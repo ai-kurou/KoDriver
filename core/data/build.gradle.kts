@@ -84,6 +84,7 @@ kotlin {
                 implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
                 implementation(libs.kotlinx.coroutinesTest)
                 implementation(libs.androidx.datastore.preferences)
+                implementation(project.dependencies.platform(libs.okhttp.bom))
                 implementation(libs.okhttp)
                 implementation(libs.okhttp.mockwebserver)
             }
