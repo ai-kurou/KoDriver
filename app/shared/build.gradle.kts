@@ -115,7 +115,17 @@ kotlin {
             implementation(libs.roborazzi.composeDesktop)
             implementation(libs.compose.material3.adaptive.layout)
         }
+        jvmTest {
+            kotlin.srcDir(
+                rootProject.layout.projectDirectory.dir("build-logic/src/featureComposeScreenshotJvmTest/kotlin"),
+            )
+        }
         named("androidHostTest") {
+            kotlin.srcDir(
+                rootProject.layout.projectDirectory.dir(
+                    "build-logic/src/featureComposeScreenshotAndroidHostTest/kotlin",
+                ),
+            )
             dependencies {
                 implementation(libs.kotlin.testJunit)
                 implementation(libs.junit)

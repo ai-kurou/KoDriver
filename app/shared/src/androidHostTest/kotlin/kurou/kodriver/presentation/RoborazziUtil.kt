@@ -3,15 +3,6 @@ package kurou.kodriver.presentation
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.ui.unit.dp
-import com.github.takahirom.roborazzi.RoborazziOptions
-
-internal val defaultRoborazziOptions =
-    RoborazziOptions(
-        compareOptions =
-            RoborazziOptions.CompareOptions(
-                changeThreshold = 0.001f,
-            ),
-    )
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 internal val twoPaneDirective =
