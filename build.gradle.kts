@@ -310,6 +310,34 @@ tasks.register("generateModuleGraphImages") {
 
         fun moduleCountLabel(count: Int): String = if (count == 1) "1 module" else "$count modules"
 
+        // モジュール種別ごとの塗り色・枠色（nowinandroid のモジュール図を参考にした色分け）
+        val moduleFillColors = mapOf(
+            "app" to "#FFE0B2",
+            "feature" to "#C8E6C9",
+            "core" to "#BBDEFB",
+            "server" to "#F8BBD0",
+            "other" to "#EEEEEE",
+        )
+        val moduleStrokeColors = mapOf(
+            "app" to "#FB8C00",
+            "feature" to "#43A047",
+            "core" to "#1E88E5",
+            "server" to "#D81B60",
+            "other" to "#9E9E9E",
+        )
+
+        fun moduleCategory(module: String): String = when {
+            module.startsWith(":app:") -> "app"
+            module.startsWith(":feature:") -> "feature"
+            module.startsWith(":core:") -> "core"
+            module.startsWith(":server") -> "server"
+            else -> "other"
+        }
+
+        fun moduleFillColor(module: String): String = moduleFillColors.getValue(moduleCategory(module))
+
+        fun moduleStrokeColor(module: String): String = moduleStrokeColors.getValue(moduleCategory(module))
+
         val featureGroup = "feature"
         val featureModuleCount = allModules.count { it.startsWith(":feature:") }
 
@@ -322,14 +350,30 @@ tasks.register("generateModuleGraphImages") {
             .toSet()
             .sortedWith(compareBy<Pair<String, String>> { it.first }.thenBy { it.second })
 
+        val overviewNodes = (overviewEdges.flatMap { (from, to) -> listOf(from, to) } + featureGroup)
+            .toSet()
+            .sorted()
+
         val fullGvFile = file("$graphsDir/full-graph.gv")
         fullGvFile.writeText(
             buildString {
                 appendLine("digraph G {")
                 appendLine("  rankdir=TB")
                 appendLine("  graph [ranksep=1.2, nodesep=0.6]")
-                appendLine("  node [shape=box, style=rounded]")
-                appendLine("  \"$featureGroup\" [label=\"feature\\n${moduleCountLabel(featureModuleCount)}\"]")
+                appendLine("  node [shape=box, style=\"rounded,filled\"]")
+                overviewNodes.forEach { node ->
+                    val category = if (node == featureGroup) ":feature:x" else node
+                    val fillColor = moduleFillColor(category)
+                    val strokeColor = moduleStrokeColor(category)
+                    val label = if (node == featureGroup) {
+                        "feature\\n${moduleCountLabel(featureModuleCount)}"
+                    } else {
+                        node
+                    }
+                    appendLine(
+                        "  \"$node\" [label=\"$label\", fillcolor=\"$fillColor\", color=\"$strokeColor\"]",
+                    )
+                }
                 overviewEdges.forEach { (from, to) ->
                     appendLine("  \"$from\" -> \"$to\"")
                 }
@@ -350,6 +394,15 @@ tasks.register("generateModuleGraphImages") {
             val gvContent = buildString {
                 appendLine("digraph G {")
                 appendLine("  rankdir=TB")
+                appendLine("  node [shape=box, style=\"rounded,filled\"]")
+                neighborhood.sorted().forEach { node ->
+                    val fillColor = moduleFillColor(node)
+                    val strokeColor = moduleStrokeColor(node)
+                    val penWidth = if (node == module) "2.5" else "1"
+                    appendLine(
+                        "  \"$node\" [fillcolor=\"$fillColor\", color=\"$strokeColor\", penwidth=$penWidth]",
+                    )
+                }
                 subEdges.forEach { (from, to, attrs) ->
                     val attrPart = if (attrs.isNotEmpty()) " $attrs" else ""
                     appendLine("  \"$from\" -> \"$to\"$attrPart")
