@@ -37,6 +37,7 @@ kotlin {
                 implementation(project.dependencies.platform(libs.koin.bom))
                 implementation(libs.koin.core)
                 implementation(libs.androidx.datastore.core)
+                implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
                 implementation(libs.kotlinx.serialization.protobuf)
                 implementation(project.dependencies.platform(libs.sentry.bom))
                 implementation(libs.sentry)

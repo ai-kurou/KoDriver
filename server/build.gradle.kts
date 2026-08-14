@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.logback)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(platform(libs.kotlinx.serialization.bom))
     implementation(libs.kotlinx.serialization.json)
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.serverCore)
