@@ -7,6 +7,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.windowsSharedMemory)
     implementation(libs.kotlinx.coroutinesCore)
+    implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
 
     testImplementation(libs.kotlin.testJunit)

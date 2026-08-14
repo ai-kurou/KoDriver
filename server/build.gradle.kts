@@ -38,6 +38,7 @@ kotlin.sourceSets.main {
 dependencies {
     api(projects.core.domain)
     implementation(libs.logback)
+    implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serverCore)

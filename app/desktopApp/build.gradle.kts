@@ -17,6 +17,7 @@ dependencies {
 
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)
+    implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.sentry)
 
