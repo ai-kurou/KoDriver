@@ -6,6 +6,7 @@ import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryPollingSou
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import kurou.kodriver.core.windowssharedmemory.datasource.WindowsSharedMemoryReader
 import java.nio.ByteBuffer
+import kotlin.time.Clock
 
 /**
  * Assetto Corsa EVO の Graphics 共有メモリ（`Local\acevo_pmf_graphics`）をポーリングし、
@@ -20,7 +21,7 @@ internal class AceWindowsGraphicsSharedMemorySource(
             segmentName = "Local\\acevo_pmf_graphics",
             sizeBytes = GRAPHICS_SEGMENT_SIZE_BYTES,
         ),
-    private val currentTimeMs: () -> Long = System::currentTimeMillis,
+    private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
     scope: CoroutineScope,
 ) {
     private val pollingSource =

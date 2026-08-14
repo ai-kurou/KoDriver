@@ -17,6 +17,7 @@ ksp = "2.3.11"
 jna = "5.19.1"
 jmdns = "3.6.3"
 kotlinx-coroutines = "1.11.0"
+kotlinx-datetime = "0.7.1"
 detekt = "1.23.8"
 ktlint = "14.2.0"
 ktlintCore = "1.8.0"
@@ -69,6 +70,7 @@ kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bo
 kotlinx-coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing" }
 kotlinx-coroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
 ktor-serverCore = { module = "io.ktor:ktor-server-core-jvm" }

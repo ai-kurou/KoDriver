@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import kotlin.math.roundToLong
+import kotlin.time.Clock
 
 /**
  * LMU 共有メモリ (LMU_WINDOWS_Data) の ByteBuffer を LmuWindowsTelemetryData に変換する。
@@ -137,7 +138,7 @@ internal object LmuWindowsMapper {
         val vehicleScoringBase = findPlayerVehicleScoringBase(buffer)
 
         return LmuWindowsTelemetryData(
-            timestampMs = System.currentTimeMillis(),
+            timestampMs = Clock.System.now().toEpochMilliseconds(),
             engine =
                 LmuWindowsEngineData(
                     rpm = buffer.getDouble(vehicleBase + OFF_ENGINE_RPM),
