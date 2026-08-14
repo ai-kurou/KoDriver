@@ -70,14 +70,15 @@ kotlinx-coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-co
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing" }
 kotlinx-coroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-ktor-serverCore = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
-ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
-ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
-ktor-serverWebsockets = { module = "io.ktor:ktor-server-websockets-jvm", version.ref = "ktor" }
-ktor-clientWebsockets = { module = "io.ktor:ktor-client-websockets-jvm", version.ref = "ktor" }
-ktor-clientCore = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-clientOkhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
-ktor-clientWebsocketsMultiplatform = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
+ktor-serverCore = { module = "io.ktor:ktor-server-core-jvm" }
+ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm" }
+ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm" }
+ktor-serverWebsockets = { module = "io.ktor:ktor-server-websockets-jvm" }
+ktor-clientWebsockets = { module = "io.ktor:ktor-client-websockets-jvm" }
+ktor-clientCore = { module = "io.ktor:ktor-client-core" }
+ktor-clientOkhttp = { module = "io.ktor:ktor-client-okhttp" }
+ktor-clientWebsocketsMultiplatform = { module = "io.ktor:ktor-client-websockets" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
