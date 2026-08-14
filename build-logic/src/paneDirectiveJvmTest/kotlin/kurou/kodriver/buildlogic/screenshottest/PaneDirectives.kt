@@ -1,11 +1,11 @@
-package kurou.kodriver.presentation
+package kurou.kodriver.buildlogic.screenshottest
 
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-internal val twoPaneDirective =
+val twoPaneDirective =
     PaneScaffoldDirective(
         maxHorizontalPartitions = 2,
         horizontalPartitionSpacerSize = 16.dp,
@@ -16,7 +16,7 @@ internal val twoPaneDirective =
     )
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-internal val singlePaneDirective =
+val singlePaneDirective =
     PaneScaffoldDirective(
         maxHorizontalPartitions = 1,
         horizontalPartitionSpacerSize = 0.dp,

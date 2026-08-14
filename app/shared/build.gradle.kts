@@ -119,11 +119,19 @@ kotlin {
             kotlin.srcDir(
                 rootProject.layout.projectDirectory.dir("build-logic/src/featureComposeScreenshotJvmTest/kotlin"),
             )
+            kotlin.srcDir(
+                rootProject.layout.projectDirectory.dir("build-logic/src/paneDirectiveJvmTest/kotlin"),
+            )
         }
         named("androidHostTest") {
             kotlin.srcDir(
                 rootProject.layout.projectDirectory.dir(
                     "build-logic/src/featureComposeScreenshotAndroidHostTest/kotlin",
+                ),
+            )
+            kotlin.srcDir(
+                rootProject.layout.projectDirectory.dir(
+                    "build-logic/src/paneDirectiveAndroidHostTest/kotlin",
                 ),
             )
             dependencies {

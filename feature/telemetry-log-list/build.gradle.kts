@@ -30,6 +30,11 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.mockk)
         }
+        jvmTest {
+            kotlin.srcDir(
+                rootProject.layout.projectDirectory.dir("build-logic/src/paneDirectiveJvmTest/kotlin"),
+            )
+        }
     }
 }
 
