@@ -9,6 +9,7 @@ digraph G {
   ":core:ace-windows-data" [label=":core:ace-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:data" [label=":core:data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:designsystem" [label=":core:designsystem", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:device-volume-data" [label=":core:device-volume-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:domain" [label=":core:domain", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:gt7-ps5-data" [label=":core:gt7-ps5-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -30,6 +31,7 @@ digraph G {
   ":core:ace-windows-data" -> ":core:domain"
   ":core:ace-windows-data" -> ":core:windows-shared-memory"
   ":core:data" -> ":core:domain"
+  ":core:device-volume-data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:windows-shared-memory"
