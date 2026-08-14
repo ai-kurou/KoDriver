@@ -21,7 +21,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
@@ -41,7 +40,6 @@ fun ReadoutContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
-    contentBottomPadding: Dp = 0.dp,
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
 ) {
     val viewModel: ReadoutListViewModel = koinViewModel()
@@ -58,7 +56,6 @@ fun ReadoutContent(
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
-        contentBottomPadding = contentBottomPadding,
         detailContent = detailContent,
     )
 }
@@ -79,7 +76,6 @@ internal fun ReadoutContent(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
-    contentBottomPadding: Dp = 0.dp,
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
 ) {
     val navigationState =
@@ -161,7 +157,6 @@ internal fun ReadoutContent(
                 onQueueEnabledChanged = onQueueEnabledChanged,
                 onItemClick = onItemSelected,
                 scrollToTopRequest = scrollToTopRequest,
-                contentBottomPadding = contentBottomPadding,
             )
         },
         detailPane = {

@@ -49,7 +49,6 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import dev.chrisbanes.haze.HazeState
@@ -96,12 +95,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * Material3 の NavigationBar のデフォルト高さ。NavigationBar がコンテンツに重ねて浮かぶ
- * レイアウト時、各リストの下部に確保する contentPadding として使う。コンテンツ自体は画面
- * 全体（バーの裏側も含む）に描画されるため、Haze はバーの裏に透けるコンテンツをぼかせる一方、
- * リストは contentPadding 分スクロール可能になり、末尾の項目もバーの上まで届くようになる。
+ * NavigationBar がコンテンツに重ねて浮かぶレイアウト時、コンテンツ末尾がバーの裏に完全に
+ * 隠れないよう確保する下部余白。NavigationBar のデフォルト高さ（80.dp）よりわずかに小さくし、
+ * バーの裏にコンテンツの一部が透けて見える余地（Hazeでぼかす対象）を残す。
  */
-private val FloatingNavigationBarHeight = 80.dp
+private val FloatingNavigationBarContentBottomPadding = 64.dp
 
 private fun withTabSwitch(
     action: (() -> Unit)?,
@@ -172,7 +170,6 @@ private fun AppNavIcon(
 private fun DefaultOtherContent(
     backHandler: AppBackHandler,
     scrollToTopRequest: Int,
-    contentBottomPadding: Dp,
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
@@ -185,7 +182,6 @@ private fun DefaultOtherContent(
     OtherContent(
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
-        contentBottomPadding = contentBottomPadding,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         onOpenThemeDialog = { showThemeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId, feedbackAttachRequestId ->
@@ -242,44 +238,30 @@ fun AppScreen(
     otherListViewModel: OtherListViewModel = koinViewModel(),
     backHandler: AppBackHandler = { _, _, _ -> },
     onDarkThemeChanged: (Boolean) -> Unit = {},
-    readoutContent: @Composable (scrollToTopRequest: Int, contentBottomPadding: Dp) -> Unit = {
-        scrollToTopRequest,
-        contentBottomPadding,
-        ->
+    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
         ReadoutContent(
             backHandler = backHandler,
             scrollToTopRequest = scrollToTopRequest,
-            contentBottomPadding = contentBottomPadding,
             detailContent = { itemType -> ReadoutItemDetailContent(itemType) },
         )
     },
-    telemetryLogContent: @Composable (
-        scrollToTopRequest: Int,
-        onFeedbackClick: (Long) -> Unit,
-        contentBottomPadding: Dp,
-    ) -> Unit = {
+    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = {
         scrollToTopRequest,
         onFeedbackClick,
-        contentBottomPadding,
         ->
         TelemetryLogContent(
             backHandler = backHandler,
             scrollToTopRequest = scrollToTopRequest,
             onFeedbackClick = onFeedbackClick,
-            contentBottomPadding = contentBottomPadding,
             detailContent = { id ->
                 TelemetryLogDetailContent(id = id)
             },
         )
     },
-    otherContent: @Composable (scrollToTopRequest: Int, contentBottomPadding: Dp) -> Unit = {
-        scrollToTopRequest,
-        contentBottomPadding,
-        ->
+    otherContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
         DefaultOtherContent(
             backHandler = backHandler,
             scrollToTopRequest = scrollToTopRequest,
-            contentBottomPadding = contentBottomPadding,
         )
     },
 ) {
@@ -382,18 +364,13 @@ private fun AppMainContent(
     bannerUiState: ConnectionBannerUiState,
     onBannerTapWithTabSwitch: (() -> Unit)?,
     currentDestination: AppDestination,
-    readoutContent: @Composable (scrollToTopRequest: Int, contentBottomPadding: Dp) -> Unit,
+    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit,
     readoutListScrollToTopRequest: Int,
-    telemetryLogContent: @Composable (
-        scrollToTopRequest: Int,
-        onFeedbackClick: (Long) -> Unit,
-        contentBottomPadding: Dp,
-    ) -> Unit,
+    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit,
     telemetryLogListScrollToTopRequest: Int,
     onFeedbackClickWithTabSwitch: ((Long) -> Unit)?,
-    otherContent: @Composable (scrollToTopRequest: Int, contentBottomPadding: Dp) -> Unit,
+    otherContent: @Composable (scrollToTopRequest: Int) -> Unit,
     otherListScrollToTopRequest: Int,
-    contentBottomPadding: Dp,
 ) {
     Column(modifier = modifier) {
         AnimatedVisibility(
@@ -421,15 +398,14 @@ private fun AppMainContent(
         ) { destination ->
             AppDestinationContent(
                 destination = destination,
-                readoutContent = { readoutContent(readoutListScrollToTopRequest, contentBottomPadding) },
+                readoutContent = { readoutContent(readoutListScrollToTopRequest) },
                 telemetryLogContent = {
                     telemetryLogContent(
                         telemetryLogListScrollToTopRequest,
                         onFeedbackClickWithTabSwitch ?: {},
-                        contentBottomPadding,
                     )
                 },
-                otherContent = { otherContent(otherListScrollToTopRequest, contentBottomPadding) },
+                otherContent = { otherContent(otherListScrollToTopRequest) },
             )
         }
     }
@@ -474,15 +450,11 @@ internal fun AppScreenContent(
     onReadoutTabReselected: () -> Unit = {},
     onLogTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
-    readoutContent: @Composable (scrollToTopRequest: Int, contentBottomPadding: Dp) -> Unit = { _, _ -> },
+    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     readoutListScrollToTopRequest: Int = 0,
-    telemetryLogContent: @Composable (
-        scrollToTopRequest: Int,
-        onFeedbackClick: (Long) -> Unit,
-        contentBottomPadding: Dp,
-    ) -> Unit = { _, _, _ -> },
+    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = { _, _ -> },
     telemetryLogListScrollToTopRequest: Int = 0,
-    otherContent: @Composable (scrollToTopRequest: Int, contentBottomPadding: Dp) -> Unit = { _, _ -> },
+    otherContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     otherListScrollToTopRequest: Int = 0,
 ) {
     val navigationState = rememberAppNavigationState()
@@ -523,7 +495,7 @@ internal fun AppScreenContent(
                             Modifier
                                 .fillMaxSize()
                                 .hazeSource(state = hazeState)
-                                .padding(top = 4.dp),
+                                .padding(top = 4.dp, bottom = FloatingNavigationBarContentBottomPadding),
                         bannerUiState = bannerUiState,
                         onBannerTapWithTabSwitch = onBannerTapWithTabSwitch,
                         currentDestination = navigationState.current,
@@ -534,7 +506,6 @@ internal fun AppScreenContent(
                         onFeedbackClickWithTabSwitch = onFeedbackClickWithTabSwitch,
                         otherContent = otherContent,
                         otherListScrollToTopRequest = otherListScrollToTopRequest,
-                        contentBottomPadding = FloatingNavigationBarHeight,
                     )
                     FloatingHazeNavigationBar(
                         modifier = Modifier.align(Alignment.BottomCenter),
@@ -621,7 +592,6 @@ internal fun AppScreenContent(
                         onFeedbackClickWithTabSwitch = onFeedbackClickWithTabSwitch,
                         otherContent = otherContent,
                         otherListScrollToTopRequest = otherListScrollToTopRequest,
-                        contentBottomPadding = 0.dp,
                     )
                 }
             }

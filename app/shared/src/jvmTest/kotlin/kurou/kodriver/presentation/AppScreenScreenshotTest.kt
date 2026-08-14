@@ -84,7 +84,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        readoutContent = { _, _ ->
+                        readoutContent = {
                             ReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
@@ -110,7 +110,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        otherContent = { _, _ ->
+                        otherContent = { _ ->
                             OtherContent(
                                 uiState = OtherListUiState(),
                                 onItemSelected = {},
@@ -143,7 +143,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        telemetryLogContent = { _, _, _ -> TelemetryLogContent() },
+                        telemetryLogContent = { _, _ -> TelemetryLogContent() },
                     )
                 }
             }
@@ -166,7 +166,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        readoutContent = { _, _ ->
+                        readoutContent = {
                             ReadoutContent(scaffoldDirective = singlePaneDirective)
                         },
                     )
@@ -192,7 +192,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        telemetryLogContent = { _, _, _ -> TelemetryLogContent() },
+                        telemetryLogContent = { _, _ -> TelemetryLogContent() },
                     )
                 }
             }
@@ -218,7 +218,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        otherContent = { _, _ ->
+                        otherContent = { _ ->
                             OtherContent(
                                 uiState = OtherListUiState(),
                                 onItemSelected = {},

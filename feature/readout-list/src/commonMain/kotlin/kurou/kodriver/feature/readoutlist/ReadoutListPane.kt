@@ -14,7 +14,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -82,7 +81,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.simulatorDisplayName
@@ -268,7 +266,6 @@ internal fun ReadoutListPane(
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemClick: (ReadoutItemKey) -> Unit,
     scrollToTopRequest: Int = 0,
-    contentBottomPadding: Dp = 0.dp,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
@@ -295,8 +292,10 @@ internal fun ReadoutListPane(
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             state = listState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp + contentBottomPadding),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 16.dp),
         ) {
             item(key = "simulatorSelector") {
                 ExposedDropdownMenuBox(
