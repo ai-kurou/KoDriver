@@ -7,9 +7,11 @@ dependencies {
     implementation(libs.jna)
     implementation(libs.jna.platform)
     implementation(libs.sentry)
+    implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutinesCore)
 
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)
+    testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutinesTest)
 }

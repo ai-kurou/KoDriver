@@ -16,12 +16,14 @@ dependencies {
     implementation(projects.server)
 
     implementation(compose.desktop.currentOs)
+    implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutinesSwing)
     implementation(libs.koin.core)
     implementation(libs.sentry)
 
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)
+    testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutinesTest)
     testImplementation(libs.compose.uiTest)
     testImplementation(libs.compose.uiTestJunit4)

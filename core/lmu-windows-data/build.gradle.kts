@@ -6,10 +6,12 @@ plugins {
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.windowsSharedMemory)
+    implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutinesCore)
     implementation(libs.koin.core)
 
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)
+    testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutinesTest)
 }

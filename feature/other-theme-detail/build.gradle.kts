@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.designsystem)
         }
         jvmTest.dependencies {
+            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.mockk)
         }
@@ -43,5 +44,6 @@ compose.resources {
 dependencies {
     testFixturesApi(projects.core.domain)
     testFixturesImplementation(libs.koin.core)
+    testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))
     testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }

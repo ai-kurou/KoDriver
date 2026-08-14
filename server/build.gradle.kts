@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.jmdns)
     testImplementation(libs.ktor.clientWebsockets)
     testImplementation(libs.ktor.serverTestHost)
+    testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutinesTest)
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.mockk)
