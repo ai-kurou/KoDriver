@@ -48,6 +48,7 @@ kotlin {
                 implementation(libs.androidx.datastore.core)
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
+                implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
                 implementation(libs.kotlinx.serialization.protobuf)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(project.dependencies.platform(libs.sentry.bom))
@@ -68,6 +69,7 @@ kotlin {
                 implementation(libs.ktor.clientCore)
                 implementation(libs.ktor.clientOkhttp)
                 implementation(libs.ktor.clientWebsocketsMultiplatform)
+                implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
                 implementation(libs.kotlinx.serialization.json)
             }
         }
