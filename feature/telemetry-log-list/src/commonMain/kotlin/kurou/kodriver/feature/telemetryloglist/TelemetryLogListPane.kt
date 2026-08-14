@@ -14,6 +14,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -55,6 +56,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.simulatorIcon
@@ -78,6 +80,7 @@ internal fun TelemetryLogListPane(
     onFeedbackClick: (Long) -> Unit = {},
     onDeleteClick: (Long) -> Unit = {},
     scrollToTopRequest: Int = 0,
+    contentBottomPadding: Dp = 0.dp,
 ) {
     if (uiState.logs.isEmpty()) {
         TelemetryLogEmptyState(
@@ -135,10 +138,8 @@ internal fun TelemetryLogListPane(
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 state = listState,
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 8.dp),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp + contentBottomPadding),
             ) {
                 item(key = RESET_ITEM_KEY) {
                     TelemetryLogResetListItem(

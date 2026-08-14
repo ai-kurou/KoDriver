@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
@@ -53,6 +54,7 @@ fun TelemetryLogContent(
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     onFeedbackClick: (Long) -> Unit = {},
+    contentBottomPadding: Dp = 0.dp,
     detailContent: @Composable (Long) -> Unit = {},
 ) {
     val viewModel = koinViewModel<TelemetryLogListViewModel>()
@@ -74,6 +76,7 @@ fun TelemetryLogContent(
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
         onFeedbackClick = onFeedbackClick,
+        contentBottomPadding = contentBottomPadding,
         detailContent = detailContent,
     )
 }
@@ -98,6 +101,7 @@ internal fun TelemetryLogContentScaffold(
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     onFeedbackClick: (Long) -> Unit = {},
+    contentBottomPadding: Dp = 0.dp,
     detailContent: @Composable (Long) -> Unit = {},
 ) {
     val navigationState =
@@ -216,6 +220,7 @@ internal fun TelemetryLogContentScaffold(
                     onFeedbackClick = onFeedbackClick,
                     onDeleteClick = onDeleteClick,
                     scrollToTopRequest = scrollToTopRequest,
+                    contentBottomPadding = contentBottomPadding,
                 )
             },
             detailPane = {

@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherlist
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -44,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
@@ -227,6 +229,7 @@ fun OtherListPane(
     onAppVersionTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
     scrollToTopRequest: Int = 0,
+    contentBottomPadding: Dp = 0.dp,
 ) {
     val listState = rememberLazyListState()
 
@@ -236,10 +239,8 @@ fun OtherListPane(
 
     LazyColumn(
         state = listState,
-        modifier =
-            modifier
-                .fillMaxSize()
-                .padding(vertical = 8.dp),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp + contentBottomPadding),
     ) {
         val groupedItems = uiState.items.groupBy { it.section() }
         otherListSections.forEach { section ->

@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
@@ -45,6 +46,7 @@ fun OtherContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
+    contentBottomPadding: Dp = 0.dp,
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
@@ -72,6 +74,7 @@ fun OtherContent(
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
+        contentBottomPadding = contentBottomPadding,
         detailContent = detailContent,
     )
 }
@@ -123,6 +126,7 @@ internal fun OtherContent(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
+    contentBottomPadding: Dp = 0.dp,
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
 ) {
     val navigationState =
@@ -213,6 +217,7 @@ internal fun OtherContent(
                     )
                 },
                 scrollToTopRequest = scrollToTopRequest,
+                contentBottomPadding = contentBottomPadding,
             )
         },
         detailPane = {

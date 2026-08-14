@@ -157,7 +157,7 @@ class AppScreenContentTest {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                telemetryLogContent = { _, _ -> Text("TelemetryLogContent") },
+                telemetryLogContent = { _, _, _ -> Text("TelemetryLogContent") },
             )
         }
 
@@ -175,13 +175,13 @@ class AppScreenContentTest {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
                 onFeedbackClick = { feedbackClickedLogId = it },
-                telemetryLogContent = { _, onFeedbackClick ->
+                telemetryLogContent = { _, onFeedbackClick, _ ->
                     Text(
                         text = "TelemetryLogContent",
                         modifier = Modifier.clickable(onClick = { onFeedbackClick(42L) }),
                     )
                 },
-                otherContent = { Text("OtherContent") },
+                otherContent = { _, _ -> Text("OtherContent") },
             )
         }
 
