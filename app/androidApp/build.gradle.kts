@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.app.shared)
     implementation(projects.core.data)
     implementation(projects.core.gt7Ps5Data)
+    implementation(projects.core.deviceVolumeData)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
