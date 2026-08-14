@@ -49,9 +49,10 @@ jobs:
 
           1. docs/nightly-todo-list.md を読み、「毎晩実行する項目」と、上記のJST曜日に対応する「曜日ローテーション項目」だけを対象にする（他の曜日の項目は対象外）。
           2. 対象項目それぞれについて調査し、KoDriverに追記する価値があると判断した改善案をまとめる。
-          3. 改善案がある場合は、docs/improvement-ideas.md のみを編集し、既存の記述スタイル・見出し構成に合わせて「対象・課題・改善案」がわかる粒度で追記する。重複する項目があれば追記せず既存項目を優先する。
-          4. docs/improvement-ideas.md 以外のファイルは一切変更しない。改善案が1件もない場合は何も変更しない。
-          5. 最後に、調査した各項目について「確認した内容」「追記した/しなかった判断とその理由」を簡潔にまとめて出力する（このまとめはPRの説明欄に転記されるため、改善案の追記有無にかかわらず必ず出力すること）。
+          3. 改善案がある場合は、docs/resolved-improvement-ideas.md を読み、同趣旨の内容が既に対応済みとして記録されていないか確認する。記録があれば、その改善案は追記しない。
+          4. 記録がなければ docs/improvement-ideas.md のみを編集し、既存の記述スタイル・見出し構成に合わせて「対象・課題・改善案」がわかる粒度で追記する。docs/improvement-ideas.md 内で重複する項目があれば追記せず既存項目を優先する。
+          5. docs/improvement-ideas.md 以外のファイルは一切変更しない（docs/resolved-improvement-ideas.md も読み取り専用として扱い、変更しない）。改善案が1件もない場合は何も変更しない。
+          6. 最後に、調査した各項目について「確認した内容」「追記した/しなかった判断とその理由」を簡潔にまとめて出力する（このまとめはPRの説明欄に転記されるため、改善案の追記有無にかかわらず必ず出力すること）。
           PROMPT
           )" \
             --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Edit(docs/improvement-ideas.md),Write(docs/improvement-ideas.md)" \
