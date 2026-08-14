@@ -31,6 +31,7 @@ kotlin {
             dependsOn(commonMain.get())
             dependencies {
                 implementation(projects.core.domain)
+                implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
                 implementation(libs.kotlinx.coroutinesCore)
                 implementation(project.dependencies.platform(libs.koin.bom))
                 implementation(libs.koin.core)
@@ -48,6 +49,7 @@ kotlin {
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
+            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.androidx.datastore.core)
         }

@@ -18,6 +18,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         jvmTest.dependencies {
+            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.compose.uiTest)
             implementation(libs.compose.uiTestJunit4)

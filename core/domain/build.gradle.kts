@@ -48,6 +48,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.kotlinx.serialization.json)
         }
@@ -57,6 +58,7 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(libs.kotlin.testJunit)
+                implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
                 implementation(libs.kotlinx.coroutinesTest)
                 implementation(libs.mockk)
             }

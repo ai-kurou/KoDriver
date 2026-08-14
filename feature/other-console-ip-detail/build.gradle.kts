@@ -41,5 +41,6 @@ dependencies {
     testFixturesApi(projects.core.domain)
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
+    testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))
     testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }
