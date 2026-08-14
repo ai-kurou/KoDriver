@@ -49,9 +49,11 @@ kotlin {
             implementation(libs.koin.core)
         }
         androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.sentry.bom))
             implementation(libs.sentry)
         }
         jvmMain.dependencies {
+            implementation(project.dependencies.platform(libs.sentry.bom))
             implementation(libs.sentry)
         }
         commonTest.dependencies {

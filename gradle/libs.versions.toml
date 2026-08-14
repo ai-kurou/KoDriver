@@ -101,8 +101,9 @@ robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectr
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons-extended" }
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
-sentry-android = { module = "io.sentry:sentry-android", version.ref = "sentry" }
-sentry = { module = "io.sentry:sentry", version.ref = "sentry" }
+sentry-bom = { module = "io.sentry:sentry-bom", version.ref = "sentry" }
+sentry-android = { module = "io.sentry:sentry-android" }
+sentry = { module = "io.sentry:sentry" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [plugins]

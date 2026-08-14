@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(platform(libs.sentry.bom))
     implementation(libs.sentry.android)
 
     debugImplementation(libs.compose.uiTooling)
