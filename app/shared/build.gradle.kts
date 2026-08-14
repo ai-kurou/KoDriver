@@ -98,6 +98,8 @@ kotlin {
             implementation(libs.compose.material3.adaptive.navigation)
             implementation(libs.navigation3.ui)
             implementation(libs.compose.ui)
+            implementation(libs.haze)
+            implementation(libs.haze.materials)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.runtimeCompose)

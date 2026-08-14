@@ -26,6 +26,8 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -45,9 +47,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_more
@@ -85,6 +93,13 @@ import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
 import kurou.kodriver.feature.telemetryloglist.TelemetryLogListViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
+/**
+ * NavigationBar がコンテンツに重ねて浮かぶレイアウト時、コンテンツ末尾がバーの裏に完全に
+ * 隠れないよう確保する下部余白。NavigationBar のデフォルト高さ（80.dp）よりわずかに小さくし、
+ * バーの裏にコンテンツの一部が透けて見える余地（Hazeでぼかす対象）を残す。
+ */
+private val FloatingNavigationBarContentBottomPadding = 64.dp
 
 private fun withTabSwitch(
     action: (() -> Unit)?,
@@ -344,6 +359,84 @@ internal fun ConnectionSnackbarEffect(
 }
 
 @Composable
+private fun AppMainContent(
+    modifier: Modifier,
+    bannerUiState: ConnectionBannerUiState,
+    onBannerTapWithTabSwitch: (() -> Unit)?,
+    currentDestination: AppDestination,
+    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit,
+    readoutListScrollToTopRequest: Int,
+    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit,
+    telemetryLogListScrollToTopRequest: Int,
+    onFeedbackClickWithTabSwitch: ((Long) -> Unit)?,
+    otherContent: @Composable (scrollToTopRequest: Int) -> Unit,
+    otherListScrollToTopRequest: Int,
+) {
+    Column(modifier = modifier) {
+        AnimatedVisibility(
+            visible = bannerUiState.isVisible,
+            enter =
+                slideInVertically(
+                    initialOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 300),
+                ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+            exit =
+                slideOutVertically(
+                    targetOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 200),
+                ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+        ) {
+            ConnectionBannerContent(
+                uiState = bannerUiState,
+                onClick = onBannerTapWithTabSwitch,
+            )
+        }
+        AnimatedContent(
+            targetState = currentDestination,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            modifier = Modifier.weight(1f),
+        ) { destination ->
+            AppDestinationContent(
+                destination = destination,
+                readoutContent = { readoutContent(readoutListScrollToTopRequest) },
+                telemetryLogContent = {
+                    telemetryLogContent(
+                        telemetryLogListScrollToTopRequest,
+                        onFeedbackClickWithTabSwitch ?: {},
+                    )
+                },
+                otherContent = { otherContent(otherListScrollToTopRequest) },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalHazeMaterialsApi::class)
+@Composable
+private fun FloatingHazeNavigationBar(
+    hazeState: HazeState,
+    current: AppDestination,
+    hasAppUpdate: Boolean,
+    onItemClick: (AppDestination) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    NavigationBar(
+        modifier = modifier.hazeEffect(state = hazeState, style = HazeMaterials.thin()),
+        containerColor = Color.Transparent,
+    ) {
+        AppDestination.entries.forEach { dest ->
+            val showBadge = dest == AppDestination.More && hasAppUpdate
+            NavigationBarItem(
+                selected = current == dest,
+                onClick = { onItemClick(dest) },
+                icon = { AppNavIcon(dest = dest, showBadge = showBadge) },
+                label = { Text(dest.label()) },
+            )
+        }
+    }
+}
+
+@Composable
 internal fun AppScreenContent(
     darkTheme: Boolean = false,
     dynamicColorEnabled: Boolean = false,
@@ -373,6 +466,15 @@ internal fun AppScreenContent(
         withTabSwitchWithArg(onFeedbackClick) {
             navigationState.navigateTo(AppDestination.More)
         }
+    val onDestinationClick: (AppDestination) -> Unit = { dest ->
+        navigationState.handleTabClick(dest) { reselected ->
+            when (reselected) {
+                AppDestination.Readout -> onReadoutTabReselected()
+                AppDestination.Log -> onLogTabReselected()
+                AppDestination.More -> onOtherTabReselected()
+            }
+        }
+    }
 
     AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -385,120 +487,112 @@ internal fun AppScreenContent(
                     .background(MaterialTheme.colorScheme.background)
                     .safeDrawingPadding(),
         ) {
-            NavigationSuiteScaffold(
-                modifier = Modifier.padding(top = 4.dp),
-                layoutType = resolvedLayoutType,
-                navigationSuiteItems = {
-                    AppDestination.entries.forEach { dest ->
-                        val itemModifier =
-                            if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(4.dp)
-                            } else {
-                                Modifier
-                            }
-                        val showBadge = dest == AppDestination.More && hasAppUpdate
-                        item(
-                            icon = {
-                                if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
-                                    AppNavIcon(dest = dest, showBadge = showBadge)
-                                }
-                            },
-                            label = {
+            if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                val hazeState = remember { HazeState() }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AppMainContent(
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .hazeSource(state = hazeState)
+                                .padding(top = 4.dp, bottom = FloatingNavigationBarContentBottomPadding),
+                        bannerUiState = bannerUiState,
+                        onBannerTapWithTabSwitch = onBannerTapWithTabSwitch,
+                        currentDestination = navigationState.current,
+                        readoutContent = readoutContent,
+                        readoutListScrollToTopRequest = readoutListScrollToTopRequest,
+                        telemetryLogContent = telemetryLogContent,
+                        telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
+                        onFeedbackClickWithTabSwitch = onFeedbackClickWithTabSwitch,
+                        otherContent = otherContent,
+                        otherListScrollToTopRequest = otherListScrollToTopRequest,
+                    )
+                    FloatingHazeNavigationBar(
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        hazeState = hazeState,
+                        current = navigationState.current,
+                        hasAppUpdate = hasAppUpdate,
+                        onItemClick = onDestinationClick,
+                    )
+                }
+            } else {
+                NavigationSuiteScaffold(
+                    modifier = Modifier.padding(top = 4.dp),
+                    layoutType = resolvedLayoutType,
+                    navigationSuiteItems = {
+                        AppDestination.entries.forEach { dest ->
+                            val itemModifier =
                                 if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-                                    Row(
-                                        modifier =
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .offset(x = (-6).dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        AppNavIcon(
-                                            dest = dest,
-                                            showBadge = showBadge,
-                                            modifier = Modifier.size(24.dp),
-                                        )
-                                        Spacer(modifier = Modifier.width(12.dp))
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(4.dp)
+                                } else {
+                                    Modifier
+                                }
+                            val showBadge = dest == AppDestination.More && hasAppUpdate
+                            item(
+                                icon = {
+                                    if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
+                                        AppNavIcon(dest = dest, showBadge = showBadge)
+                                    }
+                                },
+                                label = {
+                                    if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
+                                        Row(
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .offset(x = (-6).dp),
+                                            horizontalArrangement = Arrangement.Center,
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
+                                            AppNavIcon(
+                                                dest = dest,
+                                                showBadge = showBadge,
+                                                modifier = Modifier.size(24.dp),
+                                            )
+                                            Spacer(modifier = Modifier.width(12.dp))
+                                            Text(dest.label())
+                                        }
+                                    } else {
                                         Text(dest.label())
                                     }
-                                } else {
-                                    Text(dest.label())
-                                }
-                            },
-                            selected = navigationState.current == dest,
-                            onClick = {
-                                navigationState.handleTabClick(dest) { reselected ->
-                                    when (reselected) {
-                                        AppDestination.Readout -> onReadoutTabReselected()
-                                        AppDestination.Log -> onLogTabReselected()
-                                        AppDestination.More -> onOtherTabReselected()
-                                    }
-                                }
-                            },
-                            modifier = itemModifier,
-                        )
-                    }
-                },
-            ) {
-                val dividerColor = DividerDefaults.color
-                val dividerThickness = DividerDefaults.Thickness
-                val contentModifier =
-                    Modifier
-                        .fillMaxSize()
-                        .then(
-                            if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                                Modifier
-                            } else {
-                                Modifier.drawWithContent {
-                                    drawContent()
-                                    val strokeWidth = dividerThickness.toPx()
-                                    drawLine(
-                                        color = dividerColor,
-                                        start = Offset(strokeWidth / 2, 0f),
-                                        end = Offset(strokeWidth / 2, size.height),
-                                        strokeWidth = strokeWidth,
-                                    )
-                                }
-                            },
-                        )
-                Column(modifier = contentModifier) {
-                    AnimatedVisibility(
-                        visible = bannerUiState.isVisible,
-                        enter =
-                            slideInVertically(
-                                initialOffsetY = { -it },
-                                animationSpec = tween(durationMillis = 300),
-                            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                        exit =
-                            slideOutVertically(
-                                targetOffsetY = { -it },
-                                animationSpec = tween(durationMillis = 200),
-                            ) + fadeOut(animationSpec = tween(durationMillis = 200)),
-                    ) {
-                        ConnectionBannerContent(
-                            uiState = bannerUiState,
-                            onClick = onBannerTapWithTabSwitch,
-                        )
-                    }
-                    AnimatedContent(
-                        targetState = navigationState.current,
-                        transitionSpec = { fadeIn() togetherWith fadeOut() },
-                        modifier = Modifier.weight(1f),
-                    ) { destination ->
-                        AppDestinationContent(
-                            destination = destination,
-                            readoutContent = { readoutContent(readoutListScrollToTopRequest) },
-                            telemetryLogContent = {
-                                telemetryLogContent(
-                                    telemetryLogListScrollToTopRequest,
-                                    onFeedbackClickWithTabSwitch ?: {},
+                                },
+                                selected = navigationState.current == dest,
+                                onClick = { onDestinationClick(dest) },
+                                modifier = itemModifier,
+                            )
+                        }
+                    },
+                ) {
+                    val dividerColor = DividerDefaults.color
+                    val dividerThickness = DividerDefaults.Thickness
+                    val contentModifier =
+                        Modifier
+                            .fillMaxSize()
+                            .drawWithContent {
+                                drawContent()
+                                val strokeWidth = dividerThickness.toPx()
+                                drawLine(
+                                    color = dividerColor,
+                                    start = Offset(strokeWidth / 2, 0f),
+                                    end = Offset(strokeWidth / 2, size.height),
+                                    strokeWidth = strokeWidth,
                                 )
-                            },
-                            otherContent = { otherContent(otherListScrollToTopRequest) },
-                        )
-                    }
+                            }
+                    AppMainContent(
+                        modifier = contentModifier,
+                        bannerUiState = bannerUiState,
+                        onBannerTapWithTabSwitch = onBannerTapWithTabSwitch,
+                        currentDestination = navigationState.current,
+                        readoutContent = readoutContent,
+                        readoutListScrollToTopRequest = readoutListScrollToTopRequest,
+                        telemetryLogContent = telemetryLogContent,
+                        telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
+                        onFeedbackClickWithTabSwitch = onFeedbackClickWithTabSwitch,
+                        otherContent = otherContent,
+                        otherListScrollToTopRequest = otherListScrollToTopRequest,
+                    )
                 }
             }
             SnackbarHost(
