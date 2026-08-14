@@ -78,15 +78,15 @@ fun OtherVolumeDetailPaneContent(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
         ) {
+            DetailPaneSubtitle(
+                text = stringResource(Res.string.volume_subtitle),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 DetailPaneBodyText(text = stringResource(Res.string.volume_description))
                 DetailPaneBodyText(text = stringResource(Res.string.volume_formula))
                 DetailPaneBodyText(text = stringResource(Res.string.volume_low_warning))
             }
-            DetailPaneSubtitle(
-                text = stringResource(Res.string.volume_subtitle),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
             ThresholdSlider(
                 value = uiState.volume.toFloat(),
                 valueRange = 0f..100f,
@@ -95,13 +95,13 @@ fun OtherVolumeDetailPaneContent(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 steps = 99,
             )
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                DetailPaneBodyText(text = stringResource(Res.string.device_volume_description))
-            }
             DetailPaneSubtitle(
                 text = stringResource(Res.string.device_volume_subtitle),
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                DetailPaneBodyText(text = stringResource(Res.string.device_volume_description))
+            }
             ThresholdSlider(
                 value = uiState.deviceVolume.toFloat(),
                 valueRange = 0f..100f,
