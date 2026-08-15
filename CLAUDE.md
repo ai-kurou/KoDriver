@@ -57,6 +57,7 @@ KoDriver/
 │   └── telemetry-log-detail/            テレメトリログの詳細表示
 ├── app/
 │   ├── androidApp/ Android アプリのエントリーポイント
+│   ├── androidBenchmark/ Macrobenchmarkによる Baseline Profile 生成（`app:androidApp` 計装テスト）
 │   ├── desktopApp/ JVM デスクトップアプリのエントリーポイント
 │   ├── shared/     Compose Multiplatform 共通 UI・ナビゲーション
 │   └── webApp/     Web アプリ（Gradle ビルド設定のみ用意、独自機能は未実装）

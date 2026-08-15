@@ -34,6 +34,7 @@ plugins {
 }
 
 include(":app:androidApp")
+include(":app:androidBenchmark")
 include(":app:desktopApp")
 include(":app:shared")
 include(":app:webApp")
