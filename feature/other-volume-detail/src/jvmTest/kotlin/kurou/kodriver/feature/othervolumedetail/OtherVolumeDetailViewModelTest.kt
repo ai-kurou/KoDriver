@@ -14,10 +14,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
@@ -134,5 +137,25 @@ class OtherVolumeDetailViewModelTest {
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(20) }
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(80) }
             confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+        }
+
+    @Test
+    fun `detailPane表示中は一定間隔で端末のマスター音量を再取得する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            val viewModel = createViewModel()
+            val job = viewModel.uiState.launchIn(this)
+            runCurrent()
+
+            advanceTimeBy(500)
+            runCurrent()
+            advanceTimeBy(500)
+            runCurrent()
+
+            coVerify(exactly = 3) { deviceVolumeRepository.getVolume() }
+            verify(exactly = 1) { soundVolumeRepository.volume() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            job.cancel()
         }
 }
