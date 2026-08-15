@@ -41,5 +41,6 @@
   - `androidHostTest` は Roborazzi + Robolectric による **JVM上でのホスト側テスト**であり、実機/仮想デバイスのエミュレータは一切登場しない（`reactivecircus/android-emulator-runner` 等は未使用）。「エミュレータ起動が時間を占めている」という当初の推測は誤りだった。
   - ローカルで `./gradlew verifyRoborazziAndroidHostTests --profile` を実行し `build/reports/profile/*.html` のタスク別内訳を確認したところ、`app:shared:testAndroidHostTest` 単体で **2分56秒**（ビルド全体3分6秒の大部分）を占めており、突出したボトルネックだった。他の6モジュール（`feature:other-list` 等、実際に `captureRoboImage` を呼ぶスクリーンショットテストを持つモジュール）は22〜27秒程度で、並列実行によりこちらは全体時間にほぼ影響していなかった。
   - `app:shared` の `androidHostTest` にはテストファイル5個・`@Test` 17個（`AppThemeAndroidTest`・`AppThemeModeAndroidTest`・`OtherContentScreenshotTest` 等）があり、1テストあたり平均10秒程度かかっている。Gradleの `Test` タスクはデフォルトで `maxParallelForks=1` のため、同一モジュール内のテストは単一JVM上で直列実行される。
-  **改善案**: `app:shared` の `androidHostTest` を細分化する（`maxParallelForks` を上げてテストクラス単位で並列化する、またはテスト対象を複数モジュールに分割する）か、各テスト（特にテーマ・サイズの組み合わせが多いもの）のレンダリング回数・Robolectricの初期化コストをさらに深掘りして削減できないか検討する。
+  **改善案**: `app:shared` の `androidHostTest` を細分化する（テスト対象を複数モジュールに分割する）か、各テスト（特にテーマ・サイズの組み合わせが多いもの）のレンダリング回数・Robolectricの初期化コストをさらに深掘りして削減できないか検討する。
+  **試行結果（2026-08-15、効果なし）**: ルート `build.gradle.kts` の `subprojects { tasks.withType<Test>() }` に `maxParallelForks = (availableProcessors / 2).coerceAtLeast(1)` を追加してローカルで再計測したところ、`app:shared:testAndroidHostTest` は2分56秒→4分2秒、他の6モジュールも22〜27秒→30〜39秒と、全体的にむしろ悪化した。`org.gradle.parallel=true` によるモジュール単位の並列実行と `maxParallelForks` によるテストクラス単位の並列forkが同時に働き、ローカル環境（10コア）でCPUを奪い合ったことが原因と考えられる。この設定変更は採用しなかった（コミットせず破棄）。次に試す場合は、`org.gradle.workers.max` との兼ね合いやCIランナーの実コア数を踏まえて再検討すること。
 
