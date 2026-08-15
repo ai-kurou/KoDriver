@@ -1,5 +1,6 @@
 plugins {
     id("feature-compose-screenshot")
+    `java-test-fixtures`
 }
 
 kotlin {
@@ -36,4 +37,12 @@ kotlin {
 
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.othervolumedetail.generated.resources"
+}
+
+dependencies {
+    testFixturesApi(projects.core.domain)
+    testFixturesImplementation(platform(libs.koin.bom))
+    testFixturesImplementation(libs.koin.core)
+    testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))
+    testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }

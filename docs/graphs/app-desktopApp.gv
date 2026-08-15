@@ -5,6 +5,7 @@ digraph G {
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:ace-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:device-volume-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:gt7-ps5-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:lmu-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=1]
@@ -13,5 +14,6 @@ digraph G {
   ":app:desktopApp" -> ":core:lmu-windows-data"
   ":app:desktopApp" -> ":core:gt7-ps5-data"
   ":app:desktopApp" -> ":core:ace-windows-data"
+  ":app:desktopApp" -> ":core:device-volume-data"
   ":app:desktopApp" -> ":server"
 }
