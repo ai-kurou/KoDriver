@@ -78,7 +78,8 @@ private class MMDeviceEnumerator(
 ) : Unknown(pointer) {
     fun getDefaultAudioEndpoint(): Pointer {
         val ppDevice = PointerByReference()
-        val hr = _invokeNativeObject(4, arrayOf(E_RENDER, E_MULTIMEDIA, ppDevice), HRESULT::class.java) as HRESULT
+        val hr =
+            _invokeNativeObject(4, arrayOf(pointer, E_RENDER, E_MULTIMEDIA, ppDevice), HRESULT::class.java) as HRESULT
         COMUtils.checkRC(hr)
         return ppDevice.value
     }
@@ -93,7 +94,7 @@ private class MMDevice(
         val hr =
             _invokeNativeObject(
                 3,
-                arrayOf(IID_AUDIO_ENDPOINT_VOLUME, CLSCTX_ALL, null, ppInterface),
+                arrayOf(pointer, IID_AUDIO_ENDPOINT_VOLUME, CLSCTX_ALL, null, ppInterface),
                 HRESULT::class.java,
             ) as HRESULT
         COMUtils.checkRC(hr)
@@ -110,13 +111,13 @@ private class AudioEndpointVolume(
 ) : Unknown(pointer) {
     fun getMasterVolumeLevelScalar(): Float {
         val level = FloatByReference()
-        val hr = _invokeNativeObject(9, arrayOf(level), HRESULT::class.java) as HRESULT
+        val hr = _invokeNativeObject(9, arrayOf(pointer, level), HRESULT::class.java) as HRESULT
         COMUtils.checkRC(hr)
         return level.value
     }
 
     fun setMasterVolumeLevelScalar(level: Float) {
-        val hr = _invokeNativeObject(7, arrayOf(level, null), HRESULT::class.java) as HRESULT
+        val hr = _invokeNativeObject(7, arrayOf(pointer, level, null), HRESULT::class.java) as HRESULT
         COMUtils.checkRC(hr)
     }
 }
