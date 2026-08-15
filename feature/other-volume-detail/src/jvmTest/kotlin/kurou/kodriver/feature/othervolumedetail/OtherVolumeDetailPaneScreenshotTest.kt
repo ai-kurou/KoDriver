@@ -20,7 +20,7 @@ class OtherVolumeDetailPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             OtherVolumeDetailPaneContent(
-                                uiState = OtherVolumeDetailUiState(volume = 80),
+                                uiState = OtherVolumeDetailUiState(volume = 80, deviceVolume = 60),
                             )
                         }
                     }

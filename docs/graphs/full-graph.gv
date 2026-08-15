@@ -9,6 +9,7 @@ digraph G {
   ":core:ace-windows-data" [label=":core:ace-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:data" [label=":core:data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:designsystem" [label=":core:designsystem", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:device-volume-data" [label=":core:device-volume-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:domain" [label=":core:domain", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:gt7-ps5-data" [label=":core:gt7-ps5-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -18,10 +19,12 @@ digraph G {
   "feature" [label="feature\n35 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:data"
+  ":app:androidApp" -> ":core:device-volume-data"
   ":app:androidApp" -> ":core:gt7-ps5-data"
   ":app:desktopApp" -> ":app:shared"
   ":app:desktopApp" -> ":core:ace-windows-data"
   ":app:desktopApp" -> ":core:data"
+  ":app:desktopApp" -> ":core:device-volume-data"
   ":app:desktopApp" -> ":core:gt7-ps5-data"
   ":app:desktopApp" -> ":core:lmu-windows-data"
   ":app:desktopApp" -> ":server"
@@ -30,6 +33,7 @@ digraph G {
   ":core:ace-windows-data" -> ":core:domain"
   ":core:ace-windows-data" -> ":core:windows-shared-memory"
   ":core:data" -> ":core:domain"
+  ":core:device-volume-data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:windows-shared-memory"

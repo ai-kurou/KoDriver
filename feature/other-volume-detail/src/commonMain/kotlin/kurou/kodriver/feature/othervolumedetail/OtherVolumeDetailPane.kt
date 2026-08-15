@@ -12,11 +12,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
+import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.feature.othervolumedetail.generated.resources.Res
+import kurou.kodriver.feature.othervolumedetail.generated.resources.device_volume_description
+import kurou.kodriver.feature.othervolumedetail.generated.resources.device_volume_subtitle
 import kurou.kodriver.feature.othervolumedetail.generated.resources.navigate_back
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_description
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_formula
@@ -42,6 +45,7 @@ fun OtherVolumeDetailPane(
     OtherVolumeDetailPaneContent(
         uiState = uiState,
         onVolumeChanged = viewModel::onVolumeChanged,
+        onDeviceVolumeChanged = viewModel::onDeviceVolumeChanged,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -55,6 +59,7 @@ fun OtherVolumeDetailPane(
 fun OtherVolumeDetailPaneContent(
     uiState: OtherVolumeDetailUiState,
     onVolumeChanged: (Int) -> Unit = {},
+    onDeviceVolumeChanged: (Int) -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -74,20 +79,37 @@ fun OtherVolumeDetailPaneContent(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
         ) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                DetailPaneBodyText(text = stringResource(Res.string.volume_description))
-                DetailPaneBodyText(text = stringResource(Res.string.volume_formula))
-                DetailPaneBodyText(text = stringResource(Res.string.volume_low_warning))
-            }
+            DetailPaneDescription(
+                text = stringResource(Res.string.volume_description),
+            )
             DetailPaneSubtitle(
                 text = stringResource(Res.string.volume_subtitle),
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                DetailPaneBodyText(text = stringResource(Res.string.volume_formula))
+                DetailPaneBodyText(text = stringResource(Res.string.volume_low_warning))
+            }
             ThresholdSlider(
                 value = uiState.volume.toFloat(),
                 valueRange = 0f..100f,
                 labelFormatter = { volumeLabel.formatSliderLabel(it.roundToInt()) },
                 onValueChangeFinished = { onVolumeChanged(it.roundToInt()) },
+                modifier = Modifier.padding(horizontal = 16.dp),
+                steps = 99,
+            )
+            DetailPaneSubtitle(
+                text = stringResource(Res.string.device_volume_subtitle),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                DetailPaneBodyText(text = stringResource(Res.string.device_volume_description))
+            }
+            ThresholdSlider(
+                value = uiState.deviceVolume.toFloat(),
+                valueRange = 0f..100f,
+                labelFormatter = { volumeLabel.formatSliderLabel(it.roundToInt()) },
+                onValueChangeFinished = { onDeviceVolumeChanged(it.roundToInt()) },
                 modifier = Modifier.padding(horizontal = 16.dp),
                 steps = 99,
             )

@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.core.lmuWindowsData)
     implementation(projects.core.gt7Ps5Data)
     implementation(projects.core.aceWindowsData)
+    implementation(projects.core.deviceVolumeData)
     implementation(projects.server)
 
     implementation(compose.desktop.currentOs)

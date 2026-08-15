@@ -3,6 +3,7 @@ digraph G {
   node [shape=box, style="rounded,filled"]
   ":core:ace-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:device-volume-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
   ":core:gt7-ps5-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:lmu-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
@@ -45,6 +46,7 @@ digraph G {
   ":server" -> ":core:domain"
   ":core:ace-windows-data" -> ":core:domain"
   ":core:data" -> ":core:domain"
+  ":core:device-volume-data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
   ":feature:ace-windows-connection" -> ":core:domain"
