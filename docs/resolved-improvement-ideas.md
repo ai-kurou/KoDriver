@@ -64,3 +64,4 @@
 - 2026-08-14 improvement-ideasからAI自動PRレビュー導入案を削除
 - 2026-08-15 maestro-testジョブのactions/checkout flaky対策案を見送りとして削除
 - 2026-08-15 android-screenshot-test-verifyジョブの高速化案を、複数の打ち手(モジュール分割・並列度調整・キャッシュ・SDK切替順序)がいずれも効果なしと確認した上で削除（PR #1125）
+- 2026-08-15 Baseline Profile導入案を実装し削除（PR #1126）
