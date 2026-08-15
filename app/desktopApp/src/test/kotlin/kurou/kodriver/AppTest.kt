@@ -16,7 +16,6 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
-import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -27,6 +26,7 @@ import kurou.kodriver.feature.main.fakeMainModule
 import kurou.kodriver.feature.otherconsoleipdetail.fakeOtherConsoleIpDetailModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.fakeOtherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherthemedetail.fakeOtherThemeDetailModule
+import kurou.kodriver.feature.othervolumedetail.fakeOtherVolumeDetailModule
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
@@ -56,7 +56,7 @@ class AppTest {
                 // :core:lmu-windows-data の lmuWindowsDataModule は含めない。LMU/GT7の各Repositoryは
                 // fakeLmuWindowsNarratorModule / fakeGt7Ps5DataModule が最後に上書きするため実質未使用になる。
                 modules(
-                    listOf(desktopDataModule, aceWindowsDataModule, deviceVolumeDataModule) + featureModules +
+                    listOf(desktopDataModule, aceWindowsDataModule) + featureModules +
                         listOf(
                             fakeGt7Ps5DataModule,
                             fakeLmuWindowsNarratorModule,
@@ -66,6 +66,7 @@ class AppTest {
                             fakeOtherThemeDetailModule,
                             fakeOtherReadoutStartSoundDetailModule,
                             fakeOtherConsoleIpDetailModule,
+                            fakeOtherVolumeDetailModule,
                         ),
                 )
             }
