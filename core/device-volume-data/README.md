@@ -6,6 +6,8 @@ KoDriver自体のアナウンス音量設定とは異なり、OS側の再生音�
 - jvmMain: Windows Core Audio（WASAPI `IAudioEndpointVolume`）をJNA経由で直接呼び出す`WindowsDeviceVolumeRepository`。
   非Windowsでは何もしないNo-Op実装にフォールバックする。
 - androidMain: `AudioManager`（`STREAM_MUSIC`）を使う`AndroidDeviceVolumeRepository`。
+  Android SDKには公開のマスター音量APIが存在しないため、読み上げ音声（メディア扱い）に対応する
+  `STREAM_MUSIC`をマスター音量の代替として扱う。
 
 いずれも`core:domain`の`DeviceVolumeRepository`（値は0-100のパーセンテージ）を実装する。
 

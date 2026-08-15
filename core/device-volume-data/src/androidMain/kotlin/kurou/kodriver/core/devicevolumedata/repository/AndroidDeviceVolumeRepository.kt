@@ -9,7 +9,11 @@ import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kotlin.math.roundToInt
 
 /**
- * [AudioManager]（`STREAM_MUSIC`）を介して端末のマスター音量（0-100）を取得・設定する。
+ * [AudioManager]の`STREAM_MUSIC`（メディア音量）を介して端末の音量（0-100）を取得・設定する。
+ *
+ * Android SDKにはWindowsのようなアプリから操作可能な公開マスター音量APIが存在しない
+ * （`AudioManager.getMasterVolume`等は`@hide`）ため、KoDriverの読み上げ音声（メディア扱い）が
+ * 実際に聞こえるかどうかに関わる`STREAM_MUSIC`を、実質的なマスター音量の代替として扱う。
  */
 internal class AndroidDeviceVolumeRepository(
     private val audioManager: AudioManager,
