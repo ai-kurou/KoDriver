@@ -5,10 +5,12 @@ digraph G {
   ":app:androidBenchmark" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:device-volume-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:gt7-ps5-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":app:androidBenchmark"
   ":app:androidApp" -> ":core:data"
   ":app:androidApp" -> ":core:gt7-ps5-data"
+  ":app:androidApp" -> ":core:device-volume-data"
   ":app:androidBenchmark" -> ":app:androidApp"
 }
