@@ -34,7 +34,12 @@
 
 ## CI/CD
 
-- **対象**: `.github/workflows/on-pull-request.yml` の `android-screenshot-test-verify` ジョブ
-  **課題**: 他ジョブ（ktlint 約3分、unit-test 約10分、detekt 約6分など）に比べて所要時間が突出して長い（約22〜23分、例: run 31778741798, 31809382366）。エミュレータ起動とRoborazzi比較のどちらが時間を占めているか内訳が不明で、PR全体の待ち時間のボトルネックになっている可能性がある。
-  **改善案**: ジョブ内のステップ別所要時間を計測し、エミュレータ起動のキャッシュ・スナップショット活用等で短縮できないか検討する。
+- **対象**: `.github/workflows/on-pull-request.yml` の `android-screenshot-test-verify` ジョブ（実体は `./gradlew verifyRoborazziAndroidHostTests`）
+  **課題**: 他ジョブ（ktlint 約3分、unit-test 約10分、detekt 約6分など）に比べて所要時間が突出して長い（約22〜23分、例: run 31778741798, 31809382366）。
+  **調査結果（2026-08-15）**:
+  - CI実行（run 31883058239）のステップ別タイミングを確認したところ、`checkout`（3秒）・`setup-screenshot`（26秒）に対し `Verify screenshot tests` ステップだけで10分44秒を占めており、ジョブ全体（約11分19秒）のほぼ全てがこの1ステップに集中していた。
+  - `androidHostTest` は Roborazzi + Robolectric による **JVM上でのホスト側テスト**であり、実機/仮想デバイスのエミュレータは一切登場しない（`reactivecircus/android-emulator-runner` 等は未使用）。「エミュレータ起動が時間を占めている」という当初の推測は誤りだった。
+  - ローカルで `./gradlew verifyRoborazziAndroidHostTests --profile` を実行し `build/reports/profile/*.html` のタスク別内訳を確認したところ、`app:shared:testAndroidHostTest` 単体で **2分56秒**（ビルド全体3分6秒の大部分）を占めており、突出したボトルネックだった。他の6モジュール（`feature:other-list` 等、実際に `captureRoboImage` を呼ぶスクリーンショットテストを持つモジュール）は22〜27秒程度で、並列実行によりこちらは全体時間にほぼ影響していなかった。
+  - `app:shared` の `androidHostTest` にはテストファイル5個・`@Test` 17個（`AppThemeAndroidTest`・`AppThemeModeAndroidTest`・`OtherContentScreenshotTest` 等）があり、1テストあたり平均10秒程度かかっている。Gradleの `Test` タスクはデフォルトで `maxParallelForks=1` のため、同一モジュール内のテストは単一JVM上で直列実行される。
+  **改善案**: `app:shared` の `androidHostTest` を細分化する（`maxParallelForks` を上げてテストクラス単位で並列化する、またはテスト対象を複数モジュールに分割する）か、各テスト（特にテーマ・サイズの組み合わせが多いもの）のレンダリング回数・Robolectricの初期化コストをさらに深掘りして削減できないか検討する。
 
