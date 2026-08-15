@@ -9,6 +9,7 @@
 [![License](https://img.shields.io/github/license/ai-kurou/KoDriver)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/ai-kurou/KoDriver)](https://github.com/ai-kurou/KoDriver/releases)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.0-7F52FF?logo=kotlin)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ai-kurou/KoDriver)
 
 Le Mans Ultimate（LMU）、Gran Turismo 7（GT7 PS5）、Assetto Corsa EVO（ACE）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
 
