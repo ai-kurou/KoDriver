@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -53,7 +53,7 @@ internal class OtherVolumeDetailViewModel(
         combine(
             observeSoundVolume(),
             merge(deviceVolumeRefreshTrigger.map { }, deviceVolumePollingTicker)
-                .flatMapLatest { flow { emit(getDeviceVolume()) } },
+                .mapLatest { getDeviceVolume() },
         ) { volume, deviceVolume ->
             OtherVolumeDetailUiState(volume = volume, deviceVolume = deviceVolume)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVolumeDetailUiState())
