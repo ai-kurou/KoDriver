@@ -11,10 +11,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -105,6 +107,32 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 2) { deviceVolumeRepository.getVolume() }
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(30) }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+        }
+
+    @Test
+    fun `端末のマスター音量を連続して変更すると書き込みが直列に実行される`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            val callOrder = mutableListOf<String>()
+            coEvery { deviceVolumeRepository.setVolume(20) } coAnswers {
+                callOrder.add("start:20")
+                delay(100)
+                callOrder.add("end:20")
+            }
+            coEvery { deviceVolumeRepository.setVolume(80) } coAnswers {
+                callOrder.add("start:80")
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onDeviceVolumeChanged(20)
+            viewModel.onDeviceVolumeChanged(80)
+            advanceUntilIdle()
+
+            assertEquals(listOf("start:20", "end:20", "start:80"), callOrder)
+            verify(exactly = 1) { soundVolumeRepository.volume() }
+            coVerify(exactly = 1) { deviceVolumeRepository.setVolume(20) }
+            coVerify(exactly = 1) { deviceVolumeRepository.setVolume(80) }
             confirmVerified(soundVolumeRepository, deviceVolumeRepository)
         }
 }
