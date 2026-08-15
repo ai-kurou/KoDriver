@@ -22,7 +22,8 @@ class BaselineProfileGenerator {
             pressHome()
             startActivityAndWait()
 
-            // 起動〜シミュレータ選択〜読み上げ一覧表示までのクリティカルユーザージャーニーをプロファイル対象にする
+            // 起動〜シミュレータ選択〜読み上げ一覧表示までの
+            // クリティカルユーザージャーニーをプロファイル対象にする
             device.wait(Until.hasObject(By.desc("シミュレータを選択")), UI_TIMEOUT_MS)
             device.findObject(By.desc("シミュレータを選択")).click()
             device.wait(Until.hasObject(By.text("Le Mans Ultimate（Windows版）")), UI_TIMEOUT_MS)
