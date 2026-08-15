@@ -33,7 +33,4 @@
   **課題**: Baseline Profile生成のUIセレクタが `By.desc("シミュレータを選択")` 等のハードコードされた日本語文言に依存しており、ローカライズや表示文言の変更に対して脆い（PR #1126 Sourceryレビュー指摘）。
   **改善案**: resource ID やComposeのテストタグなど、表示文言に依存しない安定した識別子へ切り替える。少なくとも文字列は定数として一元管理する。
 
-- **対象**: `app/androidApp/src/release/generated/baselineProfiles/baseline-prof.txt`（`app:androidApp`）
-  **課題**: 生成済み `baseline-prof.txt` をリポジトリにコミットする運用のため、クリティカルユーザージャーニー（起動〜シミュレータ選択〜読み上げ一覧表示）が変わった際に手動での再生成（`./gradlew :app:androidApp:generateReleaseBaselineProfile`）を忘れると古いプロファイルのまま取り残される（PR #1126 Sourceryレビュー指摘）。
-  **改善案**: CIで定期的に再生成・差分検知するワークフロー、またはPRテンプレート等でのチェック項目化を検討する。
 

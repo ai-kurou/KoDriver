@@ -61,8 +61,47 @@ jobs:
     with:
       ref: main
 
-  build-apk:
+  update-baseline-profile:
     needs: version-bump
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: main
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: ./.github/actions/setup
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 36
+          arch: x86_64
+          script: ./gradlew :app:androidApp:generateReleaseBaselineProfile
+
+      - name: Commit updated baseline profile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- app/androidApp/src/release/generated/baselineProfiles/baseline-prof.txt; then
+            echo "Baseline profile has no changes"
+          else
+            git add app/androidApp/src/release/generated/baselineProfiles/baseline-prof.txt
+            git commit -m "chore: update baseline profile [skip ci]"
+            git push origin main
+          fi
+
+  build-apk:
+    needs: update-baseline-profile
     uses: ./.github/workflows/_build-android-release.yml
     with:
       ref: main
