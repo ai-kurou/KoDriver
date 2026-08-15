@@ -1,6 +1,15 @@
 reviews:
   auto_review:
     enabled: true
+  path_filters:
+    - "**/*.kt"
+    - "**/*.kts"
+    - "**/*.yml"
+    - "**/*.yaml"
+    - "**/*.toml"
+    - "**/*.xml"
+    - "**/*.sh"
+    - "**/*.bat"
   finishing_touches:
     unit_tests:
       enabled: false

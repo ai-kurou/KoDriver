@@ -62,3 +62,4 @@
 - 2026-08-13 NarratorViewModelを共通化しないルールを明文化（PR #1080）
 - 2026-08-14 core:data のファイルをパッケージ単位で整理（PR #1090）
 - 2026-08-14 improvement-ideasからAI自動PRレビュー導入案を削除
+- 2026-08-15 maestro-testジョブのactions/checkout flaky対策案を見送りとして削除
