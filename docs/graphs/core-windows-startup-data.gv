@@ -1,0 +1,7 @@
+digraph G {
+  rankdir=TB
+  node [shape=box, style="rounded,filled"]
+  ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:windows-startup-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
+  ":core:windows-startup-data" -> ":core:domain"
+}
