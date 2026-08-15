@@ -75,6 +75,12 @@ KoDriver/
 - `docs/improvement-ideas.md` に内容を追加・変更する場合は、事前にユーザーの承認を得ること。
 - `docs/improvement-ideas.md` から項目を削除する際は、削除と同じ PR で `docs/resolved-improvement-ideas.md`（対応済み改善案の1行ログ）に1行追記すること。詳細な理由は残さず、`- YYYY-MM-DD 一言サマリ（関連PR #番号）` 程度に留める（肥大化を防ぐため）。夜間バッチ（`nightly-todo.yml`）はこのログを参照し、過去に対応済みの内容を重複して追記しないようにする。
 
+### app:androidBenchmark の targetProjectPath は app 間依存の例外
+
+`app:androidBenchmark`（`com.android.test` モジュール）は `targetProjectPath = ":app:androidApp"` で `app:androidApp` を計装対象として参照する。これは Gradle の `implementation`/`api` 依存ではなく AGP 固有のテスト対象指定であり、`moduleGraphAssert` の対象外（`app:.*App` を含む `allowed` パターンにも含まれない）。
+
+AGP は 1 モジュールにつき 1 つの Android プラグインタイプ（application / library / test / dynamic-feature）しか適用できないため、`com.android.test` プラグインを `app:androidApp` 自体に同居させることはできない。Macrobenchmark はテスト APK と計測対象 APK を別プロセスとして起動して計測する仕組みのため、Baseline Profile 生成にはモジュールを分けた `targetProjectPath` 参照が構造的に必須（Google 公式の Baseline Profile モジュールテンプレートも同じ構成）。「app モジュール同士は依存しない」という原則の例外として、この参照のみ容認する（PR #1126）。
+
 ### 共有メモリ読み取りは Windows 専用
 `:core:windows-shared-memory` の `SharedMemoryReader` / `WindowsSharedMemoryReader` は `OpenFileMappingA` / `MapViewOfFile` を使用するため **Windows のみ**動作する。macOS / Linux ではシミュレーターが起動しないため `open()` が `false` を返し続ける（クラッシュはしない）。`:core:lmu-windows-data` と `:core:ace-windows-data` はこの共通基盤に依存し、それぞれのシム固有の構造体パースのみを実装する。
 
