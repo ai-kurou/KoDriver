@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
+import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -78,12 +79,14 @@ fun OtherVolumeDetailPaneContent(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
         ) {
+            DetailPaneDescription(
+                text = stringResource(Res.string.volume_description),
+            )
             DetailPaneSubtitle(
                 text = stringResource(Res.string.volume_subtitle),
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                DetailPaneBodyText(text = stringResource(Res.string.volume_description))
                 DetailPaneBodyText(text = stringResource(Res.string.volume_formula))
                 DetailPaneBodyText(text = stringResource(Res.string.volume_low_warning))
             }
