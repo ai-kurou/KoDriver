@@ -23,10 +23,13 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
 import kotlin.test.AfterTest
@@ -43,6 +46,9 @@ class OtherVolumeDetailViewModelTest {
 
     @MockK
     private lateinit var deviceVolumeRepository: DeviceVolumeRepository
+
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
 
     private val volumeFlow = MutableStateFlow(80)
 
@@ -63,6 +69,7 @@ class OtherVolumeDetailViewModelTest {
             saveSoundVolume = SaveSoundVolumeUseCase(soundVolumeRepository),
             getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
             setDeviceVolume = SetDeviceVolumeUseCase(deviceVolumeRepository),
+            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
     @Test
@@ -138,6 +145,19 @@ class OtherVolumeDetailViewModelTest {
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(80) }
             confirmVerified(soundVolumeRepository, deviceVolumeRepository)
         }
+
+    @Test
+    fun `onPreviewClickedを呼ぶとLmuWindowsMyBestLapFormalイベントが再生される`() {
+        every { soundVolumeRepository.volume() } returns volumeFlow
+        every { ttsEngine.speak(SpeechEvent.LmuWindowsMyBestLapFormal, false) } returns Unit
+        val viewModel = createViewModel()
+
+        viewModel.onPreviewClicked()
+
+        verify(exactly = 1) { soundVolumeRepository.volume() }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsMyBestLapFormal, false) }
+        confirmVerified(soundVolumeRepository, ttsEngine)
+    }
 
     @Test
     fun `detailPane表示中は一定間隔で端末のマスター音量を再取得する`() =

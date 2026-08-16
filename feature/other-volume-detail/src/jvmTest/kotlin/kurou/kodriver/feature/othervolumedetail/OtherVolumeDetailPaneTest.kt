@@ -5,6 +5,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
@@ -57,6 +58,23 @@ class OtherVolumeDetailPaneTest {
             .performSemanticsAction(SemanticsActions.SetProgress) { it(30f) }
 
         assertEquals(30, changedDeviceVolume)
+    }
+
+    @Test
+    fun `試聴チップをタップするとonPreviewClickedが呼ばれる`() {
+        var previewCount = 0
+        rule.setContent {
+            MaterialTheme {
+                OtherVolumeDetailPaneContent(
+                    uiState = OtherVolumeDetailUiState(volume = 80, deviceVolume = 60),
+                    onPreviewClicked = { previewCount++ },
+                )
+            }
+        }
+
+        rule.onNode(hasText("試聴")).performClick()
+
+        assertEquals(1, previewCount)
     }
 
     @Test
