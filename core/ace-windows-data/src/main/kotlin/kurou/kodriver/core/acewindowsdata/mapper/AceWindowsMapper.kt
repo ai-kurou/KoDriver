@@ -6,6 +6,8 @@ import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 
 /**
@@ -39,7 +41,11 @@ import java.nio.ByteBuffer
  *   [+204] fuel_liter_per_km, km_per_fuel_liter (float x2)
  *   [+212] current_torque (float)
  *   [+216] current_bhp (int32)
- *   [+220] tyre_lf/rf/lr/rr (SMEvoTyreState x4, 各256バイト = 1024バイト)
+ *   [+220] tyre_lf/rf/lr/rr (SMEvoTyreState x4, 各256バイト = 1024バイト) ← TyreCarcassTemperature 取得対象
+ *     SMEvoTyreState 内の tyre_temperature_c (カーカス平均温度, ℃) は各要素内 [+12] オフセット
+ *     (slip: float[+0], lock: bool[+4]+3パディング, tyre_pressure: float[+8], tyre_temperature_c: float[+12])。
+ *     ホイール順は tyre_lf[+220]/tyre_rf[+476]/tyre_lr[+732]/tyre_rr[+988] で
+ *     WheelIndex.FRONT_LEFT/FRONT_RIGHT/REAR_LEFT/REAR_RIGHT の ordinal 順と一致する。
  *   [+1244] npos, kers_charge_perc, kers_current_perc, control_lock_time (float x4)
  *   [+1260] car_damage (SMEvoDamageState, 128バイト)
  *   [+1388] car_location (int32)
@@ -61,6 +67,9 @@ import java.nio.ByteBuffer
 internal object AceWindowsMapper {
     private const val OFF_STATUS = 4
     private const val OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT = 200
+    private const val OFF_TYRE_LF = 220
+    private const val TYRE_STATE_STRIDE = 256
+    private const val OFF_TYRE_TEMPERATURE_C = 12
     private const val OFF_CAR_LOCATION = 1388
     private const val OFF_FLAG = 2404
     private const val PERCENT_MULTIPLIER = 100
@@ -72,6 +81,15 @@ internal object AceWindowsMapper {
         AceWindowsFuelData(
             remainingPercent =
                 buffer.getFloat(OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT).toDouble() * PERCENT_MULTIPLIER,
+        )
+
+    fun mapTyreCarcassTemperature(buffer: ByteBuffer): AceWindowsTyreCarcassTemperatureData =
+        AceWindowsTyreCarcassTemperatureData(
+            wheels =
+                WheelIndex.entries.associateWith { wheel ->
+                    val tyreStateBase = OFF_TYRE_LF + wheel.ordinal * TYRE_STATE_STRIDE
+                    buffer.getFloat(tyreStateBase + OFF_TYRE_TEMPERATURE_C).toDouble()
+                },
         )
 
     fun mapFlag(buffer: ByteBuffer): AceWindowsFlagData =
