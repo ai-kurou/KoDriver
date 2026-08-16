@@ -58,7 +58,7 @@ jobs:
             --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Edit(docs/improvement-ideas.md),Write(docs/improvement-ideas.md)" \
             --permission-mode acceptEdits \
             --model sonnet \
-            --effort medium \
+            --effort low \
             | tee nightly-todo-summary.txt
 
       - name: Verify only improvement-ideas.md changed
