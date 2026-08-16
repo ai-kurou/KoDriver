@@ -27,6 +27,7 @@ val generateAppVersionSource =
 
 plugins {
     id("feature-compose-screenshot")
+    `java-test-fixtures`
 }
 
 kotlin {
@@ -76,4 +77,12 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.otherlist.generated.resources"
     publicResClass = true
+}
+
+dependencies {
+    testFixturesApi(projects.core.domain)
+    testFixturesImplementation(platform(libs.koin.bom))
+    testFixturesImplementation(libs.koin.core)
+    testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))
+    testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }

@@ -7,6 +7,7 @@ import io.sentry.android.core.SentryAndroid
 import io.sentry.protocol.User
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
+import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.androidDataModule
 import kurou.kodriver.presentation.featureModules
 import org.koin.core.context.startKoin
@@ -40,6 +41,7 @@ class KoDriverApplication : Application() {
                     androidDataModule(this@KoDriverApplication),
                     gt7Ps5DataModule,
                     deviceVolumeDataModule,
+                    windowsStartupDataModule,
                 ) +
                     featureModules +
                     listOf(module { single(named("appVersion")) { BuildConfig.VERSION_NAME } }),

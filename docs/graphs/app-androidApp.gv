@@ -7,10 +7,12 @@ digraph G {
   ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:device-volume-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:gt7-ps5-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:windows-startup-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":app:androidBenchmark"
   ":app:androidApp" -> ":core:data"
   ":app:androidApp" -> ":core:gt7-ps5-data"
   ":app:androidApp" -> ":core:device-volume-data"
+  ":app:androidApp" -> ":core:windows-startup-data"
   ":app:androidBenchmark" -> ":app:androidApp"
 }

@@ -204,6 +204,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
+                OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 -> {}

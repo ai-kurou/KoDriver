@@ -7,6 +7,7 @@ digraph G {
   ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
   ":core:gt7-ps5-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:lmu-windows-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:windows-startup-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":feature:ace-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -49,6 +50,7 @@ digraph G {
   ":core:device-volume-data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
+  ":core:windows-startup-data" -> ":core:domain"
   ":feature:ace-windows-connection" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
   ":feature:ace-windows-readout-flag-detail" -> ":core:domain"
