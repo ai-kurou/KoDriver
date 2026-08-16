@@ -52,7 +52,7 @@ jobs:
           3. 改善案がある場合は、docs/resolved-improvement-ideas.md を読み、同趣旨の内容が既に対応済みとして記録されていないか確認する。記録があれば、その改善案は追記しない。
           4. 記録がなければ docs/improvement-ideas.md のみを編集し、既存の記述スタイル・見出し構成に合わせて「対象・課題・改善案」がわかる粒度で追記する。docs/improvement-ideas.md 内で重複する項目があれば追記せず既存項目を優先する。
           5. docs/improvement-ideas.md 以外のファイルは一切変更しない（docs/resolved-improvement-ideas.md も読み取り専用として扱い、変更しない）。改善案が1件もない場合は何も変更しない。
-          6. 最後に、調査した各項目について「確認した内容」「追記した/しなかった判断とその理由」を簡潔にまとめて出力する（このまとめはPRの説明欄に転記されるため、改善案の追記有無にかかわらず必ず出力すること）。
+          6. 最後に、調査した各項目について「確認した内容」「追記した/しなかった判断とその理由」を簡潔にまとめて出力する（このまとめはPRの説明欄に転記されるため、改善案の追記有無にかかわらず必ず出力すること）。ZennとQiitaについては、docs/nightly-todo-list.md の当該項目の指示に従い、過去24時間以内に確認した全記事のURLと1行要約の一覧も出力に含めること。
           PROMPT
           )" \
             --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Edit(docs/improvement-ideas.md),Write(docs/improvement-ideas.md)" \
