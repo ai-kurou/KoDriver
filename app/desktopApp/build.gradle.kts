@@ -81,6 +81,7 @@ compose.desktop {
             windows {
                 shortcut = true
                 iconFile.set(project.file("src/main/resources/launcher.ico"))
+                upgradeUuid = "885EA480-3A3E-49DF-BB86-558A47B331D7"
             }
         }
     }
