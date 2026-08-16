@@ -6,6 +6,7 @@
     <string name="volume_low_warning">50% 以下に設定すると音声が聞こえにくくなります。</string>
     <string name="volume_subtitle">アプリの音量</string>
     <string name="volume_label">%1$d%%</string>
+    <string name="volume_preview_chip">試聴</string>
     <string name="device_volume_description">端末（OS）のマスター音量を設定します。この音量が低いと、上記のアプリ側の音量設定に関わらず読み上げが聞こえにくくなります。</string>
     <string name="device_volume_subtitle">端末のマスター音量</string>
 </resources>
