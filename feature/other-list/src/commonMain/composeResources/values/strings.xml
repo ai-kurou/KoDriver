@@ -4,7 +4,7 @@
     <string name="item_readout_start_sound">読み上げ開始音</string>
     <string name="item_theme">テーマ</string>
     <string name="item_dynamic_color">ダイナミックカラー</string>
-    <string name="item_startup">端末起動時にKoDriverを起動する</string>
+    <string name="item_startup">PC起動時に自動起動</string>
     <string name="item_github_repository">GitHubレポジトリ</string>
     <string name="item_release_page">リリースページ</string>
     <string name="item_feedback">フィードバックを送信</string>

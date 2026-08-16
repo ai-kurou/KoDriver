@@ -115,7 +115,7 @@ class OtherListPaneTest {
     }
 
     @Test
-    fun `端末起動時に起動をクリックすると切り替えコールバックを呼ぶ`() {
+    fun `PC起動時に自動起動をクリックすると切り替えコールバックを呼ぶ`() {
         var startupEnabled: Boolean? = null
 
         rule.setContent {
@@ -132,7 +132,7 @@ class OtherListPaneTest {
             )
         }
 
-        rule.onNode(hasText("端末起動時にKoDriverを起動する")).performClick()
+        rule.onNode(hasText("PC起動時に自動起動")).performClick()
 
         assertEquals(true, startupEnabled)
     }
@@ -161,7 +161,7 @@ class OtherListPaneTest {
 
         rule.onNode(hasText("画面をスリープさせない")).performClick()
         rule.onNode(hasText("ダイナミックカラー")).performClick()
-        rule.onNode(hasText("端末起動時にKoDriverを起動する")).performClick()
+        rule.onNode(hasText("PC起動時に自動起動")).performClick()
 
         assertNull(clickedItem)
     }
