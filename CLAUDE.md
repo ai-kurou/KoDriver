@@ -58,6 +58,7 @@ KoDriver/
 │   └── telemetry-log-detail/            テレメトリログの詳細表示
 ├── app/
 │   ├── androidApp/ Android アプリのエントリーポイント
+│   ├── androidBenchmark/ Macrobenchmarkによる Baseline Profile 生成（`app:androidApp` 計装テスト）
 │   ├── desktopApp/ JVM デスクトップアプリのエントリーポイント
 │   ├── shared/     Compose Multiplatform 共通 UI・ナビゲーション
 │   └── webApp/     Web アプリ（Gradle ビルド設定のみ用意、独自機能は未実装）
@@ -74,6 +75,12 @@ KoDriver/
 
 - `docs/improvement-ideas.md` に内容を追加・変更する場合は、事前にユーザーの承認を得ること。
 - `docs/improvement-ideas.md` から項目を削除する際は、削除と同じ PR で `docs/resolved-improvement-ideas.md`（対応済み改善案の1行ログ）に1行追記すること。詳細な理由は残さず、`- YYYY-MM-DD 一言サマリ（関連PR #番号）` 程度に留める（肥大化を防ぐため）。夜間バッチ（`nightly-todo.yml`）はこのログを参照し、過去に対応済みの内容を重複して追記しないようにする。
+
+### app:androidBenchmark の targetProjectPath は app 間依存の例外
+
+`app:androidBenchmark`（`com.android.test` モジュール）は `targetProjectPath = ":app:androidApp"` で `app:androidApp` を計装対象として参照する。これは Gradle の `implementation`/`api` 依存ではなく AGP 固有のテスト対象指定であり、`moduleGraphAssert` の対象外（`app:.*App` を含む `allowed` パターンにも含まれない）。
+
+AGP は 1 モジュールにつき 1 つの Android プラグインタイプ（application / library / test / dynamic-feature）しか適用できないため、`com.android.test` プラグインを `app:androidApp` 自体に同居させることはできない。Macrobenchmark はテスト APK と計測対象 APK を別プロセスとして起動して計測する仕組みのため、Baseline Profile 生成にはモジュールを分けた `targetProjectPath` 参照が構造的に必須（Google 公式の Baseline Profile モジュールテンプレートも同じ構成）。「app モジュール同士は依存しない」という原則の例外として、この参照のみ容認する（PR #1126）。
 
 ### 共有メモリ読み取りは Windows 専用
 `:core:windows-shared-memory` の `SharedMemoryReader` / `WindowsSharedMemoryReader` は `OpenFileMappingA` / `MapViewOfFile` を使用するため **Windows のみ**動作する。macOS / Linux ではシミュレーターが起動しないため `open()` が `false` を返し続ける（クラッシュはしない）。`:core:lmu-windows-data` と `:core:ace-windows-data` はこの共通基盤に依存し、それぞれのシム固有の構造体パースのみを実装する。
@@ -239,7 +246,7 @@ GitHub Actions ワークフロー:
 - `_build-android-release.yml`: 署名付き Android APK をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。ファイル名・表示名を `_` で始め、Actions の実行一覧では手動起動対象として表示されないようにしている。`ref` 入力でビルド対象のブランチ・タグ・コミットを指定する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
 - `_build-windows-msi.yml`: Windows MSI をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。`_build-android-release.yml` と同様に `ref` 入力でビルド対象を指定し、`gradle.properties` の `appVersion` を出力する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
 - `build-apps.yml`: `workflow_dispatch` で起動し、Android APK と Windows MSI を並列にビルドする。Android APK のビルドは `_build-android-release.yml`、Windows MSI のビルドは `_build-windows-msi.yml` を呼び出す
-- `release-apps.yml`: 手動でリリースする際に実行。まず `_e2e-android-maestro.yml`（`ref: main`）を実行し、成功した場合のみバージョンバンプ・MSI/APK ビルド・リリース作成に進む。Android APK のビルドは `_build-android-release.yml`、Windows MSI のビルドは `_build-windows-msi.yml` を呼び出す
+- `release-apps.yml`: 手動でリリースする際に実行。まず `_e2e-android-maestro.yml`（`ref: main`）を実行し、成功した場合のみバージョンバンプ・MSI/APK ビルド・リリース作成に進む。バージョンバンプ後、`generate-baseline-profile` ジョブが Android エミュレータ上で `./gradlew :app:androidApp:generateReleaseBaselineProfile` を実行して `baseline-prof.txt` を再生成し artifact としてアップロードし、`commit-baseline-profile` ジョブがそれをダウンロードして差分があれば main へコミット・プッシュする（差分がなければコミットしない）。ジョブを分けているのは、main へ push 可能な `GH_PAT` を、サードパーティ Action（`reactivecircus/android-emulator-runner`）や任意の Gradle ビルド実行と同じジョブに同居させない（該当コードが侵害された場合の `GH_PAT` 漏洩・不正 push を避ける）ため。両ジョブとも `permissions` を明示（`generate-baseline-profile` は `contents: read` のみ、`commit-baseline-profile` は `contents: write`）し、`commit-baseline-profile` の `checkout` は `persist-credentials: false` としたうえで push 時のみ `GH_TOKEN` を使って認証ヘッダを都度指定する（zizmor の `artipacked`: チェックアウトした認証情報がジョブ内に永続化されたままになるリスクを避けるため）。Android APK のビルド（`_build-android-release.yml`）もこの再生成後の main を対象に `permissions: contents: read` で実行され、Windows MSI のビルド（`_build-windows-msi.yml`）はバージョンバンプ後すぐに並行して実行される
 - `_e2e-android-maestro.yml`: `_build-android-release.yml` で署名付き APK をビルドし、Android エミュレータ上で Maestro（`.maestro/tap-bottom-tabs.yaml`）を実行してボトムナビゲーションの各タブ（読み上げ・ログ・その他）をタップする E2E テスト。`release-apps.yml` から呼び出されるほか、Actions の画面から `ref` を指定して手動実行できる
 - `record-golden-images.yml`: `workflow_dispatch` に加え、PR に `record-golden-images` ラベルが付与された時にも起動し、PR のブランチに対して golden 画像（Roborazzi スクリーンショット）を再記録してコミットする。同一ブランチで新しい実行が開始された場合は、実行中の古い記録処理をキャンセルする
 - `nightly-todo.yml`: 毎日 JST 午前3時ごろ（`workflow_dispatch` でも手動実行可）に起動する。JST の日付・曜日をシェル側で明示的に算出したうえで、Claude Code CLI（`CLAUDE_CODE_OAUTH_TOKEN` シークレットで認証、Pro/Max サブスクリプション枠を使用）に `docs/nightly-todo-list.md` の「毎晩実行する項目」とその曜日の「曜日ローテーション項目」を調査させ、`docs/improvement-ideas.md` の編集権限のみを与える（`Edit`/`Write` ツールを同ファイルに限定し、`git`/`gh` 操作の権限は与えない）。追記前には `docs/resolved-improvement-ideas.md`（対応済み改善案の1行ログ、読み取り専用）も確認させ、過去に対応済みの内容を重複して追記しないようにする。Claude Code の最終出力（各項目の確認内容・追記有無の判断理由）は `nightly-todo-summary.txt` に保存され、下書き PR の説明欄に転記される（改善案の追記が無かった夜でも、何を調査してなぜ追記しなかったかを PR 上で確認できるようにするため）。Claude Code 実行後、ワークフロー側で `docs/improvement-ideas.md` 以外が変更されていないことを検証してから、ブランチ作成・コミット・プッシュ・下書き PR 作成をワークフローの固定処理として行う（`docs/improvement-ideas.md` の変更は事前承認が必要という CLAUDE.md のルールを守るため、直接 main には書き込まない）。GitHub への操作には `GH_PAT` シークレットを使用する（`GITHUB_TOKEN` で作成した PR は後続の CI ワークフローをトリガーしないため）

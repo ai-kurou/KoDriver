@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
+    alias(libs.plugins.androidxBaselineProfile)
 }
 
 kotlin {
@@ -22,6 +23,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.profileinstaller)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(platform(libs.sentry.bom))
@@ -33,6 +35,8 @@ dependencies {
     androidTestImplementation(libs.compose.uiTestJunit4)
     androidTestImplementation(testFixtures(projects.app.shared))
     debugImplementation(libs.compose.uiTest)
+
+    baselineProfile(projects.app.androidBenchmark)
 }
 
 android {
@@ -101,4 +105,10 @@ android {
         abortOnError = true
         warningsAsErrors = false
     }
+}
+
+baselineProfile {
+    // 起動時間短縮のため、Macrobenchmark実行時にBaseline Profileの再生成もあわせて行う
+    automaticGenerationDuringBuild = false
+    saveInSrc = true
 }

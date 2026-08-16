@@ -25,13 +25,6 @@
   **改善案**: Navigation3のサンプル・公式ドキュメントにあるMaterial3 AdaptiveとNavDisplayの統合パターン（両者で単一のバックスタックを共有する設計）への寄せ替えを検討する。ただし現状の実装（PR #1069, #1075, #1077, #1078）で機能的な不具合は出ていないため、優先度は低め。
   **調査結果（2026-08-14）**: 統合用ライブラリ`org.jetbrains.compose.material3.adaptive:adaptive-navigation3`（AndroidX本家の`ListDetailSceneStrategy`に相当、`rememberListDetailSceneStrategy()`をNavDisplayに渡す構成）はJetBrains公式ドキュメント（https://kotlinlang.org/docs/multiplatform/compose-navigation-3.html）に記載されており存在する。ただし現時点のバージョンは`1.3.0-beta02`で、プロジェクトが依存している`adaptive-layout`/`adaptive-navigation`の安定版`1.2.0`系とは異なるベータ系列。CLAUDE.mdの「致命的なバグや互換性問題がない限り最新安定版を使用する」方針とも相性が悪いため、この統合ライブラリが安定版としてリリースされてから改めて移行を検討する。
 
-## パフォーマンス
-
-- **対象**: `app/androidApp`（Android アプリ）
-  **課題**: Baseline Profile（`androidx.benchmark.baseline-profile` プラグイン + Macrobenchmark）が未導入で、ART の AOT コンパイル対象を事前指定できていない。導入により初回起動時間の短縮が見込める。
-  **改善案**: `app/androidApp` 向けに Macrobenchmark モジュールを追加し、起動〜読み上げ一覧表示までのクリティカルユーザージャーニーをプロファイル対象として Baseline Profile（`baseline-prof.txt`）を生成・同梱する。
-  参考: https://developer.android.com/topic/performance/baselineprofiles/overview
-
 ## エラーハンドリング・ログ
 
 - **対象**: `Gt7Ps5NarratorEventProcessor.process`（`feature:gt7-ps5-narrator`）の `saveTelemetryLog` 呼び出し
@@ -39,4 +32,11 @@
   **改善案**: GT7版にも LMU/ACE 同様の `saveTelemetryLogSafely`（`CancellationException` のみ再スロー、それ以外は握りつぶし）を導入し、3機種で挙動を揃える。
 
 ## CI/CD
+
+## パフォーマンス
+
+- **対象**: `app/androidBenchmark/src/main/kotlin/kurou/kodriver/benchmark/BaselineProfileGenerator.kt`
+  **課題**: Baseline Profile生成のUIセレクタが `By.desc("シミュレータを選択")` 等のハードコードされた日本語文言に依存しており、ローカライズや表示文言の変更に対して脆い（PR #1126 Sourceryレビュー指摘）。
+  **改善案**: resource ID やComposeのテストタグなど、表示文言に依存しない安定した識別子へ切り替える。少なくとも文字列は定数として一元管理する。
+
 

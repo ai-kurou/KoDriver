@@ -7,6 +7,7 @@ plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
     alias(libs.plugins.androidApplication) apply false
+    alias(libs.plugins.androidTest) apply false
     alias(libs.plugins.androidMultiplatformLibrary) apply false
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
@@ -19,6 +20,7 @@ plugins {
     alias(libs.plugins.ktor) apply false
     alias(libs.plugins.modulesGraphAssert)
     alias(libs.plugins.kotlinxSerialization) apply false
+    alias(libs.plugins.androidxBaselineProfile) apply false
 }
 
 plugins.withType<YarnPlugin> {

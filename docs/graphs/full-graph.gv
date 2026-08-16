@@ -3,6 +3,7 @@ digraph G {
   graph [ranksep=1.2, nodesep=0.6]
   node [shape=box, style="rounded,filled"]
   ":app:androidApp" [label=":app:androidApp", fillcolor="#FFE0B2", color="#FB8C00"]
+  ":app:androidBenchmark" [label=":app:androidBenchmark", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:desktopApp" [label=":app:desktopApp", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:shared" [label=":app:shared", fillcolor="#FFE0B2", color="#FB8C00"]
   ":app:webApp" [label=":app:webApp", fillcolor="#FFE0B2", color="#FB8C00"]
@@ -17,10 +18,12 @@ digraph G {
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#BBDEFB", color="#1E88E5"]
   ":server" [label=":server", fillcolor="#F8BBD0", color="#D81B60"]
   "feature" [label="feature\n35 modules", fillcolor="#C8E6C9", color="#43A047"]
+  ":app:androidApp" -> ":app:androidBenchmark"
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:data"
   ":app:androidApp" -> ":core:device-volume-data"
   ":app:androidApp" -> ":core:gt7-ps5-data"
+  ":app:androidBenchmark" -> ":app:androidApp"
   ":app:desktopApp" -> ":app:shared"
   ":app:desktopApp" -> ":core:ace-windows-data"
   ":app:desktopApp" -> ":core:data"
