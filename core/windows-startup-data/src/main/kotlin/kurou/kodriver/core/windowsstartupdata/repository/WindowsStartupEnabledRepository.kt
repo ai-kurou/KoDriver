@@ -4,11 +4,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kurou.kodriver.core.windowsstartupdata.windows.RegistryStartupRegistrySource
 import kurou.kodriver.core.windowsstartupdata.windows.WindowsStartupRegistrySource
-import kurou.kodriver.domain.repository.StartupRegistrationRepository
+import kurou.kodriver.domain.repository.StartupEnabledRepository
 
-internal class WindowsStartupRegistrationRepository(
+internal class WindowsStartupEnabledRepository(
     private val source: WindowsStartupRegistrySource = RegistryStartupRegistrySource(),
-) : StartupRegistrationRepository {
+) : StartupEnabledRepository {
     override suspend fun isEnabled(): Boolean =
         withContext(Dispatchers.IO) {
             source.isRegistered()

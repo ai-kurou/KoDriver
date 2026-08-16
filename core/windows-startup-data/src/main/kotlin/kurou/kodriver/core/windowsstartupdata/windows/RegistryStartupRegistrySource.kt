@@ -9,7 +9,7 @@ private const val STARTUP_REGISTRY_VALUE_NAME = "KoDriver"
 /**
  * `Advapi32Util`（JNA）を介してレジストリの`Run`キーへ現在実行中のアプリの起動コマンドを登録・解除する。
  * プラットフォーム固有の外部APIを直接呼び出すためユニットテスト対象外とし（CLAUDE.mdのテスト方針を参照）、
- * 上位の [kurou.kodriver.core.windowsstartupdata.repository.WindowsStartupRegistrationRepository]
+ * 上位の [kurou.kodriver.core.windowsstartupdata.repository.WindowsStartupEnabledRepository]
  * 側のロジックを [WindowsStartupRegistrySource] 経由のFakeでテストする。
  */
 internal class RegistryStartupRegistrySource : WindowsStartupRegistrySource {

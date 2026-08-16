@@ -1,9 +1,9 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.repository.StartupRegistrationRepository
+import kurou.kodriver.domain.repository.StartupEnabledRepository
 
 class StartupRegistrationUseCases(
-    private val repository: StartupRegistrationRepository,
+    private val repository: StartupEnabledRepository,
 ) {
     suspend fun getEnabled(): Boolean = repository.isEnabled()
 

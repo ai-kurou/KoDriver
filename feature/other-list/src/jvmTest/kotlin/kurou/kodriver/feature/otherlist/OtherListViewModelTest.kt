@@ -20,7 +20,7 @@ import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
-import kurou.kodriver.domain.repository.StartupRegistrationRepository
+import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
@@ -50,7 +50,7 @@ class OtherListViewModelTest {
     private lateinit var dynamicColorRepository: DynamicColorEnabledRepository
 
     @MockK
-    private lateinit var startupRegistrationRepository: StartupRegistrationRepository
+    private lateinit var startupRegistrationRepository: StartupEnabledRepository
 
     private val keepScreenOnFlow = MutableStateFlow(true)
     private val dynamicColorFlow = MutableStateFlow(false)

@@ -5,12 +5,12 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class WindowsStartupRegistrationRepositoryTest {
+class WindowsStartupEnabledRepositoryTest {
     @Test
     fun `isEnabledはレジストリに登録済みの場合trueを返す`() =
         runTest {
             val source = FakeWindowsStartupRegistrySource(registered = true)
-            val repository = WindowsStartupRegistrationRepository(source)
+            val repository = WindowsStartupEnabledRepository(source)
 
             assertTrue(repository.isEnabled())
         }
@@ -19,7 +19,7 @@ class WindowsStartupRegistrationRepositoryTest {
     fun `isEnabledはレジストリに未登録の場合falseを返す`() =
         runTest {
             val source = FakeWindowsStartupRegistrySource(registered = false)
-            val repository = WindowsStartupRegistrationRepository(source)
+            val repository = WindowsStartupEnabledRepository(source)
 
             assertFalse(repository.isEnabled())
         }
@@ -28,7 +28,7 @@ class WindowsStartupRegistrationRepositoryTest {
     fun `setEnabledにtrueを渡すとレジストリへ登録する`() =
         runTest {
             val source = FakeWindowsStartupRegistrySource(registered = false)
-            val repository = WindowsStartupRegistrationRepository(source)
+            val repository = WindowsStartupEnabledRepository(source)
 
             repository.setEnabled(true)
 
@@ -39,7 +39,7 @@ class WindowsStartupRegistrationRepositoryTest {
     fun `setEnabledにfalseを渡すとレジストリから解除する`() =
         runTest {
             val source = FakeWindowsStartupRegistrySource(registered = true)
-            val repository = WindowsStartupRegistrationRepository(source)
+            val repository = WindowsStartupEnabledRepository(source)
 
             repository.setEnabled(false)
 
