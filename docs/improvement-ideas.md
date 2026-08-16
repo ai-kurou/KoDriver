@@ -32,5 +32,11 @@
   **改善案**: `app/androidApp` 向けに Macrobenchmark モジュールを追加し、起動〜読み上げ一覧表示までのクリティカルユーザージャーニーをプロファイル対象として Baseline Profile（`baseline-prof.txt`）を生成・同梱する。
   参考: https://developer.android.com/topic/performance/baselineprofiles/overview
 
+## エラーハンドリング・ログ
+
+- **対象**: `Gt7Ps5NarratorEventProcessor.process`（`feature:gt7-ps5-narrator`）の `saveTelemetryLog` 呼び出し
+  **課題**: `LmuWindowsNarratorEventProcessor.saveTelemetryLogSafely`（`feature:lmu-windows-narrator`）・`AceWindowsNarratorEventProcessor.saveTelemetryLogSafely`（`feature:ace-windows-narrator`）は `saveTelemetryLog` の呼び出しを `try-catch` で囲み、`CancellationException` のみ再スローして他の例外（DB書き込み失敗等）は握りつぶし「ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない」というコメントを添えている。一方 GT7 版の `Gt7Ps5NarratorEventProcessor.process`（`Gt7Ps5NarratorEventProcessor.kt:55`）は `saveTelemetryLog` を素で呼んでおり、`TelemetryLogRepositoryImpl.saveTelemetryLog`（`core:data`）内の Room `dao.insert` が例外を投げた場合（ディスク容量不足等）にそのまま呼び出し元へ伝播し、GT7 の読み上げ処理自体を止めてしまう恐れがある。3機種で本来同じであるべき「ログ保存失敗時の扱い」が実装ごとに異なっている。
+  **改善案**: GT7版にも LMU/ACE 同様の `saveTelemetryLogSafely`（`CancellationException` のみ再スロー、それ以外は握りつぶし）を導入し、3機種で挙動を揃える。
+
 ## CI/CD
 
