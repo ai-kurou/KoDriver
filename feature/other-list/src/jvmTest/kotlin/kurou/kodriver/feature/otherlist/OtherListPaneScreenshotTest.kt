@@ -27,6 +27,7 @@ class OtherListPaneScreenshotTest {
                                 onItemClick = {},
                                 onKeepScreenOnChange = {},
                                 onDynamicColorEnabledChange = {},
+                                onStartupEnabledChange = {},
                             )
                         }
                     }
@@ -48,6 +49,7 @@ class OtherListPaneScreenshotTest {
                                 onItemClick = {},
                                 onKeepScreenOnChange = {},
                                 onDynamicColorEnabledChange = {},
+                                onStartupEnabledChange = {},
                             )
                         }
                     }

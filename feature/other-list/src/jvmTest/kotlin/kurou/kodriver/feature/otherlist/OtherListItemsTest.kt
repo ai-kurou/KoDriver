@@ -14,6 +14,7 @@ class OtherListItemsTest {
                 OtherListItemType.Volume,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
+                OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,

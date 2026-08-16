@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -41,6 +42,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,6 +58,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_license
 import kurou.kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kurou.kodriver.feature.otherlist.generated.resources.item_release_page
 import kurou.kodriver.feature.otherlist.generated.resources.item_server_ip
+import kurou.kodriver.feature.otherlist.generated.resources.item_startup
 import kurou.kodriver.feature.otherlist.generated.resources.item_theme
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
@@ -95,6 +98,7 @@ private fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
         OtherListItemType.DynamicColor,
+        OtherListItemType.Startup,
         -> OtherListSection.AppSettings
 
         OtherListItemType.GitHubRepository,
@@ -116,6 +120,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
         OtherListItemType.Theme -> stringResource(Res.string.item_theme)
         OtherListItemType.DynamicColor -> stringResource(Res.string.item_dynamic_color)
+        OtherListItemType.Startup -> stringResource(Res.string.item_startup)
         OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
         OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
         OtherListItemType.Feedback -> stringResource(Res.string.item_feedback)
@@ -132,61 +137,35 @@ private fun otherListSectionTitle(section: OtherListSection): String =
         OtherListSection.Information -> stringResource(Res.string.section_information)
     }
 
+private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
+    when (itemType) {
+        OtherListItemType.ServerIp -> Icons.Outlined.Computer
+        OtherListItemType.ConsoleIp -> Icons.Outlined.SportsEsports
+        OtherListItemType.Volume -> Icons.AutoMirrored.Outlined.VolumeUp
+        OtherListItemType.KeepScreenOn -> Icons.Outlined.BrightnessHigh
+        OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
+        OtherListItemType.Theme -> Icons.Outlined.BrightnessHigh
+        OtherListItemType.DynamicColor -> Icons.Outlined.Palette
+        OtherListItemType.Startup -> Icons.Outlined.PowerSettingsNew
+        OtherListItemType.GitHubRepository -> Icons.Outlined.Code
+        OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
+        OtherListItemType.Feedback -> Icons.Outlined.Feedback
+        OtherListItemType.License -> Icons.Outlined.Description
+        OtherListItemType.DebugState -> Icons.Outlined.Code
+    }
+
 @Composable
 private fun OtherListItemLeadingIcon(
     itemType: OtherListItemType,
     hasAppUpdate: Boolean,
 ) {
-    when (itemType) {
-        OtherListItemType.ServerIp -> {
-            Icon(imageVector = Icons.Outlined.Computer, contentDescription = null)
+    val imageVector = otherListItemLeadingIconVector(itemType)
+    if (itemType == OtherListItemType.ReleasePage) {
+        BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
+            Icon(imageVector = imageVector, contentDescription = null)
         }
-
-        OtherListItemType.ConsoleIp -> {
-            Icon(imageVector = Icons.Outlined.SportsEsports, contentDescription = null)
-        }
-
-        OtherListItemType.Volume -> {
-            Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
-        }
-
-        OtherListItemType.KeepScreenOn -> {
-            Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
-        }
-
-        OtherListItemType.ReadoutStartSound -> {
-            Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
-        }
-
-        OtherListItemType.Theme -> {
-            Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
-        }
-
-        OtherListItemType.DynamicColor -> {
-            Icon(imageVector = Icons.Outlined.Palette, contentDescription = null)
-        }
-
-        OtherListItemType.GitHubRepository -> {
-            Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
-        }
-
-        OtherListItemType.ReleasePage -> {
-            BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
-                Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
-            }
-        }
-
-        OtherListItemType.Feedback -> {
-            Icon(imageVector = Icons.Outlined.Feedback, contentDescription = null)
-        }
-
-        OtherListItemType.License -> {
-            Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
-        }
-
-        OtherListItemType.DebugState -> {
-            Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
-        }
+    } else {
+        Icon(imageVector = imageVector, contentDescription = null)
     }
 }
 
@@ -207,6 +186,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
 
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
+        OtherListItemType.Startup,
         -> Unit
 
         OtherListItemType.GitHubRepository,
@@ -224,6 +204,7 @@ fun OtherListPane(
     onItemClick: (OtherListItemType) -> Unit,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
+    onStartupEnabledChange: (Boolean) -> Unit,
     onAppVersionTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
     scrollToTopRequest: Int = 0,
@@ -255,6 +236,7 @@ fun OtherListPane(
                         uiState = uiState,
                         onKeepScreenOnChange = onKeepScreenOnChange,
                         onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                        onStartupEnabledChange = onStartupEnabledChange,
                         onItemClick = onItemClick,
                     )
                     HorizontalDivider()
@@ -305,6 +287,7 @@ private fun OtherListItem(
     uiState: OtherListUiState,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
+    onStartupEnabledChange: (Boolean) -> Unit,
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     val isSelected = item == uiState.selectedItem
@@ -358,6 +341,13 @@ private fun OtherListItem(
                     )
                 }
 
+                OtherListItemType.Startup -> {
+                    Switch(
+                        checked = uiState.startupEnabled,
+                        onCheckedChange = onStartupEnabledChange,
+                    )
+                }
+
                 OtherListItemType.ServerIp,
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
@@ -392,6 +382,10 @@ private fun OtherListItem(
 
                         OtherListItemType.DynamicColor -> {
                             onDynamicColorEnabledChange(!uiState.dynamicColorEnabled)
+                        }
+
+                        OtherListItemType.Startup -> {
+                            onStartupEnabledChange(!uiState.startupEnabled)
                         }
 
                         OtherListItemType.ServerIp,
@@ -476,5 +470,6 @@ private fun OtherListPanePreview() {
         onItemClick = {},
         onKeepScreenOnChange = {},
         onDynamicColorEnabledChange = {},
+        onStartupEnabledChange = {},
     )
 }
