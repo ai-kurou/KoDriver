@@ -8,12 +8,15 @@ import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMem
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFlagRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFuelRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsStatusRepositoryImpl
+import kurou.kodriver.core.acewindowsdata.repository.AceWindowsTyreCarcassTemperatureRepositoryImpl
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
+import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -39,6 +42,13 @@ val aceWindowsDataModule =
         single<AceWindowsStatusRepository> {
             if (isWindows) AceWindowsStatusRepositoryImpl(source = get()) else NoOpAceWindowsStatusRepository()
         }
+        single<AceWindowsTyreCarcassTemperatureRepository> {
+            if (isWindows) {
+                AceWindowsTyreCarcassTemperatureRepositoryImpl(source = get())
+            } else {
+                NoOpAceWindowsTyreCarcassTemperatureRepository()
+            }
+        }
     }
 
 private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
@@ -53,4 +63,8 @@ private class NoOpAceWindowsFlagRepository : AceWindowsFlagRepository {
 
 private class NoOpAceWindowsStatusRepository : AceWindowsStatusRepository {
     override fun statusStream(): Flow<AceWindowsStatusData> = emptyFlow()
+}
+
+private class NoOpAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<AceWindowsTyreCarcassTemperatureData> = emptyFlow()
 }

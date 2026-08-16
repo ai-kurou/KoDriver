@@ -3,6 +3,7 @@ package kurou.kodriver.core.acewindowsdata.mapper
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test
@@ -12,10 +13,21 @@ class AceWindowsMapperTest {
     private companion object {
         const val OFF_STATUS = 4
         const val OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT = 200
+        const val OFF_TYRE_LF = 220
+        const val TYRE_STATE_STRIDE = 256
+        const val OFF_TYRE_TEMPERATURE_C = 12
         const val OFF_CAR_LOCATION = 1388
         const val OFF_FLAG = 2404
         const val BUFFER_SIZE = 8_192
     }
+
+    private fun tyreCarcassTemperatureBuffer(temperatures: Map<WheelIndex, Float>): ByteBuffer =
+        ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also { buffer ->
+            temperatures.forEach { (wheel, celsius) ->
+                val tyreStateBase = OFF_TYRE_LF + wheel.ordinal * TYRE_STATE_STRIDE
+                buffer.putFloat(tyreStateBase + OFF_TYRE_TEMPERATURE_C, celsius)
+            }
+        }
 
     private fun buffer(fuelPercent: Float): ByteBuffer =
         ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
@@ -55,6 +67,24 @@ class AceWindowsMapperTest {
         val result = AceWindowsMapper.mapFuel(buffer(0.0f))
 
         assertEquals(0.0, result.remainingPercent, 0.0001)
+    }
+
+    @Test
+    fun `4輪それぞれのtyre_temperature_cをカーカス平均温度として取得する`() {
+        val temperatures =
+            mapOf(
+                WheelIndex.FRONT_LEFT to 80.0f,
+                WheelIndex.FRONT_RIGHT to 81.0f,
+                WheelIndex.REAR_LEFT to 82.0f,
+                WheelIndex.REAR_RIGHT to 83.0f,
+            )
+
+        val result = AceWindowsMapper.mapTyreCarcassTemperature(tyreCarcassTemperatureBuffer(temperatures))
+
+        assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT]!!, 0.0001)
+        assertEquals(81.0, result.wheels[WheelIndex.FRONT_RIGHT]!!, 0.0001)
+        assertEquals(82.0, result.wheels[WheelIndex.REAR_LEFT]!!, 0.0001)
+        assertEquals(83.0, result.wheels[WheelIndex.REAR_RIGHT]!!, 0.0001)
     }
 
     @Test
