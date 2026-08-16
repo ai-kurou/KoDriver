@@ -14,6 +14,7 @@ dependencies {
     implementation(projects.core.gt7Ps5Data)
     implementation(projects.core.aceWindowsData)
     implementation(projects.core.deviceVolumeData)
+    implementation(projects.core.windowsStartupData)
     implementation(projects.server)
 
     implementation(compose.desktop.currentOs)

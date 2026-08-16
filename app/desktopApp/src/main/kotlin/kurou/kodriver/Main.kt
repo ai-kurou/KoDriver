@@ -15,6 +15,7 @@ import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
+import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.AnonymousUserId
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.presentation.AppScreen
@@ -69,6 +70,7 @@ fun main() {
                                             gt7Ps5DataModule,
                                             aceWindowsDataModule,
                                             deviceVolumeDataModule,
+                                            windowsStartupDataModule,
                                         ) +
                                             featureModules +
                                             listOf(module { single(named("appVersion")) { APP_VERSION } }),

@@ -14,6 +14,15 @@ import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
+
+/**
+ * アプリバージョン表示に必要な情報（現在バージョン・プラットフォーム別ラベル）。
+ */
+data class OtherListAppVersionInfo(
+    val currentVersion: String,
+    val appVersionLabel: String,
+)
 
 /**
  * OtherList 画面の状態管理とユーザー操作を扱う ViewModel。
@@ -24,14 +33,15 @@ class OtherListViewModel(
     private val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
     observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
     private val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
-    private val currentVersion: String,
-    appVersionLabel: String,
+    private val startupRegistration: StartupRegistrationUseCases,
+    appVersionInfo: OtherListAppVersionInfo,
 ) : ViewModel() {
+    private val currentVersion = appVersionInfo.currentVersion
     private val _uiState =
         MutableStateFlow(
             OtherListUiState(
-                appVersionLabel = appVersionLabel,
-                appVersion = currentVersion,
+                appVersionLabel = appVersionInfo.appVersionLabel,
+                appVersion = appVersionInfo.currentVersion,
             ),
         )
     val uiState: StateFlow<OtherListUiState> =
@@ -51,6 +61,20 @@ class OtherListViewModel(
         viewModelScope.launch {
             val hasUpdate = checkAppUpdateAvailable(currentVersion)
             _uiState.update { it.copy(hasAppUpdate = hasUpdate) }
+        }
+    }
+
+    fun checkStartupEnabled() {
+        viewModelScope.launch {
+            val enabled = startupRegistration.getEnabled()
+            _uiState.update { it.copy(startupEnabled = enabled) }
+        }
+    }
+
+    fun onStartupEnabledChange(enabled: Boolean) {
+        viewModelScope.launch {
+            startupRegistration.setEnabled(enabled)
+            _uiState.update { it.copy(startupEnabled = enabled) }
         }
     }
 

@@ -163,6 +163,7 @@ dependencies {
     add("jvmTestImplementation", testFixtures(projects.feature.otherReadoutStartSoundDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherConsoleIpDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherVolumeDetail))
+    add("jvmTestImplementation", testFixtures(projects.feature.otherList))
     add("androidHostTestImplementation", testFixtures(projects.feature.otherThemeDetail))
     testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))
     testFixturesApi(testFixtures(projects.feature.gt7Ps5Narrator))
@@ -173,6 +174,7 @@ dependencies {
     testFixturesApi(testFixtures(projects.feature.otherReadoutStartSoundDetail))
     testFixturesApi(testFixtures(projects.feature.otherConsoleIpDetail))
     testFixturesApi(testFixtures(projects.feature.otherVolumeDetail))
+    testFixturesApi(testFixtures(projects.feature.otherList))
 }
 
 compose.resources {
