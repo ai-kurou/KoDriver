@@ -19,8 +19,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
 
@@ -29,6 +31,7 @@ internal class OtherVolumeDetailViewModel(
     private val saveSoundVolume: SaveSoundVolumeUseCase,
     private val getDeviceVolume: GetDeviceVolumeUseCase,
     private val setDeviceVolume: SetDeviceVolumeUseCase,
+    private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     private val deviceVolumeRefreshTrigger = MutableStateFlow(0)
 
@@ -69,6 +72,10 @@ internal class OtherVolumeDetailViewModel(
 
     fun onVolumeChanged(volume: Int) {
         viewModelScope.launch { saveSoundVolume(volume) }
+    }
+
+    fun onPreviewClicked() {
+        playSpeechEvent(SpeechEvent.LmuWindowsMyBestLapFormal)
     }
 
     fun onDeviceVolumeChanged(volume: Int) {

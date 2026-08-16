@@ -1,10 +1,13 @@
 package kurou.kodriver.feature.othervolumedetail
 
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -12,7 +15,8 @@ import org.koin.dsl.module
  *
  * 提供: OtherVolumeDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: SoundVolumePreferencesRepository（:core:data で登録）、
- * DeviceVolumeRepository（:core:device-volume-data で登録）。
+ * DeviceVolumeRepository（:core:device-volume-data で登録）、および試聴用の
+ * named(Simulator.LmuWindows.id) の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
  */
 val otherVolumeDetailModule =
     module {
@@ -24,4 +28,7 @@ val otherVolumeDetailModule =
         factory { SaveSoundVolumeUseCase(get()) }
         factory { GetDeviceVolumeUseCase(get()) }
         factory { SetDeviceVolumeUseCase(get()) }
+
+        // 試聴再生（named(Simulator.LmuWindows.id) の TextToSpeechEngine に依存）
+        factory { PlaySpeechEventUseCase(get(named(Simulator.LmuWindows.id))) }
     }

@@ -1,7 +1,10 @@
 package kurou.kodriver.feature.othervolumedetail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
@@ -25,6 +29,7 @@ import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_descr
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_formula
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_label
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_low_warning
+import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_preview_chip
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_subtitle
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_title
 import org.jetbrains.compose.resources.stringResource
@@ -46,6 +51,7 @@ fun OtherVolumeDetailPane(
         uiState = uiState,
         onVolumeChanged = viewModel::onVolumeChanged,
         onDeviceVolumeChanged = viewModel::onDeviceVolumeChanged,
+        onPreviewClicked = viewModel::onPreviewClicked,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -60,11 +66,13 @@ fun OtherVolumeDetailPaneContent(
     uiState: OtherVolumeDetailUiState,
     onVolumeChanged: (Int) -> Unit = {},
     onDeviceVolumeChanged: (Int) -> Unit = {},
+    onPreviewClicked: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val volumeLabel = stringResource(Res.string.volume_label)
+    val previewChipLabel = stringResource(Res.string.volume_preview_chip)
 
     DetailPaneScaffold(
         title = stringResource(Res.string.volume_title),
@@ -98,6 +106,18 @@ fun OtherVolumeDetailPaneContent(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 steps = 99,
             )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            ) {
+                DetailPaneCardChips(
+                    chipLabels = listOf(previewChipLabel),
+                    selectedChipLabels = setOf(previewChipLabel),
+                    chipEnabled = true,
+                    onChipClick = { onPreviewClicked() },
+                )
+            }
             DetailPaneSubtitle(
                 text = stringResource(Res.string.device_volume_subtitle),
                 modifier = Modifier.padding(horizontal = 16.dp),
