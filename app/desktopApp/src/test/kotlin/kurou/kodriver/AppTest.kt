@@ -24,6 +24,7 @@ import kurou.kodriver.feature.gt7ps5narrator.fakeGt7Ps5DataModule
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.main.fakeMainModule
 import kurou.kodriver.feature.otherconsoleipdetail.fakeOtherConsoleIpDetailModule
+import kurou.kodriver.feature.otherlist.fakeOtherListModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.fakeOtherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherthemedetail.fakeOtherThemeDetailModule
 import kurou.kodriver.feature.othervolumedetail.fakeOtherVolumeDetailModule
@@ -67,6 +68,7 @@ class AppTest {
                             fakeOtherReadoutStartSoundDetailModule,
                             fakeOtherConsoleIpDetailModule,
                             fakeOtherVolumeDetailModule,
+                            fakeOtherListModule,
                         ),
                 )
             }

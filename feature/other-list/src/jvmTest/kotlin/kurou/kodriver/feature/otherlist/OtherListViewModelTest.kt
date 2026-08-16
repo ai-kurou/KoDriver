@@ -20,11 +20,13 @@ import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.StartupRegistrationRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,6 +36,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class OtherListViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
 
@@ -45,6 +48,9 @@ class OtherListViewModelTest {
 
     @MockK
     private lateinit var dynamicColorRepository: DynamicColorEnabledRepository
+
+    @MockK
+    private lateinit var startupRegistrationRepository: StartupRegistrationRepository
 
     private val keepScreenOnFlow = MutableStateFlow(true)
     private val dynamicColorFlow = MutableStateFlow(false)
@@ -67,8 +73,12 @@ class OtherListViewModelTest {
             saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
             observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorRepository),
             saveDynamicColorEnabled = SaveDynamicColorEnabledUseCase(dynamicColorRepository),
-            currentVersion = currentVersion,
-            appVersionLabel = "Windows版KoDriverバージョン",
+            startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
+            appVersionInfo =
+                OtherListAppVersionInfo(
+                    currentVersion = currentVersion,
+                    appVersionLabel = "Windows版KoDriverバージョン",
+                ),
         )
 
     @Test
@@ -335,5 +345,49 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+        }
+
+    @Test
+    fun `checkStartupEnabledでOS起動時自動起動の状態を取得できる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            coEvery { startupRegistrationRepository.isEnabled() } returns true
+            val viewModel = createViewModel()
+
+            viewModel.checkStartupEnabled()
+
+            assertTrue(viewModel.uiState.first().startupEnabled)
+            coVerify(exactly = 1) { startupRegistrationRepository.isEnabled() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                startupRegistrationRepository,
+            )
+        }
+
+    @Test
+    fun `onStartupEnabledChangeでOS起動時自動起動の状態を保存できる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            coEvery { startupRegistrationRepository.setEnabled(true) } returns Unit
+            val viewModel = createViewModel()
+
+            viewModel.onStartupEnabledChange(true)
+
+            assertTrue(viewModel.uiState.first().startupEnabled)
+            coVerify(exactly = 1) { startupRegistrationRepository.setEnabled(true) }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                startupRegistrationRepository,
+            )
         }
 }
