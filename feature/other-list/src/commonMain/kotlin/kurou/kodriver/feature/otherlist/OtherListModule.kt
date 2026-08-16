@@ -7,7 +7,7 @@ import org.koin.dsl.module
 /**
  * その他一覧画面（other-list feature）の Koin モジュール。
  *
- * 提供: OtherListViewModel と、それが使う StartupRegistrationRepository 関連 UseCase。
+ * 提供: OtherListViewModel と、それが使う StartupEnabledRepository 関連 UseCase。
  * 消費（get で解決）: OtherListViewModel が使う UseCase 群（:core:domain。実体の Repository は
  *   :core:data / :core:windows-startup-data で登録）。アプリバージョンはビルド生成値を直接渡す。
  */

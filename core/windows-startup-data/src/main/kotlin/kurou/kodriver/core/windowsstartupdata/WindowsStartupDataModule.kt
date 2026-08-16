@@ -1,7 +1,7 @@
 package kurou.kodriver.core.windowsstartupdata
 
-import kurou.kodriver.core.windowsstartupdata.repository.WindowsStartupRegistrationRepository
-import kurou.kodriver.domain.repository.StartupRegistrationRepository
+import kurou.kodriver.core.windowsstartupdata.repository.WindowsStartupEnabledRepository
+import kurou.kodriver.domain.repository.StartupEnabledRepository
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -14,12 +14,12 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  */
 val windowsStartupDataModule =
     module {
-        single<StartupRegistrationRepository> {
-            if (isWindows) WindowsStartupRegistrationRepository() else NoOpStartupRegistrationRepository()
+        single<StartupEnabledRepository> {
+            if (isWindows) WindowsStartupEnabledRepository() else NoOpStartupEnabledRepository()
         }
     }
 
-private class NoOpStartupRegistrationRepository : StartupRegistrationRepository {
+private class NoOpStartupEnabledRepository : StartupEnabledRepository {
     override suspend fun isEnabled(): Boolean = false
 
     override suspend fun setEnabled(enabled: Boolean) = Unit

@@ -1,18 +1,18 @@
 package kurou.kodriver.feature.otherlist
 
-import kurou.kodriver.domain.repository.StartupRegistrationRepository
+import kurou.kodriver.domain.repository.StartupEnabledRepository
 import org.koin.dsl.module
 
 /**
  * テスト用の Fake Koin モジュール（testFixtures）。:core:windows-startup-data の代わりに
- * StartupRegistrationRepository の Fake 実装をバインドし、実OSのレジストリ操作を避ける。
+ * StartupEnabledRepository の Fake 実装をバインドし、実OSのレジストリ操作を避ける。
  */
 val fakeOtherListModule =
     module {
-        single<StartupRegistrationRepository> { FakeStartupRegistrationRepository() }
+        single<StartupEnabledRepository> { FakeStartupEnabledRepository() }
     }
 
-class FakeStartupRegistrationRepository : StartupRegistrationRepository {
+class FakeStartupEnabledRepository : StartupEnabledRepository {
     private var enabled = false
 
     override suspend fun isEnabled(): Boolean = enabled
