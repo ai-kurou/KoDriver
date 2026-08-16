@@ -80,6 +80,8 @@ compose.desktop {
             packageVersion = providers.gradleProperty("appVersion").get()
             windows {
                 shortcut = true
+                menu = true
+                perUserInstall = true
                 iconFile.set(project.file("src/main/resources/launcher.ico"))
                 upgradeUuid = "885EA480-3A3E-49DF-BB86-558A47B331D7"
             }
