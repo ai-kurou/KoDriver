@@ -216,6 +216,13 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = true
             }
         }
+
+        sealed interface TyreTemperature : AceWindows {
+            data object Root : TyreTemperature, TopLevel {
+                override val value = "ace_windows_tyre_temperature"
+                override val supportsQueue = true
+            }
+        }
     }
 
     companion object {
@@ -256,6 +263,7 @@ sealed interface ReadoutItemKey {
                 AceWindows.Flag.OrangeCircleFlag,
                 AceWindows.Flag.RedYellowStripesFlag,
                 AceWindows.RemainingFuel.Root,
+                AceWindows.TyreTemperature.Root,
             )
         }
 

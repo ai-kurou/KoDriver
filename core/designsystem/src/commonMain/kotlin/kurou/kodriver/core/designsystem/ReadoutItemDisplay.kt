@@ -81,7 +81,7 @@ private fun vehicleApproachDisplayName(readoutItemKeyValue: String): String? =
 @Composable
 private fun tyreTemperatureDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_tyre_temperature", "gt7_ps5_tyre_temperature" -> {
+        "lmu_windows_tyre_temperature", "gt7_ps5_tyre_temperature", "ace_windows_tyre_temperature" -> {
             stringResource(Res.string.readout_item_tyre_temperature)
         }
 
