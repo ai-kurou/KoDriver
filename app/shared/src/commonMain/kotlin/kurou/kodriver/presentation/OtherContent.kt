@@ -55,6 +55,7 @@ fun OtherContent(
 
     LaunchedEffect(Unit) {
         viewModel.checkUpdate()
+        viewModel.checkStartupEnabled()
     }
 
     OtherContent(
@@ -66,6 +67,7 @@ fun OtherContent(
         onOpenThemeDialog = onOpenThemeDialog,
         onKeepScreenOnChange = viewModel::onKeepScreenOnChange,
         onDynamicColorEnabledChange = viewModel::onDynamicColorEnabledChange,
+        onStartupEnabledChange = viewModel::onStartupEnabledChange,
         onAppVersionTapped = { viewModel.selectItem(OtherListItemType.DebugState) },
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
@@ -98,6 +100,7 @@ private fun handleOtherItemClick(
         OtherListItemType.Volume,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
+        OtherListItemType.Startup,
         OtherListItemType.Feedback,
         OtherListItemType.License,
         OtherListItemType.DebugState,
@@ -116,6 +119,7 @@ internal fun OtherContent(
     onOpenThemeDialog: () -> Unit = {},
     onKeepScreenOnChange: (Boolean) -> Unit = {},
     onDynamicColorEnabledChange: (Boolean) -> Unit = {},
+    onStartupEnabledChange: (Boolean) -> Unit = {},
     onAppVersionTapped: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
@@ -201,6 +205,7 @@ internal fun OtherContent(
                 uiState = uiState,
                 onKeepScreenOnChange = onKeepScreenOnChange,
                 onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                onStartupEnabledChange = onStartupEnabledChange,
                 onAppVersionTapped = onAppVersionTapped,
                 onItemClick = { itemType ->
                     handleOtherItemClick(

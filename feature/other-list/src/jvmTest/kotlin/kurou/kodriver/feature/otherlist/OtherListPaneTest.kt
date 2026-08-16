@@ -36,6 +36,7 @@ class OtherListPaneTest {
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
@@ -58,6 +59,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
@@ -80,6 +82,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
@@ -102,12 +105,36 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
+                onStartupEnabledChange = {},
             )
         }
 
         rule.onNode(hasText("ダイナミックカラー")).performClick()
 
         assertEquals(false, dynamicColorEnabled)
+    }
+
+    @Test
+    fun `PC起動時に自動起動をクリックすると切り替えコールバックを呼ぶ`() {
+        var startupEnabled: Boolean? = null
+
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.Startup),
+                        startupEnabled = false,
+                    ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = { startupEnabled = it },
+            )
+        }
+
+        rule.onNode(hasText("PC起動時に自動起動")).performClick()
+
+        assertEquals(true, startupEnabled)
     }
 
     @Test
@@ -122,16 +149,19 @@ class OtherListPaneTest {
                             listOf(
                                 OtherListItemType.KeepScreenOn,
                                 OtherListItemType.DynamicColor,
+                                OtherListItemType.Startup,
                             ),
                     ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
         rule.onNode(hasText("画面をスリープさせない")).performClick()
         rule.onNode(hasText("ダイナミックカラー")).performClick()
+        rule.onNode(hasText("PC起動時に自動起動")).performClick()
 
         assertNull(clickedItem)
     }
@@ -149,6 +179,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
@@ -169,6 +200,7 @@ class OtherListPaneTest {
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
@@ -190,6 +222,7 @@ class OtherListPaneTest {
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
@@ -213,6 +246,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
                 onAppVersionTapped = { tappedCount++ },
             )
         }
@@ -239,6 +273,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
                 onAppVersionTapped = { tappedCount++ },
             )
         }
@@ -267,6 +302,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
@@ -287,6 +323,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
@@ -307,6 +344,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onStartupEnabledChange = {},
             )
         }
 
@@ -338,6 +376,7 @@ class OtherListPaneTest {
                     onItemClick = {},
                     onKeepScreenOnChange = {},
                     onDynamicColorEnabledChange = {},
+                    onStartupEnabledChange = {},
                     scrollToTopRequest = scrollToTopRequest,
                 )
             }
