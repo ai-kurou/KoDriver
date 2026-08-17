@@ -347,7 +347,7 @@ internal fun ReadoutListPane(
                             ),
                     )
                 }
-                itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
+                itemsIndexed(uiState.items, key = { _, item -> item.value }) { index, item ->
                     ReorderableItem(reorderableState, key = item.value) {
                         val isSelected =
                             uiState.selectedSimulator.let {
