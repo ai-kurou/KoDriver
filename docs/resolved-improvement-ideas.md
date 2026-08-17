@@ -68,4 +68,4 @@
 - 2026-08-16 baseline-prof.txt再生成運用をrelease-apps.ymlへの自動組み込みで解消し削除（PR #1126）
 - 2026-08-17 BaselineProfileGeneratorのテキストセレクタ脆弱性改善案を見送りとして削除
 - 2026-08-17 GT7版saveTelemetryLogSafely導入を実装し削除（PR #1152）
-- 2026-08-17 ServerVersionRepository/ServerIpPreferencesRepositoryはDesktop側でUI導線自体が存在せず対応不要と判断し削除
+- 2026-08-17 ServerVersionRepository/ServerIpPreferencesRepositoryはDesktop側でUI導線自体が存在せず対応不要と判断し削除（PR #1154）
