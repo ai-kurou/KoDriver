@@ -18,6 +18,7 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_description
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_label
@@ -30,7 +31,6 @@ import kotlin.math.roundToInt
 
 private const val HIGH_THRESHOLD_MIN = 90f
 private const val HIGH_THRESHOLD_MAX = 110f
-private const val HIGH_THRESHOLD_INITIAL = 95f
 
 @Composable
 fun AceWindowsReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
@@ -76,7 +76,7 @@ internal fun AceWindowsReadoutTyreTemperatureDetailPaneContent(modifier: Modifie
                     }
                     DetailPaneSubtitle(text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle))
                     ThresholdSlider(
-                        value = HIGH_THRESHOLD_INITIAL,
+                        value = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.toFloat(),
                         valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
                         steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { labelTemplate.formatSliderLabel(it.roundToInt()) },

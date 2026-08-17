@@ -38,6 +38,6 @@ class AceWindowsReadoutTyreTemperatureDetailPaneTest {
         rule.onNodeWithText("過熱警告").assertIsDisplayed()
         rule.onNodeWithText("タイヤ過熱警告").assertIsDisplayed()
         rule.onNodeWithText("高温閾値設定").assertIsDisplayed()
-        rule.onNodeWithText("高温閾値: 95°C").assertIsDisplayed()
+        rule.onNodeWithText("高温閾値: 90°C").assertIsDisplayed()
     }
 }
