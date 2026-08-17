@@ -240,17 +240,16 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 `:app:webApp` は Gradle ビルド設定のみで独自機能が未実装のため、現在はテスト・ビルド確認の対象外。
 
-GitHub Actions ワークフロー:
+GitHub Actions ワークフロー概要（詳細な挙動・権限設計は [`docs/ci-workflows.md`](docs/ci-workflows.md) を参照）:
 
-- `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行（`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行）。同一 PR に新しいコミットが追加された場合は、実行中の古い CI をキャンセルする。`desktop-screenshot-test-verify` / `android-screenshot-test-verify`（`_screenshot-test-verify.yml` を呼び出す）は、まず verify を実行し、失敗した場合のみ golden 画像を再記録してコミット・プッシュしたうえでジョブを失敗させる
-- `on-main-merge.yml`: main へのマージ時に実行。`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行する。`dokka-pages` ジョブは Dokka（`./gradlew :dokkaGenerate`）で API ドキュメントを生成し、GitHub Pages（`github-pages` environment）へ自動デプロイする。ドキュメント本体（`docs/api/`）はコミットせず、CI 実行のたびに再生成する
-- `_build-android-release.yml`: 署名付き Android APK をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。ファイル名・表示名を `_` で始め、Actions の実行一覧では手動起動対象として表示されないようにしている。`ref` 入力でビルド対象のブランチ・タグ・コミットを指定する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
-- `_build-windows-msi.yml`: Windows MSI をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。`_build-android-release.yml` と同様に `ref` 入力でビルド対象を指定し、`gradle.properties` の `appVersion` を出力する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
-- `build-apps.yml`: `workflow_dispatch` で起動し、Android APK と Windows MSI を並列にビルドする。Android APK のビルドは `_build-android-release.yml`、Windows MSI のビルドは `_build-windows-msi.yml` を呼び出す
-- `release-apps.yml`: 手動でリリースする際に実行。まず `_e2e-android-maestro.yml`（`ref: main`）を実行し、成功した場合のみバージョンバンプ・MSI/APK ビルド・リリース作成に進む。バージョンバンプ後、`generate-baseline-profile` ジョブが Android エミュレータ上で `./gradlew :app:androidApp:generateReleaseBaselineProfile` を実行して `baseline-prof.txt` を再生成し artifact としてアップロードし、`commit-baseline-profile` ジョブがそれをダウンロードして差分があれば main へコミット・プッシュする（差分がなければコミットしない）。ジョブを分けているのは、main へ push 可能な `GH_PAT` を、サードパーティ Action（`reactivecircus/android-emulator-runner`）や任意の Gradle ビルド実行と同じジョブに同居させない（該当コードが侵害された場合の `GH_PAT` 漏洩・不正 push を避ける）ため。両ジョブとも `permissions` を明示（`generate-baseline-profile` は `contents: read` のみ、`commit-baseline-profile` は `contents: write`）し、`commit-baseline-profile` の `checkout` は `persist-credentials: false` としたうえで push 時のみ `GH_TOKEN` を使って認証ヘッダを都度指定する（zizmor の `artipacked`: チェックアウトした認証情報がジョブ内に永続化されたままになるリスクを避けるため）。Android APK のビルド（`_build-android-release.yml`）もこの再生成後の main を対象に `permissions: contents: read` で実行され、Windows MSI のビルド（`_build-windows-msi.yml`）はバージョンバンプ後すぐに並行して実行される
-- `_e2e-android-maestro.yml`: `_build-android-release.yml` で署名付き APK をビルドし、Android エミュレータ上で Maestro（`.maestro/tap-bottom-tabs.yaml`）を実行してボトムナビゲーションの各タブ（読み上げ・ログ・その他）をタップする E2E テスト。`release-apps.yml` から呼び出されるほか、Actions の画面から `ref` を指定して手動実行できる
-- `record-golden-images.yml`: `workflow_dispatch` に加え、PR に `record-golden-images` ラベルが付与された時にも起動し、PR のブランチに対して golden 画像（Roborazzi スクリーンショット）を再記録してコミットする。同一ブランチで新しい実行が開始された場合は、実行中の古い記録処理をキャンセルする
-- `nightly-todo.yml`: 毎日 JST 午前3時ごろ（`workflow_dispatch` でも手動実行可）に起動する。JST の日付・曜日をシェル側で明示的に算出したうえで、Claude Code CLI（`CLAUDE_CODE_OAUTH_TOKEN` シークレットで認証、Pro/Max サブスクリプション枠を使用）に `docs/nightly-todo-list.md` の「毎晩実行する項目」とその曜日の「曜日ローテーション項目」を調査させ、`docs/improvement-ideas.md` の編集権限のみを与える（`Edit`/`Write` ツールを同ファイルに限定し、`git`/`gh` 操作の権限は与えない）。追記前には `docs/resolved-improvement-ideas.md`（対応済み改善案の1行ログ、読み取り専用）も確認させ、過去に対応済みの内容を重複して追記しないようにする。Claude Code の最終出力（各項目の確認内容・追記有無の判断理由）は `nightly-todo-summary.txt` に保存され、下書き PR の説明欄に転記される（改善案の追記が無かった夜でも、何を調査してなぜ追記しなかったかを PR 上で確認できるようにするため）。Claude Code 実行後、ワークフロー側で `docs/improvement-ideas.md` 以外が変更されていないことを検証してから、ブランチ作成・コミット・プッシュ・下書き PR 作成をワークフローの固定処理として行う（`docs/improvement-ideas.md` の変更は事前承認が必要という CLAUDE.md のルールを守るため、直接 main には書き込まない）。GitHub への操作には `GH_PAT` シークレットを使用する（`GITHUB_TOKEN` で作成した PR は後続の CI ワークフローをトリガーしないため）
+- `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行
+- `on-main-merge.yml`: main へのマージ時に ktlint 検証・API ドキュメント自動デプロイを実行
+- `_build-android-release.yml` / `_build-windows-msi.yml`: 署名付き Android APK / Windows MSI をビルドする再利用可能ワークフロー（`workflow_call` 専用）
+- `build-apps.yml`: 手動起動で Android APK と Windows MSI を並列ビルド
+- `release-apps.yml`: 手動リリース時に E2E テスト・バージョンバンプ・ビルド・Baseline Profile 再生成・リリース作成を実行
+- `_e2e-android-maestro.yml`: Maestro によるボトムナビゲーション E2E テスト
+- `record-golden-images.yml`: golden 画像（Roborazzi スクリーンショット）の再記録
+- `nightly-todo.yml`: 毎晩 `docs/improvement-ideas.md` への追記候補を調査する下書き PR を作成
 
 ---
 
@@ -326,8 +325,7 @@ GitHub Actions ワークフロー:
    - GitHub Actions のスクリーンショットテストは集約タスクを使い、モジュール追加のたびに workflow を変更しない構成を維持する。
 4. 完了前
    - 変更範囲に応じたスクリーンショットテストを実行する。
-   - `./gradlew preMergeCheck` を必ず実行する（detekt・assertModuleGraph・全ユニットテスト・両アプリのビルド・デスクトップ統合テストを含む）。
-   - `CLAUDE.md`・`README.md`・`docs/` 以下のドキュメント更新要否を確認する。
+   - 「[コード変更時の必須確認](#コード変更時の必須確認)」を実行する。
 5. PR 作成後
    - GitHub checks / Codacy / Actions の結果を確認し、指摘があれば修正する。
    - PR のタイトルと説明が実装内容を正しく表していることを確認する。
