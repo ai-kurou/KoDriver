@@ -31,4 +31,10 @@
   **課題**: `shortcut = true` / `menu = true` / `perUserInstall = true` はjpackageの仕様上いずれもサイレントフラグであり、インストール実行時に自動でその挙動が固定されるだけで、ユーザーに選択させるダイアログは表示されない。ショートカット作成可否を選ばせるには別途 `--win-shortcut-prompt` が必要だが、Compose MultiplatformのGradle DSL(`org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask`)には対応するプロパティが存在せず、現状のDSLの範囲では実現できない。インストール範囲(全ユーザー/個人用)を選ばせる標準ダイアログもjpackage自体に用意されていない。
   **改善案**: Compose Multiplatformが `winShortcutPrompt` 等のDSLプロパティを将来追加した場合、または freeform引数差し込み等の代替手段が判明した場合に、MSIインストーラー上でショートカット作成可否をユーザーに選択させる機能の追加を検討する。
 
+## テスト
+
+- **対象**: `server/src/test/kotlin/kurou/kodriver/ApplicationTest.kt` の `` `フラッグWebSocketはクライアント切断時に送信Flowをキャンセルする` ``
+  **課題**: PR #1121で `close()` 呼び出し後に `withTimeout(1_000) { closeReason.await() }` を追加してクロージングハンドシェイクの完了を待つ対策を入れたが、その後も同テストがflakyになることが確認された（対策自体は本PRで巻き戻し済み）。根本原因（クライアント切断からサーバー側の送信Flowキャンセルまでの実際のネットワーク往復に伴うタイミング依存）は未調査。
+  **改善案**: `withTimeout(5_000) { repository.cancelled.await() }` 側のタイムアウト延長や、テストの構造自体（実ネットワークI/Oを伴うtestApplication構成）の見直しなど、別のアプローチでのflaky対策を検討する。
+
 
