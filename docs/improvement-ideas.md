@@ -37,7 +37,3 @@
   **課題**: `titleAlpha`・`dividerAlpha`・`bottomContentAlpha`（42〜44行目）は `checked` に応じて `1f` / `DISABLED_CONTENT_ALPHA`（0.38f）を即座に切り替え、`.alpha(...)`（100〜118行目）でそのまま適用しているため、`Switch` のON/OFF操作時にカード全体の不透明度が瞬時に切り替わりアニメーションがない。このコンポーネントは各detail画面（タイヤ摩耗・車両故障・車両接近など）から共通利用されているため、影響範囲が広い。
   **改善案**: `animateFloatAsState` で `titleAlpha` 等をアニメーション化し、有効/無効切り替え時に滑らかに減光させる。
 
-- **対象**: `feature/debug-state-detail/src/commonMain/kotlin/kurou/kodriver/feature/debugstatedetail/DebugStateYellowFlagStateCard.kt`（`YellowFlagStateContent`）・`DebugStateGamePhaseCard.kt`（`GamePhaseContent`）
-  **課題**: いずれもテレメトリ由来のenum状態（`SessionYellowFlagState`・`SessionPhase`）をもとに `Text` の表示内容を直接切り替えており、`Crossfade`/`AnimatedContent` を使っていないため、走行中に状態が変化した際にテキストが瞬時に切り替わる。状態変化を監視するためのデバッグ画面という性質上、変化の視認性が低い。
-  **改善案**: `Crossfade` または `AnimatedContent` で状態変化時にフェード等の遷移を付与する。
-
