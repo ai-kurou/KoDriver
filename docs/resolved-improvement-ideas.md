@@ -67,3 +67,4 @@
 - 2026-08-15 Baseline Profile導入案を実装し削除（PR #1126）
 - 2026-08-16 baseline-prof.txt再生成運用をrelease-apps.ymlへの自動組み込みで解消し削除（PR #1126）
 - 2026-08-17 BaselineProfileGeneratorのテキストセレクタ脆弱性改善案を見送りとして削除
+- 2026-08-17 GT7版saveTelemetryLogSafely導入を実装し削除（PR #1151）

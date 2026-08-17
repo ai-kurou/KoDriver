@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.core.narrator.TelemetryLogJson
@@ -52,9 +53,8 @@ internal class Gt7Ps5NarratorEventProcessor(
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
             if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
-                saveTelemetryLog(
+                saveTelemetryLogSafely(
                     createdAt = observedAtMs,
-                    simulator = Simulator.Gt7Ps5,
                     readoutItemKey = event.readoutItemKey,
                     telemetryJson =
                         buildTelemetryLogJson(
@@ -84,6 +84,25 @@ internal class Gt7Ps5NarratorEventProcessor(
             speak = { queue -> ttsEngine.speak(event, queue) },
             stop = { ttsEngine.stop() },
         )
+
+    private suspend fun saveTelemetryLogSafely(
+        createdAt: Long,
+        readoutItemKey: ReadoutItemKey,
+        telemetryJson: String,
+    ) {
+        try {
+            saveTelemetryLog(
+                createdAt = createdAt,
+                simulator = Simulator.Gt7Ps5,
+                readoutItemKey = readoutItemKey,
+                telemetryJson = telemetryJson,
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            // ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない。
+        }
+    }
 }
 
 /**
