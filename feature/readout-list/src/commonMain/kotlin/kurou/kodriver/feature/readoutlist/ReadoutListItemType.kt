@@ -140,7 +140,8 @@ sealed class ReadoutListItemType(
         private fun aceWindowsOrderIndex(key: ReadoutItemKey.AceWindows.TopLevel): Int =
             when (key) {
                 ReadoutItemKey.AceWindows.Flag.Root -> 0
-                ReadoutItemKey.AceWindows.RemainingFuel.Root -> 1
+                ReadoutItemKey.AceWindows.TyreTemperature.Root -> 1
+                ReadoutItemKey.AceWindows.RemainingFuel.Root -> 2
             }
     }
 }

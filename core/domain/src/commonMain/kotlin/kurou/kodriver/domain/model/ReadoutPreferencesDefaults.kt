@@ -26,6 +26,7 @@ val READOUT_ENABLED_STATE_DEFAULT: Map<Simulator, Map<ReadoutItemKey, Boolean>> 
         Simulator.AceWindows to
             mapOf(
                 ReadoutItemKey.AceWindows.Flag.Root to true,
+                ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
                 ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
             ),
     )

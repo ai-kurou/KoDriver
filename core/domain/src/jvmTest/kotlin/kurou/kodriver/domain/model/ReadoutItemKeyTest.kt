@@ -92,6 +92,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag,
             ReadoutItemKey.fromValue("ace_windows_red_yellow_stripes_flag"),
         )
+        assertEquals(
+            ReadoutItemKey.AceWindows.TyreTemperature.Root,
+            ReadoutItemKey.fromValue("ace_windows_tyre_temperature"),
+        )
     }
 
     @Test
@@ -119,5 +123,6 @@ class ReadoutItemKeyTest {
         assertEquals(true, ReadoutItemKey.Gt7Ps5.TyreTemperature.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.AceWindows.RemainingFuel.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.AceWindows.Flag.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.AceWindows.TyreTemperature.Root.supportsQueue)
     }
 }

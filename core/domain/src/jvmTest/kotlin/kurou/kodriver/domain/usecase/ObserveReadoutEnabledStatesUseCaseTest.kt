@@ -132,6 +132,7 @@ class ObserveReadoutEnabledStatesUseCaseTest {
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
                     ReadoutItemKey.AceWindows.Flag.Root to true,
+                    ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
                 ),
                 useCase("ace_windows").first(),
