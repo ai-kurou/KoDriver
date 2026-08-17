@@ -1,5 +1,6 @@
 package kurou.kodriver.core.designsystem
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,12 +38,13 @@ fun DetailPaneCard(
     bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val contentAlpha by animateFloatAsState(targetValue = if (checked) 1f else DISABLED_CONTENT_ALPHA)
     DetailPaneCardLayout(
         title = title,
         modifier = modifier,
-        titleAlpha = if (checked) 1f else DISABLED_CONTENT_ALPHA,
-        dividerAlpha = if (checked) 1f else DISABLED_CONTENT_ALPHA,
-        bottomContentAlpha = if (checked) 1f else DISABLED_CONTENT_ALPHA,
+        titleAlpha = contentAlpha,
+        dividerAlpha = contentAlpha,
+        bottomContentAlpha = contentAlpha,
         headerContent = {
             Switch(
                 checked = checked,
