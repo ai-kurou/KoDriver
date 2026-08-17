@@ -79,29 +79,16 @@ KoDriver/
 
 ### app:androidBenchmark の targetProjectPath は app 間依存の例外
 
-`app:androidBenchmark`（`com.android.test` モジュール）は `targetProjectPath = ":app:androidApp"` で `app:androidApp` を計装対象として参照する。これは Gradle の `implementation`/`api` 依存ではなく AGP 固有のテスト対象指定であり、`moduleGraphAssert` の対象外（`app:.*App` を含む `allowed` パターンにも含まれない）。
-
-AGP は 1 モジュールにつき 1 つの Android プラグインタイプ（application / library / test / dynamic-feature）しか適用できないため、`com.android.test` プラグインを `app:androidApp` 自体に同居させることはできない。Macrobenchmark はテスト APK と計測対象 APK を別プロセスとして起動して計測する仕組みのため、Baseline Profile 生成にはモジュールを分けた `targetProjectPath` 参照が構造的に必須（Google 公式の Baseline Profile モジュールテンプレートも同じ構成）。「app モジュール同士は依存しない」という原則の例外として、この参照のみ容認する（PR #1126）。
+`app:androidBenchmark`（`com.android.test` モジュール）は `targetProjectPath = ":app:androidApp"` で `app:androidApp` を計装対象として参照する。これは Gradle の `implementation`/`api` 依存ではなく AGP 固有のテスト対象指定であり、`moduleGraphAssert` の対象外（`app:.*App` を含む `allowed` パターンにも含まれない）。「app モジュール同士は依存しない」という原則の例外として、この参照のみ容認する（PR #1126）。技術的な背景は `app/androidBenchmark/README.md` を参照。
 
 ### 共有メモリ読み取りは Windows 専用
 `:core:windows-shared-memory` の `SharedMemoryReader` / `WindowsSharedMemoryReader` は `OpenFileMappingA` / `MapViewOfFile` を使用するため **Windows のみ**動作する。macOS / Linux ではシミュレーターが起動しないため `open()` が `false` を返し続ける（クラッシュはしない）。`:core:lmu-windows-data` と `:core:ace-windows-data` はこの共通基盤に依存し、それぞれのシム固有の構造体パースのみを実装する。
 
 ### Ktor サーバー
-`:server` は Windows 版デスクトップアプリと同一プロセスで起動し、`0.0.0.0:8080` で待ち受ける。WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。`/ws/<Simulator.id>/flags` は `ObserveLmuWindowsRaceFlagsUseCase` を通じて `LmuWindowsFlagRepository` を購読し、`LmuWindowsRaceFlagsData` を JSON として送信する。同一内容の連続値は送信しない。
+`:server` は Windows 版デスクトップアプリと同一プロセスで起動し、`0.0.0.0:8080` で待ち受ける。WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。現時点では認証・暗号化を実装していないため、信頼できる LAN 内でのみ使用すること。`KoDriverServer.start()` は mDNS（`_kodriver._tcp.local.`）でサーバーを LAN 内へ広告し、`:feature:other-server-ip-detail` がそれを検出して接続先 IP の自動入力に使う。エンドポイント仕様・CSWSH対策・mDNS広告の詳細は `server/README.md` を参照。
 
-LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws/<Simulator.id>/flags` 等へ接続する。外部端末から接続するには Windows ファイアウォールで TCP 8080 番ポートの受信を許可する必要がある場合がある。現時点では認証・暗号化を実装していないため、信頼できる LAN 内でのみ使用すること。
-
-`server/src/main/kotlin/kurou/kodriver/TelemetryWebSocket.kt` の `telemetryWebSocket` は、WebSocket 接続に `Origin` ヘッダが含まれる場合は `CloseReason.Codes.VIOLATED_POLICY` で切断する。WebSocket はブラウザの CORS（Same-Origin Policy）の対象外のため、LAN 内の別端末で開かれた悪意あるページの JavaScript から接続されてテレメトリ情報を読み取られる恐れがある（CSWSH: Cross-Site WebSocket Hijacking）。Android アプリ等のネイティブクライアントは通常 `Origin` ヘッダを送らないため接続に影響しない。
-
-`KoDriverServer.start()` は Ktor サーバー起動と同時に `KoDriverServiceAdvertiser`（`javax.jmdns.JmDNS` によるラッパー）でサービスタイプ `_kodriver._tcp.local.`（`core:domain` の `MdnsConstants.KO_DRIVER_SERVICE_TYPE` として `:server` と `:feature:other-server-ip-detail`（JVM 実装）から共有）を LAN 内へ mDNS 広告する。インスタンス名にはホスト名を使用し、複数台の Windows PC が同一 LAN 上で起動している場合でも Android 側がホスト名で区別できるようにしている。ホスト名が FQDN（ドット区切り）で返る環境向けに、ドット以降を除去してから使用する。`start()` は呼び出しごとに既存の `JmDNS` インスタンスを `stop()` してから新規生成するため、多重起動してもソケットはリークしない。mDNS の登録・解除に失敗しても（`IOException`）ログ出力のみで Ktor サーバー自体の起動・停止は妨げない。
-
-`:feature:other-server-ip-detail` の接続先 IP 入力画面（detailPane）は、画面が表示されている間だけ `WindowsServerDiscovery`（プラットフォーム実装: JVM は JmDNS、Android は `NsdManager`）で上記の mDNS 広告を検出する。`OtherServerIpDetailViewModel` は検出結果を `SharingStarted.WhileSubscribed` で `uiState` の購読に連動させており、アプリ起動時ではなく detailPane 表示中のみ検出が動作する。検出できた場合はホスト名・IP アドレスを選べるダイアログを自動表示し、「選択する」で選択した IP アドレスを入力欄へ自動入力する。
-
-### TimingData のラップタイム
-`LmuWindowsMapper` は Scoring セグメントのプレイヤー車両からラップタイム系フィールド（`currentLapTimeMs`, `lastLapTimeMs`, `bestLapTimeMs`, `sector1Ms`, `sector1And2Ms`）を取得する。Scoring のプレイヤー車両が見つからない場合は `0L` にフォールバックする。
-
-### オフセット情報
-`LmuWindowsMapper.kt` のコメントに pyLMUSharedMemory の ctypes レイアウト（`_pack_=4`）を記載済み。
+### LMU Windows共有メモリのパース詳細
+`LmuWindowsMapper` のラップタイム系フィールドの扱い（Scoringのプレイヤー車両フォールバック等）、車両クラス名、共有メモリのオフセット情報は `core/lmu-windows-data/README.md` を参照。
 
 ### ReadoutItemKey の配線（listPane / detailPane とNarratorの読み上げ判定の一致）
 `ReadoutItemKey` は、読み上げ一覧画面（listPane）のトップレベルの項目スイッチと、各機能の詳細画面（detailPane）内のサブトグルの両方で使われる共通のキー空間である。listPane のスイッチは「その項目をNarratorで読み上げるかどうか」に一致する仕様であり、detailPane のサブトグルは「その項目内のどのイベントを読み上げるか」を絞り込む仕様である。
@@ -120,14 +107,7 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 
 ### list/detail ペイン切り替えの Navigation 3 パターン
 
-`ReadoutContent.kt`（`feature:readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）は、`Material3 Adaptive` の `ListDetailPaneScaffold` と並行して、Navigation 3 の `NavBackStack<NavKey>` を「現在どちらのペインを表示しているか」の状態として保持する共通パターンを使う。新しく list/detail 構成の画面を追加する場合は、これらの実装（`XxxNavigationState.kt` とその `XxxNavigationStateTest.kt`）を参照すること。
-
-- `internal enum class XxxPaneDestination : NavKey { List, Detail }` でペインの宛先を定義する。
-- `internal class XxxNavigationState(val backStack: NavBackStack<NavKey>)` が `current`（`backStack.lastOrNull() as? XxxPaneDestination ?: XxxPaneDestination.List`）と `navigateTo(destination)`（現在と異なる場合のみ `clear()` してから `add()` する置き換え）を提供する。
-- `@Composable internal fun rememberXxxNavigationState(initial: XxxPaneDestination = XxxPaneDestination.List)` は `remember { XxxNavigationState(NavBackStack(initial)) }` で生成する。**`rememberSaveable` は使わない**（後述）。
-- 呼び出し側（`XxxContent.kt`）では `navigationState` の `initial` を ViewModel の `uiState.selectedXxx` から導出し、`LaunchedEffect(uiState.selectedXxx)` で `uiState.selectedXxx` の変化のたびに `navigationState.navigateTo(...)` を呼んで同期したうえで、その結果（`navigationState.current`）を使って `ListDetailPaneScaffoldRole` へ `navigator.navigateTo(...)` する。詳細ペインの実際の表示内容は `navigationState.current` ではなく `uiState.selectedXxx` を直接 `let` で分岐して描画する。
-
-**`rememberSaveable`/`Saver` を使わない理由**: 選択状態の唯一の正（`_selectedItem` 等）は各 ViewModel 内のプレーンな `MutableStateFlow` であり、`SavedStateHandle` や DataStore に永続化されていない。そのため `LaunchedEffect(uiState.selectedXxx)` は初回コンポジションでも必ず一度発火し、`uiState.selectedXxx`（プロセス再生成後は常に未選択）に基づいて `navigationState` を無条件に上書きする。`rememberSaveable` で `navigationState` 側だけを復元しても、直後にこの同期で上書きされるため実質的に意味を持たない。選択状態自体の永続化が必要になった場合は、まず ViewModel 側（`SavedStateHandle` 等）で対応すること。
+`ReadoutContent.kt`（`feature:readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）は、`Material3 Adaptive` の `ListDetailPaneScaffold` と並行して、Navigation 3 の `NavBackStack<NavKey>` を「現在どちらのペインを表示しているか」の状態として保持する共通パターンを使う。新しく list/detail 構成の画面を追加する場合は、これらの実装（`XxxNavigationState.kt` とその `XxxNavigationStateTest.kt`）を参照すること。パターンの詳細・`rememberSaveable` を使わない理由は [`docs/list-detail-navigation-pattern.md`](docs/list-detail-navigation-pattern.md) を参照。
 
 ### 実装前の類似コード確認
 
