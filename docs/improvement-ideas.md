@@ -53,10 +53,3 @@
   **課題**: いずれもテレメトリ由来のenum状態（`SessionYellowFlagState`・`SessionPhase`）をもとに `Text` の表示内容を直接切り替えており、`Crossfade`/`AnimatedContent` を使っていないため、走行中に状態が変化した際にテキストが瞬時に切り替わる。状態変化を監視するためのデバッグ画面という性質上、変化の視認性が低い。
   **改善案**: `Crossfade` または `AnimatedContent` で状態変化時にフェード等の遷移を付与する。
 
-## パフォーマンス
-
-- **対象**: `app/androidBenchmark/src/main/kotlin/kurou/kodriver/benchmark/BaselineProfileGenerator.kt`
-  **課題**: Baseline Profile生成のUIセレクタが `By.desc("シミュレータを選択")` 等のハードコードされた日本語文言に依存しており、ローカライズや表示文言の変更に対して脆い（PR #1126 Sourceryレビュー指摘）。
-  **改善案**: resource ID やComposeのテストタグなど、表示文言に依存しない安定した識別子へ切り替える。少なくとも文字列は定数として一元管理する。
-
-
