@@ -16,8 +16,10 @@
 
 ## 毎晩実行する項目
 
-- Zennで直近の記事を確認する場合、`WebSearch`はZennの新着記事のインデックス反映が遅く投稿直後の記事を拾えないことが分かっているため使わない。代わりに `WebFetch` で `https://zenn.dev/api/articles?order=latest&count=100`（Zennが公開している新着記事一覧のJSON API）を取得する。`count=100` は投稿数の多い日でも数時間分にしかならないため、`published_at` が24時間以上前に達するまで `page=2`, `page=3`, ... とページを進めて取得を続ける（レスポンスの `next_page` を参照する）。また `order=latest` でも一部トレンド記事等が時系列を乱して混在することがあるため、必ず各記事の `published_at` を確認して24時間以内かどうかを判定する（順序だけで打ち切らない）。集めた記事の中からタイトルがAIコーディング・Compose Multiplatform・Android・Claude・Codex等に関連するものを絞り込み、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。絞り込み対象になった記事・ならなかった記事を問わず、過去24時間以内に取得できた全記事のURLと1行程度の要約を、最終出力（PRの説明欄に転記される）に一覧として必ず含める。ただし全件網羅（個別記事の内容まで深掘りする）は不要で、タイトルから明らかに関連しそうな記事だけを深掘りすればよい。
-- Qiita（[https://qiita.com](https://qiita.com)）でも同様に、AIコーディング・Compose Multiplatform・Android・Claude・Codex等に関する過去24時間以内の記事をWebで確認し、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。絞り込み対象になった記事・ならなかった記事を問わず、過去24時間以内に確認できた全記事のURLと1行程度の要約を、最終出力（PRの説明欄に転記される）に一覧として必ず含める。ただし全件網羅（個別記事の内容まで深掘りする）は不要で、タイトルから明らかに関連しそうな記事だけを深掘りすればよい。
+- 対象キーワードは共通で「Compose・Android・Claude・Codex・Kotlin」とする。以下のZenn・Qiita双方とも、まずキーワードで検索してから過去24時間以内かを判定する（新着記事を全件取得してからキーワードでフィルターする方式は使わない。取得件数・処理量を減らすため）。
+- Zenn: キーワードごとに `WebFetch` で `https://zenn.dev/api/articles?topicname=<topicname>&order=latest&count=100`（Zennが公開しているトピック別記事一覧のJSON API）を取得する。`topicname` は各キーワードに対応するZennのトピック名（`compose`, `android`, `claude`, `codex`, `kotlin`。いずれもキーワードを小文字化したもの。「Compose Multiplatform」は独立したトピックが存在しないため`compose`で代用する）を指定する。`count=100` で足りない場合は `next_page` を参照して `page=2`, `page=3`, ... と進める。トピックによる絞り込みのため無関係な記事が混じることがあるが、タイトルからの関連性判断は次のステップに委ねてよい。取得した記事の中から `published_at` が24時間以内のものだけを対象にし、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。`WebSearch`はZennの新着記事のインデックス反映が遅く投稿直後の記事を拾えないことが分かっているため使わない。
+- Qiita（[https://qiita.com](https://qiita.com)）: キーワードごとに `WebFetch` で `https://qiita.com/api/v2/items?query=<キーワード>+created:%3E%3D<24時間前の日付、YYYY-MM-DD形式>&per_page=100`（Qiita API v2の記事検索、`query`パラメータでキーワード検索し`created:>=`で日付範囲を絞り込む）を取得する。KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。
+- Zenn・Qiitaいずれも、絞り込み対象になった記事・ならなかった記事を問わず、過去24時間以内に取得できた全記事のURLと1行程度の要約を、最終出力（PRの説明欄に転記される）に一覧として必ず含める。ただし全件網羅（個別記事の内容まで深掘りする）は不要で、タイトルから明らかに関連しそうな記事だけを深掘りすればよい。
 
 ## 曜日ローテーション項目
 
