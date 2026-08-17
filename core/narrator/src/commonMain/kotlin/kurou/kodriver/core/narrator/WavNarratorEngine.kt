@@ -65,8 +65,8 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
 
     // playJob がアクティブな間だけ再生中のキーを返す。
     // キャンセル後に古いジョブが _currentKey を上書きしないよう playJob で二重確認する。
-    val currentKey: KEY?
-        get() = _currentKey.takeIf { playJob?.isActive == true }
+    val currentKey: KEY
+        get() = _currentKey.takeIf { playJob?.isActive == true }!!
 
     init {
         scope.launch { volumeFlow.collect { currentVolume = it } }

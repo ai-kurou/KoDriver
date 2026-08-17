@@ -125,13 +125,13 @@ private fun Modifier.pulseWhile(enabled: Boolean): Modifier {
 fun ConnectionBannerContent(
     uiState: ConnectionBannerUiState,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null,
+    onClick: () -> Unit = {},
 ) {
     val colors = bannerColors(uiState.status)
     val backgroundColor by animateColorAsState(targetValue = colors.background)
     val contentColor by animateColorAsState(targetValue = colors.content)
     val icon = bannerIcon(uiState.iconType, uiState.isConnected)
-    val isTappable = uiState.isTappable && onClick != null
+    val isTappable = uiState.isTappable
 
     Box(
         modifier =
@@ -140,7 +140,7 @@ fun ConnectionBannerContent(
                 .background(backgroundColor)
                 .then(
                     if (isTappable) {
-                        Modifier.clickable(role = Role.Button, onClick = onClick!!)
+                        Modifier.clickable(role = Role.Button, onClick = onClick)
                     } else {
                         Modifier
                     },
