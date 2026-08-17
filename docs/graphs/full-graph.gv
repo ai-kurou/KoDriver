@@ -18,7 +18,7 @@ digraph G {
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-startup-data" [label=":core:windows-startup-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":server" [label=":server", fillcolor="#F8BBD0", color="#D81B60"]
-  "feature" [label="feature\n35 modules", fillcolor="#C8E6C9", color="#43A047"]
+  "feature" [label="feature\n36 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":app:androidApp" -> ":app:androidBenchmark"
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:data"

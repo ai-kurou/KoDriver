@@ -12,6 +12,7 @@ digraph G {
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:desktop-splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -55,6 +56,7 @@ digraph G {
   ":feature:ace-windows-narrator" -> ":core:domain"
   ":feature:ace-windows-readout-flag-detail" -> ":core:domain"
   ":feature:ace-windows-readout-remaining-fuel-detail" -> ":core:domain"
+  ":feature:ace-windows-readout-tyre-temperature-detail" -> ":core:domain"
   ":feature:debug-state-detail" -> ":core:domain"
   ":feature:desktop-splash" -> ":core:domain"
   ":feature:gt7-ps5-connection" -> ":core:domain"
