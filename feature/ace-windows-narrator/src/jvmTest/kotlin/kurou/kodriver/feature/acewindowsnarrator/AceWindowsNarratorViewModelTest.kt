@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "TooManyFunctions")
 
 package kurou.kodriver.feature.acewindowsnarrator
 
@@ -28,13 +28,17 @@ import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
+import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -44,6 +48,9 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -86,6 +93,12 @@ class AceWindowsNarratorViewModelTest {
     private lateinit var statusRepository: AceWindowsStatusRepository
 
     @MockK
+    private lateinit var tyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository
+
+    @MockK
+    private lateinit var tyreTemperaturePreferencesRepository: AceWindowsTyreTemperaturePreferencesRepository
+
+    @MockK
     private lateinit var ttsEngine: TextToSpeechEngine
 
     @BeforeTest
@@ -103,10 +116,14 @@ class AceWindowsNarratorViewModelTest {
         fuelChannel: Channel<AceWindowsFuelData>,
         ttsEngine: TextToSpeechEngine,
         flagChannel: Channel<AceWindowsFlagData> = Channel(Channel.UNLIMITED),
+        tyreCarcassTemperatureChannel: Channel<AceWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         currentTimeMs: () -> Long = { 0L },
     ): AceWindowsNarratorViewModel {
         every { fuelRepository.fuelStream() } returns fuelChannel.receiveAsFlow()
         every { flagRepository.flagStream() } returns flagChannel.receiveAsFlow()
+        every {
+            tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream()
+        } returns tyreCarcassTemperatureChannel.receiveAsFlow()
         return AceWindowsNarratorViewModel(
             remainingFuelUseCases =
                 RemainingFuelUseCases(
@@ -125,6 +142,15 @@ class AceWindowsNarratorViewModelTest {
                 FlagUseCases(
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(flagRepository),
                     observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(flagPreferencesRepository),
+                ),
+            tyreTemperatureUseCases =
+                TyreTemperatureUseCases(
+                    observeAceWindowsTyreCarcassTemperature =
+                        ObserveAceWindowsTyreCarcassTemperatureUseCase(tyreCarcassTemperatureRepository),
+                    observeHighThreshold =
+                        ObserveAceWindowsTyreTemperatureHighThresholdUseCase(tyreTemperaturePreferencesRepository),
+                    observeTyreTemperatureEnabledStates =
+                        ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(tyreTemperaturePreferencesRepository),
                 ),
             observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(statusRepository),
             eventProcessor =
@@ -154,6 +180,12 @@ class AceWindowsNarratorViewModelTest {
             } returns MutableStateFlow(30)
             every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every {
+                tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
+            } returns MutableStateFlow(90)
+            every {
+                tyreTemperaturePreferencesRepository.observeEnabledStates()
+            } returns MutableStateFlow(emptyMap())
             createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(fuel(20.0))
@@ -275,6 +307,12 @@ class AceWindowsNarratorViewModelTest {
             } returns MutableStateFlow(30)
             every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every {
+                tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
+            } returns MutableStateFlow(90)
+            every {
+                tyreTemperaturePreferencesRepository.observeEnabledStates()
+            } returns MutableStateFlow(emptyMap())
             every { statusRepository.statusStream() } returns statusChannel.receiveAsFlow()
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -384,11 +422,14 @@ class AceWindowsNarratorViewModelTest {
      * simulator/enabledStates/readoutOrder/thresholdの標準スタブをまとめて設定する。
      * ViewModelがコンストラクタ内で即座にFlowを購読・combineするため、必ず [createViewModel] の前に呼ぶこと。
      */
+    @Suppress("LongParameterList")
     private fun stubReadoutDefaults(
         thresholdPercentage: Int,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        tyreTemperatureHighThresholdCelsius: Int = 90,
+        tyreTemperatureEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         carLocation: AceWindowsCarLocation = AceWindowsCarLocation.TRACK,
         status: AceWindowsStatusType = AceWindowsStatusType.LIVE,
         statusFlowOverride: MutableStateFlow<AceWindowsStatusData>? = null,
@@ -405,6 +446,12 @@ class AceWindowsNarratorViewModelTest {
         } returns MutableStateFlow(thresholdPercentage)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
+        every {
+            tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
+        } returns MutableStateFlow(tyreTemperatureHighThresholdCelsius)
+        every {
+            tyreTemperaturePreferencesRepository.observeEnabledStates()
+        } returns MutableStateFlow(tyreTemperatureEnabledOverrides)
         every { statusRepository.statusStream() } returns
             (statusFlowOverride ?: MutableStateFlow(AceWindowsStatusData(status = status, carLocation = carLocation)))
         coEvery {
@@ -471,6 +518,114 @@ class AceWindowsNarratorViewModelTest {
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
 
+    @Test
+    fun `タイヤが高温になると読み上げる`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val tyreCarcassTemperatureChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30, tyreTemperatureHighThresholdCelsius = 90)
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                tyreCarcassTemperatureChannel = tyreCarcassTemperatureChannel,
+            )
+
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsTyreOverheat), spokenTexts)
+        }
+
+    @Test
+    fun `タイヤ温度項目が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val tyreCarcassTemperatureChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.TyreTemperature.Root to false),
+                tyreTemperatureHighThresholdCelsius = 90,
+            )
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                tyreCarcassTemperatureChannel = tyreCarcassTemperatureChannel,
+            )
+
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `過熱警告スイッチが無効のときは読み上げない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val tyreCarcassTemperatureChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                tyreTemperatureHighThresholdCelsius = 90,
+                tyreTemperatureEnabledOverrides =
+                    mapOf(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false),
+            )
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                tyreCarcassTemperatureChannel = tyreCarcassTemperatureChannel,
+            )
+
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `読み上げが発生したら現在と直前のタイヤカーカス温度を保存する`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val tyreCarcassTemperatureChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val telemetryJsons = mutableListOf<String>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30, tyreTemperatureHighThresholdCelsius = 90)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.TyreTemperature.Root,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                tyreCarcassTemperatureChannel = tyreCarcassTemperatureChannel,
+                currentTimeMs = { 123_456L },
+            )
+
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0))
+
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""previousTyreCarcassTemperature":{"wheels":{"FRONT_LEFT":85.0}}"""),
+            )
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":95.0}}"""),
+            )
+            assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+        }
+
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 
     private fun mockTts(spokenTexts: MutableList<SpeechEvent>): TextToSpeechEngine {
@@ -481,4 +636,7 @@ class AceWindowsNarratorViewModelTest {
     }
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = remainingPercent)
+
+    private fun tyreCarcassTemperature(fl: Double) =
+        AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to fl))
 }
