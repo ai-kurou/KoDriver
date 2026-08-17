@@ -69,3 +69,4 @@
 - 2026-08-17 BaselineProfileGeneratorのテキストセレクタ脆弱性改善案を見送りとして削除
 - 2026-08-17 GT7版saveTelemetryLogSafely導入を実装し削除（PR #1152）
 - 2026-08-17 ServerVersionRepository/ServerIpPreferencesRepositoryはDesktop側でUI導線自体が存在せず対応不要と判断し削除（PR #1154）
+- 2026-08-17 デバッグ画面のイエローフラッグ状態・ゲームフェーズ表示にAnimatedContentでフェード遷移を追加し削除

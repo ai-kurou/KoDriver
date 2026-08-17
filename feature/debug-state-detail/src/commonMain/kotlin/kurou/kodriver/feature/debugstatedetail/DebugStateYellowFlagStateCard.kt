@@ -1,5 +1,9 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -35,9 +39,16 @@ private fun yellowFlagStateDisplayName(yellowFlagState: SessionYellowFlagState):
 
 @Composable
 internal fun YellowFlagStateContent(raceFlags: LmuWindowsRaceFlagsData?) {
-    if (raceFlags == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
-        return
+    val displayText =
+        if (raceFlags == null) {
+            stringResource(Res.string.debug_state_flag_info_unavailable)
+        } else {
+            yellowFlagStateDisplayName(raceFlags.yellowFlagState)
+        }
+    AnimatedContent(
+        targetState = displayText,
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+    ) { text ->
+        Text(text = text)
     }
-    Text(text = yellowFlagStateDisplayName(raceFlags.yellowFlagState))
 }
