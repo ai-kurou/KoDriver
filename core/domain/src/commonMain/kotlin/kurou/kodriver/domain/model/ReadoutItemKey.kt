@@ -222,6 +222,10 @@ sealed interface ReadoutItemKey {
                 override val value = "ace_windows_tyre_temperature"
                 override val supportsQueue = true
             }
+
+            data object OverheatWarning : TyreTemperature {
+                override val value = "ace_windows_tyre_temperature_overheat_warning"
+            }
         }
     }
 
@@ -264,6 +268,7 @@ sealed interface ReadoutItemKey {
                 AceWindows.Flag.RedYellowStripesFlag,
                 AceWindows.RemainingFuel.Root,
                 AceWindows.TyreTemperature.Root,
+                AceWindows.TyreTemperature.OverheatWarning,
             )
         }
 

@@ -32,8 +32,9 @@ data class AceWindowsNarratorReadoutDecision(
 /**
  * ACE の燃料残量・旗状態から、今回読み上げるべき音声イベントを決定する UseCase。
  *
- * [ReadoutItemKey.AceWindows.TyreTemperature.Root] は listPane 追加時点ではまだ判定ロジック未実装。
- * 読み上げ判定（キューのサブトグル・実際のイベント生成）は別PRで追加する。
+ * [ReadoutItemKey.AceWindows.TyreTemperature.Root] と、そのサブ項目
+ * [ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning] は detailPane 追加時点ではまだ
+ * 判定ロジック未実装。読み上げ判定（キューのサブトグル・実際のイベント生成）は別PRで追加する。
  */
 class DetermineAceWindowsNarratorReadoutUseCase {
     fun determineRemainingFuel(
