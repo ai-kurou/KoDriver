@@ -166,4 +166,8 @@ sealed interface SpeechEvent {
     data object AceWindowsRedYellowStripesFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
     }
+
+    data object AceWindowsTyreOverheat : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.TyreTemperature.Root
+    }
 }

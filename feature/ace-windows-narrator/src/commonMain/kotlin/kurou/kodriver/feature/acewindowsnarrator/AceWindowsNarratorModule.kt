@@ -101,6 +101,7 @@ private val aceWindowsEventToFile: Map<SpeechEvent, String> =
         SpeechEvent.AceWindowsCheckeredFlag to "files/checkered_flag.wav",
         SpeechEvent.AceWindowsOrangeCircleFlag to "files/orange_circle_flag.wav",
         SpeechEvent.AceWindowsRedYellowStripesFlag to "files/red_yellow_stripes_flag.wav",
+        SpeechEvent.AceWindowsTyreOverheat to "files/tyre_overheat.wav",
     )
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =

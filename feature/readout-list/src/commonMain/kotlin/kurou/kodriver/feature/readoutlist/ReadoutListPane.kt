@@ -186,7 +186,7 @@ private fun aceWindowsItemIcon(itemId: ReadoutItemKey.AceWindows): ImageVector =
     when (itemId) {
         is ReadoutItemKey.AceWindows.Flag -> Icons.Filled.Flag
         is ReadoutItemKey.AceWindows.RemainingFuel.Root -> Icons.Filled.LocalGasStation
-        is ReadoutItemKey.AceWindows.TyreTemperature.Root -> Icons.Filled.DeviceThermostat
+        is ReadoutItemKey.AceWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
     }
 
 private fun readoutItemIndex(

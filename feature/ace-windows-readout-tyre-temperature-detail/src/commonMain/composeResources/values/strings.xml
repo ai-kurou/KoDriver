@@ -5,4 +5,5 @@
     <string name="tyre_temperature_overheat_warning_chip">タイヤ過熱警告</string>
     <string name="tyre_temperature_high_threshold_subtitle">高温閾値設定</string>
     <string name="tyre_temperature_high_threshold_label">高温閾値: %1$s°C</string>
+    <string name="tyre_temperature_high_threshold_reset">デフォルトに戻す</string>
 </resources>
