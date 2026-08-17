@@ -26,4 +26,18 @@ class AceWindowsReadoutTyreTemperatureDetailPaneTest {
                     "ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
             ).assertIsDisplayed()
     }
+
+    @Test
+    fun `過熱警告カードのタイトルとチップと高温閾値設定が表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                AceWindowsReadoutTyreTemperatureDetailPaneContent()
+            }
+        }
+
+        rule.onNodeWithText("過熱警告").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ過熱警告").assertIsDisplayed()
+        rule.onNodeWithText("高温閾値設定").assertIsDisplayed()
+        rule.onNodeWithText("高温閾値: 95°C").assertIsDisplayed()
+    }
 }
