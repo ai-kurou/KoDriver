@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.Simulator
@@ -141,5 +142,37 @@ class DebugStateTyreCarcassTemperatureCardTest {
         rule.onNodeWithText("FR 96.0℃").assertIsDisplayed()
         rule.onNodeWithText("RL 97.0℃").assertIsDisplayed()
         rule.onNodeWithText("RR 98.0℃").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがACEの場合は4輪のカーカス温度を摂氏で表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsTyreCarcassTemperature =
+                                AceWindowsTyreCarcassTemperatureData(
+                                    wheels =
+                                        mapOf(
+                                            WheelIndex.FRONT_LEFT to 91.0,
+                                            WheelIndex.FRONT_RIGHT to 92.0,
+                                            WheelIndex.REAR_LEFT to 93.0,
+                                            WheelIndex.REAR_RIGHT to 94.0,
+                                        ),
+                                ),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤカーカス温度").assertIsDisplayed()
+        rule.onNodeWithText("FL 91.0℃").assertIsDisplayed()
+        rule.onNodeWithText("FR 92.0℃").assertIsDisplayed()
+        rule.onNodeWithText("RL 93.0℃").assertIsDisplayed()
+        rule.onNodeWithText("RR 94.0℃").assertIsDisplayed()
     }
 }

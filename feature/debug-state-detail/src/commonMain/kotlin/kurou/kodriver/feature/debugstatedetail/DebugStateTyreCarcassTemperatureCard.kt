@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -25,9 +26,15 @@ private val WHEEL_COLUMN_WIDTH = 110.dp
 internal fun TyreCarcassTemperatureContent(
     selectedSimulator: Simulator?,
     tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData?,
+    aceWindowsTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData?,
 ) {
-    val wheels = tyreCarcassTemperature?.wheels
-    if (selectedSimulator !is Simulator.LmuWindows || wheels == null) {
+    val wheels =
+        when (selectedSimulator) {
+            is Simulator.LmuWindows -> tyreCarcassTemperature?.wheels
+            is Simulator.AceWindows -> aceWindowsTyreCarcassTemperature?.wheels
+            is Simulator.Gt7Ps5, null -> null
+        }
+    if (wheels == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
     }
