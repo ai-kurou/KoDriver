@@ -1,11 +1,13 @@
 package kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail
 
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5TyreTemperatureEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5TyreTemperatureHighThresholdUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -15,7 +17,9 @@ import org.koin.dsl.module
  */
 val gt7Ps5ReadoutTyreTemperatureDetailModule =
     module {
-        viewModel { Gt7Ps5ReadoutTyreTemperatureDetailViewModel(get(), get(), get(), get()) }
+        viewModel {
+            Gt7Ps5ReadoutTyreTemperatureDetailViewModel(get(), get(), get(), get(), get(named(Simulator.Gt7Ps5.id)))
+        }
 
         factoryOf(::ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase)
         factoryOf(::ObserveGt7Ps5TyreTemperatureHighThresholdUseCase)
