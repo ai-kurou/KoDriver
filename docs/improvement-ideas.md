@@ -31,9 +31,4 @@
   **課題**: `shortcut = true` / `menu = true` / `perUserInstall = true` はjpackageの仕様上いずれもサイレントフラグであり、インストール実行時に自動でその挙動が固定されるだけで、ユーザーに選択させるダイアログは表示されない。ショートカット作成可否を選ばせるには別途 `--win-shortcut-prompt` が必要だが、Compose MultiplatformのGradle DSL(`org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask`)には対応するプロパティが存在せず、現状のDSLの範囲では実現できない。インストール範囲(全ユーザー/個人用)を選ばせる標準ダイアログもjpackage自体に用意されていない。
   **改善案**: Compose Multiplatformが `winShortcutPrompt` 等のDSLプロパティを将来追加した場合、または freeform引数差し込み等の代替手段が判明した場合に、MSIインストーラー上でショートカット作成可否をユーザーに選択させる機能の追加を検討する。
 
-## UI/UX
-
-- **対象**: `core/designsystem/src/commonMain/kotlin/kurou/kodriver/core/designsystem/DetailPaneCard.kt`
-  **課題**: `titleAlpha`・`dividerAlpha`・`bottomContentAlpha`（42〜44行目）は `checked` に応じて `1f` / `DISABLED_CONTENT_ALPHA`（0.38f）を即座に切り替え、`.alpha(...)`（100〜118行目）でそのまま適用しているため、`Switch` のON/OFF操作時にカード全体の不透明度が瞬時に切り替わりアニメーションがない。このコンポーネントは各detail画面（タイヤ摩耗・車両故障・車両接近など）から共通利用されているため、影響範囲が広い。
-  **改善案**: `animateFloatAsState` で `titleAlpha` 等をアニメーション化し、有効/無効切り替え時に滑らかに減光させる。
 
