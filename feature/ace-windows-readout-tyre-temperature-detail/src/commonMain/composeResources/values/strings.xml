@@ -1,4 +1,8 @@
 <resources>
     <string name="tyre_temperature_title">タイヤ温度</string>
     <string name="tyre_temperature_description">タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。</string>
+    <string name="tyre_temperature_overheat_warning_card_title">過熱警告</string>
+    <string name="tyre_temperature_overheat_warning_chip">タイヤ過熱警告</string>
+    <string name="tyre_temperature_high_threshold_subtitle">高温閾値設定</string>
+    <string name="tyre_temperature_high_threshold_label">高温閾値: %1$s°C</string>
 </resources>
