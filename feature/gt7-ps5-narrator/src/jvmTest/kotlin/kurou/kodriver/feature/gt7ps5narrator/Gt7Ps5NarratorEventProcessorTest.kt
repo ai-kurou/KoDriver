@@ -8,6 +8,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -298,6 +299,78 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `ログ保存に失敗しても次の読み上げは継続する`() =
+        runTest {
+            val spokenEvents = mutableListOf<SpeechEvent>()
+            var saveCount = 0
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(capture(spokenEvents), queue = false) } just Runs
+            val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 100L,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = sourceKey,
+                    telemetryJson = capture(slot<String>()),
+                )
+            } answers {
+                saveCount += 1
+                error("failed")
+            }
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = sourceKey,
+                    telemetryJson = capture(slot<String>()),
+                )
+            } answers { saveCount += 1 }
+            val processor = createProcessor()
+
+            processor.process(
+                sourceKey = sourceKey,
+                telemetry = telemetry(bestLapTimeMs = 60_000),
+                events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                readoutOrder = listOf(sourceKey),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+            )
+            processor.process(
+                sourceKey = sourceKey,
+                telemetry = telemetry(bestLapTimeMs = 59_000),
+                events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                readoutOrder = listOf(sourceKey),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+            )
+
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal, SpeechEvent.Gt7Ps5MyBestLapFormal),
+                spokenEvents,
+            )
+            assertEquals(2, saveCount)
+            verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 2) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 100L,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = sourceKey,
+                    telemetryJson = capture(slot<String>()),
+                )
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = sourceKey,
+                    telemetryJson = capture(slot<String>()),
                 )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
