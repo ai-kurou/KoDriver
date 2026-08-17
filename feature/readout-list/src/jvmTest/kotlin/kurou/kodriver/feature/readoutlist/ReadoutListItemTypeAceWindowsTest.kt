@@ -29,8 +29,11 @@ class ReadoutListItemTypeAceWindowsTest {
     }
 
     @Test
-    fun `ace_windows の tyre_temperature は detailPane未実装のため null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.TyreTemperature.Root))
+    fun `ace_windows の tyre_temperature は AceWindows_TyreTemperature を返す`() {
+        assertEquals(
+            ReadoutListItemType.AceWindows.TyreTemperature,
+            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.TyreTemperature.Root),
+        )
     }
 
     @Test
