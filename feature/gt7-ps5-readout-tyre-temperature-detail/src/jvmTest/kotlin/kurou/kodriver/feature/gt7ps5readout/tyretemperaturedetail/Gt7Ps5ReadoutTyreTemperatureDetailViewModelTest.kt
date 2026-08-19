@@ -18,11 +18,14 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5TyreTemperatureEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kotlin.test.AfterTest
@@ -36,6 +39,9 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
 
     @MockK
     private lateinit var repository: Gt7Ps5TyreTemperaturePreferencesRepository
+
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
 
     private val highThresholdFlow = MutableStateFlow(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
 
@@ -56,6 +62,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             observeHighThreshold = ObserveGt7Ps5TyreTemperatureHighThresholdUseCase(repository),
             saveEnabledState = SaveGt7Ps5TyreTemperatureEnabledStateUseCase(repository),
             saveHighThreshold = SaveGt7Ps5TyreTemperatureHighThresholdUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
     @Test
@@ -137,5 +144,21 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
                 repository.saveHighThresholdCelsius(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
             }
             confirmVerified(repository)
+        }
+
+    @Test
+    fun `onPreviewClickedを呼ぶとタイヤ過熱警告を読み上げる`() =
+        runTest {
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+            every { ttsEngine.speak(SpeechEvent.Gt7Ps5TyreOverheat, false) } returns Unit
+            val viewModel = createViewModel()
+
+            viewModel.onPreviewClicked()
+
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5TyreOverheat, false) }
+            confirmVerified(repository, ttsEngine)
         }
 }

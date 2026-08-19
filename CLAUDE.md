@@ -80,29 +80,16 @@ KoDriver/
 
 ### app:androidBenchmark の targetProjectPath は app 間依存の例外
 
-`app:androidBenchmark`（`com.android.test` モジュール）は `targetProjectPath = ":app:androidApp"` で `app:androidApp` を計装対象として参照する。これは Gradle の `implementation`/`api` 依存ではなく AGP 固有のテスト対象指定であり、`moduleGraphAssert` の対象外（`app:.*App` を含む `allowed` パターンにも含まれない）。
-
-AGP は 1 モジュールにつき 1 つの Android プラグインタイプ（application / library / test / dynamic-feature）しか適用できないため、`com.android.test` プラグインを `app:androidApp` 自体に同居させることはできない。Macrobenchmark はテスト APK と計測対象 APK を別プロセスとして起動して計測する仕組みのため、Baseline Profile 生成にはモジュールを分けた `targetProjectPath` 参照が構造的に必須（Google 公式の Baseline Profile モジュールテンプレートも同じ構成）。「app モジュール同士は依存しない」という原則の例外として、この参照のみ容認する（PR #1126）。
+`app:androidBenchmark`（`com.android.test` モジュール）は `targetProjectPath = ":app:androidApp"` で `app:androidApp` を計装対象として参照する。これは Gradle の `implementation`/`api` 依存ではなく AGP 固有のテスト対象指定であり、`moduleGraphAssert` の対象外（`app:.*App` を含む `allowed` パターンにも含まれない）。「app モジュール同士は依存しない」という原則の例外として、この参照のみ容認する（PR #1126）。技術的な背景は `app/androidBenchmark/README.md` を参照。
 
 ### 共有メモリ読み取りは Windows 専用
 `:core:windows-shared-memory` の `SharedMemoryReader` / `WindowsSharedMemoryReader` は `OpenFileMappingA` / `MapViewOfFile` を使用するため **Windows のみ**動作する。macOS / Linux ではシミュレーターが起動しないため `open()` が `false` を返し続ける（クラッシュはしない）。`:core:lmu-windows-data` と `:core:ace-windows-data` はこの共通基盤に依存し、それぞれのシム固有の構造体パースのみを実装する。
 
 ### Ktor サーバー
-`:server` は Windows 版デスクトップアプリと同一プロセスで起動し、`0.0.0.0:8080` で待ち受ける。WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。`/ws/<Simulator.id>/flags` は `ObserveLmuWindowsRaceFlagsUseCase` を通じて `LmuWindowsFlagRepository` を購読し、`LmuWindowsRaceFlagsData` を JSON として送信する。同一内容の連続値は送信しない。
+`:server` は Windows 版デスクトップアプリと同一プロセスで起動し、`0.0.0.0:8080` で待ち受ける。WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。現時点では認証・暗号化を実装していないため、信頼できる LAN 内でのみ使用すること。`KoDriverServer.start()` は mDNS（`_kodriver._tcp.local.`）でサーバーを LAN 内へ広告し、`:feature:other-server-ip-detail` がそれを検出して接続先 IP の自動入力に使う。エンドポイント仕様・CSWSH対策・mDNS広告の詳細は `server/README.md` を参照。
 
-LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws/<Simulator.id>/flags` 等へ接続する。外部端末から接続するには Windows ファイアウォールで TCP 8080 番ポートの受信を許可する必要がある場合がある。現時点では認証・暗号化を実装していないため、信頼できる LAN 内でのみ使用すること。
-
-`server/src/main/kotlin/kurou/kodriver/TelemetryWebSocket.kt` の `telemetryWebSocket` は、WebSocket 接続に `Origin` ヘッダが含まれる場合は `CloseReason.Codes.VIOLATED_POLICY` で切断する。WebSocket はブラウザの CORS（Same-Origin Policy）の対象外のため、LAN 内の別端末で開かれた悪意あるページの JavaScript から接続されてテレメトリ情報を読み取られる恐れがある（CSWSH: Cross-Site WebSocket Hijacking）。Android アプリ等のネイティブクライアントは通常 `Origin` ヘッダを送らないため接続に影響しない。
-
-`KoDriverServer.start()` は Ktor サーバー起動と同時に `KoDriverServiceAdvertiser`（`javax.jmdns.JmDNS` によるラッパー）でサービスタイプ `_kodriver._tcp.local.`（`core:domain` の `MdnsConstants.KO_DRIVER_SERVICE_TYPE` として `:server` と `:feature:other-server-ip-detail`（JVM 実装）から共有）を LAN 内へ mDNS 広告する。インスタンス名にはホスト名を使用し、複数台の Windows PC が同一 LAN 上で起動している場合でも Android 側がホスト名で区別できるようにしている。ホスト名が FQDN（ドット区切り）で返る環境向けに、ドット以降を除去してから使用する。`start()` は呼び出しごとに既存の `JmDNS` インスタンスを `stop()` してから新規生成するため、多重起動してもソケットはリークしない。mDNS の登録・解除に失敗しても（`IOException`）ログ出力のみで Ktor サーバー自体の起動・停止は妨げない。
-
-`:feature:other-server-ip-detail` の接続先 IP 入力画面（detailPane）は、画面が表示されている間だけ `WindowsServerDiscovery`（プラットフォーム実装: JVM は JmDNS、Android は `NsdManager`）で上記の mDNS 広告を検出する。`OtherServerIpDetailViewModel` は検出結果を `SharingStarted.WhileSubscribed` で `uiState` の購読に連動させており、アプリ起動時ではなく detailPane 表示中のみ検出が動作する。検出できた場合はホスト名・IP アドレスを選べるダイアログを自動表示し、「選択する」で選択した IP アドレスを入力欄へ自動入力する。
-
-### TimingData のラップタイム
-`LmuWindowsMapper` は Scoring セグメントのプレイヤー車両からラップタイム系フィールド（`currentLapTimeMs`, `lastLapTimeMs`, `bestLapTimeMs`, `sector1Ms`, `sector1And2Ms`）を取得する。Scoring のプレイヤー車両が見つからない場合は `0L` にフォールバックする。
-
-### オフセット情報
-`LmuWindowsMapper.kt` のコメントに pyLMUSharedMemory の ctypes レイアウト（`_pack_=4`）を記載済み。
+### LMU Windows共有メモリのパース詳細
+`LmuWindowsMapper` のラップタイム系フィールドの扱い（Scoringのプレイヤー車両フォールバック等）、車両クラス名、共有メモリのオフセット情報は `core/lmu-windows-data/README.md` を参照。
 
 ### ReadoutItemKey の配線（listPane / detailPane とNarratorの読み上げ判定の一致）
 `ReadoutItemKey` は、読み上げ一覧画面（listPane）のトップレベルの項目スイッチと、各機能の詳細画面（detailPane）内のサブトグルの両方で使われる共通のキー空間である。listPane のスイッチは「その項目をNarratorで読み上げるかどうか」に一致する仕様であり、detailPane のサブトグルは「その項目内のどのイベントを読み上げるか」を絞り込む仕様である。
@@ -121,14 +108,7 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 
 ### list/detail ペイン切り替えの Navigation 3 パターン
 
-`ReadoutContent.kt`（`feature:readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）は、`Material3 Adaptive` の `ListDetailPaneScaffold` と並行して、Navigation 3 の `NavBackStack<NavKey>` を「現在どちらのペインを表示しているか」の状態として保持する共通パターンを使う。新しく list/detail 構成の画面を追加する場合は、これらの実装（`XxxNavigationState.kt` とその `XxxNavigationStateTest.kt`）を参照すること。
-
-- `internal enum class XxxPaneDestination : NavKey { List, Detail }` でペインの宛先を定義する。
-- `internal class XxxNavigationState(val backStack: NavBackStack<NavKey>)` が `current`（`backStack.lastOrNull() as? XxxPaneDestination ?: XxxPaneDestination.List`）と `navigateTo(destination)`（現在と異なる場合のみ `clear()` してから `add()` する置き換え）を提供する。
-- `@Composable internal fun rememberXxxNavigationState(initial: XxxPaneDestination = XxxPaneDestination.List)` は `remember { XxxNavigationState(NavBackStack(initial)) }` で生成する。**`rememberSaveable` は使わない**（後述）。
-- 呼び出し側（`XxxContent.kt`）では `navigationState` の `initial` を ViewModel の `uiState.selectedXxx` から導出し、`LaunchedEffect(uiState.selectedXxx)` で `uiState.selectedXxx` の変化のたびに `navigationState.navigateTo(...)` を呼んで同期したうえで、その結果（`navigationState.current`）を使って `ListDetailPaneScaffoldRole` へ `navigator.navigateTo(...)` する。詳細ペインの実際の表示内容は `navigationState.current` ではなく `uiState.selectedXxx` を直接 `let` で分岐して描画する。
-
-**`rememberSaveable`/`Saver` を使わない理由**: 選択状態の唯一の正（`_selectedItem` 等）は各 ViewModel 内のプレーンな `MutableStateFlow` であり、`SavedStateHandle` や DataStore に永続化されていない。そのため `LaunchedEffect(uiState.selectedXxx)` は初回コンポジションでも必ず一度発火し、`uiState.selectedXxx`（プロセス再生成後は常に未選択）に基づいて `navigationState` を無条件に上書きする。`rememberSaveable` で `navigationState` 側だけを復元しても、直後にこの同期で上書きされるため実質的に意味を持たない。選択状態自体の永続化が必要になった場合は、まず ViewModel 側（`SavedStateHandle` 等）で対応すること。
+`ReadoutContent.kt`（`feature:readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）は、`Material3 Adaptive` の `ListDetailPaneScaffold` と並行して、Navigation 3 の `NavBackStack<NavKey>` を「現在どちらのペインを表示しているか」の状態として保持する共通パターンを使う。新しく list/detail 構成の画面を追加する場合は、これらの実装（`XxxNavigationState.kt` とその `XxxNavigationStateTest.kt`）を参照すること。パターンの詳細・`rememberSaveable` を使わない理由は [`docs/list-detail-navigation-pattern.md`](docs/list-detail-navigation-pattern.md) を参照。
 
 ### 実装前の類似コード確認
 
@@ -241,17 +221,16 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 `:app:webApp` は Gradle ビルド設定のみで独自機能が未実装のため、現在はテスト・ビルド確認の対象外。
 
-GitHub Actions ワークフロー:
+GitHub Actions ワークフロー概要（詳細な挙動・権限設計は [`docs/ci-workflows.md`](docs/ci-workflows.md) を参照）:
 
-- `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行（`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行）。同一 PR に新しいコミットが追加された場合は、実行中の古い CI をキャンセルする。`desktop-screenshot-test-verify` / `android-screenshot-test-verify`（`_screenshot-test-verify.yml` を呼び出す）は、まず verify を実行し、失敗した場合のみ golden 画像を再記録してコミット・プッシュしたうえでジョブを失敗させる
-- `on-main-merge.yml`: main へのマージ時に実行。`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行する。`dokka-pages` ジョブは Dokka（`./gradlew :dokkaGenerate`）で API ドキュメントを生成し、GitHub Pages（`github-pages` environment）へ自動デプロイする。ドキュメント本体（`docs/api/`）はコミットせず、CI 実行のたびに再生成する
-- `_build-android-release.yml`: 署名付き Android APK をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。ファイル名・表示名を `_` で始め、Actions の実行一覧では手動起動対象として表示されないようにしている。`ref` 入力でビルド対象のブランチ・タグ・コミットを指定する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
-- `_build-windows-msi.yml`: Windows MSI をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。`_build-android-release.yml` と同様に `ref` 入力でビルド対象を指定し、`gradle.properties` の `appVersion` を出力する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
-- `build-apps.yml`: `workflow_dispatch` で起動し、Android APK と Windows MSI を並列にビルドする。Android APK のビルドは `_build-android-release.yml`、Windows MSI のビルドは `_build-windows-msi.yml` を呼び出す
-- `release-apps.yml`: 手動でリリースする際に実行。まず `_e2e-android-maestro.yml`（`ref: main`）を実行し、成功した場合のみバージョンバンプ・MSI/APK ビルド・リリース作成に進む。バージョンバンプ後、`generate-baseline-profile` ジョブが Android エミュレータ上で `./gradlew :app:androidApp:generateReleaseBaselineProfile` を実行して `baseline-prof.txt` を再生成し artifact としてアップロードし、`commit-baseline-profile` ジョブがそれをダウンロードして差分があれば main へコミット・プッシュする（差分がなければコミットしない）。ジョブを分けているのは、main へ push 可能な `GH_PAT` を、サードパーティ Action（`reactivecircus/android-emulator-runner`）や任意の Gradle ビルド実行と同じジョブに同居させない（該当コードが侵害された場合の `GH_PAT` 漏洩・不正 push を避ける）ため。両ジョブとも `permissions` を明示（`generate-baseline-profile` は `contents: read` のみ、`commit-baseline-profile` は `contents: write`）し、`commit-baseline-profile` の `checkout` は `persist-credentials: false` としたうえで push 時のみ `GH_TOKEN` を使って認証ヘッダを都度指定する（zizmor の `artipacked`: チェックアウトした認証情報がジョブ内に永続化されたままになるリスクを避けるため）。Android APK のビルド（`_build-android-release.yml`）もこの再生成後の main を対象に `permissions: contents: read` で実行され、Windows MSI のビルド（`_build-windows-msi.yml`）はバージョンバンプ後すぐに並行して実行される
-- `_e2e-android-maestro.yml`: `_build-android-release.yml` で署名付き APK をビルドし、Android エミュレータ上で Maestro（`.maestro/tap-bottom-tabs.yaml`）を実行してボトムナビゲーションの各タブ（読み上げ・ログ・その他）をタップする E2E テスト。`release-apps.yml` から呼び出されるほか、Actions の画面から `ref` を指定して手動実行できる
-- `record-golden-images.yml`: `workflow_dispatch` に加え、PR に `record-golden-images` ラベルが付与された時にも起動し、PR のブランチに対して golden 画像（Roborazzi スクリーンショット）を再記録してコミットする。同一ブランチで新しい実行が開始された場合は、実行中の古い記録処理をキャンセルする
-- `nightly-todo.yml`: 毎日 JST 午前3時ごろ（`workflow_dispatch` でも手動実行可）に起動する。JST の日付・曜日をシェル側で明示的に算出したうえで、Claude Code CLI（`CLAUDE_CODE_OAUTH_TOKEN` シークレットで認証、Pro/Max サブスクリプション枠を使用）に `docs/nightly-todo-list.md` の「毎晩実行する項目」とその曜日の「曜日ローテーション項目」を調査させ、`docs/improvement-ideas.md` の編集権限のみを与える（`Edit`/`Write` ツールを同ファイルに限定し、`git`/`gh` 操作の権限は与えない）。追記前には `docs/resolved-improvement-ideas.md`（対応済み改善案の1行ログ、読み取り専用）も確認させ、過去に対応済みの内容を重複して追記しないようにする。Claude Code の最終出力（各項目の確認内容・追記有無の判断理由）は `nightly-todo-summary.txt` に保存され、下書き PR の説明欄に転記される（改善案の追記が無かった夜でも、何を調査してなぜ追記しなかったかを PR 上で確認できるようにするため）。Claude Code 実行後、ワークフロー側で `docs/improvement-ideas.md` 以外が変更されていないことを検証してから、ブランチ作成・コミット・プッシュ・下書き PR 作成をワークフローの固定処理として行う（`docs/improvement-ideas.md` の変更は事前承認が必要という CLAUDE.md のルールを守るため、直接 main には書き込まない）。GitHub への操作には `GH_PAT` シークレットを使用する（`GITHUB_TOKEN` で作成した PR は後続の CI ワークフローをトリガーしないため）
+- `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行
+- `on-main-merge.yml`: main へのマージ時に ktlint 検証・API ドキュメント自動デプロイを実行
+- `_build-android-release.yml` / `_build-windows-msi.yml`: 署名付き Android APK / Windows MSI をビルドする再利用可能ワークフロー（`workflow_call` 専用）
+- `build-apps.yml`: 手動起動で Android APK と Windows MSI を並列ビルド
+- `release-apps.yml`: 手動リリース時に E2E テスト・バージョンバンプ・ビルド・Baseline Profile 再生成・リリース作成を実行
+- `_e2e-android-maestro.yml`: Maestro によるボトムナビゲーション E2E テスト
+- `record-golden-images.yml`: golden 画像（Roborazzi スクリーンショット）の再記録
+- `nightly-todo.yml`: 毎晩 `docs/improvement-ideas.md` への追記候補を調査する下書き PR を作成
 
 ---
 
@@ -327,8 +306,7 @@ GitHub Actions ワークフロー:
    - GitHub Actions のスクリーンショットテストは集約タスクを使い、モジュール追加のたびに workflow を変更しない構成を維持する。
 4. 完了前
    - 変更範囲に応じたスクリーンショットテストを実行する。
-   - `./gradlew preMergeCheck` を必ず実行する（detekt・assertModuleGraph・全ユニットテスト・両アプリのビルド・デスクトップ統合テストを含む）。
-   - `CLAUDE.md`・`README.md`・`docs/` 以下のドキュメント更新要否を確認する。
+   - 「[コード変更時の必須確認](#コード変更時の必須確認)」を実行する。
 5. PR 作成後
    - GitHub checks / Codacy / Actions の結果を確認し、指摘があれば修正する。
    - PR のタイトルと説明が実装内容を正しく表していることを確認する。

@@ -86,4 +86,21 @@ class Gt7Ps5ReadoutTyreTemperatureDetailPaneTest {
 
         assertEquals(true, resetCalled)
     }
+
+    @Test
+    fun `チップをタップするとonPreviewClickedが呼ばれる`() {
+        var previewClicked = false
+        rule.setContent {
+            KoDriverTheme {
+                Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
+                    uiState = Gt7Ps5ReadoutTyreTemperatureDetailUiState(overheatWarningEnabled = true),
+                    onPreviewClicked = { previewClicked = true },
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ過熱警告").performClick()
+
+        assertEquals(true, previewClicked)
+    }
 }

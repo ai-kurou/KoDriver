@@ -358,14 +358,6 @@ class ApplicationTest {
                     install(WebSockets)
                 }.webSocket("/ws/lmu_windows/flags") {
                     close()
-                    // close() はクローズフレームの送信のみで完了するため、クロージングハンドシェイクの
-                    // 完了（サーバーからのクローズフレーム受信）を待ってからブロックを抜けることで、
-                    // サーバー側へ切断が伝わるまでの実ネットワークI/Oのばらつきによるflakyさを減らす。
-                    // サーバー側が何らかの理由でクローズフレームを返さない場合にテストがハングしないよう、
-                    // withTimeoutで保護する。
-                    withTimeout(1_000) {
-                        closeReason.await()
-                    }
                 }
 
             // クライアント切断からサーバー側の送信Flowキャンセルまでは実際のネットワーク往復を伴うため、

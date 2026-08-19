@@ -17,6 +17,14 @@ Scoring セグメントの `mVehicleClass` (char[32]、オフセット +200) は
 
 参照: `LmuWindowsMapper.readVehicleClassName`, `LmuWindowsVehicleClassData`
 
+## TimingData のラップタイム
+
+`LmuWindowsMapper` は Scoring セグメントのプレイヤー車両からラップタイム系フィールド（`currentLapTimeMs`, `lastLapTimeMs`, `bestLapTimeMs`, `sector1Ms`, `sector1And2Ms`）を取得する。Scoring のプレイヤー車両が見つからない場合は `0L` にフォールバックする。
+
+## 共有メモリのオフセット情報
+
+`LmuWindowsMapper.kt` のコメントに pyLMUSharedMemory の ctypes レイアウト（`_pack_=4`）を記載済み。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

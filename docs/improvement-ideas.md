@@ -29,19 +29,35 @@
   **課題**: PR #1158（Sourcery指摘）で判明。高温しきい値スライダーの範囲定数（`90f`〜`110f`）が3つのdetail画面それぞれに `private const val` として重複定義されている。デフォルト値自体は既に `core:domain` の `*Defaults.kt` に集約済みだが、スライダーの上下限は各UI層に個別定義されたまま。
   **改善案**: スライダーの上下限もドメイン層の仕様値（`XXX_DEFAULT` と同様の命名規則）として `core:domain` に集約し、シミュレーター間で一貫させる。ただし3機能は意図的に独立実装を維持する方針（本ファイル「NarratorViewModelは共通化しない」）もあるため、UIコンポーネント自体を共通化するのではなく定数の参照元だけを揃える方向で検討する。
 
+## UI/UX
+
+- **対象**: `ReadoutContent.kt`（`feature:readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）の `ListDetailPaneScaffold`／画面幅判定まわり
+- **課題**: Jetpack Compose 2026年4月リリース（Compose 1.11.0系）で追加された宣言的な `MediaQuery` API（`WindowSizeClass` の手動購読・分岐に代わり、ウィンドウ状態に応じた宣言的なクエリ記述が可能）をまだ利用していない。現状は `rememberListDetailPaneScaffoldNavigator` 等の既存の分岐ロジックで賄っている。
+- **改善案**: プロジェクトが依存する Compose Multiplatform / Material3 Adaptive のバージョンで `MediaQuery` API が利用可能になった際、list/detailペインの表示切り替え判定を簡潔化できないか調査する。参考: https://android-developers.googleblog.com/2026/04/jetpack-compose-april-2026-updates.html
+
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)
   **課題**: `shortcut = true` / `menu = true` / `perUserInstall = true` はjpackageの仕様上いずれもサイレントフラグであり、インストール実行時に自動でその挙動が固定されるだけで、ユーザーに選択させるダイアログは表示されない。ショートカット作成可否を選ばせるには別途 `--win-shortcut-prompt` が必要だが、Compose MultiplatformのGradle DSL(`org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask`)には対応するプロパティが存在せず、現状のDSLの範囲では実現できない。インストール範囲(全ユーザー/個人用)を選ばせる標準ダイアログもjpackage自体に用意されていない。
   **改善案**: Compose Multiplatformが `winShortcutPrompt` 等のDSLプロパティを将来追加した場合、または freeform引数差し込み等の代替手段が判明した場合に、MSIインストーラー上でショートカット作成可否をユーザーに選択させる機能の追加を検討する。
 
-## UI/UX
+## ライブラリ
 
-- **対象**: `core/designsystem/src/commonMain/kotlin/kurou/kodriver/core/designsystem/DetailPaneCard.kt`
-  **課題**: `titleAlpha`・`dividerAlpha`・`bottomContentAlpha`（42〜44行目）は `checked` に応じて `1f` / `DISABLED_CONTENT_ALPHA`（0.38f）を即座に切り替え、`.alpha(...)`（100〜118行目）でそのまま適用しているため、`Switch` のON/OFF操作時にカード全体の不透明度が瞬時に切り替わりアニメーションがない。このコンポーネントは各detail画面（タイヤ摩耗・車両故障・車両接近など）から共通利用されているため、影響範囲が広い。
-  **改善案**: `animateFloatAsState` で `titleAlpha` 等をアニメーション化し、有効/無効切り替え時に滑らかに減光させる。
+- **対象**: `gradle/libs.versions.toml` の `androidx-lifecycle`（現在 `2.10.0`）
+- **課題**: 2026-08-18時点のWeb調査で、AndroidX Lifecycle `2.11.0` が安定版としてリリース済みの可能性が高いことを確認した（`2.11.0-beta02` の変更点として `rememberViewModelStoreNavEntryDecorator` の新オーバーロード追加等が確認できる）。ただし検索結果だけでは正式リリース日・stable channel反映の断定はできなかった。
+- **改善案**: https://developer.android.com/jetpack/androidx/releases/lifecycle で `2.11.0` が stable channel に載っているかを確認し、致命的な互換性問題がなければ `androidx-lifecycle` を更新する（CLAUDE.mdの「ライブラリバージョン管理」方針）。あわせて `2.11.0` は Compose UI 1.7.0+ を要求し、AGPも `9.2.0` 以上が前提とされる点（現在のAGPは `9.3.1` なので条件は満たす）を確認する。
+
+## リファクタリング
+
+- **対象**: `feature/gt7-ps5-narrator/.../Gt7Ps5NarratorEventProcessor.kt`・`feature/ace-windows-narrator/.../AceWindowsNarratorEventProcessor.kt`・`feature/lmu-windows-narrator/.../LmuWindowsNarratorEventProcessor.kt` の `buildTelemetryLogJson`/`toJsonString` 系関数
+  **課題**: 3つの `XxxNarratorEventProcessor` それぞれに、テレメトリログをJSON文字列化するための `buildTelemetryLogJson`/`toJsonString` 相当の関数がほぼ同一の実装（doc commentも含め）で存在する。CLAUDE.mdの「NarratorViewModelは共通化しない」はシミュレーターごとに判定対象・購読UseCase群が異なるViewModel本体を対象にした方針であり、この部分は判定ロジックと無関係な「テレメトリログのJSONシリアライズ」という単純な処理のため、同方針の対象外と考えられる。
+  **改善案**: `core:narrator`（WAV再生の共通基盤が既に存在するモジュール）に、テレメトリログJSON化の共通ヘルパーを切り出せないか検討する。各シミュレーター固有のログ項目は呼び出し側でデータクラス化して渡す形にすれば、シリアライズ処理自体は共通化できる可能性がある。
 
 ## テスト
+
+- **対象**: `server/src/test/kotlin/kurou/kodriver/ApplicationTest.kt` の `` `フラッグWebSocketはクライアント切断時に送信Flowをキャンセルする` ``
+  **課題**: PR #1121で `close()` 呼び出し後に `withTimeout(1_000) { closeReason.await() }` を追加してクロージングハンドシェイクの完了を待つ対策を入れたが、その後も同テストがflakyになることが確認された（対策自体は本PRで巻き戻し済み）。根本原因（クライアント切断からサーバー側の送信Flowキャンセルまでの実際のネットワーク往復に伴うタイミング依存）は未調査。
+  **改善案**: `withTimeout(5_000) { repository.cancelled.await() }` 側のタイムアウト延長や、テストの構造自体（実ネットワークI/Oを伴うtestApplication構成）の見直しなど、別のアプローチでのflaky対策を検討する。
 
 - **対象**: `AceWindowsReadoutTyreTemperatureDetailPane` のUIテスト（`feature:ace-windows-readout-tyre-temperature-detail`）
   **課題**: PR #1158（Sourcery指摘）で判明。UIテストが日本語の表示文字列をハードコードした値でアサートしており、将来文言を変更した際にテストが壊れやすい。
