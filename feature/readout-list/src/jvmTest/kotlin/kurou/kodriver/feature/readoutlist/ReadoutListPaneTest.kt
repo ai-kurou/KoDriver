@@ -138,6 +138,34 @@ class ReadoutListPaneTest {
     }
 
     @Test
+    fun `読み上げ開始音トグルはクリックするたびにローカルのON_OFF状態を反転する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                        ),
+                    onSimulatorSelected = {},
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+
+        val startSoundToggle =
+            rule.onNodeWithTag("readoutListStartSoundTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+
+        startSoundToggle.assertIsEnabled().performClick()
+        startSoundToggle.performClick()
+    }
+
+    @Test
     fun `スイッチとキュー追加トグルの外側タップ領域は項目タップではなくON_OFF変更コールバックを呼ぶ`() {
         val readoutChanges = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
         val queueChanges = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
