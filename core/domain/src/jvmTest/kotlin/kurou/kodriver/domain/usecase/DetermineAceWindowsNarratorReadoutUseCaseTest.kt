@@ -4,10 +4,13 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Suppress("TooManyFunctions")
 class DetermineAceWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineAceWindowsNarratorReadoutUseCase()
 
@@ -265,9 +268,168 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         }
     }
 
+    @Test
+    fun `いずれかのタイヤが閾値以上になるとAceWindowsTyreOverheatを返す`() {
+        val decision =
+            useCase.determineTyreTemperatureOverheat(
+                state = AceWindowsNarratorState(),
+                data = tyreCarcassTemperature(fl = 95.0),
+                settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+            )
+
+        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `高温状態が継続しても再度読み上げない`() {
+        val decision =
+            useCase.determineTyreTemperatureOverheat(
+                state = AceWindowsNarratorState(tyreOverheating = true),
+                data = tyreCarcassTemperature(fl = 95.0),
+                settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `全タイヤが閾値以下に戻ると再度読み上げ可能になる`() {
+        val overheatState =
+            useCase
+                .determineTyreTemperatureOverheat(
+                    state = AceWindowsNarratorState(),
+                    data = tyreCarcassTemperature(fl = 95.0),
+                    settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+                ).state
+
+        val cooledState =
+            useCase
+                .determineTyreTemperatureOverheat(
+                    state = overheatState,
+                    data = tyreCarcassTemperature(fl = 85.0),
+                    settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+                ).state
+
+        val reovertDecision =
+            useCase.determineTyreTemperatureOverheat(
+                state = cooledState,
+                data = tyreCarcassTemperature(fl = 95.0),
+                settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+            )
+
+        assertEquals(false, cooledState.tyreOverheating)
+        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat), reovertDecision.events)
+    }
+
+    @Test
+    fun `タイヤ温度項目が無効なら読み上げない`() {
+        val decision =
+            useCase.determineTyreTemperatureOverheat(
+                state = AceWindowsNarratorState(),
+                data = tyreCarcassTemperature(fl = 95.0),
+                settings =
+                    tyreTemperatureSettings(
+                        highThresholdCelsius = 90,
+                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.TyreTemperature.Root to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `過熱警告スイッチがOFFの場合は読み上げられない`() {
+        val decision =
+            useCase.determineTyreTemperatureOverheat(
+                state = AceWindowsNarratorState(),
+                data = tyreCarcassTemperature(fl = 95.0),
+                settings =
+                    tyreTemperatureSettings(
+                        highThresholdCelsius = 90,
+                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `閾値ちょうどは高温扱い`() {
+        val decision =
+            useCase.determineTyreTemperatureOverheat(
+                state = AceWindowsNarratorState(),
+                data = tyreCarcassTemperature(fl = 90.0),
+                settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+            )
+
+        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat), decision.events)
+    }
+
+    @Test
+    fun `ヒステリシス範囲内に下がっただけでは過熱状態を維持し再度読み上げない`() {
+        val overheatState =
+            useCase
+                .determineTyreTemperatureOverheat(
+                    state = AceWindowsNarratorState(),
+                    data = tyreCarcassTemperature(fl = 95.0),
+                    settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+                ).state
+
+        val decision =
+            useCase.determineTyreTemperatureOverheat(
+                state = overheatState,
+                data = tyreCarcassTemperature(fl = 87.0),
+                settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+            )
+
+        assertEquals(true, decision.state.tyreOverheating)
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
+    fun `ヒステリシス下限まで下がると再度読み上げ可能になる`() {
+        val overheatState =
+            useCase
+                .determineTyreTemperatureOverheat(
+                    state = AceWindowsNarratorState(),
+                    data = tyreCarcassTemperature(fl = 95.0),
+                    settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+                ).state
+
+        val cooledState =
+            useCase
+                .determineTyreTemperatureOverheat(
+                    state = overheatState,
+                    data = tyreCarcassTemperature(fl = 85.0),
+                    settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+                ).state
+
+        assertEquals(false, cooledState.tyreOverheating)
+    }
+
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = remainingPercent)
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
+
+    private fun tyreCarcassTemperature(fl: Double) =
+        AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to fl))
+
+    private fun tyreTemperatureSettings(
+        highThresholdCelsius: Int,
+        enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+    ) = AceWindowsNarratorReadoutSettings(
+        enabledStates =
+            mapOf(
+                ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
+                ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to true,
+            ) + enabledOverrides,
+        remainingFuelThresholdPercentage = 0,
+        tyreTemperatureHighThresholdCelsius = highThresholdCelsius,
+    )
 
     private fun settings(
         thresholdPercentage: Int,
