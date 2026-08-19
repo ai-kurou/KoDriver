@@ -92,19 +92,7 @@ KoDriver/
 `LmuWindowsMapper` のラップタイム系フィールドの扱い（Scoringのプレイヤー車両フォールバック等）、車両クラス名、共有メモリのオフセット情報は `core/lmu-windows-data/README.md` を参照。
 
 ### ReadoutItemKey の配線（listPane / detailPane とNarratorの読み上げ判定の一致）
-`ReadoutItemKey` は、読み上げ一覧画面（listPane）のトップレベルの項目スイッチと、各機能の詳細画面（detailPane）内のサブトグルの両方で使われる共通のキー空間である。listPane のスイッチは「その項目をNarratorで読み上げるかどうか」に一致する仕様であり、detailPane のサブトグルは「その項目内のどのイベントを読み上げるか」を絞り込む仕様である。
-
-`ReadoutItemKey` を新設・変更する際は、以下の両方を必ず確認すること。
-
-1. listPane / detailPane のスイッチがどの `DataStore`（`ReadoutPreferencesRepository` か、各機能固有の Preferences Repository か）に保存されるか
-2. その `ReadoutItemKey` が実際に Narrator の読み上げ判定（LMU: `LmuWindowsNarratorViewModel` の `enabledStates` マージ処理と `DetermineLmuWindowsNarratorReadoutUseCase`、GT7: `Gt7Ps5NarratorViewModel` とその判定処理）で参照されているか
-
-`ReadoutItemKey` は複数の独立した `DataStore` に同名キーとして存在しうるため、片方だけ実装してもう片方（Narrator側の実際のゲート処理）への配線を忘れると、スイッチが存在するのに効果がない死んだ実装になる。過去に以下のバグが発生している。
-
-- #464: タイヤ温度・自己ベストラップのデフォルト無効状態がNarratorに未反映だった
-- #472: listPane の `VehicleDamage` スイッチが `DetermineLmuWindowsNarratorReadoutUseCase.determineVehicleDamage` から参照されておらず、子項目 `Overheat` のみでゲートされていたため、`VehicleDamage` をOFFにしても過熱警告の読み上げが止まらなかった
-
-新しい `ReadoutItemKey` を読み上げ判定ロジックに追加する場合は、対応する `Determine*NarratorReadoutUseCase` のテストに「その項目を無効にした場合は読み上げられない」ケースを必ず追加すること。
+`ReadoutItemKey` を新設・変更する際は、listPane/detailPaneのスイッチの保存先 `DataStore` と、Narrator側の実際の読み上げ判定ロジックへの配線が一致しているかを必ず確認すること。片方だけ実装すると、スイッチが存在するのに効果がない死んだ実装になる（過去に #464, #472 のバグが発生）。詳細・確認手順は [`docs/readout-item-key-wiring.md`](docs/readout-item-key-wiring.md) を参照。
 
 ### list/detail ペイン切り替えの Navigation 3 パターン
 
@@ -126,13 +114,7 @@ KoDriver/
 
 ### NarratorViewModel は共通化しない
 
-`Gt7Ps5NarratorViewModel`（`feature:gt7-ps5-narrator`）・`LmuWindowsNarratorViewModel`（`feature:lmu-windows-narrator`）・`AceWindowsNarratorViewModel`（`feature:ace-windows-narrator`）は、いずれも「テレメトリFlowを購読し、`Determine*NarratorReadoutUseCase` で読み上げ判定した結果を `NarratorEventProcessor` 系のクラスへ渡す」という共通の骨格を持つが、シミュレーターごとに `ReadoutItemKey` の種類・判定対象のテレメトリ項目・購読するUseCase群が異なる。この骨格の類似を理由に、共通ViewModel基底やシミュレーター横断の共通購読ロジックへ切り出すことはしない。
-
-- 各featureモジュールの独立性（本ファイルの「[モジュール構成](#モジュール構成)」を参照）を優先する。共通基底に切り出すと、シミュレーターごとに異なるUseCase群・判定対象・`ReadoutItemKey`を型パラメータやコールバック注入で表現することになり、素直な `flatMapLatest`/`onEach` の配線より可読性が落ちやすい。
-- シミュレーターが増える・読み上げ項目が増えるたびに各NarratorViewModelの構造が微妙にズレていくため（[ReadoutItemKey の配線](#readoutitemkey-の配線listpane--detailpane-とnarratorの読み上げ判定の一致)も参照）、無理に共通基底へ合わせ込むと将来の項目追加のたびに歪みが生じやすい。
-- 各NarratorViewModelを独立させておくことで、モックが単純なテストのまま保てる。共通基底化すると基底クラス側のテストとサブクラス固有のテストの両方が必要になり、テストの複雑さが増す。
-
-新しいシミュレーター向けのNarratorViewModelを実装する際は、既存の類似ViewModel（[実装前の類似コード確認](#実装前の類似コード確認)を参照）の構成をそのままコピーして書いてよい。
+`Gt7Ps5NarratorViewModel`・`LmuWindowsNarratorViewModel`・`AceWindowsNarratorViewModel` は共通の骨格を持つが、シミュレーターごとに `ReadoutItemKey` の種類・判定対象のテレメトリ項目・購読するUseCase群が異なるため、共通ViewModel基底やシミュレーター横断の共通購読ロジックへは切り出さない。理由・詳細は [`docs/narrator-viewmodel-design.md`](docs/narrator-viewmodel-design.md) を参照。新しいシミュレーター向けのNarratorViewModelを実装する際は、既存の類似ViewModel（「実装前の類似コード確認」を参照）の構成をそのままコピーして書いてよい。
 
 ### ユーザー設定のデフォルト値
 
@@ -234,22 +216,6 @@ GitHub Actions ワークフロー概要（詳細な挙動・権限設計は [`do
 
 ---
 
-## 主要ライブラリバージョン（libs.versions.toml）
-
-| ライブラリ | バージョン |
-|---|---|
-| Kotlin | 2.4.0 |
-| Compose Multiplatform | 1.11.1 |
-| JNA | 5.19.1 |
-| kotlinx-coroutines | 1.11.0 |
-| kotlinx-datetime | 0.7.1 |
-| androidx-lifecycle | 2.10.0 |
-| Ktor | 3.5.2 |
-| Dokka | 2.2.0 |
-| ktlint | 1.8.0 |
-
----
-
 ## Git 操作ルール
 
 - **feature ブランチでのコミット・プッシュ・PR の作成は、ユーザーの明示的な指示を待たずに自発的に実行してよい。** `start-implementation` などのフローで実装が一区切りついた時点で、コミット・プッシュ・PR作成まで自動的に進めること。
@@ -346,12 +312,7 @@ GitHub Actions ワークフロー概要（詳細な挙動・権限設計は [`do
 ./gradlew :core:data:testAndroidHostTest
 ```
 
-detekt の主な閾値（`config/detekt/detekt.yml`）:
-- `MagicNumber`: 無効（数値リテラルは許容）
-- `LongMethod`: 閾値 100 行（`@Composable` は除外）
-- `LongParameterList`: 関数・コンストラクタともに 8 個
-- `TooManyFunctions`: ファイル・クラス・オブジェクト 20 個
-- `CyclomaticComplexMethod`: 閾値 15
+detekt の閾値設定は `config/detekt/detekt.yml` を参照（`MagicNumber` は無効化済みで数値リテラルは許容、`@Composable` は `LongMethod` の対象外）。
 
 テストが失敗・detekt で指摘がある・assertModuleGraph で違反がある・ビルドエラーがある場合は修正してからレポートする。
 
