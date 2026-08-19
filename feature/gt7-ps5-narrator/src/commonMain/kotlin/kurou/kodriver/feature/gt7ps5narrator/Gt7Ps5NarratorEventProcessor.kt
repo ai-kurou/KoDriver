@@ -4,6 +4,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.core.narrator.TelemetryLogJson
+import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
+import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
+import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -119,14 +122,21 @@ private fun buildTelemetryLogJson(
     observedAtMs: Long,
     finalState: Gt7Ps5NarratorState,
 ): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousTelemetry":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"telemetry":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = state.toJsonString(),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousTelemetry",
+                json =
+                    previous?.let {
+                        telemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current = TelemetryLogJsonCurrentField(name = "telemetry", json = telemetryLogJson.encodeToString(current)),
+        settingsJson = settings.toJsonString(),
+        observedAtMs = observedAtMs,
+        finalStateJson = finalState.toJsonString(),
+    )
 
 private fun Gt7Ps5NarratorReadoutSettings.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 

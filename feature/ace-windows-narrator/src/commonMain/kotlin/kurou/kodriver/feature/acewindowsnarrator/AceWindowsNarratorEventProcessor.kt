@@ -4,6 +4,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.core.narrator.TelemetryLogJson
+import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
+import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
+import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -175,14 +178,18 @@ private fun buildTelemetryLogJson(
     observedAtMs: Long,
     finalState: AceWindowsNarratorState,
 ): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousFuel":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"fuel":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = state.toJsonString(),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousFuel",
+                json = previous?.let { telemetryLogJson.encodeToString(it) },
+            ),
+        current = TelemetryLogJsonCurrentField(name = "fuel", json = telemetryLogJson.encodeToString(current)),
+        settingsJson = settings.toJsonString(),
+        observedAtMs = observedAtMs,
+        finalStateJson = finalState.toJsonString(),
+    )
 
 private fun AceWindowsNarratorReadoutSettings.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
@@ -211,14 +218,18 @@ private fun buildFlagTelemetryLogJson(
     observedAtMs: Long,
     finalState: AceWindowsNarratorState,
 ): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousFlag":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"flag":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = state.toJsonString(),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousFlag",
+                json = previous?.let { telemetryLogJson.encodeToString(it) },
+            ),
+        current = TelemetryLogJsonCurrentField(name = "flag", json = telemetryLogJson.encodeToString(current)),
+        settingsJson = settings.toJsonString(),
+        observedAtMs = observedAtMs,
+        finalStateJson = finalState.toJsonString(),
+    )
 
 /**
  * ACE のタイヤカーカス温度判定入力（[AceWindowsTyreCarcassTemperatureData]）は判定ロジック（
@@ -234,13 +245,22 @@ private fun buildTyreTemperatureTelemetryLogJson(
     observedAtMs: Long,
     finalState: AceWindowsNarratorState,
 ): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousTyreCarcassTemperature":${
-            previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"
-        },""" +
-        """"tyreCarcassTemperature":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = state.toJsonString(),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousTyreCarcassTemperature",
+                json =
+                    previous?.let {
+                        telemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "tyreCarcassTemperature",
+                json = telemetryLogJson.encodeToString(current),
+            ),
+        settingsJson = settings.toJsonString(),
+        observedAtMs = observedAtMs,
+        finalStateJson = finalState.toJsonString(),
+    )

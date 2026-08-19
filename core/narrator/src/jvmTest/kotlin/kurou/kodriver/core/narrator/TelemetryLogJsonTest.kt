@@ -52,4 +52,42 @@ class TelemetryLogJsonTest {
 
         assertEquals("\"a\\u0008b\\u000cc\"", literal)
     }
+
+    @Test
+    fun `state_previous_current_settings_observedAtMs_finalStateの順でJSONオブジェクトを組み立てる`() {
+        val json =
+            buildTelemetryLogJson(
+                stateJson = """{"phase":"GREEN"}""",
+                previous = TelemetryLogJsonPreviousField(name = "previousFlag", json = """{"value":1}"""),
+                current = TelemetryLogJsonCurrentField(name = "flag", json = """{"value":2}"""),
+                settingsJson = """{"enabled":true}""",
+                observedAtMs = 12345L,
+                finalStateJson = """{"phase":"YELLOW"}""",
+            )
+
+        assertEquals(
+            """{"state":{"phase":"GREEN"},"previousFlag":{"value":1},"flag":{"value":2},""" +
+                """"settings":{"enabled":true},"observedAtMs":12345,"finalState":{"phase":"YELLOW"}}""",
+            json,
+        )
+    }
+
+    @Test
+    fun `previousのjsonがnullの場合はnullリテラルを埋め込む`() {
+        val json =
+            buildTelemetryLogJson(
+                stateJson = """{"phase":"GREEN"}""",
+                previous = TelemetryLogJsonPreviousField(name = "previousFlag", json = null),
+                current = TelemetryLogJsonCurrentField(name = "flag", json = """{"value":2}"""),
+                settingsJson = """{"enabled":true}""",
+                observedAtMs = 12345L,
+                finalStateJson = """{"phase":"YELLOW"}""",
+            )
+
+        assertEquals(
+            """{"state":{"phase":"GREEN"},"previousFlag":null,"flag":{"value":2},""" +
+                """"settings":{"enabled":true},"observedAtMs":12345,"finalState":{"phase":"YELLOW"}}""",
+            json,
+        )
+    }
 }

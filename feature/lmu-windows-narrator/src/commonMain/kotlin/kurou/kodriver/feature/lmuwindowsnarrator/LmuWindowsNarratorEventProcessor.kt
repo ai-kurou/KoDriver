@@ -3,6 +3,9 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.encodeToString
 import kurou.kodriver.core.narrator.TelemetryLogJson
+import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
+import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
+import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
@@ -326,14 +329,25 @@ private fun buildTelemetryLogJson(
     observedAtMs: Long,
     finalState: LmuWindowsNarratorState,
 ): String =
-    "{" +
-        """"state":${TelemetryLogJson.encodeToString(state)},""" +
-        """"previousVehicleApproach":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"vehicleApproach":${TelemetryLogJson.encodeToString(current)},""" +
-        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousVehicleApproach",
+                json =
+                    previous?.let {
+                        TelemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "vehicleApproach",
+                json = TelemetryLogJson.encodeToString(current),
+            ),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
 
 private fun buildTelemetryLogJson(
     state: LmuWindowsNarratorState,
@@ -343,14 +357,14 @@ private fun buildTelemetryLogJson(
     observedAtMs: Long,
     finalState: LmuWindowsNarratorState,
 ): String =
-    "{" +
-        """"state":${TelemetryLogJson.encodeToString(state)},""" +
-        """"previousTelemetry":${previous?.toJson() ?: "null"},""" +
-        """"telemetry":${current.toJson()},""" +
-        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous = TelemetryLogJsonPreviousField(name = "previousTelemetry", json = previous?.toJson()),
+        current = TelemetryLogJsonCurrentField(name = "telemetry", json = current.toJson()),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
 
 private fun LmuWindowsTelemetryData.toJson(): String =
     "{" +
@@ -369,14 +383,21 @@ private fun buildTelemetryLogJson(
     observedAtMs: Long,
     finalState: LmuWindowsNarratorState,
 ): String =
-    "{" +
-        """"state":${TelemetryLogJson.encodeToString(state)},""" +
-        """"previousVehicleDamage":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"vehicleDamage":${TelemetryLogJson.encodeToString(current)},""" +
-        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousVehicleDamage",
+                json =
+                    previous?.let {
+                        TelemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current = TelemetryLogJsonCurrentField(name = "vehicleDamage", json = TelemetryLogJson.encodeToString(current)),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
 
 /**
  * タイヤ摩耗判定入力（[LmuWindowsTyreWearData]）は判定ロジック（
@@ -392,14 +413,21 @@ private fun buildTelemetryLogJson(
     observedAtMs: Long,
     finalState: LmuWindowsNarratorState,
 ): String =
-    "{" +
-        """"state":${TelemetryLogJson.encodeToString(state)},""" +
-        """"previousTyreWear":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"tyreWear":${TelemetryLogJson.encodeToString(current)},""" +
-        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousTyreWear",
+                json =
+                    previous?.let {
+                        TelemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current = TelemetryLogJsonCurrentField(name = "tyreWear", json = TelemetryLogJson.encodeToString(current)),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
 
 /**
  * バーチャルエナジー残量判定入力（[LmuWindowsVirtualEnergyData]）は判定ロジック（
@@ -415,14 +443,25 @@ private fun buildTelemetryLogJson(
     observedAtMs: Long,
     finalState: LmuWindowsNarratorState,
 ): String =
-    "{" +
-        """"state":${TelemetryLogJson.encodeToString(state)},""" +
-        """"previousRemainingVirtualEnergy":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"remainingVirtualEnergy":${TelemetryLogJson.encodeToString(current)},""" +
-        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousRemainingVirtualEnergy",
+                json =
+                    previous?.let {
+                        TelemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "remainingVirtualEnergy",
+                json = TelemetryLogJson.encodeToString(current),
+            ),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
 
 private fun buildPitTimingTelemetryLogJson(
     state: LmuWindowsNarratorState,
@@ -457,14 +496,21 @@ private fun buildTelemetryLogJson(
     observedAtMs: Long,
     finalState: LmuWindowsNarratorState,
 ): String =
-    "{" +
-        """"state":${TelemetryLogJson.encodeToString(state)},""" +
-        """"previousRaceFlags":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"raceFlags":${TelemetryLogJson.encodeToString(current)},""" +
-        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
-        "}"
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousRaceFlags",
+                json =
+                    previous?.let {
+                        TelemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current = TelemetryLogJsonCurrentField(name = "raceFlags", json = TelemetryLogJson.encodeToString(current)),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
 
 /**
  * タイヤ温度読み上げの入力は [TyreTemperatureReadoutInput] で判定ロジック（

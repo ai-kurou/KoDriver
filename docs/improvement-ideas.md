@@ -47,9 +47,3 @@
 - **課題**: 2026-08-18時点のWeb調査で、AndroidX Lifecycle `2.11.0` が安定版としてリリース済みの可能性が高いことを確認した（`2.11.0-beta02` の変更点として `rememberViewModelStoreNavEntryDecorator` の新オーバーロード追加等が確認できる）。ただし検索結果だけでは正式リリース日・stable channel反映の断定はできなかった。
 - **改善案**: https://developer.android.com/jetpack/androidx/releases/lifecycle で `2.11.0` が stable channel に載っているかを確認し、致命的な互換性問題がなければ `androidx-lifecycle` を更新する（CLAUDE.mdの「ライブラリバージョン管理」方針）。あわせて `2.11.0` は Compose UI 1.7.0+ を要求し、AGPも `9.2.0` 以上が前提とされる点（現在のAGPは `9.3.1` なので条件は満たす）を確認する。
 
-## リファクタリング
-
-- **対象**: `feature/gt7-ps5-narrator/.../Gt7Ps5NarratorEventProcessor.kt`・`feature/ace-windows-narrator/.../AceWindowsNarratorEventProcessor.kt`・`feature/lmu-windows-narrator/.../LmuWindowsNarratorEventProcessor.kt` の `buildTelemetryLogJson`/`toJsonString` 系関数
-  **課題**: 3つの `XxxNarratorEventProcessor` それぞれに、テレメトリログをJSON文字列化するための `buildTelemetryLogJson`/`toJsonString` 相当の関数がほぼ同一の実装（doc commentも含め）で存在する。CLAUDE.mdの「NarratorViewModelは共通化しない」はシミュレーターごとに判定対象・購読UseCase群が異なるViewModel本体を対象にした方針であり、この部分は判定ロジックと無関係な「テレメトリログのJSONシリアライズ」という単純な処理のため、同方針の対象外と考えられる。
-  **改善案**: `core:narrator`（WAV再生の共通基盤が既に存在するモジュール）に、テレメトリログJSON化の共通ヘルパーを切り出せないか検討する。各シミュレーター固有のログ項目は呼び出し側でデータクラス化して渡す形にすれば、シリアライズ処理自体は共通化できる可能性がある。
-
