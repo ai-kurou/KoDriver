@@ -51,7 +51,7 @@ private fun String.replaceSupportedPlaceholders(
 
         val unsupportedPlaceholder = PRINTF_PLACEHOLDER_REGEX.matchAt(template, index)?.value
         require(unsupportedPlaceholder == null) {
-            "Unsupported slider label placeholder: $unsupportedPlaceholder in template: $template"
+            "Unsupported slider label placeholder: ${unsupportedPlaceholder.orEmpty()} in template: $template"
         }
 
         formatted.append(template[index])
