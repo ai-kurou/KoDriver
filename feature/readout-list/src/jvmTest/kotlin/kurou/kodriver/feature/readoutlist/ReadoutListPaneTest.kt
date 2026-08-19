@@ -236,6 +236,33 @@ class ReadoutListPaneTest {
     }
 
     @Test
+    fun `読み上げOFFの項目は読み上げ開始音トグルを無効にする`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                        ),
+                    onSimulatorSelected = {},
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+
+        rule
+            .onNodeWithTag("readoutListStartSoundTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .assertIsNotEnabled()
+            .performClick()
+    }
+
+    @Test
     fun `ACE選択時のみ読み上げタイミングヒントを表示する`() {
         rule.setContent {
             KoDriverTheme {
