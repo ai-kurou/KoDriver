@@ -140,7 +140,7 @@ fun ConnectionBannerContent(
                 .fillMaxWidth()
                 .background(backgroundColor)
                 .then(
-                    if (isTappable && currentOnClick != null) {
+                    if (isTappable) {
                         Modifier.clickable(role = Role.Button, onClick = currentOnClick)
                     } else {
                         Modifier
