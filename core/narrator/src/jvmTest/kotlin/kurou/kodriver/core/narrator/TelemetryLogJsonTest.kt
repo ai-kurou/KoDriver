@@ -58,8 +58,8 @@ class TelemetryLogJsonTest {
         val json =
             buildTelemetryLogJson(
                 stateJson = """{"phase":"GREEN"}""",
-                previous = TelemetryLogJsonField(name = "previousFlag", json = """{"value":1}"""),
-                current = TelemetryLogJsonField(name = "flag", json = """{"value":2}"""),
+                previous = TelemetryLogJsonPreviousField(name = "previousFlag", json = """{"value":1}"""),
+                current = TelemetryLogJsonCurrentField(name = "flag", json = """{"value":2}"""),
                 settingsJson = """{"enabled":true}""",
                 observedAtMs = 12345L,
                 finalStateJson = """{"phase":"YELLOW"}""",
@@ -77,8 +77,8 @@ class TelemetryLogJsonTest {
         val json =
             buildTelemetryLogJson(
                 stateJson = """{"phase":"GREEN"}""",
-                previous = TelemetryLogJsonField(name = "previousFlag", json = null),
-                current = TelemetryLogJsonField(name = "flag", json = """{"value":2}"""),
+                previous = TelemetryLogJsonPreviousField(name = "previousFlag", json = null),
+                current = TelemetryLogJsonCurrentField(name = "flag", json = """{"value":2}"""),
                 settingsJson = """{"enabled":true}""",
                 observedAtMs = 12345L,
                 finalStateJson = """{"phase":"YELLOW"}""",

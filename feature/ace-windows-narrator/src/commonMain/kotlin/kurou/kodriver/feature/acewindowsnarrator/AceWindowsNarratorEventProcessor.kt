@@ -4,7 +4,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.core.narrator.TelemetryLogJson
-import kurou.kodriver.core.narrator.TelemetryLogJsonField
+import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
+import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
 import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
@@ -180,11 +181,11 @@ private fun buildTelemetryLogJson(
     buildTelemetryLogJson(
         stateJson = state.toJsonString(),
         previous =
-            TelemetryLogJsonField(
+            TelemetryLogJsonPreviousField(
                 name = "previousFuel",
                 json = previous?.let { telemetryLogJson.encodeToString(it) },
             ),
-        current = TelemetryLogJsonField(name = "fuel", json = telemetryLogJson.encodeToString(current)),
+        current = TelemetryLogJsonCurrentField(name = "fuel", json = telemetryLogJson.encodeToString(current)),
         settingsJson = settings.toJsonString(),
         observedAtMs = observedAtMs,
         finalStateJson = finalState.toJsonString(),
@@ -220,11 +221,11 @@ private fun buildFlagTelemetryLogJson(
     buildTelemetryLogJson(
         stateJson = state.toJsonString(),
         previous =
-            TelemetryLogJsonField(
+            TelemetryLogJsonPreviousField(
                 name = "previousFlag",
                 json = previous?.let { telemetryLogJson.encodeToString(it) },
             ),
-        current = TelemetryLogJsonField(name = "flag", json = telemetryLogJson.encodeToString(current)),
+        current = TelemetryLogJsonCurrentField(name = "flag", json = telemetryLogJson.encodeToString(current)),
         settingsJson = settings.toJsonString(),
         observedAtMs = observedAtMs,
         finalStateJson = finalState.toJsonString(),
@@ -247,7 +248,7 @@ private fun buildTyreTemperatureTelemetryLogJson(
     buildTelemetryLogJson(
         stateJson = state.toJsonString(),
         previous =
-            TelemetryLogJsonField(
+            TelemetryLogJsonPreviousField(
                 name = "previousTyreCarcassTemperature",
                 json =
                     previous?.let {
@@ -255,7 +256,7 @@ private fun buildTyreTemperatureTelemetryLogJson(
                     },
             ),
         current =
-            TelemetryLogJsonField(
+            TelemetryLogJsonCurrentField(
                 name = "tyreCarcassTemperature",
                 json = telemetryLogJson.encodeToString(current),
             ),

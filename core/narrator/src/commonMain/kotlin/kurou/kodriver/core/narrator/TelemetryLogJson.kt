@@ -42,12 +42,21 @@ fun String.toJsonStringLiteral(): String =
     }
 
 /**
- * [buildTelemetryLogJson] の `previous<X>` / `<x>` フィールド1つ分（JSON キー名と、既に JSON 文字列化
- * された値）を表す。`previous` 側は値が存在しない場合を `json = null` で表現する。
+ * [buildTelemetryLogJson] の `previous<X>` フィールド1つ分（JSON キー名と、既に JSON 文字列化された値）を
+ * 表す。テレメトリの初回受信時は前回値が存在しないため、`json` は `null` を取りうる。
  */
-data class TelemetryLogJsonField(
+data class TelemetryLogJsonPreviousField(
     val name: String,
     val json: String?,
+)
+
+/**
+ * [buildTelemetryLogJson] の `<x>` フィールド1つ分（JSON キー名と、既に JSON 文字列化された値）を表す。
+ * 現在値は必ず存在するため、[TelemetryLogJsonPreviousField] と異なり `json` は非 null。
+ */
+data class TelemetryLogJsonCurrentField(
+    val name: String,
+    val json: String,
 )
 
 /**
@@ -61,8 +70,8 @@ data class TelemetryLogJsonField(
  */
 fun buildTelemetryLogJson(
     stateJson: String,
-    previous: TelemetryLogJsonField,
-    current: TelemetryLogJsonField,
+    previous: TelemetryLogJsonPreviousField,
+    current: TelemetryLogJsonCurrentField,
     settingsJson: String,
     observedAtMs: Long,
     finalStateJson: String,
