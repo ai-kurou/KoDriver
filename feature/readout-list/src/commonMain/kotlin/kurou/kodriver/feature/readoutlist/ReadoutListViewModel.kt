@@ -31,6 +31,12 @@ private data class LocalOrderState(
     val items: List<ReadoutItemKey>,
 )
 
+private data class EnabledStates(
+    val readoutEnabledStates: Map<ReadoutItemKey, Boolean>,
+    val queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+    val startSoundEnabledStates: Map<ReadoutItemKey, Boolean>,
+)
+
 /**
  * ReadoutList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
@@ -98,31 +104,35 @@ class ReadoutListViewModel(
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val _baseUiState: StateFlow<ReadoutListUiState> =
+    private val _enabledStates: StateFlow<EnabledStates> =
+        combine(
+            _readoutEnabledStates,
+            _queueEnabledStates,
+            _startSoundEnabledStates,
+        ) { readoutEnabledStates, queueEnabledStates, startSoundEnabledStates ->
+            EnabledStates(readoutEnabledStates, queueEnabledStates, startSoundEnabledStates)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            EnabledStates(emptyMap(), emptyMap(), emptyMap()),
+        )
+
+    val uiState: StateFlow<ReadoutListUiState> =
         combine(
             _selectedSimulator,
             _effectiveOrder,
-            _readoutEnabledStates,
-            _queueEnabledStates,
+            _enabledStates,
             _selectedItem,
-        ) { selected, items, readoutEnabledStates, queueEnabledStates, selectedItem ->
+        ) { selected, items, enabledStates, selectedItem ->
             ReadoutListUiState(
                 selectedSimulator = selected,
                 simulators = Simulator.entries,
                 items = items,
-                readoutEnabledStates = readoutEnabledStates,
-                queueEnabledStates = queueEnabledStates,
+                readoutEnabledStates = enabledStates.readoutEnabledStates,
+                queueEnabledStates = enabledStates.queueEnabledStates,
+                startSoundEnabledStates = enabledStates.startSoundEnabledStates,
                 selectedItem = selectedItem?.takeIf { selected != null && it.belongsTo(selected) },
             )
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            ReadoutListUiState(simulators = Simulator.entries),
-        )
-
-    val uiState: StateFlow<ReadoutListUiState> =
-        combine(_baseUiState, _startSoundEnabledStates) { baseUiState, startSoundEnabledStates ->
-            baseUiState.copy(startSoundEnabledStates = startSoundEnabledStates)
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
