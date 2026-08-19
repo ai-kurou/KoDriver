@@ -183,7 +183,7 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 # 完了報告・PR 作成前の必須チェック一式（detekt・モジュールグラフ検証・
 # 全ユニットテスト（カバレッジ付き）・両アプリのビルド・デスクトップ統合テスト）
-./gradlew preMergeCheck
+./gradlew preSubmitChecks
 
 # 静的解析とモジュール依存関係の検証
 ./gradlew detekt assertModuleGraph
@@ -286,7 +286,7 @@ GitHub Actions ワークフロー概要（詳細な挙動・権限設計は [`do
 コードを変更・追加した場合は、変更範囲・変更規模・対象モジュールに関係なく、**完了報告の前に必ず以下を実行すること**。
 
 1. **ユニットテストの追加・更新**（→「[テスト方針](#テスト方針)」を参照。テストは実装と同時に書くこと）
-2. `./gradlew preMergeCheck`（必須チェックの集約タスク。以下をすべて含む）
+2. `./gradlew preSubmitChecks`（必須チェックの集約タスク。以下をすべて含む）
    - 全モジュールの detekt（モジュール単位の `:xxx:detekt` だけでは `app:shared` 等の連鎖的な問題を見落とすため、全体で実行される）
    - モジュールグラフの検証（`assertModuleGraph`）
    - 全ユニットテスト＋カバレッジレポート生成（`koverXmlReport`）
@@ -294,13 +294,13 @@ GitHub Actions ワークフロー概要（詳細な挙動・権限設計は [`do
    - デスクトップアプリの統合テスト（Koin モジュール構成の変更は `AppTest` に影響するため）
 3. `CLAUDE.md`・`README.md`・`docs/` 以下のドキュメントに変更が必要かを確認し、必要であれば更新する
 
-`preMergeCheck` は Codacy や CI で検出される基本的な問題を作業者側で事前に検出するための最低必須チェックであり、モジュール単位の detekt や個別テストだけで代替してはならない。実行できなかった場合は、完了報告で理由を明記すること。
+`preSubmitChecks` は Codacy や CI で検出される基本的な問題を作業者側で事前に検出するための最低必須チェックであり、モジュール単位の detekt や個別テストだけで代替してはならない。実行できなかった場合は、完了報告で理由を明記すること。
 
-作業中に個別のチェックを素早く回したい場合は、以下を利用できる（完了報告前の `preMergeCheck` 実行は省略不可）。
+作業中に個別のチェックを素早く回したい場合は、以下を利用できる（完了報告前の `preSubmitChecks` 実行は省略不可）。
 
 ```bash
 # 完了報告・PR 作成前の必須チェック一式
-./gradlew preMergeCheck
+./gradlew preSubmitChecks
 
 # 変更したモジュールのテストだけを実行（例: feature:readout-list を変更した場合）
 ./gradlew :feature:readout-list:jvmTest

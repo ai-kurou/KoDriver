@@ -487,7 +487,7 @@ roborazziAggregateTasks.forEach { roborazziTask ->
 // CLAUDE.md「コード変更時の必須確認」に対応: 全モジュールの detekt・ktlint、
 // モジュールグラフ検証、全ユニットテスト（Kover カバレッジ付き）、
 // Android / デスクトップアプリのビルド、デスクトップアプリの統合テスト。
-val preMergeCheck = tasks.register("preMergeCheck") {
+val preSubmitChecks = tasks.register("preSubmitChecks") {
     group = "verification"
     description = "Runs all mandatory pre-merge checks (detekt, ktlint, module graph, tests with coverage, app builds)."
     dependsOn(
@@ -501,7 +501,7 @@ val preMergeCheck = tasks.register("preMergeCheck") {
 }
 
 gradle.projectsEvaluated {
-    preMergeCheck.configure {
+    preSubmitChecks.configure {
         dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "detekt" } })
         dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "ktlintCheck" } })
     }
