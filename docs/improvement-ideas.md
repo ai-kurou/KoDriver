@@ -59,7 +59,3 @@
   **課題**: PR #1121で `close()` 呼び出し後に `withTimeout(1_000) { closeReason.await() }` を追加してクロージングハンドシェイクの完了を待つ対策を入れたが、その後も同テストがflakyになることが確認された（対策自体は本PRで巻き戻し済み）。根本原因（クライアント切断からサーバー側の送信Flowキャンセルまでの実際のネットワーク往復に伴うタイミング依存）は未調査。
   **改善案**: `withTimeout(5_000) { repository.cancelled.await() }` 側のタイムアウト延長や、テストの構造自体（実ネットワークI/Oを伴うtestApplication構成）の見直しなど、別のアプローチでのflaky対策を検討する。
 
-- **対象**: `AceWindowsReadoutTyreTemperatureDetailPane` のUIテスト（`feature:ace-windows-readout-tyre-temperature-detail`）
-  **課題**: PR #1158（Sourcery指摘）で判明。UIテストが日本語の表示文字列をハードコードした値でアサートしており、将来文言を変更した際にテストが壊れやすい。
-  **改善案**: `stringResource` のID経由、またはテスト専用ヘルパーでローカライズ済みテキストを取得してアサートする方式に寄せる。同様のパターンが他のdetail画面のUIテストにも存在する可能性があるため、併せて確認する。
-

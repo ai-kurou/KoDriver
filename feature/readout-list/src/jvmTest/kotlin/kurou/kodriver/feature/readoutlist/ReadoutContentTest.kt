@@ -26,10 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.feature.readoutlist.generated.resources.Res
-import kurou.kodriver.feature.readoutlist.generated.resources.scroll_to_top
-import kurou.kodriver.feature.readoutlist.generated.resources.simulator_label
-import org.jetbrains.compose.resources.stringResource
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -485,8 +481,8 @@ class ReadoutContentTest {
 
     @Test
     fun `リストを下にスクロールすると先頭へ戻るボタンを表示して先頭へ戻れる`() {
-        var scrollToTopText by mutableStateOf("")
-        var simulatorLabelText by mutableStateOf("")
+        val scrollToTopText = "先頭へ"
+        val simulatorLabelText = "シミュレーター"
         var lastItemText by mutableStateOf("")
         val items =
             listOf(
@@ -505,8 +501,6 @@ class ReadoutContentTest {
             )
 
         rule.setContent {
-            scrollToTopText = stringResource(Res.string.scroll_to_top)
-            simulatorLabelText = stringResource(Res.string.simulator_label)
             lastItemText = itemDisplayName(ReadoutItemKey.LmuWindows.MyBestLap.Root)
             Box(modifier = Modifier.height(240.dp)) {
                 ReadoutListPane(
@@ -536,7 +530,7 @@ class ReadoutContentTest {
 
     @Test
     fun `scrollToTopRequestが増えるとリストを先頭へ戻す`() {
-        var simulatorLabelText by mutableStateOf("")
+        val simulatorLabelText = "シミュレーター"
         var lastItemText by mutableStateOf("")
         var scrollToTopRequest by mutableStateOf(0)
         val items =
@@ -556,7 +550,6 @@ class ReadoutContentTest {
             )
 
         rule.setContent {
-            simulatorLabelText = stringResource(Res.string.simulator_label)
             lastItemText = itemDisplayName(ReadoutItemKey.LmuWindows.MyBestLap.Root)
             Box(modifier = Modifier.height(240.dp)) {
                 ReadoutListPane(
