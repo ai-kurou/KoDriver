@@ -19,6 +19,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -406,15 +407,13 @@ class ReadoutContentTest {
         }
 
         rule.onNodeWithText(tyreTemperatureText).assertExists()
-        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(2)
+        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(4)
         rule
-            .onAllNodes(hasQueueToggleRole())
-            .get(0)
+            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.TyreTemperature.Root.value}")
             .assertIsEnabled()
             .performClick()
         rule
-            .onAllNodes(hasQueueToggleRole())
-            .get(1)
+            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
             .assertIsEnabled()
             .performClick()
 
@@ -463,15 +462,13 @@ class ReadoutContentTest {
         }
 
         rule.onNodeWithText(tyreTemperatureText).assertExists()
-        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(2)
+        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(4)
         rule
-            .onAllNodes(hasQueueToggleRole())
-            .get(0)
+            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.TyreTemperature.Root.value}")
             .assertIsNotEnabled()
             .performClick()
         rule
-            .onAllNodes(hasQueueToggleRole())
-            .get(1)
+            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
             .assertIsEnabled()
             .performClick()
 

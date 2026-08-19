@@ -125,13 +125,44 @@ class ReadoutListPaneTest {
             }
         }
 
-        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(1)
+        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(2)
         rule.onAllNodes(hasSwitchRole()).assertCountEquals(1)
-        rule.onAllNodes(hasQueueToggleRole())[0].assertIsEnabled().performClick()
+        rule
+            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .assertIsEnabled()
+            .performClick()
         rule.onAllNodes(hasSwitchRole())[0].assertIsEnabled().performClick()
 
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to true, queueChanges.single())
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to false, readoutChanges.single())
+    }
+
+    @Test
+    fun `読み上げ開始音トグルはクリックするたびにローカルのON_OFF状態を反転する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                        ),
+                    onSimulatorSelected = {},
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+
+        val startSoundToggle =
+            rule.onNodeWithTag("readoutListStartSoundTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+
+        startSoundToggle.assertIsEnabled().performClick()
+        startSoundToggle.performClick()
     }
 
     @Test
@@ -196,7 +227,10 @@ class ReadoutListPaneTest {
             }
         }
 
-        rule.onAllNodes(hasQueueToggleRole())[0].assertIsNotEnabled().performClick()
+        rule
+            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .assertIsNotEnabled()
+            .performClick()
 
         assertFalse(queueChanges.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
     }

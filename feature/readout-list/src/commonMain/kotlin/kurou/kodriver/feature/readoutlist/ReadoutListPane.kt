@@ -39,6 +39,8 @@ import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -63,6 +65,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -96,6 +99,7 @@ import kurou.kodriver.feature.readoutlist.generated.resources.queue_hint_descrip
 import kurou.kodriver.feature.readoutlist.generated.resources.scroll_to_top
 import kurou.kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kurou.kodriver.feature.readoutlist.generated.resources.simulator_label
+import kurou.kodriver.feature.readoutlist.generated.resources.start_sound_toggle_description
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -269,6 +273,7 @@ internal fun ReadoutListPane(
     scrollToTopRequest: Int = 0,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val startSoundEnabledStates = remember { mutableStateMapOf<ReadoutItemKey, Boolean>() }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val isAceSelected = uiState.selectedSimulator is Simulator.AceWindows
@@ -373,10 +378,12 @@ internal fun ReadoutListPane(
                             dragHandleModifier = Modifier.draggableHandle(),
                             readoutEnabled = readoutEnabled,
                             queueEnabled = uiState.queueEnabledStates[item] ?: false,
+                            startSoundEnabled = startSoundEnabledStates[item] ?: true,
                             containerColor = cardContainerColor,
                             onItemClick = onItemClick,
                             onQueueEnabledChanged = onQueueEnabledChanged,
                             onReadoutEnabledChanged = onReadoutEnabledChanged,
+                            onStartSoundEnabledChanged = { key, enabled -> startSoundEnabledStates[key] = enabled },
                         )
                     }
                 }
@@ -419,10 +426,12 @@ private fun ReadoutListItemCard(
     dragHandleModifier: Modifier,
     readoutEnabled: Boolean,
     queueEnabled: Boolean,
+    startSoundEnabled: Boolean,
     containerColor: Color,
     onItemClick: (ReadoutItemKey) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
 ) {
     ElevatedCard(
         modifier =
@@ -478,14 +487,23 @@ private fun ReadoutListItemCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
+                if (item is ReadoutItemKey.TopLevel) {
                     ReadoutListQueueDivider()
-                    ReadoutListQueueToggle(
+                    ReadoutListStartSoundToggle(
                         item = item,
-                        checked = queueEnabled,
+                        checked = startSoundEnabled,
                         enabled = readoutEnabled,
-                        onCheckedChange = { onQueueEnabledChanged(item, it) },
+                        onCheckedChange = { onStartSoundEnabledChanged(item, it) },
                     )
+                    if (item.supportsQueue) {
+                        ReadoutListQueueDivider()
+                        ReadoutListQueueToggle(
+                            item = item,
+                            checked = queueEnabled,
+                            enabled = readoutEnabled,
+                            onCheckedChange = { onQueueEnabledChanged(item, it) },
+                        )
+                    }
                     ReadoutListQueueDivider()
                 }
                 ReadoutListReadoutSwitch(
@@ -494,6 +512,40 @@ private fun ReadoutListItemCard(
                     onCheckedChange = { onReadoutEnabledChanged(item, it) },
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ReadoutListStartSoundToggle(
+    item: ReadoutItemKey.TopLevel,
+    checked: Boolean,
+    enabled: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier =
+            Modifier
+                .size(width = 56.dp, height = 56.dp)
+                .testTag("readoutListStartSoundTouchTarget:${item.value}")
+                .clickable(
+                    enabled = enabled,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                ) {
+                    onCheckedChange(!checked)
+                },
+    ) {
+        FilledIconToggleButton(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            enabled = enabled,
+        ) {
+            Icon(
+                imageVector = if (checked) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsOff,
+                contentDescription = stringResource(Res.string.start_sound_toggle_description),
+            )
         }
     }
 }
