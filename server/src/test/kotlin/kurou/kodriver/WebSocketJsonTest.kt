@@ -10,8 +10,11 @@ import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -34,16 +37,14 @@ class WebSocketJsonTest {
             coEvery { session.send(any()) } returns Unit
 
             var messageFlowCancelled = false
-            val messages =
-                flow<String> {
-                    try {
-                        awaitCancellation()
-                    } finally {
-                        messageFlowCancelled = true
-                    }
-                }
+            val messages = cancellableFlow { messageFlowCancelled = true }
 
-            incoming.close()
+            // sendJsonMessages が送信中Flowの購読を開始した後にクライアント切断が起きる実際の
+            // タイミングに近づけるため、並行するコルーチンからincomingを閉じる。
+            launch {
+                yield()
+                incoming.close()
+            }
 
             session.sendJsonMessages(messages)
 
@@ -59,19 +60,26 @@ class WebSocketJsonTest {
             coEvery { session.send(any()) } returns Unit
 
             var messageFlowCancelled = false
-            val messages =
-                flow<String> {
-                    try {
-                        awaitCancellation()
-                    } finally {
-                        messageFlowCancelled = true
-                    }
-                }
+            val messages = cancellableFlow { messageFlowCancelled = true }
 
-            closeReason.complete(CloseReason(CloseReason.Codes.NORMAL, ""))
+            // sendJsonMessages が送信中Flowの購読を開始した後にサーバー側クローズが起きる実際の
+            // タイミングに近づけるため、並行するコルーチンからcloseReasonを完了させる。
+            launch {
+                yield()
+                closeReason.complete(CloseReason(CloseReason.Codes.NORMAL, ""))
+            }
 
             session.sendJsonMessages(messages)
 
             assertTrue(messageFlowCancelled)
+        }
+
+    private fun cancellableFlow(onCancelled: () -> Unit): Flow<String> =
+        flow {
+            try {
+                awaitCancellation()
+            } finally {
+                onCancelled()
+            }
         }
 }
