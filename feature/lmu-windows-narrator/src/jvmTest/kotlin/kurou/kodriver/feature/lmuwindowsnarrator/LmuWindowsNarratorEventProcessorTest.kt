@@ -15,6 +15,7 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -31,6 +32,7 @@ import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -278,6 +280,171 @@ class LmuWindowsNarratorEventProcessorTest {
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    telemetryJson = telemetryJson,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `直前のフラグデータがないイベントはnullとして保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.BlueFlag, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+
+            createProcessor().processRaceFlags(
+                raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
+                events = listOf(SpeechEvent.BlueFlag),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+
+            assertContains(telemetryJsonSlot.captured, "\"previousRaceFlags\":null")
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BlueFlag, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `直前のテレメトリデータがないイベントはnullとして保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+
+            createProcessor().processTelemetry(
+                telemetry = fakeTelemetryData(),
+                events = listOf(SpeechEvent.RemainingVirtualEnergyWarning),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+
+            assertContains(telemetryJsonSlot.captured, "\"previousTelemetry\":null")
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `直前の車両ダメージデータがないイベントはnullとして保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.Overheating, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+
+            createProcessor().processVehicleDamage(
+                vehicleDamage = vehicleDamage(overheating = true),
+                events = listOf(SpeechEvent.Overheating),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+
+            assertContains(telemetryJsonSlot.captured, "\"previousVehicleDamage\":null")
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Overheating, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `読み上げたイベントを直前と現在の車両ダメージデータとともに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.Overheating, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor()
+
+            processor.processVehicleDamage(
+                vehicleDamage = vehicleDamage(overheating = false),
+                events = emptyList(),
+                readoutOrder = emptyList(),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+                logContext = logContext(),
+            )
+            processor.processVehicleDamage(
+                vehicleDamage = vehicleDamage(overheating = true),
+                events = listOf(SpeechEvent.Overheating),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            val telemetryJson = telemetryJsonSlot.captured
+            val root = Json.parseToJsonElement(telemetryJson).jsonObject
+            assertEquals(false, root["previousVehicleDamage"]!!.jsonObject["overheating"]!!.jsonPrimitive.boolean)
+            assertEquals(true, root["vehicleDamage"]!!.jsonObject["overheating"]!!.jsonPrimitive.boolean)
+            assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Overheating, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -543,6 +710,13 @@ private fun leftVehicleApproach(distance: Double = 3.0) =
         sideBySideRightVehicleIds = emptySet(),
         lateralDistanceLeftMeters = distance,
         lateralDistanceRightMeters = Double.MAX_VALUE,
+    )
+
+private fun vehicleDamage(overheating: Boolean) =
+    LmuWindowsVehicleDamageData(
+        overheating = overheating,
+        partDetached = false,
+        lastImpactMagnitude = 0.0,
     )
 
 private fun raceFlags(playerFlag: PrimaryFlag) =

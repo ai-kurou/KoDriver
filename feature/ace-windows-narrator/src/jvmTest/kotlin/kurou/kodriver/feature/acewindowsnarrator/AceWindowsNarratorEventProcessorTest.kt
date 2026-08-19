@@ -15,8 +15,10 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.AceWindowsNarratorState
@@ -357,6 +359,91 @@ class AceWindowsNarratorEventProcessorTest {
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
+
+    @Test
+    fun `直前のタイヤカーカス温度データがないイベントはnullとして保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
+
+            createProcessor().processTyreTemperature(
+                tyreCarcassTemperature = tyreCarcassTemperature(110.0),
+                events = listOf(SpeechEvent.AceWindowsTyreOverheat),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+                isOnTrack = true,
+            )
+
+            assertEquals(true, telemetryJsons.single().contains("\"previousTyreCarcassTemperature\":null"))
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":110.0}}"""),
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `読み上げたタイヤカーカス温度イベントを直前と現在のタイヤカーカス温度データとともに保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val processor = createProcessor()
+            val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
+
+            processor.processTyreTemperature(
+                tyreCarcassTemperature(90.0),
+                emptyList(),
+                emptyList(),
+                emptyMap(),
+                100L,
+                logContext(),
+                true,
+            )
+            processor.processTyreTemperature(
+                tyreCarcassTemperature(110.0),
+                listOf(SpeechEvent.AceWindowsTyreOverheat),
+                listOf(key),
+                emptyMap(),
+                200L,
+                logContext(),
+                true,
+            )
+
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""previousTyreCarcassTemperature":{"wheels":{"FRONT_LEFT":90.0}}"""),
+            )
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":110.0}}"""),
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    private fun tyreCarcassTemperature(frontLeftCelsius: Double) =
+        AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to frontLeftCelsius))
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 
