@@ -20,15 +20,18 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -47,6 +50,9 @@ class ReadoutListViewModelAceWindowsTest {
 
     @MockK
     private lateinit var queueRepository: QueuePreferencesRepository
+
+    @MockK
+    private lateinit var startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository
 
     @BeforeTest
     fun setUp() {
@@ -70,6 +76,7 @@ class ReadoutListViewModelAceWindowsTest {
             every { readoutRepository.observeReadoutEnabledStates("ace_windows") } returns MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("ace_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
             val viewModel =
                 ReadoutListViewModel(
                     observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
@@ -81,6 +88,9 @@ class ReadoutListViewModelAceWindowsTest {
                     saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
                     observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository),
                     saveQueueEnabledState = SaveQueueEnabledStateUseCase(queueRepository),
+                    observeReadoutStartSoundEnabledStates =
+                        ObserveReadoutStartSoundEnabledStatesUseCase(startSoundRepository),
+                    saveReadoutStartSoundEnabledState = SaveReadoutStartSoundEnabledStateUseCase(startSoundRepository),
                 )
 
             assertEquals(
@@ -111,6 +121,7 @@ class ReadoutListViewModelAceWindowsTest {
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("ace_windows") }
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("ace_windows") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
-            confirmVerified(simulatorRepository, readoutRepository, queueRepository)
+            verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
+            confirmVerified(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
         }
 }

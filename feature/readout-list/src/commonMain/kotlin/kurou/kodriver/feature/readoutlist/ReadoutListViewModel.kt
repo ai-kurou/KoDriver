@@ -17,11 +17,13 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
 private data class LocalOrderState(
@@ -43,6 +45,8 @@ class ReadoutListViewModel(
     private val saveReadoutOrder: SaveReadoutOrderUseCase,
     private val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
     private val saveQueueEnabledState: SaveQueueEnabledStateUseCase,
+    private val observeReadoutStartSoundEnabledStates: ObserveReadoutStartSoundEnabledStatesUseCase,
+    private val saveReadoutStartSoundEnabledState: SaveReadoutStartSoundEnabledStateUseCase,
 ) : ViewModel() {
     private val _selectedSimulator: StateFlow<Simulator?> =
         observeSelectedSimulator()
@@ -73,6 +77,10 @@ class ReadoutListViewModel(
         observeQueueEnabledStates()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
+    private val _startSoundEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
+        observeReadoutStartSoundEnabledStates()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
     private val _selectedItem = MutableStateFlow<ReadoutListItemType?>(null)
 
     private val _effectiveOrder: StateFlow<List<ReadoutItemKey>> =
@@ -90,7 +98,7 @@ class ReadoutListViewModel(
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val uiState: StateFlow<ReadoutListUiState> =
+    private val _baseUiState: StateFlow<ReadoutListUiState> =
         combine(
             _selectedSimulator,
             _effectiveOrder,
@@ -106,6 +114,15 @@ class ReadoutListViewModel(
                 queueEnabledStates = queueEnabledStates,
                 selectedItem = selectedItem?.takeIf { selected != null && it.belongsTo(selected) },
             )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            ReadoutListUiState(simulators = Simulator.entries),
+        )
+
+    val uiState: StateFlow<ReadoutListUiState> =
+        combine(_baseUiState, _startSoundEnabledStates) { baseUiState, startSoundEnabledStates ->
+            baseUiState.copy(startSoundEnabledStates = startSoundEnabledStates)
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
@@ -159,6 +176,15 @@ class ReadoutListViewModel(
     ) {
         viewModelScope.launch {
             saveQueueEnabledState(key, enabled)
+        }
+    }
+
+    fun onStartSoundEnabledChanged(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
+        viewModelScope.launch {
+            saveReadoutStartSoundEnabledState(key, enabled)
         }
     }
 }

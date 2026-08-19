@@ -34,6 +34,7 @@ class ReadoutContentScreenshotTest {
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
                                 onItemSelected = {},
                                 onClearSelectedItem = {},
                                 scaffoldDirective = twoPaneDirective,

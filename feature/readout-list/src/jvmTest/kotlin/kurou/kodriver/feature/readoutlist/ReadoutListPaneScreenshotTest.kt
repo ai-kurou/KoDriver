@@ -49,6 +49,7 @@ class ReadoutListPaneScreenshotTest {
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
                                 onItemClick = { _ -> },
                             )
                         }
@@ -80,6 +81,7 @@ class ReadoutListPaneScreenshotTest {
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
                                 onItemClick = { _ -> },
                             )
                         }
@@ -113,6 +115,7 @@ class ReadoutListPaneScreenshotTest {
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
                                 onItemClick = { _ -> },
                             )
                         }
@@ -147,6 +150,7 @@ class ReadoutListPaneScreenshotTest {
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
                                 onItemClick = { _ -> },
                             )
                         }
