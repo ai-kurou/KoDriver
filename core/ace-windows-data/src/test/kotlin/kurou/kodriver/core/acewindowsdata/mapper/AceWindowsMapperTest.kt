@@ -81,10 +81,10 @@ class AceWindowsMapperTest {
 
         val result = AceWindowsMapper.mapTyreCarcassTemperature(tyreCarcassTemperatureBuffer(temperatures))
 
-        assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT]!!, 0.0001)
-        assertEquals(81.0, result.wheels[WheelIndex.FRONT_RIGHT]!!, 0.0001)
-        assertEquals(82.0, result.wheels[WheelIndex.REAR_LEFT]!!, 0.0001)
-        assertEquals(83.0, result.wheels[WheelIndex.REAR_RIGHT]!!, 0.0001)
+        assertEquals(80.0, requireNotNull(result.wheels[WheelIndex.FRONT_LEFT]), 0.0001)
+        assertEquals(81.0, requireNotNull(result.wheels[WheelIndex.FRONT_RIGHT]), 0.0001)
+        assertEquals(82.0, requireNotNull(result.wheels[WheelIndex.REAR_LEFT]), 0.0001)
+        assertEquals(83.0, requireNotNull(result.wheels[WheelIndex.REAR_RIGHT]), 0.0001)
     }
 
     @Test

@@ -229,7 +229,7 @@ class LmuWindowsMapperTest {
 
         assertEquals(4, result.tyres.wheels.size)
         WheelIndex.entries.forEachIndexed { i, wheel ->
-            val tyre = result.tyres.wheels[wheel]!!
+            val tyre = requireNotNull(result.tyres.wheels[wheel])
             assertEquals(350.0 + i * 10.0, tyre.surfaceTemperatureK, 1e-9)
             assertEquals(345.0 + i * 10.0, tyre.carcassTemperatureK, 1e-9)
             assertEquals(200.0 + i * 5.0, tyre.brakeTemperatureC, 1e-9)
@@ -319,7 +319,7 @@ class LmuWindowsMapperTest {
         val result = LmuWindowsMapper.readCarcassTemperaturesK(buf, vb)
 
         WheelIndex.entries.forEachIndexed { i, wheel ->
-            assertEquals(345.0 + i * 10.0, result[wheel]!!, 1e-9)
+            assertEquals(345.0 + i * 10.0, requireNotNull(result[wheel]), 1e-9)
         }
     }
 

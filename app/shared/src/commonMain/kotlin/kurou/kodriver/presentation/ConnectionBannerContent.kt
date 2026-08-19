@@ -131,7 +131,8 @@ fun ConnectionBannerContent(
     val backgroundColor by animateColorAsState(targetValue = colors.background)
     val contentColor by animateColorAsState(targetValue = colors.content)
     val icon = bannerIcon(uiState.iconType, uiState.isConnected)
-    val isTappable = uiState.isTappable && onClick != null
+    val currentOnClick = onClick
+    val isTappable = uiState.isTappable && currentOnClick != null
 
     Box(
         modifier =
@@ -139,8 +140,8 @@ fun ConnectionBannerContent(
                 .fillMaxWidth()
                 .background(backgroundColor)
                 .then(
-                    if (isTappable) {
-                        Modifier.clickable(role = Role.Button, onClick = onClick!!)
+                    if (isTappable && currentOnClick != null) {
+                        Modifier.clickable(role = Role.Button, onClick = currentOnClick)
                     } else {
                         Modifier
                     },
