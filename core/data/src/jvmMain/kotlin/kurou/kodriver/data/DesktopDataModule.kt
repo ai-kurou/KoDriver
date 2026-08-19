@@ -25,6 +25,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperatu
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutPreferencesRepository
+import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
@@ -57,6 +58,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePre
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
@@ -85,6 +87,9 @@ val desktopDataModule =
         }
         single<QueuePreferencesRepository> {
             createQueuePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<ReadoutStartSoundEnabledPreferencesRepository> {
+            createReadoutStartSoundEnabledPreferencesRepository(directory = kodriverDirectory)
         }
         single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
             createGt7Ps5RemainingFuelLapsPreferencesRepository(kodriverDirectory)
