@@ -71,3 +71,4 @@
 - 2026-08-17 ServerVersionRepository/ServerIpPreferencesRepositoryはDesktop側でUI導線自体が存在せず対応不要と判断し削除（PR #1154）
 - 2026-08-17 デバッグ画面のイエローフラッグ状態・ゲームフェーズ表示にAnimatedContentでフェード遷移を追加し削除
 - 2026-08-17 DetailPaneCardのalphaにanimateFloatAsStateを追加し削除
+- 2026-08-19 AceWindowsReadoutTyreTemperatureDetailPaneのUIテスト文字列直書き案は既存319箇所と同じ確立された慣習と判断し見送りとして削除
