@@ -98,6 +98,7 @@ import kurou.kodriver.feature.readoutlist.generated.resources.queue_hint_descrip
 import kurou.kodriver.feature.readoutlist.generated.resources.scroll_to_top
 import kurou.kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kurou.kodriver.feature.readoutlist.generated.resources.simulator_label
+import kurou.kodriver.feature.readoutlist.generated.resources.start_sound_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.start_sound_toggle_description
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableItem
@@ -219,6 +220,12 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
             )
             Text(
                 text = stringResource(Res.string.queue_hint_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
+            )
+            Text(
+                text = stringResource(Res.string.start_sound_hint_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 24.dp),
