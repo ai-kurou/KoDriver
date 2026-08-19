@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
@@ -166,7 +167,7 @@ class ReadoutListPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                        Column(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             PriorityHintSheetContent()
                         }
                     }
