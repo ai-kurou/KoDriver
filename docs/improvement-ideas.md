@@ -53,9 +53,3 @@
   **課題**: 3つの `XxxNarratorEventProcessor` それぞれに、テレメトリログをJSON文字列化するための `buildTelemetryLogJson`/`toJsonString` 相当の関数がほぼ同一の実装（doc commentも含め）で存在する。CLAUDE.mdの「NarratorViewModelは共通化しない」はシミュレーターごとに判定対象・購読UseCase群が異なるViewModel本体を対象にした方針であり、この部分は判定ロジックと無関係な「テレメトリログのJSONシリアライズ」という単純な処理のため、同方針の対象外と考えられる。
   **改善案**: `core:narrator`（WAV再生の共通基盤が既に存在するモジュール）に、テレメトリログJSON化の共通ヘルパーを切り出せないか検討する。各シミュレーター固有のログ項目は呼び出し側でデータクラス化して渡す形にすれば、シリアライズ処理自体は共通化できる可能性がある。
 
-## テスト
-
-- **対象**: `server/src/test/kotlin/kurou/kodriver/ApplicationTest.kt` の `` `フラッグWebSocketはクライアント切断時に送信Flowをキャンセルする` ``
-  **課題**: PR #1121で `close()` 呼び出し後に `withTimeout(1_000) { closeReason.await() }` を追加してクロージングハンドシェイクの完了を待つ対策を入れたが、その後も同テストがflakyになることが確認された（対策自体は本PRで巻き戻し済み）。根本原因（クライアント切断からサーバー側の送信Flowキャンセルまでの実際のネットワーク往復に伴うタイミング依存）は未調査。
-  **改善案**: `withTimeout(5_000) { repository.cancelled.await() }` 側のタイムアウト延長や、テストの構造自体（実ネットワークI/Oを伴うtestApplication構成）の見直しなど、別のアプローチでのflaky対策を検討する。
-

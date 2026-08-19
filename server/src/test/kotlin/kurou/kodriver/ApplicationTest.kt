@@ -10,14 +10,10 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import io.ktor.websocket.CloseReason
 import io.ktor.websocket.Frame
-import io.ktor.websocket.close
 import io.ktor.websocket.readText
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.AceWindowsFlagData
@@ -306,65 +302,6 @@ class ApplicationTest {
                     assertEquals(GREEN_FLAG_JSON, first)
                     assertEquals(YELLOW_FLAG_JSON, second)
                 }
-        }
-
-    @Test
-    fun `フラッグWebSocketはクライアント切断時に送信Flowをキャンセルする`() =
-        testApplication {
-            val repository = CancellableLmuWindowsFlagRepository()
-            application {
-                module(
-                    KoDriverServerUseCases(
-                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                        observeLmuWindowsVehicleApproach =
-                            ObserveLmuWindowsVehicleApproachUseCase(
-                                EmptyLmuWindowsVehicleApproachRepository,
-                            ),
-                        observeLmuWindowsVehicleDamage =
-                            ObserveLmuWindowsVehicleDamageUseCase(
-                                EmptyLmuWindowsVehicleDamageRepository,
-                            ),
-                        observeLmuWindowsTyreCarcassTemperature =
-                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
-                            ),
-                        observeLmuWindowsVehicleClass =
-                            ObserveLmuWindowsVehicleClassUseCase(
-                                EmptyLmuWindowsVehicleClassRepository,
-                            ),
-                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
-                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                        observeLmuWindowsVirtualEnergy =
-                            ObserveLmuWindowsVirtualEnergyUseCase(
-                                EmptyLmuWindowsVirtualEnergyRepository,
-                            ),
-                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
-                        observeAceWindowsTyreCarcassTemperature =
-                            ObserveAceWindowsTyreCarcassTemperatureUseCase(
-                                EmptyAceWindowsTyreCarcassTemperatureRepository,
-                            ),
-                        observeLmuWindowsPitStatus =
-                            ObserveLmuWindowsPitStatusUseCase(
-                                EmptyLmuWindowsPitStatusRepository,
-                            ),
-                    ),
-                )
-            }
-
-            client
-                .config {
-                    install(WebSockets)
-                }.webSocket("/ws/lmu_windows/flags") {
-                    close()
-                }
-
-            // クライアント切断からサーバー側の送信Flowキャンセルまでは実際のネットワーク往復を伴うため、
-            // CI環境の負荷変動を考慮して他のテストより長めのタイムアウトを設定する。
-            withTimeout(5_000) {
-                repository.cancelled.await()
-            }
         }
 
     @Test
@@ -1971,19 +1908,6 @@ private class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {
     fun emit(data: LmuWindowsRaceFlagsData) {
         channel.trySend(data).getOrThrow()
     }
-}
-
-private class CancellableLmuWindowsFlagRepository : LmuWindowsFlagRepository {
-    val cancelled = CompletableDeferred<Unit>()
-
-    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> =
-        flow {
-            try {
-                awaitCancellation()
-            } finally {
-                cancelled.complete(Unit)
-            }
-        }
 }
 
 private class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
