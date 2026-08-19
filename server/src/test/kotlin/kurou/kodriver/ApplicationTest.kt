@@ -362,7 +362,8 @@ class ApplicationTest {
 
             // クライアント切断からサーバー側の送信Flowキャンセルまでは実際のネットワーク往復を伴うため、
             // CI環境の負荷変動を考慮して他のテストより長めのタイムアウトを設定する。
-            withTimeout(5_000) {
+            // 5秒では高負荷なCI環境下でflakyになることが確認されたため、15秒まで延長した。
+            withTimeout(15_000) {
                 repository.cancelled.await()
             }
         }
