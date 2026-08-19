@@ -160,6 +160,47 @@ class WavNarratorEngineTest {
         }
 
     @Test
+    fun `開始音が無効な項目はイベント音声のみを再生する`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine =
+                createEngine(
+                    player = player,
+                    startSoundEnabledStatesFlow = flowOf(mapOf(CAR_LEFT_KEY to false)),
+                )
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds.single())
+        }
+
+    @Test
+    fun `開始音の有効無効状態変化後のspeakは新しい状態を反映する`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val startSoundEnabledStatesFlow = MutableStateFlow(mapOf(CAR_LEFT_KEY to true))
+            val engine = createEngine(player, startSoundEnabledStatesFlow = startSoundEnabledStatesFlow)
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            startSoundEnabledStatesFlow.update { mapOf(CAR_LEFT_KEY to false) }
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            assertEquals(3, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[2])
+        }
+
+    @Test
     fun `queue true の speak は前の音声が終わってから再生する`() =
         runTest {
             val player = FakeSoundPlayer()
@@ -427,6 +468,7 @@ class WavNarratorEngineTest {
         player: FakeSoundPlayer,
         volumeFlow: Flow<Int> = flowOf(100),
         startSoundTypeFlow: Flow<String> = flowOf(FORMULA_RADIO),
+        startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
         resourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
                 CAR_LEFT_PATH -> CAR_LEFT_SOUND
@@ -465,6 +507,7 @@ class WavNarratorEngineTest {
             defaultStartSoundType = FORMULA_RADIO,
             volumeFlow = volumeFlow,
             startSoundTypeFlow = startSoundTypeFlow,
+            startSoundEnabledStatesFlow = startSoundEnabledStatesFlow,
             scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
         )
 

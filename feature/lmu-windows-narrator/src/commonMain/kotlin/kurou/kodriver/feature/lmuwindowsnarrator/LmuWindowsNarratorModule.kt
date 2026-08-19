@@ -35,6 +35,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
@@ -127,6 +128,7 @@ val lmuWindowsNarratorModule: Module =
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+                    startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
                 ),
             )
         }

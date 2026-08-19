@@ -31,6 +31,7 @@ data class WavResources<EVENT, START_TYPE>(
  * 呼び出し側（各 narrator feature）が薄いアダプタとして用意する。core:narrator が `:core:domain` へ
  * 依存しないようにするため、イベント・キー種別をすべて型パラメータ化している。
  */
+@Suppress("LongParameterList")
 class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     private val soundPlayer: SoundPlayer,
     private val resources: WavResources<EVENT, START_TYPE>,
@@ -38,6 +39,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     defaultStartSoundType: START_TYPE,
     volumeFlow: Flow<Int> = flowOf(100),
     startSoundTypeFlow: Flow<START_TYPE> = flowOf(defaultStartSoundType),
+    startSoundEnabledStatesFlow: Flow<Map<KEY, Boolean>> = flowOf(emptyMap()),
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) {
     @Volatile
@@ -45,6 +47,9 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
 
     @Volatile
     private var currentStartSoundType: START_TYPE = defaultStartSoundType
+
+    @Volatile
+    private var currentStartSoundEnabledStates: Map<KEY, Boolean> = emptyMap()
 
     @Volatile
     private var sounds: Map<EVENT, ByteArray> = emptyMap()
@@ -71,6 +76,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     init {
         scope.launch { volumeFlow.collect { currentVolume = it } }
         scope.launch { startSoundTypeFlow.collect { currentStartSoundType = it } }
+        scope.launch { startSoundEnabledStatesFlow.collect { currentStartSoundEnabledStates = it } }
         scope.launch {
             val loaded = mutableMapOf<EVENT, ByteArray>()
             resources.eventToFile.forEach { (event, path) ->
@@ -128,9 +134,13 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
         event: EVENT,
         mainSound: ByteArray,
     ) {
-        _currentKey = eventToKey(event)
+        val key = eventToKey(event)
+        _currentKey = key
         val vol = currentVolume
-        startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
+        val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
+        if (startSoundEnabled) {
+            startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
+        }
         soundPlayer.play(mainSound, vol)
         _currentKey = null
     }
