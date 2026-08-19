@@ -29,10 +29,19 @@ class ReadoutListItemTypeAceWindowsTest {
     }
 
     @Test
-    fun `ace_windows のデフォルト並び順は先頭がフラッグ`() {
+    fun `ace_windows の tyre_temperature は AceWindows_TyreTemperature を返す`() {
+        assertEquals(
+            ReadoutListItemType.AceWindows.TyreTemperature,
+            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.TyreTemperature.Root),
+        )
+    }
+
+    @Test
+    fun `ace_windows のデフォルト並び順はフラッグ・タイヤ温度・燃料残量の順`() {
         assertEquals(
             listOf(
                 ReadoutItemKey.AceWindows.Flag.Root,
+                ReadoutItemKey.AceWindows.TyreTemperature.Root,
                 ReadoutItemKey.AceWindows.RemainingFuel.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.AceWindows),

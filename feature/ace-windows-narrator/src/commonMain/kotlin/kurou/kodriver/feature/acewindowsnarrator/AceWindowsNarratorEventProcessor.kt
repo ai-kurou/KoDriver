@@ -10,6 +10,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
@@ -28,6 +29,7 @@ internal class AceWindowsNarratorEventProcessor(
 ) {
     private var previousFuel: AceWindowsFuelData? = null
     private var previousFlag: AceWindowsFlagData? = null
+    private var previousTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null
 
     suspend fun processFlag(
         flag: AceWindowsFlagData,
@@ -91,6 +93,38 @@ internal class AceWindowsNarratorEventProcessor(
             }
         }
         previousFuel = fuel
+    }
+
+    suspend fun processTyreTemperature(
+        tyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: AceWindowsTelemetryLogContext,
+        isOnTrack: Boolean,
+    ) {
+        val previous = previousTyreCarcassTemperature
+        if (isOnTrack) {
+            events.forEach { event ->
+                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                    saveTelemetryLogSafely(
+                        createdAt = observedAtMs,
+                        readoutItemKey = event.readoutItemKey,
+                        telemetryJson =
+                            buildTyreTemperatureTelemetryLogJson(
+                                state = logContext.state,
+                                previous = previous,
+                                current = tyreCarcassTemperature,
+                                settings = logContext.settings,
+                                observedAtMs = observedAtMs,
+                                finalState = logContext.finalState,
+                            ),
+                    )
+                }
+            }
+        }
+        previousTyreCarcassTemperature = tyreCarcassTemperature
     }
 
     private fun speakWithPriority(
@@ -181,6 +215,31 @@ private fun buildFlagTelemetryLogJson(
         """"state":${state.toJsonString()},""" +
         """"previousFlag":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
         """"flag":${telemetryLogJson.encodeToString(current)},""" +
+        """"settings":${settings.toJsonString()},""" +
+        """"observedAtMs":$observedAtMs,""" +
+        """"finalState":${finalState.toJsonString()}""" +
+        "}"
+
+/**
+ * ACE のタイヤカーカス温度判定入力（[AceWindowsTyreCarcassTemperatureData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineTyreTemperatureOverheat]）と
+ * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
+private fun buildTyreTemperatureTelemetryLogJson(
+    state: AceWindowsNarratorState,
+    previous: AceWindowsTyreCarcassTemperatureData?,
+    current: AceWindowsTyreCarcassTemperatureData,
+    settings: AceWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: AceWindowsNarratorState,
+): String =
+    "{" +
+        """"state":${state.toJsonString()},""" +
+        """"previousTyreCarcassTemperature":${
+            previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"
+        },""" +
+        """"tyreCarcassTemperature":${telemetryLogJson.encodeToString(current)},""" +
         """"settings":${settings.toJsonString()},""" +
         """"observedAtMs":$observedAtMs,""" +
         """"finalState":${finalState.toJsonString()}""" +

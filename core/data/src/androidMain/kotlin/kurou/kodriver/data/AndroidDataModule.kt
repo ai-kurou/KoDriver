@@ -11,6 +11,7 @@ import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelPreferencesRepository
+import kurou.kodriver.data.preferences.createAceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5MyBestLapPreferencesRepository
@@ -38,6 +39,7 @@ import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsFlagRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsFuelRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsStatusRepository
+import kurou.kodriver.data.websocket.WebSocketAceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsFlagRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsPitStatusRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsRepository
@@ -53,6 +55,8 @@ import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
+import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
@@ -242,6 +246,9 @@ private fun androidDataModuleAceWindows() =
         single<AceWindowsStatusRepository> {
             WebSocketAceWindowsStatusRepository(serverIpRepository = get(), client = get())
         }
+        single<AceWindowsTyreCarcassTemperatureRepository> {
+            WebSocketAceWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
+        }
     }
 
 /**
@@ -266,6 +273,9 @@ private fun androidDataModuleThresholdPreferences(context: Context) =
         }
         single<AceWindowsFlagPreferencesRepository> {
             createAceWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<AceWindowsTyreTemperaturePreferencesRepository> {
+            createAceWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
         }
         single<LmuWindowsPitTimingPreferencesRepository> {
             createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)

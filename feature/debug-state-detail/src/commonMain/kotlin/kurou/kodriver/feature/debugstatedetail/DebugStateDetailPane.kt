@@ -171,7 +171,13 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
         DebugStateCardKey.TYRE_TEMPERATURE to
             { uiState -> TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry) },
         DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
-            { uiState -> TyreCarcassTemperatureContent(uiState.selectedSimulator, uiState.tyreCarcassTemperature) },
+            { uiState ->
+                TyreCarcassTemperatureContent(
+                    uiState.selectedSimulator,
+                    uiState.tyreCarcassTemperature,
+                    uiState.aceWindowsTyreCarcassTemperature,
+                )
+            },
         DebugStateCardKey.TYRE_WEAR to
             { uiState -> TyreWearContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry) },
         DebugStateCardKey.FUEL_CONSUMPTION to { uiState ->

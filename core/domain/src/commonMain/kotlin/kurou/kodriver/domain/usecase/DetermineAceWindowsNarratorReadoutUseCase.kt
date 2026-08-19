@@ -1,26 +1,30 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 
 /**
  * ACE 向け読み上げ判定の継続状態。
  *
- * 同じ低燃料警告や同じ旗状態を連続で読み上げないため、前回の判定結果を保持する。
+ * 同じ低燃料警告・同じ旗状態・同じタイヤ過熱状態を連続で読み上げないため、前回の判定結果を保持する。
  */
 data class AceWindowsNarratorState(
     val remainingFuelWarned: Boolean = false,
     val previousFlag: AceWindowsFlagType? = null,
+    val tyreOverheating: Boolean = false,
 )
 
 /** ACE 向け読み上げ判定で参照するユーザー設定。 */
 data class AceWindowsNarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val remainingFuelThresholdPercentage: Int,
+    val tyreTemperatureHighThresholdCelsius: Int = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
 )
 
 /** ACE 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
@@ -30,7 +34,7 @@ data class AceWindowsNarratorReadoutDecision(
 )
 
 /**
- * ACE の燃料残量・旗状態から、今回読み上げるべき音声イベントを決定する UseCase。
+ * ACE の燃料残量・旗状態・タイヤカーカス温度から、今回読み上げるべき音声イベントを決定する UseCase。
  */
 class DetermineAceWindowsNarratorReadoutUseCase {
     fun determineRemainingFuel(
@@ -66,6 +70,31 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                     settings.enabledStates.readoutEnabled(itemKey)
                 }?.second
         return AceWindowsNarratorReadoutDecision(nextState, listOfNotNull(event))
+    }
+
+    fun determineTyreTemperatureOverheat(
+        state: AceWindowsNarratorState,
+        data: AceWindowsTyreCarcassTemperatureData,
+        settings: AceWindowsNarratorReadoutSettings,
+    ): AceWindowsNarratorReadoutDecision {
+        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.toDouble()
+        val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
+        val anyHot = data.wheels.values.any { it >= hotThreshold }
+        val allCool = data.wheels.values.all { it <= coolThreshold }
+        val nextOverheating =
+            when {
+                anyHot -> true
+                allCool -> false
+                else -> state.tyreOverheating
+            }
+        val shouldAnnounce =
+            !state.tyreOverheating && nextOverheating &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.TyreTemperature.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning)
+        return AceWindowsNarratorReadoutDecision(
+            state = state.copy(tyreOverheating = nextOverheating),
+            events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsTyreOverheat) else emptyList(),
+        )
     }
 
     private fun flagEvent(flag: AceWindowsFlagType): Pair<ReadoutItemKey, SpeechEvent>? =
@@ -114,4 +143,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                 null
             }
         }
+
+    private companion object {
+        const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5.0
+    }
 }

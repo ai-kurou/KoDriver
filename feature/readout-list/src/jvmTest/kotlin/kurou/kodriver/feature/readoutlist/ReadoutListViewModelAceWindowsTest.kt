@@ -60,7 +60,7 @@ class ReadoutListViewModelAceWindowsTest {
     }
 
     @Test
-    fun `ace_windowsを選択するとlistPaneにフラッグと燃料残量アイテムが表示される`() =
+    fun `ace_windowsを選択するとlistPaneにフラッグとタイヤ温度と燃料残量アイテムが表示される`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -93,12 +93,18 @@ class ReadoutListViewModelAceWindowsTest {
             val state = viewModel.uiState.first()
             assertEquals(Simulator.AceWindows, state.selectedSimulator)
             assertEquals(
-                listOf(ReadoutItemKey.AceWindows.Flag.Root, ReadoutItemKey.AceWindows.RemainingFuel.Root),
+                listOf(
+                    ReadoutItemKey.AceWindows.Flag.Root,
+                    ReadoutItemKey.AceWindows.TyreTemperature.Root,
+                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                ),
                 state.items,
             )
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
+            assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
             assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
+            assertEquals(false, state.queueEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
             assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) }
