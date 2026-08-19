@@ -125,9 +125,12 @@ class ReadoutListPaneTest {
             }
         }
 
-        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(1)
+        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(2)
         rule.onAllNodes(hasSwitchRole()).assertCountEquals(1)
-        rule.onAllNodes(hasQueueToggleRole())[0].assertIsEnabled().performClick()
+        rule
+            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .assertIsEnabled()
+            .performClick()
         rule.onAllNodes(hasSwitchRole())[0].assertIsEnabled().performClick()
 
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to true, queueChanges.single())
@@ -196,7 +199,10 @@ class ReadoutListPaneTest {
             }
         }
 
-        rule.onAllNodes(hasQueueToggleRole())[0].assertIsNotEnabled().performClick()
+        rule
+            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .assertIsNotEnabled()
+            .performClick()
 
         assertFalse(queueChanges.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
     }

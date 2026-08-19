@@ -6,6 +6,7 @@
     <string name="priority_hint_description">上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます</string>
     <string name="queue_hint_description">キューアイコンをONにすると、その項目は読み上げが重なった際に割り込まず、順番に読み上げられるよう待機します</string>
     <string name="ace_readout_timing_hint_description">レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。レース中（コース走行中）は設定通りに読み上げられます。</string>
+    <string name="start_sound_toggle_description">読み上げ開始音</string>
     <string name="scroll_to_top">先頭へ</string>
     <string name="navigate_back">戻る</string>
 </resources>
