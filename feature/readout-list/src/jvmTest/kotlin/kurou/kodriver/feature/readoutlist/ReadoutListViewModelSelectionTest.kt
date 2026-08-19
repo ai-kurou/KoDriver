@@ -20,6 +20,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -39,6 +40,9 @@ class ReadoutListViewModelSelectionTest {
 
     @MockK
     private lateinit var queueRepository: QueuePreferencesRepository
+
+    @MockK
+    private lateinit var startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository
 
     @BeforeTest
     fun setUp() {
@@ -63,7 +67,9 @@ class ReadoutListViewModelSelectionTest {
                 MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
             viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
@@ -76,7 +82,9 @@ class ReadoutListViewModelSelectionTest {
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
 
@@ -95,7 +103,9 @@ class ReadoutListViewModelSelectionTest {
                 MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
             viewModel.onItemSelected(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
@@ -115,7 +125,9 @@ class ReadoutListViewModelSelectionTest {
                 MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
             viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
@@ -142,7 +154,9 @@ class ReadoutListViewModelSelectionTest {
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { readoutRepository.observeReadoutOrder("gt7_ps5") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
             viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
@@ -159,7 +173,8 @@ class ReadoutListViewModelSelectionTest {
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("gt7_ps5") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
-            confirmVerified(simulatorRepository, readoutRepository, queueRepository)
+            verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
+            confirmVerified(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
         }
 
     @Test
@@ -167,7 +182,9 @@ class ReadoutListViewModelSelectionTest {
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
             viewModel.clearSelectedItem()

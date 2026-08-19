@@ -50,6 +50,7 @@ fun ReadoutContent(
         onMove = viewModel::moveItem,
         onReadoutEnabledChanged = viewModel::onReadoutEnabledChanged,
         onQueueEnabledChanged = viewModel::onQueueEnabledChanged,
+        onStartSoundEnabledChanged = viewModel::onStartSoundEnabledChanged,
         onItemSelected = viewModel::onItemSelected,
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
@@ -69,6 +70,7 @@ internal fun ReadoutContent(
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemSelected: (ReadoutItemKey) -> Unit,
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
@@ -155,6 +157,7 @@ internal fun ReadoutContent(
                 onMove = onMove,
                 onReadoutEnabledChanged = onReadoutEnabledChanged,
                 onQueueEnabledChanged = onQueueEnabledChanged,
+                onStartSoundEnabledChanged = onStartSoundEnabledChanged,
                 onItemClick = onItemSelected,
                 scrollToTopRequest = scrollToTopRequest,
             )
@@ -195,6 +198,7 @@ private fun ReadoutContentPreview() {
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
         onQueueEnabledChanged = { _, _ -> },
+        onStartSoundEnabledChanged = { _, _ -> },
         onItemSelected = {},
         onClearSelectedItem = {},
     )

@@ -65,7 +65,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -269,11 +268,11 @@ internal fun ReadoutListPane(
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemClick: (ReadoutItemKey) -> Unit,
     scrollToTopRequest: Int = 0,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val startSoundEnabledStates = remember { mutableStateMapOf<ReadoutItemKey, Boolean>() }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val isAceSelected = uiState.selectedSimulator is Simulator.AceWindows
@@ -378,12 +377,12 @@ internal fun ReadoutListPane(
                             dragHandleModifier = Modifier.draggableHandle(),
                             readoutEnabled = readoutEnabled,
                             queueEnabled = uiState.queueEnabledStates[item] ?: false,
-                            startSoundEnabled = startSoundEnabledStates[item] ?: true,
+                            startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
                             containerColor = cardContainerColor,
                             onItemClick = onItemClick,
                             onQueueEnabledChanged = onQueueEnabledChanged,
                             onReadoutEnabledChanged = onReadoutEnabledChanged,
-                            onStartSoundEnabledChanged = { key, enabled -> startSoundEnabledStates[key] = enabled },
+                            onStartSoundEnabledChanged = onStartSoundEnabledChanged,
                         )
                     }
                 }
@@ -661,6 +660,7 @@ private fun ReadoutListPanePreview(
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
         onQueueEnabledChanged = { _, _ -> },
+        onStartSoundEnabledChanged = { _, _ -> },
         onItemClick = { _ -> },
     )
 }

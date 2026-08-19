@@ -1,11 +1,12 @@
 package kurou.kodriver.domain.model
 
 // readout-list（ReadoutListViewModel）が参照するデフォルト値。
-// 現行の「読み上げ開始音を必ず再生する」挙動を保つため、全ての ReadoutItemKey.TopLevel をデフォルト true とする。
+// 車両接近アナウンスは接近車両ごとに頻繁に再生されるため開始音をデフォルトOFFとし、
+// それ以外の ReadoutItemKey.TopLevel はデフォルトONとする。
 // 新しい ReadoutItemKey.TopLevel を追加した場合は必ずここにも列挙すること（省略＝デフォルトtrue、ではない）。
 val READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
-        ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
+        ReadoutItemKey.LmuWindows.VehicleApproach.Root to false,
         ReadoutItemKey.LmuWindows.Flag.Root to true,
         ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,

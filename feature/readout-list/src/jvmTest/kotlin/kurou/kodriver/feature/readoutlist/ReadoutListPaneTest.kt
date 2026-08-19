@@ -37,6 +37,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }
@@ -60,6 +61,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }
@@ -91,6 +93,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = { clicked += it },
                 )
             }
@@ -120,6 +123,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { item, enabled -> readoutChanges += item to enabled },
                     onQueueEnabledChanged = { item, enabled -> queueChanges += item to enabled },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }
@@ -153,6 +157,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }
@@ -185,6 +190,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { item, enabled -> readoutChanges += item to enabled },
                     onQueueEnabledChanged = { item, enabled -> queueChanges += item to enabled },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = { clicked += it },
                 )
             }
@@ -222,6 +228,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { item, enabled -> queueChanges += item to enabled },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }
@@ -251,6 +258,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }
@@ -278,6 +286,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }
@@ -306,6 +315,7 @@ class ReadoutListPaneTest {
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }

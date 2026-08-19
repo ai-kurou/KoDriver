@@ -10,6 +10,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import org.koin.dsl.module
 
@@ -26,6 +27,9 @@ val fakeReadoutListModule =
         }
         single<LmuWindowsFlagPreferencesRepository> { FakeLmuWindowsFlagPreferencesRepositoryImpl() }
         single<QueuePreferencesRepository> { FakeQueuePreferencesRepositoryImpl() }
+        single<ReadoutStartSoundEnabledPreferencesRepository> {
+            FakeReadoutStartSoundEnabledPreferencesRepositoryImpl()
+        }
     }
 
 private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepository {
@@ -82,6 +86,19 @@ private class FakeQueuePreferencesRepositoryImpl : QueuePreferencesRepository {
     override fun observeQueueEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
 
     override suspend fun saveQueueEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
+        states.update { it + (key to enabled) }
+    }
+}
+
+private class FakeReadoutStartSoundEnabledPreferencesRepositoryImpl : ReadoutStartSoundEnabledPreferencesRepository {
+    private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+
+    override fun observeStartSoundEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
+
+    override suspend fun saveStartSoundEnabledState(
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {

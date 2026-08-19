@@ -28,7 +28,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ReadoutListViewModelQueueTest {
+class ReadoutListViewModelStartSoundTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -55,18 +55,19 @@ class ReadoutListViewModelQueueTest {
     }
 
     @Test
-    fun `キューのデフォルト値にRepositoryの永続化済み状態がマージされて表示される`() =
+    fun `読み上げ開始音のデフォルト値にRepositoryの永続化済み状態がマージされて表示される`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator?>(null)
-            every { queueRepository.observeQueueEnabledStates() } returns
-                MutableStateFlow(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true))
-            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns
+                MutableStateFlow(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to false))
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             val state = viewModel.uiState.first()
-            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.Flag.Root])
-            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.TyreWear.Root])
+            assertEquals(false, state.startSoundEnabledStates[ReadoutItemKey.LmuWindows.Flag.Root])
+            assertEquals(false, state.startSoundEnabledStates[ReadoutItemKey.LmuWindows.VehicleApproach.Root])
+            assertEquals(true, state.startSoundEnabledStates[ReadoutItemKey.LmuWindows.TyreWear.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
             verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
@@ -74,25 +75,28 @@ class ReadoutListViewModelQueueTest {
         }
 
     @Test
-    fun `onQueueEnabledChangedでキューのON_OFF状態がRepositoryに保存される`() =
+    fun `onStartSoundEnabledChangedで読み上げ開始音のON_OFF状態がRepositoryに保存される`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator?>(null)
-            val queueEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-            every { queueRepository.observeQueueEnabledStates() } returns queueEnabledFlow
-            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            val startSoundEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns startSoundEnabledFlow
             coEvery {
-                queueRepository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+                startSoundRepository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
             } answers {
-                queueEnabledFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to true) }
+                startSoundEnabledFlow.update { it + (ReadoutItemKey.LmuWindows.VehicleApproach.Root to true) }
             }
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onQueueEnabledChanged(ReadoutItemKey.LmuWindows.Flag.Root, true)
+            viewModel.onStartSoundEnabledChanged(ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
 
-            assertEquals(true, viewModel.uiState.first().queueEnabledStates[ReadoutItemKey.LmuWindows.Flag.Root])
+            assertEquals(
+                true,
+                viewModel.uiState.first().startSoundEnabledStates[ReadoutItemKey.LmuWindows.VehicleApproach.Root],
+            )
             coVerify(exactly = 1) {
-                queueRepository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+                startSoundRepository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
             }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
