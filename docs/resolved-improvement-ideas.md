@@ -73,3 +73,4 @@
 - 2026-08-17 DetailPaneCardのalphaにanimateFloatAsStateを追加し削除
 - 2026-08-19 AceWindowsReadoutTyreTemperatureDetailPaneのUIテスト文字列直書き案は既存319箇所と同じ確立された慣習と判断し見送りとして削除
 - 2026-08-19 flagWebSocketキャンセルテストのflaky対策をsendJsonMessages単体テスト化で実装し削除（PR #1176）
+- 2026-08-19 LMU/GT7/ACE NarratorEventProcessorのテレメトリログJSON組み立て重複をcore:narratorのbuildTelemetryLogJsonヘルパーへ切り出して削除

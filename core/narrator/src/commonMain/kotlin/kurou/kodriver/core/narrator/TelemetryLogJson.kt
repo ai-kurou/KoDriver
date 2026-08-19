@@ -41,6 +41,41 @@ fun String.toJsonStringLiteral(): String =
         append('"')
     }
 
+/**
+ * [buildTelemetryLogJson] の `previous<X>` / `<x>` フィールド1つ分（JSON キー名と、既に JSON 文字列化
+ * された値）を表す。`previous` 側は値が存在しない場合を `json = null` で表現する。
+ */
+data class TelemetryLogJsonField(
+    val name: String,
+    val json: String?,
+)
+
+/**
+ * `XxxNarratorEventProcessor` がテレメトリログとして保存する JSON オブジェクトを組み立てる共通ヘルパー。
+ *
+ * LMU / GT7 / ACE の各 narrator feature は、判定対象のテレメトリ型やシリアライズ方法（[TelemetryLogJson] を
+ * そのまま使うか `allowSpecialFloatingPointValues = true` で拡張するか等）がそれぞれ異なるため、値の
+ * シリアライズ自体は呼び出し側の責務のまま、既に JSON 文字列化された値をここへ渡してもらい、
+ * `state` / `previous<X>` / `<x>` / `settings` / `observedAtMs` / `finalState` という共通のキー構成へ
+ * 組み立てるだけを担う。
+ */
+fun buildTelemetryLogJson(
+    stateJson: String,
+    previous: TelemetryLogJsonField,
+    current: TelemetryLogJsonField,
+    settingsJson: String,
+    observedAtMs: Long,
+    finalStateJson: String,
+): String =
+    "{" +
+        """"state":$stateJson,""" +
+        """"${previous.name}":${previous.json ?: "null"},""" +
+        """"${current.name}":${current.json},""" +
+        """"settings":$settingsJson,""" +
+        """"observedAtMs":$observedAtMs,""" +
+        """"finalState":$finalStateJson""" +
+        "}"
+
 /** JSON 仕様でエスケープが必須な制御文字の境界値 (U+0020)。これ未満の文字は全て `\uXXXX` でエスケープする。 */
 private const val CONTROL_CHARACTER_BOUNDARY = ' '
 
