@@ -76,3 +76,4 @@
 - 2026-08-19 LMU/GT7/ACE NarratorEventProcessorのテレメトリログJSON組み立て重複をcore:narratorのbuildTelemetryLogJsonヘルパーへ切り出して削除
 - 2026-08-20 WebSocketのmaxFrameSize未設定をKtorに64KB上限を明示設定して削除（PR #1190）
 - 2026-08-20 WebSocket同時接続数上限は、Origin検証(PR #1084)・maxFrameSize設定(PR #1190)で主要リスクは対応済みと判断し見送りとして削除
+- 2026-08-20 readoutリセットボタン文言の2系統分裂を「デフォルトに戻す」に統一して削除（PR #1197）
