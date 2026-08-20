@@ -1,6 +1,7 @@
 package kurou.kodriver.core.gt7ps5data.mapper
 
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test
@@ -85,14 +86,14 @@ class Gt7Ps5MapperTest {
     fun `GasLevelを正しくマッピングする`() {
         val packet = packetWith(gasLevel = 45.5f)
         val result = Gt7Ps5Mapper.map(packet)
-        assertEquals(45.5f, result.gasLevel)
+        assertEquals(Gt7Ps5FuelUnit(45.5f), result.gasLevel)
     }
 
     @Test
     fun `GasCapacityを正しくマッピングする`() {
         val packet = packetWith(gasCapacity = 100f)
         val result = Gt7Ps5Mapper.map(packet)
-        assertEquals(100f, result.gasCapacity)
+        assertEquals(Gt7Ps5FuelUnit(100f), result.gasCapacity)
     }
 
     @Test
@@ -111,8 +112,8 @@ class Gt7Ps5MapperTest {
         assertEquals(3, result.lapCount)
         assertEquals(15, result.lapsInRace)
         assertEquals(85_432, result.bestLapTimeMs)
-        assertEquals(30.2f, result.gasLevel)
-        assertEquals(80f, result.gasCapacity)
+        assertEquals(Gt7Ps5FuelUnit(30.2f), result.gasLevel)
+        assertEquals(Gt7Ps5FuelUnit(80f), result.gasCapacity)
         assertEquals(CelsiusReading(82.1f), result.tyreTemperature.frontLeftCelsius)
         assertEquals(CelsiusReading(83.4f), result.tyreTemperature.frontRightCelsius)
         assertEquals(CelsiusReading(78.5f), result.tyreTemperature.rearLeftCelsius)

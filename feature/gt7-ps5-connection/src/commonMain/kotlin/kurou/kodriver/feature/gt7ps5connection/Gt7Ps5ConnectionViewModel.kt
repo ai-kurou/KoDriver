@@ -30,8 +30,8 @@ internal class Gt7Ps5ConnectionViewModel(
                                 } else {
                                     Gt7Ps5ConnectionStatus.DISCONNECTED
                                 },
-                            fuelLevel = state.telemetry?.gasLevel,
-                            fuelCapacity = state.telemetry?.gasCapacity,
+                            fuelLevel = state.telemetry?.gasLevel?.value,
+                            fuelCapacity = state.telemetry?.gasCapacity?.value,
                             currentLap = state.telemetry?.lapCount,
                             totalLaps = state.telemetry?.lapsInRace,
                         )

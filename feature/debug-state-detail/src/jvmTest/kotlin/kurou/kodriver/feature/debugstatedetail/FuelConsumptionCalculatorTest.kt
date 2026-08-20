@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -63,7 +64,7 @@ class FuelConsumptionCalculatorTest {
         lapCount = lapCount,
         lapsInRace = 0,
         bestLapTimeMs = 0,
-        gasLevel = gasLevel,
-        gasCapacity = gasCapacity,
+        gasLevel = Gt7Ps5FuelUnit(gasLevel),
+        gasCapacity = Gt7Ps5FuelUnit(gasCapacity),
     )
 }

@@ -26,6 +26,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -933,8 +934,8 @@ private fun gt7Telemetry(bestLapTimeMs: Int) =
         lapCount = 0,
         lapsInRace = 0,
         bestLapTimeMs = bestLapTimeMs,
-        gasLevel = 0f,
-        gasCapacity = 100f,
+        gasLevel = Gt7Ps5FuelUnit(0f),
+        gasCapacity = Gt7Ps5FuelUnit(100f),
     )
 
 private fun gt7Telemetry(
@@ -946,8 +947,8 @@ private fun gt7Telemetry(
     lapCount = lapCount,
     lapsInRace = 5,
     bestLapTimeMs = bestLapTimeMs,
-    gasLevel = gasLevel,
-    gasCapacity = gasCapacity,
+    gasLevel = Gt7Ps5FuelUnit(gasLevel),
+    gasCapacity = Gt7Ps5FuelUnit(gasCapacity),
 )
 
 private fun gt7Telemetry(tyreTemperature: Gt7Ps5TyreTemperatureData) =
@@ -955,7 +956,7 @@ private fun gt7Telemetry(tyreTemperature: Gt7Ps5TyreTemperatureData) =
         lapCount = 0,
         lapsInRace = 0,
         bestLapTimeMs = 30_000,
-        gasLevel = 0f,
-        gasCapacity = 100f,
+        gasLevel = Gt7Ps5FuelUnit(0f),
+        gasCapacity = Gt7Ps5FuelUnit(100f),
         tyreTemperature = tyreTemperature,
     )

@@ -1,6 +1,7 @@
 package kurou.kodriver.core.gt7ps5data.mapper
 
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import java.nio.ByteBuffer
@@ -27,8 +28,8 @@ internal object Gt7Ps5Mapper {
             lapCount = packet.getShort(LAP_COUNT_OFFSET).toInt(),
             lapsInRace = packet.getShort(LAPS_IN_RACE_OFFSET).toInt(),
             bestLapTimeMs = packet.getInt(BEST_LAP_TIME_OFFSET),
-            gasLevel = packet.getFloat(GAS_LEVEL_OFFSET),
-            gasCapacity = packet.getFloat(GAS_CAPACITY_OFFSET),
+            gasLevel = Gt7Ps5FuelUnit(packet.getFloat(GAS_LEVEL_OFFSET)),
+            gasCapacity = Gt7Ps5FuelUnit(packet.getFloat(GAS_CAPACITY_OFFSET)),
             carCategory = readCarCategory(packet),
             tyreTemperature = readTyreTemperature(packet),
         )

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kotlin.test.BeforeTest
@@ -40,8 +41,8 @@ class ObserveGt7Ps5ConnectionUseCaseTest {
                     lapCount = 3,
                     lapsInRace = 10,
                     bestLapTimeMs = 0,
-                    gasLevel = 20f,
-                    gasCapacity = 50f,
+                    gasLevel = Gt7Ps5FuelUnit(20f),
+                    gasCapacity = Gt7Ps5FuelUnit(50f),
                 )
             every { repository.telemetryStream() } returns MutableStateFlow(telemetry)
             coEvery { repository.isConnected() } returns true
