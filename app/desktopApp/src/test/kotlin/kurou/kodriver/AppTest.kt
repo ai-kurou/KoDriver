@@ -153,11 +153,7 @@ class AppTest {
         selectSimulator("Assetto Corsa EVO（Windows版）")
         clickReadoutPriorityHelp()
 
-        waitUntilDisplayed("燃料残量")
-        clickItemAndVerifyDescription(
-            "燃料残量",
-            "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
-        )
+        waitUntilDisplayed("フラッグ")
         clickItemAndVerifyDescription(
             "フラッグ",
             "ホワイトフラッグ・グリーンフラッグ・レッドフラッグ・イエローフラッグなどのフラッグ状況を音声でお知らせします。",
@@ -165,6 +161,10 @@ class AppTest {
         clickItemAndVerifyDescription(
             "タイヤ温度",
             "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
+        )
+        clickItemAndVerifyDescription(
+            "燃料残量",
+            "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
         )
     }
 
