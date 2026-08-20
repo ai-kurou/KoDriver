@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.model
 
 import kotlinx.serialization.Serializable
+import kotlin.jvm.JvmInline
 
 /**
  * テレメトリから取得した実測の摂氏温度。単位の取り違え（℃/℉、ケルビン等）をコンパイル時に防ぐために使う。
