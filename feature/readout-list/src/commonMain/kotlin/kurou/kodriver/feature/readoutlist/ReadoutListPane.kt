@@ -59,6 +59,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -502,6 +503,7 @@ private fun ReadoutListItemCard(
                         text = itemName,
                         modifier = Modifier.padding(start = 12.dp).weight(1f),
                     )
+                    VerticalDivider(modifier = Modifier.padding(horizontal = 8.dp).heightIn(max = 24.dp))
                     ReadoutListReadoutSwitch(
                         item = item,
                         checked = readoutEnabled,
