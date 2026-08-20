@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -207,7 +208,7 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = 42.0),
+                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
                         ),
                     canNavigateBack = true,

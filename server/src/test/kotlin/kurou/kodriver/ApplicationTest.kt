@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
@@ -2075,8 +2076,8 @@ private class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRep
     }
 }
 
-private val aceFuelData1 = AceWindowsFuelData(remainingPercent = 42.0)
-private val aceFuelData2 = AceWindowsFuelData(remainingPercent = 28.5)
+private val aceFuelData1 = AceWindowsFuelData(remainingPercent = FuelPercent(42.0))
+private val aceFuelData2 = AceWindowsFuelData(remainingPercent = FuelPercent(28.5))
 
 private const val ACE_FUEL_JSON_1 = """{"remainingPercent":42.0}"""
 private const val ACE_FUEL_JSON_2 = """{"remainingPercent":28.5}"""

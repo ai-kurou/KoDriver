@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class AceWindowsFuelData(
-    /** 燃料残量割合。単位は percent。0.0 より大きく 100.0 以下の値を想定する。 */
-    val remainingPercent: Double,
+    /** 燃料残量割合。0.0 より大きく 100.0 以下の値を想定する。 */
+    val remainingPercent: FuelPercent,
 )

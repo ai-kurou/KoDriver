@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 
@@ -81,7 +82,7 @@ internal object AceWindowsMapper {
     fun mapFuel(buffer: ByteBuffer): AceWindowsFuelData =
         AceWindowsFuelData(
             remainingPercent =
-                buffer.getFloat(OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT).toDouble() * PERCENT_MULTIPLIER,
+                FuelPercent(buffer.getFloat(OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT).toDouble() * PERCENT_MULTIPLIER),
         )
 
     fun mapTyreCarcassTemperature(buffer: ByteBuffer): AceWindowsTyreCarcassTemperatureData =

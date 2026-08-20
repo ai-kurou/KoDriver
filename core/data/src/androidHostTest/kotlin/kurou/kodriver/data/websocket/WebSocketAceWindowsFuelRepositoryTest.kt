@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
+import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -74,7 +75,7 @@ class WebSocketAceWindowsFuelRepositoryTest {
 
             val result = buildRepository().fuelStream().first()
 
-            assertEquals(42.0, result.remainingPercent)
+            assertEquals(FuelPercent(42.0), result.remainingPercent)
             assertEquals("/ws/ace_windows/fuel", server.takeRequest().path)
         }
 
@@ -99,7 +100,7 @@ class WebSocketAceWindowsFuelRepositoryTest {
 
             val result = buildRepository().fuelStream().first()
 
-            assertEquals(42.0, result.remainingPercent)
+            assertEquals(FuelPercent(42.0), result.remainingPercent)
         }
 
     @Test
@@ -134,7 +135,7 @@ class WebSocketAceWindowsFuelRepositoryTest {
 
             val result = buildRepository(retryDelayMs = 0L).fuelStream().first()
 
-            assertEquals(42.0, result.remainingPercent)
+            assertEquals(FuelPercent(42.0), result.remainingPercent)
         }
 
     @Test
@@ -162,7 +163,7 @@ class WebSocketAceWindowsFuelRepositoryTest {
 
             fakeIpRepository.setIp("127.0.0.1")
             val result = repository.fuelStream().first()
-            assertEquals(28.5, result.remainingPercent)
+            assertEquals(FuelPercent(28.5), result.remainingPercent)
         }
 
     @Test

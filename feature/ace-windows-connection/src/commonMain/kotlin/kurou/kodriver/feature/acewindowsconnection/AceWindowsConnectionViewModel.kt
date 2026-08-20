@@ -30,7 +30,7 @@ internal class AceWindowsConnectionViewModel(
                                 } else {
                                     AceWindowsConnectionStatus.DISCONNECTED
                                 },
-                            fuelRemainingPercent = state.fuel?.remainingPercent,
+                            fuelRemainingPercent = state.fuel?.remainingPercent?.value,
                         )
                     }
                 } else {

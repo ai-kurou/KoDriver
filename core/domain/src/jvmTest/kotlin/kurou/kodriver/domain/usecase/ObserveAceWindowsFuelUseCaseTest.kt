@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -29,7 +30,7 @@ class ObserveAceWindowsFuelUseCaseTest {
     @Test
     fun `invoke はリポジトリの fuelStream を返す`() =
         runTest {
-            val expected = AceWindowsFuelData(remainingPercent = 50.0)
+            val expected = AceWindowsFuelData(remainingPercent = FuelPercent(50.0))
             every { repo.fuelStream() } returns flowOf(expected)
             val useCase = ObserveAceWindowsFuelUseCase(repo)
 
@@ -56,9 +57,9 @@ class ObserveAceWindowsFuelUseCaseTest {
     @Test
     fun `複数のデータを順番通りに流す`() =
         runTest {
-            val data1 = AceWindowsFuelData(remainingPercent = 80.0)
-            val data2 = AceWindowsFuelData(remainingPercent = 50.0)
-            val data3 = AceWindowsFuelData(remainingPercent = 20.0)
+            val data1 = AceWindowsFuelData(remainingPercent = FuelPercent(80.0))
+            val data2 = AceWindowsFuelData(remainingPercent = FuelPercent(50.0))
+            val data3 = AceWindowsFuelData(remainingPercent = FuelPercent(20.0))
             every { repo.fuelStream() } returns flowOf(data1, data2, data3)
             val useCase = ObserveAceWindowsFuelUseCase(repo)
 

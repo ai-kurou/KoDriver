@@ -7,6 +7,7 @@ import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
@@ -413,7 +414,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         assertEquals(false, cooledState.tyreOverheating)
     }
 
-    private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = remainingPercent)
+    private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 
