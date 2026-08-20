@@ -33,6 +33,7 @@ description: 実装内容とベースブランチを指定して、専用ワー�
    - わかりやすい日本語のコミットメッセージでコミットする。手順8で `docs/improvement-ideas.md` を削除した場合は、実装本体と同じコミットまたは別コミットのいずれでもよいが、`docs/resolved-improvement-ideas.md` への追記も含めて同じ PR に含める。
    - `git push -u origin <ブランチ名>` でプッシュする。
    - `gh pr create --base <ベースブランチ> --head <ブランチ名> --title --body` でPRを作成する。タイトル・説明は日本語で書き、署名やセッションURLは含めない。
+   - PR作成後、`gh pr comment <PR番号> --body '@coderabbitai review'` を実行し、CodeRabbit に手動でレビューを依頼する（このリポジトリはGitHub star数が少なく自動レビューが起動しないため）。
 
 ## CI完了待ちフェーズ
 
