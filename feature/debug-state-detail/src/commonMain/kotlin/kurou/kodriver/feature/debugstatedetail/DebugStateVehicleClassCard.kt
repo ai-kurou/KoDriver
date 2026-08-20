@@ -19,7 +19,8 @@ internal fun VehicleClassContent(
         when (selectedSimulator) {
             is Simulator.LmuWindows -> lmuWindowsVehicleClass?.name
             is Simulator.Gt7Ps5 -> gt7Ps5VehicleClass?.name
-            else -> null
+            is Simulator.AceWindows -> null
+            null -> null
         }
     if (name.isNullOrEmpty()) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
