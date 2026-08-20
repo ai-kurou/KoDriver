@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsOff
+import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -623,7 +624,7 @@ private fun ReadoutListQueueToggle(
     ReadoutListBottomChip(
         checked = checked,
         enabled = enabled,
-        icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+        icon = if (checked) Icons.AutoMirrored.Filled.PlaylistAdd else Icons.Filled.PlaylistRemove,
         label = stringResource(Res.string.queue_toggle_description),
         testTag = "readoutListQueueTouchTarget:${item.value}",
         onCheckedChange = onCheckedChange,
