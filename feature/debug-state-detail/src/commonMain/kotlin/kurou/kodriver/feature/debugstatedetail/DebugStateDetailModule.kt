@@ -23,7 +23,9 @@ import org.koin.dsl.module
 /**
  * デバッグ状態画面（debug-state-detail feature）の Koin モジュール。
  *
- * 提供: DebugStateDetailViewModel と、それが使うドメイン UseCase。
+ * 提供: DebugStateDetailViewModel、この feature 内で定義した UseCase 集約 data class
+ *   （LmuWindowsDebugStateUseCases / Gt7Ps5DebugStateUseCases / AceWindowsDebugStateUseCases /
+ *   DebugStateCardOrderUseCases）、それらが束ねる各ドメイン UseCase。
  * 消費（get で解決）: LmuWindowsFlagRepository・SimulatorPreferencesRepository・
  * LmuWindowsVirtualEnergyRepository・LmuWindowsRepository・Gt7Ps5Repository・AceWindowsFuelRepository・
  * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・LmuWindowsTyreCarcassTemperatureRepository・
@@ -33,27 +35,13 @@ import org.koin.dsl.module
  */
 val debugStateDetailModule =
     module {
-        viewModel {
-            DebugStateDetailViewModel(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-            )
-        }
+        viewModel { DebugStateDetailViewModel(get(), get(), get(), get(), get()) }
+
+        // この feature 固有の UseCase 集約 data class（本モジュールで定義）
+        factory { LmuWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get()) }
+        factory { Gt7Ps5DebugStateUseCases(get(), get()) }
+        factory { AceWindowsDebugStateUseCases(get(), get(), get(), get()) }
+        factory { DebugStateCardOrderUseCases(get(), get(), get()) }
 
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
