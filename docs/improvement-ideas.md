@@ -25,10 +25,6 @@
   **改善案**: Navigation3のサンプル・公式ドキュメントにあるMaterial3 AdaptiveとNavDisplayの統合パターン（両者で単一のバックスタックを共有する設計）への寄せ替えを検討する。ただし現状の実装（PR #1069, #1075, #1077, #1078）で機能的な不具合は出ていないため、優先度は低め。
   **調査結果（2026-08-14）**: 統合用ライブラリ`org.jetbrains.compose.material3.adaptive:adaptive-navigation3`（AndroidX本家の`ListDetailSceneStrategy`に相当、`rememberListDetailSceneStrategy()`をNavDisplayに渡す構成）はJetBrains公式ドキュメント（https://kotlinlang.org/docs/multiplatform/compose-navigation-3.html）に記載されており存在する。ただし現時点のバージョンは`1.3.0-beta02`で、プロジェクトが依存している`adaptive-layout`/`adaptive-navigation`の安定版`1.2.0`系とは異なるベータ系列。CLAUDE.mdの「致命的なバグや互換性問題がない限り最新安定版を使用する」方針とも相性が悪いため、この統合ライブラリが安定版としてリリースされてから改めて移行を検討する。
 
-- **対象**: `AceWindowsReadoutTyreTemperatureDetailPane`・`Gt7Ps5ReadoutTyreTemperatureDetailPane`・`LmuWindowsReadoutTyreTemperatureDetailPane`（各featureモジュールの `HIGH_THRESHOLD_MIN` / `HIGH_THRESHOLD_MAX`）
-  **課題**: PR #1158（Sourcery指摘）で判明。高温しきい値スライダーの範囲定数（`90f`〜`110f`）が3つのdetail画面それぞれに `private const val` として重複定義されている。デフォルト値自体は既に `core:domain` の `*Defaults.kt` に集約済みだが、スライダーの上下限は各UI層に個別定義されたまま。
-  **改善案**: スライダーの上下限もドメイン層の仕様値（`XXX_DEFAULT` と同様の命名規則）として `core:domain` に集約し、シミュレーター間で一貫させる。ただし3機能は意図的に独立実装を維持する方針（本ファイル「NarratorViewModelは共通化しない」）もあるため、UIコンポーネント自体を共通化するのではなく定数の参照元だけを揃える方向で検討する。
-
 ## UI/UX
 
 - **対象**: `ReadoutContent.kt`（`feature:readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）の `ListDetailPaneScaffold`／画面幅判定まわり

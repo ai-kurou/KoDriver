@@ -21,6 +21,8 @@ import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
+import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_description
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_label
@@ -32,9 +34,6 @@ import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.generated.
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
-
-private const val HIGH_THRESHOLD_MIN = 90f
-private const val HIGH_THRESHOLD_MAX = 110f
 
 @Composable
 fun AceWindowsReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
@@ -61,6 +60,8 @@ internal fun AceWindowsReadoutTyreTemperatureDetailPaneContent(
 ) {
     val labelTemplate = stringResource(Res.string.tyre_temperature_high_threshold_label)
     val overheatWarningChipLabel = stringResource(Res.string.tyre_temperature_overheat_warning_chip)
+    val highThresholdMin = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
+    val highThresholdMax = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
 
     Column(
         modifier =
@@ -97,8 +98,8 @@ internal fun AceWindowsReadoutTyreTemperatureDetailPaneContent(
                     DetailPaneSubtitle(text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle))
                     ThresholdSlider(
                         value = uiState.highThresholdCelsius.toFloat(),
-                        valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
-                        steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
+                        valueRange = highThresholdMin..highThresholdMax,
+                        steps = (highThresholdMax - highThresholdMin).toInt() - 1,
                         labelFormatter = { labelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
                         defaultValue = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.toFloat(),
