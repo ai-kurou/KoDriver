@@ -37,6 +37,8 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
@@ -62,9 +64,6 @@ import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
-
-private const val HIGH_THRESHOLD_MIN = 90f
-private const val HIGH_THRESHOLD_MAX = 110f
 
 /**
  * LmuWindowsReadoutTyreTemperatureDetail の画面を表示する Composable。
@@ -213,10 +212,12 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             ?: lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
                                 uiState.selectedVehicleClass,
                             )
+                    val highThresholdMin = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
+                    val highThresholdMax = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
                     ThresholdSlider(
                         value = selectedVehicleClassHighThresholdCelsius.toFloat(),
-                        valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
-                        steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
+                        valueRange = highThresholdMin..highThresholdMax,
+                        steps = (highThresholdMax - highThresholdMin).toInt() - 1,
                         labelFormatter = { labelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = {
                             onVehicleClassHighThresholdChanged(uiState.selectedVehicleClass, it.roundToInt())

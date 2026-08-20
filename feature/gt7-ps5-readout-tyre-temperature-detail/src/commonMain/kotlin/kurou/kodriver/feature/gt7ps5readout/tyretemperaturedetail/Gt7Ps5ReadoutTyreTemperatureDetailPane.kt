@@ -20,6 +20,8 @@ import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
+import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.resources.Res
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.resources.tyre_temperature_description
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_label
@@ -30,9 +32,6 @@ import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.reso
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
-
-private const val HIGH_THRESHOLD_MIN = 90f
-private const val HIGH_THRESHOLD_MAX = 110f
 
 /**
  * Gt7Ps5ReadoutTyreTemperatureDetail の画面を表示する Composable。
@@ -62,6 +61,8 @@ internal fun Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
 ) {
     val labelTemplate = stringResource(Res.string.tyre_temperature_high_threshold_label)
     val overheatWarningPreviewChipLabel = stringResource(Res.string.tyre_temperature_overheat_warning_preview_chip)
+    val highThresholdMin = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
+    val highThresholdMax = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
 
     Column(
         modifier =
@@ -89,8 +90,8 @@ internal fun Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
                     DetailPaneSubtitle(text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle))
                     ThresholdSlider(
                         value = uiState.highThresholdCelsius.toFloat(),
-                        valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
-                        steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
+                        valueRange = highThresholdMin..highThresholdMax,
+                        steps = (highThresholdMax - highThresholdMin).toInt() - 1,
                         labelFormatter = { labelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
                         defaultValue = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.toFloat(),
