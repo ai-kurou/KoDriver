@@ -33,7 +33,7 @@ description: 実装内容とベースブランチを指定して、専用ワー�
    - わかりやすい日本語のコミットメッセージでコミットする。手順8で `docs/improvement-ideas.md` を削除した場合は、実装本体と同じコミットまたは別コミットのいずれでもよいが、`docs/resolved-improvement-ideas.md` への追記も含めて同じ PR に含める。
    - `git push -u origin <ブランチ名>` でプッシュする。
    - `gh pr create --base <ベースブランチ> --head <ブランチ名> --title --body` でPRを作成する。タイトル・説明は日本語で書き、署名やセッションURLは含めない。
-   - PR作成後、`gh pr comment <PR番号> --body '@coderabbitai review'` を実行し、CodeRabbit に手動でレビューを依頼する（このリポジトリはGitHub star数が少なく自動レビューが起動しないため）。
+   - PR作成後、CodeRabbit に手動でレビューを依頼する（このリポジトリはGitHub star数が少なく自動レビューが起動しないため）。PR作成直後に投稿される CodeRabbit の初回コメント本文には `- [ ] <!-- {"checkboxId":"..."} --> 🔍 Trigger review` というチェックボックスが含まれているため、そのコメントを `gh api repos/<owner>/<repo>/issues/<PR番号>/comments` で取得し、該当行のみ `- [ ]` を `- [x]` に置換した本文で `gh api -X PATCH repos/<owner>/<repo>/issues/comments/<コメントID> -f body=<書き換えた本文>` を実行してチェックを入れる（`checkboxId` はコメントごとに異なる動的な値のため、都度本文から抽出すること。該当行以外は変更しない）。
 
 ## CI完了待ちフェーズ
 
