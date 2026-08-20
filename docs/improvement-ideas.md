@@ -37,6 +37,12 @@
   **課題**: `shortcut = true` / `menu = true` / `perUserInstall = true` はjpackageの仕様上いずれもサイレントフラグであり、インストール実行時に自動でその挙動が固定されるだけで、ユーザーに選択させるダイアログは表示されない。ショートカット作成可否を選ばせるには別途 `--win-shortcut-prompt` が必要だが、Compose MultiplatformのGradle DSL(`org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask`)には対応するプロパティが存在せず、現状のDSLの範囲では実現できない。インストール範囲(全ユーザー/個人用)を選ばせる標準ダイアログもjpackage自体に用意されていない。
   **改善案**: Compose Multiplatformが `winShortcutPrompt` 等のDSLプロパティを将来追加した場合、または freeform引数差し込み等の代替手段が判明した場合に、MSIインストーラー上でショートカット作成可否をユーザーに選択させる機能の追加を検討する。
 
+## 開発プロセス
+
+- **対象**: `.github/workflows/_e2e-android-maestro.yml`（ボトムナビゲーションE2Eテスト）・Claude Code によるUI実装作業フロー
+  **課題**: 現状、Claude CodeがUIを変更した際の動作確認はスクリーンショット目視が中心（本ファイルのCLAUDE.md「UIまたはフロントエンドの変更」の項目）で、Maestroは主にCIのE2Eテストとしてのみ活用されている。参考記事（https://zenn.dev/worlddowntown/articles/641c492c4730f0 ）では、AIエージェントがUI実装を確認する際に目視のスクリーンショットではなく`maestro test`でフローを実行し`assertVisible`等で要素の存在を厳密に検証する運用に切り替えたところ、確認時間が中央値70秒→28秒に短縮し、手戻りも減ったと報告している。
+  **改善案**: KoDriverでもUI変更を伴う作業時に、既存の`.maestro/`配下のE2Eフロー（`MainActivityTest.kt`/`AppTest.kt`のタップ順テストとは別に）を流用・追加し、Claude Codeが実装直後に`maestro test`で対象画面の要素存在を機械的に確認する運用を検討する余地がある。ただし現状Maestroの主対象はAndroidのボトムナビゲーションのみのため、Desktop側や詳細画面まで対象を広げる場合の実現性・コストは別途調査が必要。
+
 ## ライブラリ
 
 - **対象**: `gradle/libs.versions.toml` の `androidx-lifecycle`（現在 `2.10.0`）
