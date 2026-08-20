@@ -17,7 +17,9 @@ import org.koin.dsl.module
 /**
  * アナウンス設定一覧（readout-list feature）の Koin モジュール。
  *
- * 提供: ReadoutListViewModel と、それが使うドメイン UseCase。
+ * 提供: ReadoutListViewModel、この feature 内で定義した UseCase 集約 data class
+ *   （SimulatorUseCases / ReadoutOrderUseCases / ReadoutEnabledUseCases / QueueUseCases /
+ *   StartSoundUseCases）、それらが束ねる各ドメイン UseCase。
  * 消費（get で解決）: SimulatorPreferencesRepository・ReadoutPreferencesRepository・
  *   QueuePreferencesRepository・ReadoutStartSoundEnabledPreferencesRepository（いずれも :core:data で登録）。
  */
@@ -25,6 +27,13 @@ val readoutListModule =
     module {
         // ViewModel
         viewModelOf(::ReadoutListViewModel)
+
+        // この feature 固有の UseCase 集約 data class（本モジュールで定義）
+        factory { SimulatorUseCases(get(), get()) }
+        factory { ReadoutOrderUseCases(get(), get(), get()) }
+        factory { ReadoutEnabledUseCases(get(), get()) }
+        factory { QueueUseCases(get(), get()) }
+        factory { StartSoundUseCases(get(), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveSelectedSimulatorUseCase(get()) }

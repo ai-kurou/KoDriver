@@ -22,17 +22,6 @@ import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -78,19 +67,11 @@ class ReadoutListViewModelAceWindowsTest {
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
             val viewModel =
-                ReadoutListViewModel(
-                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-                    saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
-                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
-                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
-                    observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
-                    resolveReadoutOrder = ResolveReadoutOrderUseCase(),
-                    saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
-                    observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository),
-                    saveQueueEnabledState = SaveQueueEnabledStateUseCase(queueRepository),
-                    observeReadoutStartSoundEnabledStates =
-                        ObserveReadoutStartSoundEnabledStatesUseCase(startSoundRepository),
-                    saveReadoutStartSoundEnabledState = SaveReadoutStartSoundEnabledStateUseCase(startSoundRepository),
+                createViewModel(
+                    simulatorRepository = simulatorRepository,
+                    readoutRepository = readoutRepository,
+                    queueRepository = queueRepository,
+                    startSoundRepository = startSoundRepository,
                 )
 
             assertEquals(
