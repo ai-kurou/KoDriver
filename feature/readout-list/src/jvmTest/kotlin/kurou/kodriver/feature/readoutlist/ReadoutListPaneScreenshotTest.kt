@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
@@ -49,6 +50,7 @@ class ReadoutListPaneScreenshotTest {
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
                                 onItemClick = { _ -> },
                             )
                         }
@@ -80,6 +82,7 @@ class ReadoutListPaneScreenshotTest {
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
                                 onItemClick = { _ -> },
                             )
                         }
@@ -113,6 +116,7 @@ class ReadoutListPaneScreenshotTest {
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
                                 onItemClick = { _ -> },
                             )
                         }
@@ -147,8 +151,24 @@ class ReadoutListPaneScreenshotTest {
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
                                 onItemClick = { _ -> },
                             )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `ヘルプボトムシート`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Column(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            PriorityHintSheetContent()
                         }
                     }
                 }

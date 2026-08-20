@@ -30,6 +30,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachThresholds
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
+import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
 import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
 import kurou.kodriver.data.preferences.createThemePreferencesRepository
@@ -89,6 +90,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
@@ -279,6 +281,9 @@ private fun androidDataModuleThresholdPreferences(context: Context) =
         }
         single<LmuWindowsPitTimingPreferencesRepository> {
             createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<ReadoutStartSoundEnabledPreferencesRepository> {
+            createReadoutStartSoundEnabledPreferencesRepository(context.filesDir.absolutePath)
         }
         // テレメトリログ（Room データベース）
         single<TelemetryLogRepository> {

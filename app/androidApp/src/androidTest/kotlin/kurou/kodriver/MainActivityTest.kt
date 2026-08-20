@@ -98,8 +98,19 @@ class MainActivityTest {
         selectSimulator("Assetto Corsa EVO（Windows版）")
         clickReadoutPriorityHelp()
 
-        waitUntilDisplayed("燃料残量")
-        clickItemAndNavigateBack("燃料残量")
+        waitUntilDisplayed("フラッグ")
+        clickItemAndVerifyDescription(
+            "フラッグ",
+            "ホワイトフラッグ・グリーンフラッグ・レッドフラッグ・イエローフラッグなどのフラッグ状況を音声でお知らせします。",
+        )
+        clickItemAndVerifyDescription(
+            "タイヤ温度",
+            "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
+        )
+        clickItemAndVerifyDescription(
+            "燃料残量",
+            "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
+        )
     }
 
     @Test
@@ -214,7 +225,9 @@ class MainActivityTest {
         text: String,
         substring: Boolean = false,
     ) {
-        composeTestRule.waitUntil(timeoutMillis = 5_000L) {
+        // CI実機エミュレータではボトムシートの閉じるアニメーション等が遅く、
+        // 5秒では不足してタイムアウトすることがあるため、実機テストのみ余裕を持たせる。
+        composeTestRule.waitUntil(timeoutMillis = 8_000L) {
             composeTestRule.onAllNodes(hasText(text, substring = substring)).fetchSemanticsNodes().isNotEmpty()
         }
     }

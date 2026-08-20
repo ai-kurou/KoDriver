@@ -39,6 +39,8 @@ import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -96,6 +98,8 @@ import kurou.kodriver.feature.readoutlist.generated.resources.queue_hint_descrip
 import kurou.kodriver.feature.readoutlist.generated.resources.scroll_to_top
 import kurou.kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kurou.kodriver.feature.readoutlist.generated.resources.simulator_label
+import kurou.kodriver.feature.readoutlist.generated.resources.start_sound_hint_description
+import kurou.kodriver.feature.readoutlist.generated.resources.start_sound_toggle_description
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -208,18 +212,7 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
             onDismissRequest = { showHelpSheet = false },
             sheetState = sheetState,
         ) {
-            Text(
-                text = stringResource(Res.string.priority_hint_description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            Text(
-                text = stringResource(Res.string.queue_hint_description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 24.dp),
-            )
+            PriorityHintSheetContent()
         }
     }
 
@@ -248,6 +241,28 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
 }
 
 @Composable
+internal fun PriorityHintSheetContent(modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(Res.string.priority_hint_description),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.padding(horizontal = 16.dp),
+    )
+    Text(
+        text = stringResource(Res.string.queue_hint_description),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
+    )
+    Text(
+        text = stringResource(Res.string.start_sound_hint_description),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 24.dp),
+    )
+}
+
+@Composable
 private fun AceReadoutTimingHintRow(modifier: Modifier = Modifier) {
     Text(
         text = stringResource(Res.string.ace_readout_timing_hint_description),
@@ -265,6 +280,7 @@ internal fun ReadoutListPane(
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemClick: (ReadoutItemKey) -> Unit,
     scrollToTopRequest: Int = 0,
 ) {
@@ -373,10 +389,12 @@ internal fun ReadoutListPane(
                             dragHandleModifier = Modifier.draggableHandle(),
                             readoutEnabled = readoutEnabled,
                             queueEnabled = uiState.queueEnabledStates[item] ?: false,
+                            startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
                             containerColor = cardContainerColor,
                             onItemClick = onItemClick,
                             onQueueEnabledChanged = onQueueEnabledChanged,
                             onReadoutEnabledChanged = onReadoutEnabledChanged,
+                            onStartSoundEnabledChanged = onStartSoundEnabledChanged,
                         )
                     }
                 }
@@ -419,10 +437,12 @@ private fun ReadoutListItemCard(
     dragHandleModifier: Modifier,
     readoutEnabled: Boolean,
     queueEnabled: Boolean,
+    startSoundEnabled: Boolean,
     containerColor: Color,
     onItemClick: (ReadoutItemKey) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
 ) {
     ElevatedCard(
         modifier =
@@ -478,14 +498,23 @@ private fun ReadoutListItemCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
+                if (item is ReadoutItemKey.TopLevel) {
                     ReadoutListQueueDivider()
-                    ReadoutListQueueToggle(
+                    ReadoutListStartSoundToggle(
                         item = item,
-                        checked = queueEnabled,
+                        checked = startSoundEnabled,
                         enabled = readoutEnabled,
-                        onCheckedChange = { onQueueEnabledChanged(item, it) },
+                        onCheckedChange = { onStartSoundEnabledChanged(item, it) },
                     )
+                    if (item.supportsQueue) {
+                        ReadoutListQueueDivider()
+                        ReadoutListQueueToggle(
+                            item = item,
+                            checked = queueEnabled,
+                            enabled = readoutEnabled,
+                            onCheckedChange = { onQueueEnabledChanged(item, it) },
+                        )
+                    }
                     ReadoutListQueueDivider()
                 }
                 ReadoutListReadoutSwitch(
@@ -494,6 +523,40 @@ private fun ReadoutListItemCard(
                     onCheckedChange = { onReadoutEnabledChanged(item, it) },
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ReadoutListStartSoundToggle(
+    item: ReadoutItemKey.TopLevel,
+    checked: Boolean,
+    enabled: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier =
+            Modifier
+                .size(width = 56.dp, height = 56.dp)
+                .testTag("readoutListStartSoundTouchTarget:${item.value}")
+                .clickable(
+                    enabled = enabled,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                ) {
+                    onCheckedChange(!checked)
+                },
+    ) {
+        FilledIconToggleButton(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            enabled = enabled,
+        ) {
+            Icon(
+                imageVector = if (checked) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsOff,
+                contentDescription = stringResource(Res.string.start_sound_toggle_description),
+            )
         }
     }
 }
@@ -609,6 +672,7 @@ private fun ReadoutListPanePreview(
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
         onQueueEnabledChanged = { _, _ -> },
+        onStartSoundEnabledChanged = { _, _ -> },
         onItemClick = { _ -> },
     )
 }

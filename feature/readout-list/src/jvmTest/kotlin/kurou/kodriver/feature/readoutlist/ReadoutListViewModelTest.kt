@@ -20,15 +20,18 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -40,6 +43,7 @@ internal fun createViewModel(
     simulatorRepository: SimulatorPreferencesRepository,
     readoutRepository: ReadoutPreferencesRepository,
     queueRepository: QueuePreferencesRepository,
+    startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository,
 ) = ReadoutListViewModel(
     observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
     saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
@@ -50,6 +54,8 @@ internal fun createViewModel(
     saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
     observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository),
     saveQueueEnabledState = SaveQueueEnabledStateUseCase(queueRepository),
+    observeReadoutStartSoundEnabledStates = ObserveReadoutStartSoundEnabledStatesUseCase(startSoundRepository),
+    saveReadoutStartSoundEnabledState = SaveReadoutStartSoundEnabledStateUseCase(startSoundRepository),
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -64,6 +70,9 @@ class ReadoutListViewModelTest {
 
     @MockK
     private lateinit var queueRepository: QueuePreferencesRepository
+
+    @MockK
+    private lateinit var startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository
 
     @BeforeTest
     fun setUp() {
@@ -89,7 +98,9 @@ class ReadoutListViewModelTest {
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns enabledStatesFlow
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns orderFlow
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             assertNull(viewModel.uiState.first().selectedSimulator)
             assertEquals(emptyList(), viewModel.uiState.first().items)
@@ -142,7 +153,9 @@ class ReadoutListViewModelTest {
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } returns Unit
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
             viewModel.moveItem(0, 1)
@@ -181,7 +194,8 @@ class ReadoutListViewModelTest {
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
             coVerify(exactly = 1) { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
-            confirmVerified(readoutRepository, simulatorRepository, queueRepository)
+            verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
+            confirmVerified(readoutRepository, simulatorRepository, queueRepository, startSoundRepository)
         }
 
     @Test
@@ -189,7 +203,9 @@ class ReadoutListViewModelTest {
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.moveItem(0, 1)
 
@@ -218,7 +234,9 @@ class ReadoutListViewModelTest {
                 enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.VehicleApproach.Root to false) }
             }
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
             viewModel.onReadoutEnabledChanged(ReadoutItemKey.LmuWindows.VehicleApproach.Root, false)
@@ -239,7 +257,8 @@ class ReadoutListViewModelTest {
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
-            confirmVerified(readoutRepository, simulatorRepository, queueRepository)
+            verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
+            confirmVerified(readoutRepository, simulatorRepository, queueRepository, startSoundRepository)
         }
 
     @Test
@@ -247,7 +266,9 @@ class ReadoutListViewModelTest {
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onReadoutEnabledChanged(ReadoutItemKey.LmuWindows.VehicleApproach.Root, false)
 
@@ -267,7 +288,9 @@ class ReadoutListViewModelTest {
                 MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false))
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
 
@@ -289,7 +312,9 @@ class ReadoutListViewModelTest {
                     listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 )
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
 
@@ -335,7 +360,9 @@ class ReadoutListViewModelTest {
                 orderFlow.update { movedOrder }
             }
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
             viewModel.moveItem(0, 1)
@@ -391,7 +418,9 @@ class ReadoutListViewModelTest {
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", firstMovedOrder) } returns Unit
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", secondMovedOrder) } returns Unit
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.LmuWindows)
             viewModel.moveItem(0, 1) // [tyre_temperature, flag, vehicle_approach, vehicle_damage, my_best_lap]
@@ -423,7 +452,9 @@ class ReadoutListViewModelTest {
             every { readoutRepository.observeReadoutEnabledStates("gt7_ps5") } returns MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("gt7_ps5") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
 
@@ -452,7 +483,9 @@ class ReadoutListViewModelTest {
                 MutableStateFlow(mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false))
             every { readoutRepository.observeReadoutOrder("gt7_ps5") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
 
@@ -494,7 +527,9 @@ class ReadoutListViewModelTest {
                 lmuEnabledFlow.update { it + (ReadoutItemKey.LmuWindows.MyBestLap.Root to true) }
             }
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
             viewModel.onReadoutEnabledChanged(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, false)
