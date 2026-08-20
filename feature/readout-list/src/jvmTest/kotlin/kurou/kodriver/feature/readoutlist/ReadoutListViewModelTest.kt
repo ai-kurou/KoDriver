@@ -45,17 +45,32 @@ internal fun createViewModel(
     queueRepository: QueuePreferencesRepository,
     startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository,
 ) = ReadoutListViewModel(
-    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-    saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
-    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
-    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
-    observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
-    resolveReadoutOrder = ResolveReadoutOrderUseCase(),
-    saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
-    observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository),
-    saveQueueEnabledState = SaveQueueEnabledStateUseCase(queueRepository),
-    observeReadoutStartSoundEnabledStates = ObserveReadoutStartSoundEnabledStatesUseCase(startSoundRepository),
-    saveReadoutStartSoundEnabledState = SaveReadoutStartSoundEnabledStateUseCase(startSoundRepository),
+    simulatorUseCases =
+        SimulatorUseCases(
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+            saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
+        ),
+    readoutOrderUseCases =
+        ReadoutOrderUseCases(
+            observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
+            resolveReadoutOrder = ResolveReadoutOrderUseCase(),
+            saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
+        ),
+    readoutEnabledUseCases =
+        ReadoutEnabledUseCases(
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
+        ),
+    queueUseCases =
+        QueueUseCases(
+            observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository),
+            saveQueueEnabledState = SaveQueueEnabledStateUseCase(queueRepository),
+        ),
+    startSoundUseCases =
+        StartSoundUseCases(
+            observeReadoutStartSoundEnabledStates = ObserveReadoutStartSoundEnabledStatesUseCase(startSoundRepository),
+            saveReadoutStartSoundEnabledState = SaveReadoutStartSoundEnabledStateUseCase(startSoundRepository),
+        ),
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)

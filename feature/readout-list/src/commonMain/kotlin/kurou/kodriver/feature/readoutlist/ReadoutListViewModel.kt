@@ -37,25 +37,45 @@ private data class EnabledStates(
     val startSoundEnabledStates: Map<ReadoutItemKey, Boolean>,
 )
 
+data class SimulatorUseCases(
+    val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
+)
+
+data class ReadoutOrderUseCases(
+    val observeReadoutOrder: ObserveReadoutOrderUseCase,
+    val resolveReadoutOrder: ResolveReadoutOrderUseCase,
+    val saveReadoutOrder: SaveReadoutOrderUseCase,
+)
+
+data class ReadoutEnabledUseCases(
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
+data class QueueUseCases(
+    val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
+    val saveQueueEnabledState: SaveQueueEnabledStateUseCase,
+)
+
+data class StartSoundUseCases(
+    val observeReadoutStartSoundEnabledStates: ObserveReadoutStartSoundEnabledStatesUseCase,
+    val saveReadoutStartSoundEnabledState: SaveReadoutStartSoundEnabledStateUseCase,
+)
+
 /**
  * ReadoutList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-@Suppress("LongParameterList")
 class ReadoutListViewModel(
-    private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
-    private val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
-    private val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
-    private val observeReadoutOrder: ObserveReadoutOrderUseCase,
-    private val resolveReadoutOrder: ResolveReadoutOrderUseCase,
-    private val saveReadoutOrder: SaveReadoutOrderUseCase,
-    private val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
-    private val saveQueueEnabledState: SaveQueueEnabledStateUseCase,
-    private val observeReadoutStartSoundEnabledStates: ObserveReadoutStartSoundEnabledStatesUseCase,
-    private val saveReadoutStartSoundEnabledState: SaveReadoutStartSoundEnabledStateUseCase,
+    private val simulatorUseCases: SimulatorUseCases,
+    private val readoutOrderUseCases: ReadoutOrderUseCases,
+    private val readoutEnabledUseCases: ReadoutEnabledUseCases,
+    private val queueUseCases: QueueUseCases,
+    private val startSoundUseCases: StartSoundUseCases,
 ) : ViewModel() {
     private val _selectedSimulator: StateFlow<Simulator?> =
-        observeSelectedSimulator()
+        simulatorUseCases
+            .observeSelectedSimulator()
             .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     // ドラッグ操作後のインメモリ順序（DataStore 反映前の即時 UI 更新用）
@@ -66,7 +86,7 @@ class ReadoutListViewModel(
         _selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator != null) {
-                    observeReadoutOrder(simulator.id)
+                    readoutOrderUseCases.observeReadoutOrder(simulator.id)
                 } else {
                     flowOf(emptyList())
                 }
@@ -76,15 +96,21 @@ class ReadoutListViewModel(
     private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
         _selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator != null) observeReadoutEnabledStates(simulator.id) else flowOf(emptyMap())
+                if (simulator != null) {
+                    readoutEnabledUseCases.observeReadoutEnabledStates(simulator.id)
+                } else {
+                    flowOf(emptyMap())
+                }
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val _queueEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
-        observeQueueEnabledStates()
+        queueUseCases
+            .observeQueueEnabledStates()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val _startSoundEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
-        observeReadoutStartSoundEnabledStates()
+        startSoundUseCases
+            .observeReadoutStartSoundEnabledStates()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val _selectedItem = MutableStateFlow<ReadoutListItemType?>(null)
@@ -100,7 +126,7 @@ class ReadoutListViewModel(
             if (local.simulator == selected) {
                 local.items
             } else {
-                resolveReadoutOrder(persistedOrder = persisted, defaultOrder = defaultItems)
+                readoutOrderUseCases.resolveReadoutOrder(persistedOrder = persisted, defaultOrder = defaultItems)
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -141,7 +167,7 @@ class ReadoutListViewModel(
 
     fun onSimulatorSelected(simulator: Simulator) {
         viewModelScope.launch {
-            saveSelectedSimulator(simulator)
+            simulatorUseCases.saveSelectedSimulator(simulator)
         }
     }
 
@@ -156,7 +182,7 @@ class ReadoutListViewModel(
                 .also { it.add(toIndex, it.removeAt(fromIndex)) }
         _localOrder.update { LocalOrderState(selected, newItems) }
         viewModelScope.launch {
-            saveReadoutOrder(selected.id, newItems)
+            readoutOrderUseCases.saveReadoutOrder(selected.id, newItems)
         }
     }
 
@@ -176,7 +202,7 @@ class ReadoutListViewModel(
     ) {
         val simulator = _selectedSimulator.value ?: return
         viewModelScope.launch {
-            saveReadoutEnabledState(simulator.id, key, enabled)
+            readoutEnabledUseCases.saveReadoutEnabledState(simulator.id, key, enabled)
         }
     }
 
@@ -185,7 +211,7 @@ class ReadoutListViewModel(
         enabled: Boolean,
     ) {
         viewModelScope.launch {
-            saveQueueEnabledState(key, enabled)
+            queueUseCases.saveQueueEnabledState(key, enabled)
         }
     }
 
@@ -194,7 +220,7 @@ class ReadoutListViewModel(
         enabled: Boolean,
     ) {
         viewModelScope.launch {
-            saveReadoutStartSoundEnabledState(key, enabled)
+            startSoundUseCases.saveReadoutStartSoundEnabledState(key, enabled)
         }
     }
 }

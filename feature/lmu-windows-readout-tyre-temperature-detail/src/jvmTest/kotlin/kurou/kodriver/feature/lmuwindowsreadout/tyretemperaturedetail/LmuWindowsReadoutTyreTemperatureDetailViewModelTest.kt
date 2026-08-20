@@ -65,18 +65,21 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutTyreTemperatureDetailViewModel(
-            observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
-            observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
-            observeVehicleClassHighThreshold =
-                ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(vehicleClassRepository),
-            observeVehicleClassSelection =
-                ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase(vehicleClassRepository),
-            saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository),
-            saveLowWarningPhases = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
-            saveVehicleClassHighThreshold =
-                SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(vehicleClassRepository),
-            saveVehicleClassSelection =
-                SaveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase(vehicleClassRepository),
+            tyreTemperatureUseCases =
+                TyreTemperatureUseCases(
+                    observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
+                    observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
+                    observeVehicleClassHighThreshold =
+                        ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(vehicleClassRepository),
+                    observeVehicleClassSelection =
+                        ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase(vehicleClassRepository),
+                    saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository),
+                    saveLowWarningPhases = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
+                    saveVehicleClassHighThreshold =
+                        SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(vehicleClassRepository),
+                    saveVehicleClassSelection =
+                        SaveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase(vehicleClassRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
