@@ -153,7 +153,7 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 - ダイアログ表示用のホスト: `480.dp x 320.dp`
 - デスクトップ Splash など独立したウィンドウ: 既存の専用サイズ
 
-新規追加・移動したスクリーンショットテストのゴールデン画像は、手元で生成してコミットしてはならない。ゴールデン画像の追加・更新は CI の `record-golden-images` ワークフローで行う。動作確認などで手元に `**/snapshots/*.png` が生成・更新された場合は、PR 作成や報告の前に必ず破棄すること。Android 向けスクリーンショットテストを追加する場合は、PR 説明に Desktop/JVM 版と見た目が異なる理由を書くこと。
+新規追加・移動したスクリーンショットテストのゴールデン画像は、手元で生成してコミットしてはならない。ゴールデン画像の追加・更新は CI（`on-pull-request.yml` の verify → 失敗時の自動再記録）で行われる。動作確認などで手元に `**/snapshots/*.png` が生成・更新された場合は、PR 作成や報告の前に必ず破棄すること。Android 向けスクリーンショットテストを追加する場合は、PR 説明に Desktop/JVM 版と見た目が異なる理由を書くこと。
 
 ---
 
@@ -211,7 +211,6 @@ GitHub Actions ワークフロー概要（詳細な挙動・権限設計は [`do
 - `build-apps.yml`: 手動起動で Android APK と Windows MSI を並列ビルド
 - `release-apps.yml`: 手動リリース時に E2E テスト・バージョンバンプ・ビルド・Baseline Profile 再生成・リリース作成を実行
 - `_e2e-android-maestro.yml`: Maestro によるボトムナビゲーション E2E テスト
-- `record-golden-images.yml`: golden 画像（Roborazzi スクリーンショット）の再記録
 - `nightly-todo.yml`: 毎晩 `docs/improvement-ideas.md` への追記候補を調査する下書き PR を作成
 
 ---
