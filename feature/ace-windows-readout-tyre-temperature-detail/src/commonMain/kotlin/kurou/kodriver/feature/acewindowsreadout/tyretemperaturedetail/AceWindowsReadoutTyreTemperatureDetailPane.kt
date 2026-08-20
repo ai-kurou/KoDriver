@@ -60,8 +60,8 @@ internal fun AceWindowsReadoutTyreTemperatureDetailPaneContent(
 ) {
     val labelTemplate = stringResource(Res.string.tyre_temperature_high_threshold_label)
     val overheatWarningChipLabel = stringResource(Res.string.tyre_temperature_overheat_warning_chip)
-    val highThresholdMin = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
-    val highThresholdMax = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
+    val highThresholdMin = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN.value.toFloat()
+    val highThresholdMax = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX.value.toFloat()
 
     Column(
         modifier =

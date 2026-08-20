@@ -61,8 +61,8 @@ internal fun Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
 ) {
     val labelTemplate = stringResource(Res.string.tyre_temperature_high_threshold_label)
     val overheatWarningPreviewChipLabel = stringResource(Res.string.tyre_temperature_overheat_warning_preview_chip)
-    val highThresholdMin = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
-    val highThresholdMax = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
+    val highThresholdMin = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN.value.toFloat()
+    val highThresholdMax = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX.value.toFloat()
 
     Column(
         modifier =
