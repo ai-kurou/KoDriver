@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class CelsiusReading(
-    val value: Double,
+    val value: Float,
 ) : Comparable<CelsiusReading> {
     override fun compareTo(other: CelsiusReading): Int = value.compareTo(other.value)
 }

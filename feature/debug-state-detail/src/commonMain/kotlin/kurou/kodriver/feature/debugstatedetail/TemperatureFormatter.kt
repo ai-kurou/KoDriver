@@ -10,12 +10,15 @@ private const val KELVIN_OFFSET = 273.15
 internal fun wheelTemperatureText(
     wheels: Map<WheelIndex, LmuWindowsTyreWheelData>,
     wheelIndex: WheelIndex,
-): String = wheels[wheelIndex]?.let { formatCelsius(CelsiusReading(it.surfaceTemperatureK - KELVIN_OFFSET)) } ?: "-"
+): String =
+    wheels[wheelIndex]?.let {
+        formatCelsius(CelsiusReading((it.surfaceTemperatureK - KELVIN_OFFSET).toFloat()))
+    } ?: "-"
 
 internal fun wheelCarcassTemperatureText(
     wheels: Map<WheelIndex, Double>,
     wheelIndex: WheelIndex,
-): String = wheels[wheelIndex]?.let { formatCelsius(CelsiusReading(it)) } ?: "-"
+): String = wheels[wheelIndex]?.let { formatCelsius(CelsiusReading(it.toFloat())) } ?: "-"
 
 private fun formatCelsius(value: CelsiusReading): String {
     val rounded = round(value.value * 10) / 10
