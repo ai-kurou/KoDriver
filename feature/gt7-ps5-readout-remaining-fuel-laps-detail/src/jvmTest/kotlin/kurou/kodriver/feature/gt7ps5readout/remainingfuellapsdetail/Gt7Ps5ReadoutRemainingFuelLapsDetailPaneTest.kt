@@ -92,7 +92,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
             }
         }
 
-        rule.onNode(hasContentDescription("デフォルト値にリセット")).performClick()
+        rule.onNode(hasContentDescription("デフォルトに戻す")).performClick()
 
         assertTrue(resetCalled)
     }

@@ -35,10 +35,6 @@
 - **課題**: Jetpack Compose 2026年4月リリース（Compose 1.11.0系）で追加された宣言的な `MediaQuery` API（`WindowSizeClass` の手動購読・分岐に代わり、ウィンドウ状態に応じた宣言的なクエリ記述が可能）をまだ利用していない。現状は `rememberListDetailPaneScaffoldNavigator` 等の既存の分岐ロジックで賄っている。
 - **改善案**: プロジェクトが依存する Compose Multiplatform / Material3 Adaptive のバージョンで `MediaQuery` API が利用可能になった際、list/detailペインの表示切り替え判定を簡潔化できないか調査する。参考: https://android-developers.googleblog.com/2026/04/jetpack-compose-april-2026-updates.html
 
-- **対象**: `feature/*-readout-*-detail` 配下の各 `strings.xml`（しきい値・設定値のリセットボタン文言）
-  **課題**: デフォルト値に戻すボタンの文言が「デフォルト値にリセット」（`ace-windows-readout-remaining-fuel-detail`, `gt7-ps5-readout-remaining-fuel-detail`, `gt7-ps5-readout-remaining-fuel-laps-detail`, `lmu-windows-readout-pit-timing-detail`, `lmu-windows-readout-vehicle-approach-detail`）と「デフォルトに戻す」（`ace-windows-readout-tyre-temperature-detail`, `gt7-ps5-readout-tyre-temperature-detail`, `lmu-windows-readout-tyre-temperature-detail`, `lmu-windows-readout-tyre-wear-detail`, `lmu-windows-readout-remaining-virtual-energy-detail`）の2系統に分裂しており、燃料系・タイヤ系といった項目の種類に関係なく画面ごとにばらついている。
-  **改善案**: いずれか一方の表現（例:「デフォルトに戻す」）に統一する。
-
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)

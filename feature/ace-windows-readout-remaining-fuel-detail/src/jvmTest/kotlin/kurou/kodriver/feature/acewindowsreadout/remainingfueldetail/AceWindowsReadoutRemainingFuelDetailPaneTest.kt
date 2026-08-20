@@ -82,7 +82,7 @@ class AceWindowsReadoutRemainingFuelDetailPaneTest {
             }
         }
 
-        rule.onNode(hasContentDescription("デフォルト値にリセット")).performClick()
+        rule.onNode(hasContentDescription("デフォルトに戻す")).performClick()
 
         assertEquals(true, resetCalled)
     }

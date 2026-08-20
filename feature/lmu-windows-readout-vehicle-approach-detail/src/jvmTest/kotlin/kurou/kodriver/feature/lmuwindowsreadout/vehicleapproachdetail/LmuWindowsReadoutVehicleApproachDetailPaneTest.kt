@@ -201,7 +201,7 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
             }
         }
 
-        rule.onAllNodes(hasContentDescription("デフォルト値にリセット"))[0].performClick()
+        rule.onAllNodes(hasContentDescription("デフォルトに戻す"))[0].performClick()
 
         assertEquals(true, resetCalled)
     }
@@ -218,7 +218,7 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
             }
         }
 
-        rule.onAllNodes(hasContentDescription("デフォルト値にリセット"))[1].performClick()
+        rule.onAllNodes(hasContentDescription("デフォルトに戻す"))[1].performClick()
 
         assertEquals(true, resetCalled)
     }
@@ -235,7 +235,7 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
             }
         }
 
-        rule.onAllNodes(hasContentDescription("デフォルト値にリセット"))[2].performClick()
+        rule.onAllNodes(hasContentDescription("デフォルトに戻す"))[2].performClick()
 
         assertEquals(true, resetCalled)
     }
