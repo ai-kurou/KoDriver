@@ -74,3 +74,4 @@
 - 2026-08-19 AceWindowsReadoutTyreTemperatureDetailPaneのUIテスト文字列直書き案は既存319箇所と同じ確立された慣習と判断し見送りとして削除
 - 2026-08-19 flagWebSocketキャンセルテストのflaky対策をsendJsonMessages単体テスト化で実装し削除（PR #1176）
 - 2026-08-19 LMU/GT7/ACE NarratorEventProcessorのテレメトリログJSON組み立て重複をcore:narratorのbuildTelemetryLogJsonヘルパーへ切り出して削除
+- 2026-08-20 WebSocketのmaxFrameSize未設定をKtorに64KB上限を明示設定して削除（同時接続数上限は別項目として継続、PR #1190）

@@ -41,9 +41,9 @@
 
 ## セキュリティ
 
-- **対象**: `server/src/main/kotlin/kurou/kodriver/Application.kt`・`WebSocketJson.kt`
-  **課題**: `/ws/<simulator>/<feature>` の各WebSocketエンドポイントに同時接続数の上限がなく、`WebSockets { }` プラグインにも `maxFrameSize` が設定されていない。LAN内の端末から大量の接続や大きいフレームを送られた場合、デスクトップアプリと同一プロセスで動作しているKtorサーバーが、本体アプリのリソースまで巻き込んでリソース枯渇する可能性がある（CSWSH対策のOriginヘッダ検証はPR #1084で実装済みだが、接続数・フレームサイズの制限は別課題）。
-  **改善案**: 簡易的な接続数カウンタで同時接続数に上限を設ける、または `WebSockets { maxFrameSize = ... }` を明示的に設定してフレームサイズ上限を設ける。信頼できるLAN内限定という現状の前提を大きく崩すものではないため優先度は低めだが、既知の制約として記録しておく。
+- **対象**: `server/src/main/kotlin/kurou/kodriver/Application.kt`・`TelemetryWebSocket.kt`
+  **課題**: `/ws/<simulator>/<feature>` の各WebSocketエンドポイントに同時接続数の上限がない。LAN内の端末から大量の接続を張られた場合、デスクトップアプリと同一プロセスで動作しているKtorサーバーが、本体アプリのリソースまで巻き込んでリソース枯渇する可能性がある（CSWSH対策のOriginヘッダ検証はPR #1084で実装済み、フレームサイズ上限はPR #1190で対応済み）。
+  **改善案**: 簡易的な接続数カウンタで同時接続数に上限を設ける。信頼できるLAN内限定という現状の前提を大きく崩すものではないため優先度は低めだが、既知の制約として記録しておく。
 
 ## CI/CD
 
