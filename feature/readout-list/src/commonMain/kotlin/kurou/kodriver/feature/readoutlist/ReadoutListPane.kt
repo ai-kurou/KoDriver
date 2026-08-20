@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -51,7 +51,6 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuBoxScope
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,7 +58,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -75,6 +73,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -95,6 +94,7 @@ import kurou.kodriver.feature.readoutlist.generated.resources.drag_handle
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_label
 import kurou.kodriver.feature.readoutlist.generated.resources.queue_hint_description
+import kurou.kodriver.feature.readoutlist.generated.resources.queue_toggle_description
 import kurou.kodriver.feature.readoutlist.generated.resources.scroll_to_top
 import kurou.kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kurou.kodriver.feature.readoutlist.generated.resources.simulator_label
@@ -455,22 +455,11 @@ private fun ReadoutListItemCard(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 72.dp)
-                    .padding(start = 16.dp, end = 16.dp),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .heightIn(min = 72.dp)
-                        .semantics { contentDescription = itemName }
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                        ) {
-                            onItemClick(item)
-                        },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
@@ -485,47 +474,124 @@ private fun ReadoutListItemCard(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.widthIn(min = 20.dp),
                 )
-                Icon(
-                    imageVector = itemIcon(item),
-                    contentDescription = null,
-                )
-                Text(
-                    text = itemName,
-                    modifier = Modifier.padding(start = 12.dp),
-                )
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if (item is ReadoutItemKey.TopLevel) {
-                    ReadoutListQueueDivider()
-                    ReadoutListStartSoundToggle(
-                        item = item,
-                        checked = startSoundEnabled,
-                        enabled = readoutEnabled,
-                        onCheckedChange = { onStartSoundEnabledChanged(item, it) },
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 48.dp)
+                            .semantics { contentDescription = itemName }
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                            ) {
+                                onItemClick(item)
+                            },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = itemIcon(item),
+                        contentDescription = null,
                     )
-                    if (item.supportsQueue) {
-                        ReadoutListQueueDivider()
-                        ReadoutListQueueToggle(
-                            item = item,
-                            checked = queueEnabled,
-                            enabled = readoutEnabled,
-                            onCheckedChange = { onQueueEnabledChanged(item, it) },
-                        )
-                    }
-                    ReadoutListQueueDivider()
+                    Text(
+                        text = itemName,
+                        modifier = Modifier.padding(start = 12.dp).weight(1f),
+                    )
+                    ReadoutListReadoutSwitch(
+                        item = item,
+                        checked = readoutEnabled,
+                        onCheckedChange = { onReadoutEnabledChanged(item, it) },
+                    )
                 }
-                ReadoutListReadoutSwitch(
-                    item = item,
-                    checked = readoutEnabled,
-                    onCheckedChange = { onReadoutEnabledChanged(item, it) },
-                )
+                if (item is ReadoutItemKey.TopLevel) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        ReadoutListStartSoundToggle(
+                            item = item,
+                            checked = startSoundEnabled,
+                            enabled = readoutEnabled,
+                            onCheckedChange = { onStartSoundEnabledChanged(item, it) },
+                            modifier = Modifier.weight(1f),
+                        )
+                        if (item.supportsQueue) {
+                            ReadoutListQueueToggle(
+                                item = item,
+                                checked = queueEnabled,
+                                enabled = readoutEnabled,
+                                onCheckedChange = { onQueueEnabledChanged(item, it) },
+                                modifier = Modifier.weight(1f),
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
             }
         }
     }
 }
+
+@Composable
+private fun ReadoutListBottomChip(
+    checked: Boolean,
+    enabled: Boolean,
+    icon: ImageVector,
+    label: String,
+    testTag: String,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val containerColor =
+        if (checked) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerHigh
+        }
+    val contentColor =
+        if (checked) {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        }
+    val resolvedContentColor = if (enabled) contentColor else contentColor.copy(alpha = DISABLED_CHIP_CONTENT_ALPHA)
+    Row(
+        modifier =
+            modifier
+                .heightIn(min = 40.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(containerColor)
+                .testTag(testTag)
+                .clickable(
+                    enabled = enabled,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    role = Role.Checkbox,
+                ) {
+                    onCheckedChange(!checked)
+                }.padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp, alignment = Alignment.CenterHorizontally),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = resolvedContentColor,
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = resolvedContentColor,
+        )
+    }
+}
+
+private const val DISABLED_CHIP_CONTENT_ALPHA = 0.38f
 
 @Composable
 private fun ReadoutListStartSoundToggle(
@@ -533,32 +599,17 @@ private fun ReadoutListStartSoundToggle(
     checked: Boolean,
     enabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier =
-            Modifier
-                .size(width = 56.dp, height = 56.dp)
-                .testTag("readoutListStartSoundTouchTarget:${item.value}")
-                .clickable(
-                    enabled = enabled,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                ) {
-                    onCheckedChange(!checked)
-                },
-    ) {
-        FilledIconToggleButton(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            enabled = enabled,
-        ) {
-            Icon(
-                imageVector = if (checked) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsOff,
-                contentDescription = stringResource(Res.string.start_sound_toggle_description),
-            )
-        }
-    }
+    ReadoutListBottomChip(
+        checked = checked,
+        enabled = enabled,
+        icon = if (checked) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsOff,
+        label = stringResource(Res.string.start_sound_toggle_description),
+        testTag = "readoutListStartSoundTouchTarget:${item.value}",
+        onCheckedChange = onCheckedChange,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -567,32 +618,17 @@ private fun ReadoutListQueueToggle(
     checked: Boolean,
     enabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier =
-            Modifier
-                .size(width = 56.dp, height = 56.dp)
-                .testTag("readoutListQueueTouchTarget:${item.value}")
-                .clickable(
-                    enabled = enabled,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                ) {
-                    onCheckedChange(!checked)
-                },
-    ) {
-        FilledIconToggleButton(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            enabled = enabled,
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
-                contentDescription = null,
-            )
-        }
-    }
+    ReadoutListBottomChip(
+        checked = checked,
+        enabled = enabled,
+        icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+        label = stringResource(Res.string.queue_toggle_description),
+        testTag = "readoutListQueueTouchTarget:${item.value}",
+        onCheckedChange = onCheckedChange,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -605,7 +641,7 @@ private fun ReadoutListReadoutSwitch(
         contentAlignment = Alignment.Center,
         modifier =
             Modifier
-                .size(width = 64.dp, height = 56.dp)
+                .size(width = 64.dp, height = 48.dp)
                 .testTag("readoutListSwitchTouchTarget:${item.value}")
                 .clickable(
                     indication = null,
@@ -619,14 +655,6 @@ private fun ReadoutListReadoutSwitch(
             onCheckedChange = onCheckedChange,
         )
     }
-}
-
-@Composable
-private fun ReadoutListQueueDivider() {
-    VerticalDivider(
-        modifier = Modifier.height(40.dp),
-        color = MaterialTheme.colorScheme.outlineVariant,
-    )
 }
 
 @Composable
