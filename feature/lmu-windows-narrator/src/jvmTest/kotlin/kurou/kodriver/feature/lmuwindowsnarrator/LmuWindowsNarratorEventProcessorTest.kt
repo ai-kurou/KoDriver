@@ -22,6 +22,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -694,7 +695,7 @@ private fun logContext() =
                 vehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
                 vehicleApproachSustainedApproachDurationSeconds = 7,
                 vehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
-                tyreTemperatureHighThresholdCelsius = 95,
+                tyreTemperatureHighThresholdCelsius = Celsius(95),
                 tyreTemperatureLowWarningPhases = emptySet(),
                 tyreWearThresholdPercentage = 50,
                 remainingVirtualEnergyThresholdPercentage = 50,
@@ -768,7 +769,7 @@ private fun pitTimingLogContext() =
                 vehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
                 vehicleApproachSustainedApproachDurationSeconds = 7,
                 vehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
-                tyreTemperatureHighThresholdCelsius = 95,
+                tyreTemperatureHighThresholdCelsius = Celsius(95),
                 tyreTemperatureLowWarningPhases = emptySet(),
                 tyreWearThresholdPercentage = 50,
                 remainingVirtualEnergyThresholdPercentage = 50,

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
@@ -32,7 +33,7 @@ internal class Gt7Ps5ReadoutTyreTemperatureDetailViewModel(
         combine(observeEnabledStates(), observeHighThreshold()) { states, highThresholdCelsius ->
             Gt7Ps5ReadoutTyreTemperatureDetailUiState(
                 overheatWarningEnabled = states.getValue(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning),
-                highThresholdCelsius = highThresholdCelsius,
+                highThresholdCelsius = highThresholdCelsius.value,
             )
         }.stateIn(
             viewModelScope,
@@ -47,11 +48,11 @@ internal class Gt7Ps5ReadoutTyreTemperatureDetailViewModel(
     }
 
     fun onHighThresholdChanged(celsius: Int) {
-        viewModelScope.launch { saveHighThreshold(celsius) }
+        viewModelScope.launch { saveHighThreshold(Celsius(celsius)) }
     }
 
     fun onHighThresholdReset() {
-        onHighThresholdChanged(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+        onHighThresholdChanged(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value)
     }
 
     fun onPreviewClicked() {

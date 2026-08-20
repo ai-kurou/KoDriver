@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
@@ -12,19 +13,19 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePre
 internal class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleClassTyreTemperaturePreferences>,
 ) : LmuWindowsVehicleClassTyreTemperaturePreferencesRepository {
-    override fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Int>> =
+    override fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Celsius>> =
         dataStore.observeProperty { prefs ->
             lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
-                prefs.highThresholdCelsiusByVehicleClass[keyOf(vehicleClass)]
+                prefs.highThresholdCelsiusByVehicleClass[keyOf(vehicleClass)]?.let { Celsius(it) }
                     ?: lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClass)
             }
         }
 
     override suspend fun saveHighThresholdCelsius(
         vehicleClass: LmuWindowsVehicleClassData,
-        celsius: Int,
+        celsius: Celsius,
     ) {
-        dataStore.saveProperty(celsius) { prefs, value ->
+        dataStore.saveProperty(celsius.value) { prefs, value ->
             val updated = prefs.highThresholdCelsiusByVehicleClass + (keyOf(vehicleClass) to value)
             prefs.copy(highThresholdCelsiusByVehicleClass = updated)
         }

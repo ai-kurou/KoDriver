@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
@@ -48,7 +49,7 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
                 overheatWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning),
                 lowWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning),
                 lowWarningPhases = lowWarningPhases,
-                vehicleClassHighThresholdCelsius = vehicleClassHighThresholdCelsius,
+                vehicleClassHighThresholdCelsius = vehicleClassHighThresholdCelsius.mapValues { it.value.value },
                 selectedVehicleClass = selectedVehicleClass,
             )
         }.stateIn(
@@ -87,7 +88,9 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
         vehicleClass: LmuWindowsVehicleClassData,
         celsius: Int,
     ) {
-        viewModelScope.launch { tyreTemperatureUseCases.saveVehicleClassHighThreshold(vehicleClass, celsius) }
+        viewModelScope.launch {
+            tyreTemperatureUseCases.saveVehicleClassHighThreshold(vehicleClass, Celsius(celsius))
+        }
     }
 
     fun onVehicleClassHighThresholdReset(vehicleClass: LmuWindowsVehicleClassData) {

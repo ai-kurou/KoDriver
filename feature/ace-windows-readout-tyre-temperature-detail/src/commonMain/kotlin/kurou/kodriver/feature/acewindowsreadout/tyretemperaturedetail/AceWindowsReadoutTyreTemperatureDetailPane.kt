@@ -102,7 +102,7 @@ internal fun AceWindowsReadoutTyreTemperatureDetailPaneContent(
                         steps = (highThresholdMax - highThresholdMin).toInt() - 1,
                         labelFormatter = { labelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
-                        defaultValue = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.toFloat(),
+                        defaultValue = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value.toFloat(),
                         onResetToDefault = onHighThresholdReset,
                         resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
                     )

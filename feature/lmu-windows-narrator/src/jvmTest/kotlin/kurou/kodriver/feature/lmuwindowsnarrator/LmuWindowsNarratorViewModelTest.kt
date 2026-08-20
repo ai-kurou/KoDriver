@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsEngineData
@@ -265,8 +266,8 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel.receiveAsFlow()
         every { vehicleClassTyreTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns
             MutableStateFlow(
-                tyreTemperatureHighThresholdByVehicleClass
-                    ?: lmuWindowsAllVehicleClasses.associateWith { tyreTemperatureHighThreshold },
+                tyreTemperatureHighThresholdByVehicleClass?.mapValues { Celsius(it.value) }
+                    ?: lmuWindowsAllVehicleClasses.associateWith { Celsius(tyreTemperatureHighThreshold) },
             )
         every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(vehicleClass)
         every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns

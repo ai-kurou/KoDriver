@@ -14,7 +14,7 @@ class AceWindowsTyreTemperaturePreferencesSerializerTest {
     fun `デフォルト値は90度`() {
         assertEquals(
             AceWindowsTyreTemperaturePreferences(
-                highThresholdCelsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+                highThresholdCelsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value,
             ),
             AceWindowsTyreTemperaturePreferencesSerializer.defaultValue,
         )

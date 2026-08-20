@@ -40,10 +40,10 @@ class LmuWindowsVehicleClassTyreTemperatureDefaultsTest {
 
     @Test
     fun `resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusはマップの値を返す`() {
-        val thresholds: Map<LmuWindowsVehicleClassData, Int> = mapOf(LmuWindowsVehicleClassData.Gt3 to 100)
+        val thresholds: Map<LmuWindowsVehicleClassData, Celsius> = mapOf(LmuWindowsVehicleClassData.Gt3 to Celsius(100))
 
         assertEquals(
-            100,
+            Celsius(100),
             resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
                 thresholds,
                 LmuWindowsVehicleClassData.Gt3,
@@ -64,11 +64,11 @@ class LmuWindowsVehicleClassTyreTemperatureDefaultsTest {
 
     @Test
     fun `resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusはUnknownのraw値によらず代表キーを参照する`() {
-        val thresholds: Map<LmuWindowsVehicleClassData, Int> =
-            mapOf(LmuWindowsVehicleClassData.Unknown(LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY) to 100)
+        val thresholds: Map<LmuWindowsVehicleClassData, Celsius> =
+            mapOf(LmuWindowsVehicleClassData.Unknown(LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY) to Celsius(100))
 
         assertEquals(
-            100,
+            Celsius(100),
             resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
                 thresholds,
                 LmuWindowsVehicleClassData.Unknown("Formula2026"),

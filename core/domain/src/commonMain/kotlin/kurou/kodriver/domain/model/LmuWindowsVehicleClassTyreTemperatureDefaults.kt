@@ -1,12 +1,12 @@
 package kurou.kodriver.domain.model
 
-const val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_HYPERCAR_DEFAULT = 100
-const val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P2_DEFAULT = 90
-const val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P2_ELMS_DEFAULT = 90
-const val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P3_DEFAULT = 90
-const val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT = 100
-const val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GT3_DEFAULT = 90
-const val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKNOWN_DEFAULT = 90
+val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_HYPERCAR_DEFAULT = Celsius(100)
+val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P2_DEFAULT = Celsius(90)
+val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P2_ELMS_DEFAULT = Celsius(90)
+val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_P3_DEFAULT = Celsius(90)
+val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT = Celsius(100)
+val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GT3_DEFAULT = Celsius(90)
+val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKNOWN_DEFAULT = Celsius(90)
 
 /**
  * [LmuWindowsVehicleClassData.Unknown] を「未知クラス全体で共有する1件」として扱うための代表キー。
@@ -18,7 +18,9 @@ const val LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY = "Unknown"
  * 車両クラスごとの高温警告しきい値のデフォルト値（摂氏）。Hypercar と GTE は 100℃、
  * それ以外のクラスは 90℃ を既定値とする。
  */
-fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClass: LmuWindowsVehicleClassData): Int =
+fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+    vehicleClass: LmuWindowsVehicleClassData,
+): Celsius =
     when (vehicleClass) {
         LmuWindowsVehicleClassData.Hypercar -> {
             LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_HYPERCAR_DEFAULT
@@ -55,9 +57,9 @@ fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClas
  * マップの直接参照ではなく代表キーへ正規化してから参照する。
  */
 fun resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
-    thresholdsByVehicleClass: Map<LmuWindowsVehicleClassData, Int>,
+    thresholdsByVehicleClass: Map<LmuWindowsVehicleClassData, Celsius>,
     vehicleClass: LmuWindowsVehicleClassData,
-): Int {
+): Celsius {
     val key =
         if (vehicleClass is LmuWindowsVehicleClassData.Unknown) {
             LmuWindowsVehicleClassData.Unknown(LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY)

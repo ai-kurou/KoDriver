@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -84,9 +85,9 @@ private class FakeGt7Ps5TyreTemperaturePreferencesRepository : Gt7Ps5TyreTempera
     private val flow = MutableStateFlow(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
-    override fun observeHighThresholdCelsius(): Flow<Int> = flow
+    override fun observeHighThresholdCelsius(): Flow<Celsius> = flow
 
-    override suspend fun saveHighThresholdCelsius(celsius: Int) {
+    override suspend fun saveHighThresholdCelsius(celsius: Celsius) {
         flow.update { celsius }
     }
 

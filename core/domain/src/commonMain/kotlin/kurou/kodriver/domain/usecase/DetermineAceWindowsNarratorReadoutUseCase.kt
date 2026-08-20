@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 
@@ -24,7 +25,7 @@ data class AceWindowsNarratorState(
 data class AceWindowsNarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val remainingFuelThresholdPercentage: Int,
-    val tyreTemperatureHighThresholdCelsius: Int = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+    val tyreTemperatureHighThresholdCelsius: Celsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
 )
 
 /** ACE 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
@@ -77,7 +78,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         data: AceWindowsTyreCarcassTemperatureData,
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
-        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.toDouble()
+        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toDouble()
         val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
         val anyHot = data.wheels.values.any { it >= hotThreshold }
         val allCool = data.wheels.values.all { it <= coolThreshold }

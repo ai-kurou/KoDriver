@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -47,7 +48,7 @@ data class Gt7Ps5NarratorReadoutSettings(
     val myBestLapVoiceType: MyBestLapVoiceType,
     val remainingFuelLapsThreshold: Int,
     val remainingFuelThresholdPercentage: Int,
-    val tyreTemperatureHighThresholdCelsius: Int,
+    val tyreTemperatureHighThresholdCelsius: Celsius,
 )
 
 /** GT7 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
@@ -158,7 +159,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 telemetry.tyreTemperature.rearLeftCelsius,
                 telemetry.tyreTemperature.rearRightCelsius,
             )
-        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.toFloat()
+        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
         val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
         val anyHot = wheels.any { it >= hotThreshold }
         val allCool = wheels.all { it <= coolThreshold }

@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
@@ -428,7 +429,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to true,
             ) + enabledOverrides,
         remainingFuelThresholdPercentage = 0,
-        tyreTemperatureHighThresholdCelsius = highThresholdCelsius,
+        tyreTemperatureHighThresholdCelsius = Celsius(highThresholdCelsius),
     )
 
     private fun settings(

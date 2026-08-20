@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -99,7 +100,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val vehicleApproachStartReadoutType: VehicleApproachStartReadoutType,
     val vehicleApproachSustainedApproachDurationSeconds: Int,
     val vehicleApproachSustainedReadoutType: VehicleApproachSustainedReadoutType,
-    val tyreTemperatureHighThresholdCelsius: Int,
+    val tyreTemperatureHighThresholdCelsius: Celsius,
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
     val tyreWearThresholdPercentage: Int,
     val remainingVirtualEnergyThresholdPercentage: Int,
@@ -264,7 +265,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
         val data = input.tyreCarcassTemperature
-        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.toDouble()
+        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toDouble()
         val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
         val anyHot = data.wheels.values.any { it >= hotThreshold }
         val allCool = data.wheels.values.all { it <= coolThreshold }

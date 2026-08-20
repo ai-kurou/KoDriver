@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
@@ -32,7 +33,7 @@ internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
         combine(observeEnabledStates(), observeHighThreshold()) { states, highThresholdCelsius ->
             AceWindowsReadoutTyreTemperatureDetailUiState(
                 overheatWarningEnabled = states.getValue(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning),
-                highThresholdCelsius = highThresholdCelsius,
+                highThresholdCelsius = highThresholdCelsius.value,
             )
         }.stateIn(
             viewModelScope,
@@ -47,11 +48,11 @@ internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
     }
 
     fun onHighThresholdChanged(celsius: Int) {
-        viewModelScope.launch { saveHighThreshold(celsius) }
+        viewModelScope.launch { saveHighThreshold(Celsius(celsius)) }
     }
 
     fun onHighThresholdReset() {
-        onHighThresholdChanged(ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+        onHighThresholdChanged(ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value)
     }
 
     fun onPreviewClicked() {

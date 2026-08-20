@@ -5,6 +5,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -21,9 +22,9 @@ class SaveGt7Ps5TyreTemperatureHighThresholdUseCaseTest {
     @Test
     fun `高温閾値を保存する`() =
         runTest {
-            SaveGt7Ps5TyreTemperatureHighThresholdUseCase(repository)(95)
+            SaveGt7Ps5TyreTemperatureHighThresholdUseCase(repository)(Celsius(95))
 
-            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(95) }
+            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(Celsius(95)) }
             confirmVerified(repository)
         }
 }

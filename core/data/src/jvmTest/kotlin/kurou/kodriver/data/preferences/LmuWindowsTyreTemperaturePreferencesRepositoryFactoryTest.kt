@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -36,8 +37,8 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
         runTest {
             val repository = createLmuWindowsTyreTemperaturePreferencesRepository(tempDir.absolutePath)
 
-            repository.saveHighThresholdCelsius(105)
+            repository.saveHighThresholdCelsius(Celsius(105))
 
-            assertEquals(105, repository.observeHighThresholdCelsius().first())
+            assertEquals(Celsius(105), repository.observeHighThresholdCelsius().first())
         }
 }

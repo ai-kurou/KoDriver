@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -60,7 +61,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             useCase.determineTyreTemperatureOverheat(
                 state = LmuWindowsNarratorState(),
                 input = tyreTemperatureInput(fl = 95.0),
-                settings = emptySettings.copy(tyreTemperatureHighThresholdCelsius = 90),
+                settings = emptySettings.copy(tyreTemperatureHighThresholdCelsius = Celsius(90)),
             )
         val tyreTemperatureLow =
             useCase.determineTyreTemperatureLow(
@@ -1655,7 +1656,7 @@ private fun settings(
     vehicleApproachStartReadoutType = startReadoutType,
     vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds,
     vehicleApproachSustainedReadoutType = sustainedReadoutType,
-    tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThresholdCelsius,
+    tyreTemperatureHighThresholdCelsius = Celsius(tyreTemperatureHighThresholdCelsius),
     tyreTemperatureLowWarningPhases =
         setOf(
             SessionPhase.GARAGE,

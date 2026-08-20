@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
@@ -107,7 +108,9 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
         runTest {
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
-            coEvery { repository.saveHighThresholdCelsius(105) } answers { highThresholdFlow.update { 105 } }
+            coEvery {
+                repository.saveHighThresholdCelsius(Celsius(105))
+            } answers { highThresholdFlow.update { Celsius(105) } }
             val viewModel = createViewModel()
 
             viewModel.onHighThresholdChanged(105)
@@ -115,14 +118,14 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             assertEquals(105, viewModel.uiState.first().highThresholdCelsius)
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(105) }
+            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(Celsius(105)) }
             confirmVerified(repository)
         }
 
     @Test
     fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値に戻る`() =
         runTest {
-            highThresholdFlow.update { 105 }
+            highThresholdFlow.update { Celsius(105) }
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
             coEvery {
@@ -135,7 +138,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             viewModel.onHighThresholdReset()
 
             assertEquals(
-                GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+                GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value,
                 viewModel.uiState.first().highThresholdCelsius,
             )
             verify(exactly = 1) { repository.observeEnabledStates() }

@@ -16,7 +16,7 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
     fun `デフォルト値は highThresholdCelsius が 95、enabledStates が空Map`() {
         assertEquals(
             LmuWindowsTyreTemperaturePreferences(
-                highThresholdCelsius = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+                highThresholdCelsius = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value,
                 enabledStates = emptyMap(),
             ),
             LmuWindowsTyreTemperaturePreferencesSerializer.defaultValue,
