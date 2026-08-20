@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -1454,7 +1455,7 @@ private fun sampleGt7Ps5Telemetry(
     carCategory = carCategory,
 )
 
-private fun sampleAceWindowsFuel() = AceWindowsFuelData(remainingPercent = 50.0)
+private fun sampleAceWindowsFuel() = AceWindowsFuelData(remainingPercent = FuelPercent(50.0))
 
 private fun sampleAceWindowsFlag() = AceWindowsFlagData(flag = AceWindowsFlagType.NO_FLAG)
 

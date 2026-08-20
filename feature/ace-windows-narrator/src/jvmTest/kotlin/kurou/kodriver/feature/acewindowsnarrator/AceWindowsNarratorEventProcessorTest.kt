@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -454,7 +455,7 @@ class AceWindowsNarratorEventProcessorTest {
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
         )
 
-    private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = remainingPercent)
+    private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))
 
     private fun logContext() =
         AceWindowsTelemetryLogContext(

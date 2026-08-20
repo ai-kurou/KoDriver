@@ -123,7 +123,7 @@ private fun AceWindowsFuelContent(aceWindowsFuel: AceWindowsFuelData?) {
         text =
             stringResource(
                 Res.string.debug_state_fuel_consumption_remaining_percent,
-                formatOneDecimal(aceWindowsFuel.remainingPercent),
+                formatOneDecimal(aceWindowsFuel.remainingPercent.value),
             ),
     )
 }
