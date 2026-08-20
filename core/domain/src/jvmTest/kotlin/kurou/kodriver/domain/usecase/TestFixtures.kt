@@ -4,6 +4,7 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
+import kurou.kodriver.domain.model.Liters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
@@ -58,7 +59,7 @@ internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) =
         engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
         inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
         tyres = LmuWindowsTyreData(wheels = emptyMap()),
-        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+        fuel = LmuWindowsFuelData(currentLiters = Liters(0.0), capacityLiters = Liters(0.0)),
         timing =
             LmuWindowsTimingData(
                 currentLapTimeMs = 0L,

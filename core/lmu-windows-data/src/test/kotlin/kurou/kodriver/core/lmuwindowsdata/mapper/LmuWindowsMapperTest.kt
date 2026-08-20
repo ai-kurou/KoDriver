@@ -1,5 +1,6 @@
 package kurou.kodriver.core.lmuwindowsdata.mapper
 
+import kurou.kodriver.domain.model.Liters
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
@@ -113,8 +114,8 @@ class LmuWindowsMapperTest {
 
         val result = LmuWindowsMapper.map(buf)
 
-        assertEquals(45.5, result.fuel.currentLiters)
-        assertEquals(100.0, result.fuel.capacityLiters)
+        assertEquals(Liters(45.5), result.fuel.currentLiters)
+        assertEquals(Liters(100.0), result.fuel.capacityLiters)
     }
 
     @Test
