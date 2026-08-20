@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import kurou.kodriver.domain.model.Liters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
@@ -139,7 +140,7 @@ class LmuFuelConsumptionCalculatorTest {
                         )
                     },
             ),
-        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+        fuel = LmuWindowsFuelData(currentLiters = Liters(0.0), capacityLiters = Liters(0.0)),
         timing =
             LmuWindowsTimingData(
                 currentLapTimeMs = 0L,

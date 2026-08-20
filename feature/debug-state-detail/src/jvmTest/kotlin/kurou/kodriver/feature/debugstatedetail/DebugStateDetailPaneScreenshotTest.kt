@@ -15,6 +15,7 @@ import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.Liters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
@@ -76,7 +77,7 @@ private val sampleLmuWindowsTelemetry =
                         WheelIndex.REAR_RIGHT to sampleWheel(88.0),
                     ),
             ),
-        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+        fuel = LmuWindowsFuelData(currentLiters = Liters(0.0), capacityLiters = Liters(0.0)),
         timing =
             LmuWindowsTimingData(
                 currentLapTimeMs = 0L,

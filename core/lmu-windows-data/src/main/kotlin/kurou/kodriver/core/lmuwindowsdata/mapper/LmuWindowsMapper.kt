@@ -1,5 +1,6 @@
 package kurou.kodriver.core.lmuwindowsdata.mapper
 
+import kurou.kodriver.domain.model.Liters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
@@ -155,8 +156,8 @@ internal object LmuWindowsMapper {
             tyres = mapTyres(buffer, vehicleBase),
             fuel =
                 LmuWindowsFuelData(
-                    currentLiters = buffer.getDouble(vehicleBase + OFF_FUEL),
-                    capacityLiters = buffer.getDouble(vehicleBase + OFF_FUEL_CAPACITY),
+                    currentLiters = Liters(buffer.getDouble(vehicleBase + OFF_FUEL)),
+                    capacityLiters = Liters(buffer.getDouble(vehicleBase + OFF_FUEL_CAPACITY)),
                 ),
             timing =
                 LmuWindowsTimingData(
