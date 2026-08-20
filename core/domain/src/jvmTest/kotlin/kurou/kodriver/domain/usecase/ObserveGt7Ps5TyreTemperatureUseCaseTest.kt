@@ -8,6 +8,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kotlin.test.BeforeTest
@@ -26,7 +27,13 @@ class ObserveGt7Ps5TyreTemperatureUseCaseTest {
     @Test
     fun `invokeはリポジトリのtelemetryStreamからtyreTemperatureだけを取り出す`() =
         runTest {
-            val tyreTemperature = Gt7Ps5TyreTemperatureData(80f, 82f, 78f, 79f)
+            val tyreTemperature =
+                Gt7Ps5TyreTemperatureData(
+                    CelsiusReading(80f),
+                    CelsiusReading(82f),
+                    CelsiusReading(78f),
+                    CelsiusReading(79f),
+                )
             val data = fakeGt7Ps5TelemetryData(tyreTemperature = tyreTemperature)
             every { repo.telemetryStream() } returns flowOf(data)
             val useCase = ObserveGt7Ps5TyreTemperatureUseCase(repo)
@@ -41,7 +48,13 @@ class ObserveGt7Ps5TyreTemperatureUseCaseTest {
     @Test
     fun `タイヤ温度が全て0の場合はそのまま0を返す`() =
         runTest {
-            val tyreTemperature = Gt7Ps5TyreTemperatureData(0f, 0f, 0f, 0f)
+            val tyreTemperature =
+                Gt7Ps5TyreTemperatureData(
+                    CelsiusReading(0f),
+                    CelsiusReading(0f),
+                    CelsiusReading(0f),
+                    CelsiusReading(0f),
+                )
             val data = fakeGt7Ps5TelemetryData(tyreTemperature = tyreTemperature)
             every { repo.telemetryStream() } returns flowOf(data)
             val useCase = ObserveGt7Ps5TyreTemperatureUseCase(repo)

@@ -78,10 +78,10 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         data: AceWindowsTyreCarcassTemperatureData,
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
-        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toDouble()
+        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
         val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
-        val anyHot = data.wheels.values.any { it >= hotThreshold }
-        val allCool = data.wheels.values.all { it <= coolThreshold }
+        val anyHot = data.wheels.values.any { it.value >= hotThreshold }
+        val allCool = data.wheels.values.all { it.value <= coolThreshold }
         val nextOverheating =
             when {
                 anyHot -> true
@@ -146,6 +146,6 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         }
 
     private companion object {
-        const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5.0
+        const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
     }
 }

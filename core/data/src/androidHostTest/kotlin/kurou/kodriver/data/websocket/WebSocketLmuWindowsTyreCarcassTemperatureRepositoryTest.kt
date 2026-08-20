@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import okhttp3.Response
@@ -79,10 +80,10 @@ class WebSocketLmuWindowsTyreCarcassTemperatureRepositoryTest {
 
             val result = buildRepository().tyreCarcassTemperatureStream().first()
 
-            assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT])
-            assertEquals(82.0, result.wheels[WheelIndex.FRONT_RIGHT])
-            assertEquals(85.0, result.wheels[WheelIndex.REAR_LEFT])
-            assertEquals(87.0, result.wheels[WheelIndex.REAR_RIGHT])
+            assertEquals(CelsiusReading(80.0f), result.wheels[WheelIndex.FRONT_LEFT])
+            assertEquals(CelsiusReading(82.0f), result.wheels[WheelIndex.FRONT_RIGHT])
+            assertEquals(CelsiusReading(85.0f), result.wheels[WheelIndex.REAR_LEFT])
+            assertEquals(CelsiusReading(87.0f), result.wheels[WheelIndex.REAR_RIGHT])
             assertEquals("/ws/lmu_windows/tyre_carcass_temperature", server.takeRequest().path)
         }
 
@@ -108,7 +109,7 @@ class WebSocketLmuWindowsTyreCarcassTemperatureRepositoryTest {
             val result = buildRepository().tyreCarcassTemperatureStream().first()
 
             assertNotNull(result)
-            assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT])
+            assertEquals(CelsiusReading(80.0f), result.wheels[WheelIndex.FRONT_LEFT])
         }
 
     @Test
@@ -164,7 +165,7 @@ class WebSocketLmuWindowsTyreCarcassTemperatureRepositoryTest {
 
             val result = buildRepository(retryDelayMs = 0L).tyreCarcassTemperatureStream().first()
 
-            assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT])
+            assertEquals(CelsiusReading(80.0f), result.wheels[WheelIndex.FRONT_LEFT])
         }
 }
 

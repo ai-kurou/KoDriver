@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -68,7 +69,7 @@ internal fun TyreCarcassTemperatureContent(
 
 @Composable
 private fun WheelCarcassTemperatureText(
-    wheels: Map<WheelIndex, Double>,
+    wheels: Map<WheelIndex, CelsiusReading>,
     wheelIndex: WheelIndex,
     labelRes: StringResource,
 ) {

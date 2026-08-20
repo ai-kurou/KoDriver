@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.Simulator
@@ -26,7 +27,7 @@ class DebugStateTyreCarcassTemperatureCardTest {
                             selectedSimulator = null,
                             tyreCarcassTemperature =
                                 LmuWindowsTyreCarcassTemperatureData(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to 95.0),
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
                                 ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
                         ),
@@ -50,7 +51,7 @@ class DebugStateTyreCarcassTemperatureCardTest {
                             selectedSimulator = Simulator.Gt7Ps5,
                             tyreCarcassTemperature =
                                 LmuWindowsTyreCarcassTemperatureData(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to 95.0),
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
                                 ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
                         ),
@@ -74,7 +75,7 @@ class DebugStateTyreCarcassTemperatureCardTest {
                             selectedSimulator = Simulator.AceWindows,
                             tyreCarcassTemperature =
                                 LmuWindowsTyreCarcassTemperatureData(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to 95.0),
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
                                 ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
                         ),
@@ -98,7 +99,7 @@ class DebugStateTyreCarcassTemperatureCardTest {
                             selectedSimulator = Simulator.LmuWindows,
                             tyreCarcassTemperature =
                                 LmuWindowsTyreCarcassTemperatureData(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to 95.0),
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
                                 ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
                         ),
@@ -124,10 +125,10 @@ class DebugStateTyreCarcassTemperatureCardTest {
                                 LmuWindowsTyreCarcassTemperatureData(
                                     wheels =
                                         mapOf(
-                                            WheelIndex.FRONT_LEFT to 95.0,
-                                            WheelIndex.FRONT_RIGHT to 96.0,
-                                            WheelIndex.REAR_LEFT to 97.0,
-                                            WheelIndex.REAR_RIGHT to 98.0,
+                                            WheelIndex.FRONT_LEFT to CelsiusReading(95.0f),
+                                            WheelIndex.FRONT_RIGHT to CelsiusReading(96.0f),
+                                            WheelIndex.REAR_LEFT to CelsiusReading(97.0f),
+                                            WheelIndex.REAR_RIGHT to CelsiusReading(98.0f),
                                         ),
                                 ),
                         ),
@@ -156,10 +157,10 @@ class DebugStateTyreCarcassTemperatureCardTest {
                                 AceWindowsTyreCarcassTemperatureData(
                                     wheels =
                                         mapOf(
-                                            WheelIndex.FRONT_LEFT to 91.0,
-                                            WheelIndex.FRONT_RIGHT to 92.0,
-                                            WheelIndex.REAR_LEFT to 93.0,
-                                            WheelIndex.REAR_RIGHT to 94.0,
+                                            WheelIndex.FRONT_LEFT to CelsiusReading(91.0f),
+                                            WheelIndex.FRONT_RIGHT to CelsiusReading(92.0f),
+                                            WheelIndex.REAR_LEFT to CelsiusReading(93.0f),
+                                            WheelIndex.REAR_RIGHT to CelsiusReading(94.0f),
                                         ),
                                 ),
                         ),

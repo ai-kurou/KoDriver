@@ -12,6 +12,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
@@ -110,10 +111,10 @@ private val sampleTyreCarcassTemperature =
     LmuWindowsTyreCarcassTemperatureData(
         wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to 95.0,
-                WheelIndex.FRONT_RIGHT to 96.0,
-                WheelIndex.REAR_LEFT to 97.0,
-                WheelIndex.REAR_RIGHT to 98.0,
+                WheelIndex.FRONT_LEFT to CelsiusReading(95.0f),
+                WheelIndex.FRONT_RIGHT to CelsiusReading(96.0f),
+                WheelIndex.REAR_LEFT to CelsiusReading(97.0f),
+                WheelIndex.REAR_RIGHT to CelsiusReading(98.0f),
             ),
     )
 

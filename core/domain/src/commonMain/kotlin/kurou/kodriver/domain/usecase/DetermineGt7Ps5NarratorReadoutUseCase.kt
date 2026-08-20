@@ -161,8 +161,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             )
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
         val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
-        val anyHot = wheels.any { it >= hotThreshold }
-        val allCool = wheels.all { it <= coolThreshold }
+        val anyHot = wheels.any { it.value >= hotThreshold }
+        val allCool = wheels.all { it.value <= coolThreshold }
         val nextOverheating =
             when {
                 anyHot -> true

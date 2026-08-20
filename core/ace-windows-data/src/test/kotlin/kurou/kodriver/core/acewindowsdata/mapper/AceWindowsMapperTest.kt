@@ -3,6 +3,7 @@ package kurou.kodriver.core.acewindowsdata.mapper
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -81,10 +82,10 @@ class AceWindowsMapperTest {
 
         val result = AceWindowsMapper.mapTyreCarcassTemperature(tyreCarcassTemperatureBuffer(temperatures))
 
-        assertEquals(80.0, requireNotNull(result.wheels[WheelIndex.FRONT_LEFT]), 0.0001)
-        assertEquals(81.0, requireNotNull(result.wheels[WheelIndex.FRONT_RIGHT]), 0.0001)
-        assertEquals(82.0, requireNotNull(result.wheels[WheelIndex.REAR_LEFT]), 0.0001)
-        assertEquals(83.0, requireNotNull(result.wheels[WheelIndex.REAR_RIGHT]), 0.0001)
+        assertEquals(CelsiusReading(80.0f), result.wheels[WheelIndex.FRONT_LEFT])
+        assertEquals(CelsiusReading(81.0f), result.wheels[WheelIndex.FRONT_RIGHT])
+        assertEquals(CelsiusReading(82.0f), result.wheels[WheelIndex.REAR_LEFT])
+        assertEquals(CelsiusReading(83.0f), result.wheels[WheelIndex.REAR_RIGHT])
     }
 
     @Test

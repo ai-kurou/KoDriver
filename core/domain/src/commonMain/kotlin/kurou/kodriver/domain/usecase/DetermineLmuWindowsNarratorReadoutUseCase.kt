@@ -265,10 +265,10 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
         val data = input.tyreCarcassTemperature
-        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toDouble()
+        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.value.toFloat()
         val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
-        val anyHot = data.wheels.values.any { it >= hotThreshold }
-        val allCool = data.wheels.values.all { it <= coolThreshold }
+        val anyHot = data.wheels.values.any { it.value >= hotThreshold }
+        val allCool = data.wheels.values.all { it.value <= coolThreshold }
         val nextOverheating =
             when {
                 anyHot -> true
@@ -297,7 +297,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             previousGamePhase != null &&
                 raceFlags.gamePhase != previousGamePhase &&
                 raceFlags.gamePhase in settings.tyreTemperatureLowWarningPhases
-        val anyCold = data.wheels.values.any { it <= TYRE_LOW_WARNING_THRESHOLD_CELSIUS }
+        val anyCold = data.wheels.values.any { it.value <= TYRE_LOW_WARNING_THRESHOLD_CELSIUS }
         val shouldAnnounce =
             enteringTargetPhase && anyCold &&
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
@@ -598,8 +598,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     private companion object {
         const val APPROACH_DEBOUNCE_MS = 50L
         const val MILLIS_PER_SECOND = 1_000L
-        const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60.0
-        const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5.0
+        const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60f
+        const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
         const val PERCENTAGE_SCALE = 100.0
     }
 }

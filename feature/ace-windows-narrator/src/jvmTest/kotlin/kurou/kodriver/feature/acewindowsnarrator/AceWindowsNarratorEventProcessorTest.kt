@@ -16,6 +16,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -372,7 +373,7 @@ class AceWindowsNarratorEventProcessorTest {
             } just Runs
 
             createProcessor().processTyreTemperature(
-                tyreCarcassTemperature = tyreCarcassTemperature(110.0),
+                tyreCarcassTemperature = tyreCarcassTemperature(110.0f),
                 events = listOf(SpeechEvent.AceWindowsTyreOverheat),
                 readoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
@@ -407,7 +408,7 @@ class AceWindowsNarratorEventProcessorTest {
             } just Runs
 
             processor.processTyreTemperature(
-                tyreCarcassTemperature(90.0),
+                tyreCarcassTemperature(90.0f),
                 emptyList(),
                 emptyList(),
                 emptyMap(),
@@ -416,7 +417,7 @@ class AceWindowsNarratorEventProcessorTest {
                 true,
             )
             processor.processTyreTemperature(
-                tyreCarcassTemperature(110.0),
+                tyreCarcassTemperature(110.0f),
                 listOf(SpeechEvent.AceWindowsTyreOverheat),
                 listOf(key),
                 emptyMap(),
@@ -442,8 +443,8 @@ class AceWindowsNarratorEventProcessorTest {
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
-    private fun tyreCarcassTemperature(frontLeftCelsius: Double) =
-        AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to frontLeftCelsius))
+    private fun tyreCarcassTemperature(frontLeftCelsius: Float) =
+        AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(frontLeftCelsius)))
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 

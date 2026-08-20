@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import java.nio.ByteBuffer
@@ -19,7 +20,7 @@ internal class LmuWindowsTyreCarcassTemperatureRepositoryImpl(
         val wheels =
             LmuWindowsMapper
                 .readCarcassTemperaturesK(buffer, vehicleBase)
-                .mapValues { (_, kelvin) -> kelvin - KELVIN_OFFSET }
+                .mapValues { (_, kelvin) -> CelsiusReading((kelvin - KELVIN_OFFSET).toFloat()) }
         return LmuWindowsTyreCarcassTemperatureData(wheels)
     }
 

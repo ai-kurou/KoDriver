@@ -1,5 +1,6 @@
 package kurou.kodriver.core.gt7ps5data.mapper
 
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import java.nio.ByteBuffer
@@ -34,10 +35,10 @@ internal object Gt7Ps5Mapper {
 
     private fun readTyreTemperature(packet: ByteBuffer) =
         Gt7Ps5TyreTemperatureData(
-            frontLeftCelsius = packet.getFloat(TYRE_TEMP_FRONT_LEFT_OFFSET),
-            frontRightCelsius = packet.getFloat(TYRE_TEMP_FRONT_RIGHT_OFFSET),
-            rearLeftCelsius = packet.getFloat(TYRE_TEMP_REAR_LEFT_OFFSET),
-            rearRightCelsius = packet.getFloat(TYRE_TEMP_REAR_RIGHT_OFFSET),
+            frontLeftCelsius = CelsiusReading(packet.getFloat(TYRE_TEMP_FRONT_LEFT_OFFSET)),
+            frontRightCelsius = CelsiusReading(packet.getFloat(TYRE_TEMP_FRONT_RIGHT_OFFSET)),
+            rearLeftCelsius = CelsiusReading(packet.getFloat(TYRE_TEMP_REAR_LEFT_OFFSET)),
+            rearRightCelsius = CelsiusReading(packet.getFloat(TYRE_TEMP_REAR_RIGHT_OFFSET)),
         )
 
     private fun readCarCategory(packet: ByteBuffer): String {
