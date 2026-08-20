@@ -217,6 +217,7 @@ fun createKoDriverServer(koin: Koin): KoDriverServer =
 
 private const val WEB_SOCKET_PING_PERIOD_MS = 15_000L
 private const val WEB_SOCKET_TIMEOUT_MS = 15_000L
+private const val WEB_SOCKET_MAX_FRAME_SIZE_BYTES = 64L * 1024
 
 /**
  * KoDriver サーバーの Ktor module。
@@ -230,6 +231,8 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         // セッションを解放するため、ping/pong を有効にする。
         pingPeriodMillis = WEB_SOCKET_PING_PERIOD_MS
         timeoutMillis = WEB_SOCKET_TIMEOUT_MS
+        // LAN内の端末から巨大なフレームを送られた場合の受信バッファ肥大化を防ぐ。
+        maxFrameSize = WEB_SOCKET_MAX_FRAME_SIZE_BYTES
     }
     routing {
         get("/") {
