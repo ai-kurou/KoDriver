@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsOff
+import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -58,6 +59,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -501,6 +503,7 @@ private fun ReadoutListItemCard(
                         text = itemName,
                         modifier = Modifier.padding(start = 12.dp).weight(1f),
                     )
+                    VerticalDivider(modifier = Modifier.padding(horizontal = 8.dp).heightIn(max = 24.dp))
                     ReadoutListReadoutSwitch(
                         item = item,
                         checked = readoutEnabled,
@@ -623,7 +626,7 @@ private fun ReadoutListQueueToggle(
     ReadoutListBottomChip(
         checked = checked,
         enabled = enabled,
-        icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+        icon = if (checked) Icons.AutoMirrored.Filled.PlaylistAdd else Icons.Filled.PlaylistRemove,
         label = stringResource(Res.string.queue_toggle_description),
         testTag = "readoutListQueueTouchTarget:${item.value}",
         onCheckedChange = onCheckedChange,
