@@ -113,8 +113,8 @@ class ReadoutListViewModelAceWindowsTest {
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
-            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
-            assertEquals(false, state.queueEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
+            assertEquals(false, state.queueEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
+            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
             assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) }
