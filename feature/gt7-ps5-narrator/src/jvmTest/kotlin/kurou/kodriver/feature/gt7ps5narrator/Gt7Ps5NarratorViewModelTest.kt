@@ -25,6 +25,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -462,8 +463,28 @@ class Gt7Ps5NarratorViewModelTest {
             stubReadoutDefaults(tyreTemperatureHighThresholdCelsius = 95)
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(90f, 90f, 90f, 90f)))
-            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)))
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                        ),
+                ),
+            )
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(95f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                        ),
+                ),
+            )
 
             assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat), spokenTexts)
         }
@@ -480,8 +501,28 @@ class Gt7Ps5NarratorViewModelTest {
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(90f, 90f, 90f, 90f)))
-            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)))
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                        ),
+                ),
+            )
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(95f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                        ),
+                ),
+            )
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
@@ -499,8 +540,28 @@ class Gt7Ps5NarratorViewModelTest {
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(90f, 90f, 90f, 90f)))
-            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)))
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                        ),
+                ),
+            )
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(95f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                        ),
+                ),
+            )
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
@@ -523,8 +584,28 @@ class Gt7Ps5NarratorViewModelTest {
             } just Runs
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
 
-            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(90f, 90f, 90f, 90f)))
-            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)))
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                        ),
+                ),
+            )
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(95f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                            CelsiusReading(90f),
+                        ),
+                ),
+            )
 
             assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat), spokenTexts)
             assertEquals(1, telemetryJsons.size)

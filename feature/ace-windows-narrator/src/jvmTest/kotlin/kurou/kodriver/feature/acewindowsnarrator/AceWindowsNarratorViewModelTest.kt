@@ -30,6 +30,7 @@ import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -533,8 +534,8 @@ class AceWindowsNarratorViewModelTest {
                 tyreCarcassTemperatureChannel = tyreCarcassTemperatureChannel,
             )
 
-            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0))
-            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0f))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0f))
 
             assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsTyreOverheat), spokenTexts)
         }
@@ -557,8 +558,8 @@ class AceWindowsNarratorViewModelTest {
                 tyreCarcassTemperatureChannel = tyreCarcassTemperatureChannel,
             )
 
-            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0))
-            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0f))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0f))
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
@@ -582,8 +583,8 @@ class AceWindowsNarratorViewModelTest {
                 tyreCarcassTemperatureChannel = tyreCarcassTemperatureChannel,
             )
 
-            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0))
-            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0f))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0f))
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
@@ -612,8 +613,8 @@ class AceWindowsNarratorViewModelTest {
                 currentTimeMs = { 123_456L },
             )
 
-            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0))
-            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0f))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0f))
 
             assertEquals(1, telemetryJsons.size)
             assertEquals(
@@ -638,6 +639,6 @@ class AceWindowsNarratorViewModelTest {
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = remainingPercent)
 
-    private fun tyreCarcassTemperature(fl: Double) =
-        AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to fl))
+    private fun tyreCarcassTemperature(fl: Float) =
+        AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(fl)))
 }

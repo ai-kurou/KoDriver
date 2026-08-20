@@ -7,6 +7,7 @@ import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 
@@ -88,7 +89,7 @@ internal object AceWindowsMapper {
             wheels =
                 WheelIndex.entries.associateWith { wheel ->
                     val tyreStateBase = OFF_TYRE_LF + wheel.ordinal * TYRE_STATE_STRIDE
-                    buffer.getFloat(tyreStateBase + OFF_TYRE_TEMPERATURE_C).toDouble()
+                    CelsiusReading(buffer.getFloat(tyreStateBase + OFF_TYRE_TEMPERATURE_C))
                 },
         )
 

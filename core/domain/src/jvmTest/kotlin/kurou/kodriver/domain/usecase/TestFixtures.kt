@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
@@ -19,7 +20,13 @@ import kurou.kodriver.domain.model.SessionYellowFlagState
 internal fun fakeGt7Ps5TelemetryData(
     lapCount: Int = 0,
     carCategory: String = "",
-    tyreTemperature: Gt7Ps5TyreTemperatureData = Gt7Ps5TyreTemperatureData(0f, 0f, 0f, 0f),
+    tyreTemperature: Gt7Ps5TyreTemperatureData =
+        Gt7Ps5TyreTemperatureData(
+            CelsiusReading(0f),
+            CelsiusReading(0f),
+            CelsiusReading(0f),
+            CelsiusReading(0f),
+        ),
 ) = Gt7Ps5TelemetryData(
     lapCount = lapCount,
     lapsInRace = 0,

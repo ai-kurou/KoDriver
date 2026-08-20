@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -656,7 +657,11 @@ class DebugStateDetailViewModelTest {
             every { vehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
-                MutableStateFlow(LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 92.5)))
+                MutableStateFlow(
+                    LmuWindowsTyreCarcassTemperatureData(
+                        wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(92.5f)),
+                    ),
+                )
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -667,7 +672,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(92.5, state.tyreCarcassTemperature?.wheels?.get(WheelIndex.FRONT_LEFT))
+            assertEquals(CelsiusReading(92.5f), state.tyreCarcassTemperature?.wheels?.get(WheelIndex.FRONT_LEFT))
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }

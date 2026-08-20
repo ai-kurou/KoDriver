@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 /** GT7 の各タイヤ温度（摂氏）。取得できない場合は 0f。 */
 @Serializable
 data class Gt7Ps5TyreTemperatureData(
-    val frontLeftCelsius: Float,
-    val frontRightCelsius: Float,
-    val rearLeftCelsius: Float,
-    val rearRightCelsius: Float,
+    val frontLeftCelsius: CelsiusReading,
+    val frontRightCelsius: CelsiusReading,
+    val rearLeftCelsius: CelsiusReading,
+    val rearRightCelsius: CelsiusReading,
 )

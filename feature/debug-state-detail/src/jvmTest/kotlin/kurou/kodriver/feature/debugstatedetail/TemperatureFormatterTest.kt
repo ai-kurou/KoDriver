@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
@@ -23,7 +24,7 @@ class TemperatureFormatterTest {
 
     @Test
     fun `カーカス温度は対象ホイールが存在する場合は摂氏をそのまま表示する`() {
-        val wheels = mapOf(WheelIndex.FRONT_LEFT to 92.5)
+        val wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(92.5f))
 
         assertEquals("92.5", wheelCarcassTemperatureText(wheels, WheelIndex.FRONT_LEFT))
     }

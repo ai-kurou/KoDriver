@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -1793,10 +1794,10 @@ private fun tyreTemperature(
 ) = LmuWindowsTyreCarcassTemperatureData(
     wheels =
         mapOf(
-            WheelIndex.FRONT_LEFT to fl,
-            WheelIndex.FRONT_RIGHT to fr,
-            WheelIndex.REAR_LEFT to rl,
-            WheelIndex.REAR_RIGHT to rr,
+            WheelIndex.FRONT_LEFT to CelsiusReading(fl.toFloat()),
+            WheelIndex.FRONT_RIGHT to CelsiusReading(fr.toFloat()),
+            WheelIndex.REAR_LEFT to CelsiusReading(rl.toFloat()),
+            WheelIndex.REAR_RIGHT to CelsiusReading(rr.toFloat()),
         ),
 )
 

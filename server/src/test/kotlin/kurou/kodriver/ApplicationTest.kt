@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -1838,10 +1839,10 @@ private val tyreCarcassTemperatureData1 =
     LmuWindowsTyreCarcassTemperatureData(
         wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to 80.0,
-                WheelIndex.FRONT_RIGHT to 82.0,
-                WheelIndex.REAR_LEFT to 85.0,
-                WheelIndex.REAR_RIGHT to 87.0,
+                WheelIndex.FRONT_LEFT to CelsiusReading(80.0f),
+                WheelIndex.FRONT_RIGHT to CelsiusReading(82.0f),
+                WheelIndex.REAR_LEFT to CelsiusReading(85.0f),
+                WheelIndex.REAR_RIGHT to CelsiusReading(87.0f),
             ),
     )
 
@@ -1849,10 +1850,10 @@ private val tyreCarcassTemperatureData2 =
     LmuWindowsTyreCarcassTemperatureData(
         wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to 90.0,
-                WheelIndex.FRONT_RIGHT to 91.0,
-                WheelIndex.REAR_LEFT to 92.0,
-                WheelIndex.REAR_RIGHT to 93.0,
+                WheelIndex.FRONT_LEFT to CelsiusReading(90.0f),
+                WheelIndex.FRONT_RIGHT to CelsiusReading(91.0f),
+                WheelIndex.REAR_LEFT to CelsiusReading(92.0f),
+                WheelIndex.REAR_RIGHT to CelsiusReading(93.0f),
             ),
     )
 

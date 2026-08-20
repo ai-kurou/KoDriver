@@ -16,9 +16,9 @@ internal fun wheelTemperatureText(
     } ?: "-"
 
 internal fun wheelCarcassTemperatureText(
-    wheels: Map<WheelIndex, Double>,
+    wheels: Map<WheelIndex, CelsiusReading>,
     wheelIndex: WheelIndex,
-): String = wheels[wheelIndex]?.let { formatCelsius(CelsiusReading(it.toFloat())) } ?: "-"
+): String = wheels[wheelIndex]?.let { formatCelsius(it) } ?: "-"
 
 private fun formatCelsius(value: CelsiusReading): String {
     val rounded = round(value.value * 10) / 10

@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
@@ -274,7 +275,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = AceWindowsNarratorState(),
-                data = tyreCarcassTemperature(fl = 95.0),
+                data = tyreCarcassTemperature(fl = 95.0f),
                 settings = tyreTemperatureSettings(highThresholdCelsius = 90),
             )
 
@@ -287,7 +288,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = AceWindowsNarratorState(tyreOverheating = true),
-                data = tyreCarcassTemperature(fl = 95.0),
+                data = tyreCarcassTemperature(fl = 95.0f),
                 settings = tyreTemperatureSettings(highThresholdCelsius = 90),
             )
 
@@ -301,7 +302,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = AceWindowsNarratorState(),
-                    data = tyreCarcassTemperature(fl = 95.0),
+                    data = tyreCarcassTemperature(fl = 95.0f),
                     settings = tyreTemperatureSettings(highThresholdCelsius = 90),
                 ).state
 
@@ -309,14 +310,14 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = overheatState,
-                    data = tyreCarcassTemperature(fl = 85.0),
+                    data = tyreCarcassTemperature(fl = 85.0f),
                     settings = tyreTemperatureSettings(highThresholdCelsius = 90),
                 ).state
 
         val reovertDecision =
             useCase.determineTyreTemperatureOverheat(
                 state = cooledState,
-                data = tyreCarcassTemperature(fl = 95.0),
+                data = tyreCarcassTemperature(fl = 95.0f),
                 settings = tyreTemperatureSettings(highThresholdCelsius = 90),
             )
 
@@ -329,7 +330,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = AceWindowsNarratorState(),
-                data = tyreCarcassTemperature(fl = 95.0),
+                data = tyreCarcassTemperature(fl = 95.0f),
                 settings =
                     tyreTemperatureSettings(
                         highThresholdCelsius = 90,
@@ -346,7 +347,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = AceWindowsNarratorState(),
-                data = tyreCarcassTemperature(fl = 95.0),
+                data = tyreCarcassTemperature(fl = 95.0f),
                 settings =
                     tyreTemperatureSettings(
                         highThresholdCelsius = 90,
@@ -363,7 +364,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = AceWindowsNarratorState(),
-                data = tyreCarcassTemperature(fl = 90.0),
+                data = tyreCarcassTemperature(fl = 90.0f),
                 settings = tyreTemperatureSettings(highThresholdCelsius = 90),
             )
 
@@ -376,14 +377,14 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = AceWindowsNarratorState(),
-                    data = tyreCarcassTemperature(fl = 95.0),
+                    data = tyreCarcassTemperature(fl = 95.0f),
                     settings = tyreTemperatureSettings(highThresholdCelsius = 90),
                 ).state
 
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = overheatState,
-                data = tyreCarcassTemperature(fl = 87.0),
+                data = tyreCarcassTemperature(fl = 87.0f),
                 settings = tyreTemperatureSettings(highThresholdCelsius = 90),
             )
 
@@ -397,7 +398,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = AceWindowsNarratorState(),
-                    data = tyreCarcassTemperature(fl = 95.0),
+                    data = tyreCarcassTemperature(fl = 95.0f),
                     settings = tyreTemperatureSettings(highThresholdCelsius = 90),
                 ).state
 
@@ -405,7 +406,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = overheatState,
-                    data = tyreCarcassTemperature(fl = 85.0),
+                    data = tyreCarcassTemperature(fl = 85.0f),
                     settings = tyreTemperatureSettings(highThresholdCelsius = 90),
                 ).state
 
@@ -416,8 +417,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 
-    private fun tyreCarcassTemperature(fl: Double) =
-        AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to fl))
+    private fun tyreCarcassTemperature(fl: Float) =
+        AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(fl)))
 
     private fun tyreTemperatureSettings(
         highThresholdCelsius: Int,

@@ -8,5 +8,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AceWindowsTyreCarcassTemperatureData(
     /** ホイールごとのカーカス平均温度（単位: Celsius）。 */
-    val wheels: Map<WheelIndex, Double>,
+    val wheels: Map<WheelIndex, CelsiusReading>,
 )

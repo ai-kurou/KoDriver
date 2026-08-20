@@ -1,5 +1,6 @@
 package kurou.kodriver.core.gt7ps5data.mapper
 
+import kurou.kodriver.domain.model.CelsiusReading
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test
@@ -112,10 +113,10 @@ class Gt7Ps5MapperTest {
         assertEquals(85_432, result.bestLapTimeMs)
         assertEquals(30.2f, result.gasLevel)
         assertEquals(80f, result.gasCapacity)
-        assertEquals(82.1f, result.tyreTemperature.frontLeftCelsius)
-        assertEquals(83.4f, result.tyreTemperature.frontRightCelsius)
-        assertEquals(78.5f, result.tyreTemperature.rearLeftCelsius)
-        assertEquals(79.9f, result.tyreTemperature.rearRightCelsius)
+        assertEquals(CelsiusReading(82.1f), result.tyreTemperature.frontLeftCelsius)
+        assertEquals(CelsiusReading(83.4f), result.tyreTemperature.frontRightCelsius)
+        assertEquals(CelsiusReading(78.5f), result.tyreTemperature.rearLeftCelsius)
+        assertEquals(CelsiusReading(79.9f), result.tyreTemperature.rearRightCelsius)
         assertEquals("GR3", result.carCategory)
     }
 
@@ -123,28 +124,28 @@ class Gt7Ps5MapperTest {
     fun `TyreTemperatureFLを正しくマッピングする`() {
         val packet = packetWith(tyreTemps = TyreTemps(frontLeft = 90.5f))
         val result = Gt7Ps5Mapper.map(packet)
-        assertEquals(90.5f, result.tyreTemperature.frontLeftCelsius)
+        assertEquals(CelsiusReading(90.5f), result.tyreTemperature.frontLeftCelsius)
     }
 
     @Test
     fun `TyreTemperatureFRを正しくマッピングする`() {
         val packet = packetWith(tyreTemps = TyreTemps(frontRight = 91.5f))
         val result = Gt7Ps5Mapper.map(packet)
-        assertEquals(91.5f, result.tyreTemperature.frontRightCelsius)
+        assertEquals(CelsiusReading(91.5f), result.tyreTemperature.frontRightCelsius)
     }
 
     @Test
     fun `TyreTemperatureRLを正しくマッピングする`() {
         val packet = packetWith(tyreTemps = TyreTemps(rearLeft = 85.5f))
         val result = Gt7Ps5Mapper.map(packet)
-        assertEquals(85.5f, result.tyreTemperature.rearLeftCelsius)
+        assertEquals(CelsiusReading(85.5f), result.tyreTemperature.rearLeftCelsius)
     }
 
     @Test
     fun `TyreTemperatureRRを正しくマッピングする`() {
         val packet = packetWith(tyreTemps = TyreTemps(rearRight = 86.5f))
         val result = Gt7Ps5Mapper.map(packet)
-        assertEquals(86.5f, result.tyreTemperature.rearRightCelsius)
+        assertEquals(CelsiusReading(86.5f), result.tyreTemperature.rearRightCelsius)
     }
 
     @Test

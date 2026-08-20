@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kotlin.test.BeforeTest
@@ -30,7 +31,11 @@ class ObserveAceWindowsTyreCarcassTemperatureUseCaseTest {
     @Test
     fun `invoke はリポジトリの tyreCarcassTemperatureStream を返す`() =
         runTest {
-            val expected = AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 80.0))
+            val expected =
+                AceWindowsTyreCarcassTemperatureData(
+                    wheels =
+                        mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(80.0f)),
+                )
             every { repo.tyreCarcassTemperatureStream() } returns flowOf(expected)
             val useCase = ObserveAceWindowsTyreCarcassTemperatureUseCase(repo)
 
@@ -57,9 +62,21 @@ class ObserveAceWindowsTyreCarcassTemperatureUseCaseTest {
     @Test
     fun `複数のデータを順番通りに流す`() =
         runTest {
-            val data1 = AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 80.0))
-            val data2 = AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 82.0))
-            val data3 = AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 85.0))
+            val data1 =
+                AceWindowsTyreCarcassTemperatureData(
+                    wheels =
+                        mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(80.0f)),
+                )
+            val data2 =
+                AceWindowsTyreCarcassTemperatureData(
+                    wheels =
+                        mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(82.0f)),
+                )
+            val data3 =
+                AceWindowsTyreCarcassTemperatureData(
+                    wheels =
+                        mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(85.0f)),
+                )
             every { repo.tyreCarcassTemperatureStream() } returns flowOf(data1, data2, data3)
             val useCase = ObserveAceWindowsTyreCarcassTemperatureUseCase(repo)
 
