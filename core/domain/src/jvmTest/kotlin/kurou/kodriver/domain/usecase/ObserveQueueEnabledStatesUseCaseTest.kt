@@ -38,7 +38,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     ReadoutItemKey.LmuWindows.Flag.Root to false,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
                     ReadoutItemKey.LmuWindows.PitTiming.Root to true,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
                     ReadoutItemKey.LmuWindows.TyreWear.Root to true,
@@ -47,9 +47,9 @@ class ObserveQueueEnabledStatesUseCaseTest {
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
-                    ReadoutItemKey.AceWindows.Flag.Root to true,
+                    ReadoutItemKey.AceWindows.Flag.Root to false,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root to false,
+                    ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
                 ),
                 useCase().first(),
             )
@@ -73,7 +73,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     ReadoutItemKey.LmuWindows.Flag.Root to true,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
                     ReadoutItemKey.LmuWindows.PitTiming.Root to true,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
                     ReadoutItemKey.LmuWindows.TyreWear.Root to true,
@@ -82,9 +82,9 @@ class ObserveQueueEnabledStatesUseCaseTest {
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
-                    ReadoutItemKey.AceWindows.Flag.Root to true,
+                    ReadoutItemKey.AceWindows.Flag.Root to false,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root to false,
+                    ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
                 ),
                 useCase().first(),
             )
