@@ -144,24 +144,36 @@ class DebugStateDetailViewModelTest {
     private fun createViewModel() =
         DebugStateDetailViewModel(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
-            observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
-            observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
-            observeLmuWindowsTelemetry = ObserveLmuWindowsUseCase(lmuWindowsRepository),
-            observeGt7Ps5Telemetry = ObserveGt7Ps5UseCase(gt7Ps5Repository),
-            observeGt7Ps5VehicleClass = ObserveGt7Ps5VehicleClassUseCase(gt7Ps5Repository),
-            observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(aceWindowsFuelRepository),
-            observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(aceWindowsFlagRepository),
-            observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
-            observeLmuWindowsTyreCarcassTemperature =
-                ObserveLmuWindowsTyreCarcassTemperatureUseCase(tyreCarcassTemperatureRepository),
-            observeLmuWindowsVehicleClass = ObserveLmuWindowsVehicleClassUseCase(vehicleClassRepository),
-            observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
-            observeAceWindowsTyreCarcassTemperature =
-                ObserveAceWindowsTyreCarcassTemperatureUseCase(aceWindowsTyreCarcassTemperatureRepository),
-            observeLmuWindowsPitStatus = ObserveLmuWindowsPitStatusUseCase(lmuWindowsPitStatusRepository),
-            observeCardOrder = ObserveDebugStateCardOrderUseCase(cardOrderRepository),
-            resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
-            saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),
+            lmuWindowsUseCases =
+                LmuWindowsDebugStateUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
+                    observeTelemetry = ObserveLmuWindowsUseCase(lmuWindowsRepository),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
+                    observeTyreCarcassTemperature =
+                        ObserveLmuWindowsTyreCarcassTemperatureUseCase(tyreCarcassTemperatureRepository),
+                    observeVehicleClass = ObserveLmuWindowsVehicleClassUseCase(vehicleClassRepository),
+                    observePitStatus = ObserveLmuWindowsPitStatusUseCase(lmuWindowsPitStatusRepository),
+                ),
+            gt7Ps5UseCases =
+                Gt7Ps5DebugStateUseCases(
+                    observeTelemetry = ObserveGt7Ps5UseCase(gt7Ps5Repository),
+                    observeVehicleClass = ObserveGt7Ps5VehicleClassUseCase(gt7Ps5Repository),
+                ),
+            aceWindowsUseCases =
+                AceWindowsDebugStateUseCases(
+                    observeFuel = ObserveAceWindowsFuelUseCase(aceWindowsFuelRepository),
+                    observeFlag = ObserveAceWindowsFlagUseCase(aceWindowsFlagRepository),
+                    observeStatus = ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
+                    observeTyreCarcassTemperature =
+                        ObserveAceWindowsTyreCarcassTemperatureUseCase(aceWindowsTyreCarcassTemperatureRepository),
+                ),
+            cardOrderUseCases =
+                DebugStateCardOrderUseCases(
+                    observeCardOrder = ObserveDebugStateCardOrderUseCase(cardOrderRepository),
+                    resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
+                    saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),
+                ),
         )
 
     @Test
