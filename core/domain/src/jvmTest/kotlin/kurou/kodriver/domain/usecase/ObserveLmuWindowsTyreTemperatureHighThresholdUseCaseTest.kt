@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -28,18 +29,18 @@ class ObserveLmuWindowsTyreTemperatureHighThresholdUseCaseTest {
     @Test
     fun `初期値を返す・保存済みの値を返す`() =
         runTest {
-            val state = MutableStateFlow(90)
+            val state = MutableStateFlow(Celsius(90))
             every { repo.observeHighThresholdCelsius() } returns state
-            coEvery { repo.saveHighThresholdCelsius(110) } answers { state.update { 110 } }
+            coEvery { repo.saveHighThresholdCelsius(Celsius(110)) } answers { state.update { Celsius(110) } }
             val useCase = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repo)
 
-            assertEquals(90, useCase().first())
+            assertEquals(Celsius(90), useCase().first())
 
-            repo.saveHighThresholdCelsius(110)
-            assertEquals(110, useCase().first())
+            repo.saveHighThresholdCelsius(Celsius(110))
+            assertEquals(Celsius(110), useCase().first())
 
             verify(exactly = 2) { repo.observeHighThresholdCelsius() }
-            coVerify(exactly = 1) { repo.saveHighThresholdCelsius(110) }
+            coVerify(exactly = 1) { repo.saveHighThresholdCelsius(Celsius(110)) }
             confirmVerified(repo)
         }
 }

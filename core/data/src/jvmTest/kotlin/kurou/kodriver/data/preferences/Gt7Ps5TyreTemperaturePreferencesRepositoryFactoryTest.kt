@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -38,8 +39,8 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryFactoryTest {
                     directory = tempDir.absolutePath,
                 )
 
-            repository.saveHighThresholdCelsius(100)
+            repository.saveHighThresholdCelsius(Celsius(100))
 
-            assertEquals(100, repository.observeHighThresholdCelsius().first())
+            assertEquals(Celsius(100), repository.observeHighThresholdCelsius().first())
         }
 }

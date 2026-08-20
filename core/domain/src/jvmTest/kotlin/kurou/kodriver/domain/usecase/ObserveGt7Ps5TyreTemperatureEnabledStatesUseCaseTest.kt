@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kotlin.test.BeforeTest
@@ -21,12 +22,12 @@ import kotlin.test.assertEquals
 
 private fun createGt7Ps5TyreTemperaturePreferencesRepository(
     repository: Gt7Ps5TyreTemperaturePreferencesRepository,
-    initialHighThreshold: Int = 90,
+    initialHighThreshold: Celsius = Celsius(90),
 ): Gt7Ps5TyreTemperaturePreferencesRepository {
     val highThreshold = MutableStateFlow(initialHighThreshold)
     val enabledStates = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeHighThresholdCelsius() } returns highThreshold
-    coEvery { repository.saveHighThresholdCelsius(100) } answers { highThreshold.update { 100 } }
+    coEvery { repository.saveHighThresholdCelsius(Celsius(100)) } answers { highThreshold.update { Celsius(100) } }
     every { repository.observeEnabledStates() } returns enabledStates
     listOf(
         ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning,

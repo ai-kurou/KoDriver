@@ -28,7 +28,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
                                             lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
                                                 lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
                                                     vehicleClass,
-                                                )
+                                                ).value
                                             },
                                     ),
                             )

@@ -4,5 +4,5 @@ import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSI
 
 internal data class Gt7Ps5ReadoutTyreTemperatureDetailUiState(
     val overheatWarningEnabled: Boolean = true,
-    val highThresholdCelsius: Int = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+    val highThresholdCelsius: Int = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value,
 )

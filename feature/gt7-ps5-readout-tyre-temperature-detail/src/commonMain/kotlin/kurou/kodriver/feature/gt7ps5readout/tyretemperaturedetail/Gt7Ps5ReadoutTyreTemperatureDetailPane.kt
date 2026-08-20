@@ -94,7 +94,7 @@ internal fun Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
                         steps = (highThresholdMax - highThresholdMin).toInt() - 1,
                         labelFormatter = { labelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
-                        defaultValue = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.toFloat(),
+                        defaultValue = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value.toFloat(),
                         onResetToDefault = onHighThresholdReset,
                         resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
                     )

@@ -14,7 +14,7 @@ class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
     fun `デフォルト値は95度`() {
         assertEquals(
             Gt7Ps5TyreTemperaturePreferences(
-                highThresholdCelsius = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+                highThresholdCelsius = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value,
             ),
             Gt7Ps5TyreTemperaturePreferencesSerializer.defaultValue,
         )

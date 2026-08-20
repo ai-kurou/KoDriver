@@ -211,7 +211,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         uiState.vehicleClassHighThresholdCelsius[uiState.selectedVehicleClass]
                             ?: lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
                                 uiState.selectedVehicleClass,
-                            )
+                            ).value
                     val highThresholdMin = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
                     val highThresholdMax = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
                     ThresholdSlider(
@@ -225,7 +225,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         defaultValue =
                             lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
                                 uiState.selectedVehicleClass,
-                            ).toFloat(),
+                            ).value.toFloat(),
                         onResetToDefault = { onVehicleClassHighThresholdReset(uiState.selectedVehicleClass) },
                         resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
                     )

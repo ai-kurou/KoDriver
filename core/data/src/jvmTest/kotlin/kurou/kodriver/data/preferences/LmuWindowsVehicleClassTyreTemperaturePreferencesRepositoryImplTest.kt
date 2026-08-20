@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
@@ -50,11 +51,11 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `saveHighThresholdCelsius で保存したクラスの値だけが更新され他クラスはデフォルトのまま`() =
         testScope.runTest {
-            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 110)
+            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, Celsius(110))
 
             val result = repository.observeHighThresholdCelsius().first()
 
-            assertEquals(110, result[LmuWindowsVehicleClassData.Gte])
+            assertEquals(Celsius(110), result[LmuWindowsVehicleClassData.Gte])
             assertEquals(
                 lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(LmuWindowsVehicleClassData.Gt3),
                 result[LmuWindowsVehicleClassData.Gt3],
@@ -64,11 +65,11 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `saveHighThresholdCelsius を複数回呼ぶと最後の値で上書きされる`() =
         testScope.runTest {
-            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 80)
-            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 100)
+            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, Celsius(80))
+            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, Celsius(100))
 
             assertEquals(
-                100,
+                Celsius(100),
                 repository.observeHighThresholdCelsius().first()[LmuWindowsVehicleClassData.Gte],
             )
         }
@@ -76,12 +77,12 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `Unknownクラスは raw 値によらず1つのしきい値を共有する`() =
         testScope.runTest {
-            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Unknown("Formula2026"), 105)
+            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Unknown("Formula2026"), Celsius(105))
 
             val result = repository.observeHighThresholdCelsius().first()
             val unknownEntry = result.entries.single { it.key is LmuWindowsVehicleClassData.Unknown }
 
-            assertEquals(105, unknownEntry.value)
+            assertEquals(Celsius(105), unknownEntry.value)
         }
 
     @Test

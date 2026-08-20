@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
@@ -348,7 +349,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             useCase.determineTyreTemperature(
                 state = Gt7Ps5NarratorState(),
                 telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
-                settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
             )
 
         assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat), decision.events)
@@ -361,7 +362,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             useCase.determineTyreTemperature(
                 state = Gt7Ps5NarratorState(tyreOverheating = true),
                 telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
-                settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
             )
 
         assertTrue(decision.events.isEmpty())
@@ -375,13 +376,13 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 .determineTyreTemperature(
                     state = Gt7Ps5NarratorState(),
                     telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
-                    settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                    settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
                 ).state
         val decision =
             useCase.determineTyreTemperature(
                 state = overheatedState,
                 telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(92f, 90f, 90f, 90f)),
-                settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
             )
 
         assertTrue(decision.events.isEmpty())
@@ -395,20 +396,20 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 .determineTyreTemperature(
                     state = Gt7Ps5NarratorState(),
                     telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
-                    settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                    settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
                 ).state
         val cooledState =
             useCase
                 .determineTyreTemperature(
                     state = overheatedState,
                     telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(85f, 85f, 85f, 85f)),
-                    settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                    settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
                 ).state
         val decision =
             useCase.determineTyreTemperature(
                 state = cooledState,
                 telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
-                settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
             )
 
         assertEquals(false, cooledState.tyreOverheating)
@@ -424,7 +425,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to false),
-                        tyreTemperatureHighThresholdCelsius = 95,
+                        tyreTemperatureHighThresholdCelsius = Celsius(95),
                     ),
             )
 
@@ -441,7 +442,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
-                        tyreTemperatureHighThresholdCelsius = 95,
+                        tyreTemperatureHighThresholdCelsius = Celsius(95),
                     ),
             )
 
@@ -454,7 +455,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         remainingFuelLapsThreshold: Int = 3,
         remainingFuelThresholdPercentage: Int = 30,
-        tyreTemperatureHighThresholdCelsius: Int = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+        tyreTemperatureHighThresholdCelsius: Celsius = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
     ) = Gt7Ps5NarratorReadoutSettings(
         enabledStates = enabledStates,
         myBestLapVoiceType = myBestLapVoiceType,

@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -42,18 +43,18 @@ class AceWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `保存した高温閾値を取得できる`() =
         testScope.runTest {
-            repository.saveHighThresholdCelsius(100)
+            repository.saveHighThresholdCelsius(Celsius(100))
 
-            assertEquals(100, repository.observeHighThresholdCelsius().first())
+            assertEquals(Celsius(100), repository.observeHighThresholdCelsius().first())
         }
 
     @Test
     fun `高温閾値を上書き保存できる`() =
         testScope.runTest {
-            repository.saveHighThresholdCelsius(100)
-            repository.saveHighThresholdCelsius(105)
+            repository.saveHighThresholdCelsius(Celsius(100))
+            repository.saveHighThresholdCelsius(Celsius(105))
 
-            assertEquals(105, repository.observeHighThresholdCelsius().first())
+            assertEquals(Celsius(105), repository.observeHighThresholdCelsius().first())
         }
 
     @Test
@@ -104,7 +105,7 @@ class AceWindowsTyreTemperaturePreferencesRepositoryImplTest {
     fun `saveEnabledState後にsaveHighThresholdCelsiusを呼んでもenabledStatesは保持される`() =
         testScope.runTest {
             repository.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, false)
-            repository.saveHighThresholdCelsius(100)
+            repository.saveHighThresholdCelsius(Celsius(100))
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false),

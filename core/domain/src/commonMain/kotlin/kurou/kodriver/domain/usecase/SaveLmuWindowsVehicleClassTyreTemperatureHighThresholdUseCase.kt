@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 
@@ -8,6 +9,6 @@ class SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(
 ) {
     suspend operator fun invoke(
         vehicleClass: LmuWindowsVehicleClassData,
-        celsius: Int,
+        celsius: Celsius,
     ) = repository.saveHighThresholdCelsius(vehicleClass, celsius)
 }

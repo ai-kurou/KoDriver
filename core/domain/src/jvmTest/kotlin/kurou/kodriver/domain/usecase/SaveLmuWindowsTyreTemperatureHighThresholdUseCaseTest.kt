@@ -5,6 +5,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -23,11 +24,11 @@ class SaveLmuWindowsTyreTemperatureHighThresholdUseCaseTest {
         runTest {
             val useCase = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository)
 
-            useCase(100)
-            useCase(75)
+            useCase(Celsius(100))
+            useCase(Celsius(75))
 
-            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
-            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(75) }
+            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(Celsius(100)) }
+            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(Celsius(75)) }
             confirmVerified(repository)
         }
 }

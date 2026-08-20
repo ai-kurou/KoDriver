@@ -29,6 +29,7 @@ import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -182,7 +183,7 @@ class AceWindowsNarratorViewModelTest {
             every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every {
                 tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
-            } returns MutableStateFlow(90)
+            } returns MutableStateFlow(Celsius(90))
             every {
                 tyreTemperaturePreferencesRepository.observeEnabledStates()
             } returns MutableStateFlow(emptyMap())
@@ -309,7 +310,7 @@ class AceWindowsNarratorViewModelTest {
             every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every {
                 tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
-            } returns MutableStateFlow(90)
+            } returns MutableStateFlow(Celsius(90))
             every {
                 tyreTemperaturePreferencesRepository.observeEnabledStates()
             } returns MutableStateFlow(emptyMap())
@@ -448,7 +449,7 @@ class AceWindowsNarratorViewModelTest {
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
         every {
             tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
-        } returns MutableStateFlow(tyreTemperatureHighThresholdCelsius)
+        } returns MutableStateFlow(Celsius(tyreTemperatureHighThresholdCelsius))
         every {
             tyreTemperaturePreferencesRepository.observeEnabledStates()
         } returns MutableStateFlow(tyreTemperatureEnabledOverrides)

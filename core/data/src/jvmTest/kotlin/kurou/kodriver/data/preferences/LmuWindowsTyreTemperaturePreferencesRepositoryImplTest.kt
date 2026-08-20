@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
@@ -46,16 +47,16 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `saveHighThresholdCelsius で保存した値を observeHighThresholdCelsius で取得できる`() =
         testScope.runTest {
-            repository.saveHighThresholdCelsius(110)
-            assertEquals(110, repository.observeHighThresholdCelsius().first())
+            repository.saveHighThresholdCelsius(Celsius(110))
+            assertEquals(Celsius(110), repository.observeHighThresholdCelsius().first())
         }
 
     @Test
     fun `saveHighThresholdCelsius を複数回呼ぶと最後の値で上書きされる`() =
         testScope.runTest {
-            repository.saveHighThresholdCelsius(80)
-            repository.saveHighThresholdCelsius(95)
-            assertEquals(95, repository.observeHighThresholdCelsius().first())
+            repository.saveHighThresholdCelsius(Celsius(80))
+            repository.saveHighThresholdCelsius(Celsius(95))
+            assertEquals(Celsius(95), repository.observeHighThresholdCelsius().first())
         }
 
     @Test
@@ -158,7 +159,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     fun `saveLowWarningPhases後にsaveHighThresholdCelsiusを呼んでもphasesは保持される`() =
         testScope.runTest {
             repository.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
-            repository.saveHighThresholdCelsius(100)
+            repository.saveHighThresholdCelsius(Celsius(100))
             assertEquals(
                 mapOf(
                     SessionPhase.GARAGE to false,

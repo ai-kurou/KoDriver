@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -149,13 +150,13 @@ class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemp
 }
 
 class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTemperaturePreferencesRepository {
-    private val flow = MutableStateFlow(90)
+    private val flow = MutableStateFlow(Celsius(90))
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     private val lowWarningPhasesFlow = MutableStateFlow<Map<SessionPhase, Boolean>>(emptyMap())
 
-    override fun observeHighThresholdCelsius(): Flow<Int> = flow
+    override fun observeHighThresholdCelsius(): Flow<Celsius> = flow
 
-    override suspend fun saveHighThresholdCelsius(celsius: Int) {
+    override suspend fun saveHighThresholdCelsius(celsius: Celsius) {
         flow.update { celsius }
     }
 

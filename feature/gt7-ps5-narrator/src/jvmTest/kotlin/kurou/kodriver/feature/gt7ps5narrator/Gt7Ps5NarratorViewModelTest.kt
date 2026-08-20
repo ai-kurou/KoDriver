@@ -24,6 +24,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -164,7 +165,9 @@ class Gt7Ps5NarratorViewModelTest {
                 MutableStateFlow(MyBestLapVoiceType.FORMAL)
             every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
             every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(30)
-            every { tyreTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns MutableStateFlow(95)
+            every {
+                tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
+            } returns MutableStateFlow(Celsius(95))
             every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
@@ -688,7 +691,9 @@ class Gt7Ps5NarratorViewModelTest {
                 MutableStateFlow(MyBestLapVoiceType.FORMAL)
             every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
             every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(0)
-            every { tyreTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns MutableStateFlow(95)
+            every {
+                tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
+            } returns MutableStateFlow(Celsius(95))
             every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             val telemetryJsons = mutableListOf<String>()
@@ -772,7 +777,7 @@ class Gt7Ps5NarratorViewModelTest {
         } returns MutableStateFlow(remainingFuelThresholdPercentage)
         every {
             tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
-        } returns MutableStateFlow(tyreTemperatureHighThresholdCelsius)
+        } returns MutableStateFlow(Celsius(tyreTemperatureHighThresholdCelsius))
         every {
             tyreTemperaturePreferencesRepository.observeEnabledStates()
         } returns MutableStateFlow(tyreTemperatureEnabledOverrides)
