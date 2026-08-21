@@ -16,4 +16,5 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutinesTest)
+    testImplementation(project(path = projects.core.windowsSharedMemory.path, configuration = "testArtifacts"))
 }

@@ -5,13 +5,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMemorySource
+import kurou.kodriver.core.windowssharedmemory.datasource.FakeWindowsSharedMemoryReader
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AceWindowsFuelRepositoryImplTest {
     private fun makeSource(
-        reader: FakeSharedMemoryReader,
+        reader: FakeWindowsSharedMemoryReader,
         pollingIntervalMs: Long = 1L,
     ) = AceWindowsGraphicsSharedMemorySource(
         pollingIntervalMs = pollingIntervalMs,
@@ -23,7 +24,7 @@ class AceWindowsFuelRepositoryImplTest {
     @Test
     fun `reader が open 済みのときデータを emit する`() =
         runTest {
-            val fake = FakeSharedMemoryReader(initialOpen = true)
+            val fake = FakeWindowsSharedMemoryReader(initialOpen = true, bufferSize = 8_192)
             val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
             repo.fuelStream().first()
@@ -32,7 +33,7 @@ class AceWindowsFuelRepositoryImplTest {
     @Test
     fun `reader が open できるとき isConnected は true を返す`() =
         runTest {
-            val fake = FakeSharedMemoryReader(openResults = listOf(true))
+            val fake = FakeWindowsSharedMemoryReader(openResults = listOf(true), bufferSize = 8_192)
             val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
             assertTrue(repo.isConnected())
@@ -41,7 +42,7 @@ class AceWindowsFuelRepositoryImplTest {
     @Test
     fun `reader が open できないとき isConnected は false を返す`() =
         runTest {
-            val fake = FakeSharedMemoryReader(openResults = listOf(false))
+            val fake = FakeWindowsSharedMemoryReader(openResults = listOf(false), bufferSize = 8_192)
             val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
             assertFalse(repo.isConnected())
