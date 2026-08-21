@@ -61,7 +61,7 @@ private fun flagDisplayName(readoutItemKeyValue: String): String? =
 @Composable
 private fun vehicleApproachDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_vehicle_approach" -> {
+        "lmu_windows_vehicle_approach", "ace_windows_vehicle_approach" -> {
             stringResource(Res.string.readout_item_vehicle_approach)
         }
 

@@ -37,10 +37,19 @@ class ReadoutListItemTypeAceWindowsTest {
     }
 
     @Test
-    fun `ace_windows のデフォルト並び順はフラッグ・タイヤ温度・燃料残量の順`() {
+    fun `ace_windows の vehicle_approach は AceWindows_VehicleApproach を返す`() {
+        assertEquals(
+            ReadoutListItemType.AceWindows.VehicleApproach,
+            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.VehicleApproach.Root),
+        )
+    }
+
+    @Test
+    fun `ace_windows のデフォルト並び順はフラッグ・車両接近・タイヤ温度・燃料残量の順`() {
         assertEquals(
             listOf(
                 ReadoutItemKey.AceWindows.Flag.Root,
+                ReadoutItemKey.AceWindows.VehicleApproach.Root,
                 ReadoutItemKey.AceWindows.TyreTemperature.Root,
                 ReadoutItemKey.AceWindows.RemainingFuel.Root,
             ),

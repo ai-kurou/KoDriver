@@ -190,6 +190,7 @@ private fun gt7Ps5ItemIcon(itemId: ReadoutItemKey.Gt7Ps5): ImageVector =
 
 private fun aceWindowsItemIcon(itemId: ReadoutItemKey.AceWindows): ImageVector =
     when (itemId) {
+        is ReadoutItemKey.AceWindows.VehicleApproach -> Icons.Filled.DirectionsCar
         is ReadoutItemKey.AceWindows.Flag -> Icons.Filled.Flag
         is ReadoutItemKey.AceWindows.RemainingFuel.Root -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.AceWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
