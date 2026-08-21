@@ -37,9 +37,3 @@
   **課題**: `shortcut = true` / `menu = true` / `perUserInstall = true` はjpackageの仕様上いずれもサイレントフラグであり、インストール実行時に自動でその挙動が固定されるだけで、ユーザーに選択させるダイアログは表示されない。ショートカット作成可否を選ばせるには別途 `--win-shortcut-prompt` が必要だが、Compose MultiplatformのGradle DSL(`org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask`)には対応するプロパティが存在せず、現状のDSLの範囲では実現できない。インストール範囲(全ユーザー/個人用)を選ばせる標準ダイアログもjpackage自体に用意されていない。
   **改善案**: Compose Multiplatformが `winShortcutPrompt` 等のDSLプロパティを将来追加した場合、または freeform引数差し込み等の代替手段が判明した場合に、MSIインストーラー上でショートカット作成可否をユーザーに選択させる機能の追加を検討する。
 
-## ライブラリ
-
-- **対象**: `gradle/libs.versions.toml` の `androidx-lifecycle`（現在 `2.10.0`）
-- **課題**: 2026-08-18時点のWeb調査で、AndroidX Lifecycle `2.11.0` が安定版としてリリース済みの可能性が高いことを確認した（`2.11.0-beta02` の変更点として `rememberViewModelStoreNavEntryDecorator` の新オーバーロード追加等が確認できる）。ただし検索結果だけでは正式リリース日・stable channel反映の断定はできなかった。
-- **改善案**: https://developer.android.com/jetpack/androidx/releases/lifecycle で `2.11.0` が stable channel に載っているかを確認し、致命的な互換性問題がなければ `androidx-lifecycle` を更新する（CLAUDE.mdの「ライブラリバージョン管理」方針）。あわせて `2.11.0` は Compose UI 1.7.0+ を要求し、AGPも `9.2.0` 以上が前提とされる点（現在のAGPは `9.3.1` なので条件は満たす）を確認する。
-
