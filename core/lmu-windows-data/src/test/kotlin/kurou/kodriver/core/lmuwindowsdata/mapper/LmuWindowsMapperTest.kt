@@ -235,7 +235,7 @@ class LmuWindowsMapperTest {
             assertEquals(345.0 + i * 10.0, tyre.carcassTemperatureK, 1e-9)
             assertEquals(200.0 + i * 5.0, tyre.brakeTemperatureC, 1e-9)
             assertEquals(220.0 + i.toDouble(), tyre.pressureKpa, 1e-9)
-            assertEquals(0.9 - i * 0.05, tyre.wear, 1e-9)
+            assertEquals(0.9 - i * 0.05, tyre.wear.value, 1e-9)
         }
     }
 

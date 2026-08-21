@@ -2006,7 +2006,8 @@ private class FakeLmuWindowsRepository : LmuWindowsRepository {
     }
 }
 
-private val emptyWheels = WheelIndex.entries.associateWith { LmuWindowsTyreWheelData(0.0, 0.0, 0.0, 0.0, 0.0) }
+private val emptyWheels =
+    WheelIndex.entries.associateWith { LmuWindowsTyreWheelData(0.0, 0.0, 0.0, 0.0, LmuWindowsTyreWearRatio(0.0)) }
 
 private val timingTelemetryData1 =
     LmuWindowsTelemetryData(

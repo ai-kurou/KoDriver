@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.debugstatedetail
 
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
@@ -40,6 +41,6 @@ class TemperatureFormatterTest {
             carcassTemperatureK = 0.0,
             brakeTemperatureC = 0.0,
             pressureKpa = 0.0,
-            wear = 0.0,
+            wear = LmuWindowsTyreWearRatio(0.0),
         )
 }

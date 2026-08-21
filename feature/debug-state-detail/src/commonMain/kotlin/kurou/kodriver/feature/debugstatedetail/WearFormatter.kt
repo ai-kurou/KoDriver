@@ -9,7 +9,7 @@ private const val PERCENTAGE_SCALE = 100
 internal fun wheelWearPercentText(
     wheels: Map<WheelIndex, LmuWindowsTyreWheelData>,
     wheelIndex: WheelIndex,
-): String = wheels[wheelIndex]?.let { formatPercent(it.wear * PERCENTAGE_SCALE) } ?: "-"
+): String = wheels[wheelIndex]?.let { formatPercent(it.wear.value * PERCENTAGE_SCALE) } ?: "-"
 
 private fun formatPercent(value: Double): String {
     val rounded = round(value * 10) / 10

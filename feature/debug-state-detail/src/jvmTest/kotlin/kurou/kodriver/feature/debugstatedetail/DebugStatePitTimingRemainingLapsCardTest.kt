@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -148,7 +149,7 @@ class DebugStatePitTimingRemainingLapsCardTest {
                             carcassTemperatureK = 0.0,
                             brakeTemperatureC = 0.0,
                             pressureKpa = 0.0,
-                            wear = wear,
+                            wear = LmuWindowsTyreWearRatio(wear),
                         )
                     },
             ),
