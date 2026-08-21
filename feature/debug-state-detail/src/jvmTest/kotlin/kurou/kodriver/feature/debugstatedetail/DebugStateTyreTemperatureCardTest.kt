@@ -157,7 +157,7 @@ class DebugStateTyreTemperatureCardTest {
         LmuWindowsTyreWheelData(
             surfaceTemperature = CelsiusReading(surfaceTemperatureCelsius.toFloat()),
             carcassTemperature = CelsiusReading(0f),
-            brakeTemperatureC = 0.0,
+            brakeTemperature = CelsiusReading(0f),
             pressureKpa = 0.0,
             wear = LmuWindowsTyreWearRatio(0.0),
         )

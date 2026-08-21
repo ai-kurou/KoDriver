@@ -148,7 +148,7 @@ class DebugStatePitTimingRemainingLapsCardTest {
                         LmuWindowsTyreWheelData(
                             surfaceTemperature = CelsiusReading(0f),
                             carcassTemperature = CelsiusReading(0f),
-                            brakeTemperatureC = 0.0,
+                            brakeTemperature = CelsiusReading(0f),
                             pressureKpa = 0.0,
                             wear = LmuWindowsTyreWearRatio(wear),
                         )
