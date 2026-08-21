@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
+import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
@@ -27,7 +28,8 @@ private const val DEFAULT_RETRY_DELAY_MS = 3000L
 private val emptyEngine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0)
 private val emptyInputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0)
 private val emptyTyres = LmuWindowsTyreData(wheels = emptyMap())
-private val emptyFuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0)
+private val emptyFuel =
+    LmuWindowsFuelData(currentLiters = LmuWindowsFuelUnit(0.0), capacityLiters = LmuWindowsFuelUnit(0.0))
 private val emptyVehicle =
     LmuWindowsVehicleData(
         localVelocityX = 0.0,

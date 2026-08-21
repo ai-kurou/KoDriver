@@ -18,6 +18,7 @@ import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
+import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
@@ -77,7 +78,7 @@ private val sampleLmuWindowsTelemetry =
                         WheelIndex.REAR_RIGHT to sampleWheel(88.0),
                     ),
             ),
-        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+        fuel = LmuWindowsFuelData(currentLiters = LmuWindowsFuelUnit(0.0), capacityLiters = LmuWindowsFuelUnit(0.0)),
         timing =
             LmuWindowsTimingData(
                 currentLapTimeMs = 0L,
