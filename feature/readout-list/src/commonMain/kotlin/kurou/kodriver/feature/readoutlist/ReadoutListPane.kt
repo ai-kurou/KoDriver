@@ -552,13 +552,13 @@ private fun ReadoutListBottomChip(
 ) {
     val containerColor =
         if (checked) {
-            MaterialTheme.colorScheme.secondaryContainer
+            MaterialTheme.colorScheme.primaryContainer
         } else {
             MaterialTheme.colorScheme.surfaceContainerHigh
         }
     val contentColor =
         if (checked) {
-            MaterialTheme.colorScheme.onSecondaryContainer
+            MaterialTheme.colorScheme.onPrimaryContainer
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         }
@@ -569,7 +569,11 @@ private fun ReadoutListBottomChip(
                 .heightIn(min = 40.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(containerColor)
-                .testTag(testTag)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    shape = RoundedCornerShape(10.dp),
+                ).testTag(testTag)
                 .clickable(
                     enabled = enabled,
                     indication = null,
