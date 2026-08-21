@@ -37,9 +37,10 @@ data class AceWindowsNarratorReadoutDecision(
 /**
  * ACE の燃料残量・旗状態・タイヤカーカス温度から、今回読み上げるべき音声イベントを決定する UseCase。
  *
- * 注意: [ReadoutItemKey.AceWindows.VehicleApproach.Root] は listPane には表示されるが、
- * 車両接近アナウンスの実際の読み上げ判定はこの UseCase にまだ配線されていない（別PRで対応予定）。
- * detailPane・DataStoreへの永続化も未実装のため、現状はlistPaneのスイッチ操作が読み上げに反映されない。
+ * 注意: [ReadoutItemKey.AceWindows.VehicleApproach.Root] は listPane に表示され、
+ * スイッチ・読み上げ開始音のON/OFF状態はDataStoreへ永続化される。ただし車両接近アナウンスの
+ * 実際の読み上げ判定はこの UseCase にまだ配線されていない（別PRで対応予定）ため、
+ * 現状はlistPaneのスイッチ操作が読み上げに反映されない。detailPaneも未実装。
  */
 class DetermineAceWindowsNarratorReadoutUseCase {
     fun determineRemainingFuel(
