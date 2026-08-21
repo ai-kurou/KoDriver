@@ -235,7 +235,7 @@ class LmuWindowsMapperTest {
             assertEquals((350.0 + i * 10.0 - KELVIN_OFFSET).toFloat(), tyre.surfaceTemperature.value, 1e-4f)
             assertEquals((345.0 + i * 10.0 - KELVIN_OFFSET).toFloat(), tyre.carcassTemperature.value, 1e-4f)
             assertEquals((200.0 + i * 5.0).toFloat(), tyre.brakeTemperature.value, 1e-4f)
-            assertEquals(220.0 + i.toDouble(), tyre.pressureKpa, 1e-9)
+            assertEquals(220.0 + i.toDouble(), tyre.pressureKpa.value, 1e-9)
             assertEquals(0.9 - i * 0.05, tyre.wear.value, 1e-9)
         }
     }

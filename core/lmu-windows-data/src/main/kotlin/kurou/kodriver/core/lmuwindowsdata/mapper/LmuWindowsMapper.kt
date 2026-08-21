@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
+import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import kotlin.math.roundToLong
@@ -325,7 +326,7 @@ internal object LmuWindowsMapper {
                     surfaceTemperature = CelsiusReading((surfaceTempK - KELVIN_OFFSET).toFloat()),
                     carcassTemperature = CelsiusReading((carcassTempK - KELVIN_OFFSET).toFloat()),
                     brakeTemperature = CelsiusReading(buffer.getDouble(offset + OFF_WHEEL_BRAKE_TEMP).toFloat()),
-                    pressureKpa = buffer.getDouble(offset + OFF_WHEEL_PRESSURE),
+                    pressureKpa = PressureKpa(buffer.getDouble(offset + OFF_WHEEL_PRESSURE)),
                     wear = LmuWindowsTyreWearRatio(buffer.getDouble(offset + OFF_WHEEL_WEAR)),
                 )
             }
