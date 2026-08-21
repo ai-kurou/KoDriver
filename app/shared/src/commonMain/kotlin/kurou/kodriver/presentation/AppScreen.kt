@@ -55,6 +55,7 @@ import kurou.kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.AceWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.AceWindowsReadoutTyreTemperatureDetailPane
+import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.AceWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.Gt7Ps5ReadoutRemainingFuelDetailPane
@@ -582,13 +583,9 @@ private fun Gt7Ps5ReadoutItemDetailContent(itemType: ReadoutListItemType.Gt7Ps5)
 private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.AceWindows) {
     when (itemType) {
         ReadoutListItemType.AceWindows.Flag -> AceWindowsReadoutFlagDetailPane()
-
         ReadoutListItemType.AceWindows.TyreTemperature -> AceWindowsReadoutTyreTemperatureDetailPane()
-
         ReadoutListItemType.AceWindows.RemainingFuel -> AceWindowsReadoutRemainingFuelDetailPane()
-
-        // 車両接近の detailPane は別PRで実装予定のため、現状は空の詳細画面を表示する。
-        ReadoutListItemType.AceWindows.VehicleApproach -> Unit
+        ReadoutListItemType.AceWindows.VehicleApproach -> AceWindowsReadoutVehicleApproachDetailPane()
     }
 }
 

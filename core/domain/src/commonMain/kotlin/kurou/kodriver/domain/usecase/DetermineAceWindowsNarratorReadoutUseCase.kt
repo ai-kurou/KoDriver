@@ -40,7 +40,8 @@ data class AceWindowsNarratorReadoutDecision(
  * 注意: [ReadoutItemKey.AceWindows.VehicleApproach.Root] は listPane に表示され、
  * スイッチ・読み上げ開始音のON/OFF状態はDataStoreへ永続化される。ただし車両接近アナウンスの
  * 実際の読み上げ判定はこの UseCase にまだ配線されていない（別PRで対応予定）ため、
- * 現状はlistPaneのスイッチ操作が読み上げに反映されない。detailPaneも未実装。
+ * 現状はlistPaneのスイッチ操作が読み上げに反映されない。detailPaneは説明文のみ実装済みで、
+ * 詳細設定項目（閾値等）は未実装。
  */
 class DetermineAceWindowsNarratorReadoutUseCase {
     fun determineRemainingFuel(
