@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -1800,16 +1801,16 @@ private val vehicleApproachDataLeft =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(3),
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = 1.5,
-        lateralDistanceRightMeters = Double.MAX_VALUE,
+        lateralDistanceLeftMeters = LateralDistanceMeters(1.5),
+        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private val vehicleApproachDataRight =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = emptySet(),
         sideBySideRightVehicleIds = setOf(5),
-        lateralDistanceLeftMeters = Double.MAX_VALUE,
-        lateralDistanceRightMeters = 2.0,
+        lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
+        lateralDistanceRightMeters = LateralDistanceMeters(2.0),
     )
 
 private const val VEHICLE_APPROACH_LEFT_JSON =

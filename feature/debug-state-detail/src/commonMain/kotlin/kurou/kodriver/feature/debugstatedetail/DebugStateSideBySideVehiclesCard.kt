@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
@@ -17,8 +18,8 @@ import kotlin.math.round
 
 private val SIDE_BY_SIDE_COLUMN_WIDTH = 80.dp
 
-private fun formatMeters(value: Double): String {
-    val rounded = round(value * 10) / 10
+private fun formatMeters(value: LateralDistanceMeters): String {
+    val rounded = round(value.value * 10) / 10
     return rounded.toString()
 }
 

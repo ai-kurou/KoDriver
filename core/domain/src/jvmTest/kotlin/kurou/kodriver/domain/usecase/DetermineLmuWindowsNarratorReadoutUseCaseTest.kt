@@ -4,6 +4,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -1736,24 +1737,24 @@ private fun leftVehicleApproach(vehicleId: Int) =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(vehicleId),
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = 3.0,
-        lateralDistanceRightMeters = Double.MAX_VALUE,
+        lateralDistanceLeftMeters = LateralDistanceMeters(3.0),
+        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private fun rightVehicleApproach(vehicleId: Int) =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = emptySet(),
         sideBySideRightVehicleIds = setOf(vehicleId),
-        lateralDistanceLeftMeters = Double.MAX_VALUE,
-        lateralDistanceRightMeters = 3.0,
+        lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
+        lateralDistanceRightMeters = LateralDistanceMeters(3.0),
     )
 
 private fun leftAndRightVehicleApproach() =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(1),
         sideBySideRightVehicleIds = setOf(2),
-        lateralDistanceLeftMeters = 3.0,
-        lateralDistanceRightMeters = 3.0,
+        lateralDistanceLeftMeters = LateralDistanceMeters(3.0),
+        lateralDistanceRightMeters = LateralDistanceMeters(3.0),
     )
 
 private fun clearFlags(

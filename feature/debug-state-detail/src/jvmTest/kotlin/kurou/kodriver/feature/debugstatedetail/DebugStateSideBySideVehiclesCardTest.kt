@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import org.junit.Rule
 import org.junit.Test
@@ -44,8 +45,8 @@ class DebugStateSideBySideVehiclesCardTest {
                                 LmuWindowsVehicleApproachData(
                                     sideBySideLeftVehicleIds = emptySet(),
                                     sideBySideRightVehicleIds = emptySet(),
-                                    lateralDistanceLeftMeters = Double.MAX_VALUE,
-                                    lateralDistanceRightMeters = Double.MAX_VALUE,
+                                    lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
+                                    lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
                                 ),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                         ),
@@ -69,8 +70,8 @@ class DebugStateSideBySideVehiclesCardTest {
                                 LmuWindowsVehicleApproachData(
                                     sideBySideLeftVehicleIds = setOf(1),
                                     sideBySideRightVehicleIds = emptySet(),
-                                    lateralDistanceLeftMeters = 1.24,
-                                    lateralDistanceRightMeters = Double.MAX_VALUE,
+                                    lateralDistanceLeftMeters = LateralDistanceMeters(1.24),
+                                    lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
                                 ),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                         ),
@@ -94,8 +95,8 @@ class DebugStateSideBySideVehiclesCardTest {
                                 LmuWindowsVehicleApproachData(
                                     sideBySideLeftVehicleIds = emptySet(),
                                     sideBySideRightVehicleIds = setOf(2),
-                                    lateralDistanceLeftMeters = Double.MAX_VALUE,
-                                    lateralDistanceRightMeters = 2.06,
+                                    lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
+                                    lateralDistanceRightMeters = LateralDistanceMeters(2.06),
                                 ),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                         ),
@@ -119,8 +120,8 @@ class DebugStateSideBySideVehiclesCardTest {
                                 LmuWindowsVehicleApproachData(
                                     sideBySideLeftVehicleIds = setOf(1),
                                     sideBySideRightVehicleIds = setOf(2),
-                                    lateralDistanceLeftMeters = 0.5,
-                                    lateralDistanceRightMeters = 0.76,
+                                    lateralDistanceLeftMeters = LateralDistanceMeters(0.5),
+                                    lateralDistanceRightMeters = LateralDistanceMeters(0.76),
                                 ),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                         ),

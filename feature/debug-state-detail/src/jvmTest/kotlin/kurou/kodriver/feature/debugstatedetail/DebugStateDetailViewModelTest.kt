@@ -28,6 +28,7 @@ import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -1439,8 +1440,9 @@ private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = leftVehicleIds,
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = if (leftVehicleIds.isEmpty()) Double.MAX_VALUE else 1.0,
-        lateralDistanceRightMeters = Double.MAX_VALUE,
+        lateralDistanceLeftMeters =
+            LateralDistanceMeters(if (leftVehicleIds.isEmpty()) Double.MAX_VALUE else 1.0),
+        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private fun sampleTyreCarcassTemperature() = LmuWindowsTyreCarcassTemperatureData(wheels = emptyMap())

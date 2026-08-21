@@ -16,6 +16,7 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -136,8 +137,8 @@ private val sampleVehicleApproach =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(4),
         sideBySideRightVehicleIds = setOf(7),
-        lateralDistanceLeftMeters = 2.0,
-        lateralDistanceRightMeters = 1.5,
+        lateralDistanceLeftMeters = LateralDistanceMeters(2.0),
+        lateralDistanceRightMeters = LateralDistanceMeters(1.5),
     )
 
 class DebugStateDetailPaneScreenshotTest {
