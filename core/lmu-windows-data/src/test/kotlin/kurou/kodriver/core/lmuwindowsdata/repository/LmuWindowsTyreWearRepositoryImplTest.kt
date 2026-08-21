@@ -51,10 +51,10 @@ class LmuWindowsTyreWearRepositoryImplTest {
 
             val result = repo.tyreWearStream().first()
 
-            assertEquals(0.95, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
-            assertEquals(0.94, result.wheels[WheelIndex.FRONT_RIGHT]!!, 1e-9)
-            assertEquals(0.93, result.wheels[WheelIndex.REAR_LEFT]!!, 1e-9)
-            assertEquals(0.92, result.wheels[WheelIndex.REAR_RIGHT]!!, 1e-9)
+            assertEquals(0.95, result.wheels[WheelIndex.FRONT_LEFT]!!.value, 1e-9)
+            assertEquals(0.94, result.wheels[WheelIndex.FRONT_RIGHT]!!.value, 1e-9)
+            assertEquals(0.93, result.wheels[WheelIndex.REAR_LEFT]!!.value, 1e-9)
+            assertEquals(0.92, result.wheels[WheelIndex.REAR_RIGHT]!!.value, 1e-9)
         }
 
     @Test
@@ -74,7 +74,7 @@ class LmuWindowsTyreWearRepositoryImplTest {
 
             val result = repo.tyreWearStream().first()
 
-            assertEquals(0.8, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
+            assertEquals(0.8, result.wheels[WheelIndex.FRONT_LEFT]!!.value, 1e-9)
         }
 
     @Test

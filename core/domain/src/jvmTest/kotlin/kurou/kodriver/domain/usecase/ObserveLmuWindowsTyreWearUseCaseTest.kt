@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kotlin.test.BeforeTest
@@ -32,7 +33,7 @@ class ObserveLmuWindowsTyreWearUseCaseTest {
         runTest {
             val expected =
                 LmuWindowsTyreWearData(
-                    wheels = mapOf(WheelIndex.FRONT_LEFT to 0.8),
+                    wheels = mapOf(WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(0.8)),
                 )
             every { repo.tyreWearStream() } returns flowOf(expected)
             val useCase = ObserveLmuWindowsTyreWearUseCase(repo)
@@ -60,9 +61,9 @@ class ObserveLmuWindowsTyreWearUseCaseTest {
     @Test
     fun `複数のデータを順番通りに流す`() =
         runTest {
-            val data1 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to 1.0))
-            val data2 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to 0.9))
-            val data3 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to 0.8))
+            val data1 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(1.0)))
+            val data2 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(0.9)))
+            val data3 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(0.8)))
             every { repo.tyreWearStream() } returns flowOf(data1, data2, data3)
             val useCase = ObserveLmuWindowsTyreWearUseCase(repo)
 

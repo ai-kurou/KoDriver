@@ -315,7 +315,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val anyWorn =
             data.wheels.values.any { remainingRatio ->
-                (1.0 - remainingRatio) * PERCENTAGE_SCALE >= settings.tyreWearThresholdPercentage
+                (1.0 - remainingRatio.value) * PERCENTAGE_SCALE >= settings.tyreWearThresholdPercentage
             }
         val shouldAnnounce =
             !state.tyreWearWarned && anyWorn &&
@@ -414,7 +414,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 state = state.pitTimingTyreWearTrackingState,
                 currentLap = telemetry.timing.currentLap,
                 bestLapTimeMs = telemetry.timing.bestLapTimeMs,
-                currentValue = worstRemainingRatio,
+                currentValue = worstRemainingRatio.value,
                 session = null,
                 observedAtMs = observedAtMs,
             )

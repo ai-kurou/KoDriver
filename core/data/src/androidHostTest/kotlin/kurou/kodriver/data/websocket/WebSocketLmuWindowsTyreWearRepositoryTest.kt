@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
+import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import okhttp3.Response
@@ -79,10 +80,10 @@ class WebSocketLmuWindowsTyreWearRepositoryTest {
 
             val result = buildRepository().tyreWearStream().first()
 
-            assertEquals(0.8, result.wheels[WheelIndex.FRONT_LEFT])
-            assertEquals(0.82, result.wheels[WheelIndex.FRONT_RIGHT])
-            assertEquals(0.85, result.wheels[WheelIndex.REAR_LEFT])
-            assertEquals(0.87, result.wheels[WheelIndex.REAR_RIGHT])
+            assertEquals(LmuWindowsTyreWearRatio(0.8), result.wheels[WheelIndex.FRONT_LEFT])
+            assertEquals(LmuWindowsTyreWearRatio(0.82), result.wheels[WheelIndex.FRONT_RIGHT])
+            assertEquals(LmuWindowsTyreWearRatio(0.85), result.wheels[WheelIndex.REAR_LEFT])
+            assertEquals(LmuWindowsTyreWearRatio(0.87), result.wheels[WheelIndex.REAR_RIGHT])
             assertEquals("/ws/lmu_windows/tyre_wear", server.takeRequest().path)
         }
 
@@ -108,7 +109,7 @@ class WebSocketLmuWindowsTyreWearRepositoryTest {
             val result = buildRepository().tyreWearStream().first()
 
             assertNotNull(result)
-            assertEquals(0.8, result.wheels[WheelIndex.FRONT_LEFT])
+            assertEquals(LmuWindowsTyreWearRatio(0.8), result.wheels[WheelIndex.FRONT_LEFT])
         }
 
     @Test
@@ -164,7 +165,7 @@ class WebSocketLmuWindowsTyreWearRepositoryTest {
 
             val result = buildRepository(retryDelayMs = 0L).tyreWearStream().first()
 
-            assertEquals(0.8, result.wheels[WheelIndex.FRONT_LEFT])
+            assertEquals(LmuWindowsTyreWearRatio(0.8), result.wheels[WheelIndex.FRONT_LEFT])
         }
 }
 

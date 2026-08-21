@@ -37,6 +37,7 @@ import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
@@ -1877,10 +1878,10 @@ private val tyreWearData1 =
     LmuWindowsTyreWearData(
         wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to 0.8,
-                WheelIndex.FRONT_RIGHT to 0.82,
-                WheelIndex.REAR_LEFT to 0.85,
-                WheelIndex.REAR_RIGHT to 0.87,
+                WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(0.8),
+                WheelIndex.FRONT_RIGHT to LmuWindowsTyreWearRatio(0.82),
+                WheelIndex.REAR_LEFT to LmuWindowsTyreWearRatio(0.85),
+                WheelIndex.REAR_RIGHT to LmuWindowsTyreWearRatio(0.87),
             ),
     )
 
@@ -1888,10 +1889,10 @@ private val tyreWearData2 =
     LmuWindowsTyreWearData(
         wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to 0.5,
-                WheelIndex.FRONT_RIGHT to 0.51,
-                WheelIndex.REAR_LEFT to 0.52,
-                WheelIndex.REAR_RIGHT to 0.53,
+                WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(0.5),
+                WheelIndex.FRONT_RIGHT to LmuWindowsTyreWearRatio(0.51),
+                WheelIndex.REAR_LEFT to LmuWindowsTyreWearRatio(0.52),
+                WheelIndex.REAR_RIGHT to LmuWindowsTyreWearRatio(0.53),
             ),
     )
 
