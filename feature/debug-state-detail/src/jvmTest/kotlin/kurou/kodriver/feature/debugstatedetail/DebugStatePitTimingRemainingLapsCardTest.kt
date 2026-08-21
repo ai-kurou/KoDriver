@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
+import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
@@ -151,7 +152,7 @@ class DebugStatePitTimingRemainingLapsCardTest {
                         )
                     },
             ),
-        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+        fuel = LmuWindowsFuelData(currentLiters = LmuWindowsFuelUnit(0.0), capacityLiters = LmuWindowsFuelUnit(0.0)),
         timing =
             LmuWindowsTimingData(
                 currentLapTimeMs = 0L,

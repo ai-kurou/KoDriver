@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
+import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
@@ -165,7 +166,11 @@ class DebugStateTyreTemperatureCardTest {
             engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
             inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
             tyres = LmuWindowsTyreData(wheels = wheels),
-            fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+            fuel =
+                LmuWindowsFuelData(
+                    currentLiters = LmuWindowsFuelUnit(0.0),
+                    capacityLiters = LmuWindowsFuelUnit(0.0),
+                ),
             timing =
                 LmuWindowsTimingData(
                     currentLapTimeMs = 0L,
