@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -508,6 +509,10 @@ private fun ReadoutListItemCard(
                         item = item,
                         checked = readoutEnabled,
                         onCheckedChange = { onReadoutEnabledChanged(item, it) },
+                    )
+                    Icon(
+                        imageVector = Icons.Outlined.ChevronRight,
+                        contentDescription = null,
                     )
                 }
                 if (item is ReadoutItemKey.TopLevel) {
