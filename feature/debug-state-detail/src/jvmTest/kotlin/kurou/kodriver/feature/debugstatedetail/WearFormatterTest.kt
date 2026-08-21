@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.WheelIndex
@@ -24,8 +25,8 @@ class WearFormatterTest {
 
     private fun sampleWheel(wear: Double) =
         LmuWindowsTyreWheelData(
-            surfaceTemperatureK = 0.0,
-            carcassTemperatureK = 0.0,
+            surfaceTemperature = CelsiusReading(0f),
+            carcassTemperature = CelsiusReading(0f),
             brakeTemperatureC = 0.0,
             pressureKpa = 0.0,
             wear = LmuWindowsTyreWearRatio(wear),

@@ -5,15 +5,10 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.math.round
 
-private const val KELVIN_OFFSET = 273.15
-
 internal fun wheelTemperatureText(
     wheels: Map<WheelIndex, LmuWindowsTyreWheelData>,
     wheelIndex: WheelIndex,
-): String =
-    wheels[wheelIndex]?.let {
-        formatCelsius(CelsiusReading((it.surfaceTemperatureK - KELVIN_OFFSET).toFloat()))
-    } ?: "-"
+): String = wheels[wheelIndex]?.let { formatCelsius(it.surfaceTemperature) } ?: "-"
 
 internal fun wheelCarcassTemperatureText(
     wheels: Map<WheelIndex, CelsiusReading>,
