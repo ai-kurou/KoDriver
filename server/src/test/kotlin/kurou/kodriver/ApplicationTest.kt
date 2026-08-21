@@ -44,6 +44,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -2012,7 +2013,7 @@ private val emptyWheels =
             surfaceTemperature = CelsiusReading(0f),
             carcassTemperature = CelsiusReading(0f),
             brakeTemperature = CelsiusReading(0f),
-            pressureKpa = 0.0,
+            pressureKpa = PressureKpa(0.0),
             wear = LmuWindowsTyreWearRatio(0.0),
         )
     }
