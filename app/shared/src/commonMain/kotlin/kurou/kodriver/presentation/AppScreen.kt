@@ -582,8 +582,13 @@ private fun Gt7Ps5ReadoutItemDetailContent(itemType: ReadoutListItemType.Gt7Ps5)
 private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.AceWindows) {
     when (itemType) {
         ReadoutListItemType.AceWindows.Flag -> AceWindowsReadoutFlagDetailPane()
+
         ReadoutListItemType.AceWindows.TyreTemperature -> AceWindowsReadoutTyreTemperatureDetailPane()
+
         ReadoutListItemType.AceWindows.RemainingFuel -> AceWindowsReadoutRemainingFuelDetailPane()
+
+        // 車両接近の detailPane は別PRで実装予定のため、現状は空の詳細画面を表示する。
+        ReadoutListItemType.AceWindows.VehicleApproach -> Unit
     }
 }
 

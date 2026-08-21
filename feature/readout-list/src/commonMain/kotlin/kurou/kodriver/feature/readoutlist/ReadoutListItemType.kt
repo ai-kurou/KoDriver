@@ -42,6 +42,8 @@ sealed class ReadoutListItemType(
     sealed class AceWindows(
         id: ReadoutItemKey,
     ) : ReadoutListItemType(id) {
+        data object VehicleApproach : AceWindows(ReadoutItemKey.AceWindows.VehicleApproach.Root)
+
         data object Flag : AceWindows(ReadoutItemKey.AceWindows.Flag.Root)
 
         data object TyreTemperature : AceWindows(ReadoutItemKey.AceWindows.TyreTemperature.Root)
@@ -91,6 +93,7 @@ sealed class ReadoutListItemType(
 
         private fun aceWindowsFromId(id: ReadoutItemKey): AceWindows? =
             when (id) {
+                ReadoutItemKey.AceWindows.VehicleApproach.Root -> AceWindows.VehicleApproach
                 ReadoutItemKey.AceWindows.Flag.Root -> AceWindows.Flag
                 ReadoutItemKey.AceWindows.TyreTemperature.Root -> AceWindows.TyreTemperature
                 ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
@@ -143,8 +146,9 @@ sealed class ReadoutListItemType(
         private fun aceWindowsOrderIndex(key: ReadoutItemKey.AceWindows.TopLevel): Int =
             when (key) {
                 ReadoutItemKey.AceWindows.Flag.Root -> 0
-                ReadoutItemKey.AceWindows.TyreTemperature.Root -> 1
-                ReadoutItemKey.AceWindows.RemainingFuel.Root -> 2
+                ReadoutItemKey.AceWindows.VehicleApproach.Root -> 1
+                ReadoutItemKey.AceWindows.TyreTemperature.Root -> 2
+                ReadoutItemKey.AceWindows.RemainingFuel.Root -> 3
             }
     }
 }

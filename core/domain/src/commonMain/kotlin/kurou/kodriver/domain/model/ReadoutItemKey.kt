@@ -163,6 +163,13 @@ sealed interface ReadoutItemKey {
             AceWindows,
             ReadoutItemKey.TopLevel
 
+        sealed interface VehicleApproach : AceWindows {
+            data object Root : VehicleApproach, TopLevel {
+                override val value = "ace_windows_vehicle_approach"
+                override val supportsQueue = false
+            }
+        }
+
         sealed interface Flag : AceWindows {
             data object Root : Flag, TopLevel {
                 override val value = "ace_windows_flag"
@@ -255,6 +262,7 @@ sealed interface ReadoutItemKey {
                 Gt7Ps5.RemainingFuel.Root,
                 Gt7Ps5.TyreTemperature.Root,
                 Gt7Ps5.TyreTemperature.OverheatWarning,
+                AceWindows.VehicleApproach.Root,
                 AceWindows.Flag.Root,
                 AceWindows.Flag.WhiteFlag,
                 AceWindows.Flag.GreenFlag,

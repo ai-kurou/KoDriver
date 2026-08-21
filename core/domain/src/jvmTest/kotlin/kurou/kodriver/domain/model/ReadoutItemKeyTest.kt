@@ -96,6 +96,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.AceWindows.TyreTemperature.Root,
             ReadoutItemKey.fromValue("ace_windows_tyre_temperature"),
         )
+        assertEquals(
+            ReadoutItemKey.AceWindows.VehicleApproach.Root,
+            ReadoutItemKey.fromValue("ace_windows_vehicle_approach"),
+        )
     }
 
     @Test
@@ -106,6 +110,7 @@ class ReadoutItemKeyTest {
     @Test
     fun `車両接近の Root のみ supportsQueue が false`() {
         assertEquals(false, ReadoutItemKey.LmuWindows.VehicleApproach.Root.supportsQueue)
+        assertEquals(false, ReadoutItemKey.AceWindows.VehicleApproach.Root.supportsQueue)
     }
 
     @Test
