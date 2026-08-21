@@ -24,6 +24,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -718,8 +719,8 @@ private fun leftVehicleApproach(distance: Double = 3.0) =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(1),
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = distance,
-        lateralDistanceRightMeters = Double.MAX_VALUE,
+        lateralDistanceLeftMeters = LateralDistanceMeters(distance),
+        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private fun vehicleDamage(overheating: Boolean) =

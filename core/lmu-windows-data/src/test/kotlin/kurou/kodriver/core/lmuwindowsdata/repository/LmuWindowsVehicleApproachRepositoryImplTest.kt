@@ -340,8 +340,8 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
 
             val result = repo.vehicleApproachStream().first()
 
-            assertTrue(kotlin.math.abs(result.lateralDistanceLeftMeters - 3.0) < 1e-9)
-            assertTrue(result.lateralDistanceRightMeters == Double.MAX_VALUE)
+            assertTrue(kotlin.math.abs(result.lateralDistanceLeftMeters.value - 3.0) < 1e-9)
+            assertTrue(result.lateralDistanceRightMeters.value == Double.MAX_VALUE)
         }
 
     @Test
@@ -369,7 +369,7 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
 
             val result = repo.vehicleApproachStream().first()
 
-            assertTrue(kotlin.math.abs(result.lateralDistanceLeftMeters - 3.0) < 1e-9)
+            assertTrue(kotlin.math.abs(result.lateralDistanceLeftMeters.value - 3.0) < 1e-9)
         }
 
     @Test
@@ -396,7 +396,7 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
 
             val result = repo.vehicleApproachStream().first()
 
-            assertEquals(3.0, result.lateralDistanceRightMeters)
+            assertEquals(3.0, result.lateralDistanceRightMeters.value)
         }
 
     @Test
@@ -480,8 +480,8 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
 
             val result = repo.vehicleApproachStream().first()
 
-            assertTrue(result.lateralDistanceLeftMeters == Double.MAX_VALUE)
-            assertTrue(result.lateralDistanceRightMeters == Double.MAX_VALUE)
+            assertTrue(result.lateralDistanceLeftMeters.value == Double.MAX_VALUE)
+            assertTrue(result.lateralDistanceRightMeters.value == Double.MAX_VALUE)
         }
 }
 

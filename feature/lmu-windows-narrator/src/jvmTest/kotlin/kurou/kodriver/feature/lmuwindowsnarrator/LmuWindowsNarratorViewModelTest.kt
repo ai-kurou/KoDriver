@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
+import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -2074,16 +2075,16 @@ private fun noVehicleApproach() =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = emptySet(),
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = Double.MAX_VALUE,
-        lateralDistanceRightMeters = Double.MAX_VALUE,
+        lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
+        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private fun leftVehicleApproach(vehicleId: Int) =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(vehicleId),
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = 3.0,
-        lateralDistanceRightMeters = Double.MAX_VALUE,
+        lateralDistanceLeftMeters = LateralDistanceMeters(3.0),
+        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private fun clearFlags(
