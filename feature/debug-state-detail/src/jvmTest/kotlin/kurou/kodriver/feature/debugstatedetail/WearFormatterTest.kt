@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
@@ -27,6 +28,6 @@ class WearFormatterTest {
             carcassTemperatureK = 0.0,
             brakeTemperatureC = 0.0,
             pressureKpa = 0.0,
-            wear = wear,
+            wear = LmuWindowsTyreWearRatio(wear),
         )
 }

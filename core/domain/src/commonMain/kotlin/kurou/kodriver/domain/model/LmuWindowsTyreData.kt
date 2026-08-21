@@ -7,7 +7,7 @@ data class LmuWindowsTyreWheelData(
     val carcassTemperatureK: Double,
     val brakeTemperatureC: Double,
     val pressureKpa: Double,
-    val wear: Double,
+    val wear: LmuWindowsTyreWearRatio,
 )
 
 data class LmuWindowsTyreData(

@@ -324,7 +324,7 @@ internal object LmuWindowsMapper {
                     carcassTemperatureK = buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE),
                     brakeTemperatureC = buffer.getDouble(offset + OFF_WHEEL_BRAKE_TEMP),
                     pressureKpa = buffer.getDouble(offset + OFF_WHEEL_PRESSURE),
-                    wear = buffer.getDouble(offset + OFF_WHEEL_WEAR),
+                    wear = LmuWindowsTyreWearRatio(buffer.getDouble(offset + OFF_WHEEL_WEAR)),
                 )
             }
         return LmuWindowsTyreData(wheels)

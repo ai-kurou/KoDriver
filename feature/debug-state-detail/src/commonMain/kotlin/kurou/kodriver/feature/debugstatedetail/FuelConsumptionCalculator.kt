@@ -69,7 +69,8 @@ internal fun calculateLmuTyreWearRemainingLaps(telemetry: LmuWindowsTelemetryDat
     if (currentLap <= 0) return null
     val worstRemainingRatio =
         telemetry.tyres.wheels.values
-            .minOfOrNull { it.wear } ?: return null
+            .minOfOrNull { it.wear }
+            ?.value ?: return null
     val consumedRatio = 1.0 - worstRemainingRatio
     if (consumedRatio <= 0.0) return null
     val avgConsumptionPerLap = consumedRatio / currentLap
