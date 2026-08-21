@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -29,7 +30,7 @@ class ObserveLmuWindowsVirtualEnergyUseCaseTest {
     @Test
     fun `invoke はリポジトリの virtualEnergyStream を返す`() =
         runTest {
-            val expected = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
+            val expected = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5))
             every { repo.virtualEnergyStream() } returns flowOf(expected)
             val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
 
@@ -56,9 +57,9 @@ class ObserveLmuWindowsVirtualEnergyUseCaseTest {
     @Test
     fun `複数のデータを順番通りに流す`() =
         runTest {
-            val data1 = LmuWindowsVirtualEnergyData(remainingRatio = 0.8)
-            val data2 = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
-            val data3 = LmuWindowsVirtualEnergyData(remainingRatio = 0.2)
+            val data1 = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.8))
+            val data2 = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5))
+            val data3 = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.2))
             every { repo.virtualEnergyStream() } returns flowOf(data1, data2, data3)
             val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
 

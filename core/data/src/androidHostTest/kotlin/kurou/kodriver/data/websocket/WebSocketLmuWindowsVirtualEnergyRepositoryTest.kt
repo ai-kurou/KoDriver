@@ -78,7 +78,7 @@ class WebSocketLmuWindowsVirtualEnergyRepositoryTest {
 
             val result = buildRepository().virtualEnergyStream().first()
 
-            assertEquals(0.5, result.remainingRatio)
+            assertEquals(0.5, result.remainingRatio.value)
             assertEquals("/ws/lmu_windows/virtual_energy", server.takeRequest().path)
         }
 
@@ -104,7 +104,7 @@ class WebSocketLmuWindowsVirtualEnergyRepositoryTest {
             val result = buildRepository().virtualEnergyStream().first()
 
             assertNotNull(result)
-            assertEquals(0.5, result.remainingRatio)
+            assertEquals(0.5, result.remainingRatio.value)
         }
 
     @Test
@@ -160,7 +160,7 @@ class WebSocketLmuWindowsVirtualEnergyRepositoryTest {
 
             val result = buildRepository(retryDelayMs = 0L).virtualEnergyStream().first()
 
-            assertEquals(0.5, result.remainingRatio)
+            assertEquals(0.5, result.remainingRatio.value)
         }
 }
 

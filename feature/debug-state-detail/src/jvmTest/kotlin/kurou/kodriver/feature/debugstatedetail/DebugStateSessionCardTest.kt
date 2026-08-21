@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import org.junit.Rule
 import org.junit.Test
 
@@ -55,7 +56,11 @@ class DebugStateSessionCardTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.0, session = session),
+                                virtualEnergy =
+                                    LmuWindowsVirtualEnergyData(
+                                        remainingRatio = LmuWindowsVirtualEnergyRatio(0.0),
+                                        session = session,
+                                    ),
                                 cardOrder = listOf(DebugStateCardKey.SESSION),
                             ),
                         canNavigateBack = true,

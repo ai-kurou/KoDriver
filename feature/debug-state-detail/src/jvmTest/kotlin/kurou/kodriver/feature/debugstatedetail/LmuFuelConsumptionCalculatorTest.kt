@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
@@ -23,7 +24,7 @@ class LmuFuelConsumptionCalculatorTest {
     fun `LMU 5周消費後の残量50パーセントなら1周あたり10パーセント消費で残り5周`() {
         val result =
             calculateLmuVirtualEnergyConsumption(
-                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
                 telemetry = sampleLmuTelemetry(currentLap = 5),
             )
 
@@ -43,7 +44,7 @@ class LmuFuelConsumptionCalculatorTest {
     fun `LMU telemetryがnullの場合はnullを返す`() {
         assertNull(
             calculateLmuVirtualEnergyConsumption(
-                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
                 telemetry = null,
             ),
         )
@@ -53,7 +54,7 @@ class LmuFuelConsumptionCalculatorTest {
     fun `LMU currentLapが0以下の場合はnullを返す`() {
         assertNull(
             calculateLmuVirtualEnergyConsumption(
-                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
                 telemetry = sampleLmuTelemetry(currentLap = 0),
             ),
         )
@@ -63,7 +64,7 @@ class LmuFuelConsumptionCalculatorTest {
     fun `LMU 消費量が0以下（残量が減っていない）場合はnullを返す`() {
         assertNull(
             calculateLmuVirtualEnergyConsumption(
-                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 1.0),
+                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(1.0)),
                 telemetry = sampleLmuTelemetry(currentLap = 3),
             ),
         )
@@ -73,7 +74,9 @@ class LmuFuelConsumptionCalculatorTest {
     fun `LMU バーチャルエナジー残量を割合で返す`() {
         assertEquals(
             50.0,
-            calculateLmuVirtualEnergyRemainingPercent(LmuWindowsVirtualEnergyData(remainingRatio = 0.5)),
+            calculateLmuVirtualEnergyRemainingPercent(
+                LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
+            ),
         )
     }
 

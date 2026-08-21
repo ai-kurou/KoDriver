@@ -40,6 +40,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -2176,6 +2177,6 @@ private fun remainingVirtualEnergy(
     remainingRatio: Double = 1.0,
     session: Int = 0,
 ) = LmuWindowsVirtualEnergyData(
-    remainingRatio = remainingRatio,
+    remainingRatio = LmuWindowsVirtualEnergyRatio(remainingRatio),
     session = session,
 )

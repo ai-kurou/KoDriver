@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import java.nio.ByteBuffer
 
@@ -19,7 +20,7 @@ internal class LmuWindowsVirtualEnergyRepositoryImpl(
     private fun readVirtualEnergy(buffer: ByteBuffer): LmuWindowsVirtualEnergyData? {
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null
         return LmuWindowsVirtualEnergyData(
-            remainingRatio = LmuWindowsMapper.readVirtualEnergyRatio(buffer, vehicleBase),
+            remainingRatio = LmuWindowsVirtualEnergyRatio(LmuWindowsMapper.readVirtualEnergyRatio(buffer, vehicleBase)),
             session = LmuWindowsMapper.readSession(buffer),
         )
     }

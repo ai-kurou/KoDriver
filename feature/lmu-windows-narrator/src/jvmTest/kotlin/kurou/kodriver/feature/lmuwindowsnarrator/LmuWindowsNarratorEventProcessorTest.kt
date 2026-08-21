@@ -38,6 +38,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -201,7 +202,10 @@ class LmuWindowsNarratorEventProcessorTest {
             val processor = createProcessor()
 
             processor.processRemainingVirtualEnergy(
-                remainingVirtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.8),
+                remainingVirtualEnergy =
+                    LmuWindowsVirtualEnergyData(
+                        remainingRatio = LmuWindowsVirtualEnergyRatio(0.8),
+                    ),
                 events = emptyList(),
                 readoutOrder = emptyList(),
                 queueEnabledStates = emptyMap(),
@@ -209,7 +213,10 @@ class LmuWindowsNarratorEventProcessorTest {
                 logContext = logContext(),
             )
             processor.processRemainingVirtualEnergy(
-                remainingVirtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.3),
+                remainingVirtualEnergy =
+                    LmuWindowsVirtualEnergyData(
+                        remainingRatio = LmuWindowsVirtualEnergyRatio(0.3),
+                    ),
                 events = listOf(SpeechEvent.RemainingVirtualEnergyWarning),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
                 queueEnabledStates = emptyMap(),
@@ -784,7 +791,7 @@ private fun pitTimingLogContext() =
 private fun pitTimingSnapshot(tyreWear: LmuWindowsTyreWearData) =
     LmuWindowsPitTimingSnapshot(
         telemetry = fakeTelemetryData(),
-        virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+        virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
         tyreWear = tyreWear,
     )
 

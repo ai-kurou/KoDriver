@@ -33,6 +33,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -54,7 +55,8 @@ private val sampleRaceFlags =
         playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
     )
 
-private val sampleVirtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = 10)
+private val sampleVirtualEnergy =
+    LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5), session = 10)
 
 private fun sampleWheel(surfaceTemperatureCelsius: Double) =
     LmuWindowsTyreWheelData(

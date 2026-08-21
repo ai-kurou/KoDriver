@@ -15,6 +15,7 @@ import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -147,7 +148,11 @@ class DebugStateDetailPaneTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = session),
+                                virtualEnergy =
+                                    LmuWindowsVirtualEnergyData(
+                                        remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                        session = session,
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},

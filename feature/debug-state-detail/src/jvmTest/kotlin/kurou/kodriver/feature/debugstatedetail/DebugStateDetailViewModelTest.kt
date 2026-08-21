@@ -43,6 +43,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -1403,7 +1404,8 @@ private fun sampleRaceFlags(gamePhase: SessionPhase) =
         playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
     )
 
-private fun sampleVirtualEnergy(session: Int) = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = session)
+private fun sampleVirtualEnergy(session: Int) =
+    LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5), session = session)
 
 private fun sampleLmuWindowsTelemetry(currentLap: Int) =
     LmuWindowsTelemetryData(
