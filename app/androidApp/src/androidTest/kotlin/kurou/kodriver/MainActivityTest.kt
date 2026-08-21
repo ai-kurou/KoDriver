@@ -103,10 +103,7 @@ class MainActivityTest {
             "フラッグ",
             "ホワイトフラッグ・グリーンフラッグ・レッドフラッグ・イエローフラッグなどのフラッグ状況を音声でお知らせします。",
         )
-        // 車両接近はdetailPaneが未実装のため、タップできることのみ確認する。
-        scrollToItem("車両接近")
-        clickReadoutItem("車両接近")
-        navigateBack()
+        clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
         clickItemAndVerifyDescription(
             "タイヤ温度",
             "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
