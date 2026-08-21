@@ -1,3 +1,7 @@
 <resources>
     <string name="vehicle_approach_description">周囲の車両が接近した際に音声でお知らせします。</string>
+    <string name="vehicle_approach_threshold_subtitle">しきい値</string>
+    <string name="vehicle_approach_threshold_label">%1$.1f m</string>
+    <string name="vehicle_approach_threshold_reset_to_default">デフォルトに戻す</string>
+    <string name="vehicle_approach_start_readout_card_title">接近開始時に読み上げる</string>
 </resources>
