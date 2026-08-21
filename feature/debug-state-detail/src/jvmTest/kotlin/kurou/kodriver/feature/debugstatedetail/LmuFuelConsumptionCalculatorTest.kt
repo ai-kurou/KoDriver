@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -133,8 +134,8 @@ class LmuFuelConsumptionCalculatorTest {
                 wheels =
                     wheels.mapValues { (_, wear) ->
                         LmuWindowsTyreWheelData(
-                            surfaceTemperatureK = 0.0,
-                            carcassTemperatureK = 0.0,
+                            surfaceTemperature = CelsiusReading(0f),
+                            carcassTemperature = CelsiusReading(0f),
                             brakeTemperatureC = 0.0,
                             pressureKpa = 0.0,
                             wear = LmuWindowsTyreWearRatio(wear),

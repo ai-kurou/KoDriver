@@ -9,10 +9,10 @@ import kotlin.test.assertEquals
 
 class TemperatureFormatterTest {
     @Test
-    fun `対象ホイールが存在する場合はケルビンを摂氏に変換して表示する`() {
+    fun `対象ホイールが存在する場合は表面温度を摂氏で表示する`() {
         val wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to sampleWheel(surfaceTemperatureK = 358.15),
+                WheelIndex.FRONT_LEFT to sampleWheel(surfaceTemperature = CelsiusReading(85.0f)),
             )
 
         assertEquals("85.0", wheelTemperatureText(wheels, WheelIndex.FRONT_LEFT))
@@ -35,10 +35,10 @@ class TemperatureFormatterTest {
         assertEquals("-", wheelCarcassTemperatureText(emptyMap(), WheelIndex.FRONT_LEFT))
     }
 
-    private fun sampleWheel(surfaceTemperatureK: Double) =
+    private fun sampleWheel(surfaceTemperature: CelsiusReading) =
         LmuWindowsTyreWheelData(
-            surfaceTemperatureK = surfaceTemperatureK,
-            carcassTemperatureK = 0.0,
+            surfaceTemperature = surfaceTemperature,
+            carcassTemperature = CelsiusReading(0f),
             brakeTemperatureC = 0.0,
             pressureKpa = 0.0,
             wear = LmuWindowsTyreWearRatio(0.0),

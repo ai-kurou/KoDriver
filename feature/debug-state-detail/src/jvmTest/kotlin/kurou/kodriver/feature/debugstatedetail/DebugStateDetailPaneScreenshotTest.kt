@@ -57,8 +57,8 @@ private val sampleVirtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0
 
 private fun sampleWheel(surfaceTemperatureCelsius: Double) =
     LmuWindowsTyreWheelData(
-        surfaceTemperatureK = surfaceTemperatureCelsius + 273.15,
-        carcassTemperatureK = 0.0,
+        surfaceTemperature = CelsiusReading(surfaceTemperatureCelsius.toFloat()),
+        carcassTemperature = CelsiusReading(0f),
         brakeTemperatureC = 0.0,
         pressureKpa = 0.0,
         wear = LmuWindowsTyreWearRatio(0.0),

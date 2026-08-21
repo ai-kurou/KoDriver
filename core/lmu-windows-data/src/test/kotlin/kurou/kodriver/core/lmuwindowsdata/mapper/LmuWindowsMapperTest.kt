@@ -16,6 +16,7 @@ class LmuWindowsMapperTest {
         const val SCORING_BASE = 1_632
         const val VEHICLE_SCORING_BASE = 2_192
         const val VEHICLE_SCORING_STRIDE = 584
+        const val KELVIN_OFFSET = 273.15
 
         const val OFF_SCORING_CURRENT_ET = 68
         const val OFF_SCORING_NUM_VEHICLES = 104
@@ -231,8 +232,8 @@ class LmuWindowsMapperTest {
         assertEquals(4, result.tyres.wheels.size)
         WheelIndex.entries.forEachIndexed { i, wheel ->
             val tyre = requireNotNull(result.tyres.wheels[wheel])
-            assertEquals(350.0 + i * 10.0, tyre.surfaceTemperatureK, 1e-9)
-            assertEquals(345.0 + i * 10.0, tyre.carcassTemperatureK, 1e-9)
+            assertEquals((350.0 + i * 10.0 - KELVIN_OFFSET).toFloat(), tyre.surfaceTemperature.value, 1e-4f)
+            assertEquals((345.0 + i * 10.0 - KELVIN_OFFSET).toFloat(), tyre.carcassTemperature.value, 1e-4f)
             assertEquals(200.0 + i * 5.0, tyre.brakeTemperatureC, 1e-9)
             assertEquals(220.0 + i.toDouble(), tyre.pressureKpa, 1e-9)
             assertEquals(0.9 - i * 0.05, tyre.wear.value, 1e-9)

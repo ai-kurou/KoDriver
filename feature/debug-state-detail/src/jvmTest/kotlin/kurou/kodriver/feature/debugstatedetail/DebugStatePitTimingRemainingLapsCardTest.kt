@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -145,8 +146,8 @@ class DebugStatePitTimingRemainingLapsCardTest {
                 wheels =
                     wheels.mapValues { (_, wear) ->
                         LmuWindowsTyreWheelData(
-                            surfaceTemperatureK = 0.0,
-                            carcassTemperatureK = 0.0,
+                            surfaceTemperature = CelsiusReading(0f),
+                            carcassTemperature = CelsiusReading(0f),
                             brakeTemperatureC = 0.0,
                             pressureKpa = 0.0,
                             wear = LmuWindowsTyreWearRatio(wear),

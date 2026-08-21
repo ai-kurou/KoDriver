@@ -1,5 +1,6 @@
 package kurou.kodriver.core.lmuwindowsdata.mapper
 
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -319,9 +320,10 @@ internal object LmuWindowsMapper {
             WheelIndex.entries.associateWith { wheel ->
                 val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
                 val surfaceTempK = buffer.getDouble(offset + OFF_WHEEL_TEMPERATURE + 8)
+                val carcassTempK = buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE)
                 LmuWindowsTyreWheelData(
-                    surfaceTemperatureK = surfaceTempK,
-                    carcassTemperatureK = buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE),
+                    surfaceTemperature = CelsiusReading((surfaceTempK - KELVIN_OFFSET).toFloat()),
+                    carcassTemperature = CelsiusReading((carcassTempK - KELVIN_OFFSET).toFloat()),
                     brakeTemperatureC = buffer.getDouble(offset + OFF_WHEEL_BRAKE_TEMP),
                     pressureKpa = buffer.getDouble(offset + OFF_WHEEL_PRESSURE),
                     wear = LmuWindowsTyreWearRatio(buffer.getDouble(offset + OFF_WHEEL_WEAR)),
@@ -330,5 +332,6 @@ internal object LmuWindowsMapper {
         return LmuWindowsTyreData(wheels)
     }
 
+    private const val KELVIN_OFFSET = 273.15
     private const val MILLIS_PER_SECOND = 1_000
 }
