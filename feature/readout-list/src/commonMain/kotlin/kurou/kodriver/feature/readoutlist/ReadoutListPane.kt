@@ -563,15 +563,17 @@ private fun ReadoutListBottomChip(
             MaterialTheme.colorScheme.onSurfaceVariant
         }
     val resolvedContentColor = if (enabled) contentColor else contentColor.copy(alpha = DISABLED_CHIP_CONTENT_ALPHA)
-    val borderColor = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
     Row(
         modifier =
             modifier
                 .heightIn(min = 40.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(containerColor)
-                .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(10.dp))
-                .testTag(testTag)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    shape = RoundedCornerShape(10.dp),
+                ).testTag(testTag)
                 .clickable(
                     enabled = enabled,
                     indication = null,
