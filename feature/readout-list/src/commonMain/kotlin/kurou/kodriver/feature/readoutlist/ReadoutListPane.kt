@@ -458,7 +458,7 @@ private fun ReadoutListItemCard(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(start = 8.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -510,10 +510,6 @@ private fun ReadoutListItemCard(
                         checked = readoutEnabled,
                         onCheckedChange = { onReadoutEnabledChanged(item, it) },
                     )
-                    Icon(
-                        imageVector = Icons.Outlined.ChevronRight,
-                        contentDescription = null,
-                    )
                 }
                 if (item is ReadoutItemKey.TopLevel) {
                     Row(
@@ -541,6 +537,10 @@ private fun ReadoutListItemCard(
                     }
                 }
             }
+            Icon(
+                imageVector = Icons.Outlined.ChevronRight,
+                contentDescription = null,
+            )
         }
     }
 }
