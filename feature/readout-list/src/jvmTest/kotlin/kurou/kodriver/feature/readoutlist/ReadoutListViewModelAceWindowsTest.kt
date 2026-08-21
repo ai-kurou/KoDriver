@@ -97,6 +97,7 @@ class ReadoutListViewModelAceWindowsTest {
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
             assertEquals(false, state.queueEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
+            assertEquals(null, state.queueEnabledStates[ReadoutItemKey.AceWindows.VehicleApproach.Root])
             assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
             assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }

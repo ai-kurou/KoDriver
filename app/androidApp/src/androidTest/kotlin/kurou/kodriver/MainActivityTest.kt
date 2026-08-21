@@ -105,7 +105,7 @@ class MainActivityTest {
         )
         // 車両接近はdetailPaneが未実装のため、タップできることのみ確認する。
         scrollToItem("車両接近")
-        clickItem("車両接近")
+        clickReadoutItem("車両接近")
         navigateBack()
         clickItemAndVerifyDescription(
             "タイヤ温度",
