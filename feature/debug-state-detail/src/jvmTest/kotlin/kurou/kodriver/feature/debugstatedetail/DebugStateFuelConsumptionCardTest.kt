@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -257,7 +258,7 @@ class DebugStateFuelConsumptionCardTest {
         lapCount = lapCount,
         lapsInRace = 0,
         bestLapTimeMs = 0,
-        gasLevel = gasLevel,
-        gasCapacity = gasCapacity,
+        gasLevel = Gt7Ps5FuelUnit(gasLevel),
+        gasCapacity = Gt7Ps5FuelUnit(gasCapacity),
     )
 }

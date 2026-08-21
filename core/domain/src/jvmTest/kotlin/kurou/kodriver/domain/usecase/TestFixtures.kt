@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
@@ -31,8 +32,8 @@ internal fun fakeGt7Ps5TelemetryData(
     lapCount = lapCount,
     lapsInRace = 0,
     bestLapTimeMs = -1,
-    gasLevel = 0f,
-    gasCapacity = 100f,
+    gasLevel = Gt7Ps5FuelUnit(0f),
+    gasCapacity = Gt7Ps5FuelUnit(100f),
     carCategory = carCategory,
     tyreTemperature = tyreTemperature,
 )

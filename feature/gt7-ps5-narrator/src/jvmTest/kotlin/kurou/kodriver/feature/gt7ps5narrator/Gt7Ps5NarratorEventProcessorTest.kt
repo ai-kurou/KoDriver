@@ -13,6 +13,7 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -389,7 +390,7 @@ class Gt7Ps5NarratorEventProcessorTest {
         lapCount = 0,
         lapsInRace = 5,
         bestLapTimeMs = bestLapTimeMs,
-        gasLevel = gasLevel,
-        gasCapacity = 100f,
+        gasLevel = Gt7Ps5FuelUnit(gasLevel),
+        gasCapacity = Gt7Ps5FuelUnit(100f),
     )
 }

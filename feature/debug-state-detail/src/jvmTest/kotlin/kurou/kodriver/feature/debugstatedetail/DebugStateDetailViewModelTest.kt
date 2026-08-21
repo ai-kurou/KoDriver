@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -1450,8 +1451,8 @@ private fun sampleGt7Ps5Telemetry(
     lapCount = lapCount,
     lapsInRace = 0,
     bestLapTimeMs = 0,
-    gasLevel = 0f,
-    gasCapacity = 0f,
+    gasLevel = Gt7Ps5FuelUnit(0f),
+    gasCapacity = Gt7Ps5FuelUnit(0f),
     carCategory = carCategory,
 )
 

@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -140,7 +141,7 @@ class DebugStateCurrentLapCardTest {
             lapCount = lapCount,
             lapsInRace = 0,
             bestLapTimeMs = 0,
-            gasLevel = 0f,
-            gasCapacity = 0f,
+            gasLevel = Gt7Ps5FuelUnit(0f),
+            gasCapacity = Gt7Ps5FuelUnit(0f),
         )
 }

@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -30,13 +31,13 @@ data class Gt7Ps5NarratorState(
  * 残り周回数警告のタイミングを推定する。
  */
 data class Gt7Ps5FuelTrackingState(
-    val raceStartFuel: Float? = null,
+    val raceStartFuel: Gt7Ps5FuelUnit? = null,
     val raceStartLap: Int? = null,
     val currentLap: Int = -1,
     val currentLapStartedAtMs: Long = 0L,
-    val currentGasLevel: Float = 0f,
+    val currentGasLevel: Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(0f),
     val bestLapTimeMs: Int = -1,
-    val totalRefueled: Float = 0f,
+    val totalRefueled: Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(0f),
     val hasRefueled: Boolean = false,
     val isNewSession: Boolean = false,
     val observedAtMs: Long = 0L,
@@ -193,7 +194,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                     currentLapStartedAtMs = observedAtMs,
                     currentGasLevel = telemetry.gasLevel,
                     bestLapTimeMs = telemetry.bestLapTimeMs,
-                    totalRefueled = 0f,
+                    totalRefueled = Gt7Ps5FuelUnit(0f),
                     hasRefueled = false,
                     isNewSession = true,
                     observedAtMs = observedAtMs,
@@ -208,7 +209,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                     currentLapStartedAtMs = observedAtMs,
                     currentGasLevel = telemetry.gasLevel,
                     bestLapTimeMs = telemetry.bestLapTimeMs,
-                    totalRefueled = 0f,
+                    totalRefueled = Gt7Ps5FuelUnit(0f),
                     hasRefueled = false,
                     isNewSession = false,
                     observedAtMs = observedAtMs,
@@ -216,7 +217,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             }
 
             else -> {
-                val refueled = (telemetry.gasLevel - state.currentGasLevel).coerceAtLeast(0f)
+                val refueled = (telemetry.gasLevel - state.currentGasLevel).coerceAtLeast(Gt7Ps5FuelUnit(0f))
                 val currentLapStartedAtMs =
                     if (telemetry.lapCount != state.currentLap) {
                         observedAtMs
@@ -229,7 +230,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                     currentGasLevel = telemetry.gasLevel,
                     bestLapTimeMs = telemetry.bestLapTimeMs,
                     totalRefueled = state.totalRefueled + refueled,
-                    hasRefueled = refueled > 0f,
+                    hasRefueled = refueled > Gt7Ps5FuelUnit(0f),
                     isNewSession = false,
                     observedAtMs = observedAtMs,
                 )
@@ -257,7 +258,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         val lapsCompleted = fuelState.currentLap - startLap
         if (lapsCompleted <= 0) return RemainingFuelLapsEvaluation(state.lastFuelEvaluationLap, null)
         val consumedFuel = startFuel + fuelState.totalRefueled - fuelState.currentGasLevel
-        if (consumedFuel <= 0f) return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
+        if (consumedFuel <= Gt7Ps5FuelUnit(0f)) return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
         val avgConsumption = consumedFuel / (lapsCompleted + CURRENT_LAP_CONSUMPTION_WEIGHT)
         val remainingLapsFloor = (fuelState.currentGasLevel / avgConsumption).toInt()
         if (remainingLapsFloor < 0 || remainingLapsFloor > settings.remainingFuelLapsThreshold) {
@@ -276,9 +277,9 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         telemetry: Gt7Ps5TelemetryData,
         thresholdPercentage: Int,
     ): Boolean =
-        telemetry.gasLevel > 0f &&
-            telemetry.gasCapacity > 0f &&
-            telemetry.gasLevel * 100f <= thresholdPercentage * telemetry.gasCapacity
+        telemetry.gasLevel > Gt7Ps5FuelUnit(0f) &&
+            telemetry.gasCapacity > Gt7Ps5FuelUnit(0f) &&
+            telemetry.gasLevel.value * 100f <= thresholdPercentage * telemetry.gasCapacity.value
 
     private companion object {
         const val REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000

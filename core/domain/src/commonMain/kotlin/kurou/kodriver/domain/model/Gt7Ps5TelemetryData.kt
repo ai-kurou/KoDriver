@@ -17,9 +17,9 @@ data class Gt7Ps5TelemetryData(
     /** セッション中のベストラップタイム。単位は milliseconds。 */
     val bestLapTimeMs: Int,
     /** 現在の燃料残量。単位は GT7 の fuel unit。 */
-    val gasLevel: Float,
+    val gasLevel: Gt7Ps5FuelUnit,
     /** 燃料タンク容量。単位は GT7 の fuel unit。 */
-    val gasCapacity: Float,
+    val gasCapacity: Gt7Ps5FuelUnit,
     /** 車両カテゴリ（例: "GR3", "GRX"）。取得できない場合は空文字列。 */
     val carCategory: String = "",
     /** 各タイヤの温度。取得できない場合は全て 0f。 */

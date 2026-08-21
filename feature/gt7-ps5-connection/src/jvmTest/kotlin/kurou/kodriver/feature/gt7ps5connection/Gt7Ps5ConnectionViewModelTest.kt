@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
@@ -49,8 +50,8 @@ class Gt7Ps5ConnectionViewModelTest {
             lapCount = 0,
             lapsInRace = 0,
             bestLapTimeMs = 0,
-            gasLevel = 0f,
-            gasCapacity = 0f,
+            gasLevel = Gt7Ps5FuelUnit(0f),
+            gasCapacity = Gt7Ps5FuelUnit(0f),
         )
 
     @BeforeTest
@@ -102,8 +103,8 @@ class Gt7Ps5ConnectionViewModelTest {
                         lapCount = 4,
                         lapsInRace = 12,
                         bestLapTimeMs = 0,
-                        gasLevel = 32.5f,
-                        gasCapacity = 50f,
+                        gasLevel = Gt7Ps5FuelUnit(32.5f),
+                        gasCapacity = Gt7Ps5FuelUnit(50f),
                     ),
                 )
             every { connectionRepository.telemetryStream() } returns telemetryFlow
@@ -125,8 +126,8 @@ class Gt7Ps5ConnectionViewModelTest {
                     lapCount = 5,
                     lapsInRace = 12,
                     bestLapTimeMs = 0,
-                    gasLevel = 28f,
-                    gasCapacity = 50f,
+                    gasLevel = Gt7Ps5FuelUnit(28f),
+                    gasCapacity = Gt7Ps5FuelUnit(50f),
                 )
             }
             dispatcher.scheduler.runCurrent()

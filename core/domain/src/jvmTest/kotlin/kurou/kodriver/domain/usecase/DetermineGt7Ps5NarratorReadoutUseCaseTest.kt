@@ -4,6 +4,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -219,7 +220,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), firstWarningDecision.events)
         assertTrue(refueledDecision.events.isEmpty())
         assertEquals(-1, refueledDecision.state.lastAnnouncedRemainingLaps)
-        assertEquals(50f, refueledDecision.state.fuelTrackingState.totalRefueled)
+        assertEquals(Gt7Ps5FuelUnit(50f), refueledDecision.state.fuelTrackingState.totalRefueled)
         assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), secondWarningDecision.events)
     }
 
@@ -231,10 +232,10 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 lastFuelEvaluationLap = 5,
                 fuelTrackingState =
                     Gt7Ps5FuelTrackingState(
-                        raceStartFuel = 100f,
+                        raceStartFuel = Gt7Ps5FuelUnit(100f),
                         raceStartLap = 1,
                         currentLap = 5,
-                        currentGasLevel = 20f,
+                        currentGasLevel = Gt7Ps5FuelUnit(20f),
                         bestLapTimeMs = 90_000,
                     ),
             )
@@ -558,8 +559,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         lapCount = lapCount,
         lapsInRace = lapsInRace,
         bestLapTimeMs = bestLapTimeMs,
-        gasLevel = gasLevel,
-        gasCapacity = gasCapacity,
+        gasLevel = Gt7Ps5FuelUnit(gasLevel),
+        gasCapacity = Gt7Ps5FuelUnit(gasCapacity),
         tyreTemperature = tyreTemperature,
     )
 }

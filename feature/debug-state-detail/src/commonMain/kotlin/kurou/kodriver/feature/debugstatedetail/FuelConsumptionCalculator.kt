@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -41,19 +42,19 @@ internal fun calculateLmuVirtualEnergyConsumption(
 internal fun calculateGt7FuelConsumption(telemetry: Gt7Ps5TelemetryData?): FuelConsumptionResult? {
     if (telemetry == null || telemetry.lapCount <= 0) return null
     val consumedFuel = telemetry.gasCapacity - telemetry.gasLevel
-    if (consumedFuel <= 0f) return null
-    val avgConsumptionPerLap = consumedFuel / telemetry.lapCount
+    if (consumedFuel <= Gt7Ps5FuelUnit(0f)) return null
+    val avgConsumptionPerLap = consumedFuel / telemetry.lapCount.toFloat()
     val preciseRemainingLaps = telemetry.gasLevel / avgConsumptionPerLap
     return FuelConsumptionResult(
-        consumptionPerLap = avgConsumptionPerLap.toDouble(),
+        consumptionPerLap = avgConsumptionPerLap.value.toDouble(),
         remainingLaps = preciseRemainingLaps.toInt(),
         preciseRemainingLaps = preciseRemainingLaps.toDouble(),
     )
 }
 
 internal fun calculateGt7FuelRemainingPercent(telemetry: Gt7Ps5TelemetryData?): Double? {
-    if (telemetry == null || telemetry.gasCapacity <= 0f) return null
-    return telemetry.gasLevel * PERCENT_MULTIPLIER / telemetry.gasCapacity
+    if (telemetry == null || telemetry.gasCapacity <= Gt7Ps5FuelUnit(0f)) return null
+    return telemetry.gasLevel.value * PERCENT_MULTIPLIER / telemetry.gasCapacity.value
 }
 
 internal fun calculateLmuVirtualEnergyRemainingPercent(virtualEnergy: LmuWindowsVirtualEnergyData?): Double? =
