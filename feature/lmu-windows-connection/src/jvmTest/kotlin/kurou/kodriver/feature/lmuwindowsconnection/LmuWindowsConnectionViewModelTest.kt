@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -53,7 +54,10 @@ class LmuWindowsConnectionViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsConnectionViewModel(
-            checkLmuWindowsConnection = CheckLmuWindowsConnectionUseCase(connectionRepository),
+            observeLmuWindowsConnection =
+                ObserveLmuWindowsConnectionUseCase(
+                    checkLmuWindowsConnection = CheckLmuWindowsConnectionUseCase(connectionRepository),
+                ),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
         )
 
