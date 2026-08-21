@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.WheelIndex
@@ -241,10 +242,10 @@ internal object LmuWindowsMapper {
     internal fun readWearFractions(
         buffer: ByteBuffer,
         vehicleBase: Int,
-    ): Map<WheelIndex, Double> =
+    ): Map<WheelIndex, LmuWindowsTyreWearRatio> =
         WheelIndex.entries.associateWith { wheel ->
             val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
-            buffer.getDouble(offset + OFF_WHEEL_WEAR)
+            LmuWindowsTyreWearRatio(buffer.getDouble(offset + OFF_WHEEL_WEAR))
         }
 
     /** Scoring セグメントの mVehicleClass (char[32]) をトリムした文字列として返す。 */

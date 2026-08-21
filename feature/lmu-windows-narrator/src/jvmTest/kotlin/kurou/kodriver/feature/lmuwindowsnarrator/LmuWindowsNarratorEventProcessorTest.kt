@@ -33,6 +33,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
@@ -737,10 +738,10 @@ private fun tyreWear(frontLeft: Double) =
     LmuWindowsTyreWearData(
         wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to frontLeft,
-                WheelIndex.FRONT_RIGHT to 0.9,
-                WheelIndex.REAR_LEFT to 0.9,
-                WheelIndex.REAR_RIGHT to 0.9,
+                WheelIndex.FRONT_LEFT to LmuWindowsTyreWearRatio(frontLeft),
+                WheelIndex.FRONT_RIGHT to LmuWindowsTyreWearRatio(0.9),
+                WheelIndex.REAR_LEFT to LmuWindowsTyreWearRatio(0.9),
+                WheelIndex.REAR_RIGHT to LmuWindowsTyreWearRatio(0.9),
             ),
     )
 
