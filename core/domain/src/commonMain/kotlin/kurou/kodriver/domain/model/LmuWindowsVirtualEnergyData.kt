@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LmuWindowsVirtualEnergyData(
     /** バーチャルエナジー残量割合（0.0〜1.0）。 */
-    val remainingRatio: Double,
+    val remainingRatio: LmuWindowsVirtualEnergyRatio,
     /** Scoring の mSession 値。プラクティス・予選・レースなどセッションの切り替わり検出に使う。 */
     val session: Int = SESSION_UNKNOWN,
 ) {

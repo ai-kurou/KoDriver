@@ -44,6 +44,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -2068,8 +2069,10 @@ private const val TIMING_JSON_2 =
     """{"currentLapTimeMs":70000,"lastLapTimeMs":91000,"bestLapTimeMs":88000,""" +
         """"sector1Ms":31000,"sector1And2Ms":29000,"currentLap":4,"maxLaps":10}"""
 
-private val virtualEnergyData1 = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = 10)
-private val virtualEnergyData2 = LmuWindowsVirtualEnergyData(remainingRatio = 0.3, session = 10)
+private val virtualEnergyData1 =
+    LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5), session = 10)
+private val virtualEnergyData2 =
+    LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.3), session = 10)
 
 private const val VIRTUAL_ENERGY_JSON_1 = """{"remainingRatio":0.5,"session":10}"""
 private const val VIRTUAL_ENERGY_JSON_2 = """{"remainingRatio":0.3,"session":10}"""

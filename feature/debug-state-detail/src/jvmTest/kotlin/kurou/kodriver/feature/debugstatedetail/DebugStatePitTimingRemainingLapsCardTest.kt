@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -116,7 +117,10 @@ class DebugStatePitTimingRemainingLapsCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                            virtualEnergy =
+                                LmuWindowsVirtualEnergyData(
+                                    remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                ),
                             lmuWindowsTelemetry =
                                 sampleLmuTelemetry(
                                     currentLap = 5,

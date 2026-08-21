@@ -18,6 +18,7 @@ import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
@@ -34,7 +35,10 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = null,
-                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                            virtualEnergy =
+                                LmuWindowsVirtualEnergyData(
+                                    remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                ),
                             lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
                         ),
@@ -98,7 +102,10 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                            virtualEnergy =
+                                LmuWindowsVirtualEnergyData(
+                                    remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                ),
                             lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
                         ),
@@ -122,7 +129,10 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                            virtualEnergy =
+                                LmuWindowsVirtualEnergyData(
+                                    remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                ),
                             lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 0),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
                         ),

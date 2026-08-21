@@ -331,7 +331,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         data: LmuWindowsVirtualEnergyData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
-        val isLow = data.remainingRatio * PERCENTAGE_SCALE <= settings.remainingVirtualEnergyThresholdPercentage
+        val isLow = data.remainingRatio.value * PERCENTAGE_SCALE <= settings.remainingVirtualEnergyThresholdPercentage
         val shouldAnnounce =
             !state.remainingVirtualEnergyWarned && isLow &&
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
@@ -353,7 +353,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 state = state.pitTimingVirtualEnergyTrackingState,
                 currentLap = telemetry.timing.currentLap,
                 bestLapTimeMs = telemetry.timing.bestLapTimeMs,
-                currentValue = virtualEnergy.remainingRatio,
+                currentValue = virtualEnergy.remainingRatio.value,
                 session = virtualEnergy.session,
                 observedAtMs = observedAtMs,
             )

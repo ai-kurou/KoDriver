@@ -23,7 +23,7 @@ internal fun calculateLmuVirtualEnergyConsumption(
     telemetry: LmuWindowsTelemetryData?,
 ): FuelConsumptionResult? {
     val currentLap = telemetry?.timing?.currentLap ?: return null
-    val remainingRatio = virtualEnergy?.remainingRatio ?: return null
+    val remainingRatio = virtualEnergy?.remainingRatio?.value ?: return null
     if (currentLap <= 0) return null
     val consumedRatio = 1.0 - remainingRatio
     if (consumedRatio <= 0.0) return null
@@ -58,7 +58,7 @@ internal fun calculateGt7FuelRemainingPercent(telemetry: Gt7Ps5TelemetryData?): 
 }
 
 internal fun calculateLmuVirtualEnergyRemainingPercent(virtualEnergy: LmuWindowsVirtualEnergyData?): Double? =
-    virtualEnergy?.remainingRatio?.times(PERCENT_MULTIPLIER)
+    virtualEnergy?.remainingRatio?.value?.times(PERCENT_MULTIPLIER)
 
 /**
  * 4輪のうち最も摩耗が進んでいるタイヤの残溝割合を基準に、レース開始からの平均摩耗量で近似する簡易計算。

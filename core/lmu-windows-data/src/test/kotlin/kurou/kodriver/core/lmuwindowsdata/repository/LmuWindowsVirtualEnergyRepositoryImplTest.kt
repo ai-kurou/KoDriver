@@ -40,7 +40,7 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
 
             val result = repo.virtualEnergyStream().first()
 
-            assertEquals(0.75, result.remainingRatio, 1e-6)
+            assertEquals(0.75, result.remainingRatio.value, 1e-6)
             assertEquals(10, result.session)
         }
 
@@ -57,7 +57,7 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
 
             val result = repo.virtualEnergyStream().first()
 
-            assertEquals(0.3, result.remainingRatio, 1e-6)
+            assertEquals(0.3, result.remainingRatio.value, 1e-6)
         }
 
     @Test
