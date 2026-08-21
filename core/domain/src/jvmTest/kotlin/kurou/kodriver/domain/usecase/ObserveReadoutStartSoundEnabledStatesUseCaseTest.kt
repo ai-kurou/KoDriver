@@ -29,7 +29,7 @@ class ObserveReadoutStartSoundEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値は車両接近のみfalseそれ以外はtrueのデフォルト値を返す`() =
+    fun `初期値はLMUとACEの車両接近のみfalseそれ以外はtrueのデフォルト値を返す`() =
         runTest {
             every { repository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
             val useCase = ObserveReadoutStartSoundEnabledStatesUseCase(repository)
@@ -49,7 +49,7 @@ class ObserveReadoutStartSoundEnabledStatesUseCaseTest {
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
                     ReadoutItemKey.AceWindows.Flag.Root to true,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
+                    ReadoutItemKey.AceWindows.VehicleApproach.Root to false,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
                 ),
