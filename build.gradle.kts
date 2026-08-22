@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary) apply false
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
+    alias(libs.plugins.composeStabilityAnalyzer) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint) apply false
@@ -514,6 +515,7 @@ gradle.projectsEvaluated {
     preSubmitChecks.configure {
         dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "detekt" } })
         dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "ktlintCheck" } })
+        dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "stabilityCheck" } })
     }
 }
 
