@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -30,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
@@ -38,8 +38,6 @@ import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach
@@ -55,35 +53,23 @@ import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.generated.
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * AceWindowsReadoutVehicleApproachDetail の画面を表示する Composable。
- *
- * 設定値の永続化は未実装で、画面内でのみ保持する（別PRで DataStore への永続化を行う）。
  */
 @Composable
 fun AceWindowsReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
-    var longitudinalThresholdMeters by remember {
-        mutableDoubleStateOf(ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT)
-    }
-    var lateralThresholdMeters by remember {
-        mutableDoubleStateOf(ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT)
-    }
-    var startReadoutEnabled by remember {
-        mutableStateOf(ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT)
-    }
-    var startReadoutType by remember {
-        mutableStateOf(ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT)
-    }
+    val viewModel: AceWindowsReadoutVehicleApproachDetailViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     AceWindowsReadoutVehicleApproachDetailPaneContent(
-        longitudinalThresholdMeters = longitudinalThresholdMeters,
-        onLongitudinalThresholdChanged = { longitudinalThresholdMeters = it },
-        lateralThresholdMeters = lateralThresholdMeters,
-        onLateralThresholdChanged = { lateralThresholdMeters = it },
-        startReadoutEnabled = startReadoutEnabled,
-        onStartReadoutEnabledChanged = { startReadoutEnabled = it },
-        startReadoutType = startReadoutType,
-        onStartReadoutTypeChanged = { startReadoutType = it },
+        uiState = uiState,
+        onLongitudinalThresholdChanged = viewModel::onLongitudinalThresholdChanged,
+        onResetLongitudinalThreshold = viewModel::onResetLongitudinalThreshold,
+        onLateralThresholdChanged = viewModel::onLateralThresholdChanged,
+        onResetLateralThreshold = viewModel::onResetLateralThreshold,
+        onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
+        onStartReadoutTypeChanged = viewModel::onStartReadoutTypeChanged,
         modifier = modifier,
     )
 }
@@ -91,13 +77,12 @@ fun AceWindowsReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AceWindowsReadoutVehicleApproachDetailPaneContent(
-    longitudinalThresholdMeters: Double = ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
+    uiState: AceWindowsReadoutVehicleApproachDetailUiState = AceWindowsReadoutVehicleApproachDetailUiState(),
     onLongitudinalThresholdChanged: (Double) -> Unit = {},
-    lateralThresholdMeters: Double = ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
+    onResetLongitudinalThreshold: () -> Unit = {},
     onLateralThresholdChanged: (Double) -> Unit = {},
-    startReadoutEnabled: Boolean = ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT,
+    onResetLateralThreshold: () -> Unit = {},
     onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
-    startReadoutType: VehicleApproachStartReadoutType = ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT,
     onStartReadoutTypeChanged: (VehicleApproachStartReadoutType) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -142,23 +127,23 @@ internal fun AceWindowsReadoutVehicleApproachDetailPaneContent(
             ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
         val defaultLateralThresholdMeters = ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
         ThresholdSlider(
-            value = longitudinalThresholdMeters.toFloat(),
+            value = uiState.longitudinalThresholdMeters.toFloat(),
             valueRange = 0.1f..10f,
             labelFormatter = { longitudinalLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
             modifier = Modifier.padding(horizontal = 16.dp),
             defaultValue = defaultLongitudinalThresholdMeters.toFloat(),
-            onResetToDefault = { onLongitudinalThresholdChanged(defaultLongitudinalThresholdMeters) },
+            onResetToDefault = onResetLongitudinalThreshold,
             resetContentDescription = resetToDefaultLabel,
         )
         ThresholdSlider(
-            value = lateralThresholdMeters.toFloat(),
+            value = uiState.lateralThresholdMeters.toFloat(),
             valueRange = 2f..8f,
             labelFormatter = { lateralLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
             modifier = Modifier.padding(horizontal = 16.dp),
             defaultValue = defaultLateralThresholdMeters.toFloat(),
-            onResetToDefault = { onLateralThresholdChanged(defaultLateralThresholdMeters) },
+            onResetToDefault = onResetLateralThreshold,
             resetContentDescription = resetToDefaultLabel,
         )
         val carLeftRightChipLabel = stringResource(Res.string.vehicle_approach_car_left_right_chip_label)
@@ -170,14 +155,14 @@ internal fun AceWindowsReadoutVehicleApproachDetailPaneContent(
             )
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_approach_start_readout_switch_label),
-            checked = startReadoutEnabled,
+            checked = uiState.startReadoutEnabled,
             onCheckedChange = onStartReadoutEnabledChanged,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = startReadoutTypeLabels.values.toList(),
-                    selectedChipLabels = setOfNotNull(startReadoutTypeLabels[startReadoutType]),
-                    chipEnabled = startReadoutEnabled,
+                    selectedChipLabels = setOfNotNull(startReadoutTypeLabels[uiState.startReadoutType]),
+                    chipEnabled = uiState.startReadoutEnabled,
                     onChipClick = { label ->
                         startReadoutTypeLabels
                             .entries

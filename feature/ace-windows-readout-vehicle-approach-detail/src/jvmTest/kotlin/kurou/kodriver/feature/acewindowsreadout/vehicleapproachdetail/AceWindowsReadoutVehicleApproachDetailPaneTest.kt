@@ -13,7 +13,6 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
-import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import org.junit.Rule
 import org.junit.Test
@@ -100,20 +99,37 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
     }
 
     @Test
-    fun `デフォルト値から変更している場合に前後の閾値のリセットボタンをタップするとデフォルト値が渡される`() {
-        var changedMeters: Double? = null
+    fun `前後の閾値のリセットボタンをタップするとonResetLongitudinalThresholdが呼ばれる`() {
+        var resetCalled = false
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutVehicleApproachDetailPaneContent(
-                    longitudinalThresholdMeters = 7.0,
-                    onLongitudinalThresholdChanged = { changedMeters = it },
+                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(longitudinalThresholdMeters = 7.0),
+                    onResetLongitudinalThreshold = { resetCalled = true },
                 )
             }
         }
 
         rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].performClick()
 
-        assertEquals(5.0, changedMeters)
+        assertEquals(true, resetCalled)
+    }
+
+    @Test
+    fun `左右の閾値のリセットボタンをタップするとonResetLateralThresholdが呼ばれる`() {
+        var resetCalled = false
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(lateralThresholdMeters = 7.0),
+                    onResetLateralThreshold = { resetCalled = true },
+                )
+            }
+        }
+
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].performClick()
+
+        assertEquals(true, resetCalled)
     }
 
     @Test
@@ -122,7 +138,7 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutVehicleApproachDetailPaneContent(
-                    startReadoutEnabled = true,
+                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(startReadoutEnabled = true),
                     onStartReadoutEnabledChanged = { enabled = it },
                 )
             }
@@ -139,7 +155,7 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutVehicleApproachDetailPaneContent(
-                    startReadoutEnabled = true,
+                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(startReadoutEnabled = true),
                     onStartReadoutTypeChanged = { changedType = it },
                 )
             }
@@ -154,7 +170,9 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
     fun `読み上げが無効ならチップも無効になる`() {
         rule.setContent {
             MaterialTheme {
-                AceWindowsReadoutVehicleApproachDetailPaneContent(startReadoutEnabled = false)
+                AceWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(startReadoutEnabled = false),
+                )
             }
         }
 
@@ -165,26 +183,12 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
     fun `読み上げが有効ならチップも有効になる`() {
         rule.setContent {
             MaterialTheme {
-                AceWindowsReadoutVehicleApproachDetailPaneContent(startReadoutEnabled = true)
+                AceWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(startReadoutEnabled = true),
+                )
             }
         }
 
         rule.onNodeWithText("カーレフト・カーライト").assertIsEnabled()
-    }
-
-    @Test
-    fun `Pane単体で状態を保持し各操作が反映される`() {
-        rule.setContent {
-            KoDriverTheme {
-                AceWindowsReadoutVehicleApproachDetailPane()
-            }
-        }
-
-        rule.onNodeWithText("周囲の車両が接近した際に音声でお知らせします。").assertIsDisplayed()
-
-        rule.onNodeWithText("接近開始時の読み上げ").performClick()
-        rule.onNodeWithText("左接近・右接近").performClick()
-
-        rule.onNodeWithText("左接近・右接近").assertIsDisplayed()
     }
 }
