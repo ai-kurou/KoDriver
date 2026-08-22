@@ -11,22 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -39,6 +30,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
@@ -114,17 +106,6 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
     val lateralLabel = stringResource(Res.string.vehicle_approach_lateral_label)
     val sustainedDurationLabel = stringResource(Res.string.vehicle_approach_sustained_duration_label)
-    var showHelpSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-
-    if (showHelpSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showHelpSheet = false },
-            sheetState = sheetState,
-        ) {
-            VehicleApproachHelpSheetContent()
-        }
-    }
 
     Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         DetailPaneDescription(
@@ -134,13 +115,10 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
             modifier = Modifier.padding(horizontal = 16.dp),
             trailingContent = {
-                IconButton(onClick = { showHelpSheet = true }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
-                        contentDescription = stringResource(Res.string.vehicle_approach_help_icon_content_description),
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
+                HelpIconButton(
+                    contentDescription = stringResource(Res.string.vehicle_approach_help_icon_content_description),
+                    sheetContent = { VehicleApproachHelpSheetContent() },
+                )
             },
         )
         val defaultLongitudinal =

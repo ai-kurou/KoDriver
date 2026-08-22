@@ -100,6 +100,15 @@ public fun kurou.kodriver.core.designsystem.DetailPaneTopAppBar(title: kotlin.St
     - scrollBehavior: STABLE (marked @Stable or @Immutable)
 
 @Composable
+public fun kurou.kodriver.core.designsystem.HelpIconButton(contentDescription: kotlin.String, modifier: androidx.compose.ui.Modifier, sheetContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - contentDescription: STABLE (String is immutable)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - sheetContent: STABLE (composable function type)
+
+@Composable
 public fun kurou.kodriver.core.designsystem.KoDriverTheme(darkTheme: kotlin.Boolean, content: @[Composable] androidx.compose.runtime.internal.ComposableFunction0<kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true

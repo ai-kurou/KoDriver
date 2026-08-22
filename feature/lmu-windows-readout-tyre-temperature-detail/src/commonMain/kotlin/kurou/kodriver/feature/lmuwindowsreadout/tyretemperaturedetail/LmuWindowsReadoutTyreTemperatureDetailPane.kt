@@ -11,22 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +28,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
@@ -100,29 +94,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     onVehicleClassHighThresholdReset: (LmuWindowsVehicleClassData) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var showHelpSheet by remember { mutableStateOf(false) }
-    var showLowWarningPhasesHelpSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-    val lowWarningPhasesSheetState = rememberModalBottomSheetState()
-
-    if (showHelpSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showHelpSheet = false },
-            sheetState = sheetState,
-        ) {
-            TyreTemperatureThresholdHelpSheetContent()
-        }
-    }
-
-    if (showLowWarningPhasesHelpSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showLowWarningPhasesHelpSheet = false },
-            sheetState = lowWarningPhasesSheetState,
-        ) {
-            TyreTemperatureLowWarningPhasesHelpSheetContent()
-        }
-    }
-
     Column(
         modifier =
             modifier
@@ -198,13 +169,10 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle),
                         trailingContent = {
-                            IconButton(onClick = { showHelpSheet = true }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
-                                    contentDescription = helpIconContentDescription,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                )
-                            }
+                            HelpIconButton(
+                                contentDescription = helpIconContentDescription,
+                                sheetContent = { TyreTemperatureThresholdHelpSheetContent() },
+                            )
                         },
                     )
                     val selectedVehicleClassHighThresholdCelsius =
@@ -256,13 +224,10 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_low_warning_phases_subtitle),
                         trailingContent = {
-                            IconButton(onClick = { showLowWarningPhasesHelpSheet = true }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
-                                    contentDescription = lowWarningPhasesHelpIconContentDescription,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                )
-                            }
+                            HelpIconButton(
+                                contentDescription = lowWarningPhasesHelpIconContentDescription,
+                                sheetContent = { TyreTemperatureLowWarningPhasesHelpSheetContent() },
+                            )
                         },
                     )
                     FlowRow(
