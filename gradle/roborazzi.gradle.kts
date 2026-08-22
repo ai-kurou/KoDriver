@@ -22,26 +22,7 @@ tasks.withType<Test>().configureEach {
     }
 }
 
-tasks.register("recordRoborazziJvmTest") {
-    group = "roborazzi"
-    description = "スクリーンショットのゴールデン画像を更新する"
-    dependsOn("jvmTest")
-}
-
-tasks.register("verifyRoborazziJvmTest") {
-    group = "roborazzi"
-    description = "スクリーンショットをゴールデン画像と比較する"
-    dependsOn("jvmTest")
-}
-
-tasks.register("recordRoborazziAndroidHostTest") {
-    group = "roborazzi"
-    description = "Android スクリーンショットのゴールデン画像を更新する"
-    dependsOn("testAndroidHostTest")
-}
-
-tasks.register("verifyRoborazziAndroidHostTest") {
-    group = "roborazzi"
-    description = "Android スクリーンショットをゴールデン画像と比較する"
-    dependsOn("testAndroidHostTest")
-}
+// record/verify の各タスク（recordRoborazziJvmTest 等）は
+// io.github.takahirom.roborazzi Gradle Plugin がテストタスク（jvmTest / testAndroidHostTest）ごとに
+// 自動生成する（同名のため、以前ここで手動登録していたタスクは廃止）。
+// プラグイン適用により、record/verify 実行後に HTML レポート（build/reports/roborazzi/index.html）も生成される。

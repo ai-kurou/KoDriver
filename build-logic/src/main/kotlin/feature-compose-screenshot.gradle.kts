@@ -1,5 +1,6 @@
 plugins {
     id("feature-compose")
+    id("io.github.takahirom.roborazzi")
 }
 
 private val libs = versionCatalogs.named("libs")

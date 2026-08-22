@@ -13,4 +13,9 @@ dependencies {
             "com.github.skydoves.compose.stability.analyzer.gradle.plugin:" +
             libs.versions.composeStabilityAnalyzer.get(),
     )
+    implementation(
+        "io.github.takahirom.roborazzi:" +
+            "io.github.takahirom.roborazzi.gradle.plugin:" +
+            libs.versions.roborazzi.get(),
+    )
 }

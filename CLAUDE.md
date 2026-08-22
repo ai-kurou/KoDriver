@@ -195,6 +195,14 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 ./gradlew stabilityDump
 ./gradlew stabilityCheck
 
+# Roborazzi スクリーンショットの検証・記録（全モジュール集約）と、
+# 全モジュール分のHTMLレポートを1ファイルから辿れるインデックスの生成
+# （各モジュールのレポート本体は <module>/build/reports/roborazzi/**/index.html。
+#  generateRoborazziIndex は record/verify の成否に関わらず自動実行される）
+./gradlew verifyRoborazziJvmTests
+./gradlew recordRoborazziJvmTests
+# 生成されたインデックス: build/reports/roborazzi/index.html
+
 # ktlint（コードスタイル）チェック・自動整形
 ./gradlew ktlintCheck
 ./gradlew ktlintFormat

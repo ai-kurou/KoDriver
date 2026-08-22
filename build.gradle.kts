@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.composeStabilityAnalyzer) apply false
+    alias(libs.plugins.roborazzi) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint) apply false
@@ -55,8 +56,8 @@ data class RoborazziAggregateTask(
 )
 
 val roborazziAggregateTasks = listOf(
-    RoborazziAggregateTask("recordRoborazziJvmTests", "recordRoborazziJvmTest", "jvmTest"),
-    RoborazziAggregateTask("verifyRoborazziJvmTests", "verifyRoborazziJvmTest", "jvmTest"),
+    RoborazziAggregateTask("recordRoborazziJvmTests", "recordRoborazziJvm", "jvmTest"),
+    RoborazziAggregateTask("verifyRoborazziJvmTests", "verifyRoborazziJvm", "jvmTest"),
     RoborazziAggregateTask("recordRoborazziAndroidHostTests", "recordRoborazziAndroidHostTest", "testAndroidHostTest"),
     RoborazziAggregateTask("verifyRoborazziAndroidHostTests", "verifyRoborazziAndroidHostTest", "testAndroidHostTest"),
 )
@@ -491,6 +492,58 @@ roborazziAggregateTasks.forEach { roborazziTask ->
                     },
             )
         }
+    }
+
+    // record/verify 失敗時にも各モジュールの生成済みレポートを一覧できるよう、
+    // 成否に関わらず(finalizedBy) ルートのインデックスHTMLを再生成する。
+    aggregateTask.configure { finalizedBy("generateRoborazziIndex") }
+}
+
+// 各モジュールが個別に生成する build/reports/roborazzi/**/index.html を
+// ルートの1ファイル(build/reports/roborazzi/index.html)から辿れるように一覧化する。
+// Roborazzi Gradle Plugin 自体にはマルチモジュール集約レポート機能がないため、
+// 生成済みレポートのパスを走査してリンク一覧を作るだけの軽量なタスクとして実装する。
+tasks.register("generateRoborazziIndex") {
+    group = "roborazzi"
+    description = "Generates a root index.html linking to every module's Roborazzi report."
+
+    val outputFile = layout.buildDirectory.file("reports/roborazzi/index.html")
+    val rootDirFile = rootDir
+    outputs.file(outputFile)
+    // 各モジュールのレポートは verify/record タスクの実行結果であり、
+    // このタスク自体は生成済みファイルを走査するだけなので inputs.files 宣言はしない。
+    outputs.upToDateWhen { false }
+
+    doLast {
+        val reportFiles = rootDirFile.walkTopDown()
+            .filter { it.isFile && it.name == "index.html" }
+            .filter { it.path.replace(File.separatorChar, '/').contains("/build/reports/roborazzi/") }
+            .filterNot { it == outputFile.get().asFile }
+            .sortedBy { it.relativeTo(rootDirFile).path }
+            .toList()
+
+        val body = if (reportFiles.isEmpty()) {
+            "<p>No Roborazzi reports found. Run a record/verify task first (e.g. ./gradlew verifyRoborazziJvmTests).</p>"
+        } else {
+            reportFiles.joinToString(separator = "\n") { file ->
+                val relPath = file.relativeTo(outputFile.get().asFile.parentFile).path.replace(File.separatorChar, '/')
+                val label = file.relativeTo(rootDirFile).path.replace(File.separatorChar, '/')
+                "<li><a href=\"$relPath\">$label</a></li>"
+            }.let { "<ul>\n$it\n</ul>" }
+        }
+
+        outputFile.get().asFile.also { it.parentFile.mkdirs() }.writeText(
+            """
+            <!DOCTYPE html>
+            <html>
+            <head><meta charset="utf-8"><title>Roborazzi Reports</title></head>
+            <body>
+            <h1>Roborazzi Reports</h1>
+            $body
+            </body>
+            </html>
+            """.trimIndent(),
+        )
     }
 }
 

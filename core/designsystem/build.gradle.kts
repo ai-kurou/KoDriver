@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
     alias(libs.plugins.composeStabilityAnalyzer)
+    alias(libs.plugins.roborazzi)
 }
 
 composeStabilityAnalyzer {
