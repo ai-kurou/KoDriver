@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary) apply false
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
+    alias(libs.plugins.composeStabilityAnalyzer) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint) apply false
@@ -183,24 +184,34 @@ moduleGraphAssert {
         ":server -> :core:domain",
     )
     restricted = arrayOf(
-        // app エントリーポイント（feature 層・domain 層への直接参照禁止）
+        // app エントリーポイント（feature 層・domain 層・他 app への直接参照禁止）
         ":app:.*App -X> :feature:.*",
         ":app:.*App -X> :core:domain",
+        ":app:.*App -X> :app:.*App",
         // app:shared（上位 app・core・server への参照禁止）
         ":app:shared -X> :app:.*",
         ":app:shared -X> :core:.*",
         ":app:shared -X> :server",
-        // feature（上位 app・他 feature への参照禁止）
+        // feature（上位 app・他 feature・core:data 系への直接参照禁止。
+        // core:data 系は composition root（app エントリーポイント）でのみ DI バインドする）
         ":feature:.* -X> :app:.*",
         ":feature:.* -X> :feature:.*",
-        // core（上位層への参照禁止・逆方向依存禁止）
-        ":core:domain -X> :core:data",
+        ":feature:.* -X> :core:.*data",
+        // core（上位層への参照禁止・逆方向依存禁止・葉モジュールの他モジュール参照禁止・兄弟 data モジュール参照禁止）
+        ":core:domain -X> :.*",
+        ":core:narrator -X> :.*",
+        ":core:designsystem -X> :.*",
+        ":core:windows-shared-memory -X> :.*",
+        ":core:.*data -X> :core:.*data",
         ":core:.* -X> :feature:.*",
         ":core:.* -X> :app:.*",
         ":core:.* -X> :server",
-        // server（app・feature への参照禁止）
+        // server（app・feature・narrator・designsystem・core:data 系への参照禁止）
         ":server -X> :app:.*",
         ":server -X> :feature:.*",
+        ":server -X> :core:narrator",
+        ":server -X> :core:designsystem",
+        ":server -X> :core:.*data",
     )
 }
 
@@ -504,6 +515,7 @@ gradle.projectsEvaluated {
     preSubmitChecks.configure {
         dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "detekt" } })
         dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "ktlintCheck" } })
+        dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "stabilityCheck" } })
     }
 }
 

@@ -8,4 +8,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kover-gradle-plugin:${libs.versions.kover.get()}")
     implementation("org.jetbrains.compose:compose-gradle-plugin:${libs.versions.composeMultiplatform.get()}")
     implementation("org.jetbrains.kotlin:compose-compiler-gradle-plugin:${libs.versions.kotlin.get()}")
+    implementation(
+        "com.github.skydoves.compose.stability.analyzer:" +
+            "com.github.skydoves.compose.stability.analyzer.gradle.plugin:" +
+            libs.versions.composeStabilityAnalyzer.get(),
+    )
 }
