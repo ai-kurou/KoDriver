@@ -220,7 +220,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
         }
 
     @Test
-    fun `onStartReadoutTypeChangedを呼ぶとuiStateのstartReadoutTypeが更新されCarLeftとCarRightが再生される`() =
+    fun `onStartReadoutTypeChangedを呼ぶとuiStateのstartReadoutTypeが更新されAceWindowsVehicleApproachが再生される`() =
         runTest {
             every { repository.observeLongitudinalThresholdMeters() } returns longitudinalFlow
             every { repository.observeLateralThresholdMeters() } returns lateralFlow
@@ -229,8 +229,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             coEvery {
                 repository.saveStartReadoutType(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
             } answers { startReadoutTypeFlow.update { VehicleApproachStartReadoutType.CAR_LEFT_RIGHT } }
-            every { ttsEngine.speak(SpeechEvent.CarLeft, false) } returns Unit
-            every { ttsEngine.speak(SpeechEvent.CarRight, true) } returns Unit
+            every { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) } returns Unit
             val viewModel = createViewModel()
 
             viewModel.onStartReadoutTypeChanged(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
@@ -244,13 +243,12 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeStartReadoutType() }
             coVerify(exactly = 1) { repository.saveStartReadoutType(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT) }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeft, false) }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarRight, true) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) }
             confirmVerified(repository, ttsEngine)
         }
 
     @Test
-    fun `onStartReadoutTypeChangedにLEFT_RIGHT_APPROACHを渡すとLeftApproachとRightApproachが再生される`() =
+    fun `onStartReadoutTypeChangedにLEFT_RIGHT_APPROACHを渡してもAceWindowsVehicleApproachが再生される`() =
         runTest {
             every { repository.observeLongitudinalThresholdMeters() } returns longitudinalFlow
             every { repository.observeLateralThresholdMeters() } returns lateralFlow
@@ -259,8 +257,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             coEvery {
                 repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
             } answers { startReadoutTypeFlow.update { VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH } }
-            every { ttsEngine.speak(SpeechEvent.LeftApproach, false) } returns Unit
-            every { ttsEngine.speak(SpeechEvent.RightApproach, true) } returns Unit
+            every { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) } returns Unit
             val viewModel = createViewModel()
 
             viewModel.onStartReadoutTypeChanged(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
@@ -276,8 +273,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             coVerify(exactly = 1) {
                 repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
             }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LeftApproach, false) }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RightApproach, true) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) }
             confirmVerified(repository, ttsEngine)
         }
 }

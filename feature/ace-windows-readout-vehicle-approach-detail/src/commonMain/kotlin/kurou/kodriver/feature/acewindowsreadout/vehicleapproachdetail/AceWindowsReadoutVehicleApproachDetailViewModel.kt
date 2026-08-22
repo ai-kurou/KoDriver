@@ -80,21 +80,16 @@ internal class AceWindowsReadoutVehicleApproachDetailViewModel(
 
     fun onStartReadoutTypeChanged(type: VehicleApproachStartReadoutType) {
         viewModelScope.launch { preferences.saveStartReadoutType(type) }
-        playStartReadoutPreview(type)
+        playStartReadoutPreview()
     }
 
-    private fun playStartReadoutPreview(type: VehicleApproachStartReadoutType) {
-        val events =
-            when (type) {
-                VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> {
-                    SpeechEvent.CarLeft to SpeechEvent.CarRight
-                }
-
-                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> {
-                    SpeechEvent.LeftApproach to SpeechEvent.RightApproach
-                }
-            }
-        playSpeechEvent(events.first)
-        playSpeechEvent(events.second, queue = true)
+    /**
+     * ACE の共有メモリには自車の向きに相当するフィールドが存在せず、周辺車両との直線距離のみが
+     * 取得できるため、LMU のような左右を区別した接近アナウンスができない。そのため
+     * [VehicleApproachStartReadoutType] の選択に関わらず、常に同じ汎用の接近アナウンス
+     * （[SpeechEvent.AceWindowsVehicleApproach]）をプレビュー再生する。
+     */
+    private fun playStartReadoutPreview() {
+        playSpeechEvent(SpeechEvent.AceWindowsVehicleApproach)
     }
 }
