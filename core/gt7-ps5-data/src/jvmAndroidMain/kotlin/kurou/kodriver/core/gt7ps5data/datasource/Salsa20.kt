@@ -109,6 +109,4 @@ internal object Salsa20 {
     private val SIGMA_1 = "nd 3".toByteArray().leInt(0)
     private val SIGMA_2 = "2-by".toByteArray().leInt(0)
     private val SIGMA_3 = "te k".toByteArray().leInt(0)
-
-    private fun String.leInt(offset: Int): Int = toByteArray(Charsets.US_ASCII).leInt(offset)
 }
