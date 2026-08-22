@@ -10,6 +10,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
+            implementation(projects.core.domain)
+            implementation(libs.compose.material.icons.extended)
         }
     }
 }
