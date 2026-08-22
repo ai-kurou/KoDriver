@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
@@ -121,7 +122,7 @@ class ObserveKoDriverServerConnectionUseCaseTest {
             runCurrent()
             assertEquals(KoDriverServerConnectionStatus.DISCONNECTED, states[1].connectionStatus)
 
-            advanceTimeBy(1_000L)
+            advanceTimeBy(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
             runCurrent()
 
             assertEquals(KoDriverServerConnectionStatus.CONNECTED, states[2].connectionStatus)
