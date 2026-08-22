@@ -153,6 +153,34 @@ class LmuWindowsMapperTest {
     }
 
     @Test
+    fun `新しいラップ開始直後で現在セッション時刻がラップ開始時刻より前ならcurrentLapTimeMsは0になる`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 0)
+        buf.putInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES, 1)
+        buf.putDouble(SCORING_BASE + OFF_SCORING_CURRENT_ET, 100.000)
+        buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 1)
+        buf.putDouble(scoringBase + OFF_SCORING_LAP_START_ET, 100.500)
+
+        val result = LmuWindowsMapper.map(buf)
+
+        assertEquals(0L, result.timing.currentLapTimeMs)
+    }
+
+    @Test
+    fun `現在セッション時刻がNaNならcurrentLapTimeMsは0になる`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 0)
+        buf.putInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES, 1)
+        buf.putDouble(SCORING_BASE + OFF_SCORING_CURRENT_ET, Double.NaN)
+        buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 1)
+        buf.putDouble(scoringBase + OFF_SCORING_LAP_START_ET, 100.000)
+
+        val result = LmuWindowsMapper.map(buf)
+
+        assertEquals(0L, result.timing.currentLapTimeMs)
+    }
+
+    @Test
     fun `Scoringのプレイヤー車両が見つからない場合はラップタイムフィールドがゼロである`() {
         val buf = emptyBuffer()
         val scoringBase = vehicleScoringBase(index = 0)
