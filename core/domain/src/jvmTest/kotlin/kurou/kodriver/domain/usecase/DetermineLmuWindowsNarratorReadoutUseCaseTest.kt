@@ -157,6 +157,107 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `音声種別がFORMALなら自己ベストラップ更新でLmuWindowsMyBestLapFormalを返す`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 60_000L),
+                settings = settings(myBestLapVoiceType = MyBestLapVoiceType.FORMAL),
+            )
+
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 59_000L),
+                settings = settings(myBestLapVoiceType = MyBestLapVoiceType.FORMAL),
+            )
+
+        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLapFormal), second.events)
+    }
+
+    @Test
+    fun `ベストラップタイムが0以下なら自己ベストラップを読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 60_000L),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 0L),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
+    fun `前回のベストラップタイムが0以下でも更新条件を満たせば自己ベストラップを読み上げる`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 0L),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 59_000L),
+                settings = settings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLapFormal), second.events)
+    }
+
+    @Test
+    fun `前回より遅いラップタイムでは読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 60_000L),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 61_000L),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
+    fun `既に記録している自己ベストより遅ければ読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 60_000L),
+                settings = settings(),
+            )
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 59_000L),
+                settings = settings(),
+            )
+
+        val third =
+            useCase.determineMyBestLap(
+                state = second.state.copy(previousBestLapTimeMs = 65_000L),
+                telemetry = telemetry(bestLapTimeMs = 60_000L),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), third.events)
+    }
+
+    @Test
     fun `自己ベストラップ項目が無効なら読み上げない`() {
         val first =
             useCase.determineMyBestLap(
@@ -222,6 +323,27 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(listOf(SpeechEvent.RightApproach), second.events)
+    }
+
+    @Test
+    fun `左接近の読み上げ種別を変更するとLeftApproachを返す`() {
+        val first =
+            useCase.determineVehicleApproach(
+                state = LmuWindowsNarratorState(),
+                vehicleApproach = leftVehicleApproach(vehicleId = 1),
+                settings = settings(startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH),
+                observedAtMs = 0L,
+            )
+
+        val second =
+            useCase.determineVehicleApproach(
+                state = first.state,
+                vehicleApproach = leftVehicleApproach(vehicleId = 1),
+                settings = settings(startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH),
+                observedAtMs = 50L,
+            )
+
+        assertEquals(listOf(SpeechEvent.LeftApproach), second.events)
     }
 
     @Test
@@ -356,6 +478,77 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.KeepRight), second.events)
+    }
+
+    @Test
+    fun `右接近が閾値秒数継続するとKeepLeftを返す`() {
+        val first =
+            useCase.determineVehicleApproach(
+                state = LmuWindowsNarratorState(),
+                vehicleApproach = rightVehicleApproach(vehicleId = 1),
+                settings = settings(sustainedApproachDurationSeconds = 7),
+                observedAtMs = 0L,
+            )
+
+        val second =
+            useCase.determineVehicleApproach(
+                state = first.state,
+                vehicleApproach = rightVehicleApproach(vehicleId = 1),
+                settings = settings(sustainedApproachDurationSeconds = 7),
+                observedAtMs = 7_000L,
+            )
+
+        assertEquals(listOf(SpeechEvent.CarRight, SpeechEvent.KeepLeft), second.events)
+    }
+
+    @Test
+    fun `左接近の継続読み上げ種別を変更するとRightSustainedを返す`() {
+        val first =
+            useCase.determineVehicleApproach(
+                state = LmuWindowsNarratorState(),
+                vehicleApproach = leftVehicleApproach(vehicleId = 1),
+                settings =
+                    settings(
+                        sustainedApproachDurationSeconds = 7,
+                        sustainedReadoutType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
+                    ),
+                observedAtMs = 0L,
+            )
+
+        val second =
+            useCase.determineVehicleApproach(
+                state = first.state,
+                vehicleApproach = leftVehicleApproach(vehicleId = 1),
+                settings =
+                    settings(
+                        sustainedApproachDurationSeconds = 7,
+                        sustainedReadoutType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
+                    ),
+                observedAtMs = 7_000L,
+            )
+
+        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.RightSustained), second.events)
+    }
+
+    @Test
+    fun `左右同時に継続接近しても読み上げない`() {
+        val first =
+            useCase.determineVehicleApproach(
+                state = LmuWindowsNarratorState(),
+                vehicleApproach = leftAndRightVehicleApproach(),
+                settings = settings(sustainedApproachDurationSeconds = 7),
+                observedAtMs = 0L,
+            )
+
+        val second =
+            useCase.determineVehicleApproach(
+                state = first.state,
+                vehicleApproach = leftAndRightVehicleApproach(),
+                settings = settings(sustainedApproachDurationSeconds = 7),
+                observedAtMs = 7_000L,
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
     }
 
     @Test
@@ -567,6 +760,115 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `青旗が継続しても再度読み上げない`() {
+        val first =
+            useCase.determineRaceFlags(
+                state = LmuWindowsNarratorState(),
+                raceFlags = clearFlags(playerFlag = PrimaryFlag.BLUE),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineRaceFlags(
+                state = first.state,
+                raceFlags = clearFlags(playerFlag = PrimaryFlag.BLUE),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
+    fun `イエローセクターが継続しても再度読み上げない`() {
+        val first =
+            useCase.determineRaceFlags(
+                state = LmuWindowsNarratorState(),
+                raceFlags =
+                    clearFlags(
+                        sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+                    ),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineRaceFlags(
+                state = first.state,
+                raceFlags =
+                    clearFlags(
+                        sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+                    ),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
+    fun `フルコースイエロー項目が無効なら読み上げない`() {
+        val first =
+            useCase.determineRaceFlags(
+                state = LmuWindowsNarratorState(),
+                raceFlags = clearFlags(),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to false),
+                    ),
+            )
+
+        val second =
+            useCase.determineRaceFlags(
+                state = first.state,
+                raceFlags = clearFlags(gamePhase = SessionPhase.FULL_COURSE_YELLOW),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
+    fun `フルコースイエローが継続しても再度読み上げない`() {
+        val first =
+            useCase.determineRaceFlags(
+                state = LmuWindowsNarratorState(),
+                raceFlags = clearFlags(gamePhase = SessionPhase.FULL_COURSE_YELLOW),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineRaceFlags(
+                state = first.state,
+                raceFlags = clearFlags(gamePhase = SessionPhase.FULL_COURSE_YELLOW),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
+    fun `赤旗が継続しても再度読み上げない`() {
+        val first =
+            useCase.determineRaceFlags(
+                state = LmuWindowsNarratorState(),
+                raceFlags = clearFlags(gamePhase = SessionPhase.RED_FLAG),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineRaceFlags(
+                state = first.state,
+                raceFlags = clearFlags(gamePhase = SessionPhase.RED_FLAG),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
     fun `無効な旗項目は読み上げない`() {
         val first =
             useCase.determineRaceFlags(
@@ -676,6 +978,25 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `オーバーヒートしていない状態が継続しても読み上げない`() {
+        val first =
+            useCase.determineVehicleDamage(
+                state = LmuWindowsNarratorState(),
+                vehicleDamage = damage(overheating = false),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineVehicleDamage(
+                state = first.state,
+                vehicleDamage = damage(overheating = false),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
     fun `オーバーヒート項目が無効なら読み上げない`() {
         val decision =
             useCase.determineVehicleDamage(
@@ -760,6 +1081,19 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
         assertEquals(false, cooledState.tyreOverheating)
         assertEquals(listOf(SpeechEvent.TyreOverheat), reovertState.events)
+    }
+
+    @Test
+    fun `ヒステリシス範囲内の初期温度では過熱状態にならない`() {
+        val decision =
+            useCase.determineTyreTemperatureOverheat(
+                state = LmuWindowsNarratorState(),
+                input = tyreTemperatureInput(fl = 87.0),
+                settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(false, decision.state.tyreOverheating)
     }
 
     @Test
@@ -883,6 +1217,19 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `いずれのタイヤも閾値未満なら読み上げない`() {
+        val decision =
+            useCase.determineTyreWear(
+                state = LmuWindowsNarratorState(),
+                data = tyreWear(fl = 0.9),
+                settings = settings(tyreWearThresholdPercentage = 50),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(false, decision.state.tyreWearWarned)
+    }
+
+    @Test
     fun `タイヤ摩耗項目が無効なら読み上げない`() {
         val decision =
             useCase.determineTyreWear(
@@ -953,6 +1300,19 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
         assertEquals(false, recoveredState.remainingVirtualEnergyWarned)
         assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyWarning), rewarnedDecision.events)
+    }
+
+    @Test
+    fun `残量が閾値より上なら読み上げない`() {
+        val decision =
+            useCase.determineRemainingVirtualEnergy(
+                state = LmuWindowsNarratorState(),
+                data = remainingVirtualEnergy(remainingRatio = 0.6),
+                settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(false, decision.state.remainingVirtualEnergyWarned)
     }
 
     @Test
@@ -1489,6 +1849,21 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, jitterDecision.state.pitTimingVirtualEnergyTrackingState.currentLapHasRefilled)
+    }
+
+    @Test
+    fun `タイヤ摩耗データの車輪が空なら状態を変更せず読み上げない`() {
+        val decision =
+            useCase.determinePitTimingTyreWear(
+                state = LmuWindowsNarratorState(),
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+                tyreWear = LmuWindowsTyreWearData(wheels = emptyMap()),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(LmuWindowsNarratorState(), decision.state)
     }
 
     @Test
