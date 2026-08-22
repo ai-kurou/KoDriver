@@ -1,0 +1,9 @@
+package kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail
+
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
+
+internal data class AceWindowsReadoutVehicleApproachDetailUiState(
+    val thresholdMeters: Double = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
+    val startReadoutEnabled: Boolean = ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT,
+)

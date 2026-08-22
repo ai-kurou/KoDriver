@@ -14,6 +14,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
@@ -33,6 +34,7 @@ internal class AceWindowsNarratorEventProcessor(
     private var previousFuel: AceWindowsFuelData? = null
     private var previousFlag: AceWindowsFlagData? = null
     private var previousTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null
+    private var previousVehicleApproach: AceWindowsVehicleApproachData? = null
 
     suspend fun processFlag(
         flag: AceWindowsFlagData,
@@ -128,6 +130,38 @@ internal class AceWindowsNarratorEventProcessor(
             }
         }
         previousTyreCarcassTemperature = tyreCarcassTemperature
+    }
+
+    suspend fun processVehicleApproach(
+        vehicleApproach: AceWindowsVehicleApproachData,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: AceWindowsTelemetryLogContext,
+        isOnTrack: Boolean,
+    ) {
+        val previous = previousVehicleApproach
+        if (isOnTrack) {
+            events.forEach { event ->
+                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                    saveTelemetryLogSafely(
+                        createdAt = observedAtMs,
+                        readoutItemKey = event.readoutItemKey,
+                        telemetryJson =
+                            buildVehicleApproachTelemetryLogJson(
+                                state = logContext.state,
+                                previous = previous,
+                                current = vehicleApproach,
+                                settings = logContext.settings,
+                                observedAtMs = observedAtMs,
+                                finalState = logContext.finalState,
+                            ),
+                    )
+                }
+            }
+        }
+        previousVehicleApproach = vehicleApproach
     }
 
     private fun speakWithPriority(
@@ -258,6 +292,37 @@ private fun buildTyreTemperatureTelemetryLogJson(
         current =
             TelemetryLogJsonCurrentField(
                 name = "tyreCarcassTemperature",
+                json = telemetryLogJson.encodeToString(current),
+            ),
+        settingsJson = settings.toJsonString(),
+        observedAtMs = observedAtMs,
+        finalStateJson = finalState.toJsonString(),
+    )
+
+/**
+ * ACE の車両接近判定入力（[AceWindowsVehicleApproachData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineVehicleApproach]）と
+ * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
+private fun buildVehicleApproachTelemetryLogJson(
+    state: AceWindowsNarratorState,
+    previous: AceWindowsVehicleApproachData?,
+    current: AceWindowsVehicleApproachData,
+    settings: AceWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: AceWindowsNarratorState,
+): String =
+    buildTelemetryLogJson(
+        stateJson = state.toJsonString(),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousVehicleApproach",
+                json = previous?.let { telemetryLogJson.encodeToString(it) },
+            ),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "vehicleApproach",
                 json = telemetryLogJson.encodeToString(current),
             ),
         settingsJson = settings.toJsonString(),

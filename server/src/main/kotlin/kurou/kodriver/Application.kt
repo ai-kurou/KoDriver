@@ -16,6 +16,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -31,6 +32,7 @@ import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -44,6 +46,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -74,6 +77,7 @@ data class KoDriverServerUseCases(
     val observeAceWindowsFlag: ObserveAceWindowsFlagUseCase,
     val observeAceWindowsStatus: ObserveAceWindowsStatusUseCase,
     val observeAceWindowsTyreCarcassTemperature: ObserveAceWindowsTyreCarcassTemperatureUseCase,
+    val observeAceWindowsVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
     val observeLmuWindowsPitStatus: ObserveLmuWindowsPitStatusUseCase,
 )
 
@@ -110,6 +114,10 @@ fun main() {
                 observeAceWindowsTyreCarcassTemperature =
                     ObserveAceWindowsTyreCarcassTemperatureUseCase(
                         EmptyAceWindowsTyreCarcassTemperatureRepository,
+                    ),
+                observeAceWindowsVehicleApproach =
+                    ObserveAceWindowsVehicleApproachUseCase(
+                        EmptyAceWindowsVehicleApproachRepository,
                     ),
                 observeLmuWindowsPitStatus =
                     ObserveLmuWindowsPitStatusUseCase(
@@ -208,6 +216,10 @@ fun createKoDriverServer(koin: Koin): KoDriverServer =
                     ObserveAceWindowsTyreCarcassTemperatureUseCase(
                         koin.get<AceWindowsTyreCarcassTemperatureRepository>(),
                     ),
+                observeAceWindowsVehicleApproach =
+                    ObserveAceWindowsVehicleApproachUseCase(
+                        koin.get<AceWindowsVehicleApproachRepository>(),
+                    ),
                 observeLmuWindowsPitStatus =
                     ObserveLmuWindowsPitStatusUseCase(
                         koin.get<LmuWindowsPitStatusRepository>(),
@@ -283,6 +295,9 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         telemetryWebSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE, Simulator.AceWindows) {
             useCases.observeAceWindowsTyreCarcassTemperature()
         }
+        telemetryWebSocket(KoDriverServerFeature.VEHICLE_APPROACH, Simulator.AceWindows) {
+            useCases.observeAceWindowsVehicleApproach()
+        }
         telemetryWebSocket(KoDriverServerFeature.PIT_STATUS, Simulator.LmuWindows) {
             useCases.observeLmuWindowsPitStatus()
         }
@@ -341,6 +356,10 @@ private object EmptyAceWindowsStatusRepository : AceWindowsStatusRepository {
 
 private object EmptyAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<AceWindowsTyreCarcassTemperatureData> = emptyFlow()
+}
+
+private object EmptyAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {
+    override fun vehicleApproachStream(): Flow<AceWindowsVehicleApproachData> = emptyFlow()
 }
 
 private object EmptyLmuWindowsPitStatusRepository : LmuWindowsPitStatusRepository {

@@ -8,20 +8,58 @@ import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.sqrt
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class AceWindowsMapperTest {
     private companion object {
         const val OFF_STATUS = 4
+        const val OFF_PLAYER_CAR_ID_A = 24
+        const val OFF_PLAYER_CAR_ID_B = 32
         const val OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT = 200
         const val OFF_TYRE_LF = 220
         const val TYRE_STATE_STRIDE = 256
         const val OFF_TYRE_TEMPERATURE_C = 12
         const val OFF_CAR_LOCATION = 1388
         const val OFF_FLAG = 2404
+        const val OFF_CAR_COORDINATES = 3124
+        const val CAR_COORDINATES_STRIDE = 12
+        const val OFF_ACTIVE_CARS = 3852
+        const val OFF_CAR_IDS = 3940
+        const val CAR_ID_STRIDE = 16
         const val BUFFER_SIZE = 8_192
     }
+
+    private data class CarEntry(
+        val idA: Long,
+        val idB: Long,
+        val x: Float,
+        val y: Float,
+        val z: Float,
+    )
+
+    private fun vehicleApproachBuffer(
+        cars: List<CarEntry>,
+        playerCarIdA: Long,
+        playerCarIdB: Long,
+        activeCars: Int = cars.size,
+    ): ByteBuffer =
+        ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also { buffer ->
+            buffer.putLong(OFF_PLAYER_CAR_ID_A, playerCarIdA)
+            buffer.putLong(OFF_PLAYER_CAR_ID_B, playerCarIdB)
+            buffer.put(OFF_ACTIVE_CARS, activeCars.toByte())
+            cars.forEachIndexed { i, car ->
+                val coordinatesBase = OFF_CAR_COORDINATES + i * CAR_COORDINATES_STRIDE
+                buffer.putFloat(coordinatesBase, car.x)
+                buffer.putFloat(coordinatesBase + Float.SIZE_BYTES, car.y)
+                buffer.putFloat(coordinatesBase + Float.SIZE_BYTES * 2, car.z)
+                val idsBase = OFF_CAR_IDS + i * CAR_ID_STRIDE
+                buffer.putLong(idsBase, car.idA)
+                buffer.putLong(idsBase + Long.SIZE_BYTES, car.idB)
+            }
+        }
 
     private fun tyreCarcassTemperatureBuffer(temperatures: Map<WheelIndex, Float>): ByteBuffer =
         ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also { buffer ->
@@ -167,5 +205,81 @@ class AceWindowsMapperTest {
         val result = AceWindowsMapper.mapStatus(statusBuffer(AceWindowsStatusType.LIVE.rawValue, -1))
 
         assertEquals(AceWindowsCarLocation.UNKNOWN, result.carLocation)
+    }
+
+    @Test
+    fun `自車以外の各アクティブ車両との直線距離を取得する`() {
+        val cars =
+            listOf(
+                CarEntry(idA = 1L, idB = 2L, x = 0f, y = 0f, z = 0f),
+                CarEntry(idA = 3L, idB = 4L, x = 3f, y = 0f, z = 4f),
+                CarEntry(idA = 5L, idB = 6L, x = 0f, y = 0f, z = -10f),
+            )
+        val buffer = vehicleApproachBuffer(cars, playerCarIdA = 1L, playerCarIdB = 2L)
+
+        val result = AceWindowsMapper.mapVehicleApproach(buffer)
+
+        assertEquals(2, result.nearbyVehicles.size)
+        assertEquals(5.0, result.nearbyVehicles[0].distanceMeters, 0.0001)
+        assertEquals(10.0, result.nearbyVehicles[1].distanceMeters, 0.0001)
+    }
+
+    @Test
+    fun `Y座標の差も直線距離に含める`() {
+        val cars =
+            listOf(
+                CarEntry(idA = 1L, idB = 2L, x = 0f, y = 0f, z = 0f),
+                CarEntry(idA = 3L, idB = 4L, x = 0f, y = 3f, z = 4f),
+            )
+        val buffer = vehicleApproachBuffer(cars, playerCarIdA = 1L, playerCarIdB = 2L)
+
+        val result = AceWindowsMapper.mapVehicleApproach(buffer)
+
+        assertEquals(1, result.nearbyVehicles.size)
+        assertEquals(5.0, result.nearbyVehicles[0].distanceMeters, 0.0001)
+    }
+
+    @Test
+    fun `自車のIDがcar_idsに見つからない場合は空リストを返す`() {
+        val cars = listOf(CarEntry(idA = 3L, idB = 4L, x = 0f, y = 0f, z = 0f))
+        val buffer = vehicleApproachBuffer(cars, playerCarIdA = 1L, playerCarIdB = 2L)
+
+        val result = AceWindowsMapper.mapVehicleApproach(buffer)
+
+        assertTrue(result.nearbyVehicles.isEmpty())
+    }
+
+    @Test
+    fun `active_cars が0のとき空リストを返す`() {
+        val cars = listOf(CarEntry(idA = 1L, idB = 2L, x = 0f, y = 0f, z = 0f))
+        val buffer = vehicleApproachBuffer(cars, playerCarIdA = 1L, playerCarIdB = 2L, activeCars = 0)
+
+        val result = AceWindowsMapper.mapVehicleApproach(buffer)
+
+        assertTrue(result.nearbyVehicles.isEmpty())
+    }
+
+    @Test
+    fun `自車のみがアクティブなとき空リストを返す`() {
+        val cars = listOf(CarEntry(idA = 1L, idB = 2L, x = 5f, y = 5f, z = 5f))
+        val buffer = vehicleApproachBuffer(cars, playerCarIdA = 1L, playerCarIdB = 2L)
+
+        val result = AceWindowsMapper.mapVehicleApproach(buffer)
+
+        assertTrue(result.nearbyVehicles.isEmpty())
+    }
+
+    @Test
+    fun `距離計算はsqrtでユークリッド距離として求められる`() {
+        val cars =
+            listOf(
+                CarEntry(idA = 1L, idB = 2L, x = 0f, y = 0f, z = 0f),
+                CarEntry(idA = 3L, idB = 4L, x = 1f, y = 1f, z = 1f),
+            )
+        val buffer = vehicleApproachBuffer(cars, playerCarIdA = 1L, playerCarIdB = 2L)
+
+        val result = AceWindowsMapper.mapVehicleApproach(buffer)
+
+        assertEquals(sqrt(3.0), result.nearbyVehicles[0].distanceMeters, 0.0001)
     }
 }

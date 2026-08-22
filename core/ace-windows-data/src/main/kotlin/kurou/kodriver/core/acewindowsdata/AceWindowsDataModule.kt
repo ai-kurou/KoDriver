@@ -9,14 +9,17 @@ import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFlagRepositoryImp
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFuelRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsStatusRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsTyreCarcassTemperatureRepositoryImpl
+import kurou.kodriver.core.acewindowsdata.repository.AceWindowsVehicleApproachRepositoryImpl
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -49,6 +52,13 @@ val aceWindowsDataModule =
                 NoOpAceWindowsTyreCarcassTemperatureRepository()
             }
         }
+        single<AceWindowsVehicleApproachRepository> {
+            if (isWindows) {
+                AceWindowsVehicleApproachRepositoryImpl(source = get())
+            } else {
+                NoOpAceWindowsVehicleApproachRepository()
+            }
+        }
     }
 
 private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
@@ -67,4 +77,8 @@ private class NoOpAceWindowsStatusRepository : AceWindowsStatusRepository {
 
 private class NoOpAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<AceWindowsTyreCarcassTemperatureData> = emptyFlow()
+}
+
+private class NoOpAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {
+    override fun vehicleApproachStream(): Flow<AceWindowsVehicleApproachData> = emptyFlow()
 }

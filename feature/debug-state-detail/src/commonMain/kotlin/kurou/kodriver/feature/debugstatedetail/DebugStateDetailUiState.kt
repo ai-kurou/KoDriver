@@ -4,6 +4,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
@@ -46,6 +47,7 @@ data class DebugStateDetailUiState(
     val aceWindowsStatus: AceWindowsStatusData? = null,
     val lmuWindowsPitStatus: LmuWindowsPitStatusData? = null,
     val vehicleApproach: LmuWindowsVehicleApproachData? = null,
+    val aceWindowsVehicleApproach: AceWindowsVehicleApproachData? = null,
     val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData? = null,
     val aceWindowsTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null,
     val lmuWindowsVehicleClass: LmuWindowsVehicleClassData? = null,

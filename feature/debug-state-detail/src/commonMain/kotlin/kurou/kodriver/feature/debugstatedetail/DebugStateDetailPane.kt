@@ -164,7 +164,13 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
             CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
         },
         DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to
-            { uiState -> SideBySideVehiclesContent(uiState.vehicleApproach) },
+            { uiState ->
+                SideBySideVehiclesContent(
+                    uiState.selectedSimulator,
+                    uiState.vehicleApproach,
+                    uiState.aceWindowsVehicleApproach,
+                )
+            },
         DebugStateCardKey.BEST_LAP to { uiState ->
             BestLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
         },

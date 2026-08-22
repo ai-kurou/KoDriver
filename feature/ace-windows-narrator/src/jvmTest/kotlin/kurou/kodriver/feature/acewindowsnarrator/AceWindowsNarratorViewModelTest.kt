@@ -26,9 +26,11 @@ import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
@@ -42,10 +44,13 @@ import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesReposi
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
@@ -54,6 +59,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -102,6 +109,12 @@ class AceWindowsNarratorViewModelTest {
     private lateinit var tyreTemperaturePreferencesRepository: AceWindowsTyreTemperaturePreferencesRepository
 
     @MockK
+    private lateinit var vehicleApproachRepository: AceWindowsVehicleApproachRepository
+
+    @MockK
+    private lateinit var vehicleApproachPreferencesRepository: AceWindowsVehicleApproachPreferencesRepository
+
+    @MockK
     private lateinit var ttsEngine: TextToSpeechEngine
 
     @BeforeTest
@@ -120,6 +133,7 @@ class AceWindowsNarratorViewModelTest {
         ttsEngine: TextToSpeechEngine,
         flagChannel: Channel<AceWindowsFlagData> = Channel(Channel.UNLIMITED),
         tyreCarcassTemperatureChannel: Channel<AceWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
+        vehicleApproachChannel: Channel<AceWindowsVehicleApproachData> = Channel(Channel.UNLIMITED),
         currentTimeMs: () -> Long = { 0L },
     ): AceWindowsNarratorViewModel {
         every { fuelRepository.fuelStream() } returns fuelChannel.receiveAsFlow()
@@ -127,6 +141,9 @@ class AceWindowsNarratorViewModelTest {
         every {
             tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream()
         } returns tyreCarcassTemperatureChannel.receiveAsFlow()
+        every {
+            vehicleApproachRepository.vehicleApproachStream()
+        } returns vehicleApproachChannel.receiveAsFlow()
         return AceWindowsNarratorViewModel(
             remainingFuelUseCases =
                 RemainingFuelUseCases(
@@ -154,6 +171,13 @@ class AceWindowsNarratorViewModelTest {
                         ObserveAceWindowsTyreTemperatureHighThresholdUseCase(tyreTemperaturePreferencesRepository),
                     observeTyreTemperatureEnabledStates =
                         ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(tyreTemperaturePreferencesRepository),
+                ),
+            vehicleApproachUseCases =
+                VehicleApproachUseCases(
+                    observeVehicleApproach = ObserveAceWindowsVehicleApproachUseCase(vehicleApproachRepository),
+                    observeEnabledStates =
+                        ObserveAceWindowsVehicleApproachEnabledStatesUseCase(vehicleApproachPreferencesRepository),
+                    thresholds = AceWindowsVehicleApproachThresholdsUseCases(vehicleApproachPreferencesRepository),
                 ),
             observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(statusRepository),
             eventProcessor =
@@ -189,6 +213,12 @@ class AceWindowsNarratorViewModelTest {
             every {
                 tyreTemperaturePreferencesRepository.observeEnabledStates()
             } returns MutableStateFlow(emptyMap())
+            every {
+                vehicleApproachPreferencesRepository.observeEnabledStates()
+            } returns MutableStateFlow(emptyMap())
+            every {
+                vehicleApproachPreferencesRepository.observeThresholdMeters()
+            } returns MutableStateFlow(10.0)
             createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(fuel(20.0))
@@ -317,6 +347,12 @@ class AceWindowsNarratorViewModelTest {
                 tyreTemperaturePreferencesRepository.observeEnabledStates()
             } returns MutableStateFlow(emptyMap())
             every { statusRepository.statusStream() } returns statusChannel.receiveAsFlow()
+            every {
+                vehicleApproachPreferencesRepository.observeEnabledStates()
+            } returns MutableStateFlow(emptyMap())
+            every {
+                vehicleApproachPreferencesRepository.observeThresholdMeters()
+            } returns MutableStateFlow(10.0)
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     any(),
@@ -436,6 +472,12 @@ class AceWindowsNarratorViewModelTest {
         carLocation: AceWindowsCarLocation = AceWindowsCarLocation.TRACK,
         status: AceWindowsStatusType = AceWindowsStatusType.LIVE,
         statusFlowOverride: MutableStateFlow<AceWindowsStatusData>? = null,
+        vehicleApproachEnabledOverrides: Map<ReadoutItemKey, Boolean> =
+            mapOf(
+                ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
+                ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to true,
+            ),
+        vehicleApproachThresholdMeters: Double = 10.0,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
         every {
@@ -457,6 +499,12 @@ class AceWindowsNarratorViewModelTest {
         } returns MutableStateFlow(tyreTemperatureEnabledOverrides)
         every { statusRepository.statusStream() } returns
             (statusFlowOverride ?: MutableStateFlow(AceWindowsStatusData(status = status, carLocation = carLocation)))
+        every {
+            vehicleApproachPreferencesRepository.observeEnabledStates()
+        } returns MutableStateFlow(vehicleApproachEnabledOverrides)
+        every {
+            vehicleApproachPreferencesRepository.observeThresholdMeters()
+        } returns MutableStateFlow(vehicleApproachThresholdMeters)
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
@@ -628,6 +676,186 @@ class AceWindowsNarratorViewModelTest {
             )
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
         }
+
+    @Test
+    fun `閾値内に車両が入ると読み上げる`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                orderOverride = listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
+            )
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                vehicleApproachChannel = vehicleApproachChannel,
+            )
+
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach), spokenTexts)
+        }
+
+    @Test
+    fun `車両接近項目が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                vehicleApproachEnabledOverrides = mapOf(ReadoutItemKey.AceWindows.VehicleApproach.Root to false),
+            )
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                vehicleApproachChannel = vehicleApproachChannel,
+            )
+
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `接近開始時の読み上げが無効のときは読み上げない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                vehicleApproachEnabledOverrides =
+                    mapOf(
+                        ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
+                        ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false,
+                    ),
+            )
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                vehicleApproachChannel = vehicleApproachChannel,
+            )
+
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `閾値より遠い場合は読み上げない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30)
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                vehicleApproachChannel = vehicleApproachChannel,
+            )
+
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 20.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `接近状態が継続しても再度読み上げない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30)
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                vehicleApproachChannel = vehicleApproachChannel,
+            )
+
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach), spokenTexts)
+        }
+
+    @Test
+    fun `車両が離れて再接近すると再度読み上げる`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30)
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                vehicleApproachChannel = vehicleApproachChannel,
+            )
+
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 20.0))
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach, SpeechEvent.AceWindowsVehicleApproach),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `読み上げが発生したら現在と直前の車両接近データを保存する`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val telemetryJsons = mutableListOf<String>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                orderOverride = listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
+            )
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                vehicleApproachChannel = vehicleApproachChannel,
+                currentTimeMs = { 123_456L },
+            )
+
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 20.0))
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(
+                    """"previousVehicleApproach":{"nearbyVehicles":[{"distanceMeters":20.0}]}""",
+                ),
+            )
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""vehicleApproach":{"nearbyVehicles":[{"distanceMeters":5.0}]}"""),
+            )
+            assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+        }
+
+    private fun vehicleApproach(distanceMeters: Double) =
+        AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(distanceMeters)))
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 

@@ -19,6 +19,13 @@ private fun kurou.kodriver.feature.debugstatedetail.AceWindowsFuelContent(aceWin
     - aceWindowsFuel: UNSTABLE (cross-module type without @Stable/@Immutable)
 
 @Composable
+private fun kurou.kodriver.feature.debugstatedetail.AceWindowsNearbyVehiclesContent(vehicleApproach: kurou.kodriver.domain.model.AceWindowsVehicleApproachData?): kotlin.Unit
+  skippable: false
+  restartable: true
+  params:
+    - vehicleApproach: UNSTABLE (cross-module type without @Stable/@Immutable)
+
+@Composable
 internal fun kurou.kodriver.feature.debugstatedetail.BestLapContent(selectedSimulator: kurou.kodriver.domain.model.Simulator?, lmuWindowsTelemetry: kurou.kodriver.domain.model.LmuWindowsTelemetryData?, gt7Ps5Telemetry: kurou.kodriver.domain.model.Gt7Ps5TelemetryData?): kotlin.Unit
   skippable: false
   restartable: true
@@ -116,6 +123,13 @@ private fun kurou.kodriver.feature.debugstatedetail.LmuWindowsFuelContent(virtua
     - lmuWindowsTelemetry: UNSTABLE (cross-module type without @Stable/@Immutable)
 
 @Composable
+private fun kurou.kodriver.feature.debugstatedetail.LmuWindowsSideBySideVehiclesContent(vehicleApproach: kurou.kodriver.domain.model.LmuWindowsVehicleApproachData?): kotlin.Unit
+  skippable: false
+  restartable: true
+  params:
+    - vehicleApproach: UNSTABLE (cross-module type without @Stable/@Immutable)
+
+@Composable
 internal fun kurou.kodriver.feature.debugstatedetail.PitTimingRemainingLapsContent(selectedSimulator: kurou.kodriver.domain.model.Simulator?, virtualEnergy: kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData?, lmuWindowsTelemetry: kurou.kodriver.domain.model.LmuWindowsTelemetryData?): kotlin.Unit
   skippable: false
   restartable: true
@@ -132,11 +146,13 @@ internal fun kurou.kodriver.feature.debugstatedetail.SessionContent(virtualEnerg
     - virtualEnergy: UNSTABLE (cross-module type without @Stable/@Immutable)
 
 @Composable
-internal fun kurou.kodriver.feature.debugstatedetail.SideBySideVehiclesContent(vehicleApproach: kurou.kodriver.domain.model.LmuWindowsVehicleApproachData?): kotlin.Unit
+internal fun kurou.kodriver.feature.debugstatedetail.SideBySideVehiclesContent(selectedSimulator: kurou.kodriver.domain.model.Simulator?, vehicleApproach: kurou.kodriver.domain.model.LmuWindowsVehicleApproachData?, aceWindowsVehicleApproach: kurou.kodriver.domain.model.AceWindowsVehicleApproachData?): kotlin.Unit
   skippable: false
   restartable: true
   params:
+    - selectedSimulator: UNSTABLE (cross-module type without @Stable/@Immutable)
     - vehicleApproach: UNSTABLE (cross-module type without @Stable/@Immutable)
+    - aceWindowsVehicleApproach: UNSTABLE (cross-module type without @Stable/@Immutable)
 
 @Composable
 internal fun kurou.kodriver.feature.debugstatedetail.SimulatorInfoContent(selectedSimulator: kurou.kodriver.domain.model.Simulator?): kotlin.Unit

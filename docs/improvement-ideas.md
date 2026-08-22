@@ -31,6 +31,15 @@
 - **課題**: Jetpack Compose 2026年4月リリース（Compose 1.11.0系）で追加された宣言的な `MediaQuery` API（`WindowSizeClass` の手動購読・分岐に代わり、ウィンドウ状態に応じた宣言的なクエリ記述が可能）をまだ利用していない。現状は `rememberListDetailPaneScaffoldNavigator` 等の既存の分岐ロジックで賄っている。
 - **改善案**: プロジェクトが依存する Compose Multiplatform / Material3 Adaptive のバージョンで `MediaQuery` API が利用可能になった際、list/detailペインの表示切り替え判定を簡潔化できないか調査する。参考: https://android-developers.googleblog.com/2026/04/jetpack-compose-april-2026-updates.html
 
+## テスト
+
+- **対象**: `feature:debug-state-detail`の`DebugStateDetailViewModel.kt`（`_receivedCardKeys`、PR #1240）
+  **課題**: `_receivedCardKeys`はシミュレータ横断で共有される単一の`Set<DebugStateCardKey>`のため、あるシミュレータのFlowが先に発火して特定カードキーをmarkCardsReceivedすると、別のシミュレータを選択した際にそのカードが「有効」表示になるが、実際のデータ（`uiState`の該当フィールド）はまだnullで「未取得」表示のまま、というズレが起こり得る（`TYRE_CARCASS_TEMPERATURE`・`SIDE_BY_SIDE_VEHICLES`など複数シミュレータが同じカードキーを使う場合に該当。CodeRabbitのPR #1240への指摘で顕在化）。
+  **改善案**: `_receivedCardKeys`をシミュレータ単位に分離して保持するか、`markCardsReceived`呼び出しを選択中シミュレータでゲーティングする。既存の`TYRE_CARCASS_TEMPERATURE`を含む横断的な修正になるため、着手時は別タスクとして切り出す。
+- **対象**: `feature:debug-state-detail`の`DebugStateSideBySideVehiclesCardTest.kt`のACE複数車両表示テスト（PR #1240）
+  **課題**: 「ACEで複数の周辺車両がいる場合は距離の近い順に表示する」テストが、両方の距離テキストが表示されていることしか検証しておらず、実際の表示順序（近い順）までは検証していないため、ソート処理が壊れても検知できない（CodeRabbitのPR #1240への指摘）。
+  **改善案**: Compose UIテストでセマンティクスノードの表示順序（`onRoot()`配下の子要素の並び、または`boundsInRoot`の位置関係）を検証するアサーションに置き換える。
+
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)

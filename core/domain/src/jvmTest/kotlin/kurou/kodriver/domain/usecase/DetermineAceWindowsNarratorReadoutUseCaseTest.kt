@@ -4,7 +4,9 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
@@ -414,9 +416,127 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         assertEquals(false, cooledState.tyreOverheating)
     }
 
+    @Test
+    fun `閾値内に車両が入ると読み上げる`() {
+        val decision =
+            useCase.determineVehicleApproach(
+                state = AceWindowsNarratorState(),
+                data = vehicleApproach(distanceMeters = 5.0),
+                settings = vehicleApproachSettings(thresholdMeters = 10.0),
+            )
+
+        assertEquals(listOf(SpeechEvent.AceWindowsVehicleApproach), decision.events)
+        assertEquals(true, decision.state.vehicleApproaching)
+    }
+
+    @Test
+    fun `閾値より遠い場合は読み上げない`() {
+        val decision =
+            useCase.determineVehicleApproach(
+                state = AceWindowsNarratorState(),
+                data = vehicleApproach(distanceMeters = 20.0),
+                settings = vehicleApproachSettings(thresholdMeters = 10.0),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(false, decision.state.vehicleApproaching)
+    }
+
+    @Test
+    fun `接近状態が継続しても再度読み上げない`() {
+        val decision =
+            useCase.determineVehicleApproach(
+                state = AceWindowsNarratorState(vehicleApproaching = true),
+                data = vehicleApproach(distanceMeters = 5.0),
+                settings = vehicleApproachSettings(thresholdMeters = 10.0),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.vehicleApproaching)
+    }
+
+    @Test
+    fun `車両が閾値外に離れると再度読み上げ可能になる`() {
+        val approachingState =
+            useCase
+                .determineVehicleApproach(
+                    state = AceWindowsNarratorState(),
+                    data = vehicleApproach(distanceMeters = 5.0),
+                    settings = vehicleApproachSettings(thresholdMeters = 10.0),
+                ).state
+
+        val departedState =
+            useCase
+                .determineVehicleApproach(
+                    state = approachingState,
+                    data = vehicleApproach(distanceMeters = 20.0),
+                    settings = vehicleApproachSettings(thresholdMeters = 10.0),
+                ).state
+
+        val reapproachDecision =
+            useCase.determineVehicleApproach(
+                state = departedState,
+                data = vehicleApproach(distanceMeters = 5.0),
+                settings = vehicleApproachSettings(thresholdMeters = 10.0),
+            )
+
+        assertEquals(false, departedState.vehicleApproaching)
+        assertEquals(listOf(SpeechEvent.AceWindowsVehicleApproach), reapproachDecision.events)
+    }
+
+    @Test
+    fun `VEHICLE_APPROACHが無効なら読み上げない`() {
+        val decision =
+            useCase.determineVehicleApproach(
+                state = AceWindowsNarratorState(),
+                data = vehicleApproach(distanceMeters = 5.0),
+                settings =
+                    vehicleApproachSettings(
+                        thresholdMeters = 10.0,
+                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.VehicleApproach.Root to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.vehicleApproaching)
+    }
+
+    @Test
+    fun `接近開始時の読み上げが無効なら読み上げない`() {
+        val decision =
+            useCase.determineVehicleApproach(
+                state = AceWindowsNarratorState(),
+                data = vehicleApproach(distanceMeters = 5.0),
+                settings =
+                    vehicleApproachSettings(
+                        thresholdMeters = 10.0,
+                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.vehicleApproaching)
+    }
+
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
+
+    private fun vehicleApproach(distanceMeters: Double) =
+        AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(distanceMeters)))
+
+    private fun vehicleApproachSettings(
+        thresholdMeters: Double,
+        enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+    ) = AceWindowsNarratorReadoutSettings(
+        enabledStates =
+            mapOf(
+                ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
+                ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to true,
+            ) + enabledOverrides,
+        remainingFuelThresholdPercentage = 0,
+        vehicleApproachThresholdMeters = thresholdMeters,
+    )
 
     private fun tyreCarcassTemperature(fl: Float) =
         AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(fl)))

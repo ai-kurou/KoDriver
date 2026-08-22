@@ -19,9 +19,11 @@ import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.FuelPercent
@@ -56,6 +58,7 @@ import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -69,6 +72,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -125,6 +129,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -172,6 +180,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -221,6 +233,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -287,6 +303,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -348,6 +368,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -401,6 +425,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -462,6 +490,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -519,6 +551,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -578,6 +614,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -640,6 +680,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -698,6 +742,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -760,6 +808,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -818,6 +870,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -880,6 +936,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -939,6 +999,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -997,6 +1061,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1052,6 +1120,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1114,6 +1186,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1172,6 +1248,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1234,6 +1314,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1292,6 +1376,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1354,6 +1442,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1413,6 +1505,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1434,6 +1530,64 @@ class ApplicationTest {
 
                     assertEquals(ACE_STATUS_JSON_1, first)
                     assertEquals(ACE_STATUS_JSON_2, second)
+                }
+        }
+
+    @Test
+    fun `ACE並走車両情報をJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeAceWindowsVehicleApproachRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsVehicleClass =
+                            ObserveLmuWindowsVehicleClassUseCase(
+                                EmptyLmuWindowsVehicleClassRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
+                        observeAceWindowsTyreCarcassTemperature =
+                            ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach = ObserveAceWindowsVehicleApproachUseCase(repository),
+                        observeLmuWindowsPitStatus =
+                            ObserveLmuWindowsPitStatusUseCase(
+                                EmptyLmuWindowsPitStatusRepository,
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/vehicle_approach") {
+                    repository.emit(aceVehicleApproachData)
+
+                    val message = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(ACE_VEHICLE_APPROACH_JSON, message)
                 }
         }
 
@@ -1473,6 +1627,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus = ObserveLmuWindowsPitStatusUseCase(repository),
                     ),
@@ -1529,6 +1687,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus = ObserveLmuWindowsPitStatusUseCase(repository),
                     ),
@@ -1588,6 +1750,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1642,6 +1808,10 @@ class ApplicationTest {
                         observeAceWindowsTyreCarcassTemperature =
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1702,6 +1872,10 @@ class ApplicationTest {
                             ObserveAceWindowsTyreCarcassTemperatureUseCase(
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1748,6 +1922,7 @@ class ApplicationTest {
                         single<AceWindowsTyreCarcassTemperatureRepository> {
                             EmptyAceWindowsTyreCarcassTemperatureRepository
                         }
+                        single<AceWindowsVehicleApproachRepository> { EmptyAceWindowsVehicleApproachRepository }
                         single<LmuWindowsPitStatusRepository> { EmptyLmuWindowsPitStatusRepository }
                     },
                 )
@@ -2159,6 +2334,25 @@ private class FakeAceWindowsStatusRepository : AceWindowsStatusRepository {
 private object EmptyAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<AceWindowsTyreCarcassTemperatureData> = emptyFlow()
 }
+
+private object EmptyAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {
+    override fun vehicleApproachStream(): Flow<AceWindowsVehicleApproachData> = emptyFlow()
+}
+
+private class FakeAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {
+    private val channel = Channel<AceWindowsVehicleApproachData>(capacity = Channel.UNLIMITED)
+
+    override fun vehicleApproachStream(): Flow<AceWindowsVehicleApproachData> = channel.receiveAsFlow()
+
+    fun emit(data: AceWindowsVehicleApproachData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private val aceVehicleApproachData =
+    AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(distanceMeters = 12.5)))
+
+private const val ACE_VEHICLE_APPROACH_JSON = """{"nearbyVehicles":[{"distanceMeters":12.5}]}"""
 
 private val pitStatusData1 =
     LmuWindowsPitStatusData(inPits = true, pitState = LmuWindowsPitState.ENTERING, inGarageStall = false)
