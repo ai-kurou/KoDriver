@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 
 data class AceWindowsConnectionState(
     val isConnected: Boolean,
@@ -42,11 +43,7 @@ class ObserveAceWindowsConnectionUseCase(
                         false
                     }
                 emit(isConnected)
-                delay(CONNECTION_CHECK_INTERVAL_MS)
+                delay(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
             }
         }
-
-    private companion object {
-        const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-    }
 }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 
 enum class KoDriverServerConnectionStatus {
@@ -85,11 +86,7 @@ class ObserveKoDriverServerConnectionUseCase(
                     isVersionMismatch = serverVersion != null && appVersion.isNotEmpty() && serverVersion != appVersion,
                 ),
             )
-            delay(CONNECTION_CHECK_INTERVAL_MS)
+            delay(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
         }
-    }
-
-    private companion object {
-        const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
     }
 }

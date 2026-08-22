@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
@@ -155,7 +156,7 @@ class ConnectionBannerViewModelTest {
             assertEquals(ConnectionBannerVmStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
             lmuChecker.isConnected = true
-            dispatcher.scheduler.advanceTimeBy(1_000L)
+            dispatcher.scheduler.advanceTimeBy(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
             dispatcher.scheduler.runCurrent()
 
             assertEquals(ConnectionBannerVmStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
@@ -173,7 +174,7 @@ class ConnectionBannerViewModelTest {
             assertEquals(ConnectionBannerVmStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
             gt7Repository.isConnected = true
-            dispatcher.scheduler.advanceTimeBy(1_000L)
+            dispatcher.scheduler.advanceTimeBy(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
             dispatcher.scheduler.runCurrent()
 
             assertEquals(ConnectionBannerVmStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
@@ -240,7 +241,7 @@ class ConnectionBannerViewModelTest {
             assertEquals(ConnectionBannerVmStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
             aceChecker.isConnected = true
-            dispatcher.scheduler.advanceTimeBy(1_000L)
+            dispatcher.scheduler.advanceTimeBy(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
             dispatcher.scheduler.runCurrent()
 
             assertEquals(ConnectionBannerVmStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
@@ -303,7 +304,7 @@ private class FakeLmuBannerConnectionChecker(
                         ConnectionBannerVmStatus.DISCONNECTED
                     }
                 emit(status)
-                delay(1_000L)
+                delay(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
             }
         }
 }
@@ -325,7 +326,7 @@ private class FakeAceBannerConnectionChecker(
                         ConnectionBannerVmStatus.DISCONNECTED
                     }
                 emit(status)
-                delay(1_000L)
+                delay(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
             }
         }
 }

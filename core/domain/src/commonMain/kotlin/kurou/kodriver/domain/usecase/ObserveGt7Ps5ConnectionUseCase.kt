@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 
 data class Gt7Ps5ConnectionState(
@@ -42,11 +43,7 @@ class ObserveGt7Ps5ConnectionUseCase(
                         false
                     }
                 emit(isConnected)
-                delay(CONNECTION_CHECK_INTERVAL_MS)
+                delay(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
             }
         }
-
-    private companion object {
-        const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-    }
 }
