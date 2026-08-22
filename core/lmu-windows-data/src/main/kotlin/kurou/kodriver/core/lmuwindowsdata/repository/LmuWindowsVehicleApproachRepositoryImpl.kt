@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_MINIMUM_METERS_DEFAULT
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
@@ -21,7 +22,7 @@ import kotlin.math.sin
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class LmuWindowsVehicleApproachRepositoryImpl(
     private val thresholdsRepository: LmuWindowsVehicleApproachThresholdsPreferencesRepository,
-    private val lateralMinimumMeters: Double = 1.0,
+    private val lateralMinimumMeters: Double = LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_MINIMUM_METERS_DEFAULT,
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsVehicleApproachRepository {
     override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> =
