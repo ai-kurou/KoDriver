@@ -4,6 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 
 class ObserveLmuWindowsConnectionUseCase(
     private val checkLmuWindowsConnection: CheckLmuWindowsConnectionUseCase,
@@ -20,11 +21,7 @@ class ObserveLmuWindowsConnectionUseCase(
                         false
                     }
                 emit(isConnected)
-                delay(CONNECTION_CHECK_INTERVAL_MS)
+                delay(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
             }
         }
-
-    private companion object {
-        const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-    }
 }

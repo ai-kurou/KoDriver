@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
@@ -93,11 +94,7 @@ class ConnectionBannerViewModel(
                     selectedSimulator = simulator,
                 ),
             )
-            delay(CONNECTION_CHECK_INTERVAL_MS)
+            delay(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
         }
-    }
-
-    private companion object {
-        const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
     }
 }

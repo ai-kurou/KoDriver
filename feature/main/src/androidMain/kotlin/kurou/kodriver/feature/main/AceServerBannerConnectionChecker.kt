@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 
@@ -34,13 +35,9 @@ class AceServerBannerConnectionChecker(
                                     ConnectionBannerVmStatus.DISCONNECTED
                                 },
                             )
-                            delay(CONNECTION_CHECK_INTERVAL_MS)
+                            delay(CONNECTION_CHECK_INTERVAL_MS_DEFAULT)
                         }
                     }
                 }
             }
-
-    private companion object {
-        const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-    }
 }
