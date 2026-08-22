@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
@@ -29,6 +30,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
@@ -60,6 +62,7 @@ private data class OptionalTelemetry(
     val gt7Ps5VehicleClass: Gt7Ps5VehicleClassData?,
     val aceWindowsStatus: AceWindowsStatusData?,
     val aceWindowsTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData?,
+    val aceWindowsVehicleApproach: AceWindowsVehicleApproachData?,
 )
 
 private val lmuWindowsSupportedCardKeys =
@@ -97,6 +100,7 @@ private val aceWindowsSupportedCardKeys =
         DebugStateCardKey.FLAG_INFO,
         DebugStateCardKey.FUEL_CONSUMPTION,
         DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
     )
 
 private fun supportedCardKeys(simulator: Simulator?): Set<DebugStateCardKey> =
@@ -127,6 +131,7 @@ internal data class AceWindowsDebugStateUseCases(
     val observeFlag: ObserveAceWindowsFlagUseCase,
     val observeStatus: ObserveAceWindowsStatusUseCase,
     val observeTyreCarcassTemperature: ObserveAceWindowsTyreCarcassTemperatureUseCase,
+    val observeVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
 )
 
 internal data class DebugStateCardOrderUseCases(
@@ -256,8 +261,12 @@ internal class DebugStateDetailViewModel(
                     markCardsReceived(DebugStateCardKey.VEHICLE_CLASS)
                 }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
         ) { lmu, gt7, aceWindowsFuel, aceWindowsFlag, gt7Ps5VehicleClass ->
-            OptionalTelemetry(lmu, gt7, aceWindowsFuel, aceWindowsFlag, gt7Ps5VehicleClass, null, null)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, OptionalTelemetry(null, null, null, null, null, null, null))
+            OptionalTelemetry(lmu, gt7, aceWindowsFuel, aceWindowsFlag, gt7Ps5VehicleClass, null, null, null)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            OptionalTelemetry(null, null, null, null, null, null, null, null),
+        )
 
     private val _aceWindowsStatus: StateFlow<AceWindowsStatusData?> =
         aceWindowsUseCases
@@ -273,17 +282,30 @@ internal class DebugStateDetailViewModel(
                 markCardsReceived(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE)
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+    private val _aceWindowsVehicleApproach: StateFlow<AceWindowsVehicleApproachData?> =
+        aceWindowsUseCases
+            .observeVehicleApproach()
+            .onEach {
+                markCardsReceived(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES)
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
     private val _optionalTelemetry: StateFlow<OptionalTelemetry> =
         combine(
             _optionalTelemetryBase,
             _aceWindowsStatus,
             _aceWindowsTyreCarcassTemperature,
-        ) { base, aceWindowsStatus, aceWindowsTyreCarcassTemperature ->
+            _aceWindowsVehicleApproach,
+        ) { base, aceWindowsStatus, aceWindowsTyreCarcassTemperature, aceWindowsVehicleApproach ->
             base.copy(
                 aceWindowsStatus = aceWindowsStatus,
                 aceWindowsTyreCarcassTemperature = aceWindowsTyreCarcassTemperature,
+                aceWindowsVehicleApproach = aceWindowsVehicleApproach,
             )
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, OptionalTelemetry(null, null, null, null, null, null, null))
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            OptionalTelemetry(null, null, null, null, null, null, null, null),
+        )
 
     val uiState: StateFlow<DebugStateDetailUiState> =
         combine(
@@ -304,6 +326,7 @@ internal class DebugStateDetailViewModel(
                 aceWindowsStatus = optionalTelemetry.aceWindowsStatus,
                 lmuWindowsPitStatus = raceState.lmuWindowsPitStatus,
                 vehicleApproach = raceState.vehicleApproach,
+                aceWindowsVehicleApproach = optionalTelemetry.aceWindowsVehicleApproach,
                 tyreCarcassTemperature = raceState.tyreCarcassTemperature,
                 aceWindowsTyreCarcassTemperature = optionalTelemetry.aceWindowsTyreCarcassTemperature,
                 lmuWindowsVehicleClass = raceState.lmuWindowsVehicleClass,
