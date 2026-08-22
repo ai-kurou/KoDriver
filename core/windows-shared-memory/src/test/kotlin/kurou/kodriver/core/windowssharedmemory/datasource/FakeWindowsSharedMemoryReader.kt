@@ -1,12 +1,12 @@
-package kurou.kodriver.core.lmuwindowsdata.repository
+package kurou.kodriver.core.windowssharedmemory.datasource
 
-import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-internal class FakeSharedMemoryReader(
+class FakeWindowsSharedMemoryReader(
     initialOpen: Boolean = false,
     openResults: List<Boolean> = listOf(true),
+    private val bufferSize: Int,
     private val returnNullBuffer: Boolean = false,
 ) : SharedMemoryReader {
     private var opened = initialOpen
@@ -23,7 +23,7 @@ internal class FakeSharedMemoryReader(
 
     override fun readBuffer(): ByteBuffer? =
         if (opened && !returnNullBuffer) {
-            ByteBuffer.allocate(135_000).order(ByteOrder.LITTLE_ENDIAN)
+            ByteBuffer.allocate(bufferSize).order(ByteOrder.LITTLE_ENDIAN)
         } else {
             null
         }
