@@ -4,6 +4,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
@@ -30,7 +31,7 @@ import org.koin.dsl.module
  * LmuWindowsVirtualEnergyRepository・LmuWindowsRepository・Gt7Ps5Repository・AceWindowsFuelRepository・
  * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・LmuWindowsTyreCarcassTemperatureRepository・
  * LmuWindowsVehicleClassRepository・AceWindowsStatusRepository・AceWindowsTyreCarcassTemperatureRepository・
- * LmuWindowsPitStatusRepository・DebugStateCardOrderPreferencesRepository
+ * AceWindowsVehicleApproachRepository・LmuWindowsPitStatusRepository・DebugStateCardOrderPreferencesRepository
  * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
  */
 val debugStateDetailModule =
@@ -40,7 +41,7 @@ val debugStateDetailModule =
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { LmuWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get()) }
         factory { Gt7Ps5DebugStateUseCases(get(), get()) }
-        factory { AceWindowsDebugStateUseCases(get(), get(), get(), get()) }
+        factory { AceWindowsDebugStateUseCases(get(), get(), get(), get(), get()) }
         factory { DebugStateCardOrderUseCases(get(), get(), get()) }
 
         factory { ObserveSelectedSimulatorUseCase(get()) }
@@ -56,6 +57,7 @@ val debugStateDetailModule =
         factory { ObserveLmuWindowsVehicleClassUseCase(get()) }
         factory { ObserveAceWindowsStatusUseCase(get()) }
         factory { ObserveAceWindowsTyreCarcassTemperatureUseCase(get()) }
+        factory { ObserveAceWindowsVehicleApproachUseCase(get()) }
         factory { ObserveLmuWindowsPitStatusUseCase(get()) }
         factory { ObserveDebugStateCardOrderUseCase(get()) }
         factory { ResolveDebugStateCardOrderUseCase() }
