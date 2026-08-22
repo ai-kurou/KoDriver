@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsconnection
 
 import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.koin.dsl.module
 
@@ -15,5 +16,6 @@ val lmuWindowsConnectionModule =
     module {
         // ドメイン UseCase（:core:domain。get() は接続元 Repository・:core:data の Preferences Repository を解決）
         factory { CheckLmuWindowsConnectionUseCase(get()) }
+        factory { ObserveLmuWindowsConnectionUseCase(get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
     }

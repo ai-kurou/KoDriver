@@ -2,21 +2,19 @@ package kurou.kodriver.feature.lmuwindowsconnection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
 internal class LmuWindowsConnectionViewModel(
-    private val checkLmuWindowsConnection: CheckLmuWindowsConnectionUseCase,
+    private val observeLmuWindowsConnection: ObserveLmuWindowsConnectionUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) : ViewModel() {
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -24,7 +22,16 @@ internal class LmuWindowsConnectionViewModel(
         observeSelectedSimulator()
             .flatMapLatest { simulator ->
                 if (simulator is Simulator.LmuWindows) {
-                    connectionCheckFlow()
+                    observeLmuWindowsConnection().map { isConnected ->
+                        LmuWindowsConnectionUiState(
+                            connectionStatus =
+                                if (isConnected) {
+                                    LmuWindowsConnectionStatus.CONNECTED
+                                } else {
+                                    LmuWindowsConnectionStatus.DISCONNECTED
+                                },
+                        )
+                    }
                 } else {
                     flowOf(LmuWindowsConnectionUiState())
                 }
@@ -33,33 +40,4 @@ internal class LmuWindowsConnectionViewModel(
                 started = SharingStarted.WhileSubscribed(),
                 initialValue = LmuWindowsConnectionUiState(),
             )
-
-    private fun connectionCheckFlow() =
-        flow {
-            while (true) {
-                val isConnected =
-                    try {
-                        checkLmuWindowsConnection()
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (_: Exception) {
-                        false
-                    }
-                emit(
-                    LmuWindowsConnectionUiState(
-                        connectionStatus =
-                            if (isConnected) {
-                                LmuWindowsConnectionStatus.CONNECTED
-                            } else {
-                                LmuWindowsConnectionStatus.DISCONNECTED
-                            },
-                    ),
-                )
-                delay(CONNECTION_CHECK_INTERVAL_MS)
-            }
-        }
-
-    private companion object {
-        const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-    }
 }
