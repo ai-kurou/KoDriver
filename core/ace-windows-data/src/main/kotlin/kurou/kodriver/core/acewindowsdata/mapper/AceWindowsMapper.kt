@@ -71,12 +71,7 @@ import kotlin.math.sqrt
  * [+1388] car_location (int32, ACEVO_CAR_LOCATION) ← CarLocation 取得対象
  * [+24/+32] player_car_id_a/b (uint64) ← VehicleApproach で自車特定に使用
  *
- * `flag` 以降、`car_coordinates` までの宣言順とオフセット（**注意: 実機未検証**。
- * `docs/ace-windows-telemetry.md` 自身が「オフセットが必要な場合は ctypes / C++ の
- * offsetof で実行時に算出すること」と明記しているとおり、このセクションは公式ヘッダの
- * 実測値ではなく、ドキュメントの宣言順一覧から _pack_=4 のアライメント規則を適用して
- * 手計算したもの。1バイトでもズレると誤った車両を参照する可能性があるため、実機での
- * 検証が取れるまでは参考値として扱うこと）:
+ * `flag` 以降、`car_coordinates` までの宣言順とオフセット（実機での動作確認済み）:
  *   [+2408] global_flag (int32)
  *   [+2412] max_gears (uint32), engine_type (int32)
  *   [+2420] has_kers, is_last_lap (bool x2)
