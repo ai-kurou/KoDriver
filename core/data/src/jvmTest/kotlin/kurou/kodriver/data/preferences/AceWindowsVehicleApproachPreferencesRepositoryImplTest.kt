@@ -6,11 +6,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -37,44 +34,17 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
     fun `初期値は各Defaults定数と一致する`() =
         testScope.runTest {
             assertEquals(
-                ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
-                repository.observeLongitudinalThresholdMeters().first(),
-            )
-            assertEquals(
-                ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
-                repository.observeLateralThresholdMeters().first(),
-            )
-            assertEquals(
-                ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT,
-                repository.observeStartReadoutType().first(),
+                ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
+                repository.observeThresholdMeters().first(),
             )
         }
 
     @Test
-    fun `保存した前後方向の閾値を取得できる`() =
+    fun `保存した閾値を取得できる`() =
         testScope.runTest {
-            repository.saveLongitudinalThresholdMeters(7.0)
+            repository.saveThresholdMeters(7.0)
 
-            assertEquals(7.0, repository.observeLongitudinalThresholdMeters().first())
-        }
-
-    @Test
-    fun `保存した左右方向の閾値を取得できる`() =
-        testScope.runTest {
-            repository.saveLateralThresholdMeters(6.0)
-
-            assertEquals(6.0, repository.observeLateralThresholdMeters().first())
-        }
-
-    @Test
-    fun `保存した開始時読み上げ文言を取得できる`() =
-        testScope.runTest {
-            repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
-
-            assertEquals(
-                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
-                repository.observeStartReadoutType().first(),
-            )
+            assertEquals(7.0, repository.observeThresholdMeters().first())
         }
 
     @Test
@@ -125,7 +95,7 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
     fun `saveEnabledState後に閾値を保存してもenabledStatesは保持される`() =
         testScope.runTest {
             repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
-            repository.saveLongitudinalThresholdMeters(7.0)
+            repository.saveThresholdMeters(7.0)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),

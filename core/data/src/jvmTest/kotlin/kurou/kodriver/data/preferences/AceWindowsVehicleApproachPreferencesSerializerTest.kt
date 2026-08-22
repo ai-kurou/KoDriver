@@ -2,9 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -16,9 +14,7 @@ class AceWindowsVehicleApproachPreferencesSerializerTest {
     fun `デフォルト値は各Defaults定数と一致する`() {
         assertEquals(
             AceWindowsVehicleApproachPreferences(
-                longitudinalThresholdMeters = ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
-                lateralThresholdMeters = ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
-                startReadoutType = ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT.id,
+                thresholdMeters = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
             ),
             AceWindowsVehicleApproachPreferencesSerializer.defaultValue,
         )
@@ -29,9 +25,7 @@ class AceWindowsVehicleApproachPreferencesSerializerTest {
         runTest {
             val original =
                 AceWindowsVehicleApproachPreferences(
-                    longitudinalThresholdMeters = 7.0,
-                    lateralThresholdMeters = 6.0,
-                    startReadoutType = "left_right_approach",
+                    thresholdMeters = 7.0,
                     enabledStates = mapOf("ace_windows_vehicle_approach_start_readout" to false),
                 )
             val output = ByteArrayOutputStream()

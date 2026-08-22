@@ -2,8 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -26,12 +25,8 @@ class AceWindowsVehicleApproachPreferencesRepositoryFactoryTest {
                 )
 
             assertEquals(
-                ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
-                repository.observeLongitudinalThresholdMeters().first(),
-            )
-            assertEquals(
-                ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
-                repository.observeLateralThresholdMeters().first(),
+                ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
+                repository.observeThresholdMeters().first(),
             )
         }
 
@@ -43,10 +38,8 @@ class AceWindowsVehicleApproachPreferencesRepositoryFactoryTest {
                     directory = tempDir.absolutePath,
                 )
 
-            repository.saveLongitudinalThresholdMeters(7.0)
-            repository.saveLateralThresholdMeters(6.0)
+            repository.saveThresholdMeters(7.0)
 
-            assertEquals(7.0, repository.observeLongitudinalThresholdMeters().first())
-            assertEquals(6.0, repository.observeLateralThresholdMeters().first())
+            assertEquals(7.0, repository.observeThresholdMeters().first())
         }
 }

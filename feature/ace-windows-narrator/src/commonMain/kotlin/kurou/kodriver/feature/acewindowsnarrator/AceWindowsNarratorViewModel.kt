@@ -14,12 +14,14 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.AceWindowsNarratorState
+import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
@@ -29,6 +31,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -52,6 +56,12 @@ internal data class TyreTemperatureUseCases(
     val observeTyreTemperatureEnabledStates: ObserveAceWindowsTyreTemperatureEnabledStatesUseCase,
 )
 
+internal data class VehicleApproachUseCases(
+    val observeVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
+    val observeEnabledStates: ObserveAceWindowsVehicleApproachEnabledStatesUseCase,
+    val thresholds: AceWindowsVehicleApproachThresholdsUseCases,
+)
+
 internal data class ReadoutListUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
@@ -66,6 +76,7 @@ internal class AceWindowsNarratorViewModel(
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
     tyreTemperatureUseCases: TyreTemperatureUseCases,
+    vehicleApproachUseCases: VehicleApproachUseCases,
     observeAceWindowsStatus: ObserveAceWindowsStatusUseCase,
     private val eventProcessor: AceWindowsNarratorEventProcessor,
     private val determineAceWindowsNarratorReadout: DetermineAceWindowsNarratorReadoutUseCase =
@@ -90,8 +101,9 @@ internal class AceWindowsNarratorViewModel(
             listEnabledStates,
             flagUseCases.observeFlagEnabledStates(),
             tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
-        ) { readoutStates, flagStates, tyreTemperatureStates ->
-            readoutStates + flagStates + tyreTemperatureStates
+            vehicleApproachUseCases.observeEnabledStates(),
+        ) { readoutStates, flagStates, tyreTemperatureStates, vehicleApproachStates ->
+            readoutStates + flagStates + tyreTemperatureStates + vehicleApproachStates
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     private val readoutOrder =
@@ -120,6 +132,15 @@ internal class AceWindowsNarratorViewModel(
                 ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
             )
 
+    private val vehicleApproachThreshold =
+        vehicleApproachUseCases.thresholds
+            .observeThresholdMeters()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
+            )
+
     private var narratorState = AceWindowsNarratorState()
 
     private val currentSettings: AceWindowsNarratorReadoutSettings
@@ -128,6 +149,7 @@ internal class AceWindowsNarratorViewModel(
                 enabledStates = mergedEnabledStates.value,
                 remainingFuelThresholdPercentage = remainingFuelThreshold.value,
                 tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThreshold.value,
+                vehicleApproachThresholdMeters = vehicleApproachThreshold.value,
             )
 
     private val fuelFlow =
@@ -149,6 +171,16 @@ internal class AceWindowsNarratorViewModel(
                     emptyFlow()
                 } else {
                     tyreTemperatureUseCases.observeAceWindowsTyreCarcassTemperature()
+                }
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val vehicleApproachFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.AceWindows) {
+                    emptyFlow()
+                } else {
+                    vehicleApproachUseCases.observeVehicleApproach()
                 }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
@@ -245,6 +277,36 @@ internal class AceWindowsNarratorViewModel(
                 narratorState = decision.state
                 eventProcessor.processTyreTemperature(
                     tyreCarcassTemperature = tyreCarcassTemperature,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        AceWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                    isOnTrack = isOnTrack,
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val vehicleApproachJob =
+        vehicleApproachFlow
+            .onEach { vehicleApproach ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    determineAceWindowsNarratorReadout.determineVehicleApproach(
+                        state = state,
+                        data = vehicleApproach,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processVehicleApproach(
+                    vehicleApproach = vehicleApproach,
                     events = decision.events,
                     readoutOrder = readoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,

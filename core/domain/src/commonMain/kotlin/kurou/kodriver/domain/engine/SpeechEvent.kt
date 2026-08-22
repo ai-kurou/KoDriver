@@ -170,4 +170,14 @@ sealed interface SpeechEvent {
     data object AceWindowsTyreOverheat : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.TyreTemperature.Root
     }
+
+    /**
+     * ACE の周辺車両接近を読み上げるイベント。
+     *
+     * ACE の共有メモリには自車の向きに相当するフィールドが存在せず、LMU（[CarLeft]/[CarRight] 等）のような
+     * 左右を区別した接近アナウンスができないため、左右を区別しない汎用の接近アナウンスとして1種類のみ用意する。
+     */
+    data object AceWindowsVehicleApproach : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.VehicleApproach.Root
+    }
 }

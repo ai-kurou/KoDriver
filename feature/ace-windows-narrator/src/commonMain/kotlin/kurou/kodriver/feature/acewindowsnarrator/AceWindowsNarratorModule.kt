@@ -8,6 +8,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
@@ -17,6 +18,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -38,8 +41,8 @@ import org.koin.dsl.module
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（RemainingFuelUseCases / ReadoutListUseCases / FlagUseCases /
- *   TyreTemperatureUseCases）、それらが束ねる各ドメイン UseCase、および named(Simulator.AceWindows.id) の音声再生系
- *   （PlaySpeechEventUseCase・TextToSpeechEngine）。
+ *   TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
+ *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は LMU/GT7 と区別するため named(Simulator.AceWindows.id) で登録している。
@@ -48,13 +51,14 @@ import org.koin.dsl.module
 val aceWindowsNarratorModule: Module =
     module {
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get()) }
+        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { RemainingFuelUseCases(get(), get()) }
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get()) }
+        factory { VehicleApproachUseCases(get(), get(), get()) }
         factory { AceWindowsNarratorEventProcessor(get(named(Simulator.AceWindows.id)), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:ace-windows-data / :core:data の Repository を解決）
@@ -68,6 +72,9 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveAceWindowsTyreCarcassTemperatureUseCase(get()) }
         factory { ObserveAceWindowsTyreTemperatureHighThresholdUseCase(get()) }
         factory { ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(get()) }
+        factory { ObserveAceWindowsVehicleApproachUseCase(get()) }
+        factory { ObserveAceWindowsVehicleApproachEnabledStatesUseCase(get()) }
+        factory { AceWindowsVehicleApproachThresholdsUseCases(get()) }
         factory { ObserveReadoutEnabledStatesUseCase(get()) }
         factory { ObserveReadoutOrderUseCase(get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
@@ -111,6 +118,7 @@ private val aceWindowsEventToFile: Map<SpeechEvent, String> =
         SpeechEvent.AceWindowsOrangeCircleFlag to "files/orange_circle_flag.wav",
         SpeechEvent.AceWindowsRedYellowStripesFlag to "files/red_yellow_stripes_flag.wav",
         SpeechEvent.AceWindowsTyreOverheat to "files/tyre_overheat.wav",
+        SpeechEvent.AceWindowsVehicleApproach to "files/vehicle_approach.wav",
     )
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =

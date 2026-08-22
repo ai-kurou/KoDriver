@@ -1,7 +1,6 @@
 package kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail
 
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachPreferencesUseCases
 import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachEnabledStateUseCase
@@ -25,13 +24,11 @@ val aceWindowsReadoutVehicleApproachDetailModule =
                 get(),
                 get(),
                 get(),
-                get(),
                 get(named(Simulator.AceWindows.id)),
             )
         }
 
         factoryOf(::AceWindowsVehicleApproachThresholdsUseCases)
-        factoryOf(::AceWindowsVehicleApproachPreferencesUseCases)
         factoryOf(::ObserveAceWindowsVehicleApproachEnabledStatesUseCase)
         factoryOf(::SaveAceWindowsVehicleApproachEnabledStateUseCase)
     }
