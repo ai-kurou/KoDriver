@@ -68,6 +68,85 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `ベストラップタイムが0以下なら自己ベストラップを読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 90_000),
+                settings = settings(),
+            )
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 0),
+                settings = settings(),
+            )
+
+        assertTrue(second.events.isEmpty())
+    }
+
+    @Test
+    fun `前回のベストラップタイムが0以下でも更新条件を満たせば自己ベストラップを読み上げる`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 0),
+                settings = settings(),
+            )
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 89_000),
+                settings = settings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLapFormal), second.events)
+    }
+
+    @Test
+    fun `前回より遅いラップタイムでは読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 90_000),
+                settings = settings(),
+            )
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 91_000),
+                settings = settings(),
+            )
+
+        assertTrue(second.events.isEmpty())
+    }
+
+    @Test
+    fun `既に記録している自己ベストより遅ければ読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 90_000),
+                settings = settings(),
+            )
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 89_000),
+                settings = settings(),
+            )
+
+        val third =
+            useCase.determineMyBestLap(
+                state = second.state.copy(previousBestLapTimeMs = 95_000),
+                telemetry = telemetry(bestLapTimeMs = 90_000),
+                settings = settings(),
+            )
+
+        assertTrue(third.events.isEmpty())
+    }
+
+    @Test
     fun `自己ベストの読み上げが無効なら読み上げない`() {
         val initialDecision =
             useCase.determineMyBestLap(
@@ -255,6 +334,142 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `ベストラップタイムが0以下なら燃料残り周回数を読み上げない`() {
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, bestLapTimeMs = 0, gasLevel = 100f),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+        val decision =
+            useCase.determineRemainingFuelLaps(
+                state = firstLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 0, gasLevel = 10f),
+                settings = settings(),
+                observedAtMs = 100_000L,
+            )
+
+        assertTrue(decision.events.isEmpty())
+    }
+
+    @Test
+    fun `完走したラップ数が0以下なら燃料残り周回数を読み上げない`() {
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+        val decision =
+            useCase.determineRemainingFuelLaps(
+                state = firstLapDecision.state,
+                telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 90f),
+                settings = settings(),
+                observedAtMs = 160_000L,
+            )
+
+        assertTrue(decision.events.isEmpty())
+    }
+
+    @Test
+    fun `燃料消費量が0以下なら燃料残り周回数を読み上げない`() {
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+        val nextLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = firstLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 100f),
+                settings = settings(),
+                observedAtMs = 100_000L,
+            )
+        val decision =
+            useCase.determineRemainingFuelLaps(
+                state = nextLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 100f),
+                settings = settings(),
+                observedAtMs = 160_000L,
+            )
+
+        assertTrue(decision.events.isEmpty())
+    }
+
+    @Test
+    fun `残り周回数が閾値を超える場合は読み上げない`() {
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
+                settings = settings(remainingFuelLapsThreshold = 3),
+                observedAtMs = 0L,
+            )
+        val nextLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = firstLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 99f),
+                settings = settings(remainingFuelLapsThreshold = 3),
+                observedAtMs = 100_000L,
+            )
+        val decision =
+            useCase.determineRemainingFuelLaps(
+                state = nextLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 99f),
+                settings = settings(remainingFuelLapsThreshold = 3),
+                observedAtMs = 160_000L,
+            )
+
+        assertTrue(decision.events.isEmpty())
+    }
+
+    @Test
+    fun `同じ残り周回数の評価が続く間は再度読み上げない`() {
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+        val secondLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = firstLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
+                settings = settings(remainingFuelLapsThreshold = 3),
+                observedAtMs = 100_000L,
+            )
+        val firstWarningDecision =
+            useCase.determineRemainingFuelLaps(
+                state = secondLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
+                settings = settings(remainingFuelLapsThreshold = 3),
+                observedAtMs = 160_000L,
+            )
+        val thirdLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = firstWarningDecision.state,
+                telemetry = telemetry(lapCount = 3, bestLapTimeMs = 90_000, gasLevel = 9f),
+                settings = settings(remainingFuelLapsThreshold = 3),
+                observedAtMs = 200_000L,
+            )
+        val secondEvaluationDecision =
+            useCase.determineRemainingFuelLaps(
+                state = thirdLapDecision.state,
+                telemetry = telemetry(lapCount = 3, bestLapTimeMs = 90_000, gasLevel = 9f),
+                settings = settings(remainingFuelLapsThreshold = 3),
+                observedAtMs = 260_000L,
+            )
+
+        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), firstWarningDecision.events)
+        assertTrue(secondEvaluationDecision.events.isEmpty())
+    }
+
+    @Test
     fun `燃料残量が閾値以下になると読み上げる`() {
         val decision =
             useCase.determineRemainingFuel(
@@ -338,6 +553,19 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             useCase.determineRemainingFuel(
                 state = Gt7Ps5NarratorState(),
                 telemetry = telemetry(gasLevel = 0f, gasCapacity = 0f),
+                settings = settings(),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(false, decision.state.remainingFuelWarned)
+    }
+
+    @Test
+    fun `燃料残量が正でも容量が0以下なら燃料残量は読み上げない`() {
+        val decision =
+            useCase.determineRemainingFuel(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(gasLevel = 20f, gasCapacity = 0f),
                 settings = settings(),
             )
 
@@ -479,6 +707,28 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
         assertEquals(false, cooledState.tyreOverheating)
         assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat), decision.events)
+    }
+
+    @Test
+    fun `ヒステリシス範囲内の初期温度では過熱状態にならない`() {
+        val decision =
+            useCase.determineTyreTemperature(
+                state = Gt7Ps5NarratorState(),
+                telemetry =
+                    telemetry(
+                        tyreTemperature =
+                            Gt7Ps5TyreTemperatureData(
+                                CelsiusReading(92f),
+                                CelsiusReading(90f),
+                                CelsiusReading(90f),
+                                CelsiusReading(90f),
+                            ),
+                    ),
+                settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(false, decision.state.tyreOverheating)
     }
 
     @Test
