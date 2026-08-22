@@ -100,6 +100,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.AceWindows.VehicleApproach.Root,
             ReadoutItemKey.fromValue("ace_windows_vehicle_approach"),
         )
+        assertEquals(
+            ReadoutItemKey.AceWindows.VehicleApproach.StartReadout,
+            ReadoutItemKey.fromValue("ace_windows_vehicle_approach_start_readout"),
+        )
     }
 
     @Test

@@ -12,6 +12,7 @@ import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.data.preferences.createAceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5MyBestLapPreferencesRepository
@@ -58,6 +59,7 @@ import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesReposi
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
@@ -278,6 +280,9 @@ private fun androidDataModuleThresholdPreferences(context: Context) =
         }
         single<AceWindowsTyreTemperaturePreferencesRepository> {
             createAceWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<AceWindowsVehicleApproachPreferencesRepository> {
+            createAceWindowsVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
         }
         single<LmuWindowsPitTimingPreferencesRepository> {
             createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)

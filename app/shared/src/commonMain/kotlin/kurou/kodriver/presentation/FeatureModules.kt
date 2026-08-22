@@ -5,6 +5,7 @@ import kurou.kodriver.feature.acewindowsnarrator.aceWindowsNarratorModule
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.aceWindowsReadoutFlagDetailModule
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.aceWindowsReadoutRemainingFuelDetailModule
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.aceWindowsReadoutTyreTemperatureDetailModule
+import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.aceWindowsReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.debugstatedetail.debugStateDetailModule
 import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
 import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
@@ -81,5 +82,6 @@ val featureModules: List<Module> =
         aceWindowsReadoutRemainingFuelDetailModule,
         aceWindowsReadoutFlagDetailModule,
         aceWindowsReadoutTyreTemperatureDetailModule,
+        aceWindowsReadoutVehicleApproachDetailModule,
         debugStateDetailModule,
     )

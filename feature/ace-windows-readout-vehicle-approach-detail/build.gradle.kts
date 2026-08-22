@@ -13,6 +13,9 @@ kotlin {
             implementation(projects.core.domain)
             implementation(libs.compose.material.icons.extended)
         }
+        jvmTest.dependencies {
+            implementation(libs.mockk)
+        }
     }
 }
 
