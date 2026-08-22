@@ -30,7 +30,7 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
 
         rule.onNodeWithText("周囲の車両が接近した際に音声でお知らせします。").assertIsDisplayed()
         rule.onNodeWithText("閾値設定").assertIsDisplayed()
-        rule.onNodeWithText("車両間隔: 5.0 m").assertIsDisplayed()
+        rule.onNodeWithText("車両間隔: 6.0 m").assertIsDisplayed()
         rule.onNodeWithText("接近開始時の読み上げ").assertIsDisplayed()
         rule.onNodeWithText("車両接近").assertIsDisplayed()
     }
@@ -65,7 +65,7 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
 
         rule
             .onNode(
-                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 5f, range = 2f..10f, steps = 79)),
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 6f, range = 2f..10f, steps = 79)),
             ).performSemanticsAction(SemanticsActions.SetProgress) {
                 it(7f)
             }
