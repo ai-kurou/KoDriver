@@ -217,11 +217,8 @@ class AceWindowsNarratorViewModelTest {
                 vehicleApproachPreferencesRepository.observeEnabledStates()
             } returns MutableStateFlow(emptyMap())
             every {
-                vehicleApproachPreferencesRepository.observeLongitudinalThresholdMeters()
+                vehicleApproachPreferencesRepository.observeThresholdMeters()
             } returns MutableStateFlow(10.0)
-            every {
-                vehicleApproachPreferencesRepository.observeLateralThresholdMeters()
-            } returns MutableStateFlow(3.0)
             createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(fuel(20.0))
@@ -354,11 +351,8 @@ class AceWindowsNarratorViewModelTest {
                 vehicleApproachPreferencesRepository.observeEnabledStates()
             } returns MutableStateFlow(emptyMap())
             every {
-                vehicleApproachPreferencesRepository.observeLongitudinalThresholdMeters()
+                vehicleApproachPreferencesRepository.observeThresholdMeters()
             } returns MutableStateFlow(10.0)
-            every {
-                vehicleApproachPreferencesRepository.observeLateralThresholdMeters()
-            } returns MutableStateFlow(3.0)
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     any(),
@@ -483,8 +477,7 @@ class AceWindowsNarratorViewModelTest {
                 ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
                 ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to true,
             ),
-        vehicleApproachLongitudinalThresholdMeters: Double = 10.0,
-        vehicleApproachLateralThresholdMeters: Double = 3.0,
+        vehicleApproachThresholdMeters: Double = 10.0,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
         every {
@@ -510,11 +503,8 @@ class AceWindowsNarratorViewModelTest {
             vehicleApproachPreferencesRepository.observeEnabledStates()
         } returns MutableStateFlow(vehicleApproachEnabledOverrides)
         every {
-            vehicleApproachPreferencesRepository.observeLongitudinalThresholdMeters()
-        } returns MutableStateFlow(vehicleApproachLongitudinalThresholdMeters)
-        every {
-            vehicleApproachPreferencesRepository.observeLateralThresholdMeters()
-        } returns MutableStateFlow(vehicleApproachLateralThresholdMeters)
+            vehicleApproachPreferencesRepository.observeThresholdMeters()
+        } returns MutableStateFlow(vehicleApproachThresholdMeters)
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
@@ -758,7 +748,7 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `いずれの閾値よりも遠い場合は読み上げない`() =
+    fun `閾値より遠い場合は読み上げない`() =
         runTest(testDispatcher) {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)

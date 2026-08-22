@@ -6,11 +6,7 @@ import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepo
 class AceWindowsVehicleApproachThresholdsUseCases(
     private val repository: AceWindowsVehicleApproachPreferencesRepository,
 ) {
-    fun observeLongitudinalThresholdMeters(): Flow<Double> = repository.observeLongitudinalThresholdMeters()
+    fun observeThresholdMeters(): Flow<Double> = repository.observeThresholdMeters()
 
-    suspend fun saveLongitudinalThresholdMeters(meters: Double) = repository.saveLongitudinalThresholdMeters(meters)
-
-    fun observeLateralThresholdMeters(): Flow<Double> = repository.observeLateralThresholdMeters()
-
-    suspend fun saveLateralThresholdMeters(meters: Double) = repository.saveLateralThresholdMeters(meters)
+    suspend fun saveThresholdMeters(meters: Double) = repository.saveThresholdMeters(meters)
 }

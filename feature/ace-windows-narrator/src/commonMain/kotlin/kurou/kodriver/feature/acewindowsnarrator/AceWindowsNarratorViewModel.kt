@@ -14,8 +14,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -133,22 +132,13 @@ internal class AceWindowsNarratorViewModel(
                 ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
             )
 
-    private val vehicleApproachLongitudinalThreshold =
+    private val vehicleApproachThreshold =
         vehicleApproachUseCases.thresholds
-            .observeLongitudinalThresholdMeters()
+            .observeThresholdMeters()
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
-            )
-
-    private val vehicleApproachLateralThreshold =
-        vehicleApproachUseCases.thresholds
-            .observeLateralThresholdMeters()
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
+                ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
             )
 
     private var narratorState = AceWindowsNarratorState()
@@ -159,8 +149,7 @@ internal class AceWindowsNarratorViewModel(
                 enabledStates = mergedEnabledStates.value,
                 remainingFuelThresholdPercentage = remainingFuelThreshold.value,
                 tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThreshold.value,
-                vehicleApproachLongitudinalThresholdMeters = vehicleApproachLongitudinalThreshold.value,
-                vehicleApproachLateralThresholdMeters = vehicleApproachLateralThreshold.value,
+                vehicleApproachThresholdMeters = vehicleApproachThreshold.value,
             )
 
     private val fuelFlow =

@@ -2,8 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
@@ -12,7 +11,6 @@ import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
-import kotlin.math.max
 
 /**
  * ACE 向け読み上げ判定の継続状態。
@@ -32,9 +30,7 @@ data class AceWindowsNarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val remainingFuelThresholdPercentage: Int,
     val tyreTemperatureHighThresholdCelsius: Celsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
-    val vehicleApproachLongitudinalThresholdMeters: Double =
-        ACE_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
-    val vehicleApproachLateralThresholdMeters: Double = ACE_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
+    val vehicleApproachThresholdMeters: Double = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
 )
 
 /** ACE 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
@@ -48,9 +44,9 @@ data class AceWindowsNarratorReadoutDecision(
  *
  * 注意: ACE の共有メモリには自車の向きに相当するフィールドが存在せず、周辺車両との直線距離
  * （[AceWindowsVehicleApproachData.nearbyVehicles]）のみが取得できるため、LMU（[SpeechEvent.CarLeft]/
- * [SpeechEvent.CarRight] 等）のような左右を区別した接近アナウンスはできない。左右いずれかの閾値
- * （縦方向・横方向のうち緩い方）を下回る車両が1台でもいれば、左右を区別しない [SpeechEvent.AceWindowsVehicleApproach]
- * を読み上げる。
+ * [SpeechEvent.CarRight] 等）のような左右を区別した接近アナウンスはできない。単一の閾値
+ * （[AceWindowsNarratorReadoutSettings.vehicleApproachThresholdMeters]）を下回る車両が1台でもいれば、
+ * 左右を区別しない [SpeechEvent.AceWindowsVehicleApproach] を読み上げる。
  */
 class DetermineAceWindowsNarratorReadoutUseCase {
     fun determineRemainingFuel(
@@ -120,9 +116,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         data: AceWindowsVehicleApproachData,
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
-        val threshold =
-            max(settings.vehicleApproachLongitudinalThresholdMeters, settings.vehicleApproachLateralThresholdMeters)
-        val isApproaching = data.nearbyVehicles.any { it.distanceMeters <= threshold }
+        val isApproaching = data.nearbyVehicles.any { it.distanceMeters <= settings.vehicleApproachThresholdMeters }
         val shouldAnnounce =
             !state.vehicleApproaching && isApproaching &&
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.VehicleApproach.Root) &&

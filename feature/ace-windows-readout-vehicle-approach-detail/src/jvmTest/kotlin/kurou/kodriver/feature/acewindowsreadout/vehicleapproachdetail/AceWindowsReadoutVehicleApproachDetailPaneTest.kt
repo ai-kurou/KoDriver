@@ -9,11 +9,9 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -32,11 +30,9 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
 
         rule.onNodeWithText("周囲の車両が接近した際に音声でお知らせします。").assertIsDisplayed()
         rule.onNodeWithText("閾値設定").assertIsDisplayed()
-        rule.onNodeWithText("前後: 5.0 m").assertIsDisplayed()
-        rule.onNodeWithText("左右: 5.0 m").assertIsDisplayed()
+        rule.onNodeWithText("車両間隔: 5.0 m").assertIsDisplayed()
         rule.onNodeWithText("接近開始時の読み上げ").assertIsDisplayed()
-        rule.onNodeWithText("カーレフト・カーライト").assertIsDisplayed()
-        rule.onNodeWithText("左接近・右接近").assertIsDisplayed()
+        rule.onNodeWithText("車両接近").assertIsDisplayed()
     }
 
     @Test
@@ -57,19 +53,19 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
     }
 
     @Test
-    fun `前後の閾値スライダーの値を確定するとonLongitudinalThresholdChangedが呼ばれる`() {
+    fun `閾値スライダーの値を確定するとonThresholdChangedが呼ばれる`() {
         var changedMeters: Double? = null
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutVehicleApproachDetailPaneContent(
-                    onLongitudinalThresholdChanged = { changedMeters = it },
+                    onThresholdChanged = { changedMeters = it },
                 )
             }
         }
 
         rule
             .onNode(
-                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 5f, range = 0.1f..10f, steps = 98)),
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 5f, range = 2f..10f, steps = 79)),
             ).performSemanticsAction(SemanticsActions.SetProgress) {
                 it(7f)
             }
@@ -78,56 +74,18 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
     }
 
     @Test
-    fun `左右の閾値スライダーの値を確定するとonLateralThresholdChangedが呼ばれる`() {
-        var changedMeters: Double? = null
-        rule.setContent {
-            MaterialTheme {
-                AceWindowsReadoutVehicleApproachDetailPaneContent(
-                    onLateralThresholdChanged = { changedMeters = it },
-                )
-            }
-        }
-
-        rule
-            .onNode(
-                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 5f, range = 2f..8f, steps = 59)),
-            ).performSemanticsAction(SemanticsActions.SetProgress) {
-                it(6f)
-            }
-
-        assertEquals(6.0, changedMeters)
-    }
-
-    @Test
-    fun `前後の閾値のリセットボタンをタップするとonResetLongitudinalThresholdが呼ばれる`() {
+    fun `閾値のリセットボタンをタップするとonResetThresholdが呼ばれる`() {
         var resetCalled = false
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutVehicleApproachDetailPaneContent(
-                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(longitudinalThresholdMeters = 7.0),
-                    onResetLongitudinalThreshold = { resetCalled = true },
+                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(thresholdMeters = 7.0),
+                    onResetThreshold = { resetCalled = true },
                 )
             }
         }
 
-        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].performClick()
-
-        assertEquals(true, resetCalled)
-    }
-
-    @Test
-    fun `左右の閾値のリセットボタンをタップするとonResetLateralThresholdが呼ばれる`() {
-        var resetCalled = false
-        rule.setContent {
-            MaterialTheme {
-                AceWindowsReadoutVehicleApproachDetailPaneContent(
-                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(lateralThresholdMeters = 7.0),
-                    onResetLateralThreshold = { resetCalled = true },
-                )
-            }
-        }
-
-        rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].performClick()
+        rule.onNode(hasContentDescription("デフォルトに戻す")).performClick()
 
         assertEquals(true, resetCalled)
     }
@@ -150,20 +108,20 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
     }
 
     @Test
-    fun `チップをタップするとonStartReadoutTypeChangedが呼ばれる`() {
-        var changedType: VehicleApproachStartReadoutType? = null
+    fun `プレビューチップをタップするとonPreviewClickedが呼ばれる`() {
+        var previewCount = 0
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutVehicleApproachDetailPaneContent(
                     uiState = AceWindowsReadoutVehicleApproachDetailUiState(startReadoutEnabled = true),
-                    onStartReadoutTypeChanged = { changedType = it },
+                    onPreviewClicked = { previewCount++ },
                 )
             }
         }
 
-        rule.onNodeWithText("左接近・右接近").performClick()
+        rule.onNodeWithText("車両接近").assertIsEnabled().performClick()
 
-        assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, changedType)
+        assertEquals(1, previewCount)
     }
 
     @Test
@@ -176,19 +134,6 @@ class AceWindowsReadoutVehicleApproachDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("カーレフト・カーライト").assertIsNotEnabled()
-    }
-
-    @Test
-    fun `読み上げが有効ならチップも有効になる`() {
-        rule.setContent {
-            MaterialTheme {
-                AceWindowsReadoutVehicleApproachDetailPaneContent(
-                    uiState = AceWindowsReadoutVehicleApproachDetailUiState(startReadoutEnabled = true),
-                )
-            }
-        }
-
-        rule.onNodeWithText("カーレフト・カーライト").assertIsEnabled()
+        rule.onNodeWithText("車両接近").assertIsNotEnabled()
     }
 }

@@ -21,7 +21,7 @@ class AceWindowsVehicleApproachPreferencesDataStoreFactoryTest {
     fun `ace_windows_vehicle_approach_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createAceWindowsVehicleApproachPreferencesDataStore(tempDir.absolutePath)
-            dataStore.updateData { it.copy(longitudinalThresholdMeters = 7.0) }
+            dataStore.updateData { it.copy(thresholdMeters = 7.0) }
 
             assertTrue(tempDir.resolve("ace_windows_vehicle_approach_preferences.pb").exists())
         }

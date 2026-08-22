@@ -422,7 +422,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             useCase.determineVehicleApproach(
                 state = AceWindowsNarratorState(),
                 data = vehicleApproach(distanceMeters = 5.0),
-                settings = vehicleApproachSettings(longitudinalThresholdMeters = 10.0, lateralThresholdMeters = 3.0),
+                settings = vehicleApproachSettings(thresholdMeters = 10.0),
             )
 
         assertEquals(listOf(SpeechEvent.AceWindowsVehicleApproach), decision.events)
@@ -430,12 +430,12 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `いずれの閾値よりも遠い場合は読み上げない`() {
+    fun `閾値より遠い場合は読み上げない`() {
         val decision =
             useCase.determineVehicleApproach(
                 state = AceWindowsNarratorState(),
                 data = vehicleApproach(distanceMeters = 20.0),
-                settings = vehicleApproachSettings(longitudinalThresholdMeters = 10.0, lateralThresholdMeters = 3.0),
+                settings = vehicleApproachSettings(thresholdMeters = 10.0),
             )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
@@ -448,7 +448,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             useCase.determineVehicleApproach(
                 state = AceWindowsNarratorState(vehicleApproaching = true),
                 data = vehicleApproach(distanceMeters = 5.0),
-                settings = vehicleApproachSettings(longitudinalThresholdMeters = 10.0, lateralThresholdMeters = 3.0),
+                settings = vehicleApproachSettings(thresholdMeters = 10.0),
             )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
@@ -462,8 +462,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 .determineVehicleApproach(
                     state = AceWindowsNarratorState(),
                     data = vehicleApproach(distanceMeters = 5.0),
-                    settings =
-                        vehicleApproachSettings(longitudinalThresholdMeters = 10.0, lateralThresholdMeters = 3.0),
+                    settings = vehicleApproachSettings(thresholdMeters = 10.0),
                 ).state
 
         val departedState =
@@ -471,15 +470,14 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 .determineVehicleApproach(
                     state = approachingState,
                     data = vehicleApproach(distanceMeters = 20.0),
-                    settings =
-                        vehicleApproachSettings(longitudinalThresholdMeters = 10.0, lateralThresholdMeters = 3.0),
+                    settings = vehicleApproachSettings(thresholdMeters = 10.0),
                 ).state
 
         val reapproachDecision =
             useCase.determineVehicleApproach(
                 state = departedState,
                 data = vehicleApproach(distanceMeters = 5.0),
-                settings = vehicleApproachSettings(longitudinalThresholdMeters = 10.0, lateralThresholdMeters = 3.0),
+                settings = vehicleApproachSettings(thresholdMeters = 10.0),
             )
 
         assertEquals(false, departedState.vehicleApproaching)
@@ -494,8 +492,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 data = vehicleApproach(distanceMeters = 5.0),
                 settings =
                     vehicleApproachSettings(
-                        longitudinalThresholdMeters = 10.0,
-                        lateralThresholdMeters = 3.0,
+                        thresholdMeters = 10.0,
                         enabledOverrides = mapOf(ReadoutItemKey.AceWindows.VehicleApproach.Root to false),
                     ),
             )
@@ -512,8 +509,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 data = vehicleApproach(distanceMeters = 5.0),
                 settings =
                     vehicleApproachSettings(
-                        longitudinalThresholdMeters = 10.0,
-                        lateralThresholdMeters = 3.0,
+                        thresholdMeters = 10.0,
                         enabledOverrides = mapOf(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),
                     ),
             )
@@ -530,8 +526,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(distanceMeters)))
 
     private fun vehicleApproachSettings(
-        longitudinalThresholdMeters: Double,
-        lateralThresholdMeters: Double,
+        thresholdMeters: Double,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) = AceWindowsNarratorReadoutSettings(
         enabledStates =
@@ -540,8 +535,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to true,
             ) + enabledOverrides,
         remainingFuelThresholdPercentage = 0,
-        vehicleApproachLongitudinalThresholdMeters = longitudinalThresholdMeters,
-        vehicleApproachLateralThresholdMeters = lateralThresholdMeters,
+        vehicleApproachThresholdMeters = thresholdMeters,
     )
 
     private fun tyreCarcassTemperature(fl: Float) =
