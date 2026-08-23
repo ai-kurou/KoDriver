@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -16,16 +17,22 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,6 +47,9 @@ class AppScreenViewModelTest {
 
     @MockK
     private lateinit var dynamicColorEnabledRepository: DynamicColorEnabledRepository
+
+    @MockK
+    private lateinit var simulatorRepository: SimulatorPreferencesRepository
 
     @BeforeTest
     fun setUp() {
@@ -56,16 +66,20 @@ class AppScreenViewModelTest {
         tagName: String? = null,
         version: String = "1.0.0",
         dynamicColorEnabled: Boolean = false,
+        selectedSimulator: Simulator? = null,
     ): AppScreenViewModel {
         coEvery { appUpdateRepository.getLatestRelease() } returns tagName?.let { AppUpdate(it) }
         every { keepScreenOnRepository.keepScreenOn() } returns flowOf(false)
         every { dynamicColorEnabledRepository.dynamicColorEnabled() } returns flowOf(dynamicColorEnabled)
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(selectedSimulator)
 
         return AppScreenViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
             currentVersion = version,
             observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
             observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorEnabledRepository),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+            saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
         )
     }
 
@@ -145,5 +159,33 @@ class AppScreenViewModelTest {
             val viewModel = createViewModel(dynamicColorEnabled = false)
 
             assertFalse(viewModel.uiState.first().dynamicColorEnabled)
+        }
+
+    @Test
+    fun `未選択の場合selectedSimulatorがnullになる`() =
+        runTest {
+            val viewModel = createViewModel(selectedSimulator = null)
+
+            assertNull(viewModel.uiState.first().selectedSimulator)
+        }
+
+    @Test
+    fun `選択済みシミュレータがuiStateに反映される`() =
+        runTest {
+            val viewModel = createViewModel(selectedSimulator = Simulator.LmuWindows)
+
+            assertEquals(Simulator.LmuWindows, viewModel.uiState.first().selectedSimulator)
+        }
+
+    @Test
+    fun `selectSimulatorを呼ぶとsaveSelectedSimulatorが実行される`() =
+        runTest {
+            val viewModel = createViewModel()
+            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } returns Unit
+
+            viewModel.selectSimulator(Simulator.Gt7Ps5)
+            advanceUntilIdle()
+
+            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
         }
 }
