@@ -1576,7 +1576,7 @@ class DebugStateDetailViewModelTest {
             val lmuEnabledCardKeys = viewModel.uiState.first().enabledCardKeys
             assertTrue(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE in lmuEnabledCardKeys)
 
-            selectedSimulator.value = Simulator.AceWindows
+            selectedSimulator.update { Simulator.AceWindows }
 
             val aceEnabledCardKeys = viewModel.uiState.first().enabledCardKeys
             assertFalse(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE in aceEnabledCardKeys)
