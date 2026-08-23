@@ -32,12 +32,6 @@
 - **改善案**: プロジェクトが依存する Compose Multiplatform / Material3 Adaptive のバージョンで `MediaQuery` API が利用可能になった際、list/detailペインの表示切り替え判定を簡潔化できないか調査する。参考: https://android-developers.googleblog.com/2026/04/jetpack-compose-april-2026-updates.html
 - **調査結果（2026-08-23）**: プロジェクトが依存する `org.jetbrains.compose.ui:ui` `1.11.1` には `MediaQuery` API（`androidx.compose.ui.MediaQueryKt`、`derivedMediaQuery`、`UiMediaScope`、`LocalUiMediaScope`）が `commonMain` として同梱されており、`feature:readout-list` 等でのコンパイル自体は成功する（JVM・Androidいずれのターゲットでも確認済み）。しかし実際に3画面へ導入して `feature:readout-list` のユニットテストを実行したところ、`LocalUiMediaScope` を明示的に提供しなかったテストが軒並み `IllegalStateException`（`CompositionLocal LocalUiMediaScope not present`）で失敗した。原因を調査した結果、`androidx.compose.ui:ui-android`（AARの`classes.jar`）には `LocalUiMediaScope` へ実際の値を供給するプラットフォーム実装（`androidx/compose/ui/adaptive/MediaQuery_androidKt.obtainUiMediaScope` 等）が存在する一方、`org.jetbrains.compose.ui:ui-desktop:1.11.1` の jar にはこの配線が一切含まれていないことを確認した。**つまり `MediaQuery` API は現時点で Android ターゲットのみ実用可能で、KoDriver の主要配布形態である Desktop（Windows MSI）では `LocalUiMediaScope` が誰からも提供されず実行時にクラッシュする。** Compose Multiplatform がDesktopターゲット向けの `UiMediaScope` プロバイダ実装を追加するまでは導入を見送る。
 
-## テスト
-
-- **対象**: `feature:debug-state-detail`の`DebugStateDetailViewModel.kt`（`_receivedCardKeys`、PR #1240）
-  **課題**: `_receivedCardKeys`はシミュレータ横断で共有される単一の`Set<DebugStateCardKey>`のため、あるシミュレータのFlowが先に発火して特定カードキーをmarkCardsReceivedすると、別のシミュレータを選択した際にそのカードが「有効」表示になるが、実際のデータ（`uiState`の該当フィールド）はまだnullで「未取得」表示のまま、というズレが起こり得る（`TYRE_CARCASS_TEMPERATURE`・`SIDE_BY_SIDE_VEHICLES`など複数シミュレータが同じカードキーを使う場合に該当。CodeRabbitのPR #1240への指摘で顕在化）。
-  **改善案**: `_receivedCardKeys`をシミュレータ単位に分離して保持するか、`markCardsReceived`呼び出しを選択中シミュレータでゲーティングする。既存の`TYRE_CARCASS_TEMPERATURE`を含む横断的な修正になるため、着手時は別タスクとして切り出す。
-
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)
