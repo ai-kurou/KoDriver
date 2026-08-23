@@ -231,6 +231,40 @@ class OtherFeedbackDetailViewModelTest {
         }
 
     @Test
+    fun `送信中に入力を変更してもSending状態が維持され再送信できない`() =
+        runTest {
+            val deferredResult = CompletableDeferred<Result<Unit>>()
+            coEvery { repository.send(any()) } coAnswers { deferredResult.await() }
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.onMessageChanged("送信します")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("user@example.com")
+            viewModel.onSend()
+            viewModel.onMessageChanged("編集しました")
+            viewModel.onTypeSelected(FeedbackType.FeatureRequest)
+            viewModel.onSend()
+
+            assertEquals(FeedbackSendStatus.Sending, viewModel.uiState.value.sendStatus)
+            assertFalse(viewModel.uiState.value.canSend)
+            coVerify(exactly = 1) {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "送信します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
+            }
+            deferredResult.complete(Result.success(Unit))
+            confirmVerified(repository)
+            collectionJob.cancel()
+        }
+
+    @Test
     fun `最大文字数を超えた入力は切り詰められる`() =
         runTest {
             val viewModel = createViewModel()

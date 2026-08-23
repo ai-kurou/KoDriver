@@ -377,9 +377,7 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        FeedbackSendStatus.Idle -> {
-            Unit
-        }
+        FeedbackSendStatus.Idle -> {}
     }
 }
 

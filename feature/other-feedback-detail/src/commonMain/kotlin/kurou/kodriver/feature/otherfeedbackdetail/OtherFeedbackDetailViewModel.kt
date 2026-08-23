@@ -54,14 +54,14 @@ internal class OtherFeedbackDetailViewModel(
     }
 
     fun onTypeSelected(type: FeedbackType) {
-        _uiState.update { it.copy(type = type, sendStatus = FeedbackSendStatus.Idle) }
+        _uiState.update { it.copy(type = type, sendStatus = it.sendStatus.resetIfNotSending()) }
     }
 
     fun onMessageChanged(message: String) {
         _uiState.update {
             it.copy(
                 message = message.take(FEEDBACK_MESSAGE_MAX_LENGTH),
-                sendStatus = FeedbackSendStatus.Idle,
+                sendStatus = it.sendStatus.resetIfNotSending(),
                 showMessageError = false,
             )
         }
@@ -71,7 +71,7 @@ internal class OtherFeedbackDetailViewModel(
         _uiState.update {
             it.copy(
                 name = name.take(FEEDBACK_NAME_MAX_LENGTH),
-                sendStatus = FeedbackSendStatus.Idle,
+                sendStatus = it.sendStatus.resetIfNotSending(),
                 showNameError = false,
             )
         }
@@ -81,11 +81,14 @@ internal class OtherFeedbackDetailViewModel(
         _uiState.update {
             it.copy(
                 email = email.take(FEEDBACK_EMAIL_MAX_LENGTH),
-                sendStatus = FeedbackSendStatus.Idle,
+                sendStatus = it.sendStatus.resetIfNotSending(),
                 showEmailError = false,
             )
         }
     }
+
+    private fun FeedbackSendStatus.resetIfNotSending(): FeedbackSendStatus =
+        if (this == FeedbackSendStatus.Sending) this else FeedbackSendStatus.Idle
 
     fun onSend() {
         val current = _uiState.value
@@ -97,7 +100,7 @@ internal class OtherFeedbackDetailViewModel(
                     showMessageError = current.message.isBlank(),
                     showNameError = current.name.isBlank(),
                     showEmailError = !isValidEmail(current.email),
-                    sendStatus = FeedbackSendStatus.Idle,
+                    sendStatus = current.sendStatus.resetIfNotSending(),
                 )
             }
             return
