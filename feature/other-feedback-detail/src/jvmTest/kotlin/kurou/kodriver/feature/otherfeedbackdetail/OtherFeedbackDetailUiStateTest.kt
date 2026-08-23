@@ -73,4 +73,17 @@ class OtherFeedbackDetailUiStateTest {
 
         assertTrue(uiState.showEmailFormatError)
     }
+
+    @Test
+    fun `送信中なら送信できない`() {
+        val uiState =
+            OtherFeedbackDetailUiState(
+                message = "送信します",
+                name = "Kurou",
+                email = "user@example.com",
+                sendStatus = FeedbackSendStatus.Sending,
+            )
+
+        assertFalse(uiState.canSend)
+    }
 }

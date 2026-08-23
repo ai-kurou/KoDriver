@@ -139,7 +139,7 @@ class OtherFeedbackDetailPaneTest {
                             message = "本文",
                             name = "Kurou",
                             email = "user@example.com",
-                            isSending = true,
+                            sendStatus = FeedbackSendStatus.Sending,
                         ),
                 )
             }
@@ -153,7 +153,7 @@ class OtherFeedbackDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 OtherFeedbackDetailPaneContent(
-                    uiState = OtherFeedbackDetailUiState(isSent = true),
+                    uiState = OtherFeedbackDetailUiState(sendStatus = FeedbackSendStatus.Sent),
                 )
             }
         }
@@ -166,7 +166,7 @@ class OtherFeedbackDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 OtherFeedbackDetailPaneContent(
-                    uiState = OtherFeedbackDetailUiState(sendFailed = true),
+                    uiState = OtherFeedbackDetailUiState(sendStatus = FeedbackSendStatus.Failed),
                 )
             }
         }

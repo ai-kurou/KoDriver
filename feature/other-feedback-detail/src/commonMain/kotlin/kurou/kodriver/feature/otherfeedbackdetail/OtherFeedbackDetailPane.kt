@@ -289,7 +289,7 @@ fun OtherFeedbackDetailPaneContent(
                 enabled = uiState.canSend,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                if (uiState.isSending) {
+                if (uiState.sendStatus == FeedbackSendStatus.Sending) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
                 } else {
                     Text(stringResource(Res.string.feedback_send))
@@ -349,8 +349,8 @@ private fun AttachedTelemetryLogChip(
 
 @Composable
 private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
-    when {
-        uiState.isSent -> {
+    when (uiState.sendStatus) {
+        FeedbackSendStatus.Sent -> {
             Text(
                 text = stringResource(Res.string.feedback_sent),
                 color = MaterialTheme.colorScheme.primary,
@@ -359,7 +359,7 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        uiState.sendFailed -> {
+        FeedbackSendStatus.Failed -> {
             Text(
                 text = stringResource(Res.string.feedback_failed),
                 color = MaterialTheme.colorScheme.error,
@@ -368,13 +368,17 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        uiState.isSending -> {
+        FeedbackSendStatus.Sending -> {
             Text(
                 text = stringResource(Res.string.feedback_sending),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        FeedbackSendStatus.Idle -> {
+            Unit
         }
     }
 }

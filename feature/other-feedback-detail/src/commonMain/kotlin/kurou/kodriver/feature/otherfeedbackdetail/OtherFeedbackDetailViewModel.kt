@@ -54,15 +54,14 @@ internal class OtherFeedbackDetailViewModel(
     }
 
     fun onTypeSelected(type: FeedbackType) {
-        _uiState.update { it.copy(type = type, isSent = false, sendFailed = false) }
+        _uiState.update { it.copy(type = type, sendStatus = FeedbackSendStatus.Idle) }
     }
 
     fun onMessageChanged(message: String) {
         _uiState.update {
             it.copy(
                 message = message.take(FEEDBACK_MESSAGE_MAX_LENGTH),
-                isSent = false,
-                sendFailed = false,
+                sendStatus = FeedbackSendStatus.Idle,
                 showMessageError = false,
             )
         }
@@ -72,8 +71,7 @@ internal class OtherFeedbackDetailViewModel(
         _uiState.update {
             it.copy(
                 name = name.take(FEEDBACK_NAME_MAX_LENGTH),
-                isSent = false,
-                sendFailed = false,
+                sendStatus = FeedbackSendStatus.Idle,
                 showNameError = false,
             )
         }
@@ -83,8 +81,7 @@ internal class OtherFeedbackDetailViewModel(
         _uiState.update {
             it.copy(
                 email = email.take(FEEDBACK_EMAIL_MAX_LENGTH),
-                isSent = false,
-                sendFailed = false,
+                sendStatus = FeedbackSendStatus.Idle,
                 showEmailError = false,
             )
         }
@@ -100,15 +97,14 @@ internal class OtherFeedbackDetailViewModel(
                     showMessageError = current.message.isBlank(),
                     showNameError = current.name.isBlank(),
                     showEmailError = !isValidEmail(current.email),
-                    isSent = false,
-                    sendFailed = false,
+                    sendStatus = FeedbackSendStatus.Idle,
                 )
             }
             return
         }
-        if (current.isSending) return
+        if (current.sendStatus == FeedbackSendStatus.Sending) return
         val attachedTelemetryLog = uiState.value.attachedTelemetryLog
-        _uiState.update { it.copy(isSending = true, isSent = false, sendFailed = false) }
+        _uiState.update { it.copy(sendStatus = FeedbackSendStatus.Sending) }
         viewModelScope.launch {
             try {
                 val result =
@@ -128,15 +124,15 @@ internal class OtherFeedbackDetailViewModel(
                 }
                 _uiState.update {
                     if (result.isSuccess) {
-                        OtherFeedbackDetailUiState(type = it.type, isSent = true)
+                        OtherFeedbackDetailUiState(type = it.type, sendStatus = FeedbackSendStatus.Sent)
                     } else {
-                        it.copy(isSending = false, sendFailed = true)
+                        it.copy(sendStatus = FeedbackSendStatus.Failed)
                     }
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _uiState.update { it.copy(isSending = false, sendFailed = true) }
+                _uiState.update { it.copy(sendStatus = FeedbackSendStatus.Failed) }
             }
         }
     }
