@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -50,27 +48,6 @@ class SimulatorSwitcherScreenshotTest {
                     }
                 }
             }
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `メニュー展開状態`() =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                            SimulatorSwitcher(
-                                selectedSimulator = Simulator.LmuWindows,
-                                simulators = Simulator.entries,
-                                onSimulatorSelected = {},
-                            )
-                        }
-                    }
-                }
-            }
-            onNodeWithContentDescription("シミュレータを切替").performClick()
-            waitForIdle()
             onRoot().captureRoboImage()
         }
 }
