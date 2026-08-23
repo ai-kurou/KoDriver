@@ -49,6 +49,10 @@ Windows 版 KoDriver をあらかじめ起動しておいてください。LMU �
 
 インストール時に Windows SmartScreen の警告が表示される場合があります。詳しい手順、ファイアウォール設定、既知の制限は [Windows 版のインストール手順](docs/windows-install.md) を参照してください。
 
+**Android アプリ**
+
+[Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の APK をダウンロードしてインストールしてください。
+
 ## GT7 (PS5) 接続設定
 
 GT7 (PS5) と接続する場合は、PS5 へ直接接続する構成と SimHub の UDP フォワーディングを利用する構成があります。
