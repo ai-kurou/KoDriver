@@ -125,8 +125,7 @@ class OtherFeedbackDetailViewModelTest {
             viewModel.onEmailChanged("user@example.com")
             viewModel.onSend()
 
-            assertTrue(viewModel.uiState.value.isSent)
-            assertFalse(viewModel.uiState.value.isSending)
+            assertEquals(FeedbackSendStatus.Sent, viewModel.uiState.value.sendStatus)
             coVerify(exactly = 1) {
                 repository.send(
                     Feedback(
@@ -154,8 +153,7 @@ class OtherFeedbackDetailViewModelTest {
             viewModel.onEmailChanged("user@example.com")
             viewModel.onSend()
 
-            assertFalse(viewModel.uiState.value.isSent)
-            assertTrue(viewModel.uiState.value.sendFailed)
+            assertEquals(FeedbackSendStatus.Failed, viewModel.uiState.value.sendStatus)
             assertEquals("失敗します", viewModel.uiState.value.message)
             coVerify(exactly = 1) {
                 repository.send(
@@ -184,9 +182,7 @@ class OtherFeedbackDetailViewModelTest {
             viewModel.onEmailChanged("user@example.com")
             viewModel.onSend()
 
-            assertFalse(viewModel.uiState.value.isSent)
-            assertFalse(viewModel.uiState.value.isSending)
-            assertTrue(viewModel.uiState.value.sendFailed)
+            assertEquals(FeedbackSendStatus.Failed, viewModel.uiState.value.sendStatus)
             coVerify(exactly = 1) {
                 repository.send(
                     Feedback(
@@ -216,7 +212,41 @@ class OtherFeedbackDetailViewModelTest {
             viewModel.onSend()
             viewModel.onSend()
 
-            assertTrue(viewModel.uiState.value.isSending)
+            assertEquals(FeedbackSendStatus.Sending, viewModel.uiState.value.sendStatus)
+            assertFalse(viewModel.uiState.value.canSend)
+            coVerify(exactly = 1) {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "送信します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
+            }
+            deferredResult.complete(Result.success(Unit))
+            confirmVerified(repository)
+            collectionJob.cancel()
+        }
+
+    @Test
+    fun `送信中に入力を変更してもSending状態が維持され再送信できない`() =
+        runTest {
+            val deferredResult = CompletableDeferred<Result<Unit>>()
+            coEvery { repository.send(any()) } coAnswers { deferredResult.await() }
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.onMessageChanged("送信します")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("user@example.com")
+            viewModel.onSend()
+            viewModel.onMessageChanged("編集しました")
+            viewModel.onTypeSelected(FeedbackType.FeatureRequest)
+            viewModel.onSend()
+
+            assertEquals(FeedbackSendStatus.Sending, viewModel.uiState.value.sendStatus)
             assertFalse(viewModel.uiState.value.canSend)
             coVerify(exactly = 1) {
                 repository.send(
@@ -249,19 +279,6 @@ class OtherFeedbackDetailViewModelTest {
             assertEquals(FEEDBACK_EMAIL_MAX_LENGTH, viewModel.uiState.value.email.length)
             collectionJob.cancel()
         }
-
-    @Test
-    fun `送信中なら送信できない`() {
-        val uiState =
-            OtherFeedbackDetailUiState(
-                message = "送信します",
-                name = "Kurou",
-                email = "user@example.com",
-                isSending = true,
-            )
-
-        assertFalse(uiState.canSend)
-    }
 
     @Test
     fun `setTelemetryLogIdで指定したログが添付される`() =
@@ -316,7 +333,7 @@ class OtherFeedbackDetailViewModelTest {
             viewModel.onEmailChanged("user@example.com")
             viewModel.onSend()
 
-            assertTrue(viewModel.uiState.value.isSent)
+            assertEquals(FeedbackSendStatus.Sent, viewModel.uiState.value.sendStatus)
             coVerify(exactly = 1) {
                 repository.send(
                     Feedback(
@@ -362,8 +379,12 @@ class OtherFeedbackDetailViewModelTest {
             viewModel.onEmailChanged("user@example.com")
             viewModel.onSend()
 
-            val sentState = viewModel.uiState.first { it.isSent && it.attachedTelemetryLog == null }
-            assertTrue(sentState.isSent)
+            val sentState =
+                viewModel.uiState.first {
+                    it.sendStatus == FeedbackSendStatus.Sent &&
+                        it.attachedTelemetryLog == null
+                }
+            assertEquals(FeedbackSendStatus.Sent, sentState.sendStatus)
             assertNull(sentState.attachedTelemetryLog)
             coVerify(exactly = 1) { repository.send(feedback) }
             verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }

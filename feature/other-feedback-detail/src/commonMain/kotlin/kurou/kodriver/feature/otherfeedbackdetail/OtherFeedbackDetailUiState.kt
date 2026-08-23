@@ -11,21 +11,31 @@ internal const val FEEDBACK_EMAIL_MAX_LENGTH = 254
 
 internal fun isValidEmail(email: String): Boolean = EMAIL_REGEX.matches(email)
 
+sealed interface FeedbackSendStatus {
+    data object Idle : FeedbackSendStatus
+
+    data object Sending : FeedbackSendStatus
+
+    data object Sent : FeedbackSendStatus
+
+    data object Failed : FeedbackSendStatus
+}
+
 data class OtherFeedbackDetailUiState(
     val type: FeedbackType = FeedbackType.BugReport,
     val message: String = "",
     val name: String = "",
     val email: String = "",
-    val isSending: Boolean = false,
-    val isSent: Boolean = false,
-    val sendFailed: Boolean = false,
+    val sendStatus: FeedbackSendStatus = FeedbackSendStatus.Idle,
     val showMessageError: Boolean = false,
     val showNameError: Boolean = false,
     val showEmailError: Boolean = false,
     val attachedTelemetryLog: TelemetryLog? = null,
 ) {
     val canSend: Boolean
-        get() = message.isNotBlank() && name.isNotBlank() && isValidEmail(email) && !isSending
+        get() =
+            message.isNotBlank() && name.isNotBlank() && isValidEmail(email) &&
+                sendStatus != FeedbackSendStatus.Sending
 
     val showEmailFormatError: Boolean
         get() = showEmailError && email.isNotBlank()
