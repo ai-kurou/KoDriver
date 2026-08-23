@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertTrue
 
 class DebugStateSideBySideVehiclesCardTest {
     @get:Rule
@@ -250,5 +251,17 @@ class DebugStateSideBySideVehiclesCardTest {
 
         rule.onNodeWithText("3.1m").assertIsDisplayed()
         rule.onNodeWithText("12.3m").assertIsDisplayed()
+
+        val nearerTop =
+            rule
+                .onNodeWithText("3.1m")
+                .fetchSemanticsNode()
+                .boundsInRoot.top
+        val fartherTop =
+            rule
+                .onNodeWithText("12.3m")
+                .fetchSemanticsNode()
+                .boundsInRoot.top
+        assertTrue(nearerTop < fartherTop)
     }
 }
