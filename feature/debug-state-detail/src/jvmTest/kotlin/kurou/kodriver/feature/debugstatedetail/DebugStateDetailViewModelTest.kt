@@ -9,6 +9,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -90,6 +91,8 @@ import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions")
@@ -1542,6 +1545,41 @@ class DebugStateDetailViewModelTest {
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
+        }
+
+    @Test
+    fun `シミュレータを切り替えても他シミュレータ由来の受信状態を引き継がない`() =
+        runTest {
+            val selectedSimulator = MutableStateFlow<Simulator?>(Simulator.LmuWindows)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns selectedSimulator
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+                MutableStateFlow(sampleTyreCarcassTemperature())
+            every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
+            every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
+            // ACE側のタイヤカーカス温度は一度も受信していない状態を再現するため、何も emit しない Flow を返す。
+            every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+
+            val lmuEnabledCardKeys = viewModel.uiState.first().enabledCardKeys
+            assertTrue(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE in lmuEnabledCardKeys)
+
+            selectedSimulator.update { Simulator.AceWindows }
+
+            val aceEnabledCardKeys = viewModel.uiState.first().enabledCardKeys
+            assertFalse(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE in aceEnabledCardKeys)
         }
 }
 
