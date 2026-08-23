@@ -31,6 +31,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
@@ -70,6 +71,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail.LmuWindowsReadout
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenViewModel
+import kurou.kodriver.feature.main.SimulatorSwitcherContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
@@ -320,6 +322,7 @@ fun AppScreen(
         otherListScrollToTopRequest = otherListScrollToTopRequest,
         telemetryLogContent = telemetryLogContent,
         otherContent = otherContent,
+        primaryActionContent = { SimulatorSwitcherContent() },
     )
 }
 
@@ -366,6 +369,7 @@ internal fun AppScreenContent(
     telemetryLogListScrollToTopRequest: Int = 0,
     otherContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     otherListScrollToTopRequest: Int = 0,
+    primaryActionContent: @Composable () -> Unit = {},
 ) {
     val navigationState = rememberAppNavigationState()
     val onBannerTapWithTabSwitch =
@@ -390,8 +394,9 @@ internal fun AppScreenContent(
         ) {
             NavigationSuiteScaffold(
                 modifier = Modifier.padding(top = 4.dp),
-                layoutType = resolvedLayoutType,
-                navigationSuiteItems = {
+                navigationSuiteType = resolvedLayoutType,
+                primaryActionContent = primaryActionContent,
+                navigationItems = {
                     AppDestination.entries.forEach { dest ->
                         val itemModifier =
                             if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
@@ -402,7 +407,7 @@ internal fun AppScreenContent(
                                 Modifier
                             }
                         val showBadge = dest == AppDestination.More && hasAppUpdate
-                        item(
+                        NavigationSuiteItem(
                             icon = {
                                 if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
                                     AppNavIcon(dest = dest, showBadge = showBadge)
@@ -441,6 +446,7 @@ internal fun AppScreenContent(
                                 }
                             },
                             modifier = itemModifier,
+                            navigationSuiteType = resolvedLayoutType,
                         )
                     }
                 },
