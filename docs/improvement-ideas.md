@@ -32,6 +32,12 @@
 - **改善案**: プロジェクトが依存する Compose Multiplatform / Material3 Adaptive のバージョンで `MediaQuery` API が利用可能になった際、list/detailペインの表示切り替え判定を簡潔化できないか調査する。参考: https://android-developers.googleblog.com/2026/04/jetpack-compose-april-2026-updates.html
 - **調査結果（2026-08-23）**: プロジェクトが依存する `org.jetbrains.compose.ui:ui` `1.11.1` には `MediaQuery` API（`androidx.compose.ui.MediaQueryKt`、`derivedMediaQuery`、`UiMediaScope`、`LocalUiMediaScope`）が `commonMain` として同梱されており、`feature:readout-list` 等でのコンパイル自体は成功する（JVM・Androidいずれのターゲットでも確認済み）。しかし実際に3画面へ導入して `feature:readout-list` のユニットテストを実行したところ、`LocalUiMediaScope` を明示的に提供しなかったテストが軒並み `IllegalStateException`（`CompositionLocal LocalUiMediaScope not present`）で失敗した。原因を調査した結果、`androidx.compose.ui:ui-android`（AARの`classes.jar`）には `LocalUiMediaScope` へ実際の値を供給するプラットフォーム実装（`androidx/compose/ui/adaptive/MediaQuery_androidKt.obtainUiMediaScope` 等）が存在する一方、`org.jetbrains.compose.ui:ui-desktop:1.11.1` の jar にはこの配線が一切含まれていないことを確認した。**つまり `MediaQuery` API は現時点で Android ターゲットのみ実用可能で、KoDriver の主要配布形態である Desktop（Windows MSI）では `LocalUiMediaScope` が誰からも提供されず実行時にクラッシュする。** Compose Multiplatform がDesktopターゲット向けの `UiMediaScope` プロバイダ実装を追加するまでは導入を見送る。
 
+## 開発プロセス
+
+- **対象**: リポジトリの PR テンプレート（現状 `.github/PULL_REQUEST_TEMPLATE.md` は未整備で、PRの説明欄は都度自由記述している）
+  **課題**: 3,400件のPR分析に基づく知見として、「これまでの仕様/実装後の仕様」のような対構造のテンプレートは、否定を肯定に変えただけの情報価値の低い記述を誘発しやすいことが指摘されている。KoDriverもCLAUDE.mdでPR説明の書式（タイトル・説明を日本語で、署名を含めない等）は定めているが、本文の構成についてのテンプレートは存在しない。
+  **改善案**: PRテンプレートを新設する場合、変更理由（WHY）を最上部に配置する・反転記述（「〜だったが〜にした」のみの記述）を避ける・設計判断は人間側が明記する・リスク情報を早期に可視化する、という4原則を参考に構成を検討する。参考: https://zenn.dev/third_yagami/articles/590216d145007f
+
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)
