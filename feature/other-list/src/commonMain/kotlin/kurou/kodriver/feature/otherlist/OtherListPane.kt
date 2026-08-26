@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.SportsEsports
+import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.HorizontalDivider
@@ -55,6 +56,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_debug_state
 import kurou.kodriver.feature.otherlist.generated.resources.item_dynamic_color
 import kurou.kodriver.feature.otherlist.generated.resources.item_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_github_repository
+import kurou.kodriver.feature.otherlist.generated.resources.item_haptic_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kurou.kodriver.feature.otherlist.generated.resources.item_license
 import kurou.kodriver.feature.otherlist.generated.resources.item_readout_start_sound
@@ -100,6 +102,7 @@ private fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
         OtherListItemType.DynamicColor,
+        OtherListItemType.HapticFeedback,
         OtherListItemType.Startup,
         -> OtherListSection.AppSettings
 
@@ -116,18 +119,40 @@ private fun OtherListItemType.section(): OtherListSection =
 private fun otherItemDisplayName(itemType: OtherListItemType): String =
     when (itemType) {
         OtherListItemType.ServerIp -> stringResource(Res.string.item_server_ip)
+
         OtherListItemType.ConsoleIp -> stringResource(Res.string.item_console_ip)
+
         OtherListItemType.Volume -> stringResource(Res.string.item_volume)
-        OtherListItemType.KeepScreenOn -> stringResource(Res.string.item_keep_screen_on)
+
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
+
+        OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
+
+        OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
+
+        OtherListItemType.Feedback -> stringResource(Res.string.item_feedback)
+
+        OtherListItemType.License -> stringResource(Res.string.item_license)
+
+        OtherListItemType.DebugState -> stringResource(Res.string.item_debug_state)
+
+        OtherListItemType.KeepScreenOn,
+        OtherListItemType.Theme,
+        OtherListItemType.DynamicColor,
+        OtherListItemType.HapticFeedback,
+        OtherListItemType.Startup,
+        -> otherAppSettingsItemDisplayName(itemType)
+    }
+
+@Composable
+private fun otherAppSettingsItemDisplayName(itemType: OtherListItemType): String =
+    when (itemType) {
+        OtherListItemType.KeepScreenOn -> stringResource(Res.string.item_keep_screen_on)
         OtherListItemType.Theme -> stringResource(Res.string.item_theme)
         OtherListItemType.DynamicColor -> stringResource(Res.string.item_dynamic_color)
+        OtherListItemType.HapticFeedback -> stringResource(Res.string.item_haptic_feedback)
         OtherListItemType.Startup -> stringResource(Res.string.item_startup)
-        OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
-        OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
-        OtherListItemType.Feedback -> stringResource(Res.string.item_feedback)
-        OtherListItemType.License -> stringResource(Res.string.item_license)
-        OtherListItemType.DebugState -> stringResource(Res.string.item_debug_state)
+        else -> error("unexpected item type: $itemType")
     }
 
 @Composable
@@ -142,18 +167,39 @@ private fun otherListSectionTitle(section: OtherListSection): String =
 private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
     when (itemType) {
         OtherListItemType.ServerIp -> Icons.Outlined.Computer
+
         OtherListItemType.ConsoleIp -> Icons.Outlined.SportsEsports
+
         OtherListItemType.Volume -> Icons.AutoMirrored.Outlined.VolumeUp
-        OtherListItemType.KeepScreenOn -> Icons.Outlined.BrightnessHigh
+
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
+
+        OtherListItemType.KeepScreenOn,
+        OtherListItemType.Theme,
+        OtherListItemType.DynamicColor,
+        OtherListItemType.HapticFeedback,
+        OtherListItemType.Startup,
+        -> otherAppSettingsItemLeadingIconVector(itemType)
+
+        OtherListItemType.GitHubRepository -> Icons.Outlined.Code
+
+        OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
+
+        OtherListItemType.Feedback -> Icons.Outlined.Feedback
+
+        OtherListItemType.License -> Icons.Outlined.Description
+
+        OtherListItemType.DebugState -> Icons.Outlined.Code
+    }
+
+private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
+    when (itemType) {
+        OtherListItemType.KeepScreenOn -> Icons.Outlined.BrightnessHigh
         OtherListItemType.Theme -> Icons.Outlined.BrightnessHigh
         OtherListItemType.DynamicColor -> Icons.Outlined.Palette
+        OtherListItemType.HapticFeedback -> Icons.Outlined.Vibration
         OtherListItemType.Startup -> Icons.Outlined.PowerSettingsNew
-        OtherListItemType.GitHubRepository -> Icons.Outlined.Code
-        OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
-        OtherListItemType.Feedback -> Icons.Outlined.Feedback
-        OtherListItemType.License -> Icons.Outlined.Description
-        OtherListItemType.DebugState -> Icons.Outlined.Code
+        else -> error("unexpected item type: $itemType")
     }
 
 @Composable
@@ -188,6 +234,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
 
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
+        OtherListItemType.HapticFeedback,
         OtherListItemType.Startup,
         -> Unit
 
@@ -206,6 +253,7 @@ fun OtherListPane(
     onItemClick: (OtherListItemType) -> Unit,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
+    onHapticFeedbackEnabledChange: (Boolean) -> Unit,
     onStartupEnabledChange: (Boolean) -> Unit,
     onAppVersionTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -238,6 +286,7 @@ fun OtherListPane(
                         uiState = uiState,
                         onKeepScreenOnChange = onKeepScreenOnChange,
                         onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                        onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
                         onStartupEnabledChange = onStartupEnabledChange,
                         onItemClick = onItemClick,
                     )
@@ -289,6 +338,7 @@ private fun OtherListItem(
     uiState: OtherListUiState,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
+    onHapticFeedbackEnabledChange: (Boolean) -> Unit,
     onStartupEnabledChange: (Boolean) -> Unit,
     onItemClick: (OtherListItemType) -> Unit,
 ) {
@@ -300,6 +350,10 @@ private fun OtherListItem(
     val onDynamicColorEnabledChangeWithHaptic: (Boolean) -> Unit = {
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onDynamicColorEnabledChange(it)
+    }
+    val onHapticFeedbackEnabledChangeWithHaptic: (Boolean) -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onHapticFeedbackEnabledChange(it)
     }
     val onStartupEnabledChangeWithHaptic: (Boolean) -> Unit = {
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
@@ -356,6 +410,13 @@ private fun OtherListItem(
                     )
                 }
 
+                OtherListItemType.HapticFeedback -> {
+                    Switch(
+                        checked = uiState.hapticFeedbackEnabled,
+                        onCheckedChange = onHapticFeedbackEnabledChangeWithHaptic,
+                    )
+                }
+
                 OtherListItemType.Startup -> {
                     Switch(
                         checked = uiState.startupEnabled,
@@ -398,6 +459,10 @@ private fun OtherListItem(
 
                         OtherListItemType.DynamicColor -> {
                             onDynamicColorEnabledChange(!uiState.dynamicColorEnabled)
+                        }
+
+                        OtherListItemType.HapticFeedback -> {
+                            onHapticFeedbackEnabledChange(!uiState.hapticFeedbackEnabled)
                         }
 
                         OtherListItemType.Startup -> {
@@ -488,6 +553,7 @@ private fun OtherListPanePreview() {
         onItemClick = {},
         onKeepScreenOnChange = {},
         onDynamicColorEnabledChange = {},
+        onHapticFeedbackEnabledChange = {},
         onStartupEnabledChange = {},
     )
 }

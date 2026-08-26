@@ -101,6 +101,7 @@ class OtherContentTest {
         var themeDialogOpened = false
         var keepScreenOn = false
         var dynamicColorEnabled = false
+        var hapticFeedbackEnabled = false
         var capturedOnBack: (() -> Unit)? = null
     }
 
@@ -113,6 +114,7 @@ class OtherContentTest {
                         selectedItem = selectedItem,
                         keepScreenOn = state.keepScreenOn,
                         dynamicColorEnabled = state.dynamicColorEnabled,
+                        hapticFeedbackEnabled = state.hapticFeedbackEnabled,
                         appVersionLabel = "Android版KoDriverバージョン",
                         appVersion = "1.2.3",
                     ),
@@ -123,6 +125,7 @@ class OtherContentTest {
                 onOpenThemeDialog = { state.themeDialogOpened = true },
                 onKeepScreenOnChange = { state.keepScreenOn = it },
                 onDynamicColorEnabledChange = { state.dynamicColorEnabled = it },
+                onHapticFeedbackEnabledChange = { state.hapticFeedbackEnabled = it },
                 onAppVersionTapped = { selectedItem = OtherListItemType.DebugState },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
@@ -182,6 +185,14 @@ class OtherContentTest {
         waitForIdle()
 
         assertTrue(state.dynamicColorEnabled)
+        assertFalse(state.backEnabled)
+
+        // HapticFeedback（Android専用トグル。Switchで直接切り替える）
+        onNode(hasScrollAction()).performScrollToNode(hasText("ハプティックフィードバック"))
+        onNode(hasText("ハプティックフィードバック")).performClick()
+        waitForIdle()
+
+        assertTrue(state.hapticFeedbackEnabled)
         assertFalse(state.backEnabled)
 
         // GitHubRepository

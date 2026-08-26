@@ -18,9 +18,11 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
+import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -41,6 +43,9 @@ class AppScreenViewModelTest {
     @MockK
     private lateinit var dynamicColorEnabledRepository: DynamicColorEnabledRepository
 
+    @MockK
+    private lateinit var hapticFeedbackEnabledRepository: HapticFeedbackEnabledRepository
+
     @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
@@ -56,16 +61,19 @@ class AppScreenViewModelTest {
         tagName: String? = null,
         version: String = "1.0.0",
         dynamicColorEnabled: Boolean = false,
+        hapticFeedbackEnabled: Boolean = true,
     ): AppScreenViewModel {
         coEvery { appUpdateRepository.getLatestRelease() } returns tagName?.let { AppUpdate(it) }
         every { keepScreenOnRepository.keepScreenOn() } returns flowOf(false)
         every { dynamicColorEnabledRepository.dynamicColorEnabled() } returns flowOf(dynamicColorEnabled)
+        every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns flowOf(hapticFeedbackEnabled)
 
         return AppScreenViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
             currentVersion = version,
             observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
             observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorEnabledRepository),
+            observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
         )
     }
 
@@ -145,5 +153,21 @@ class AppScreenViewModelTest {
             val viewModel = createViewModel(dynamicColorEnabled = false)
 
             assertFalse(viewModel.uiState.first().dynamicColorEnabled)
+        }
+
+    @Test
+    fun `ハプティックフィードバックが有効な場合hapticFeedbackEnabledがtrueになる`() =
+        runTest {
+            val viewModel = createViewModel(hapticFeedbackEnabled = true)
+
+            assertTrue(viewModel.uiState.first().hapticFeedbackEnabled)
+        }
+
+    @Test
+    fun `ハプティックフィードバックが無効な場合hapticFeedbackEnabledがfalseになる`() =
+        runTest {
+            val viewModel = createViewModel(hapticFeedbackEnabled = false)
+
+            assertFalse(viewModel.uiState.first().hapticFeedbackEnabled)
         }
 }

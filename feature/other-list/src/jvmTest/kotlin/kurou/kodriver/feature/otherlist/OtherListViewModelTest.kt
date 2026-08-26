@@ -19,12 +19,15 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
+import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 import kotlin.test.AfterTest
@@ -50,10 +53,14 @@ class OtherListViewModelTest {
     private lateinit var dynamicColorRepository: DynamicColorEnabledRepository
 
     @MockK
+    private lateinit var hapticFeedbackEnabledRepository: HapticFeedbackEnabledRepository
+
+    @MockK
     private lateinit var startupRegistrationRepository: StartupEnabledRepository
 
     private val keepScreenOnFlow = MutableStateFlow(true)
     private val dynamicColorFlow = MutableStateFlow(false)
+    private val hapticFeedbackFlow = MutableStateFlow(true)
 
     @BeforeTest
     fun setUp() {
@@ -73,6 +80,8 @@ class OtherListViewModelTest {
             saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
             observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorRepository),
             saveDynamicColorEnabled = SaveDynamicColorEnabledUseCase(dynamicColorRepository),
+            observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
+            saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
             startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
             appVersionInfo =
                 OtherListAppVersionInfo(
@@ -86,6 +95,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
 
             assertEquals(buildOtherListItems(), viewModel.uiState.first().items)
@@ -94,7 +104,13 @@ class OtherListViewModelTest {
             assertNull(viewModel.uiState.first().selectedItem)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -102,6 +118,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
 
             viewModel.onItemSelected(OtherListItemType.Volume)
@@ -109,7 +126,13 @@ class OtherListViewModelTest {
             assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -117,6 +140,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
             val initialState = viewModel.uiState.first()
 
@@ -126,7 +150,13 @@ class OtherListViewModelTest {
             assertEquals(initialState, viewModel.uiState.first())
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -134,6 +164,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
 
             viewModel.onItemSelected(OtherListItemType.License)
@@ -143,7 +174,13 @@ class OtherListViewModelTest {
             assertNull(viewModel.uiState.first().selectedItem)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -151,6 +188,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
 
             viewModel.selectItem(OtherListItemType.ConsoleIp)
@@ -160,7 +198,13 @@ class OtherListViewModelTest {
             assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -168,6 +212,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
 
             viewModel.selectFeedbackItem(42L)
@@ -180,7 +225,13 @@ class OtherListViewModelTest {
             assertEquals(firstRequestId + 1, viewModel.uiState.first().feedbackAttachRequestId)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -188,6 +239,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
 
             viewModel.selectFeedbackItem(42L)
@@ -196,7 +248,13 @@ class OtherListViewModelTest {
             assertNull(viewModel.uiState.first().selectedFeedbackTelemetryLogId)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -204,6 +262,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
 
             viewModel.onItemSelected(OtherListItemType.License)
@@ -212,7 +271,13 @@ class OtherListViewModelTest {
             assertNull(viewModel.uiState.first().selectedItem)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -220,6 +285,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
 
             keepScreenOnFlow.update { false }
@@ -227,7 +293,13 @@ class OtherListViewModelTest {
             assertEquals(false, viewModel.uiState.first().keepScreenOn)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -236,6 +308,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             coEvery { keepScreenOnRepository.saveKeepScreenOn(false) } answers { keepScreenOnFlow.update { false } }
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel()
 
             viewModel.onKeepScreenOnChange(false)
@@ -244,8 +317,14 @@ class OtherListViewModelTest {
             assertEquals(false, viewModel.uiState.first().keepScreenOn)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
             coVerify(exactly = 1) { keepScreenOnRepository.saveKeepScreenOn(false) }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -253,6 +332,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             coEvery { dynamicColorRepository.saveDynamicColorEnabled(true) } answers {
                 dynamicColorFlow.update { true }
             }
@@ -264,8 +344,41 @@ class OtherListViewModelTest {
             assertEquals(true, viewModel.uiState.first().dynamicColorEnabled)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
             coVerify(exactly = 1) { dynamicColorRepository.saveDynamicColorEnabled(true) }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
+        }
+
+    @Test
+    fun `ハプティックフィードバックの有効状態を監視・保存できる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            coEvery { hapticFeedbackEnabledRepository.saveHapticFeedbackEnabled(false) } answers {
+                hapticFeedbackFlow.update { false }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onHapticFeedbackEnabledChange(false)
+
+            assertEquals(false, hapticFeedbackFlow.first())
+            assertEquals(false, viewModel.uiState.first().hapticFeedbackEnabled)
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            coVerify(exactly = 1) { hapticFeedbackEnabledRepository.saveHapticFeedbackEnabled(false) }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -273,6 +386,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v9.9.9")
             val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -282,7 +396,13 @@ class OtherListViewModelTest {
             coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -290,6 +410,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v1.0.0")
             val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -299,7 +420,13 @@ class OtherListViewModelTest {
             coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -307,12 +434,19 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel(currentVersion = "1.0.0")
 
             assertFalse(viewModel.uiState.first().hasAppUpdate)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -320,6 +454,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             val viewModel = createViewModel(currentVersion = "")
 
             viewModel.checkUpdate()
@@ -327,7 +462,13 @@ class OtherListViewModelTest {
             assertFalse(viewModel.uiState.first().hasAppUpdate)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -335,6 +476,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             coEvery { appUpdateRepository.getLatestRelease() } returns null
             val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -344,7 +486,13 @@ class OtherListViewModelTest {
             coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+            )
         }
 
     @Test
@@ -352,6 +500,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             coEvery { startupRegistrationRepository.isEnabled() } returns true
             val viewModel = createViewModel()
 
@@ -361,10 +510,12 @@ class OtherListViewModelTest {
             coVerify(exactly = 1) { startupRegistrationRepository.isEnabled() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
                 startupRegistrationRepository,
             )
         }
@@ -374,6 +525,7 @@ class OtherListViewModelTest {
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
             coEvery { startupRegistrationRepository.setEnabled(true) } returns Unit
             val viewModel = createViewModel()
 
@@ -383,10 +535,12 @@ class OtherListViewModelTest {
             coVerify(exactly = 1) { startupRegistrationRepository.setEnabled(true) }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
                 startupRegistrationRepository,
             )
         }

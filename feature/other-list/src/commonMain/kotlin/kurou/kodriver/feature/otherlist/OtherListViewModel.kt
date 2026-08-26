@@ -11,8 +11,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 
@@ -27,12 +29,15 @@ data class OtherListAppVersionInfo(
 /**
  * OtherList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
+@Suppress("LongParameterList")
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
     private val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
     observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
     private val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
+    observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
+    private val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
     private val startupRegistration: StartupRegistrationUseCases,
     appVersionInfo: OtherListAppVersionInfo,
 ) : ViewModel() {
@@ -49,10 +54,12 @@ class OtherListViewModel(
             _uiState,
             observeKeepScreenOn(),
             observeDynamicColorEnabled(),
-        ) { state, keepScreenOn, dynamicColorEnabled ->
+            observeHapticFeedbackEnabled(),
+        ) { state, keepScreenOn, dynamicColorEnabled, hapticFeedbackEnabled ->
             state.copy(
                 keepScreenOn = keepScreenOn,
                 dynamicColorEnabled = dynamicColorEnabled,
+                hapticFeedbackEnabled = hapticFeedbackEnabled,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
@@ -117,5 +124,9 @@ class OtherListViewModel(
 
     fun onDynamicColorEnabledChange(enabled: Boolean) {
         viewModelScope.launch { saveDynamicColorEnabled(enabled) }
+    }
+
+    fun onHapticFeedbackEnabledChange(enabled: Boolean) {
+        viewModelScope.launch { saveHapticFeedbackEnabled(enabled) }
     }
 }

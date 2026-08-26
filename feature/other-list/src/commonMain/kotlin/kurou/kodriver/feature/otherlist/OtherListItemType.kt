@@ -13,6 +13,7 @@ enum class OtherListItemType(
     ReadoutStartSound("readout_start_sound"),
     Theme("theme"),
     DynamicColor("dynamic_color"),
+    HapticFeedback("haptic_feedback"),
     Startup("startup"),
     GitHubRepository("github_repository"),
     ReleasePage("release_page"),
