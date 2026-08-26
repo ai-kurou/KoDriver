@@ -94,6 +94,7 @@ class OtherListPaneScreenshotTest {
                 }
             }
 
+            onNode(hasScrollAction()).performScrollToNode(hasText("ライセンス"))
             onRoot().captureRoboImage()
         }
 }

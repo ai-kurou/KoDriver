@@ -97,6 +97,7 @@ class OtherListPaneScreenshotTest {
             }
         }
 
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("ライセンス"))
         rule.activity.window.decorView
             .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
     }
