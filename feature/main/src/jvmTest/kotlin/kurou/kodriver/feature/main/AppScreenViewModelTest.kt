@@ -189,16 +189,20 @@ class AppScreenViewModelTest {
     fun `未選択の場合selectedSimulatorがnullになる`() =
         runTest {
             val viewModel = createViewModel(selectedSimulator = null)
+            val uiState = viewModel.uiState.first()
 
-            assertNull(viewModel.uiState.first().selectedSimulator)
+            assertNull(uiState.selectedSimulator)
+            assertNull(uiState.selectedSimulatorId)
         }
 
     @Test
     fun `選択済みシミュレータがuiStateに反映される`() =
         runTest {
             val viewModel = createViewModel(selectedSimulator = Simulator.LmuWindows)
+            val uiState = viewModel.uiState.first()
 
-            assertEquals(Simulator.LmuWindows, viewModel.uiState.first().selectedSimulator)
+            assertEquals(Simulator.LmuWindows, uiState.selectedSimulator)
+            assertEquals("lmu_windows", uiState.selectedSimulatorId)
         }
 
     @Test

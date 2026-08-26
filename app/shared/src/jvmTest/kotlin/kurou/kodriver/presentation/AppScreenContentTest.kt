@@ -274,4 +274,28 @@ class AppScreenContentTest {
 
         assertEquals(emptyList(), fakeHaptic.performedTypes)
     }
+
+    @Test
+    fun `selectedSimulatorIdがnullの場合未選択が表示される`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                selectedSimulatorId = null,
+            )
+        }
+
+        rule.onNode(hasText("未選択")).assertExists()
+    }
+
+    @Test
+    fun `selectedSimulatorIdがlmu_windowsの場合LMUが表示される`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                selectedSimulatorId = "lmu_windows",
+            )
+        }
+
+        rule.onNode(hasText("LMU")).assertExists()
+    }
 }
