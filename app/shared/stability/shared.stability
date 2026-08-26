@@ -52,7 +52,7 @@ public fun kurou.kodriver.presentation.AppScreen(viewModel: kurou.kodriver.featu
     - otherContent: STABLE (composable function type)
 
 @Composable
-internal fun kurou.kodriver.presentation.AppScreenContent(darkTheme: kotlin.Boolean, dynamicColorEnabled: kotlin.Boolean, layoutType: androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType?, bannerUiState: kurou.kodriver.presentation.ConnectionBannerUiState, snackbarHostState: androidx.compose.material3.SnackbarHostState, hasAppUpdate: kotlin.Boolean, keepScreenOn: kotlin.Boolean, onBannerTap: kotlin.Function0<kotlin.Unit>?, onFeedbackClick: kotlin.Function1<kotlin.Long, kotlin.Unit>?, onReadoutTabReselected: kotlin.Function0<kotlin.Unit>, onLogTabReselected: kotlin.Function0<kotlin.Unit>, onOtherTabReselected: kotlin.Function0<kotlin.Unit>, readoutContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, readoutListScrollToTopRequest: kotlin.Int, telemetryLogContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction2<@[ParameterName(name = \, telemetryLogListScrollToTopRequest: kotlin.Int, otherContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, otherListScrollToTopRequest: kotlin.Int): kotlin.Unit
+internal fun kurou.kodriver.presentation.AppScreenContent(darkTheme: kotlin.Boolean, dynamicColorEnabled: kotlin.Boolean, layoutType: androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType?, bannerUiState: kurou.kodriver.presentation.ConnectionBannerUiState, snackbarHostState: androidx.compose.material3.SnackbarHostState, hasAppUpdate: kotlin.Boolean, keepScreenOn: kotlin.Boolean, hapticFeedbackEnabled: kotlin.Boolean, onBannerTap: kotlin.Function0<kotlin.Unit>?, onFeedbackClick: kotlin.Function1<kotlin.Long, kotlin.Unit>?, onReadoutTabReselected: kotlin.Function0<kotlin.Unit>, onLogTabReselected: kotlin.Function0<kotlin.Unit>, onOtherTabReselected: kotlin.Function0<kotlin.Unit>, readoutContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, readoutListScrollToTopRequest: kotlin.Int, telemetryLogContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction2<@[ParameterName(name = \, telemetryLogListScrollToTopRequest: kotlin.Int, otherContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, otherListScrollToTopRequest: kotlin.Int): kotlin.Unit
   skippable: false
   restartable: true
   params:
@@ -63,8 +63,31 @@ internal fun kurou.kodriver.presentation.AppScreenContent(darkTheme: kotlin.Bool
     - snackbarHostState: STABLE (marked @Stable or @Immutable)
     - hasAppUpdate: STABLE (primitive type)
     - keepScreenOn: STABLE (primitive type)
+    - hapticFeedbackEnabled: STABLE (primitive type)
     - onBannerTap: STABLE (function type)
     - onFeedbackClick: STABLE (function type)
+    - onReadoutTabReselected: STABLE (function type)
+    - onLogTabReselected: STABLE (function type)
+    - onOtherTabReselected: STABLE (function type)
+    - readoutContent: STABLE (composable function type)
+    - readoutListScrollToTopRequest: STABLE (primitive type)
+    - telemetryLogContent: STABLE (composable function type)
+    - telemetryLogListScrollToTopRequest: STABLE (primitive type)
+    - otherContent: STABLE (composable function type)
+    - otherListScrollToTopRequest: STABLE (primitive type)
+
+@Composable
+private fun kurou.kodriver.presentation.AppScreenScaffold(resolvedLayoutType: androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType, hasAppUpdate: kotlin.Boolean, bannerUiState: kurou.kodriver.presentation.ConnectionBannerUiState, snackbarHostState: androidx.compose.material3.SnackbarHostState, navigationState: kurou.kodriver.presentation.AppNavigationState, onBannerTapWithTabSwitch: kotlin.Function0<kotlin.Unit>?, onFeedbackClickWithTabSwitch: kotlin.Function1<kotlin.Long, kotlin.Unit>?, onReadoutTabReselected: kotlin.Function0<kotlin.Unit>, onLogTabReselected: kotlin.Function0<kotlin.Unit>, onOtherTabReselected: kotlin.Function0<kotlin.Unit>, readoutContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, readoutListScrollToTopRequest: kotlin.Int, telemetryLogContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction2<@[ParameterName(name = \, telemetryLogListScrollToTopRequest: kotlin.Int, otherContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, otherListScrollToTopRequest: kotlin.Int): kotlin.Unit
+  skippable: false
+  restartable: true
+  params:
+    - resolvedLayoutType: UNSTABLE (cross-module type without @Stable/@Immutable)
+    - hasAppUpdate: STABLE (primitive type)
+    - bannerUiState: STABLE (class with no mutable properties)
+    - snackbarHostState: STABLE (marked @Stable or @Immutable)
+    - navigationState: RUNTIME (requires runtime check)
+    - onBannerTapWithTabSwitch: STABLE (function type)
+    - onFeedbackClickWithTabSwitch: STABLE (function type)
     - onReadoutTabReselected: STABLE (function type)
     - onLogTabReselected: STABLE (function type)
     - onOtherTabReselected: STABLE (function type)
@@ -168,7 +191,7 @@ public fun kurou.kodriver.presentation.OtherContent(modifier: androidx.compose.u
     - detailContent: STABLE (composable function type)
 
 @Composable
-internal fun kurou.kodriver.presentation.OtherContent(uiState: kurou.kodriver.feature.otherlist.OtherListUiState, onItemSelected: kotlin.Function1<kurou.kodriver.feature.otherlist.OtherListItemType, kotlin.Unit>, onOpenGitHubRepository: kotlin.Function0<kotlin.Unit>, onOpenReleasePage: kotlin.Function0<kotlin.Unit>, onOpenReadoutStartSoundDialog: kotlin.Function0<kotlin.Unit>, onOpenThemeDialog: kotlin.Function0<kotlin.Unit>, onKeepScreenOnChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onDynamicColorEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onStartupEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onAppVersionTapped: kotlin.Function0<kotlin.Unit>, onClearSelectedItem: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, scaffoldDirective: androidx.compose.material3.adaptive.layout.PaneScaffoldDirective, windowSizeClass: androidx.window.core.layout.WindowSizeClass, backHandler: @[Composable] androidx.compose.runtime.internal.ComposableFunction3<@[ParameterName(name = \, scrollToTopRequest: kotlin.Int, detailContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction5<kurou.kodriver.feature.otherlist.OtherListItemType, kotlin.Boolean, kotlin.Function0<kotlin.Unit>, kotlin.Long?, kotlin.Long, kotlin.Unit>): kotlin.Unit
+internal fun kurou.kodriver.presentation.OtherContent(uiState: kurou.kodriver.feature.otherlist.OtherListUiState, onItemSelected: kotlin.Function1<kurou.kodriver.feature.otherlist.OtherListItemType, kotlin.Unit>, onOpenGitHubRepository: kotlin.Function0<kotlin.Unit>, onOpenReleasePage: kotlin.Function0<kotlin.Unit>, onOpenReadoutStartSoundDialog: kotlin.Function0<kotlin.Unit>, onOpenThemeDialog: kotlin.Function0<kotlin.Unit>, onKeepScreenOnChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onDynamicColorEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onHapticFeedbackEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onStartupEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onAppVersionTapped: kotlin.Function0<kotlin.Unit>, onClearSelectedItem: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, scaffoldDirective: androidx.compose.material3.adaptive.layout.PaneScaffoldDirective, windowSizeClass: androidx.window.core.layout.WindowSizeClass, backHandler: @[Composable] androidx.compose.runtime.internal.ComposableFunction3<@[ParameterName(name = \, scrollToTopRequest: kotlin.Int, detailContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction5<kurou.kodriver.feature.otherlist.OtherListItemType, kotlin.Boolean, kotlin.Function0<kotlin.Unit>, kotlin.Long?, kotlin.Long, kotlin.Unit>): kotlin.Unit
   skippable: false
   restartable: true
   params:
@@ -180,6 +203,7 @@ internal fun kurou.kodriver.presentation.OtherContent(uiState: kurou.kodriver.fe
     - onOpenThemeDialog: STABLE (function type)
     - onKeepScreenOnChange: STABLE (function type)
     - onDynamicColorEnabledChange: STABLE (function type)
+    - onHapticFeedbackEnabledChange: STABLE (function type)
     - onStartupEnabledChange: STABLE (function type)
     - onAppVersionTapped: STABLE (function type)
     - onClearSelectedItem: STABLE (function type)

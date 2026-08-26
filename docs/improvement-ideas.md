@@ -32,6 +32,13 @@
 - **改善案**: プロジェクトが依存する Compose Multiplatform / Material3 Adaptive のバージョンで `MediaQuery` API が利用可能になった際、list/detailペインの表示切り替え判定を簡潔化できないか調査する。参考: https://android-developers.googleblog.com/2026/04/jetpack-compose-april-2026-updates.html
 - **調査結果（2026-08-23）**: プロジェクトが依存する `org.jetbrains.compose.ui:ui` `1.11.1` には `MediaQuery` API（`androidx.compose.ui.MediaQueryKt`、`derivedMediaQuery`、`UiMediaScope`、`LocalUiMediaScope`）が `commonMain` として同梱されており、`feature:readout-list` 等でのコンパイル自体は成功する（JVM・Androidいずれのターゲットでも確認済み）。しかし実際に3画面へ導入して `feature:readout-list` のユニットテストを実行したところ、`LocalUiMediaScope` を明示的に提供しなかったテストが軒並み `IllegalStateException`（`CompositionLocal LocalUiMediaScope not present`）で失敗した。原因を調査した結果、`androidx.compose.ui:ui-android`（AARの`classes.jar`）には `LocalUiMediaScope` へ実際の値を供給するプラットフォーム実装（`androidx/compose/ui/adaptive/MediaQuery_androidKt.obtainUiMediaScope` 等）が存在する一方、`org.jetbrains.compose.ui:ui-desktop:1.11.1` の jar にはこの配線が一切含まれていないことを確認した。**つまり `MediaQuery` API は現時点で Android ターゲットのみ実用可能で、KoDriver の主要配布形態である Desktop（Windows MSI）では `LocalUiMediaScope` が誰からも提供されず実行時にクラッシュする。** Compose Multiplatform がDesktopターゲット向けの `UiMediaScope` プロバイダ実装を追加するまでは導入を見送る。
 
+## Android
+
+- **対象**: `app/androidApp/src/main/AndroidManifest.xml`（`android-targetSdk = "36"`、`gradle/libs.versions.toml`）
+  **課題**: Android 16（API 36）以降、`targetSdk` 36以上のアプリがプライベートアドレス（例: `192.168.x.x`）へ接続する際は `android.permission.ACCESS_LOCAL_NETWORK`（dangerous権限、実行時リクエストが必要）がないと接続パケットが**エラーを返さず黙って破棄される**（ループバック`127.0.0.1`は対象外）。KoDriverのAndroidアプリは `:feature:other-server-ip-detail` で設定したLAN内KoDriverサーバー（`:server`、`0.0.0.0:8080`）へWebSocket接続する構成のため、`targetSdk = 36` の現状構成では、マニフェストに権限宣言・実行時リクエストがない場合Android 16実機でサイレントにタイムアウトし、原因特定が困難な接続不能バグとなるおそれがある。現在の `AndroidManifest.xml` には `INTERNET` 権限のみが宣言されている。
+  **改善案**: `AndroidManifest.xml` に `<uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" android:minSdkVersion="36" />` を追加し、`ActivityResultContracts.RequestPermission()` 等でランタイム許可を取得する導線を検討する。実機がなくても `adb shell appops get <package> | grep -i local` で拒否状態を確認できる。
+  **参考URL**: https://zenn.dev/ace_toshi/articles/android-access-local-network
+
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)

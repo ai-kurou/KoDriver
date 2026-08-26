@@ -23,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 
 /**
@@ -100,8 +102,15 @@ fun HelpIconButton(
 ) {
     var showHelpSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
+    val haptic = LocalHapticFeedback.current
 
-    IconButton(onClick = { showHelpSheet = true }, modifier = modifier) {
+    IconButton(
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            showHelpSheet = true
+        },
+        modifier = modifier,
+    ) {
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
             contentDescription = contentDescription,

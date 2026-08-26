@@ -20,10 +20,12 @@ import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
+import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -49,6 +51,9 @@ class AppScreenViewModelTest {
     private lateinit var dynamicColorEnabledRepository: DynamicColorEnabledRepository
 
     @MockK
+    private lateinit var hapticFeedbackEnabledRepository: HapticFeedbackEnabledRepository
+
+    @MockK
     private lateinit var simulatorRepository: SimulatorPreferencesRepository
 
     @BeforeTest
@@ -66,11 +71,13 @@ class AppScreenViewModelTest {
         tagName: String? = null,
         version: String = "1.0.0",
         dynamicColorEnabled: Boolean = false,
+        hapticFeedbackEnabled: Boolean = true,
         selectedSimulator: Simulator? = null,
     ): AppScreenViewModel {
         coEvery { appUpdateRepository.getLatestRelease() } returns tagName?.let { AppUpdate(it) }
         every { keepScreenOnRepository.keepScreenOn() } returns flowOf(false)
         every { dynamicColorEnabledRepository.dynamicColorEnabled() } returns flowOf(dynamicColorEnabled)
+        every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns flowOf(hapticFeedbackEnabled)
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(selectedSimulator)
 
         return AppScreenViewModel(
@@ -78,6 +85,7 @@ class AppScreenViewModelTest {
             currentVersion = version,
             observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
             observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorEnabledRepository),
+            observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
         )
@@ -162,6 +170,22 @@ class AppScreenViewModelTest {
         }
 
     @Test
+    fun `ハプティックフィードバックが有効な場合hapticFeedbackEnabledがtrueになる`() =
+        runTest {
+            val viewModel = createViewModel(hapticFeedbackEnabled = true)
+
+            assertTrue(viewModel.uiState.first().hapticFeedbackEnabled)
+        }
+
+    @Test
+    fun `ハプティックフィードバックが無効な場合hapticFeedbackEnabledがfalseになる`() =
+        runTest {
+            val viewModel = createViewModel(hapticFeedbackEnabled = false)
+
+            assertFalse(viewModel.uiState.first().hapticFeedbackEnabled)
+        }
+
+    @Test
     fun `未選択の場合selectedSimulatorがnullになる`() =
         runTest {
             val viewModel = createViewModel(selectedSimulator = null)
@@ -187,5 +211,6 @@ class AppScreenViewModelTest {
             advanceUntilIdle()
 
             coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
+            confirmVerified(simulatorRepository)
         }
 }

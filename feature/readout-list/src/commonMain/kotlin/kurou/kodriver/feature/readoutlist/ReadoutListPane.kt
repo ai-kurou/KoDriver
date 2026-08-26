@@ -75,6 +75,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -448,6 +450,7 @@ private fun ReadoutListItemCard(
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     ElevatedCard(
         modifier =
             Modifier
@@ -493,6 +496,7 @@ private fun ReadoutListItemCard(
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() },
                             ) {
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                 onItemClick(item)
                             },
                     verticalAlignment = Alignment.CenterVertically,
@@ -541,6 +545,16 @@ private fun ReadoutListItemCard(
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = null,
+                modifier =
+                    Modifier
+                        .size(width = 24.dp, height = 48.dp)
+                        .testTag("readoutListChevronTouchTarget:${item.value}")
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                        ) {
+                            onItemClick(item)
+                        },
             )
         }
     }
@@ -556,6 +570,7 @@ private fun ReadoutListBottomChip(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
     val containerColor =
         if (checked) {
             MaterialTheme.colorScheme.primaryContainer
@@ -586,6 +601,7 @@ private fun ReadoutListBottomChip(
                     interactionSource = remember { MutableInteractionSource() },
                     role = Role.Checkbox,
                 ) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     onCheckedChange(!checked)
                 }.padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -650,6 +666,11 @@ private fun ReadoutListReadoutSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onCheckedChangeWithHaptic: (Boolean) -> Unit = { newChecked ->
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onCheckedChange(newChecked)
+    }
     Box(
         contentAlignment = Alignment.Center,
         modifier =
@@ -660,12 +681,12 @@ private fun ReadoutListReadoutSwitch(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() },
                 ) {
-                    onCheckedChange(!checked)
+                    onCheckedChangeWithHaptic(!checked)
                 },
     ) {
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange,
+            onCheckedChange = onCheckedChangeWithHaptic,
         )
     }
 }

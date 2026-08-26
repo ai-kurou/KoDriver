@@ -3,7 +3,10 @@ package kurou.kodriver.presentation
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -204,5 +207,71 @@ class AppScreenContentTest {
         }
 
         rule.onNode(hasText("その他")).assertExists()
+    }
+
+    @Test
+    fun `hapticFeedbackEnabledがtrueの場合タップ時のハプティックが伝播する`() {
+        val fakeHaptic = FakeHapticFeedback()
+
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides fakeHaptic) {
+                AppScreenContent(
+                    layoutType = NavigationSuiteType.NavigationBar,
+                    hapticFeedbackEnabled = true,
+                    otherContent = { _ ->
+                        val haptic = LocalHapticFeedback.current
+                        Text(
+                            text = "OtherContent",
+                            modifier =
+                                Modifier.clickable {
+                                    haptic.performHapticFeedback(
+                                        HapticFeedbackType.ContextClick,
+                                    )
+                                },
+                        )
+                    },
+                )
+            }
+        }
+
+        rule.onNode(hasText("その他")).performClick()
+        rule.waitForIdle()
+        rule.onNodeWithText("OtherContent").performClick()
+        rule.waitForIdle()
+
+        assertEquals(listOf(HapticFeedbackType.ContextClick), fakeHaptic.performedTypes)
+    }
+
+    @Test
+    fun `hapticFeedbackEnabledがfalseの場合タップ時のハプティックが伝播しない`() {
+        val fakeHaptic = FakeHapticFeedback()
+
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides fakeHaptic) {
+                AppScreenContent(
+                    layoutType = NavigationSuiteType.NavigationBar,
+                    hapticFeedbackEnabled = false,
+                    otherContent = { _ ->
+                        val haptic = LocalHapticFeedback.current
+                        Text(
+                            text = "OtherContent",
+                            modifier =
+                                Modifier.clickable {
+                                    haptic.performHapticFeedback(
+                                        HapticFeedbackType.ContextClick,
+                                    )
+                                },
+                        )
+                    },
+                )
+            }
+        }
+
+        rule.onNode(hasText("その他")).performClick()
+        rule.waitForIdle()
+        rule.onNodeWithText("OtherContent").performClick()
+        rule.waitForIdle()
+
+        assertEquals(emptyList(), fakeHaptic.performedTypes)
     }
 }

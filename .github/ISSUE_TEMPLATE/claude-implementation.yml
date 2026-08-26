@@ -1,0 +1,88 @@
+name: Claude実装依頼
+description: Claude Codeに実装を依頼するためのissue。実装しやすいよう、対象範囲・期待する挙動・受け入れ条件を具体的に記入してください。
+title: "[Claude実装] "
+labels:
+  - claude-implementable
+body:
+  - type: textarea
+    id: target
+    attributes:
+      label: 対象モジュール・ファイル
+      description: >-
+        変更対象のモジュール（例: `feature:readout-list`）や具体的なファイルパスを記載してください。
+        範囲が広い場合は、まず着手してほしい箇所を優先順位付きで書いてください。
+      placeholder: |
+        例: feature:other-volume-detail の VolumeDetailPane.kt
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: 現状の挙動
+      description: 今どうなっているか（バグの場合は再現手順も）を具体的に書いてください。
+      placeholder: |
+        例: 音量スライダーを0にしてもミュート表示にならない
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 期待する挙動
+      description: 実装後にどうなっていてほしいかを具体的に書いてください。「改善したい」等の抽象的な表現は避けてください。
+      placeholder: |
+        例: 音量スライダーが0のとき、アイコンをミュート表示に切り替える
+    validations:
+      required: true
+
+  - type: textarea
+    id: similar-implementation
+    attributes:
+      label: 参考にすべき類似実装（あれば）
+      description: >-
+        「既存の〇〇と同じ構成で」のように、踏襲してほしい既存パターンがあれば
+        ファイル名・クラス名で指定してください（CLAUDE.mdの「実装前の類似コード確認」に対応）。
+      placeholder: |
+        例: Gt7Ps5NarratorViewModel と同じ構成で実装してほしい
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: 受け入れ条件
+      description: 完了したかどうかを機械的に判断できる形で箇条書きにしてください。
+      placeholder: |
+        - [ ] 音量0のときミュートアイコンが表示される
+        - [ ] スライダー操作のユニットテストが追加されている
+    validations:
+      required: true
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: スコープ外・触ってほしくない箇所
+      description: 今回のissueで変更してほしくないファイル・モジュール・仕様があれば記載してください。
+      placeholder: |
+        例: moduleGraphAssert の設定は変更しないでほしい
+    validations:
+      required: false
+
+  - type: textarea
+    id: test-focus
+    attributes:
+      label: 特に見てほしいテスト観点
+      description: 正常系・異常系・境界値のうち、特に重視してほしい観点があれば記載してください。
+      placeholder: |
+        例: 音量が0/最大値の境界値のテストを重視してほしい
+    validations:
+      required: false
+
+  - type: textarea
+    id: references
+    attributes:
+      label: 参考URL・関連issue/PR
+      description: 参考にした記事や、関連する既存issue・PRがあればリンクしてください。
+    validations:
+      required: false

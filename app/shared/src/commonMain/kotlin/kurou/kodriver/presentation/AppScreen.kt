@@ -34,6 +34,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
@@ -206,6 +208,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
+                OtherListItemType.HapticFeedback,
                 OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
@@ -287,6 +290,7 @@ fun AppScreen(
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,
         keepScreenOn = uiState.keepScreenOn,
+        hapticFeedbackEnabled = uiState.hapticFeedbackEnabled,
         onBannerTap =
             rememberConnectionBannerTap(
                 bannerUiState = bannerUiState,
@@ -355,6 +359,7 @@ internal fun AppScreenContent(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     hasAppUpdate: Boolean = false,
     keepScreenOn: Boolean = false,
+    hapticFeedbackEnabled: Boolean = true,
     onBannerTap: (() -> Unit)? = null,
     onFeedbackClick: ((Long) -> Unit)? = null,
     onReadoutTabReselected: () -> Unit = {},
@@ -376,151 +381,195 @@ internal fun AppScreenContent(
         withTabSwitchWithArg(onFeedbackClick) {
             navigationState.navigateTo(AppDestination.More)
         }
+    val ambientHapticFeedback = LocalHapticFeedback.current
+    val effectiveHapticFeedback =
+        if (hapticFeedbackEnabled) ambientHapticFeedback else NoOpHapticFeedback
 
-    AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
-        val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-        val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
-        KeepScreenOnEffect(keepScreenOn)
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .safeDrawingPadding(),
-        ) {
-            NavigationSuiteScaffold(
-                modifier = Modifier.padding(top = 4.dp),
-                layoutType = resolvedLayoutType,
-                navigationSuiteItems = {
-                    AppDestination.entries.forEach { dest ->
-                        val itemModifier =
-                            if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(4.dp)
-                            } else {
-                                Modifier
-                            }
-                        val showBadge = dest == AppDestination.More && hasAppUpdate
-                        item(
-                            icon = {
-                                if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
-                                    AppNavIcon(dest = dest, showBadge = showBadge)
-                                }
-                            },
-                            label = {
-                                if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-                                    Row(
-                                        modifier =
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .offset(x = (-6).dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        AppNavIcon(
-                                            dest = dest,
-                                            showBadge = showBadge,
-                                            modifier = Modifier.size(24.dp),
-                                        )
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        Text(dest.label())
-                                    }
-                                } else {
-                                    Text(dest.label())
-                                }
-                            },
-                            selected = navigationState.current == dest,
-                            onClick = {
-                                navigationState.handleTabClick(dest) { reselected ->
-                                    when (reselected) {
-                                        AppDestination.Readout -> onReadoutTabReselected()
-                                        AppDestination.Log -> onLogTabReselected()
-                                        AppDestination.More -> onOtherTabReselected()
-                                    }
-                                }
-                            },
-                            modifier = itemModifier,
-                        )
-                    }
-                },
-            ) {
-                val dividerColor = DividerDefaults.color
-                val dividerThickness = DividerDefaults.Thickness
-                val contentModifier =
-                    Modifier
-                        .fillMaxSize()
-                        .then(
-                            if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                                Modifier
-                            } else {
-                                Modifier.drawWithContent {
-                                    drawContent()
-                                    val strokeWidth = dividerThickness.toPx()
-                                    drawLine(
-                                        color = dividerColor,
-                                        start = Offset(strokeWidth / 2, 0f),
-                                        end = Offset(strokeWidth / 2, size.height),
-                                        strokeWidth = strokeWidth,
-                                    )
-                                }
-                            },
-                        )
-                Column(modifier = contentModifier) {
-                    AnimatedVisibility(
-                        visible = bannerUiState.isVisible,
-                        enter =
-                            slideInVertically(
-                                initialOffsetY = { -it },
-                                animationSpec = tween(durationMillis = 300),
-                            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                        exit =
-                            slideOutVertically(
-                                targetOffsetY = { -it },
-                                animationSpec = tween(durationMillis = 200),
-                            ) + fadeOut(animationSpec = tween(durationMillis = 200)),
-                    ) {
-                        ConnectionBannerContent(
-                            uiState = bannerUiState,
-                            onClick = onBannerTapWithTabSwitch,
-                        )
-                    }
-                    AnimatedContent(
-                        targetState = navigationState.current,
-                        transitionSpec = { fadeIn() togetherWith fadeOut() },
-                        modifier = Modifier.weight(1f),
-                    ) { destination ->
-                        AppDestinationContent(
-                            destination = destination,
-                            readoutContent = { readoutContent(readoutListScrollToTopRequest) },
-                            telemetryLogContent = {
-                                telemetryLogContent(
-                                    telemetryLogListScrollToTopRequest,
-                                    onFeedbackClickWithTabSwitch ?: {},
-                                )
-                            },
-                            otherContent = { otherContent(otherListScrollToTopRequest) },
-                        )
-                    }
-                }
-            }
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier =
-                    Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            bottom =
-                                if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                                    96.dp
-                                } else {
-                                    16.dp
-                                },
-                        ),
+    CompositionLocalProvider(LocalHapticFeedback provides effectiveHapticFeedback) {
+        AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
+            val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+            val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
+            KeepScreenOnEffect(keepScreenOn)
+            AppScreenScaffold(
+                resolvedLayoutType = resolvedLayoutType,
+                hasAppUpdate = hasAppUpdate,
+                bannerUiState = bannerUiState,
+                snackbarHostState = snackbarHostState,
+                navigationState = navigationState,
+                onBannerTapWithTabSwitch = onBannerTapWithTabSwitch,
+                onFeedbackClickWithTabSwitch = onFeedbackClickWithTabSwitch,
+                onReadoutTabReselected = onReadoutTabReselected,
+                onLogTabReselected = onLogTabReselected,
+                onOtherTabReselected = onOtherTabReselected,
+                readoutContent = readoutContent,
+                readoutListScrollToTopRequest = readoutListScrollToTopRequest,
+                telemetryLogContent = telemetryLogContent,
+                telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
+                otherContent = otherContent,
+                otherListScrollToTopRequest = otherListScrollToTopRequest,
             )
         }
+    }
+}
+
+@Composable
+private fun AppScreenScaffold(
+    resolvedLayoutType: NavigationSuiteType,
+    hasAppUpdate: Boolean,
+    bannerUiState: ConnectionBannerUiState,
+    snackbarHostState: SnackbarHostState,
+    navigationState: AppNavigationState,
+    onBannerTapWithTabSwitch: (() -> Unit)?,
+    onFeedbackClickWithTabSwitch: ((Long) -> Unit)?,
+    onReadoutTabReselected: () -> Unit,
+    onLogTabReselected: () -> Unit,
+    onOtherTabReselected: () -> Unit,
+    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit,
+    readoutListScrollToTopRequest: Int,
+    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit,
+    telemetryLogListScrollToTopRequest: Int,
+    otherContent: @Composable (scrollToTopRequest: Int) -> Unit,
+    otherListScrollToTopRequest: Int,
+) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .safeDrawingPadding(),
+    ) {
+        NavigationSuiteScaffold(
+            modifier = Modifier.padding(top = 4.dp),
+            layoutType = resolvedLayoutType,
+            navigationSuiteItems = {
+                AppDestination.entries.forEach { dest ->
+                    val itemModifier =
+                        if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp)
+                        } else {
+                            Modifier
+                        }
+                    val showBadge = dest == AppDestination.More && hasAppUpdate
+                    item(
+                        icon = {
+                            if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
+                                AppNavIcon(dest = dest, showBadge = showBadge)
+                            }
+                        },
+                        label = {
+                            if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
+                                Row(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .offset(x = (-6).dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    AppNavIcon(
+                                        dest = dest,
+                                        showBadge = showBadge,
+                                        modifier = Modifier.size(24.dp),
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text(dest.label())
+                                }
+                            } else {
+                                Text(dest.label())
+                            }
+                        },
+                        selected = navigationState.current == dest,
+                        onClick = {
+                            navigationState.handleTabClick(dest) { reselected ->
+                                when (reselected) {
+                                    AppDestination.Readout -> onReadoutTabReselected()
+                                    AppDestination.Log -> onLogTabReselected()
+                                    AppDestination.More -> onOtherTabReselected()
+                                }
+                            }
+                        },
+                        modifier = itemModifier,
+                    )
+                }
+            },
+        ) {
+            val dividerColor = DividerDefaults.color
+            val dividerThickness = DividerDefaults.Thickness
+            val contentModifier =
+                Modifier
+                    .fillMaxSize()
+                    .then(
+                        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                            Modifier
+                        } else {
+                            Modifier.drawWithContent {
+                                drawContent()
+                                val strokeWidth = dividerThickness.toPx()
+                                drawLine(
+                                    color = dividerColor,
+                                    start = Offset(strokeWidth / 2, 0f),
+                                    end = Offset(strokeWidth / 2, size.height),
+                                    strokeWidth = strokeWidth,
+                                )
+                            }
+                        },
+                    )
+            Column(modifier = contentModifier) {
+                AnimatedVisibility(
+                    visible = bannerUiState.isVisible,
+                    enter =
+                        slideInVertically(
+                            initialOffsetY = { -it },
+                            animationSpec = tween(durationMillis = 300),
+                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                    exit =
+                        slideOutVertically(
+                            targetOffsetY = { -it },
+                            animationSpec = tween(durationMillis = 200),
+                        ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                ) {
+                    ConnectionBannerContent(
+                        uiState = bannerUiState,
+                        onClick = onBannerTapWithTabSwitch,
+                    )
+                }
+                AnimatedContent(
+                    targetState = navigationState.current,
+                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    modifier = Modifier.weight(1f),
+                ) { destination ->
+                    AppDestinationContent(
+                        destination = destination,
+                        readoutContent = { readoutContent(readoutListScrollToTopRequest) },
+                        telemetryLogContent = {
+                            telemetryLogContent(
+                                telemetryLogListScrollToTopRequest,
+                                onFeedbackClickWithTabSwitch ?: {},
+                            )
+                        },
+                        otherContent = { otherContent(otherListScrollToTopRequest) },
+                    )
+                }
+            }
+        }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom =
+                            if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                                96.dp
+                            } else {
+                                16.dp
+                            },
+                    ),
+        )
     }
 }
 

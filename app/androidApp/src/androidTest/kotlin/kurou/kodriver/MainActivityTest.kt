@@ -15,6 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.feature.otherlist.fakeOtherListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import org.junit.After
@@ -34,6 +35,7 @@ class MainActivityTest {
     @Before
     fun setUp() {
         loadFakeTelemetryLogListModuleIfNeeded()
+        loadFakeOtherListModuleIfNeeded()
         fakeTelemetryLogRepository.clear()
     }
 
@@ -157,6 +159,7 @@ class MainActivityTest {
         clickScrollableItem("テーマ")
         clickItem("キャンセル")
         clickScrollableItem("ダイナミックカラー")
+        clickScrollableItem("ハプティックフィードバック")
         clickItemAndNavigateBack("フィードバックを送信")
         clickItemAndNavigateBack("ライセンス")
     }
@@ -318,11 +321,19 @@ class MainActivityTest {
         const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます"
         var isFakeTelemetryLogListModuleLoaded = false
+        var isFakeOtherListModuleLoaded = false
 
         fun loadFakeTelemetryLogListModuleIfNeeded() {
             if (!isFakeTelemetryLogListModuleLoaded) {
                 loadKoinModules(fakeTelemetryLogListModule)
                 isFakeTelemetryLogListModuleLoaded = true
+            }
+        }
+
+        fun loadFakeOtherListModuleIfNeeded() {
+            if (!isFakeOtherListModuleLoaded) {
+                loadKoinModules(fakeOtherListModule)
+                isFakeOtherListModuleLoaded = true
             }
         }
     }

@@ -27,6 +27,7 @@ class OtherListPaneScreenshotTest {
                                 onItemClick = {},
                                 onKeepScreenOnChange = {},
                                 onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
                                 onStartupEnabledChange = {},
                             )
                         }
@@ -49,6 +50,7 @@ class OtherListPaneScreenshotTest {
                                 onItemClick = {},
                                 onKeepScreenOnChange = {},
                                 onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
                                 onStartupEnabledChange = {},
                             )
                         }
@@ -57,6 +59,42 @@ class OtherListPaneScreenshotTest {
             }
 
             onNode(hasScrollAction()).performScrollToNode(hasText("リリースページ"))
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `振動機能がない端末ではハプティックフィードバック項目が表示されない`() =
+        composeScreenshotTest {
+            // Desktop向けのbuildOtherListItems()は元々HapticFeedbackを含まないため、
+            // 除外前の状態としてHapticFeedbackを含むAndroid相当の項目セットを明示的に組み立てる。
+            val itemsIncludingHapticFeedback =
+                OtherListItemType.entries.filterNot {
+                    it == OtherListItemType.DebugState || it == OtherListItemType.Startup
+                }
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            OtherListPane(
+                                uiState =
+                                    OtherListUiState(
+                                        items =
+                                            itemsIncludingHapticFeedback.filterNot {
+                                                it == OtherListItemType.HapticFeedback
+                                            },
+                                    ),
+                                onItemClick = {},
+                                onKeepScreenOnChange = {},
+                                onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
+                                onStartupEnabledChange = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onNode(hasScrollAction()).performScrollToNode(hasText("ライセンス"))
             onRoot().captureRoboImage()
         }
 }
