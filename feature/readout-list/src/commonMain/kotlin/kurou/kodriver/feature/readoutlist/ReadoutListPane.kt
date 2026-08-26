@@ -541,6 +541,16 @@ private fun ReadoutListItemCard(
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = null,
+                modifier =
+                    Modifier
+                        .size(width = 24.dp, height = 48.dp)
+                        .testTag("readoutListChevronTouchTarget:${item.value}")
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                        ) {
+                            onItemClick(item)
+                        },
             )
         }
     }
