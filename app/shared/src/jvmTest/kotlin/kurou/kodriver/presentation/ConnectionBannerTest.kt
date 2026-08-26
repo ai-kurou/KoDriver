@@ -1,5 +1,9 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -9,6 +13,14 @@ import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+
+private class FakeHapticFeedback : HapticFeedback {
+    val performedTypes = mutableListOf<HapticFeedbackType>()
+
+    override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+        performedTypes += hapticFeedbackType
+    }
+}
 
 class ConnectionBannerTest {
     @get:Rule
@@ -113,6 +125,52 @@ class ConnectionBannerTest {
         composeRule.onNodeWithText("IPアドレスが未設定です").assertHasClickAction()
         composeRule.onNodeWithText("IPアドレスが未設定です").performClick()
         assertEquals(true, clicked)
+    }
+
+    @Test
+    fun `タップ可能な場合にタップするとハプティックフィードバックを発生させる`() {
+        val haptic = FakeHapticFeedback()
+        composeRule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.UNCHECKED,
+                            message = "IPアドレスが未設定です",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                            isTappable = true,
+                        ),
+                    onClick = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("IPアドレスが未設定です").performClick()
+
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
+    }
+
+    @Test
+    fun `タップ不可の場合はタップしてもハプティックフィードバックを発生させない`() {
+        val haptic = FakeHapticFeedback()
+        composeRule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.UNCHECKED,
+                            message = "確認中",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                            isTappable = false,
+                        ),
+                    onClick = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("確認中").performClick()
+
+        assertEquals(emptyList(), haptic.performedTypes)
     }
 
     @Test

@@ -293,6 +293,18 @@ private fun OtherListItem(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
+    val onKeepScreenOnChangeWithHaptic: (Boolean) -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onKeepScreenOnChange(it)
+    }
+    val onDynamicColorEnabledChangeWithHaptic: (Boolean) -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onDynamicColorEnabledChange(it)
+    }
+    val onStartupEnabledChangeWithHaptic: (Boolean) -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onStartupEnabledChange(it)
+    }
     val isSelected = item == uiState.selectedItem
     val containerColor by animateColorAsState(
         targetValue =
@@ -333,21 +345,21 @@ private fun OtherListItem(
                 OtherListItemType.KeepScreenOn -> {
                     Switch(
                         checked = uiState.keepScreenOn,
-                        onCheckedChange = onKeepScreenOnChange,
+                        onCheckedChange = onKeepScreenOnChangeWithHaptic,
                     )
                 }
 
                 OtherListItemType.DynamicColor -> {
                     Switch(
                         checked = uiState.dynamicColorEnabled,
-                        onCheckedChange = onDynamicColorEnabledChange,
+                        onCheckedChange = onDynamicColorEnabledChangeWithHaptic,
                     )
                 }
 
                 OtherListItemType.Startup -> {
                     Switch(
                         checked = uiState.startupEnabled,
-                        onCheckedChange = onStartupEnabledChange,
+                        onCheckedChange = onStartupEnabledChangeWithHaptic,
                     )
                 }
 
