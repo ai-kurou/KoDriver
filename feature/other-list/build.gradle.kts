@@ -65,6 +65,9 @@ kotlin {
                 implementation(libs.roborazzi.compose)
                 implementation(libs.robolectric)
                 implementation(libs.roborazzi.core)
+                implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
+                implementation(libs.kotlinx.coroutinesTest)
+                implementation(libs.mockk)
             }
         }
     }

@@ -19,10 +19,12 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
+import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
@@ -56,6 +58,9 @@ class OtherListViewModelTest {
     private lateinit var hapticFeedbackEnabledRepository: HapticFeedbackEnabledRepository
 
     @MockK
+    private lateinit var hapticFeedbackAvailabilityRepository: HapticFeedbackAvailabilityRepository
+
+    @MockK
     private lateinit var startupRegistrationRepository: StartupEnabledRepository
 
     private val keepScreenOnFlow = MutableStateFlow(true)
@@ -73,8 +78,12 @@ class OtherListViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel(currentVersion: String = "0.5.0") =
-        OtherListViewModel(
+    private fun createViewModel(
+        currentVersion: String = "0.5.0",
+        hapticFeedbackAvailable: Boolean = true,
+    ): OtherListViewModel {
+        every { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() } returns hapticFeedbackAvailable
+        return OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
             observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
             saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
@@ -82,6 +91,7 @@ class OtherListViewModelTest {
             saveDynamicColorEnabled = SaveDynamicColorEnabledUseCase(dynamicColorRepository),
             observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
             saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
+            checkHapticFeedbackAvailable = CheckHapticFeedbackAvailableUseCase(hapticFeedbackAvailabilityRepository),
             startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
             appVersionInfo =
                 OtherListAppVersionInfo(
@@ -89,6 +99,7 @@ class OtherListViewModelTest {
                     appVersionLabel = "Windows版KoDriverバージョン",
                 ),
         )
+    }
 
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() =
@@ -105,11 +116,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -127,11 +140,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -151,11 +166,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -175,11 +192,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -199,11 +218,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -226,11 +247,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -249,11 +272,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -272,11 +297,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -294,11 +321,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -318,12 +347,14 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             coVerify(exactly = 1) { keepScreenOnRepository.saveKeepScreenOn(false) }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -345,12 +376,14 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             coVerify(exactly = 1) { dynamicColorRepository.saveDynamicColorEnabled(true) }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -372,12 +405,41 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             coVerify(exactly = 1) { hapticFeedbackEnabledRepository.saveHapticFeedbackEnabled(false) }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+            )
+        }
+
+    @Test
+    fun `振動機能が利用不可な場合ハプティックフィードバック項目が表示されない`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = false)
+
+            assertFalse(
+                viewModel.uiState
+                    .first()
+                    .items
+                    .contains(OtherListItemType.HapticFeedback),
+            )
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -397,11 +459,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -421,11 +485,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -441,11 +507,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -463,11 +531,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -487,11 +557,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
             )
         }
 
@@ -511,11 +583,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
                 startupRegistrationRepository,
             )
         }
@@ -536,11 +610,13 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
                 startupRegistrationRepository,
             )
         }

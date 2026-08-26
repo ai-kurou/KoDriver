@@ -1,5 +1,6 @@
 package kurou.kodriver.data
 
+import kurou.kodriver.data.device.JvmHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
@@ -47,6 +48,7 @@ import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
@@ -148,6 +150,7 @@ val desktopDataModule =
         single<DynamicColorEnabledRepository> { JvmDynamicColorEnabledRepository() }
         // タップ時ハプティックフィードバック（プラットフォーム固有実装。Desktop は no-op 相当。Android専用設定）
         single<HapticFeedbackEnabledRepository> { JvmHapticFeedbackEnabledRepository() }
+        single<HapticFeedbackAvailabilityRepository> { JvmHapticFeedbackAvailabilityRepository() }
         single<LmuWindowsTyreTemperaturePreferencesRepository> {
             createLmuWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
         }

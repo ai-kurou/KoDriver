@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
@@ -38,15 +39,21 @@ class OtherListViewModel(
     private val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
     observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
     private val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
+    checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
     private val startupRegistration: StartupRegistrationUseCases,
     appVersionInfo: OtherListAppVersionInfo,
 ) : ViewModel() {
     private val currentVersion = appVersionInfo.currentVersion
+    private val hapticFeedbackAvailable = checkHapticFeedbackAvailable()
     private val _uiState =
         MutableStateFlow(
             OtherListUiState(
                 appVersionLabel = appVersionInfo.appVersionLabel,
                 appVersion = appVersionInfo.currentVersion,
+                items =
+                    buildOtherListItems().filterNot {
+                        it == OtherListItemType.HapticFeedback && !hapticFeedbackAvailable
+                    },
             ),
         )
     val uiState: StateFlow<OtherListUiState> =

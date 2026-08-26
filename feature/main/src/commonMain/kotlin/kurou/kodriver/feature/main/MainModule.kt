@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.main
 
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
@@ -34,6 +35,7 @@ val mainModule =
         factory { SaveDynamicColorEnabledUseCase(get()) }
         factory { ObserveHapticFeedbackEnabledUseCase(get()) }
         factory { SaveHapticFeedbackEnabledUseCase(get()) }
+        factory { CheckHapticFeedbackAvailableUseCase(get()) }
     }
 
 expect val mainPlatformModule: Module

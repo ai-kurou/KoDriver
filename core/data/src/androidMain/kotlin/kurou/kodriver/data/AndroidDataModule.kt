@@ -3,6 +3,7 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
+import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.preferences.AndroidDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.AndroidHapticFeedbackEnabledRepository
@@ -72,6 +73,7 @@ import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
@@ -248,6 +250,10 @@ private fun androidDataModuleAppSettings(context: Context) =
         // タップ時ハプティックフィードバック（Android専用設定）
         single<HapticFeedbackEnabledRepository> {
             AndroidHapticFeedbackEnabledRepository(context.hapticFeedbackEnabledDataStore)
+        }
+        // 端末が振動ハードウェアを備えているか（設定画面での項目表示可否に使用）
+        single<HapticFeedbackAvailabilityRepository> {
+            AndroidHapticFeedbackAvailabilityRepository(context)
         }
     }
 
