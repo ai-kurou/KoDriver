@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,6 +62,11 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
     onDismiss: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onTypeSelectedWithHaptic: (ReadoutStartSoundType) -> Unit = { type ->
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onTypeSelected(type)
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.readout_start_sound_title)) },
@@ -82,11 +89,11 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .clickable { onTypeSelected(type) },
+                                .clickable { onTypeSelectedWithHaptic(type) },
                     ) {
                         RadioButton(
                             selected = uiState.pendingType == type,
-                            onClick = { onTypeSelected(type) },
+                            onClick = { onTypeSelectedWithHaptic(type) },
                         )
                         Text(label)
                     }

@@ -52,6 +52,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -231,14 +233,17 @@ private fun TelemetryLogResetListItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
+    val haptic = LocalHapticFeedback.current
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
         modifier =
             modifier
                 .fillMaxWidth()
-                .clickable(enabled = !isResetting, onClick = onClick)
-                .padding(vertical = 12.dp),
+                .clickable(enabled = !isResetting) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onClick()
+                }.padding(vertical = 12.dp),
     ) {
         if (isResetting) {
             CircularProgressIndicator(
@@ -297,6 +302,7 @@ private fun TelemetryLogListItem(
     onFeedbackClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
 ) {
+    val haptic = LocalHapticFeedback.current
     var menuExpanded by remember { mutableStateOf(false) }
     val containerColor by animateColorAsState(
         targetValue =
@@ -412,7 +418,10 @@ private fun TelemetryLogListItem(
             modifier
                 .fillMaxWidth()
                 .combinedClickable(
-                    onClick = onClick,
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onClick()
+                    },
                     onLongClick = { menuExpanded = true },
                 ),
     )

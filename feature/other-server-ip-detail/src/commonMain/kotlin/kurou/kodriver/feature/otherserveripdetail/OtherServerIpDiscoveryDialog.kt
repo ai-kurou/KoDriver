@@ -13,6 +13,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
@@ -30,6 +32,11 @@ internal fun OtherServerIpDiscoveryDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onServerSelectedWithHaptic: (DiscoveredServer) -> Unit = { server ->
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onServerSelected(server)
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.server_ip_discovery_dialog_title)) },
@@ -42,11 +49,11 @@ internal fun OtherServerIpDiscoveryDialog(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .clickable { onServerSelected(server) },
+                                .clickable { onServerSelectedWithHaptic(server) },
                     ) {
                         RadioButton(
                             selected = selectedDiscoveredServer == server,
-                            onClick = { onServerSelected(server) },
+                            onClick = { onServerSelectedWithHaptic(server) },
                         )
                         Text("${server.hostName} (${server.ipAddress})")
                     }

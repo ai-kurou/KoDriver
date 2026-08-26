@@ -26,6 +26,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -99,6 +101,11 @@ fun OtherServerIpDetailPaneContent(
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onOpenGuideWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onOpenGuide()
+    }
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
             onDismiss()
@@ -207,7 +214,7 @@ fun OtherServerIpDetailPaneContent(
             Spacer(modifier = Modifier.height(4.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable(onClick = onOpenGuide),
+                modifier = Modifier.clickable(onClick = onOpenGuideWithHaptic),
             ) {
                 Text(
                     text = stringResource(Res.string.server_ip_guide_link),
