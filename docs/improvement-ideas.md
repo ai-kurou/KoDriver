@@ -39,6 +39,18 @@
   **改善案**: `AndroidManifest.xml` に `<uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" android:minSdkVersion="36" />` を追加し、`ActivityResultContracts.RequestPermission()` 等でランタイム許可を取得する導線を検討する。実機がなくても `adb shell appops get <package> | grep -i local` で拒否状態を確認できる。
   **参考URL**: https://zenn.dev/ace_toshi/articles/android-access-local-network
 
+## バグ
+
+- **対象**: `feature/debug-state-detail/src/commonMain/composeResources/values/strings.xml` の `debug_state_tyre_wear_fl`（L69, `_fr`/`_rl`/`_rr`も同様に計4件）・`debug_state_fuel_consumption_per_lap_ratio`（L74）・`debug_state_fuel_consumption_remaining_percent`（L77）
+  **課題**: `%1$s%` のように書式指定子の直後に単独の `%` を置いている。Android/Compose Resourcesの文字列フォーマット処理では、書式指定子中の `%` はエスケープ（`%%`）しないとフォーマット例外や表示崩れの原因になりうる。実際 `feature/ace-windows-readout-remaining-fuel-detail/src/commonMain/composeResources/values/strings.xml` の `remaining_fuel_threshold_label`（L8）は `%1$s%%` と正しくエスケープしており、モジュール間で書き方が不統一。
+  **改善案**: `debug-state-detail` の該当4文字列リソースを `%1$s%%` 表記に修正し、実際に `stringResource` 経由でフォーマットして表示崩れ・例外が起きないことを確認する。
+
+## セキュリティ
+
+- **対象**: `server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt` の `hostNameProvider`（L19）・`sanitizedHostName()`（L36）
+  **課題**: mDNS広告のサービスインスタンス名にOSのホスト名（`InetAddress.getLocalHost().hostName` をドメイン部分だけ除去したもの）をそのまま使用している。ユーザーが個人名を含むPC名（例: `Taro-PC`）を設定している場合、LAN内の第三者にその名前がmDNS経由で広告されてしまう。既存のホスト名サニタイズ（PR #610）はサービスタイプ重複やリーク対策が目的で、この個人情報露出は未検討。
+  **改善案**: サービスインスタンス名をホスト名依存ではなくアプリ固有の識別子（例: 固定文字列+ランダムサフィックスや設定可能な表示名）に変更する、またはREADMEに「PC名がLAN内に広告される」ことを既知の制約として明記することを検討する。
+
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)
