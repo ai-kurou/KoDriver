@@ -61,4 +61,33 @@ class OtherListPaneScreenshotTest {
             onNode(hasScrollAction()).performScrollToNode(hasText("リリースページ"))
             onRoot().captureRoboImage()
         }
+
+    @Test
+    fun `振動機能がない端末ではハプティックフィードバック項目が表示されない`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            OtherListPane(
+                                uiState =
+                                    OtherListUiState(
+                                        items =
+                                            buildOtherListItems().filterNot {
+                                                it == OtherListItemType.HapticFeedback
+                                            },
+                                    ),
+                                onItemClick = {},
+                                onKeepScreenOnChange = {},
+                                onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
+                                onStartupEnabledChange = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
 }

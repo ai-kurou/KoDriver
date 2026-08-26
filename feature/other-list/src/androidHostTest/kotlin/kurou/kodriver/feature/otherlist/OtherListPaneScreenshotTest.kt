@@ -74,4 +74,30 @@ class OtherListPaneScreenshotTest {
         rule.activity.window.decorView
             .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
     }
+
+    @Test
+    fun `振動機能がない端末ではハプティックフィードバック項目が表示されない`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        OtherListPane(
+                            uiState =
+                                OtherListUiState(
+                                    items = buildOtherListItems().filterNot { it == OtherListItemType.HapticFeedback },
+                                ),
+                            onItemClick = {},
+                            onKeepScreenOnChange = {},
+                            onDynamicColorEnabledChange = {},
+                            onHapticFeedbackEnabledChange = {},
+                            onStartupEnabledChange = {},
+                        )
+                    }
+                }
+            }
+        }
+
+        rule.activity.window.decorView
+            .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
+    }
 }
