@@ -39,12 +39,6 @@
   **改善案**: `AndroidManifest.xml` に `<uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" android:minSdkVersion="36" />` を追加し、`ActivityResultContracts.RequestPermission()` 等でランタイム許可を取得する導線を検討する。実機がなくても `adb shell appops get <package> | grep -i local` で拒否状態を確認できる。
   **参考URL**: https://zenn.dev/ace_toshi/articles/android-access-local-network
 
-## ロジック重複
-
-- **対象**: `core/domain/src/commonMain/kotlin/kurou/kodriver/domain/usecase/DetermineLmuWindowsNarratorReadoutUseCase.kt` の `determinePitTimingVirtualEnergy`（344行目〜）と `determinePitTimingTyreWear`（402行目〜）
-  **課題**: 両関数とも `trackPitTimingValue(...)` → `isNewSession`/`hasRefilled`/elseによる`state.copy`分岐 → `calculatePitTimingRemainingLaps(...)` → 残周回数評価、というほぼ同一の処理フローを、対象フィールド（`pitTimingVirtualEnergy*` 系 / `pitTimingTyreWear*` 系）だけを変えてコピー&ペーストしている。各関数が約58〜59行あり、detektのLongMethod閾値（デフォルト60行）に近い。
-  **改善案**: 状態更新・評価ロジックを共通のprivateヘルパー（例: 対象フィールドを引数で渡す `updatePitTimingState(...)`）へ切り出し、重複を解消しつつ各関数の行数を減らす。
-
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)
