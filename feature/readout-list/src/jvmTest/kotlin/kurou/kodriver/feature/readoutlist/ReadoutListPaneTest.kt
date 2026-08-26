@@ -105,6 +105,40 @@ class ReadoutListPaneTest {
     }
 
     @Test
+    fun `シェブロンをタップするとonItemClickが呼ばれる`() {
+        val clicked = mutableListOf<ReadoutItemKey>()
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                            readoutEnabledStates =
+                                mapOf(
+                                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
+                                ),
+                        ),
+                    onSimulatorSelected = {},
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemClick = { clicked += it },
+                )
+            }
+        }
+
+        rule
+            .onNodeWithTag(
+                "readoutListChevronTouchTarget:${ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root.value}",
+            ).performClick()
+
+        assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root, clicked.single())
+    }
+
+    @Test
     fun `スイッチとキュー追加トグルはON_OFF変更コールバックを呼ぶ`() {
         val readoutChanges = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
         val queueChanges = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
