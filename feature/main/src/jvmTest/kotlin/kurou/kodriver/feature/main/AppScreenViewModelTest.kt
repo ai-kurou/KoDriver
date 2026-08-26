@@ -211,9 +211,20 @@ class AppScreenViewModelTest {
             val viewModel = createViewModel()
             coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } returns Unit
 
-            viewModel.selectSimulator(Simulator.Gt7Ps5)
+            viewModel.selectSimulator("gt7_ps5")
             advanceUntilIdle()
 
             coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
+        }
+
+    @Test
+    fun `selectSimulatorに未対応のIDを渡した場合saveSelectedSimulatorは実行されない`() =
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.selectSimulator("unknown_simulator")
+            advanceUntilIdle()
+
+            coVerify(exactly = 0) { simulatorRepository.saveSelectedSimulator(any()) }
         }
 }

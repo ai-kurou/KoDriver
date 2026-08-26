@@ -52,7 +52,7 @@ public fun kurou.kodriver.presentation.AppScreen(viewModel: kurou.kodriver.featu
     - otherContent: STABLE (composable function type)
 
 @Composable
-internal fun kurou.kodriver.presentation.AppScreenContent(darkTheme: kotlin.Boolean, dynamicColorEnabled: kotlin.Boolean, layoutType: androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType?, bannerUiState: kurou.kodriver.presentation.ConnectionBannerUiState, snackbarHostState: androidx.compose.material3.SnackbarHostState, hasAppUpdate: kotlin.Boolean, keepScreenOn: kotlin.Boolean, hapticFeedbackEnabled: kotlin.Boolean, selectedSimulatorId: kotlin.String?, onBannerTap: kotlin.Function0<kotlin.Unit>?, onFeedbackClick: kotlin.Function1<kotlin.Long, kotlin.Unit>?, onReadoutTabReselected: kotlin.Function0<kotlin.Unit>, onLogTabReselected: kotlin.Function0<kotlin.Unit>, onOtherTabReselected: kotlin.Function0<kotlin.Unit>, readoutContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, readoutListScrollToTopRequest: kotlin.Int, telemetryLogContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction2<@[ParameterName(name = \, telemetryLogListScrollToTopRequest: kotlin.Int, otherContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, otherListScrollToTopRequest: kotlin.Int): kotlin.Unit
+internal fun kurou.kodriver.presentation.AppScreenContent(darkTheme: kotlin.Boolean, dynamicColorEnabled: kotlin.Boolean, layoutType: androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType?, bannerUiState: kurou.kodriver.presentation.ConnectionBannerUiState, snackbarHostState: androidx.compose.material3.SnackbarHostState, hasAppUpdate: kotlin.Boolean, keepScreenOn: kotlin.Boolean, hapticFeedbackEnabled: kotlin.Boolean, selectedSimulatorId: kotlin.String?, onSimulatorSelected: kotlin.Function1<kotlin.String, kotlin.Unit>, onBannerTap: kotlin.Function0<kotlin.Unit>?, onFeedbackClick: kotlin.Function1<kotlin.Long, kotlin.Unit>?, onReadoutTabReselected: kotlin.Function0<kotlin.Unit>, onLogTabReselected: kotlin.Function0<kotlin.Unit>, onOtherTabReselected: kotlin.Function0<kotlin.Unit>, readoutContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, readoutListScrollToTopRequest: kotlin.Int, telemetryLogContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction2<@[ParameterName(name = \, telemetryLogListScrollToTopRequest: kotlin.Int, otherContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, otherListScrollToTopRequest: kotlin.Int): kotlin.Unit
   skippable: false
   restartable: true
   params:
@@ -65,6 +65,7 @@ internal fun kurou.kodriver.presentation.AppScreenContent(darkTheme: kotlin.Bool
     - keepScreenOn: STABLE (primitive type)
     - hapticFeedbackEnabled: STABLE (primitive type)
     - selectedSimulatorId: STABLE (class with no mutable properties)
+    - onSimulatorSelected: STABLE (function type)
     - onBannerTap: STABLE (function type)
     - onFeedbackClick: STABLE (function type)
     - onReadoutTabReselected: STABLE (function type)
@@ -78,13 +79,14 @@ internal fun kurou.kodriver.presentation.AppScreenContent(darkTheme: kotlin.Bool
     - otherListScrollToTopRequest: STABLE (primitive type)
 
 @Composable
-private fun kurou.kodriver.presentation.AppScreenScaffold(resolvedLayoutType: androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType, hasAppUpdate: kotlin.Boolean, selectedSimulatorId: kotlin.String?, bannerUiState: kurou.kodriver.presentation.ConnectionBannerUiState, snackbarHostState: androidx.compose.material3.SnackbarHostState, navigationState: kurou.kodriver.presentation.AppNavigationState, onBannerTapWithTabSwitch: kotlin.Function0<kotlin.Unit>?, onFeedbackClickWithTabSwitch: kotlin.Function1<kotlin.Long, kotlin.Unit>?, onReadoutTabReselected: kotlin.Function0<kotlin.Unit>, onLogTabReselected: kotlin.Function0<kotlin.Unit>, onOtherTabReselected: kotlin.Function0<kotlin.Unit>, readoutContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, readoutListScrollToTopRequest: kotlin.Int, telemetryLogContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction2<@[ParameterName(name = \, telemetryLogListScrollToTopRequest: kotlin.Int, otherContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, otherListScrollToTopRequest: kotlin.Int): kotlin.Unit
+private fun kurou.kodriver.presentation.AppScreenScaffold(resolvedLayoutType: androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType, hasAppUpdate: kotlin.Boolean, selectedSimulatorId: kotlin.String?, onSimulatorSelected: kotlin.Function1<kotlin.String, kotlin.Unit>, bannerUiState: kurou.kodriver.presentation.ConnectionBannerUiState, snackbarHostState: androidx.compose.material3.SnackbarHostState, navigationState: kurou.kodriver.presentation.AppNavigationState, onBannerTapWithTabSwitch: kotlin.Function0<kotlin.Unit>?, onFeedbackClickWithTabSwitch: kotlin.Function1<kotlin.Long, kotlin.Unit>?, onReadoutTabReselected: kotlin.Function0<kotlin.Unit>, onLogTabReselected: kotlin.Function0<kotlin.Unit>, onOtherTabReselected: kotlin.Function0<kotlin.Unit>, readoutContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, readoutListScrollToTopRequest: kotlin.Int, telemetryLogContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction2<@[ParameterName(name = \, telemetryLogListScrollToTopRequest: kotlin.Int, otherContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<@[ParameterName(name = \, otherListScrollToTopRequest: kotlin.Int): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - resolvedLayoutType: UNSTABLE (cross-module type without @Stable/@Immutable)
     - hasAppUpdate: STABLE (primitive type)
     - selectedSimulatorId: STABLE (class with no mutable properties)
+    - onSimulatorSelected: STABLE (function type)
     - bannerUiState: STABLE (class with no mutable properties)
     - snackbarHostState: STABLE (marked @Stable or @Immutable)
     - navigationState: RUNTIME (requires runtime check)

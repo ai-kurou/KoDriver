@@ -56,7 +56,12 @@ class AppScreenViewModel(
         }
     }
 
-    fun selectSimulator(simulator: Simulator) {
+    /**
+     * app:shared など `:core:domain` に依存しないモジュールから呼び出せるよう、
+     * [Simulator] 型ではなく [Simulator.id] の文字列を受け取る。不明な ID は無視する。
+     */
+    fun selectSimulator(simulatorId: String) {
+        val simulator = Simulator.fromId(simulatorId) ?: return
         viewModelScope.launch {
             saveSelectedSimulator(simulator)
         }

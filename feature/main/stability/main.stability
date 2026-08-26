@@ -13,6 +13,17 @@ public fun kurou.kodriver.feature.main.AppScreenPrimarySimulatorIcon(simulatorId
     - modifier: STABLE (marked @Stable or @Immutable)
 
 @Composable
+public fun kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator(simulatorId: kotlin.String?, expanded: kotlin.Boolean, onExpandedChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onSimulatorSelected: kotlin.Function1<kotlin.String, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - simulatorId: STABLE (class with no mutable properties)
+    - expanded: STABLE (primitive type)
+    - onExpandedChange: STABLE (function type)
+    - onSimulatorSelected: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+
+@Composable
 public fun kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel(simulatorId: kotlin.String?): kotlin.String
   skippable: false
   restartable: false

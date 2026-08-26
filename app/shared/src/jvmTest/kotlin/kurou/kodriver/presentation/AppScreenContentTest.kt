@@ -298,4 +298,39 @@ class AppScreenContentTest {
 
         rule.onNode(hasText("LMU")).assertExists()
     }
+
+    @Test
+    fun `未選択項目をタップするとシミュレータ選択メニューが開く`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                selectedSimulatorId = null,
+            )
+        }
+
+        rule.onNode(hasText("未選択")).performClick()
+        rule.waitForIdle()
+
+        rule.onNode(hasText("Gran Turismo 7（PS5）")).assertExists()
+    }
+
+    @Test
+    fun `メニューでシミュレータを選択するとonSimulatorSelectedにIDが渡される`() {
+        var selectedId: String? = null
+
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                selectedSimulatorId = null,
+                onSimulatorSelected = { selectedId = it },
+            )
+        }
+
+        rule.onNode(hasText("未選択")).performClick()
+        rule.waitForIdle()
+        rule.onNode(hasText("Gran Turismo 7（PS5）")).performClick()
+        rule.waitForIdle()
+
+        assertEquals("gt7_ps5", selectedId)
+    }
 }

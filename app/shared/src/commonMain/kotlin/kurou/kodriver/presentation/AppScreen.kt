@@ -72,7 +72,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.LmuWindows
 import kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail.LmuWindowsReadoutTyreWearDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
-import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIcon
+import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
@@ -161,10 +161,14 @@ private fun AppNavIcon(
 /**
  * NavigationRail / NavigationBar の先頭に表示する、現在選択中のシミュレータの項目。
  * 他の [AppDestination] とは異なりタブ切り替えの対象ではないため、常に非選択（[selected] = false）とする。
+ * タップするとシミュレータ選択メニューを開く。
  */
 private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
     resolvedLayoutType: NavigationSuiteType,
     selectedSimulatorId: String?,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    onSimulatorSelected: (String) -> Unit,
 ) {
     val itemModifier =
         if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
@@ -177,8 +181,11 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
     item(
         icon = {
             if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
-                AppScreenPrimarySimulatorIcon(
+                AppScreenPrimarySimulatorIndicator(
                     simulatorId = selectedSimulatorId,
+                    expanded = expanded,
+                    onExpandedChange = onExpandedChange,
+                    onSimulatorSelected = onSimulatorSelected,
                     modifier = Modifier.size(24.dp),
                 )
             }
@@ -193,8 +200,11 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    AppScreenPrimarySimulatorIcon(
+                    AppScreenPrimarySimulatorIndicator(
                         simulatorId = selectedSimulatorId,
+                        expanded = expanded,
+                        onExpandedChange = onExpandedChange,
+                        onSimulatorSelected = onSimulatorSelected,
                         modifier = Modifier.size(24.dp),
                     )
                     Spacer(modifier = Modifier.width(12.dp))
@@ -205,7 +215,7 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
             }
         },
         selected = false,
-        onClick = {},
+        onClick = { onExpandedChange(true) },
         modifier = itemModifier,
     )
 }
@@ -347,6 +357,7 @@ fun AppScreen(
         keepScreenOn = uiState.keepScreenOn,
         hapticFeedbackEnabled = uiState.hapticFeedbackEnabled,
         selectedSimulatorId = uiState.selectedSimulatorId,
+        onSimulatorSelected = viewModel::selectSimulator,
         onBannerTap =
             rememberConnectionBannerTap(
                 bannerUiState = bannerUiState,
@@ -417,6 +428,7 @@ internal fun AppScreenContent(
     keepScreenOn: Boolean = false,
     hapticFeedbackEnabled: Boolean = true,
     selectedSimulatorId: String? = null,
+    onSimulatorSelected: (String) -> Unit = {},
     onBannerTap: (() -> Unit)? = null,
     onFeedbackClick: ((Long) -> Unit)? = null,
     onReadoutTabReselected: () -> Unit = {},
@@ -451,6 +463,7 @@ internal fun AppScreenContent(
                 resolvedLayoutType = resolvedLayoutType,
                 hasAppUpdate = hasAppUpdate,
                 selectedSimulatorId = selectedSimulatorId,
+                onSimulatorSelected = onSimulatorSelected,
                 bannerUiState = bannerUiState,
                 snackbarHostState = snackbarHostState,
                 navigationState = navigationState,
@@ -475,6 +488,7 @@ private fun AppScreenScaffold(
     resolvedLayoutType: NavigationSuiteType,
     hasAppUpdate: Boolean,
     selectedSimulatorId: String?,
+    onSimulatorSelected: (String) -> Unit,
     bannerUiState: ConnectionBannerUiState,
     snackbarHostState: SnackbarHostState,
     navigationState: AppNavigationState,
@@ -490,6 +504,7 @@ private fun AppScreenScaffold(
     otherContent: @Composable (scrollToTopRequest: Int) -> Unit,
     otherListScrollToTopRequest: Int,
 ) {
+    var simulatorMenuExpanded by remember { mutableStateOf(false) }
     Box(
         modifier =
             Modifier
@@ -504,6 +519,9 @@ private fun AppScreenScaffold(
                 appScreenPrimarySimulatorNavItem(
                     resolvedLayoutType = resolvedLayoutType,
                     selectedSimulatorId = selectedSimulatorId,
+                    expanded = simulatorMenuExpanded,
+                    onExpandedChange = { simulatorMenuExpanded = it },
+                    onSimulatorSelected = onSimulatorSelected,
                 )
                 AppDestination.entries.forEach { dest ->
                     val itemModifier =
