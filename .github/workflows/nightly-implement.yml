@@ -1,0 +1,97 @@
+name: Nightly Implement
+
+on:
+  schedule:
+    - cron: "37 20 * * *" # JST 5:37 (UTC 20:37)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  select-issues:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      issues: ${{ steps.select.outputs.issues }}
+
+    steps:
+      - name: Select up to 2 claude-implementable issues without a linked PR
+        id: select
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          issues="$(gh issue list \
+            --repo "${{ github.repository }}" \
+            --search "is:open label:claude-implementable -linked:pr" \
+            --json number,title,url \
+            --limit 20 \
+            | jq -c 'sort_by(.number) | .[:2]')"
+          echo "issues=${issues}" >> "$GITHUB_OUTPUT"
+          echo "Selected issues: ${issues}"
+
+  implement:
+    needs: select-issues
+    if: needs.select-issues.outputs.issues != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        issue: ${{ fromJson(needs.select-issues.outputs.issues) }}
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      - name: Cache global npm directory
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-claude-code-2.1.226
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2.1.226
+
+      - name: Determine JST date
+        id: jst
+        run: echo "date=$(TZ=Asia/Tokyo date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Implement issue with Claude Code
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          ISSUE_NUMBER: ${{ matrix.issue.number }}
+          ISSUE_TITLE: ${{ matrix.issue.title }}
+          ISSUE_URL: ${{ matrix.issue.url }}
+          REPO: ${{ github.repository }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+
+          claude -p "$(cat <<PROMPT
+          KoDriverリポジトリの夜間バッチ処理として、GitHub issue #${ISSUE_NUMBER}（${ISSUE_URL}）を実装してPRを作成してください。
+
+          1. \`gh issue view ${ISSUE_NUMBER} --repo ${REPO} --json title,body,comments\` でissueの内容（本文・コメント）を確認する。
+          2. CLAUDE.md の「実装前」チェックリストに従い、既存実装・依存モジュール・類似コードを確認する。
+          3. issueの要件が実装するには曖昧・情報不足だと判断した場合は、コード変更は一切行わず、\`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` で「要件が不十分なため保留する」旨と不足している情報を日本語で具体的にコメントし、issueには手を付けずに終了する（ラベルは外さない）。
+          4. 実装可能と判断した場合は、\`main\` から \`claude/issue-${ISSUE_NUMBER}\` のようなブランチを作成し実装する。CLAUDE.md のテスト方針・コーディング規約・Git操作ルールに従うこと。ユニットテストが必要な変更には同時にテストを追加・更新する。\`docs/improvement-ideas.md\` は変更しない（承認が必要なファイルのため）。
+          5. 実装後、\`./gradlew preSubmitChecks\` を実行する。
+             - 成功した場合: わかりやすい日本語のコミットメッセージでコミットし、\`git push -u origin claude/issue-${ISSUE_NUMBER}\` でプッシュし、\`gh pr create --repo ${REPO} --base main --head claude/issue-${ISSUE_NUMBER} --title --body\` でPRを作成する（タイトル・説明は日本語、署名やセッションURLは含めない、本文に \"Closes #${ISSUE_NUMBER}\" を含める）。その後 \`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` と \`gh pr comment <PR番号> --repo ${REPO}\` の両方に、実装内容の要約とPRへのリンクを日本語でコメントする。
+             - 失敗した場合、または実装を完遂できないと判断した場合: 変更を破棄し（\`git checkout -- .\` 等でクリーンな状態に戻す）、\`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` で失敗の理由を日本語で具体的にコメントし、\`gh issue edit ${ISSUE_NUMBER} --repo ${REPO} --remove-label claude-implementable\` でラベルを外す。PRは作成しない。
+          6. 最後に、実施した内容（コメントあり/保留/失敗のいずれか）を簡潔に出力する。
+          PROMPT
+          )" \
+            --allowedTools "Read,Grep,Glob,Edit,Write,Bash" \
+            --permission-mode acceptEdits \
+            --model sonnet
