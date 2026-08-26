@@ -4,6 +4,7 @@
     <string name="item_readout_start_sound">読み上げ開始音</string>
     <string name="item_theme">テーマ</string>
     <string name="item_dynamic_color">ダイナミックカラー</string>
+    <string name="item_haptic_feedback">ハプティックフィードバック</string>
     <string name="item_startup">PC起動時に自動起動</string>
     <string name="item_github_repository">GitHubレポジトリ</string>
     <string name="item_release_page">リリースページ</string>

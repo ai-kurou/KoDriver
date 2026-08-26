@@ -3,8 +3,10 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
+import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.preferences.AndroidDynamicColorEnabledRepository
+import kurou.kodriver.data.preferences.AndroidHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.AndroidKeepScreenOnEnabledRepository
 import kurou.kodriver.data.preferences.AndroidReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
@@ -71,6 +73,8 @@ import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
+import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -109,6 +113,7 @@ private val Context.readoutDataStore by preferencesDataStore("readout_preference
 private val Context.serverIpDataStore by preferencesDataStore("server_ip_preferences")
 private val Context.keepScreenOnDataStore by preferencesDataStore("keep_screen_on_preferences")
 private val Context.dynamicColorDataStore by preferencesDataStore("dynamic_color_preferences")
+private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore("haptic_feedback_enabled_preferences")
 
 /**
  * Android 版の Repository バインドを行う Koin モジュール（:core:data / androidMain）。
@@ -211,18 +216,11 @@ fun androidDataModule(context: Context) =
         // ネットワーク（KoDriver サーバーのバージョン取得 / GitHub リリース確認）
         single<ServerVersionRepository> { HttpServerVersionRepository() }
         single<AppUpdateRepository> { GitHubAppReleaseRepository() }
-        // 画面スリープ抑止（Android は端末画面を実際に点灯維持）
-        single<KeepScreenOnEnabledRepository> {
-            AndroidKeepScreenOnEnabledRepository(context.keepScreenOnDataStore)
-        }
-        // Dynamic Color（Android 12+ の Material You 配色を使うかどうかの設定）
-        single<DynamicColorEnabledRepository> {
-            AndroidDynamicColorEnabledRepository(context.dynamicColorDataStore)
-        }
         single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
         includes(androidDataModuleAceWindows())
         includes(androidDataModuleThresholdPreferences(context))
         includes(androidDataModuleLmuWindowsPitStatus())
+        includes(androidDataModuleAppSettings(context))
     }
 
 /**
@@ -232,6 +230,30 @@ private fun androidDataModuleLmuWindowsPitStatus() =
     module {
         single<LmuWindowsPitStatusRepository> {
             WebSocketLmuWindowsPitStatusRepository(serverIpRepository = get(), client = get())
+        }
+    }
+
+/**
+ * androidDataModule から分離したアプリ設定系バインド（画面スリープ抑止・Dynamic Color・
+ * タップ時ハプティックフィードバック。LongMethod 対策）。
+ */
+private fun androidDataModuleAppSettings(context: Context) =
+    module {
+        // 画面スリープ抑止（Android は端末画面を実際に点灯維持）
+        single<KeepScreenOnEnabledRepository> {
+            AndroidKeepScreenOnEnabledRepository(context.keepScreenOnDataStore)
+        }
+        // Dynamic Color（Android 12+ の Material You 配色を使うかどうかの設定）
+        single<DynamicColorEnabledRepository> {
+            AndroidDynamicColorEnabledRepository(context.dynamicColorDataStore)
+        }
+        // タップ時ハプティックフィードバック（Android専用設定）
+        single<HapticFeedbackEnabledRepository> {
+            AndroidHapticFeedbackEnabledRepository(context.hapticFeedbackEnabledDataStore)
+        }
+        // 端末が振動ハードウェアを備えているか（設定画面での項目表示可否に使用）
+        single<HapticFeedbackAvailabilityRepository> {
+            AndroidHapticFeedbackAvailabilityRepository(context)
         }
     }
 

@@ -14,7 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-private class FakeHapticFeedback : HapticFeedback {
+internal class FakeHapticFeedback : HapticFeedback {
     val performedTypes = mutableListOf<HapticFeedbackType>()
 
     override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {

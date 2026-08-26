@@ -27,6 +27,7 @@ class OtherListPaneScreenshotTest {
                                 onItemClick = {},
                                 onKeepScreenOnChange = {},
                                 onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
                                 onStartupEnabledChange = {},
                             )
                         }
@@ -49,6 +50,7 @@ class OtherListPaneScreenshotTest {
                                 onItemClick = {},
                                 onKeepScreenOnChange = {},
                                 onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
                                 onStartupEnabledChange = {},
                             )
                         }

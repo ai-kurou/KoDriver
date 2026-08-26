@@ -8,5 +8,6 @@ actual fun buildOtherListItems(): List<OtherListItemType> =
         it != OtherListItemType.ServerIp &&
             it != OtherListItemType.KeepScreenOn &&
             it != OtherListItemType.DynamicColor &&
+            it != OtherListItemType.HapticFeedback &&
             it != OtherListItemType.DebugState
     }
