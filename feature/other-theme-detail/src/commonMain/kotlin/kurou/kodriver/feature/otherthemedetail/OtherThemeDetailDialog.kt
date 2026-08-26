@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,6 +63,11 @@ internal fun OtherThemeDetailDialogContent(
     onDismiss: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onThemeModeSelectedWithHaptic: (ThemeMode) -> Unit = { themeMode ->
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onThemeModeSelected(themeMode)
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.theme_title)) },
@@ -79,11 +86,11 @@ internal fun OtherThemeDetailDialogContent(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .clickable { onThemeModeSelected(themeMode) },
+                                .clickable { onThemeModeSelectedWithHaptic(themeMode) },
                     ) {
                         RadioButton(
                             selected = uiState.pendingThemeMode == themeMode,
-                            onClick = { onThemeModeSelected(themeMode) },
+                            onClick = { onThemeModeSelectedWithHaptic(themeMode) },
                         )
                         Text(label)
                     }

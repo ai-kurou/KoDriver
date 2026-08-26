@@ -26,6 +26,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.Placeholder
@@ -107,6 +109,19 @@ fun OtherConsoleIpDetailPaneContent(
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onPortSelectedWithHaptic: (Int) -> Unit = { port ->
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onPortSelected(port)
+    }
+    val onOpenGuideWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onOpenGuide()
+    }
+    val onOpenSimHubWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onOpenSimHub()
+    }
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
             onDismiss()
@@ -145,7 +160,7 @@ fun OtherConsoleIpDetailPaneContent(
                                                 textDecoration = TextDecoration.Underline,
                                             ),
                                     ),
-                                linkInteractionListener = { onOpenSimHub() },
+                                linkInteractionListener = { onOpenSimHubWithHaptic() },
                             ),
                         ) {
                             append(stringResource(Res.string.console_ip_description_simhub_link))
@@ -202,11 +217,11 @@ fun OtherConsoleIpDetailPaneContent(
             ) {
                 RadioButton(
                     selected = uiState.selectedPort == GT7_PS5_UDP_PORT_DEFAULT,
-                    onClick = { onPortSelected(GT7_PS5_UDP_PORT_DEFAULT) },
+                    onClick = { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_DEFAULT) },
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33740_label),
-                    modifier = Modifier.clickable { onPortSelected(GT7_PS5_UDP_PORT_DEFAULT) },
+                    modifier = Modifier.clickable { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_DEFAULT) },
                 )
             }
             Row(
@@ -215,11 +230,11 @@ fun OtherConsoleIpDetailPaneContent(
             ) {
                 RadioButton(
                     selected = uiState.selectedPort == GT7_PS5_UDP_PORT_ALTERNATE,
-                    onClick = { onPortSelected(GT7_PS5_UDP_PORT_ALTERNATE) },
+                    onClick = { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_ALTERNATE) },
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33741_label),
-                    modifier = Modifier.clickable { onPortSelected(GT7_PS5_UDP_PORT_ALTERNATE) },
+                    modifier = Modifier.clickable { onPortSelectedWithHaptic(GT7_PS5_UDP_PORT_ALTERNATE) },
                 )
             }
             if (uiState.saveFailed) {
@@ -247,7 +262,7 @@ fun OtherConsoleIpDetailPaneContent(
             Spacer(modifier = Modifier.height(4.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable(onClick = onOpenGuide),
+                modifier = Modifier.clickable(onClick = onOpenGuideWithHaptic),
             ) {
                 Text(
                     text = stringResource(Res.string.console_ip_guide_link),

@@ -22,6 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -38,6 +40,7 @@ fun DetailPaneCard(
     bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val haptic = LocalHapticFeedback.current
     val contentAlpha by animateFloatAsState(targetValue = if (checked) 1f else DISABLED_CONTENT_ALPHA)
     DetailPaneCardLayout(
         title = title,
@@ -51,7 +54,10 @@ fun DetailPaneCard(
                 onCheckedChange = null,
             )
         },
-        onHeaderClick = { onCheckedChange(!checked) },
+        onHeaderClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            onCheckedChange(!checked)
+        },
         bottomContent = bottomContent,
     )
 }
@@ -136,12 +142,16 @@ fun DetailPaneCardChips(
     chipEnabled: Boolean,
     onChipClick: (String) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     chipLabels.forEach { label ->
         val selected = label in selectedChipLabels
         FilterChip(
             selected = selected,
             enabled = chipEnabled,
-            onClick = { onChipClick(label) },
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                onChipClick(label)
+            },
             label = { Text(text = label) },
             leadingIcon =
                 if (selected) {

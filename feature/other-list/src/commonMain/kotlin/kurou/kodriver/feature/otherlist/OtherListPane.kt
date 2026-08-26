@@ -43,6 +43,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -290,6 +292,19 @@ private fun OtherListItem(
     onStartupEnabledChange: (Boolean) -> Unit,
     onItemClick: (OtherListItemType) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onKeepScreenOnChangeWithHaptic: (Boolean) -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onKeepScreenOnChange(it)
+    }
+    val onDynamicColorEnabledChangeWithHaptic: (Boolean) -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onDynamicColorEnabledChange(it)
+    }
+    val onStartupEnabledChangeWithHaptic: (Boolean) -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onStartupEnabledChange(it)
+    }
     val isSelected = item == uiState.selectedItem
     val containerColor by animateColorAsState(
         targetValue =
@@ -330,21 +345,21 @@ private fun OtherListItem(
                 OtherListItemType.KeepScreenOn -> {
                     Switch(
                         checked = uiState.keepScreenOn,
-                        onCheckedChange = onKeepScreenOnChange,
+                        onCheckedChange = onKeepScreenOnChangeWithHaptic,
                     )
                 }
 
                 OtherListItemType.DynamicColor -> {
                     Switch(
                         checked = uiState.dynamicColorEnabled,
-                        onCheckedChange = onDynamicColorEnabledChange,
+                        onCheckedChange = onDynamicColorEnabledChangeWithHaptic,
                     )
                 }
 
                 OtherListItemType.Startup -> {
                     Switch(
                         checked = uiState.startupEnabled,
-                        onCheckedChange = onStartupEnabledChange,
+                        onCheckedChange = onStartupEnabledChangeWithHaptic,
                     )
                 }
 
@@ -375,6 +390,7 @@ private fun OtherListItem(
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
                 .clickable {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     when (item) {
                         OtherListItemType.KeepScreenOn -> {
                             onKeepScreenOnChange(!uiState.keepScreenOn)
@@ -417,6 +433,7 @@ private fun OtherAppVersionListItem(
 ) {
     if (appVersionLabel.isBlank() || appVersion.isBlank()) return
 
+    val haptic = LocalHapticFeedback.current
     var tapCount by remember { mutableIntStateOf(0) }
     var lastTapMark by remember { mutableStateOf<TimeMark?>(null) }
 
@@ -445,6 +462,7 @@ private fun OtherAppVersionListItem(
             Modifier
                 .fillMaxWidth()
                 .clickable {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     val now = TimeSource.Monotonic.markNow()
                     val elapsedSinceLastTap = lastTapMark?.elapsedNow()
                     tapCount =

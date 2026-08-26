@@ -34,6 +34,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -127,6 +129,7 @@ fun ConnectionBannerContent(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
+    val haptic = LocalHapticFeedback.current
     val colors = bannerColors(uiState.status)
     val backgroundColor by animateColorAsState(targetValue = colors.background)
     val contentColor by animateColorAsState(targetValue = colors.content)
@@ -141,7 +144,10 @@ fun ConnectionBannerContent(
                 .background(backgroundColor)
                 .then(
                     if (isTappable) {
-                        Modifier.clickable(role = Role.Button, onClick = currentOnClick)
+                        Modifier.clickable(role = Role.Button) {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            currentOnClick()
+                        }
                     } else {
                         Modifier
                     },
