@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 
 class OtherListItemsTest {
     @Test
-    fun `nonAndroidではServerIpとKeepScreenOnとDynamicColorを除いた全項目を定義順で返す`() {
+    fun `nonAndroidではServerIpとKeepScreenOnとDynamicColorとHapticFeedbackを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()
 
         assertEquals(

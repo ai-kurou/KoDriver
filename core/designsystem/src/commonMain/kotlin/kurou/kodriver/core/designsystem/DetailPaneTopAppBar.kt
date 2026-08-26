@@ -10,6 +10,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 
 private val DETAIL_TOP_APP_BAR_HEIGHT = 56.dp
@@ -27,11 +29,18 @@ fun DetailPaneTopAppBar(
     navigationIconModifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
+    val haptic = LocalHapticFeedback.current
     TopAppBar(
         title = { Text(title) },
         navigationIcon = {
             if (canNavigateBack) {
-                IconButton(onClick = onBack, modifier = navigationIconModifier) {
+                IconButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onBack()
+                    },
+                    modifier = navigationIconModifier,
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = navigateBackContentDescription,

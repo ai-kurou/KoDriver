@@ -14,7 +14,7 @@ private fun kurou.kodriver.feature.otherlist.OtherAppVersionListItem(appVersionL
     - onAppVersionTapped: STABLE (function type)
 
 @Composable
-private fun kurou.kodriver.feature.otherlist.OtherListItem(item: kurou.kodriver.feature.otherlist.OtherListItemType, uiState: kurou.kodriver.feature.otherlist.OtherListUiState, onKeepScreenOnChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onDynamicColorEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onStartupEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onItemClick: kotlin.Function1<kurou.kodriver.feature.otherlist.OtherListItemType, kotlin.Unit>): kotlin.Unit
+private fun kurou.kodriver.feature.otherlist.OtherListItem(item: kurou.kodriver.feature.otherlist.OtherListItemType, uiState: kurou.kodriver.feature.otherlist.OtherListUiState, onKeepScreenOnChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onDynamicColorEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onHapticFeedbackEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onStartupEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onItemClick: kotlin.Function1<kurou.kodriver.feature.otherlist.OtherListItemType, kotlin.Unit>): kotlin.Unit
   skippable: false
   restartable: true
   params:
@@ -22,6 +22,7 @@ private fun kurou.kodriver.feature.otherlist.OtherListItem(item: kurou.kodriver.
     - uiState: RUNTIME (requires runtime check)
     - onKeepScreenOnChange: STABLE (function type)
     - onDynamicColorEnabledChange: STABLE (function type)
+    - onHapticFeedbackEnabledChange: STABLE (function type)
     - onStartupEnabledChange: STABLE (function type)
     - onItemClick: STABLE (function type)
 
@@ -41,7 +42,7 @@ private fun kurou.kodriver.feature.otherlist.OtherListItemTrailingIcon(itemType:
     - itemType: STABLE (class with no mutable properties)
 
 @Composable
-public fun kurou.kodriver.feature.otherlist.OtherListPane(uiState: kurou.kodriver.feature.otherlist.OtherListUiState, onItemClick: kotlin.Function1<kurou.kodriver.feature.otherlist.OtherListItemType, kotlin.Unit>, onKeepScreenOnChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onDynamicColorEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onStartupEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onAppVersionTapped: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, scrollToTopRequest: kotlin.Int): kotlin.Unit
+public fun kurou.kodriver.feature.otherlist.OtherListPane(uiState: kurou.kodriver.feature.otherlist.OtherListUiState, onItemClick: kotlin.Function1<kurou.kodriver.feature.otherlist.OtherListItemType, kotlin.Unit>, onKeepScreenOnChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onDynamicColorEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onHapticFeedbackEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onStartupEnabledChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onAppVersionTapped: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, scrollToTopRequest: kotlin.Int): kotlin.Unit
   skippable: false
   restartable: true
   params:
@@ -49,6 +50,7 @@ public fun kurou.kodriver.feature.otherlist.OtherListPane(uiState: kurou.kodrive
     - onItemClick: STABLE (function type)
     - onKeepScreenOnChange: STABLE (function type)
     - onDynamicColorEnabledChange: STABLE (function type)
+    - onHapticFeedbackEnabledChange: STABLE (function type)
     - onStartupEnabledChange: STABLE (function type)
     - onAppVersionTapped: STABLE (function type)
     - modifier: STABLE (marked @Stable or @Immutable)
@@ -68,6 +70,13 @@ private fun kurou.kodriver.feature.otherlist.ScrollToTopEffect(scrollToTopReques
   params:
     - scrollToTopRequest: STABLE (primitive type)
     - scrollToTop: STABLE (function type)
+
+@Composable
+private fun kurou.kodriver.feature.otherlist.otherAppSettingsItemDisplayName(itemType: kurou.kodriver.feature.otherlist.OtherListItemType): kotlin.String
+  skippable: false
+  restartable: false
+  params:
+    - itemType: STABLE (class with no mutable properties)
 
 @Composable
 private fun kurou.kodriver.feature.otherlist.otherItemDisplayName(itemType: kurou.kodriver.feature.otherlist.OtherListItemType): kotlin.String

@@ -31,6 +31,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.Placeholder
@@ -306,16 +308,21 @@ private fun FeedbackTypeOption(
     label: String,
     onTypeSelected: (FeedbackType) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
+    val onTypeSelectedWithHaptic: () -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onTypeSelected(type)
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable { onTypeSelected(type) },
+                .clickable(onClick = onTypeSelectedWithHaptic),
     ) {
         RadioButton(
             selected = type == selectedType,
-            onClick = { onTypeSelected(type) },
+            onClick = onTypeSelectedWithHaptic,
         )
         Text(label)
     }

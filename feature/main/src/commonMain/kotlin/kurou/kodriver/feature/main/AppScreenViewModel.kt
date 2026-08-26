@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 
 /**
@@ -21,6 +22,7 @@ class AppScreenViewModel(
     private val currentVersion: String,
     observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
     observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
+    observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
 ) : ViewModel() {
     private val _hasAppUpdate = MutableStateFlow(false)
 
@@ -29,11 +31,13 @@ class AppScreenViewModel(
             _hasAppUpdate,
             observeKeepScreenOn(),
             observeDynamicColorEnabled(),
-        ) { hasUpdate, keepOn, dynamicColorEnabled ->
+            observeHapticFeedbackEnabled(),
+        ) { hasUpdate, keepOn, dynamicColorEnabled, hapticFeedbackEnabled ->
             AppScreenUiState(
                 hasAppUpdate = hasUpdate,
                 keepScreenOn = keepOn,
                 dynamicColorEnabled = dynamicColorEnabled,
+                hapticFeedbackEnabled = hapticFeedbackEnabled,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppScreenUiState())
 

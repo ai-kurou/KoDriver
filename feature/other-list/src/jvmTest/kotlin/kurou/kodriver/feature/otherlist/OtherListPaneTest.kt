@@ -2,13 +2,18 @@ package kurou.kodriver.feature.otherlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
@@ -18,6 +23,14 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+
+private class FakeHapticFeedback : HapticFeedback {
+    val performedTypes = mutableListOf<HapticFeedbackType>()
+
+    override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+        performedTypes += hapticFeedbackType
+    }
+}
 
 class OtherListPaneTest {
     @get:Rule
@@ -36,6 +49,7 @@ class OtherListPaneTest {
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -59,6 +73,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -82,6 +97,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -105,6 +121,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -112,6 +129,30 @@ class OtherListPaneTest {
         rule.onNode(hasText("ダイナミックカラー")).performClick()
 
         assertEquals(false, dynamicColorEnabled)
+    }
+
+    @Test
+    fun `ハプティックフィードバックをクリックすると切り替えコールバックを呼ぶ`() {
+        var hapticFeedbackEnabled: Boolean? = null
+
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.HapticFeedback),
+                        hapticFeedbackEnabled = true,
+                    ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = { hapticFeedbackEnabled = it },
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("ハプティックフィードバック")).performClick()
+
+        assertEquals(false, hapticFeedbackEnabled)
     }
 
     @Test
@@ -128,6 +169,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = { startupEnabled = it },
             )
         }
@@ -149,21 +191,102 @@ class OtherListPaneTest {
                             listOf(
                                 OtherListItemType.KeepScreenOn,
                                 OtherListItemType.DynamicColor,
+                                OtherListItemType.HapticFeedback,
                                 OtherListItemType.Startup,
                             ),
                     ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
 
         rule.onNode(hasText("画面をスリープさせない")).performClick()
         rule.onNode(hasText("ダイナミックカラー")).performClick()
+        rule.onNode(hasText("ハプティックフィードバック")).performClick()
         rule.onNode(hasText("PC起動時に自動起動")).performClick()
 
         assertNull(clickedItem)
+    }
+
+    @Test
+    fun `画面スリープ無効のSwitch本体を直接タップするとハプティックフィードバックを発生させる`() {
+        val haptic = FakeHapticFeedback()
+
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherListPane(
+                    uiState =
+                        OtherListUiState(
+                            items = listOf(OtherListItemType.KeepScreenOn),
+                            keepScreenOn = true,
+                        ),
+                    onItemClick = {},
+                    onKeepScreenOnChange = {},
+                    onDynamicColorEnabledChange = {},
+                    onHapticFeedbackEnabledChange = {},
+                    onStartupEnabledChange = {},
+                )
+            }
+        }
+
+        rule.onNode(isToggleable()).performClick()
+
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
+    }
+
+    @Test
+    fun `ダイナミックカラーのSwitch本体を直接タップするとハプティックフィードバックを発生させる`() {
+        val haptic = FakeHapticFeedback()
+
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherListPane(
+                    uiState =
+                        OtherListUiState(
+                            items = listOf(OtherListItemType.DynamicColor),
+                            dynamicColorEnabled = true,
+                        ),
+                    onItemClick = {},
+                    onKeepScreenOnChange = {},
+                    onDynamicColorEnabledChange = {},
+                    onHapticFeedbackEnabledChange = {},
+                    onStartupEnabledChange = {},
+                )
+            }
+        }
+
+        rule.onNode(isToggleable()).performClick()
+
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
+    }
+
+    @Test
+    fun `PC起動時に自動起動のSwitch本体を直接タップするとハプティックフィードバックを発生させる`() {
+        val haptic = FakeHapticFeedback()
+
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherListPane(
+                    uiState =
+                        OtherListUiState(
+                            items = listOf(OtherListItemType.Startup),
+                            startupEnabled = false,
+                        ),
+                    onItemClick = {},
+                    onKeepScreenOnChange = {},
+                    onDynamicColorEnabledChange = {},
+                    onHapticFeedbackEnabledChange = {},
+                    onStartupEnabledChange = {},
+                )
+            }
+        }
+
+        rule.onNode(isToggleable()).performClick()
+
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
     }
 
     @Test
@@ -179,6 +302,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -200,6 +324,7 @@ class OtherListPaneTest {
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -222,6 +347,7 @@ class OtherListPaneTest {
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -246,6 +372,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
                 onAppVersionTapped = { tappedCount++ },
             )
@@ -273,6 +400,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
                 onAppVersionTapped = { tappedCount++ },
             )
@@ -302,6 +430,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -323,6 +452,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -344,6 +474,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
                 onStartupEnabledChange = {},
             )
         }
@@ -376,6 +507,7 @@ class OtherListPaneTest {
                     onItemClick = {},
                     onKeepScreenOnChange = {},
                     onDynamicColorEnabledChange = {},
+                    onHapticFeedbackEnabledChange = {},
                     onStartupEnabledChange = {},
                     scrollToTopRequest = scrollToTopRequest,
                 )
