@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
+import androidx.compose.material.icons.outlined.BedtimeOff
 import androidx.compose.material.icons.outlined.BrightnessHigh
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Code
@@ -194,7 +195,7 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
 
 private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
     when (itemType) {
-        OtherListItemType.KeepScreenOn -> Icons.Outlined.BrightnessHigh
+        OtherListItemType.KeepScreenOn -> Icons.Outlined.BedtimeOff
         OtherListItemType.Theme -> Icons.Outlined.BrightnessHigh
         OtherListItemType.DynamicColor -> Icons.Outlined.Palette
         OtherListItemType.HapticFeedback -> Icons.Outlined.Vibration
