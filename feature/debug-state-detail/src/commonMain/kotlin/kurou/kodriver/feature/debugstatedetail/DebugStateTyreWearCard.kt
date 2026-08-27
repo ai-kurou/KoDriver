@@ -24,7 +24,7 @@ private val WHEEL_COLUMN_WIDTH = 110.dp
 
 @Composable
 internal fun TyreWearContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
 ) {
     val wheels = lmuWindowsTelemetry?.tyres?.wheels

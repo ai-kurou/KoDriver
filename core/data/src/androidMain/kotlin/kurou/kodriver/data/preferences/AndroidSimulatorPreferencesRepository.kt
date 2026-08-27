@@ -14,9 +14,9 @@ internal class AndroidSimulatorPreferencesRepository(
 ) : SimulatorPreferencesRepository {
     private val selectedSimulatorKey = stringPreferencesKey("selected_simulator")
 
-    override fun selectedSimulator(): Flow<Simulator?> =
+    override fun selectedSimulator(): Flow<Simulator> =
         dataStore.data.map {
-            Simulator.fromId(it[selectedSimulatorKey].orEmpty())
+            Simulator.fromId(it[selectedSimulatorKey].orEmpty()) ?: Simulator.LmuWindows
         }
 
     override suspend fun saveSelectedSimulator(simulator: Simulator) {

@@ -18,30 +18,6 @@ class DebugStateTyreCarcassTemperatureCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            tyreCarcassTemperature =
-                                LmuWindowsTyreCarcassTemperatureData(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("タイヤカーカス温度").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
     fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {

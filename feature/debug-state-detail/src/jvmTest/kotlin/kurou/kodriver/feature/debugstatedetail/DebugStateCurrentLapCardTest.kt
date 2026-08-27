@@ -24,28 +24,6 @@ class DebugStateCurrentLapCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
-                            cardOrder = listOf(DebugStateCardKey.CURRENT_LAP),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("現在のラップ").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
     fun `selectedSimulatorがAceWindowsの場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {

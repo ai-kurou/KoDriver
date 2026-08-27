@@ -190,45 +190,6 @@ class AceWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `ACE非選択時は読み上げない`() =
-        runTest(testDispatcher) {
-            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val ttsEngine = mockTts(spokenTexts)
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-            every {
-                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
-            } returns MutableStateFlow(emptyMap())
-            every {
-                readoutPreferencesRepository.observeReadoutOrder(Simulator.AceWindows.id)
-            } returns MutableStateFlow(emptyList())
-            every {
-                remainingFuelPreferencesRepository.observeThresholdPercentage()
-            } returns MutableStateFlow(30)
-            every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
-            every {
-                tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
-            } returns MutableStateFlow(Celsius(90))
-            every {
-                tyreTemperaturePreferencesRepository.observeEnabledStates()
-            } returns MutableStateFlow(emptyMap())
-            every {
-                vehicleApproachPreferencesRepository.observeEnabledStates()
-            } returns MutableStateFlow(emptyMap())
-            every {
-                vehicleApproachPreferencesRepository.observeThresholdMeters()
-            } returns MutableStateFlow(10.0)
-            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
-
-            channel.send(fuel(20.0))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-            confirmVerified(simulatorPreferencesRepository)
-        }
-
-    @Test
     fun `carLocationがTRACK以外の場合は残量が閾値以下でもフラグが変化しても読み上げない`() =
         runTest(testDispatcher) {
             listOf(
@@ -327,7 +288,7 @@ class AceWindowsNarratorViewModelTest {
             val statusChannel = Channel<AceWindowsStatusData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
             val ttsEngine = mockTts(spokenTexts)
-            val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.AceWindows)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.AceWindows)
             every { simulatorPreferencesRepository.selectedSimulator() } returns simulatorFlow
             every {
                 readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
@@ -335,6 +296,12 @@ class AceWindowsNarratorViewModelTest {
             every {
                 readoutPreferencesRepository.observeReadoutOrder(Simulator.AceWindows.id)
             } returns MutableStateFlow(listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root))
+            every {
+                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every {
+                readoutPreferencesRepository.observeReadoutOrder(Simulator.LmuWindows.id)
+            } returns MutableStateFlow(emptyList())
             every {
                 remainingFuelPreferencesRepository.observeThresholdPercentage()
             } returns MutableStateFlow(30)
@@ -364,7 +331,7 @@ class AceWindowsNarratorViewModelTest {
             createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine)
 
             statusChannel.send(AceWindowsStatusData(status = AceWindowsStatusType.LIVE))
-            simulatorFlow.value = null
+            simulatorFlow.value = Simulator.LmuWindows
             simulatorFlow.value = Simulator.AceWindows
 
             fuelChannel.send(fuel(50.0))

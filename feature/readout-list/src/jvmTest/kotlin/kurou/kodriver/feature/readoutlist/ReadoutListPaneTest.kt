@@ -25,7 +25,7 @@ class ReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `シミュレーター未選択の場合は読み上げ優先順位ヒントを表示しない`() {
+    fun `デフォルト状態では読み上げ優先順位ヒントを表示しない`() {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(

@@ -49,7 +49,7 @@ internal fun determineActiveRaceFlags(raceFlags: LmuWindowsRaceFlagsData): List<
 
 @Composable
 internal fun FlagInfoContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     raceFlags: LmuWindowsRaceFlagsData?,
     aceWindowsFlag: AceWindowsFlagData?,
 ) {
@@ -62,7 +62,7 @@ internal fun FlagInfoContent(
             AceFlagInfoContent(aceWindowsFlag)
         }
 
-        is Simulator.Gt7Ps5, null -> {
+        is Simulator.Gt7Ps5 -> {
             Text(
                 text = stringResource(Res.string.debug_state_flag_info_unavailable),
                 style = MaterialTheme.typography.bodyMedium,

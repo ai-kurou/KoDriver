@@ -16,27 +16,6 @@ class DebugStateVehicleClassCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar"),
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("車両クラス").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
     fun `selectedSimulatorがGT7でクラス名が空文字列の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {

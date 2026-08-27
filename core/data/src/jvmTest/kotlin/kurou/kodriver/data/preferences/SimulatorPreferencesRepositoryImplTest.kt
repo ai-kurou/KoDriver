@@ -11,7 +11,6 @@ import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SimulatorPreferencesRepositoryImplTest {
@@ -31,9 +30,9 @@ class SimulatorPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値はnull・保存した値を返す・上書きで更新される`() =
+    fun `初期値はLmuWindows・保存した値を返す・上書きで更新される`() =
         testScope.runTest {
-            assertNull(repository.selectedSimulator().first())
+            assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
 
             repository.saveSelectedSimulator(Simulator.LmuWindows)
             assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())

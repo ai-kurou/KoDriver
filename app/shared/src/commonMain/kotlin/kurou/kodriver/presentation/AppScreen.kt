@@ -94,6 +94,12 @@ import kurou.kodriver.feature.telemetryloglist.TelemetryLogListViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * `:core:domain` の `Simulator.LmuWindows.id` と一致させる、初期選択シミュレータの ID。
+ * app:shared は `:core:domain` に依存しないため、Preview / デフォルト値用にリテラルで保持する。
+ */
+private const val LMU_WINDOWS_SIMULATOR_ID = "lmu_windows"
+
 private fun withTabSwitch(
     action: (() -> Unit)?,
     switchToMore: () -> Unit,
@@ -166,7 +172,7 @@ private fun AppNavIcon(
  */
 private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
     resolvedLayoutType: NavigationSuiteType,
-    selectedSimulatorId: String?,
+    selectedSimulatorId: String,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onSimulatorSelected: (String) -> Unit,
@@ -428,7 +434,7 @@ internal fun AppScreenContent(
     hasAppUpdate: Boolean = false,
     keepScreenOn: Boolean = false,
     hapticFeedbackEnabled: Boolean = true,
-    selectedSimulatorId: String? = null,
+    selectedSimulatorId: String = LMU_WINDOWS_SIMULATOR_ID,
     onSimulatorSelected: (String) -> Unit = {},
     onBannerTap: (() -> Unit)? = null,
     onFeedbackClick: ((Long) -> Unit)? = null,
@@ -488,7 +494,7 @@ internal fun AppScreenContent(
 private fun AppScreenScaffold(
     resolvedLayoutType: NavigationSuiteType,
     hasAppUpdate: Boolean,
-    selectedSimulatorId: String?,
+    selectedSimulatorId: String,
     onSimulatorSelected: (String) -> Unit,
     bannerUiState: ConnectionBannerUiState,
     snackbarHostState: SnackbarHostState,

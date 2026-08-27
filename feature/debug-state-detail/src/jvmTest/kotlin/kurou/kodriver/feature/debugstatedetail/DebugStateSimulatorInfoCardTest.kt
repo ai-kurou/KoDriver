@@ -14,26 +14,6 @@ class DebugStateSimulatorInfoCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorが未選択の場合は未選択の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            cardOrder = listOf(DebugStateCardKey.SIMULATOR),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("選択中のシミュレータ").assertIsDisplayed()
-        rule.onNodeWithText("未選択").assertIsDisplayed()
-    }
-
-    @Test
     fun `selectedSimulatorがLMUの場合はLMUの表示名を表示する`() {
         rule.setContent {
             MaterialTheme {

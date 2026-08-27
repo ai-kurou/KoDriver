@@ -15,7 +15,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidSimulatorPreferencesRepositoryTest {
@@ -40,12 +39,12 @@ class AndroidSimulatorPreferencesRepositoryTest {
     }
 
     @Test
-    fun `selectedSimulatorは初期状態でnullを返し保存後に選択したシミュレータを返す`() =
+    fun `selectedSimulatorは初期状態でLmuWindowsを返し保存後に選択したシミュレータを返す`() =
         runTest(testDispatcher) {
-            assertNull(repository.selectedSimulator().first())
-
-            repository.saveSelectedSimulator(Simulator.LmuWindows)
-
             assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
+
+            repository.saveSelectedSimulator(Simulator.Gt7Ps5)
+
+            assertEquals(Simulator.Gt7Ps5, repository.selectedSimulator().first())
         }
 }

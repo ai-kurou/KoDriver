@@ -7,9 +7,8 @@ import kurou.kodriver.domain.model.Simulator
  */
 data class ConnectionBannerVmUiState(
     val connectionStatus: ConnectionBannerVmStatus = ConnectionBannerVmStatus.UNCHECKED,
-    val selectedSimulator: Simulator? = null,
+    val selectedSimulator: Simulator = Simulator.LmuWindows,
 ) {
-    val isSimulatorSelected: Boolean get() = selectedSimulator != null
     val isGt7Ps5: Boolean get() = selectedSimulator is Simulator.Gt7Ps5
     val isAceWindows: Boolean get() = selectedSimulator is Simulator.AceWindows
 }

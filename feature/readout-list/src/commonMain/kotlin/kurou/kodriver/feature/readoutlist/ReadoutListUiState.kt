@@ -7,7 +7,7 @@ import kurou.kodriver.domain.model.Simulator
  * ReadoutList 画面の表示状態。
  */
 data class ReadoutListUiState(
-    val selectedSimulator: Simulator? = null,
+    val selectedSimulator: Simulator = Simulator.LmuWindows,
     val items: List<ReadoutItemKey> = emptyList(),
     val readoutEnabledStates: Map<ReadoutItemKey, Boolean> = emptyMap(),
     val queueEnabledStates: Map<ReadoutItemKey, Boolean> = emptyMap(),

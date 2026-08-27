@@ -60,7 +60,7 @@ class DebugStateDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("未取得").assertCountEquals(14)
+        rule.onAllNodesWithText("未取得").assertCountEquals(13)
     }
 
     @Test
@@ -209,21 +209,6 @@ class DebugStateDetailPaneTest {
 
             rule.onNodeWithText(expectedText).assertIsDisplayed()
         }
-    }
-
-    @Test
-    fun `選択中のシミュレータが未選択の場合は未選択の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未選択").assertIsDisplayed()
     }
 
     @Test

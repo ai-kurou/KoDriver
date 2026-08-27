@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -71,10 +70,10 @@ class ReadoutListViewModel(
     private val queueUseCases: QueueUseCases,
     private val startSoundUseCases: StartSoundUseCases,
 ) : ViewModel() {
-    private val _selectedSimulator: StateFlow<Simulator?> =
+    private val _selectedSimulator: StateFlow<Simulator> =
         simulatorUseCases
             .observeSelectedSimulator()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, Simulator.LmuWindows)
 
     // ドラッグ操作後のインメモリ順序（DataStore 反映前の即時 UI 更新用）
     private val _localOrder = MutableStateFlow(LocalOrderState(null, emptyList()))
@@ -83,22 +82,14 @@ class ReadoutListViewModel(
     private val _persistedOrder: StateFlow<List<ReadoutItemKey>> =
         _selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator != null) {
-                    readoutOrderUseCases.observeReadoutOrder(simulator.id)
-                } else {
-                    flowOf(emptyList())
-                }
+                readoutOrderUseCases.observeReadoutOrder(simulator.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
         _selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator != null) {
-                    readoutEnabledUseCases.observeReadoutEnabledStates(simulator.id)
-                } else {
-                    flowOf(emptyMap())
-                }
+                readoutEnabledUseCases.observeReadoutEnabledStates(simulator.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val _queueEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
@@ -119,7 +110,7 @@ class ReadoutListViewModel(
             _persistedOrder,
             _localOrder,
         ) { selected, persisted, local ->
-            val defaultItems = selected?.let { ReadoutListItemType.defaultOrder(it) }.orEmpty()
+            val defaultItems = ReadoutListItemType.defaultOrder(selected)
             // ドラッグ中の localOrder を最優先（DataStore の非同期更新より常に新しい）
             if (local.simulator == selected) {
                 local.items
@@ -154,7 +145,7 @@ class ReadoutListViewModel(
                 readoutEnabledStates = enabledStates.readoutEnabledStates,
                 queueEnabledStates = enabledStates.queueEnabledStates,
                 startSoundEnabledStates = enabledStates.startSoundEnabledStates,
-                selectedItem = selectedItem?.takeIf { selected != null && it.belongsTo(selected) },
+                selectedItem = selectedItem?.takeIf { it.belongsTo(selected) },
             )
         }.stateIn(
             viewModelScope,
@@ -166,7 +157,7 @@ class ReadoutListViewModel(
         fromIndex: Int,
         toIndex: Int,
     ) {
-        val selected = _selectedSimulator.value ?: return
+        val selected = _selectedSimulator.value
         val newItems =
             _effectiveOrder.value
                 .toMutableList()
@@ -178,7 +169,7 @@ class ReadoutListViewModel(
     }
 
     fun onItemSelected(item: ReadoutItemKey) {
-        val simulator = _selectedSimulator.value ?: return
+        val simulator = _selectedSimulator.value
         val type = ReadoutListItemType.fromId(simulator, item) ?: return
         _selectedItem.update { if (it == type) null else type }
     }
@@ -191,7 +182,7 @@ class ReadoutListViewModel(
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {
-        val simulator = _selectedSimulator.value ?: return
+        val simulator = _selectedSimulator.value
         viewModelScope.launch {
             readoutEnabledUseCases.saveReadoutEnabledState(simulator.id, key, enabled)
         }

@@ -197,7 +197,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `フラグ情報を未取得の場合は uiState の raceFlags が null`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -259,7 +259,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `フラグ情報を購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             val flagsFlow = MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.GARAGE))
             every { flagRepository.flagStream() } returns flagsFlow
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -384,7 +384,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `バーチャルエナジー情報を購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(10))
@@ -446,7 +446,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `LMUテレメトリを購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -508,7 +508,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `GT7テレメトリを購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -633,7 +633,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `並走車両情報を購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -695,7 +695,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `タイヤカーカス温度情報を購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -761,7 +761,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `車両クラス情報を購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -824,7 +824,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `GT7車両クラス情報を購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -887,7 +887,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `ACEステータス情報を購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -950,7 +950,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `ACE並走車両情報を購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -1016,7 +1016,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `LMUピット状態情報を購読すると uiState に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -1079,7 +1079,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `初期状態のcardOrderはデフォルト順序`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -1160,7 +1160,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `永続化された順序があればそれを初期値として使う`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -1242,7 +1242,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `moveCardで順序を入れ替えるとuiStateへ即座に反映される`() =
         runTest {
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
             every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
@@ -1550,7 +1550,7 @@ class DebugStateDetailViewModelTest {
     @Test
     fun `シミュレータを切り替えても他シミュレータ由来の受信状態を引き継がない`() =
         runTest {
-            val selectedSimulator = MutableStateFlow<Simulator?>(Simulator.LmuWindows)
+            val selectedSimulator = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorPreferencesRepository.selectedSimulator() } returns selectedSimulator
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))

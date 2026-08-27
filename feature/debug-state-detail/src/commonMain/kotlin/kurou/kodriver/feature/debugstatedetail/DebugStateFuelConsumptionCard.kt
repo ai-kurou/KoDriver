@@ -19,25 +19,17 @@ import kotlin.math.round
 
 @Composable
 internal fun FuelConsumptionContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     virtualEnergy: LmuWindowsVirtualEnergyData?,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
     gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
     aceWindowsFuel: AceWindowsFuelData?,
 ) {
-    if (selectedSimulator is Simulator.AceWindows) {
-        AceWindowsFuelContent(aceWindowsFuel)
-        return
+    when (selectedSimulator) {
+        is Simulator.AceWindows -> AceWindowsFuelContent(aceWindowsFuel)
+        is Simulator.Gt7Ps5 -> Gt7Ps5FuelContent(gt7Ps5Telemetry)
+        is Simulator.LmuWindows -> LmuWindowsFuelContent(virtualEnergy, lmuWindowsTelemetry)
     }
-    if (selectedSimulator is Simulator.Gt7Ps5) {
-        Gt7Ps5FuelContent(gt7Ps5Telemetry)
-        return
-    }
-    if (selectedSimulator is Simulator.LmuWindows) {
-        LmuWindowsFuelContent(virtualEnergy, lmuWindowsTelemetry)
-        return
-    }
-    Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
 }
 
 @Composable

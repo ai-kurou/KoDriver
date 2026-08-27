@@ -19,7 +19,6 @@ import org.koin.compose.viewmodel.koinViewModel
 actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val viewModel: ConnectionBannerViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    if (!uiState.isSimulatorSelected) return ConnectionBannerUiState(isVisible = false)
 
     val isGt7 = uiState.isGt7Ps5
     val isAceWindows = uiState.isAceWindows

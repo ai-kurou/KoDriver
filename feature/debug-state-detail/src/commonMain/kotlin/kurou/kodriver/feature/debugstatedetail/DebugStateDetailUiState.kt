@@ -37,7 +37,7 @@ internal val defaultDebugStateCardOrder =
     )
 
 data class DebugStateDetailUiState(
-    val selectedSimulator: Simulator? = null,
+    val selectedSimulator: Simulator = Simulator.LmuWindows,
     val raceFlags: LmuWindowsRaceFlagsData? = null,
     val virtualEnergy: LmuWindowsVirtualEnergyData? = null,
     val lmuWindowsTelemetry: LmuWindowsTelemetryData? = null,

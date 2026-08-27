@@ -74,7 +74,7 @@ internal class Gt7Ps5NarratorViewModel(
     private val selectedSimulator =
         readoutListUseCases
             .observeSelectedSimulator()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, Simulator.LmuWindows)
 
     // listPane（readoutStates）とdetailPane（tyreTemperatureStates）を統合した、
     // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
@@ -82,11 +82,7 @@ internal class Gt7Ps5NarratorViewModel(
         combine(
             selectedSimulator
                 .flatMapLatest { simulator ->
-                    if (simulator == null) {
-                        emptyFlow<Map<ReadoutItemKey, Boolean>>()
-                    } else {
-                        readoutListUseCases.observeReadoutEnabledStates(simulator.id)
-                    }
+                    readoutListUseCases.observeReadoutEnabledStates(simulator.id)
                 },
             tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
         ) { readoutStates, tyreTemperatureStates ->
@@ -96,7 +92,7 @@ internal class Gt7Ps5NarratorViewModel(
     private val readoutOrder =
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
+                readoutListUseCases.observeReadoutOrder(simulator.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。

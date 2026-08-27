@@ -25,7 +25,7 @@ private val WHEEL_COLUMN_WIDTH = 110.dp
 
 @Composable
 internal fun TyreCarcassTemperatureContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData?,
     aceWindowsTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData?,
 ) {
@@ -33,7 +33,7 @@ internal fun TyreCarcassTemperatureContent(
         when (selectedSimulator) {
             is Simulator.LmuWindows -> tyreCarcassTemperature?.wheels
             is Simulator.AceWindows -> aceWindowsTyreCarcassTemperature?.wheels
-            is Simulator.Gt7Ps5, null -> null
+            is Simulator.Gt7Ps5 -> null
         }
     if (wheels == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))

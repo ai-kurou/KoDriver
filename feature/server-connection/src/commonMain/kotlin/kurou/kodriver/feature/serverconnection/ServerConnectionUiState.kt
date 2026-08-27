@@ -13,7 +13,7 @@ enum class ServerConnectionStatus { NOT_CONFIGURED, CHECKING, CONNECTED, DISCONN
 data class ServerConnectionUiState(
     val connectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED,
     val requiresKoDriverServer: Boolean = false,
-    val selectedSimulator: Simulator? = null,
+    val selectedSimulator: Simulator = Simulator.LmuWindows,
     val serverVersion: String? = null,
     val showVersionMismatchBottomSheet: Boolean = false,
     val appVersion: String = "",

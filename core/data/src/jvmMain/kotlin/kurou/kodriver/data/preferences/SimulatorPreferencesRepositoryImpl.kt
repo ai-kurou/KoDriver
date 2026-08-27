@@ -8,9 +8,9 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 internal class SimulatorPreferencesRepositoryImpl(
     private val dataStore: DataStore<SimulatorPreferences>,
 ) : SimulatorPreferencesRepository {
-    override fun selectedSimulator(): Flow<Simulator?> =
+    override fun selectedSimulator(): Flow<Simulator> =
         dataStore.observeProperty {
-            Simulator.fromId(it.selectedSimulator)
+            Simulator.fromId(it.selectedSimulator) ?: Simulator.LmuWindows
         }
 
     override suspend fun saveSelectedSimulator(simulator: Simulator) {

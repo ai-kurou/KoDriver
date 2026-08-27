@@ -76,7 +76,7 @@ class ServerConnectionViewModelTest {
         runTest {
             val ipFlow = MutableStateFlow("192.168.1.1")
             every { serverIpRepository.serverIp() } returns ipFlow
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
@@ -95,7 +95,7 @@ class ServerConnectionViewModelTest {
     fun `IP未設定時はNOT_CONFIGUREDを返す`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow(null)
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -132,7 +132,7 @@ class ServerConnectionViewModelTest {
         runTest {
             val ipFlow = MutableStateFlow<String?>(null)
             every { serverIpRepository.serverIp() } returns ipFlow
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { serverIpRepository.saveServerIp("192.168.1.100") } answers {
                 ipFlow.update { "192.168.1.100" }
             }
@@ -158,7 +158,7 @@ class ServerConnectionViewModelTest {
     fun `一定間隔で接続状態を更新する`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returnsMany
                 listOf(Result.failure(RuntimeException("down")), Result.success("1.0.0"))
             val viewModel = createViewModel()
@@ -181,7 +181,7 @@ class ServerConnectionViewModelTest {
     fun `接続確認で例外が発生しても未接続として監視を継続する`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returnsMany
                 listOf(Result.failure(RuntimeException("error")), Result.success("1.0.0"))
             val viewModel = createViewModel()
@@ -220,10 +220,10 @@ class ServerConnectionViewModelTest {
         }
 
     @Test
-    fun `シミュレータ未選択時はrequiresKoDriverServerがfalseになる`() =
+    fun `GT7選択時はrequiresKoDriverServerがfalseになる`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow(null)
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -237,27 +237,10 @@ class ServerConnectionViewModelTest {
         }
 
     @Test
-    fun `シミュレータ未選択時はnullを返す`() =
-        runTest {
-            every { serverIpRepository.serverIp() } returns MutableStateFlow(null)
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-            val viewModel = createViewModel()
-            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
-
-            dispatcher.scheduler.runCurrent()
-
-            assertNull(viewModel.uiState.first().selectedSimulator)
-            verify(exactly = 1) { serverIpRepository.serverIp() }
-            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            confirmVerified(serverIpRepository, versionRepository, simulatorRepository)
-            collectionJob.cancelAndJoin()
-        }
-
-    @Test
     fun `接続成功時にサーバーバージョンがuiStateに反映される`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
@@ -276,7 +259,7 @@ class ServerConnectionViewModelTest {
     fun `未接続時はサーバーバージョンがnullになる`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.failure(RuntimeException("error"))
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
@@ -295,7 +278,7 @@ class ServerConnectionViewModelTest {
     fun `バージョン不一致時にボトムシートを表示する`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
             val viewModel = createViewModel(appVersion = "1.0.0")
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
@@ -314,7 +297,7 @@ class ServerConnectionViewModelTest {
     fun `バージョン一致時はボトムシートを表示しない`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
             val viewModel = createViewModel(appVersion = "1.0.0")
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
@@ -333,7 +316,7 @@ class ServerConnectionViewModelTest {
     fun `ボトムシートをdismissするとshowVersionMismatchBottomSheetがfalseになる`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
             val viewModel = createViewModel(appVersion = "1.0.0")
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
@@ -355,7 +338,7 @@ class ServerConnectionViewModelTest {
     fun `バージョン不一致のボトムシートはdismiss後に再ポーリングで再表示されない`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
             val viewModel = createViewModel(appVersion = "1.0.0")
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
@@ -378,7 +361,7 @@ class ServerConnectionViewModelTest {
     fun `バージョン不一致のボトムシートはdismiss後に再購読しても再表示されない`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
             val viewModel = createViewModel(appVersion = "1.0.0")
             var collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }

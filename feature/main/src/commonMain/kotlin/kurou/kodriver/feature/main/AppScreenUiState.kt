@@ -13,12 +13,12 @@ data class AppScreenUiState(
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
     val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,
     val hapticFeedbackEnabled: Boolean = HAPTIC_FEEDBACK_ENABLED_DEFAULT,
-    val selectedSimulator: Simulator? = null,
+    val selectedSimulator: Simulator = Simulator.LmuWindows,
 ) {
     /**
      * app:shared など `:core:domain` に依存しないモジュールへ渡すための、選択中シミュレータの ID。
      * `:core:domain` の `Simulator` 型は `implementation` 依存のため、モジュール境界を越えて型を渡せない。
      */
-    val selectedSimulatorId: String?
-        get() = selectedSimulator?.id
+    val selectedSimulatorId: String
+        get() = selectedSimulator.id
 }

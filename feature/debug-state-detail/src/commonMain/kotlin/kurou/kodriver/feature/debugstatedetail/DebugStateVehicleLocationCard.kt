@@ -78,7 +78,7 @@ private fun booleanDisplayName(value: Boolean): String =
 
 @Composable
 internal fun VehicleLocationContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     aceWindowsStatus: AceWindowsStatusData?,
     lmuWindowsPitStatus: LmuWindowsPitStatusData?,
 ) {
@@ -130,7 +130,7 @@ internal fun VehicleLocationContent(
             }
         }
 
-        is Simulator.Gt7Ps5, null -> {
+        is Simulator.Gt7Ps5 -> {
             Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         }
     }

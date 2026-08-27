@@ -151,39 +151,6 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `GT7非選択時は読み上げない`() =
-        runTest(testDispatcher) {
-            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val ttsEngine = mockTts(spokenTexts)
-            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-            every {
-                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
-            } returns MutableStateFlow(emptyMap())
-            every {
-                readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
-            } returns MutableStateFlow(emptyList())
-            every { myBestLapPreferencesRepository.observeVoiceType() } returns
-                MutableStateFlow(MyBestLapVoiceType.FORMAL)
-            every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
-            every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(30)
-            every {
-                tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
-            } returns MutableStateFlow(Celsius(95))
-            every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-            every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
-
-            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
-            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-            confirmVerified(simulatorPreferencesRepository)
-        }
-
-    @Test
     fun `起動直後の最初のemitではベストラップが設定済みでもアナウンスしない`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
@@ -833,7 +800,7 @@ class Gt7Ps5NarratorViewModelTest {
      */
     @Suppress("LongParameterList")
     private fun stubReadoutDefaults(
-        simulator: Simulator? = Simulator.Gt7Ps5,
+        simulator: Simulator = Simulator.Gt7Ps5,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,

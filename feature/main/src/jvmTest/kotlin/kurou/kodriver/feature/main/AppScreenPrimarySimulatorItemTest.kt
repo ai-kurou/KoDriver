@@ -16,27 +16,10 @@ class AppScreenPrimarySimulatorItemTest {
     val rule = createComposeRule()
 
     @Test
-    fun `simulatorIdがnullの場合フォールバックアイコンが例外なく描画される`() {
-        rule.setContent {
-            AppScreenPrimarySimulatorIcon(simulatorId = null)
-        }
-    }
-
-    @Test
     fun `simulatorIdが指定されている場合アイコンが例外なく描画される`() {
         rule.setContent {
             AppScreenPrimarySimulatorIcon(simulatorId = "lmu_windows")
         }
-    }
-
-    @Test
-    fun `simulatorIdがnullの場合ラベルは未選択になる`() {
-        var label = ""
-        rule.setContent {
-            label = appScreenPrimarySimulatorLabel(simulatorId = null)
-        }
-
-        assertEquals("未選択", label)
     }
 
     @Test
@@ -73,7 +56,7 @@ class AppScreenPrimarySimulatorItemTest {
     fun `expandedがtrueの場合シミュレータ一覧が表示される`() {
         rule.setContent {
             AppScreenPrimarySimulatorIndicator(
-                simulatorId = null,
+                simulatorId = "lmu_windows",
                 expanded = true,
                 onExpandedChange = {},
                 onSimulatorSelected = {},
@@ -89,7 +72,7 @@ class AppScreenPrimarySimulatorItemTest {
     fun `expandedがfalseの場合シミュレータ一覧が表示されない`() {
         rule.setContent {
             AppScreenPrimarySimulatorIndicator(
-                simulatorId = null,
+                simulatorId = "lmu_windows",
                 expanded = false,
                 onExpandedChange = {},
                 onSimulatorSelected = {},
@@ -106,7 +89,7 @@ class AppScreenPrimarySimulatorItemTest {
 
         rule.setContent {
             AppScreenPrimarySimulatorIndicator(
-                simulatorId = null,
+                simulatorId = "lmu_windows",
                 expanded = expanded,
                 onExpandedChange = { expanded = it },
                 onSimulatorSelected = { selectedId = it },

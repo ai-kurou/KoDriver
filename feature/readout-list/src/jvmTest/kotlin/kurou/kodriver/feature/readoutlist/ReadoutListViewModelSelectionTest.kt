@@ -56,7 +56,7 @@ class ReadoutListViewModelSelectionTest {
     @Test
     fun `onItemSelectedでアイテムが選択される`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
@@ -73,23 +73,9 @@ class ReadoutListViewModelSelectionTest {
         }
 
     @Test
-    fun `シミュレータ未選択時はonItemSelectedで選択状態は変わらない`() =
-        runTest {
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel =
-                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
-
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-
-            assertNull(viewModel.uiState.first().selectedItem)
-        }
-
-    @Test
     fun `シミュレータに属さないアイテムを選択しても選択状態は変わらない`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
@@ -108,7 +94,7 @@ class ReadoutListViewModelSelectionTest {
     @Test
     fun `同じアイテムを再度選択すると選択解除される`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
@@ -128,7 +114,7 @@ class ReadoutListViewModelSelectionTest {
     @Test
     fun `アイテム選択後にシミュレータを切り替えると選択状態が解除される`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
@@ -161,7 +147,10 @@ class ReadoutListViewModelSelectionTest {
     @Test
     fun `clearSelectedItemで選択状態が解除される`() =
         runTest {
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
+                MutableStateFlow(emptyMap())
+            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
             val viewModel =
