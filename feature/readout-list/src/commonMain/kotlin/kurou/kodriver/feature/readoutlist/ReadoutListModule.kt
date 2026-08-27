@@ -10,7 +10,6 @@ import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -29,7 +28,7 @@ val readoutListModule =
         viewModelOf(::ReadoutListViewModel)
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-        factory { SimulatorUseCases(get(), get()) }
+        factory { SimulatorUseCases(get()) }
         factory { ReadoutOrderUseCases(get(), get(), get()) }
         factory { ReadoutEnabledUseCases(get(), get()) }
         factory { QueueUseCases(get(), get()) }
@@ -37,7 +36,6 @@ val readoutListModule =
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveSelectedSimulatorUseCase(get()) }
-        factory { SaveSelectedSimulatorUseCase(get()) }
         factory { ObserveReadoutEnabledStatesUseCase(get()) }
         factory { SaveReadoutEnabledStateUseCase(get()) }
         factory { ObserveReadoutOrderUseCase(get()) }

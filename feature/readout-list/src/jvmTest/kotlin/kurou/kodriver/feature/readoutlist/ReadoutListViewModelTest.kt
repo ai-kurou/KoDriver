@@ -32,7 +32,6 @@ import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -48,7 +47,6 @@ internal fun createViewModel(
     simulatorUseCases =
         SimulatorUseCases(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-            saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
         ),
     readoutOrderUseCases =
         ReadoutOrderUseCases(
@@ -107,9 +105,6 @@ class ReadoutListViewModelTest {
             val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             val orderFlow = MutableStateFlow<List<ReadoutItemKey>>(emptyList())
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns enabledStatesFlow
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns orderFlow
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -120,7 +115,7 @@ class ReadoutListViewModelTest {
             assertNull(viewModel.uiState.first().selectedSimulator)
             assertEquals(emptyList(), viewModel.uiState.first().items)
 
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
+            simulatorFlow.update { Simulator.LmuWindows }
 
             val state = viewModel.uiState.first()
             assertEquals(Simulator.LmuWindows, state.selectedSimulator)
@@ -140,7 +135,6 @@ class ReadoutListViewModelTest {
             assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.VehicleDamage.Root])
             assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.MyBestLap.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) }
             confirmVerified(simulatorRepository)
         }
 
@@ -149,9 +143,6 @@ class ReadoutListViewModelTest {
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
@@ -172,7 +163,7 @@ class ReadoutListViewModelTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
+            simulatorFlow.update { Simulator.LmuWindows }
             viewModel.moveItem(0, 1)
 
             assertEquals(
@@ -204,7 +195,6 @@ class ReadoutListViewModelTest {
                 )
             }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) }
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
             coVerify(exactly = 1) { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) }
@@ -234,9 +224,6 @@ class ReadoutListViewModelTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns enabledStatesFlow
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             coEvery {
@@ -253,7 +240,7 @@ class ReadoutListViewModelTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
+            simulatorFlow.update { Simulator.LmuWindows }
             viewModel.onReadoutEnabledChanged(ReadoutItemKey.LmuWindows.VehicleApproach.Root, false)
 
             assertEquals(
@@ -268,7 +255,6 @@ class ReadoutListViewModelTest {
                 )
             }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) }
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
@@ -296,9 +282,6 @@ class ReadoutListViewModelTest {
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false))
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
@@ -307,7 +290,7 @@ class ReadoutListViewModelTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
+            simulatorFlow.update { Simulator.LmuWindows }
 
             assertEquals(false, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.LmuWindows.Flag.Root])
         }
@@ -317,9 +300,6 @@ class ReadoutListViewModelTest {
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns
@@ -331,7 +311,7 @@ class ReadoutListViewModelTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
+            simulatorFlow.update { Simulator.LmuWindows }
 
             assertEquals(
                 listOf(
@@ -354,9 +334,6 @@ class ReadoutListViewModelTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             val orderFlow = MutableStateFlow<List<ReadoutItemKey>>(emptyList())
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns orderFlow
@@ -379,7 +356,7 @@ class ReadoutListViewModelTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
+            simulatorFlow.update { Simulator.LmuWindows }
             viewModel.moveItem(0, 1)
 
             assertEquals(
@@ -402,9 +379,6 @@ class ReadoutListViewModelTest {
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
                 MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
@@ -437,7 +411,7 @@ class ReadoutListViewModelTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
+            simulatorFlow.update { Simulator.LmuWindows }
             viewModel.moveItem(0, 1) // [tyre_temperature, flag, vehicle_approach, vehicle_damage, my_best_lap]
             viewModel.moveItem(0, 1) // [flag, tyre_temperature, vehicle_approach, vehicle_damage, my_best_lap]（初期順序に戻る）
 
@@ -461,9 +435,6 @@ class ReadoutListViewModelTest {
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } answers {
-                simulatorFlow.update { Simulator.Gt7Ps5 }
-            }
             every { readoutRepository.observeReadoutEnabledStates("gt7_ps5") } returns MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("gt7_ps5") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -471,7 +442,7 @@ class ReadoutListViewModelTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
+            simulatorFlow.update { Simulator.Gt7Ps5 }
 
             val state = viewModel.uiState.first()
             assertEquals(Simulator.Gt7Ps5, state.selectedSimulator)
@@ -491,9 +462,6 @@ class ReadoutListViewModelTest {
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } answers {
-                simulatorFlow.update { Simulator.Gt7Ps5 }
-            }
             every { readoutRepository.observeReadoutEnabledStates("gt7_ps5") } returns
                 MutableStateFlow(mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false))
             every { readoutRepository.observeReadoutOrder("gt7_ps5") } returns MutableStateFlow(emptyList())
@@ -502,7 +470,7 @@ class ReadoutListViewModelTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
+            simulatorFlow.update { Simulator.Gt7Ps5 }
 
             assertEquals(
                 false,
@@ -517,12 +485,6 @@ class ReadoutListViewModelTest {
             val gt7EnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             val lmuEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } answers {
-                simulatorFlow.update { Simulator.Gt7Ps5 }
-            }
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("gt7_ps5") } returns gt7EnabledFlow
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns lmuEnabledFlow
             every { readoutRepository.observeReadoutOrder("gt7_ps5") } returns MutableStateFlow(emptyList())
@@ -546,12 +508,12 @@ class ReadoutListViewModelTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
+            simulatorFlow.update { Simulator.Gt7Ps5 }
             viewModel.onReadoutEnabledChanged(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, false)
 
             assertEquals(false, gt7EnabledFlow.value[ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root])
 
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
+            simulatorFlow.update { Simulator.LmuWindows }
             viewModel.onReadoutEnabledChanged(ReadoutItemKey.LmuWindows.MyBestLap.Root, true)
 
             assertEquals(true, lmuEnabledFlow.value[ReadoutItemKey.LmuWindows.MyBestLap.Root])

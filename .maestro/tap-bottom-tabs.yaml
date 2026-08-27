@@ -9,4 +9,4 @@ appId: kurou.kodriver
 - tapOn: "その他"
 - assertVisible: "Windows版KoDriverへ接続するIPアドレス"
 - tapOn: "ルール"
-- assertVisible: "シミュレータを選択"
+- assertNotVisible: "Windows版KoDriverへ接続するIPアドレス"

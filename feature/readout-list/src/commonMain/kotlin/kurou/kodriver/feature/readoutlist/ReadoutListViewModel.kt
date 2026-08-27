@@ -24,7 +24,6 @@ import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
 private data class LocalOrderState(
     val simulator: Simulator?,
@@ -39,7 +38,6 @@ private data class EnabledStates(
 
 data class SimulatorUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
-    val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
 )
 
 data class ReadoutOrderUseCases(
@@ -152,7 +150,6 @@ class ReadoutListViewModel(
         ) { selected, items, enabledStates, selectedItem ->
             ReadoutListUiState(
                 selectedSimulator = selected,
-                simulators = Simulator.entries,
                 items = items,
                 readoutEnabledStates = enabledStates.readoutEnabledStates,
                 queueEnabledStates = enabledStates.queueEnabledStates,
@@ -162,14 +159,8 @@ class ReadoutListViewModel(
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            ReadoutListUiState(simulators = Simulator.entries),
+            ReadoutListUiState(),
         )
-
-    fun onSimulatorSelected(simulator: Simulator) {
-        viewModelScope.launch {
-            simulatorUseCases.saveSelectedSimulator(simulator)
-        }
-    }
 
     fun moveItem(
         fromIndex: Int,

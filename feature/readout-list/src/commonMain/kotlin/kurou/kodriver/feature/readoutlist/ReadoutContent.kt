@@ -46,7 +46,6 @@ fun ReadoutContent(
     val uiState by viewModel.uiState.collectAsStateInLifecycle()
     ReadoutContent(
         uiState = uiState,
-        onSimulatorSelected = viewModel::onSimulatorSelected,
         onMove = viewModel::moveItem,
         onReadoutEnabledChanged = viewModel::onReadoutEnabledChanged,
         onQueueEnabledChanged = viewModel::onQueueEnabledChanged,
@@ -66,7 +65,6 @@ fun ReadoutContent(
 @Composable
 internal fun ReadoutContent(
     uiState: ReadoutListUiState,
-    onSimulatorSelected: (Simulator) -> Unit,
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
@@ -153,7 +151,6 @@ internal fun ReadoutContent(
         listPane = {
             ReadoutListPane(
                 uiState = uiState,
-                onSimulatorSelected = onSimulatorSelected,
                 onMove = onMove,
                 onReadoutEnabledChanged = onReadoutEnabledChanged,
                 onQueueEnabledChanged = onQueueEnabledChanged,
@@ -183,7 +180,6 @@ private fun ReadoutContentPreview() {
     ReadoutContent(
         uiState =
             ReadoutListUiState(
-                simulators = listOf(Simulator.LmuWindows),
                 selectedSimulator = Simulator.LmuWindows,
                 items =
                     listOf(
@@ -194,7 +190,6 @@ private fun ReadoutContentPreview() {
                         ReadoutItemKey.LmuWindows.MyBestLap.Root,
                     ),
             ),
-        onSimulatorSelected = {},
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
         onQueueEnabledChanged = { _, _ -> },

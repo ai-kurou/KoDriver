@@ -59,9 +59,6 @@ class ReadoutListViewModelAceWindowsTest {
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) } answers {
-                simulatorFlow.update { Simulator.AceWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("ace_windows") } returns MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("ace_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -74,12 +71,7 @@ class ReadoutListViewModelAceWindowsTest {
                     startSoundRepository = startSoundRepository,
                 )
 
-            assertEquals(
-                listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows),
-                viewModel.uiState.first().simulators,
-            )
-
-            viewModel.onSimulatorSelected(Simulator.AceWindows)
+            simulatorFlow.update { Simulator.AceWindows }
 
             val state = viewModel.uiState.first()
             assertEquals(Simulator.AceWindows, state.selectedSimulator)
@@ -101,7 +93,6 @@ class ReadoutListViewModelAceWindowsTest {
             assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
             assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) }
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("ace_windows") }
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("ace_windows") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
@@ -115,9 +106,6 @@ class ReadoutListViewModelAceWindowsTest {
             val simulatorFlow = MutableStateFlow<Simulator?>(null)
             val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) } answers {
-                simulatorFlow.update { Simulator.AceWindows }
-            }
             every { readoutRepository.observeReadoutEnabledStates("ace_windows") } returns enabledStatesFlow
             every { readoutRepository.observeReadoutOrder("ace_windows") } returns MutableStateFlow(emptyList())
             coEvery {
@@ -139,7 +127,7 @@ class ReadoutListViewModelAceWindowsTest {
                     startSoundRepository = startSoundRepository,
                 )
 
-            viewModel.onSimulatorSelected(Simulator.AceWindows)
+            simulatorFlow.update { Simulator.AceWindows }
             viewModel.onReadoutEnabledChanged(ReadoutItemKey.AceWindows.VehicleApproach.Root, false)
 
             assertEquals(
@@ -154,7 +142,6 @@ class ReadoutListViewModelAceWindowsTest {
                 )
             }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) }
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("ace_windows") }
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("ace_windows") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }

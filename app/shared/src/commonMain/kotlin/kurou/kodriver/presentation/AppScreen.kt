@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
@@ -216,7 +217,7 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
         },
         selected = false,
         onClick = { onExpandedChange(true) },
-        modifier = itemModifier,
+        modifier = itemModifier.testTag("primarySimulatorNavItem"),
     )
 }
 
