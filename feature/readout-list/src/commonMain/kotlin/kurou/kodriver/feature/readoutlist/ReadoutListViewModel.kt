@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -73,7 +74,7 @@ class ReadoutListViewModel(
     private val _selectedSimulator: StateFlow<Simulator> =
         simulatorUseCases
             .observeSelectedSimulator()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, Simulator.LmuWindows)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
     // ドラッグ操作後のインメモリ順序（DataStore 反映前の即時 UI 更新用）
     private val _localOrder = MutableStateFlow(LocalOrderState(null, emptyList()))

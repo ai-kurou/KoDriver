@@ -18,6 +18,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.AceWindowsNarratorState
@@ -86,7 +87,7 @@ internal class AceWindowsNarratorViewModel(
     private val selectedSimulator =
         readoutListUseCases
             .observeSelectedSimulator()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, Simulator.LmuWindows)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
     private val listEnabledStates =
         selectedSimulator

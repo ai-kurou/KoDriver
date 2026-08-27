@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
@@ -154,7 +155,7 @@ internal class DebugStateDetailViewModel(
         observeSelectedSimulator()
             .onEach { simulator ->
                 markCardsReceived(simulator, DebugStateCardKey.SIMULATOR)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, Simulator.LmuWindows)
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
     private val _raceStateBase: StateFlow<RaceState> =
         combine(

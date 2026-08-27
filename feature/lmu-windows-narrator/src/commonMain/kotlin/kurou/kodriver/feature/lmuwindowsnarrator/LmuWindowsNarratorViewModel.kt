@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.RED_FLAG_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
@@ -145,7 +146,7 @@ internal class LmuWindowsNarratorViewModel(
     private val selectedSimulator =
         readoutListUseCases
             .observeSelectedSimulator()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, Simulator.LmuWindows)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
     // listPane（readoutStates）とdetailPane（flagStates・vehicleDamageStates）を統合した、
     // Narratorの読み上げ判定に実際に使う唯一のenabledStates。

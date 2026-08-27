@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.domain.model.CONNECTION_CHECK_INTERVAL_MS_DEFAULT
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 
 enum class KoDriverServerConnectionStatus {
@@ -19,8 +20,8 @@ enum class KoDriverServerConnectionStatus {
 
 data class KoDriverServerConnectionState(
     val connectionStatus: KoDriverServerConnectionStatus = KoDriverServerConnectionStatus.NOT_CONFIGURED,
-    val requiresKoDriverServer: Boolean = Simulator.LmuWindows.requiresKoDriverServer,
-    val selectedSimulator: Simulator = Simulator.LmuWindows,
+    val requiresKoDriverServer: Boolean = SELECTED_SIMULATOR_DEFAULT.requiresKoDriverServer,
+    val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,
     val serverVersion: String? = null,
     val isVersionMismatch: Boolean = false,
 )
