@@ -92,4 +92,26 @@ class SimulatorDisplayTest {
             }
         }
     }
+
+    @Test
+    fun `lmu_windowsの短縮名を返す`() {
+        assertEquals("LMU", simulatorShortName("lmu_windows"))
+    }
+
+    @Test
+    fun `gt7_ps5の短縮名を返す`() {
+        assertEquals("GT7", simulatorShortName("gt7_ps5"))
+    }
+
+    @Test
+    fun `ace_windowsの短縮名を返す`() {
+        assertEquals("ACE", simulatorShortName("ace_windows"))
+    }
+
+    @Test
+    fun `未対応のsimulatorIdを渡すと短縮名の取得で例外が発生する`() {
+        assertFailsWith<IllegalStateException> {
+            simulatorShortName("unknown_simulator")
+        }
+    }
 }

@@ -26,7 +26,7 @@ val generateAppVersionSource =
     }
 
 plugins {
-    id("feature-kmp")
+    id("feature-compose-screenshot")
     `java-test-fixtures`
 }
 
@@ -45,6 +45,8 @@ kotlin {
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)
+            implementation(projects.core.designsystem)
+            implementation(libs.compose.material.icons.extended)
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)
@@ -67,6 +69,11 @@ kotlin {
 
 tasks.withType<KotlinCompilationTask<*>>().configureEach {
     dependsOn(generateAppVersionSource)
+}
+
+compose.resources {
+    packageOfResClass = "kurou.kodriver.feature.main.generated.resources"
+    publicResClass = true
 }
 
 dependencies {
