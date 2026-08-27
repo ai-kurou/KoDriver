@@ -2,7 +2,7 @@ name: Nightly TODO
 
 on:
   schedule:
-    - cron: "3 20 * * *" # JST 5:03 (UTC 20:03)
+    - cron: "3 19 * * *" # JST 4:03 (UTC 19:03)
   workflow_dispatch:
 
 permissions:

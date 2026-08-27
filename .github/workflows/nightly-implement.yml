@@ -2,7 +2,7 @@ name: Nightly Implement
 
 on:
   schedule:
-    - cron: "37 20 * * *" # JST 5:37 (UTC 20:37)
+    - cron: "37 19 * * *" # JST 4:37 (UTC 19:37)
   workflow_dispatch:
 
 concurrency:
