@@ -1,5 +1,5 @@
 <resources>
-    <string name="nav_readout">読み上げ</string>
+    <string name="nav_readout">ルール</string>
     <string name="nav_log">ログ</string>
     <string name="nav_more">その他</string>
     <string name="lmu_connected">LMUに接続しました</string>
