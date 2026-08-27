@@ -20,7 +20,7 @@ jobs:
       issues: ${{ steps.select.outputs.issues }}
 
     steps:
-      - name: Select up to 2 claude-implementable issues without a linked PR
+      - name: Select up to 3 claude-implementable issues without a linked PR
         id: select
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
@@ -30,7 +30,7 @@ jobs:
             --search "is:open label:claude-implementable -linked:pr" \
             --json number,title,url \
             --limit 1000 \
-            | jq -c 'sort_by(.number) | .[:2]')"
+            | jq -c 'sort_by(.number) | .[:3]')"
           echo "issues=${issues}" >> "$GITHUB_OUTPUT"
           echo "Selected issues: ${issues}"
 
