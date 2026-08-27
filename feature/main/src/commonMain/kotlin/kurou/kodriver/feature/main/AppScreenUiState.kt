@@ -11,6 +11,10 @@ import kurou.kodriver.domain.model.Simulator
  */
 data class AppScreenUiState(
     val hasAppUpdate: Boolean = false,
+    /**
+     * 実際に画面を常時オンにするかどうか。設定がONで、かつ選択中シミュレータのテレメトリを
+     * 実際に受信中の場合のみ true になる（設定値そのものではない）。
+     */
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
     val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,
     val hapticFeedbackEnabled: Boolean = HAPTIC_FEEDBACK_ENABLED_DEFAULT,

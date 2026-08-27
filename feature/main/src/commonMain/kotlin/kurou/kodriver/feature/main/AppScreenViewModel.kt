@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
@@ -23,7 +23,7 @@ import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 class AppScreenViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
-    observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
+    observeEffectiveKeepScreenOn: ObserveEffectiveKeepScreenOnUseCase,
     observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
     observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
     observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
@@ -34,7 +34,7 @@ class AppScreenViewModel(
     val uiState: StateFlow<AppScreenUiState> =
         combine(
             _hasAppUpdate,
-            observeKeepScreenOn(),
+            observeEffectiveKeepScreenOn(),
             observeDynamicColorEnabled(),
             observeHapticFeedbackEnabled(),
             observeSelectedSimulator(),
