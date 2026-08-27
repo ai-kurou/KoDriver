@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,13 +45,8 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuBoxScope
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -81,16 +75,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import kurou.kodriver.core.designsystem.simulatorDisplayName
-import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
@@ -101,68 +91,11 @@ import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_labe
 import kurou.kodriver.feature.readoutlist.generated.resources.queue_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.queue_toggle_description
 import kurou.kodriver.feature.readoutlist.generated.resources.scroll_to_top
-import kurou.kodriver.feature.readoutlist.generated.resources.select_simulator_hint
-import kurou.kodriver.feature.readoutlist.generated.resources.simulator_label
 import kurou.kodriver.feature.readoutlist.generated.resources.start_sound_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.start_sound_toggle_description
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ExposedDropdownMenuBoxScope.SimulatorSelectorAnchor(
-    selectedSimulator: Simulator?,
-    expanded: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    val hint = stringResource(Res.string.select_simulator_hint)
-    val selectedSimulatorName = selectedSimulator?.let { simulatorDisplayName(it.id) } ?: hint
-    val shape = RoundedCornerShape(4.dp)
-    Row(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .heightIn(min = 56.dp)
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = shape,
-                ).clip(shape)
-                .semantics {
-                    contentDescription = hint
-                    stateDescription = selectedSimulatorName
-                }.padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (selectedSimulator != null) {
-            Image(
-                painter = simulatorIcon(selectedSimulator.id),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp).clip(RoundedCornerShape(4.dp)),
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = stringResource(Res.string.simulator_label),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = selectedSimulatorName,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-    }
-}
 
 private fun itemIcon(itemId: ReadoutItemKey): ImageVector =
     when (itemId) {
@@ -205,7 +138,7 @@ private fun readoutItemIndex(
     itemCount: Int,
 ): Int = (lazyListIndex - readoutItemStartIndex).coerceIn(0, itemCount - 1)
 
-internal fun readoutItemStartIndex(isAceSelected: Boolean): Int = if (isAceSelected) 3 else 2
+internal fun readoutItemStartIndex(isAceSelected: Boolean): Int = if (isAceSelected) 2 else 1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -282,7 +215,6 @@ private fun AceReadoutTimingHintRow(modifier: Modifier = Modifier) {
 @Composable
 internal fun ReadoutListPane(
     uiState: ReadoutListUiState,
-    onSimulatorSelected: (Simulator) -> Unit,
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
@@ -290,7 +222,6 @@ internal fun ReadoutListPane(
     onItemClick: (ReadoutItemKey) -> Unit,
     scrollToTopRequest: Int = 0,
 ) {
-    var expanded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val isAceSelected = uiState.selectedSimulator is Simulator.AceWindows
@@ -320,40 +251,6 @@ internal fun ReadoutListPane(
                     .fillMaxSize()
                     .padding(vertical = 16.dp),
         ) {
-            item(key = "simulatorSelector") {
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                ) {
-                    SimulatorSelectorAnchor(
-                        selectedSimulator = uiState.selectedSimulator,
-                        expanded = expanded,
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                    ) {
-                        uiState.simulators.forEach { simulator ->
-                            DropdownMenuItem(
-                                text = { Text(simulatorDisplayName(simulator.id)) },
-                                onClick = {
-                                    onSimulatorSelected(simulator)
-                                    expanded = false
-                                },
-                                leadingIcon = {
-                                    Image(
-                                        painter = simulatorIcon(simulator.id),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(24.dp).clip(RoundedCornerShape(4.dp)),
-                                    )
-                                },
-                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                            )
-                        }
-                    }
-                }
-            }
             if (uiState.selectedSimulator != null) {
                 if (isAceSelected) {
                     item(key = "aceReadoutTimingHint") {
@@ -730,7 +627,6 @@ private fun ReadoutListPanePreview(
 ) {
     ReadoutListPane(
         uiState = uiState,
-        onSimulatorSelected = {},
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
         onQueueEnabledChanged = { _, _ -> },
@@ -743,7 +639,6 @@ private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider
     override val values: Sequence<ReadoutListUiState> =
         sequenceOf(
             ReadoutListUiState(
-                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                 selectedSimulator = Simulator.LmuWindows,
                 items =
                     listOf(
@@ -755,7 +650,6 @@ private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider
                     ),
             ),
             ReadoutListUiState(
-                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                 selectedSimulator = Simulator.Gt7Ps5,
                 items =
                     listOf(

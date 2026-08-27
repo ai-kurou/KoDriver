@@ -25,15 +25,11 @@ class ReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `シミュレーター未選択の場合は選択ヒントだけを表示する`() {
+    fun `シミュレーター未選択の場合は読み上げ優先順位ヒントを表示しない`() {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
-                    uiState =
-                        ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
-                        ),
-                    onSimulatorSelected = {},
+                    uiState = ReadoutListUiState(),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
@@ -43,34 +39,7 @@ class ReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("シミュレータを選択").assertIsDisplayed()
         rule.onNodeWithText("読み上げ優先順位").assertDoesNotExist()
-    }
-
-    @Test
-    fun `シミュレーターを選択するとonSimulatorSelectedが呼ばれる`() {
-        val selected = mutableListOf<Simulator>()
-        rule.setContent {
-            KoDriverTheme {
-                ReadoutListPane(
-                    uiState =
-                        ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
-                        ),
-                    onSimulatorSelected = { selected += it },
-                    onMove = { _, _ -> },
-                    onReadoutEnabledChanged = { _, _ -> },
-                    onQueueEnabledChanged = { _, _ -> },
-                    onStartSoundEnabledChanged = { _, _ -> },
-                    onItemClick = {},
-                )
-            }
-        }
-
-        rule.onNodeWithContentDescription("シミュレータを選択").performClick()
-        rule.onNodeWithText("Le Mans Ultimate（Windows版）").performClick()
-
-        assertEquals(Simulator.LmuWindows, selected.single())
     }
 
     @Test
@@ -81,7 +50,6 @@ class ReadoutListPaneTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows),
                             selectedSimulator = Simulator.LmuWindows,
                             items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
                             readoutEnabledStates =
@@ -89,7 +57,6 @@ class ReadoutListPaneTest {
                                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
                                 ),
                         ),
-                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
@@ -112,7 +79,6 @@ class ReadoutListPaneTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows),
                             selectedSimulator = Simulator.LmuWindows,
                             items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
                             readoutEnabledStates =
@@ -120,7 +86,6 @@ class ReadoutListPaneTest {
                                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
                                 ),
                         ),
-                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
@@ -147,13 +112,11 @@ class ReadoutListPaneTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows),
                             selectedSimulator = Simulator.LmuWindows,
                             items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                             readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
                             queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
                         ),
-                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { item, enabled -> readoutChanges += item to enabled },
                     onQueueEnabledChanged = { item, enabled -> queueChanges += item to enabled },
@@ -182,12 +145,10 @@ class ReadoutListPaneTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows),
                             selectedSimulator = Simulator.LmuWindows,
                             items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                             readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
                         ),
-                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
@@ -214,13 +175,11 @@ class ReadoutListPaneTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows),
                             selectedSimulator = Simulator.LmuWindows,
                             items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                             readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
                             queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
                         ),
-                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { item, enabled -> readoutChanges += item to enabled },
                     onQueueEnabledChanged = { item, enabled -> queueChanges += item to enabled },
@@ -252,13 +211,11 @@ class ReadoutListPaneTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows),
                             selectedSimulator = Simulator.LmuWindows,
                             items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                             readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
                             queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
                         ),
-                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { item, enabled -> queueChanges += item to enabled },
@@ -283,12 +240,10 @@ class ReadoutListPaneTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows),
                             selectedSimulator = Simulator.LmuWindows,
                             items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                             readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
                         ),
-                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
@@ -311,12 +266,10 @@ class ReadoutListPaneTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows, Simulator.AceWindows),
                             selectedSimulator = Simulator.LmuWindows,
                             items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                             readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
                         ),
-                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
@@ -342,12 +295,10 @@ class ReadoutListPaneTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                            simulators = listOf(Simulator.LmuWindows, Simulator.AceWindows),
                             selectedSimulator = Simulator.AceWindows,
                             items = listOf(ReadoutItemKey.AceWindows.Flag.Root),
                             readoutEnabledStates = mapOf(ReadoutItemKey.AceWindows.Flag.Root to true),
                         ),
-                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
@@ -374,12 +325,12 @@ class ReadoutListPaneTest {
 
 class ReadoutItemStartIndexTest {
     @Test
-    fun `ACE以外を選択している場合はヘッダー2件分のオフセットを返す`() {
-        assertEquals(2, readoutItemStartIndex(isAceSelected = false))
+    fun `ACE以外を選択している場合はヘッダー1件分のオフセットを返す`() {
+        assertEquals(1, readoutItemStartIndex(isAceSelected = false))
     }
 
     @Test
-    fun `ACEを選択している場合はタイミングヒント分を加えた3件分のオフセットを返す`() {
-        assertEquals(3, readoutItemStartIndex(isAceSelected = true))
+    fun `ACEを選択している場合はタイミングヒント分を加えた2件分のオフセットを返す`() {
+        assertEquals(2, readoutItemStartIndex(isAceSelected = true))
     }
 }

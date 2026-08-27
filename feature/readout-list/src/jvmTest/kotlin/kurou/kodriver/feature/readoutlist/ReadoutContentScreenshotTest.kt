@@ -25,12 +25,10 @@ class ReadoutContentScreenshotTest {
                             ReadoutContent(
                                 uiState =
                                     ReadoutListUiState(
-                                        simulators = listOf(Simulator.LmuWindows),
                                         selectedSimulator = Simulator.LmuWindows,
                                         items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
                                         selectedItem = ReadoutListItemType.LmuWindows.Flag,
                                     ),
-                                onSimulatorSelected = {},
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
                                 onQueueEnabledChanged = { _, _ -> },

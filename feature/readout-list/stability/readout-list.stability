@@ -37,12 +37,11 @@ public fun kurou.kodriver.feature.readoutlist.ReadoutContent(modifier: androidx.
     - detailContent: STABLE (composable function type)
 
 @Composable
-internal fun kurou.kodriver.feature.readoutlist.ReadoutContent(uiState: kurou.kodriver.feature.readoutlist.ReadoutListUiState, onSimulatorSelected: kotlin.Function1<kurou.kodriver.domain.model.Simulator, kotlin.Unit>, onMove: kotlin.Function2<kotlin.Int, kotlin.Int, kotlin.Unit>, onReadoutEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onQueueEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onStartSoundEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onItemSelected: kotlin.Function1<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Unit>, onClearSelectedItem: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, scaffoldDirective: androidx.compose.material3.adaptive.layout.PaneScaffoldDirective, windowSizeClass: androidx.window.core.layout.WindowSizeClass, backHandler: @[Composable] androidx.compose.runtime.internal.ComposableFunction3<@[ParameterName(name = \, scrollToTopRequest: kotlin.Int, detailContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<kurou.kodriver.feature.readoutlist.ReadoutListItemType, kotlin.Unit>): kotlin.Unit
+internal fun kurou.kodriver.feature.readoutlist.ReadoutContent(uiState: kurou.kodriver.feature.readoutlist.ReadoutListUiState, onMove: kotlin.Function2<kotlin.Int, kotlin.Int, kotlin.Unit>, onReadoutEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onQueueEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onStartSoundEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onItemSelected: kotlin.Function1<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Unit>, onClearSelectedItem: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, scaffoldDirective: androidx.compose.material3.adaptive.layout.PaneScaffoldDirective, windowSizeClass: androidx.window.core.layout.WindowSizeClass, backHandler: @[Composable] androidx.compose.runtime.internal.ComposableFunction3<@[ParameterName(name = \, scrollToTopRequest: kotlin.Int, detailContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction1<kurou.kodriver.feature.readoutlist.ReadoutListItemType, kotlin.Unit>): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - uiState: UNSTABLE (has mutable properties or unstable members)
-    - onSimulatorSelected: STABLE (function type)
     - onMove: STABLE (function type)
     - onReadoutEnabledChanged: STABLE (function type)
     - onQueueEnabledChanged: STABLE (function type)
@@ -100,12 +99,11 @@ private fun kurou.kodriver.feature.readoutlist.ReadoutListItemCard(item: kurou.k
     - onStartSoundEnabledChanged: STABLE (function type)
 
 @Composable
-internal fun kurou.kodriver.feature.readoutlist.ReadoutListPane(uiState: kurou.kodriver.feature.readoutlist.ReadoutListUiState, onSimulatorSelected: kotlin.Function1<kurou.kodriver.domain.model.Simulator, kotlin.Unit>, onMove: kotlin.Function2<kotlin.Int, kotlin.Int, kotlin.Unit>, onReadoutEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onQueueEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onStartSoundEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onItemClick: kotlin.Function1<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Unit>, scrollToTopRequest: kotlin.Int): kotlin.Unit
+internal fun kurou.kodriver.feature.readoutlist.ReadoutListPane(uiState: kurou.kodriver.feature.readoutlist.ReadoutListUiState, onMove: kotlin.Function2<kotlin.Int, kotlin.Int, kotlin.Unit>, onReadoutEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onQueueEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onStartSoundEnabledChanged: kotlin.Function2<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Boolean, kotlin.Unit>, onItemClick: kotlin.Function1<kurou.kodriver.domain.model.ReadoutItemKey, kotlin.Unit>, scrollToTopRequest: kotlin.Int): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - uiState: UNSTABLE (has mutable properties or unstable members)
-    - onSimulatorSelected: STABLE (function type)
     - onMove: STABLE (function type)
     - onReadoutEnabledChanged: STABLE (function type)
     - onQueueEnabledChanged: STABLE (function type)
@@ -159,15 +157,6 @@ private fun kurou.kodriver.feature.readoutlist.ScrollToTopEffect(scrollToTopRequ
   params:
     - scrollToTopRequest: STABLE (primitive type)
     - scrollToTop: STABLE (function type)
-
-@Composable
-private fun kurou.kodriver.feature.readoutlist.SimulatorSelectorAnchor(selectedSimulator: kurou.kodriver.domain.model.Simulator?, expanded: kotlin.Boolean, modifier: androidx.compose.ui.Modifier): kotlin.Unit
-  skippable: false
-  restartable: true
-  params:
-    - selectedSimulator: UNSTABLE (cross-module type without @Stable/@Immutable)
-    - expanded: STABLE (primitive type)
-    - modifier: STABLE (marked @Stable or @Immutable)
 
 @Composable
 public fun kurou.kodriver.feature.readoutlist.collectAsStateInLifecycle(): androidx.compose.runtime.State<T of kurou.kodriver.feature.readoutlist.collectAsStateInLifecycle>

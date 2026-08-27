@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -220,7 +221,7 @@ class MainActivityTest {
     }
 
     private fun selectSimulator(simulatorName: String) {
-        composeTestRule.onNode(hasContentDescription("シミュレータを選択")).performClick()
+        composeTestRule.onNodeWithTag("primarySimulatorNavItem").performClick()
         composeTestRule.waitForIdle()
         clickLastItem(simulatorName)
     }
