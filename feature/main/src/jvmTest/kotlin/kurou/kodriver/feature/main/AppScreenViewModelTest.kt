@@ -189,16 +189,20 @@ class AppScreenViewModelTest {
     fun `未選択の場合selectedSimulatorがnullになる`() =
         runTest {
             val viewModel = createViewModel(selectedSimulator = null)
+            val uiState = viewModel.uiState.first()
 
-            assertNull(viewModel.uiState.first().selectedSimulator)
+            assertNull(uiState.selectedSimulator)
+            assertNull(uiState.selectedSimulatorId)
         }
 
     @Test
     fun `選択済みシミュレータがuiStateに反映される`() =
         runTest {
             val viewModel = createViewModel(selectedSimulator = Simulator.LmuWindows)
+            val uiState = viewModel.uiState.first()
 
-            assertEquals(Simulator.LmuWindows, viewModel.uiState.first().selectedSimulator)
+            assertEquals(Simulator.LmuWindows, uiState.selectedSimulator)
+            assertEquals("lmu_windows", uiState.selectedSimulatorId)
         }
 
     @Test
@@ -207,9 +211,20 @@ class AppScreenViewModelTest {
             val viewModel = createViewModel()
             coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } returns Unit
 
-            viewModel.selectSimulator(Simulator.Gt7Ps5)
+            viewModel.selectSimulator("gt7_ps5")
             advanceUntilIdle()
 
             coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
+        }
+
+    @Test
+    fun `selectSimulatorに未対応のIDを渡した場合saveSelectedSimulatorは実行されない`() =
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.selectSimulator("unknown_simulator")
+            advanceUntilIdle()
+
+            coVerify(exactly = 0) { simulatorRepository.saveSelectedSimulator(any()) }
         }
 }
