@@ -57,3 +57,13 @@
   **課題**: `shortcut = true` / `menu = true` / `perUserInstall = true` はjpackageの仕様上いずれもサイレントフラグであり、インストール実行時に自動でその挙動が固定されるだけで、ユーザーに選択させるダイアログは表示されない。ショートカット作成可否を選ばせるには別途 `--win-shortcut-prompt` が必要だが、Compose MultiplatformのGradle DSL(`org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask`)には対応するプロパティが存在せず、現状のDSLの範囲では実現できない。インストール範囲(全ユーザー/個人用)を選ばせる標準ダイアログもjpackage自体に用意されていない。
   **改善案**: Compose Multiplatformが `winShortcutPrompt` 等のDSLプロパティを将来追加した場合、または freeform引数差し込み等の代替手段が判明した場合に、MSIインストーラー上でショートカット作成可否をユーザーに選択させる機能の追加を検討する。
 
+## 開発体験
+
+- **対象**: `app/desktopApp` のホットリロード開発フロー（`./gradlew :app:desktopApp:hotRun --auto`）
+  **課題**: Compose Multiplatform 1.12.0でCompose Hot Reloadに「MCP server for AI agents」が追加され、AIコーディングエージェントが実行中アプリに接続してリロードのトリガー・スクリーンショット取得・UI検査・クリック/テキスト入力のシミュレーション・ログ読取が可能になった（参考: https://blog.jetbrains.com/kotlin/2026/08/compose-multiplatform-1-12-0/）。KoDriverのUI変更確認は現状目視・スクリーンショットテストに依存しており、この仕組みを使えばClaude Code自身がホットリロード中のデスクトップアプリを直接操作・検証できる可能性がある。
+  **改善案**: プロジェクトが依存するCompose Multiplatformのバージョンを1.12.0系へ更新するタイミングで、Hot ReloadのMCP serverを実際に有効化し、`preSubmitChecks` 前の手動UI確認フローに組み込めないか調査する。
+
+- **対象**: `app/desktopApp` のウィンドウ・ダイアログ生成部分
+  **課題**: Compose Multiplatform 1.12.0でWindow/DialogStateのv2 APIが追加され、画面選択・カスタム位置/サイズロジック・ウィンドウサイズの最小/最大設定・ダイアログの親ウィンドウ相対配置が可能になった（参考: https://blog.jetbrains.com/kotlin/2026/08/compose-multiplatform-1-12-0/）。現状KoDriverのデスクトップウィンドウ・各種設定ダイアログでこれらの制御が必要になった際の実装手段が不明瞭。
+  **改善案**: プロジェクトが依存するCompose Multiplatformのバージョンを1.12.0系へ更新した際、既存のウィンドウ/ダイアログ生成コードでv2 APIへの置き換えが有用な箇所がないか調査する。
+
