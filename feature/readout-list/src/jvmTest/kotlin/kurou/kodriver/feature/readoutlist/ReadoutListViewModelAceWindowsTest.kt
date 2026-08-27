@@ -71,7 +71,6 @@ class ReadoutListViewModelAceWindowsTest {
                     startSoundRepository = startSoundRepository,
                 )
 
-
             val state = viewModel.uiState.first()
             assertEquals(Simulator.AceWindows, state.selectedSimulator)
             assertEquals(
