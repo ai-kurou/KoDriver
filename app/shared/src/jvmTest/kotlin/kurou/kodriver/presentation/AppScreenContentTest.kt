@@ -54,7 +54,7 @@ class AppScreenContentTest {
     }
 
     @Test
-    fun `読み上げタブを再タップするとonReadoutTabReselectedが呼ばれる`() {
+    fun `ルールタブを再タップするとonReadoutTabReselectedが呼ばれる`() {
         var readoutReselectedCount = 0
         var logReselectedCount = 0
         var otherReselectedCount = 0
@@ -68,7 +68,7 @@ class AppScreenContentTest {
             )
         }
 
-        rule.onNode(hasText("読み上げ")).performClick()
+        rule.onNode(hasText("ルール")).performClick()
         rule.waitForIdle()
 
         assertEquals(1, readoutReselectedCount)
@@ -147,7 +147,7 @@ class AppScreenContentTest {
 
         rule.onNode(hasText("その他")).performClick()
         rule.waitForIdle()
-        rule.onNode(hasText("読み上げ")).performClick()
+        rule.onNode(hasText("ルール")).performClick()
         rule.waitForIdle()
 
         assertEquals(0, readoutReselectedCount)

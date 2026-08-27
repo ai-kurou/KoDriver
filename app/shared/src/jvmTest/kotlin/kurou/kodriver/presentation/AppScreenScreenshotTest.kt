@@ -71,7 +71,7 @@ class AppScreenScreenshotTest {
     }
 
     @Test
-    fun `NavigationRail 読み上げタブ`() =
+    fun `NavigationRail ルールタブ`() =
         composeScreenshotTest {
             setAppContent {
                 val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
@@ -153,7 +153,7 @@ class AppScreenScreenshotTest {
         }
 
     @Test
-    fun `NavigationBar 読み上げタブ`() =
+    fun `NavigationBar ルールタブ`() =
         composeScreenshotTest {
             setAppContent {
                 val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
