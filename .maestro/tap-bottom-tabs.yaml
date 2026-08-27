@@ -2,11 +2,11 @@ appId: kurou.kodriver
 ---
 - launchApp
 - extendedWaitUntil:
-    visible: "読み上げ"
+    visible: "ルール"
     timeout: 30000
 - tapOn: "ログ"
 - assertVisible: "ログはまだありません"
 - tapOn: "その他"
 - assertVisible: "Windows版KoDriverへ接続するIPアドレス"
-- tapOn: "読み上げ"
+- tapOn: "ルール"
 - assertVisible: "シミュレータを選択"
