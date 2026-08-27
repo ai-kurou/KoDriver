@@ -158,7 +158,7 @@ class OtherContentTest {
 
     private fun ComposeContentTestRule.toggleSwitchesAndOpenDialogs(state: OtherContentTestState) {
         // KeepScreenOn（Android専用トグル。Switchで直接切り替える）
-        onNode(hasText("画面をスリープさせない")).performClick()
+        onNode(hasText("テレメトリ受信中は画面をスリープさせない")).performClick()
         waitForIdle()
 
         assertTrue(state.keepScreenOn)

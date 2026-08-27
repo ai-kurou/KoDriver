@@ -208,7 +208,7 @@ class AppTest {
         clickItem("音量")
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
-        // 「画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
+        // 「テレメトリ受信中は画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
         clickItem("テーマ")
         clickItem("キャンセル")
         clickItem("PC起動時に自動起動")
