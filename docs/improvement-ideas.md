@@ -56,6 +56,7 @@
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)
   **課題**: `shortcut = true` / `menu = true` / `perUserInstall = true` はjpackageの仕様上いずれもサイレントフラグであり、インストール実行時に自動でその挙動が固定されるだけで、ユーザーに選択させるダイアログは表示されない。ショートカット作成可否を選ばせるには別途 `--win-shortcut-prompt` が必要だが、Compose MultiplatformのGradle DSL(`org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask`)には対応するプロパティが存在せず、現状のDSLの範囲では実現できない。インストール範囲(全ユーザー/個人用)を選ばせる標準ダイアログもjpackage自体に用意されていない。
   **改善案**: Compose Multiplatformが `winShortcutPrompt` 等のDSLプロパティを将来追加した場合、または freeform引数差し込み等の代替手段が判明した場合に、MSIインストーラー上でショートカット作成可否をユーザーに選択させる機能の追加を検討する。
+  **調査結果（2026-08-27）**: Compose Multiplatform最新版（1.12.0、2026年8月リリース）のリリースノート・`AbstractJPackageTask`のソース（GitHub master）を確認したが、`winShortcutPrompt`等の専用DSLプロパティは依然として未追加。ただし`AbstractJPackageTask`には任意のjpackage引数をそのまま渡せる`freeArgs`プロパティが存在し、GitHub Issue #773（ファイル関連付け要望）のコメントでは`freeArgs`経由で`--file-associations`等の未サポート引数を注入するワークアラウンドが確認できる。理論上は`freeArgs.add("--win-shortcut-prompt")`のような形で本件も実現できる可能性が高いが、実際にWindows環境で動作するかは未検証。DSL標準サポートはまだ無いため、実機検証を行うか、DSLが対応するまで着手を見送る。
 
 ## 開発体験
 
