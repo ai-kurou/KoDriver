@@ -156,7 +156,7 @@ class MainActivityTest {
         clickItemAndNavigateBack("音量")
         clickScrollableItem("読み上げ開始音")
         clickItem("キャンセル")
-        clickScrollableItem("画面をスリープさせない")
+        clickScrollableItem("テレメトリ受信中は画面をスリープさせない")
         clickScrollableItem("テーマ")
         clickItem("キャンセル")
         clickScrollableItem("ダイナミックカラー")

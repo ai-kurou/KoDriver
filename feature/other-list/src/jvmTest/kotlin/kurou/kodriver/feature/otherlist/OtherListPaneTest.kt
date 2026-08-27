@@ -78,7 +78,7 @@ class OtherListPaneTest {
             )
         }
 
-        rule.onNode(hasText("画面をスリープさせない")).performClick()
+        rule.onNode(hasText("テレメトリ受信中は画面をスリープさせない")).performClick()
 
         assertEquals(false, keepScreenOn)
     }
@@ -102,7 +102,7 @@ class OtherListPaneTest {
             )
         }
 
-        rule.onNode(hasText("画面をスリープさせない")).performClick()
+        rule.onNode(hasText("テレメトリ受信中は画面をスリープさせない")).performClick()
 
         assertEquals(true, keepScreenOn)
     }
@@ -203,7 +203,7 @@ class OtherListPaneTest {
             )
         }
 
-        rule.onNode(hasText("画面をスリープさせない")).performClick()
+        rule.onNode(hasText("テレメトリ受信中は画面をスリープさせない")).performClick()
         rule.onNode(hasText("ダイナミックカラー")).performClick()
         rule.onNode(hasText("ハプティックフィードバック")).performClick()
         rule.onNode(hasText("PC起動時に自動起動")).performClick()
