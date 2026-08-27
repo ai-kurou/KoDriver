@@ -5,6 +5,20 @@ labels:
   - claude-implementable
 body:
   - type: textarea
+    id: background
+    attributes:
+      label: 背景・目的（なぜやるか）
+      description: >-
+        この変更が必要な理由・背景を書いてください。手順だけを渡すと、実装エージェントは
+        フレッシュな状態で起動するため意図を汲み取れず、ズレた実装になりがちです。
+        Claudeのプランモードで検討した内容がある場合も、手順をコピーする前にまずここへ
+        「何のためにやるか」を要約してください。
+      placeholder: |
+        例: 音量0でもミュート表示にならず、ユーザーが誤操作に気づきにくいため
+    validations:
+      required: true
+
+  - type: textarea
     id: target
     attributes:
       label: 対象モジュール・ファイル
@@ -45,6 +59,23 @@ body:
         ファイル名・クラス名で指定してください（CLAUDE.mdの「実装前の類似コード確認」に対応）。
       placeholder: |
         例: Gt7Ps5NarratorViewModel と同じ構成で実装してほしい
+    validations:
+      required: false
+
+  - type: textarea
+    id: implementation-plan
+    attributes:
+      label: 実装手順案（プランモード出力の貼り付け可）
+      description: >-
+        Claudeのプランモードなどで検討した実装手順があれば、そのまま貼り付けて構いません。
+        ただし夜間実装エージェントにとっては「参考手順」の位置づけであり、上の背景・目的や
+        受け入れ条件と矛盾する場合はそちらを優先させてください。踏襲すべき既存パターンから
+        外れた手順が含まれる場合は、実装前に既存コードとの整合性を確認させてください。
+      placeholder: |
+        例:
+        1. VolumeDetailPane.kt の Slider の onValueChange で volume == 0f を判定
+        2. アイコンを Icons.Default.VolumeMute に切り替える
+        3. VolumeDetailPaneTest に境界値テストを追加
     validations:
       required: false
 
