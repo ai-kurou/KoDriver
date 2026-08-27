@@ -10,11 +10,13 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
@@ -46,13 +48,12 @@ class ObserveTelemetryReceivingUseCaseTest {
         MockKAnnotations.init(this)
     }
 
-    private fun TestScope.createUseCase() =
+    private fun createUseCase() =
         ObserveTelemetryReceivingUseCase(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
             observeGt7Ps5 = ObserveGt7Ps5UseCase(gt7Ps5Repository),
             observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
-            currentTimeMillis = { testScheduler.currentTime },
         )
 
     @Test
@@ -82,7 +83,7 @@ class ObserveTelemetryReceivingUseCaseTest {
         }
 
     @Test
-    fun `受信済みでも一定時間データが来ないとfalseに戻る`() =
+    fun `受信済みでもタイムアウトまで次のデータが来ないとfalseに戻る`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
             val status = MutableSharedFlow<AceWindowsStatusData>(replay = 1)
@@ -92,8 +93,32 @@ class ObserveTelemetryReceivingUseCaseTest {
             every { aceWindowsStatusRepository.statusStream() } returns status
             val useCase = createUseCase()
 
-            val results = withTimeout(10_000L) { useCase().take(5).toList() }
+            val results = withTimeout(10_000L) { useCase().take(3).toList() }
 
-            assertEquals(listOf(false, true, true, true, false), results)
+            assertEquals(listOf(false, true, false), results)
+        }
+
+    @Test
+    fun `タイムアウト前に再受信するとtrueが継続する`() =
+        runTest {
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
+            val telemetry = MutableSharedFlow<Gt7Ps5TelemetryData>(replay = 1)
+            telemetry.tryEmit(fakeGt7Ps5TelemetryData())
+            every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
+            every { gt7Ps5Repository.telemetryStream() } returns telemetry
+            every { aceWindowsStatusRepository.statusStream() } returns emptyFlow()
+            val useCase = createUseCase()
+
+            val values = mutableListOf<Boolean>()
+            val job =
+                launch {
+                    useCase().collect { values.add(it) }
+                }
+            advanceTimeBy(2_000L)
+            telemetry.emit(fakeGt7Ps5TelemetryData(lapCount = 1))
+            advanceTimeBy(2_000L)
+
+            assertTrue(values.last())
+            job.cancel()
         }
 }
