@@ -261,7 +261,6 @@ internal fun ReadoutListPane(
                     modifier =
                         Modifier.padding(
                             start = 8.dp,
-                            top = if (isAceSelected) 0.dp else 16.dp,
                             end = 8.dp,
                         ),
                 )
