@@ -19,7 +19,7 @@ enum class KoDriverServerConnectionStatus {
 
 data class KoDriverServerConnectionState(
     val connectionStatus: KoDriverServerConnectionStatus = KoDriverServerConnectionStatus.NOT_CONFIGURED,
-    val requiresKoDriverServer: Boolean = false,
+    val requiresKoDriverServer: Boolean = Simulator.LmuWindows.requiresKoDriverServer,
     val selectedSimulator: Simulator = Simulator.LmuWindows,
     val serverVersion: String? = null,
     val isVersionMismatch: Boolean = false,

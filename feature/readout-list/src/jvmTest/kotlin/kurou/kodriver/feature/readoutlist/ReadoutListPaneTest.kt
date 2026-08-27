@@ -25,7 +25,7 @@ class ReadoutListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `デフォルト状態では読み上げ優先順位ヒントを表示しない`() {
+    fun `デフォルト状態では読み上げ優先度ヒントを表示する`() {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
@@ -39,7 +39,7 @@ class ReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithText("読み上げ優先順位").assertDoesNotExist()
+        rule.onNodeWithText("読み上げ優先度").assertIsDisplayed()
     }
 
     @Test
