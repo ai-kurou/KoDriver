@@ -11,7 +11,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun VehicleClassContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     lmuWindowsVehicleClass: LmuWindowsVehicleClassData?,
     gt7Ps5VehicleClass: Gt7Ps5VehicleClassData?,
 ) {
@@ -20,7 +20,6 @@ internal fun VehicleClassContent(
             is Simulator.LmuWindows -> lmuWindowsVehicleClass?.name
             is Simulator.Gt7Ps5 -> gt7Ps5VehicleClass?.name
             is Simulator.AceWindows -> null
-            null -> null
         }
     if (name.isNullOrEmpty()) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))

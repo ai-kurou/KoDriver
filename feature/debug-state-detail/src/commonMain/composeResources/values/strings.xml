@@ -16,7 +16,6 @@
     <string name="debug_state_flag_orange_circle">オレンジボールフラッグ</string>
     <string name="debug_state_flag_red_yellow_stripes">レッド・イエローストライプフラッグ</string>
     <string name="debug_state_simulator_info_title">選択中のシミュレータ</string>
-    <string name="debug_state_simulator_info_unselected">未選択</string>
     <string name="debug_state_game_phase_title">ゲームフェーズ (LMUのみ)</string>
     <string name="debug_state_game_phase_garage">セッション開始前</string>
     <string name="debug_state_game_phase_warm_up">Reconnaissance laps（レースのみ）</string>

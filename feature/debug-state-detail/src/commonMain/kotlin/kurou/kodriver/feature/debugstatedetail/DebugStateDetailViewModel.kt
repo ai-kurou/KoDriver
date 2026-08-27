@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
@@ -103,12 +104,11 @@ private val aceWindowsSupportedCardKeys =
         DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
     )
 
-private fun supportedCardKeys(simulator: Simulator?): Set<DebugStateCardKey> =
+private fun supportedCardKeys(simulator: Simulator): Set<DebugStateCardKey> =
     when (simulator) {
         is Simulator.LmuWindows -> lmuWindowsSupportedCardKeys
         is Simulator.Gt7Ps5 -> gt7Ps5SupportedCardKeys
         is Simulator.AceWindows -> aceWindowsSupportedCardKeys
-        null -> emptySet()
     }
 
 internal data class LmuWindowsDebugStateUseCases(
@@ -151,13 +151,11 @@ internal class DebugStateDetailViewModel(
     private val saveCardOrder = cardOrderUseCases.saveCardOrder
     private val _receivedCardKeys = MutableStateFlow<Map<Simulator, Set<DebugStateCardKey>>>(emptyMap())
 
-    private val _selectedSimulator: StateFlow<Simulator?> =
+    private val _selectedSimulator: StateFlow<Simulator> =
         observeSelectedSimulator()
             .onEach { simulator ->
-                if (simulator != null) {
-                    markCardsReceived(simulator, DebugStateCardKey.SIMULATOR)
-                }
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+                markCardsReceived(simulator, DebugStateCardKey.SIMULATOR)
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
     private val _raceStateBase: StateFlow<RaceState> =
         combine(

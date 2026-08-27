@@ -11,7 +11,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun BestLapContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
     gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
 ) {
@@ -20,7 +20,6 @@ internal fun BestLapContent(
             is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.bestLapTimeMs
             is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.bestLapTimeMs?.toLong()
             is Simulator.AceWindows -> null
-            null -> null
         }
     Text(
         text =

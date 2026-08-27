@@ -34,7 +34,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -72,7 +71,7 @@ class AppScreenViewModelTest {
         version: String = "1.0.0",
         dynamicColorEnabled: Boolean = false,
         hapticFeedbackEnabled: Boolean = true,
-        selectedSimulator: Simulator? = null,
+        selectedSimulator: Simulator = Simulator.LmuWindows,
     ): AppScreenViewModel {
         coEvery { appUpdateRepository.getLatestRelease() } returns tagName?.let { AppUpdate(it) }
         every { keepScreenOnRepository.keepScreenOn() } returns flowOf(false)
@@ -183,16 +182,6 @@ class AppScreenViewModelTest {
             val viewModel = createViewModel(hapticFeedbackEnabled = false)
 
             assertFalse(viewModel.uiState.first().hapticFeedbackEnabled)
-        }
-
-    @Test
-    fun `未選択の場合selectedSimulatorがnullになる`() =
-        runTest {
-            val viewModel = createViewModel(selectedSimulator = null)
-            val uiState = viewModel.uiState.first()
-
-            assertNull(uiState.selectedSimulator)
-            assertNull(uiState.selectedSimulatorId)
         }
 
     @Test

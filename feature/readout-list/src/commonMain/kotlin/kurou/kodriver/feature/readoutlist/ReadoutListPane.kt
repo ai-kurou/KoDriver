@@ -251,55 +251,51 @@ internal fun ReadoutListPane(
                     .fillMaxSize()
                     .padding(vertical = 16.dp),
         ) {
-            if (uiState.selectedSimulator != null) {
-                if (isAceSelected) {
-                    item(key = "aceReadoutTimingHint") {
-                        AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
-                    }
+            if (isAceSelected) {
+                item(key = "aceReadoutTimingHint") {
+                    AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
                 }
-                item(key = "priorityHint") {
-                    PriorityHintRow(
-                        modifier =
-                            Modifier.padding(
-                                start = 8.dp,
-                                top = if (isAceSelected) 0.dp else 16.dp,
-                                end = 8.dp,
-                            ),
+            }
+            item(key = "priorityHint") {
+                PriorityHintRow(
+                    modifier =
+                        Modifier.padding(
+                            start = 8.dp,
+                            top = if (isAceSelected) 0.dp else 16.dp,
+                            end = 8.dp,
+                        ),
+                )
+            }
+            itemsIndexed(uiState.items, key = { _, item -> item.value }) { index, item ->
+                ReorderableItem(reorderableState, key = item.value) {
+                    val isSelected =
+                        ReadoutListItemType.fromId(uiState.selectedSimulator, item) == uiState.selectedItem
+                    val cardContainerColor by animateColorAsState(
+                        targetValue =
+                            if (isSelected) {
+                                MaterialTheme.colorScheme.secondaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerLow
+                            },
+                        animationSpec = tween(durationMillis = 500),
+                        label = "cardContainerColor",
                     )
-                }
-                itemsIndexed(uiState.items, key = { _, item -> item.value }) { index, item ->
-                    ReorderableItem(reorderableState, key = item.value) {
-                        val isSelected =
-                            uiState.selectedSimulator.let {
-                                ReadoutListItemType.fromId(it, item)
-                            } == uiState.selectedItem
-                        val cardContainerColor by animateColorAsState(
-                            targetValue =
-                                if (isSelected) {
-                                    MaterialTheme.colorScheme.secondaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceContainerLow
-                                },
-                            animationSpec = tween(durationMillis = 500),
-                            label = "cardContainerColor",
-                        )
-                        val itemName = itemDisplayName(item)
-                        val readoutEnabled = uiState.readoutEnabledStates[item] ?: false
-                        ReadoutListItemCard(
-                            item = item,
-                            index = index,
-                            itemName = itemName,
-                            dragHandleModifier = Modifier.draggableHandle(),
-                            readoutEnabled = readoutEnabled,
-                            queueEnabled = uiState.queueEnabledStates[item] ?: false,
-                            startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
-                            containerColor = cardContainerColor,
-                            onItemClick = onItemClick,
-                            onQueueEnabledChanged = onQueueEnabledChanged,
-                            onReadoutEnabledChanged = onReadoutEnabledChanged,
-                            onStartSoundEnabledChanged = onStartSoundEnabledChanged,
-                        )
-                    }
+                    val itemName = itemDisplayName(item)
+                    val readoutEnabled = uiState.readoutEnabledStates[item] ?: false
+                    ReadoutListItemCard(
+                        item = item,
+                        index = index,
+                        itemName = itemName,
+                        dragHandleModifier = Modifier.draggableHandle(),
+                        readoutEnabled = readoutEnabled,
+                        queueEnabled = uiState.queueEnabledStates[item] ?: false,
+                        startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
+                        containerColor = cardContainerColor,
+                        onItemClick = onItemClick,
+                        onQueueEnabledChanged = onQueueEnabledChanged,
+                        onReadoutEnabledChanged = onReadoutEnabledChanged,
+                        onStartSoundEnabledChanged = onStartSoundEnabledChanged,
+                    )
                 }
             }
         }

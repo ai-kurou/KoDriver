@@ -7,5 +7,5 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 class ObserveSelectedSimulatorUseCase(
     private val repository: SimulatorPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Simulator?> = repository.selectedSimulator()
+    operator fun invoke(): Flow<Simulator> = repository.selectedSimulator()
 }

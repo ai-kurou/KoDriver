@@ -238,7 +238,7 @@ class LmuWindowsNarratorViewModelTest {
         remainingVirtualEnergyThresholdPercentage: Int,
         pitTimingVirtualEnergyLapsThreshold: Int,
         pitTimingTyreWearLapsThreshold: Int,
-        simulator: Simulator?,
+        simulator: Simulator,
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
         every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
@@ -337,7 +337,7 @@ class LmuWindowsNarratorViewModelTest {
         remainingVirtualEnergyThresholdPercentage: Int = 30,
         pitTimingVirtualEnergyLapsThreshold: Int = 3,
         pitTimingTyreWearLapsThreshold: Int = 3,
-        simulator: Simulator? = Simulator.LmuWindows,
+        simulator: Simulator = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ): LmuWindowsNarratorViewModel {
@@ -542,44 +542,6 @@ class LmuWindowsNarratorViewModelTest {
             )
         }
     }
-
-    // --- シミュレータ選択 ---
-
-    @Test
-    fun `LMU非選択時は接近アナウンスをしない`() =
-        runTest(testDispatcher) {
-            var fakeTime = 0L
-            val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(
-                vehicleApproachChannel = channel,
-                ttsEngine = tts,
-                simulator = null,
-                currentTimeMs = { fakeTime },
-            )
-
-            channel.send(noVehicleApproach())
-            channel.send(leftVehicleApproach(vehicleId = 1))
-            fakeTime = 50L
-            channel.send(leftVehicleApproach(vehicleId = 1))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `LMU非選択時は旗アナウンスをしない`() =
-        runTest(testDispatcher) {
-            val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(flagChannel = flagChannel, ttsEngine = tts, simulator = null)
-
-            flagChannel.send(clearFlags())
-            flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
 
     // --- 自己ベストラップ ---
 
@@ -1306,19 +1268,6 @@ class LmuWindowsNarratorViewModelTest {
                 tyreTemperatureOverheatWarningEnabled = false,
             )
             flagChannel.send(clearFlags())
-
-            channel.send(tyreTemperature(fl = 95.0))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `LMU非選択時はタイヤ温度アナウンスをしない`() =
-        runTest(testDispatcher) {
-            val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val tts = mockTts(spokenTexts)
-            createViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, simulator = null)
 
             channel.send(tyreTemperature(fl = 95.0))
 

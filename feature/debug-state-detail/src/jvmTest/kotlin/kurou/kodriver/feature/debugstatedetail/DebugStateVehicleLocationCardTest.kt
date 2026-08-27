@@ -19,26 +19,6 @@ class DebugStateVehicleLocationCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("車両位置").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
     fun `selectedSimulatorがACEでステータス情報が未取得の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {

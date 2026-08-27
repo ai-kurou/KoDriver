@@ -33,9 +33,9 @@ val fakeReadoutListModule =
     }
 
 private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepository {
-    private val flow = MutableStateFlow<Simulator?>(null)
+    private val flow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
 
-    override fun selectedSimulator(): Flow<Simulator?> = flow
+    override fun selectedSimulator(): Flow<Simulator> = flow
 
     override suspend fun saveSelectedSimulator(simulator: Simulator) {
         flow.update { simulator }

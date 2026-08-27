@@ -15,6 +15,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 
 internal val defaultDebugStateCardOrder =
@@ -37,7 +38,7 @@ internal val defaultDebugStateCardOrder =
     )
 
 data class DebugStateDetailUiState(
-    val selectedSimulator: Simulator? = null,
+    val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,
     val raceFlags: LmuWindowsRaceFlagsData? = null,
     val virtualEnergy: LmuWindowsVirtualEnergyData? = null,
     val lmuWindowsTelemetry: LmuWindowsTelemetryData? = null,

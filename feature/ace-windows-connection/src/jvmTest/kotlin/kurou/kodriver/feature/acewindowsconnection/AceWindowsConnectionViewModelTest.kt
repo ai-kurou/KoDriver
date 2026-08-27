@@ -134,24 +134,9 @@ class AceWindowsConnectionViewModelTest {
         }
 
     @Test
-    fun `ACE選択前は未確認状態とする`() =
-        runTest {
-            every { connectionRepository.fuelStream() } returns MutableStateFlow(defaultFuel)
-            coEvery { connectionRepository.isConnected() } returns false
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-            val viewModel = createViewModel()
-
-            assertEquals(AceWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
-            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 0) { connectionRepository.fuelStream() }
-            coVerify(exactly = 0) { connectionRepository.isConnected() }
-            confirmVerified(connectionRepository, simulatorRepository)
-        }
-
-    @Test
     fun `ACEから別シミュレータへ切り替えると未確認にリセットされる`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.AceWindows)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.AceWindows)
             every { connectionRepository.fuelStream() } returns MutableStateFlow(defaultFuel)
             coEvery { connectionRepository.isConnected() } returns true
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow

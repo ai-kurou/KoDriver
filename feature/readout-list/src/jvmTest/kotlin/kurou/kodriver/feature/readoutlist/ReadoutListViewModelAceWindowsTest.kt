@@ -57,7 +57,7 @@ class ReadoutListViewModelAceWindowsTest {
     @Test
     fun `ace_windowsを選択するとlistPaneにフラッグと車両接近とタイヤ温度と燃料残量アイテムが表示される`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.AceWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             every { readoutRepository.observeReadoutEnabledStates("ace_windows") } returns MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("ace_windows") } returns MutableStateFlow(emptyList())
@@ -70,8 +70,6 @@ class ReadoutListViewModelAceWindowsTest {
                     queueRepository = queueRepository,
                     startSoundRepository = startSoundRepository,
                 )
-
-            simulatorFlow.update { Simulator.AceWindows }
 
             val state = viewModel.uiState.first()
             assertEquals(Simulator.AceWindows, state.selectedSimulator)
@@ -103,7 +101,7 @@ class ReadoutListViewModelAceWindowsTest {
     @Test
     fun `ace_windowsの車両接近でonReadoutEnabledChangedするとON_OFF状態がRepositoryに保存される`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.AceWindows)
             val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             every { readoutRepository.observeReadoutEnabledStates("ace_windows") } returns enabledStatesFlow
@@ -127,7 +125,6 @@ class ReadoutListViewModelAceWindowsTest {
                     startSoundRepository = startSoundRepository,
                 )
 
-            simulatorFlow.update { Simulator.AceWindows }
             viewModel.onReadoutEnabledChanged(ReadoutItemKey.AceWindows.VehicleApproach.Root, false)
 
             assertEquals(
@@ -152,7 +149,10 @@ class ReadoutListViewModelAceWindowsTest {
     @Test
     fun `ace_windowsの車両接近でonStartSoundEnabledChangedすると読み上げ開始音のON_OFF状態がRepositoryに保存される`() =
         runTest {
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator?>(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator>(Simulator.AceWindows)
+            every { readoutRepository.observeReadoutEnabledStates("ace_windows") } returns
+                MutableStateFlow(emptyMap())
+            every { readoutRepository.observeReadoutOrder("ace_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             val startSoundEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns startSoundEnabledFlow
@@ -185,6 +185,8 @@ class ReadoutListViewModelAceWindowsTest {
                 )
             }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("ace_windows") }
+            verify(exactly = 1) { readoutRepository.observeReadoutOrder("ace_windows") }
             verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
             verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
             confirmVerified(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)

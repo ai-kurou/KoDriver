@@ -27,30 +27,6 @@ class DebugStateTyreWearCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("タイヤ摩耗").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
     fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {

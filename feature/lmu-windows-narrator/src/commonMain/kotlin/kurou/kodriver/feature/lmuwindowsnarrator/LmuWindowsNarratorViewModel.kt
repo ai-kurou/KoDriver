@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.RED_FLAG_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
@@ -145,7 +146,7 @@ internal class LmuWindowsNarratorViewModel(
     private val selectedSimulator =
         readoutListUseCases
             .observeSelectedSimulator()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
     // listPane（readoutStates）とdetailPane（flagStates・vehicleDamageStates）を統合した、
     // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
@@ -153,11 +154,7 @@ internal class LmuWindowsNarratorViewModel(
         combine(
             selectedSimulator
                 .flatMapLatest { simulator ->
-                    if (simulator == null) {
-                        emptyFlow<Map<ReadoutItemKey, Boolean>>()
-                    } else {
-                        readoutListUseCases.observeReadoutEnabledStates(simulator.id)
-                    }
+                    readoutListUseCases.observeReadoutEnabledStates(simulator.id)
                 },
             flagUseCases.observeFlagEnabledStates(),
             vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
@@ -177,7 +174,7 @@ internal class LmuWindowsNarratorViewModel(
     private val readoutOrder =
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
+                readoutListUseCases.observeReadoutOrder(simulator.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。

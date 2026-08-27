@@ -276,18 +276,6 @@ class AppScreenContentTest {
     }
 
     @Test
-    fun `selectedSimulatorIdがnullの場合未選択が表示される`() {
-        rule.setContent {
-            AppScreenContent(
-                layoutType = NavigationSuiteType.NavigationBar,
-                selectedSimulatorId = null,
-            )
-        }
-
-        rule.onNode(hasText("未選択")).assertExists()
-    }
-
-    @Test
     fun `selectedSimulatorIdがlmu_windowsの場合LMUが表示される`() {
         rule.setContent {
             AppScreenContent(
@@ -300,15 +288,15 @@ class AppScreenContentTest {
     }
 
     @Test
-    fun `未選択項目をタップするとシミュレータ選択メニューが開く`() {
+    fun `選択中項目をタップするとシミュレータ選択メニューが開く`() {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                selectedSimulatorId = null,
+                selectedSimulatorId = "lmu_windows",
             )
         }
 
-        rule.onNode(hasText("未選択")).performClick()
+        rule.onNode(hasText("LMU")).performClick()
         rule.waitForIdle()
 
         rule.onNode(hasText("Gran Turismo 7（PS5）")).assertExists()
@@ -321,12 +309,12 @@ class AppScreenContentTest {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                selectedSimulatorId = null,
+                selectedSimulatorId = "lmu_windows",
                 onSimulatorSelected = { selectedId = it },
             )
         }
 
-        rule.onNode(hasText("未選択")).performClick()
+        rule.onNode(hasText("LMU")).performClick()
         rule.waitForIdle()
         rule.onNode(hasText("Gran Turismo 7（PS5）")).performClick()
         rule.waitForIdle()

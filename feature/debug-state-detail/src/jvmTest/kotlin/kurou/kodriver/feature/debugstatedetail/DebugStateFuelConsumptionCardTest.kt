@@ -28,31 +28,6 @@ class DebugStateFuelConsumptionCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            virtualEnergy =
-                                LmuWindowsVirtualEnergyData(
-                                    remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
-                                ),
-                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
-                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("燃料消費").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
     fun `selectedSimulatorがGT7でデータ未取得の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {

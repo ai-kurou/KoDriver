@@ -65,7 +65,7 @@ class ObserveKoDriverServerConnectionUseCaseTest {
     fun `接続成功時は接続済み状態とサーバーバージョンを返す`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
             val useCase = createUseCase()
 
@@ -88,7 +88,7 @@ class ObserveKoDriverServerConnectionUseCaseTest {
     fun `サーバーバージョンがアプリバージョンと異なる場合は不一致を返す`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
             val useCase = createUseCase()
 
@@ -109,7 +109,7 @@ class ObserveKoDriverServerConnectionUseCaseTest {
     fun `一定間隔で接続状態を更新する`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returnsMany
                 listOf(
                     Result.failure(RuntimeException("down")),

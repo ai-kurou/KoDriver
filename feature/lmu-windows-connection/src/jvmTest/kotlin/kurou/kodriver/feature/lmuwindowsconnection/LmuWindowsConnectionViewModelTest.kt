@@ -82,7 +82,7 @@ class LmuWindowsConnectionViewModelTest {
     fun `LMU非選択時は未接続・未確認状態を返す`() =
         runTest {
             coEvery { connectionRepository.isConnected() } returns true
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -96,22 +96,9 @@ class LmuWindowsConnectionViewModelTest {
         }
 
     @Test
-    fun `LMU選択前は未確認状態とする`() =
-        runTest {
-            coEvery { connectionRepository.isConnected() } returns false
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-            val viewModel = createViewModel()
-
-            assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
-            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            coVerify(exactly = 0) { connectionRepository.isConnected() }
-            confirmVerified(connectionRepository, simulatorRepository)
-        }
-
-    @Test
     fun `LMU選択に切り替えると接続確認を開始する`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
             coEvery { connectionRepository.isConnected() } returns true
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
@@ -136,7 +123,7 @@ class LmuWindowsConnectionViewModelTest {
     @Test
     fun `LMUから別シミュレータへ切り替えると未接続にリセットされる`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.LmuWindows)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             coEvery { connectionRepository.isConnected() } returns true
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             val viewModel = createViewModel()
@@ -144,7 +131,7 @@ class LmuWindowsConnectionViewModelTest {
             dispatcher.scheduler.runCurrent()
             assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
 
-            simulatorFlow.update { null }
+            simulatorFlow.update { Simulator.Gt7Ps5 }
             dispatcher.scheduler.runCurrent()
 
             assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)

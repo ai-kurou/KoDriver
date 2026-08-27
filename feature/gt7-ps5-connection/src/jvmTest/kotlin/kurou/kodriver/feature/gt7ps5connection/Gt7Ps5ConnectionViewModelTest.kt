@@ -167,24 +167,9 @@ class Gt7Ps5ConnectionViewModelTest {
         }
 
     @Test
-    fun `GT7選択前は未確認状態とする`() =
-        runTest {
-            every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
-            coEvery { connectionRepository.isConnected() } returns false
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-            val viewModel = createViewModel()
-
-            assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
-            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-            verify(exactly = 0) { connectionRepository.telemetryStream() }
-            coVerify(exactly = 0) { connectionRepository.isConnected() }
-            confirmVerified(connectionRepository, simulatorRepository)
-        }
-
-    @Test
     fun `GT7選択に切り替えると接続確認を開始する`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.LmuWindows)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
             coEvery { connectionRepository.isConnected() } returns true
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -211,7 +196,7 @@ class Gt7Ps5ConnectionViewModelTest {
     @Test
     fun `GT7から別シミュレータへ切り替えると未確認にリセットされる`() =
         runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.Gt7Ps5)
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
             every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
             coEvery { connectionRepository.isConnected() } returns true
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow

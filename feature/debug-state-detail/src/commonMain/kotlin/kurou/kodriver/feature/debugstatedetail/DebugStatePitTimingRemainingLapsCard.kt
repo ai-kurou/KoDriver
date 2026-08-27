@@ -15,7 +15,7 @@ import kotlin.math.round
 
 @Composable
 internal fun PitTimingRemainingLapsContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     virtualEnergy: LmuWindowsVirtualEnergyData?,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
 ) {

@@ -18,6 +18,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.AceWindowsNarratorState
@@ -86,12 +87,12 @@ internal class AceWindowsNarratorViewModel(
     private val selectedSimulator =
         readoutListUseCases
             .observeSelectedSimulator()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
     private val listEnabledStates =
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+                readoutListUseCases.observeReadoutEnabledStates(simulator.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     // listPane（listEnabledStates）とdetailPane（flagEnabledStates・tyreTemperatureEnabledStates）を統合した、
@@ -109,7 +110,7 @@ internal class AceWindowsNarratorViewModel(
     private val readoutOrder =
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
+                readoutListUseCases.observeReadoutOrder(simulator.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。

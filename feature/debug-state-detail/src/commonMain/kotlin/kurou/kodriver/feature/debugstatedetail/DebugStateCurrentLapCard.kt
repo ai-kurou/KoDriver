@@ -11,7 +11,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CurrentLapContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
     gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
 ) {
@@ -20,7 +20,6 @@ internal fun CurrentLapContent(
             is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.currentLap
             is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.lapCount
             is Simulator.AceWindows -> null
-            null -> null
         }
     Text(
         text = currentLap?.toString() ?: stringResource(Res.string.debug_state_flag_info_unavailable),

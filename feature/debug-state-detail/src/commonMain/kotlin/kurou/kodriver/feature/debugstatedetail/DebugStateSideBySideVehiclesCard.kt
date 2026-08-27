@@ -35,14 +35,14 @@ private fun formatMeters(value: Double): String {
 
 @Composable
 internal fun SideBySideVehiclesContent(
-    selectedSimulator: Simulator?,
+    selectedSimulator: Simulator,
     vehicleApproach: LmuWindowsVehicleApproachData?,
     aceWindowsVehicleApproach: AceWindowsVehicleApproachData?,
 ) {
     when (selectedSimulator) {
         is Simulator.LmuWindows -> LmuWindowsSideBySideVehiclesContent(vehicleApproach)
         is Simulator.AceWindows -> AceWindowsNearbyVehiclesContent(aceWindowsVehicleApproach)
-        is Simulator.Gt7Ps5, null -> Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        is Simulator.Gt7Ps5 -> Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
     }
 }
 

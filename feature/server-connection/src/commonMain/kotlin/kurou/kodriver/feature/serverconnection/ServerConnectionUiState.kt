@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.serverconnection
 
+import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 
 /**
@@ -12,8 +13,8 @@ enum class ServerConnectionStatus { NOT_CONFIGURED, CHECKING, CONNECTED, DISCONN
  */
 data class ServerConnectionUiState(
     val connectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED,
-    val requiresKoDriverServer: Boolean = false,
-    val selectedSimulator: Simulator? = null,
+    val requiresKoDriverServer: Boolean = SELECTED_SIMULATOR_DEFAULT.requiresKoDriverServer,
+    val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,
     val serverVersion: String? = null,
     val showVersionMismatchBottomSheet: Boolean = false,
     val appVersion: String = "",

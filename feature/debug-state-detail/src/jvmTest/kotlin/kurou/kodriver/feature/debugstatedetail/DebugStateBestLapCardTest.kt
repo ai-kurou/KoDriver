@@ -24,28 +24,6 @@ class DebugStateBestLapCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
-                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
     fun `ベストラップが未計測（0以下）の場合は未取得の文言を表示する`() {
         listOf(0, -1).forEach { bestLapTimeMs ->
             rule.setContent {

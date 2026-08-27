@@ -48,10 +48,6 @@ class ConnectionBannerViewModel(
                             .statusFlow()
                             .map { ConnectionBannerVmUiState(it, simulator) }
                     }
-
-                    null -> {
-                        flowOf(ConnectionBannerVmUiState())
-                    }
                 }
             }.stateIn(
                 scope = viewModelScope,
