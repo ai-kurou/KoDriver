@@ -215,17 +215,17 @@ moduleGraphAssert {
     )
 }
 
-// CLAUDE.md 冒頭のモジュール構成ツリーへの記載漏れ（#911 で発生）を機械的に検出するタスク。
-// settings.gradle.kts の include() 一覧と CLAUDE.md のツリー内に列挙された、
-// 説明文付きの葉モジュール名（グループ見出しの core/ feature/ app/ 自体は対象外）を突き合わせる。
-tasks.register("assertClaudeMdModuleList") {
+// docs/architecture.md のモジュール一覧表への記載漏れ（#911 で発生した CLAUDE.md 側の漏れを機械的に検出する
+// 仕組みの後継。モジュール構成の正を docs/architecture.md に一本化したため、対象をそちらへ切り替えた）を検出するタスク。
+// settings.gradle.kts の include() 一覧と docs/architecture.md の表内に列挙されたモジュール名を突き合わせる。
+tasks.register("assertArchitectureDocModuleList") {
     group = "verification"
-    description = "Verifies settings.gradle.kts modules and CLAUDE.md's module tree are in sync."
+    description = "Verifies settings.gradle.kts modules and docs/architecture.md's module table are in sync."
 
     val settingsFile = layout.projectDirectory.file("settings.gradle.kts").asFile
-    val claudeMdFile = layout.projectDirectory.file("CLAUDE.md").asFile
+    val architectureDocFile = layout.projectDirectory.file("docs/architecture.md").asFile
     inputs.file(settingsFile)
-    inputs.file(claudeMdFile)
+    inputs.file(architectureDocFile)
 
     doLast {
         val settingsModules = settingsFile
@@ -234,43 +234,22 @@ tasks.register("assertClaudeMdModuleList") {
             .map { path -> path.substringAfterLast(":") }
             .toSet()
 
-        val claudeMdLines = claudeMdFile.readLines()
-        val headingIndex = claudeMdLines.indexOfFirst { it.trim() == "## モジュール構成" }
-        val treeStart = claudeMdLines
-            .drop(headingIndex + 1)
-            .indexOfFirst { it.trim() == "```" }
-            .let { relativeIndex -> if (relativeIndex == -1) -1 else headingIndex + 1 + relativeIndex }
-        val treeEnd = claudeMdLines
-            .drop(treeStart + 1)
-            .indexOfFirst { it.trim() == "```" }
-            .let { relativeIndex -> if (relativeIndex == -1) -1 else treeStart + 1 + relativeIndex }
-        check(headingIndex != -1 && treeStart != -1 && treeEnd != -1) {
-            "CLAUDE.md の '## モジュール構成' コードブロックが見つかりません"
-        }
+        val documentedModules = architectureDocFile
+            .readLines()
+            .mapNotNull { line -> Regex("""^\| `:([^`]+)`""").find(line)?.groupValues?.get(1) }
+            .map { path -> path.substringAfterLast(":") }
+            .toSet()
 
-        val treeDrawingChars = charArrayOf('│', '├', '└', '─', ' ')
-        val documentedModules = claudeMdLines
-            .subList(treeStart + 2, treeEnd) // "```" と先頭の "KoDriver/" 行を除く
-            .mapNotNull { line ->
-                val stripped = line.trimStart(*treeDrawingChars)
-                val slashIndex = stripped.indexOf('/')
-                if (slashIndex == -1) return@mapNotNull null
-                val name = stripped.substring(0, slashIndex)
-                val rest = stripped.substring(slashIndex + 1)
-                // グループ見出し（core/ feature/ app/）は説明文を持たないため除外する
-                name.takeIf { rest.isNotBlank() }
-            }.toSet()
-
-        val missingFromClaudeMd = settingsModules - documentedModules
-        val staleInClaudeMd = documentedModules - settingsModules
-        check(missingFromClaudeMd.isEmpty() && staleInClaudeMd.isEmpty()) {
+        val missingFromDoc = settingsModules - documentedModules
+        val staleInDoc = documentedModules - settingsModules
+        check(missingFromDoc.isEmpty() && staleInDoc.isEmpty()) {
             buildString {
-                appendLine("CLAUDE.md のモジュール構成ツリーと settings.gradle.kts が一致していません。")
-                if (missingFromClaudeMd.isNotEmpty()) {
-                    appendLine("  CLAUDE.md に記載がないモジュール: ${missingFromClaudeMd.sorted()}")
+                appendLine("docs/architecture.md のモジュール一覧表と settings.gradle.kts が一致していません。")
+                if (missingFromDoc.isNotEmpty()) {
+                    appendLine("  docs/architecture.md に記載がないモジュール: ${missingFromDoc.sorted()}")
                 }
-                if (staleInClaudeMd.isNotEmpty()) {
-                    appendLine("  settings.gradle.kts に存在しない記載: ${staleInClaudeMd.sorted()}")
+                if (staleInDoc.isNotEmpty()) {
+                    appendLine("  settings.gradle.kts に存在しない記載: ${staleInDoc.sorted()}")
                 }
             }
         }
@@ -503,7 +482,7 @@ val preSubmitChecks = tasks.register("preSubmitChecks") {
     description = "Runs all mandatory pre-merge checks (detekt, ktlint, module graph, tests with coverage, app builds)."
     dependsOn(
         ":assertModuleGraph",
-        ":assertClaudeMdModuleList",
+        ":assertArchitectureDocModuleList",
         ":koverXmlReport",
         ":app:androidApp:assembleDebug",
         ":app:desktopApp:jar",
