@@ -8,65 +8,7 @@ Le Mans Ultimate（LMU）から Windows 共有メモリ経由で、Gran Turismo 
 
 ## モジュール構成
 
-```
-KoDriver/
-├── core/
-│   ├── domain/        ドメインモデル・リポジトリ抽象・ユースケース
-│   ├── data/          DataStore・HTTP/WebSocketクライアント・リポジトリ実装
-│   ├── lmu-windows-data/ LMU Windows共有メモリ読み取り・リポジトリ実装
-│   ├── gt7-ps5-data/  GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装
-│   ├── ace-windows-data/ Assetto Corsa EVO Windows共有メモリ読み取り・リポジトリ実装
-│   ├── device-volume-data/ 端末（OS）のマスター音量取得・設定のリポジトリ実装
-│   ├── windows-startup-data/ OS起動時のKoDriver自動起動設定（Windowsレジストリ）のリポジトリ実装
-│   ├── windows-shared-memory/ Windows共有メモリI/Oの汎用基盤（lmu-windows-data / ace-windows-data が共通利用）
-│   ├── designsystem/  共通 Composable コンポーネント
-│   └── narrator/      WAV音声再生の共通基盤（SoundPlayer・WavNarratorEngine。lmu/gt7/ace の各narrator featureが共通利用）
-├── feature/
-│   ├── desktop-splash/           デスクトップ起動中スプラッシュの初期化進捗管理・画面表示
-│   ├── debug-state-detail/       走行データのデバッグ表示（燃料消費・タイヤ摩耗・タイヤ温度・ピットタイミング等）
-│   ├── lmu-windows-connection/   LMU 接続状態の監視
-│   ├── main/                     アプリ全体のメイン画面状態管理
-│   ├── server-connection/        KoDriver サーバーへの接続状態確認
-│   ├── lmu-windows-narrator/     WAV 音声再生とアナウンス制御
-│   ├── other-license-detail/     その他画面のライセンス詳細表示
-│   ├── other-list/               その他画面の一覧表示・選択状態管理
-│   ├── other-readout-start-sound-detail/ その他画面の読み上げ開始音設定詳細
-│   ├── other-server-ip-detail/   その他画面の接続先サーバーIP設定ダイアログ
-│   ├── other-console-ip-detail/  その他画面のゲーム機 IP 設定ダイアログ
-│   ├── other-theme-detail/       その他画面のテーマ設定詳細
-│   ├── other-volume-detail/      その他画面の音量設定詳細
-│   ├── other-feedback-detail/    その他画面のフィードバック送信詳細
-│   ├── readout-list/             アナウンス設定の一覧 UI・状態管理
-│   ├── lmu-windows-readout-flag-detail/          フラグアナウンスの詳細設定
-│   ├── lmu-windows-readout-my-best-lap-detail/   LMU自己ベストラップアナウンスの詳細設定
-│   ├── lmu-windows-readout-vehicle-approach-detail/ 車両接近アナウンスの詳細設定
-│   ├── lmu-windows-readout-vehicle-damage-detail/   車両故障アナウンスの詳細設定
-│   ├── lmu-windows-readout-tyre-temperature-detail/ タイヤ温度アナウンスの詳細設定
-│   ├── lmu-windows-readout-remaining-virtual-energy-detail/ バーチャルエナジー残量アナウンスの詳細設定
-│   ├── lmu-windows-readout-tyre-wear-detail/     タイヤ摩耗アナウンスの詳細設定
-│   ├── lmu-windows-readout-pit-timing-detail/    ピットタイミングアナウンスの詳細設定
-│   ├── gt7-ps5-connection/              GT7 PS5 接続状態の監視
-│   ├── gt7-ps5-narrator/                GT7 PS5 WAV 音声再生とアナウンス制御
-│   ├── gt7-ps5-readout-my-best-lap-detail/      GT7自己ベストラップアナウンスの詳細設定
-│   ├── gt7-ps5-readout-remaining-fuel-detail/      GT7燃料残量アナウンスの詳細設定
-│   ├── gt7-ps5-readout-remaining-fuel-laps-detail/ GT7燃料残り周回数アナウンスの詳細設定
-│   ├── gt7-ps5-readout-tyre-temperature-detail/ GT7タイヤ温度アナウンスの詳細設定
-│   ├── ace-windows-connection/           ACE (Assetto Corsa EVO) 接続状態の監視
-│   ├── ace-windows-narrator/             ACE (Assetto Corsa EVO) WAV 音声再生とアナウンス制御
-│   ├── ace-windows-readout-remaining-fuel-detail/ ACE燃料残量アナウンスの詳細設定
-│   ├── ace-windows-readout-flag-detail/  ACEフラッグアナウンスの詳細設定
-│   ├── ace-windows-readout-tyre-temperature-detail/ ACEタイヤ温度アナウンスの詳細設定
-│   ├── ace-windows-readout-vehicle-approach-detail/ ACE車両接近アナウンスの詳細設定
-│   ├── telemetry-log-list/              テレメトリログの一覧表示
-│   └── telemetry-log-detail/            テレメトリログの詳細表示
-├── app/
-│   ├── androidApp/ Android アプリのエントリーポイント
-│   ├── androidBenchmark/ Macrobenchmarkによる Baseline Profile 生成（`app:androidApp` 計装テスト）
-│   ├── desktopApp/ JVM デスクトップアプリのエントリーポイント
-│   ├── shared/     Compose Multiplatform 共通 UI・ナビゲーション
-│   └── webApp/     Web アプリ（Gradle ビルド設定のみ用意、独自機能は未実装）
-└── server/         デスクトップアプリ内で起動する Ktor WebSocket サーバー
-```
+モジュール一覧・役割・依存関係図は [`docs/architecture.md`](docs/architecture.md) を参照すること。モジュール構成は同ファイルのみを正とし、他の場所（README等）に重複した一覧を作らない。モジュールを追加・削除した場合は `settings.gradle.kts` の変更と同じ PR で `docs/architecture.md` を更新する。
 
 各モジュールの詳細は、対象モジュール配下の `README.md` と実装を参照すること。
 
@@ -129,32 +71,9 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 ## テスト方針
 
-**実装コードを書いたら、同時にユニットテストを書くこと。** テストは完了報告前に書くのではなく、実装と並行して書く。
+**実装コードを書いたら、同時にユニットテストを書くこと。** テストは完了報告前に書くのではなく、実装と並行して書く。変更したモジュールのカバレッジは原則100%にする。
 
-ユニットテストを書ける実装コードを変更・追加した場合は、**変更したモジュールのカバレッジが 100% になるようにすること**。ただし、以下のコードはテスト対象から除外してよい。
-
-- Fake / Stub / Spy などのテストダブル
-- Koin などの DI Module
-- 単純な Preview・サンプルデータ・定数定義
-- プラットフォーム固有の外部 API（JNA, UDP ソケット等）を直接呼び出すためモックが現実的でない箇所
-
-### テストの配置先（commonTest / jvmTest）
-
-`expect` / `actual` を使わない ViewModel・UiState・純粋ロジックのテストは、原則 `jvmTest` に置くこと。`commonTest` は js / wasmJs / android を含む全ターゲットでコンパイル・実行されるため、モック等の JVM/Android 専用ライブラリを使えない。このプロジェクトの配布対象は実質 JVM（デスクトップ）と Android のみで、js / wasmJs（`:app:webApp`）はビルド設定のみのため、`commonTest` に置く意味があるのは実際にマルチプラットフォームで分岐する実装（`expect` / `actual` を持つコードなど）をテストする場合に限る。
-
-### スクリーンショットテストの配置先
-
-スクリーンショットテストは、原則として Desktop/JVM 向けの `src/jvmTest` のみに実装すること。Android と Desktop で見た目・レイアウト・表示内容が異なる場合に限り、差分を確認するための Android 向けスクリーンショットテストを `src/androidHostTest` に追加する。
-
-スクリーンショットテストの画面サイズは、目的別にできるだけ以下へ揃えること。
-
-- listPane などの一覧単体: `360.dp x 1080.dp`
-- detailPane などの詳細単体: `1560.dp x 1080.dp`
-- list/detail などアプリ全体・2ペイン構成: `720.dp x 640.dp` または `840.dp x 640.dp`
-- ダイアログ表示用のホスト: `480.dp x 320.dp`
-- デスクトップ Splash など独立したウィンドウ: 既存の専用サイズ
-
-新規追加・移動したスクリーンショットテストのゴールデン画像は、手元で生成してコミットしてはならない。ゴールデン画像の追加・更新は CI（`on-pull-request.yml` の verify → 失敗時の自動再記録）で行われる。動作確認などで手元に `**/snapshots/*.png` が生成・更新された場合は、PR 作成や報告の前に必ず破棄すること。Android 向けスクリーンショットテストを追加する場合は、PR 説明に Desktop/JVM 版と見た目が異なる理由を書くこと。
+テストの配置先（commonTest / jvmTest）・スクリーンショットテストの配置先や画面サイズ・テストパターン（命名規則、MockKの使い方、any()禁止等）・カバレッジ計測の詳細は [`docs/testing-guidelines.md`](docs/testing-guidelines.md) を参照。
 
 ---
 
@@ -211,15 +130,7 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 `:app:webApp` は Gradle ビルド設定のみで独自機能が未実装のため、現在はテスト・ビルド確認の対象外。
 
-GitHub Actions ワークフロー概要（詳細な挙動・権限設計は [`docs/ci-workflows.md`](docs/ci-workflows.md) を参照）:
-
-- `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行（Compose コンポーザブルの安定性検証を含む）
-- `on-main-merge.yml`: main へのマージ時に ktlint 検証・API ドキュメント自動デプロイを実行
-- `_build-android-release.yml` / `_build-windows-msi.yml`: 署名付き Android APK / Windows MSI をビルドする再利用可能ワークフロー（`workflow_call` 専用）
-- `build-apps.yml`: 手動起動で Android APK と Windows MSI を並列ビルド
-- `release-apps.yml`: 手動リリース時に E2E テスト・バージョンバンプ・ビルド・Baseline Profile 再生成・リリース作成を実行
-- `_e2e-android-maestro.yml`: Maestro によるボトムナビゲーション E2E テスト
-- `nightly-todo.yml`: 毎晩 `docs/improvement-ideas.md` への追記候補を調査する下書き PR を作成
+GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [`docs/ci-workflows.md`](docs/ci-workflows.md) を参照。
 
 ---
 
@@ -336,109 +247,4 @@ detekt の閾値設定は `config/detekt/detekt.yml` を参照（`MagicNumber` �
 - 文字スタイルは `MaterialTheme.typography.*` を参照し、`fontSize` / `FontWeight` を Composable 内で直接指定しない。アプリ全体のタイポグラフィは `:core:designsystem` の `KoDriverTypography` で一元管理する。
 - DataStore のキーには **ASCII の内部 ID を使うこと**。日本語などのマルチバイト文字をキーに使うと、表示名の変更でデータが孤立する。内部 ID（例: `"vehicle_approach"`）と表示名（例: `"車両接近"`）は `XxxViewModel` 内の `xxxDisplayNames: Map<String, String>` で分離する。
 
-### Repository の命名規則
-
-`Repository` は責務に応じて接尾辞で区別すること。命名だけで「取得用」か「設定保存用」かが判別できる状態を保つ。
-
-- **データ取得用**（テレメトリ・走行データなど外部ソースからの読み取り、Flow 配信、バージョン取得など）は接尾辞なしの素の `XxxRepository`（例: `LmuWindowsRepository`, `LmuWindowsFlagRepository`, `Gt7Ps5Repository`, `ServerVersionRepository`）。
-- **設定保存用**（DataStore による永続化）は必ず `XxxPreferencesRepository`（複数値・任意型の設定）または `XxxEnabledRepository`（単一の有効/無効フラグ）の接尾辞を付ける（例: `ThemePreferencesRepository`, `ConsoleAddressPreferencesRepository`, `ServerIpPreferencesRepository`, `KeepScreenOnEnabledRepository`）。設定保存用を素の `XxxRepository` にしてはならない。
-- **送信・実行用**（外部サービスへの送信など、取得・永続化を伴わない書き込み専用のアクション実行）は必ず `XxxSenderRepository` の接尾辞を付ける（例: `FeedbackSenderRepository`）。送信・実行用を素の `XxxRepository` にしてはならない。
-
-### ViewModel の設計規則
-
-- **`uiState: StateFlow<XxxUiState>` を唯一の公開状態にすること。** 個別の `StateFlow`（例: `selectedSimulator`）を `public` で追加してはならない。UI は `uiState` だけを参照すれば済む設計にする。
-- **`init {}` を使わず、宣言的に状態を組み立てること。** 外部ソース（Repository など）からの Flow は `stateIn` で StateFlow 化し、派生状態は `combine` で組み立てる。副作用のない読み取りは `private val` のカスタム getter（`get() { ... }`）で表現する。
-
-```kotlin
-// NG: public な個別 StateFlow
-val selectedSimulator: StateFlow<String?> = ...
-
-// OK: uiState に集約
-val uiState: StateFlow<XxxUiState> = ...
-
-// NG: init {} でコルーチンを起動して状態を同期
-init {
-    viewModelScope.launch { flow.collect { _state.value = it } }
-}
-
-// OK: stateIn で宣言的に StateFlow 化
-private val _selected: StateFlow<String?> = repository.observe()
-    .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-```
-
-### MutableStateFlow の更新
-
-`MutableStateFlow` の値を更新するときは **必ず `update { }` を使うこと**。`.value = ...` の直接代入は競合状態を招く恐れがある。
-
-```kotlin
-// NG
-_state.value = _state.value.copy(count = _state.value.count + 1)
-
-// OK
-_state.update { it.copy(count = it.count + 1) }
-```
-
-### mockk テストでの any() 使用
-
-mockk の `every`/`coEvery`/`verify`/`coVerify` では、**`any()` でないとテストコードが書けない場合を除き `any()` を使わないこと**。引数の実値を検証できず、意図しない値でもテストが通ってしまうため。
-
-- 引数が固定値（`ReadoutItemKey`・`Simulator.id` など）なら、その具体値を直接指定する。
-- `verify`/`coVerify` で引数の中身を確認したい場合は `withArg<T> { assert(...) }` を使う（`server/src/test/kotlin/kurou/kodriver/KoDriverServiceAdvertiserTest.kt` を参照）。
-- 呼び出しごとに値が変わり検証が現実的でない場合（例: `saveTelemetryLog` の `createdAt` など）に限り `any()` を残してよい。
-
-```kotlin
-// NG: 具体値がわかっているのに any()
-verify { jmdns.registerService(any()) }
-
-// OK: withArg で実値を検証
-verify {
-    jmdns.registerService(
-        withArg<ServiceInfo> {
-            assert(it.name == "my-pc")
-            assert(it.port == 8080)
-        },
-    )
-}
-```
-
-### Coroutines のエラーハンドリング
-
-`runCatching` および `mapCatching` は `CancellationException` を捕捉するため、structured concurrency を破壊する恐れがある。**使用禁止**。
-
-代わりに `try-catch` で `CancellationException` を明示的に再スローすること:
-
-```kotlin
-// NG
-runCatching { suspendFun() }
-
-// OK
-try {
-    Result.success(suspendFun())
-} catch (e: CancellationException) {
-    throw e
-} catch (e: Exception) {
-    Result.failure(e)
-}
-```
-
-### テストパターン
-
-- テスト名は日本語のバッククォート記法（`` `初期状態は Connecting を返す`() ``）
-- ViewModel の `uiState` から流れてきた内容を検証するときは `first()` を使う
-- テストケース数は最小限に絞ること。正常系・異常系・境界値の 3 軸を意識し、冗長なケースは省く
-- モックはテストクラスのプロパティとして `@MockK lateinit var` で宣言し、`setUp()`（`@BeforeTest` 関数）の `MockKAnnotations.init(this)` で初期化する。テストケース内やプロパティ初期化時に `mockk()` で生成しない。
-- `every`/`coEvery` によるスタブ設定は **各テストケース内で行うこと**。`setUp()` でスタブまで済ませると、そのテストケースが何を前提にしているかがテスト本体だけを読んでも分からなくなり、他のテストケースの前提を変更した際に気づかず壊す原因になる。
-- `verify`/`coVerify` では `exactly = N` を必ず指定し、期待する呼び出し回数を明示する。
-- `verify`/`coVerify` を使用した各テストケースの最後で、検証対象のモックに対して `confirmVerified(...)` を呼び、検証していない呼び出しが残っていないことを確認する。
-- MockK API は import して短い名前で呼び出し、テストコード内に `io.mockk.` の完全修飾名を書かない。
-- 通常の `@MockK` / `@RelaxedMockK` は各テストの `MockKAnnotations.init(this)` で再初期化するため、`unmockkAll()` や `clearAllMocks()` を追加しない。
-- `mockkObject` / `mockkStatic` / `mockkConstructor` でグローバルな差し替えを行う場合に限り、`finally` または `@AfterTest` で対応する `unmockkObject` / `unmockkStatic` / `unmockkConstructor` を必ず呼ぶ。対象を限定せず全グローバルモックを解除する `unmockkAll()` は原則として使わない。
-
-### カバレッジ
-
-Kover でカバレッジを計測する。新しいモジュールを追加した場合、ルートの `build.gradle.kts` の `kover { }` ブロックに `kover(project(":module:name"))` を追加しないとカバレッジ集計から除外される。
-
-```bash
-# ローカルでカバレッジレポート生成
-./gradlew koverXmlReport
-```
+Repository の命名規則・ViewModel の設計規則・`MutableStateFlow` の更新・Coroutines のエラーハンドリングの詳細は [`docs/coding-conventions.md`](docs/coding-conventions.md) を参照。テストパターン（mockkの`any()`禁止等含む）は [`docs/testing-guidelines.md`](docs/testing-guidelines.md) を参照。
