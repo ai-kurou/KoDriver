@@ -39,6 +39,10 @@
   **改善案**: `AndroidManifest.xml` に `<uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" android:minSdkVersion="36" />` を追加し、`ActivityResultContracts.RequestPermission()` 等でランタイム許可を取得する導線を検討する。実機がなくても `adb shell appops get <package> | grep -i local` で拒否状態を確認できる。
   **参考URL**: https://zenn.dev/ace_toshi/articles/android-access-local-network
 
+- **対象**: `:feature:other-server-ip-detail`、`server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt`（mDNS広告 `_kodriver._tcp.local.`）
+  **課題**: Android 17でGoogleが新設した「ローカルネットワーク保護」により、アプリが同一LAN上の他デバイスをスキャン（mDNS探索を含む）する際にユーザーの明示的な許可が必要になった（参考: https://blog.google/security/new-Android-network-security-protections/ )。`:feature:other-server-ip-detail` はKoDriverサーバーが広告するmDNSサービスを検出して接続先IPを自動入力する機能を持つため、Android 17端末では権限ダイアログの表示・拒否時のフォールバック挙動（手動IP入力への案内など）の対応が必要になる可能性がある。上記のAndroid 16向け `ACCESS_LOCAL_NETWORK` 権限との関係・重複の有無も含めて未調査。
+  **改善案**: Android 17実機またはエミュレータでmDNS自動検出フローを検証し、権限ダイアログが表示されるか、拒否時に自動検出が失敗した場合のUI（エラーメッセージ・手動入力への誘導）が適切かを確認する。必要であれば権限リクエスト導線・フォールバックUIを追加する。
+
 ## バグ
 
 - **対象**: `feature/debug-state-detail/src/commonMain/composeResources/values/strings.xml` の `debug_state_tyre_wear_fl`（L69, `_fr`/`_rl`/`_rr`も同様に計4件）・`debug_state_fuel_consumption_per_lap_ratio`（L74）・`debug_state_fuel_consumption_remaining_percent`（L77）
