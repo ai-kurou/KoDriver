@@ -72,3 +72,8 @@
   **課題**: Compose Multiplatform 1.12.0でWindow/DialogStateのv2 APIが追加され、画面選択・カスタム位置/サイズロジック・ウィンドウサイズの最小/最大設定・ダイアログの親ウィンドウ相対配置が可能になった（参考: https://blog.jetbrains.com/kotlin/2026/08/compose-multiplatform-1-12-0/）。現状KoDriverのデスクトップウィンドウ・各種設定ダイアログでこれらの制御が必要になった際の実装手段が不明瞭。
   **改善案**: プロジェクトが依存するCompose Multiplatformのバージョンを1.12.0系へ更新した際、既存のウィンドウ/ダイアログ生成コードでv2 APIへの置き換えが有用な箇所がないか調査する。
 
+- **対象**: リポジトリ直下の `CLAUDE.md`（444行）
+  **課題**: Zennの記事「CLAUDE.md に書いたのに Claude が従わない — 原因を6つに切り分ける」（https://zenn.dev/tomiyasu_chan/articles/claude-md-not-working）によると、CLAUDE.mdはシステムプロンプトではなく毎回のユーザーメッセージとして配信されるため遵守は確率的であり、200行を目安に長くなるほどコンテキストを圧迫して遵守率が下がるとされる。現状の `CLAUDE.md` は目安の倍以上の444行があり、モジュール構成表・各種設計ドキュメントへのリンク・コーディング規約・テスト方針・Git操作ルールなどが単一ファイルに集約されている。同記事は対策として、常時必要でない参照資料を `.claude/rules/`（`paths` でスコープ指定し必要な時だけ読み込み）や `skills/` へ切り出すこと、重要な制御（環境変数保護・lint自動実行等）は指示文ではなく `.claude/settings.json` の `permissions`/`hooks` で強制することを挙げている。
+  **改善案**: `CLAUDE.md` のうち常時参照が必要な項目（プロジェクト概要・モジュール構成表・作業完了前の必須チェックリストなど）と、特定の作業時のみ必要な項目（Git操作ルールの細目、ライブラリバージョン管理、CI/CDワークフロー概要など）を仕分けし、後者を `.claude/rules/` へパス指定で切り出せないか検討する。着手する場合は影響が大きいため、事前にユーザーと方針をすり合わせる。
+  **参考URL**: https://zenn.dev/tomiyasu_chan/articles/claude-md-not-working
+
