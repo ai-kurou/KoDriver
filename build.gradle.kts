@@ -231,13 +231,11 @@ tasks.register("assertArchitectureDocModuleList") {
         val settingsModules = settingsFile
             .readLines()
             .mapNotNull { line -> Regex("""include\("([^"]+)"\)""").find(line)?.groupValues?.get(1) }
-            .map { path -> path.substringAfterLast(":") }
             .toSet()
 
         val documentedModules = architectureDocFile
             .readLines()
-            .mapNotNull { line -> Regex("""^\| `:([^`]+)`""").find(line)?.groupValues?.get(1) }
-            .map { path -> path.substringAfterLast(":") }
+            .mapNotNull { line -> Regex("""^\| `(:[^`]+)`""").find(line)?.groupValues?.get(1) }
             .toSet()
 
         val missingFromDoc = settingsModules - documentedModules
