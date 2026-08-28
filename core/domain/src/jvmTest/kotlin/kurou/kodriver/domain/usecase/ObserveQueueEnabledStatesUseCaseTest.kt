@@ -50,6 +50,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
                     ReadoutItemKey.AceWindows.Flag.Root to false,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
+                    ReadoutItemKey.AceWindows.MyBestLap.Root to false,
                 ),
                 useCase().first(),
             )
@@ -85,6 +86,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
                     ReadoutItemKey.AceWindows.Flag.Root to false,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
+                    ReadoutItemKey.AceWindows.MyBestLap.Root to false,
                 ),
                 useCase().first(),
             )

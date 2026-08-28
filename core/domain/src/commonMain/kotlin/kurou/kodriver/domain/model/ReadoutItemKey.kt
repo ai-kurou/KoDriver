@@ -228,6 +228,13 @@ sealed interface ReadoutItemKey {
             }
         }
 
+        sealed interface MyBestLap : AceWindows {
+            data object Root : MyBestLap, TopLevel {
+                override val value = "ace_windows_my_best_lap"
+                override val supportsQueue = true
+            }
+        }
+
         sealed interface TyreTemperature : AceWindows {
             data object Root : TyreTemperature, TopLevel {
                 override val value = "ace_windows_tyre_temperature"
@@ -282,6 +289,7 @@ sealed interface ReadoutItemKey {
                 AceWindows.RemainingFuel.Root,
                 AceWindows.TyreTemperature.Root,
                 AceWindows.TyreTemperature.OverheatWarning,
+                AceWindows.MyBestLap.Root,
             )
         }
 

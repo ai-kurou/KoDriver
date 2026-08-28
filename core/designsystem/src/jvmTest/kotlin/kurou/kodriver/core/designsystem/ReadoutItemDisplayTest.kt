@@ -49,6 +49,7 @@ class ReadoutItemDisplayTest {
             "ace_windows_red_yellow_stripes_flag" to "レッド・イエローストライプフラッグ",
             "ace_windows_remaining_fuel" to "燃料残量",
             "ace_windows_vehicle_approach" to "車両接近",
+            "ace_windows_my_best_lap" to "自己ベストラップ",
         )
 
     @Test

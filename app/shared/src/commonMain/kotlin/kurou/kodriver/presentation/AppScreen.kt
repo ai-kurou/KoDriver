@@ -719,10 +719,24 @@ private fun Gt7Ps5ReadoutItemDetailContent(itemType: ReadoutListItemType.Gt7Ps5)
 @Composable
 private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.AceWindows) {
     when (itemType) {
-        ReadoutListItemType.AceWindows.Flag -> AceWindowsReadoutFlagDetailPane()
-        ReadoutListItemType.AceWindows.TyreTemperature -> AceWindowsReadoutTyreTemperatureDetailPane()
-        ReadoutListItemType.AceWindows.RemainingFuel -> AceWindowsReadoutRemainingFuelDetailPane()
-        ReadoutListItemType.AceWindows.VehicleApproach -> AceWindowsReadoutVehicleApproachDetailPane()
+        ReadoutListItemType.AceWindows.Flag -> {
+            AceWindowsReadoutFlagDetailPane()
+        }
+
+        ReadoutListItemType.AceWindows.TyreTemperature -> {
+            AceWindowsReadoutTyreTemperatureDetailPane()
+        }
+
+        ReadoutListItemType.AceWindows.RemainingFuel -> {
+            AceWindowsReadoutRemainingFuelDetailPane()
+        }
+
+        ReadoutListItemType.AceWindows.VehicleApproach -> {
+            AceWindowsReadoutVehicleApproachDetailPane()
+        }
+
+        // detailPane は未実装（listPaneの項目追加のみ対応）。
+        ReadoutListItemType.AceWindows.MyBestLap -> {}
     }
 }
 

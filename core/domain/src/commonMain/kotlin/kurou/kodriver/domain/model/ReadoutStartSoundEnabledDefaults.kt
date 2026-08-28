@@ -22,4 +22,5 @@ val READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.AceWindows.VehicleApproach.Root to false,
         ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
         ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
+        ReadoutItemKey.AceWindows.MyBestLap.Root to true,
     )

@@ -6,7 +6,7 @@ import kotlin.test.assertNull
 
 class ReadoutItemKeyTest {
     @Test
-    fun `fromValue は一致するキーを返す`() {
+    fun `fromValue はLMUとGT7のキーに一致するキーを返す`() {
         assertEquals(
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.fromValue("lmu_windows_vehicle_approach"),
@@ -62,6 +62,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
             ReadoutItemKey.fromValue("gt7_ps5_tyre_temperature"),
         )
+    }
+
+    @Test
+    fun `fromValue はACEのキーに一致するキーを返す`() {
         assertEquals(
             ReadoutItemKey.AceWindows.RemainingFuel.Root,
             ReadoutItemKey.fromValue("ace_windows_remaining_fuel"),
@@ -104,6 +108,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.AceWindows.VehicleApproach.StartReadout,
             ReadoutItemKey.fromValue("ace_windows_vehicle_approach_start_readout"),
         )
+        assertEquals(
+            ReadoutItemKey.AceWindows.MyBestLap.Root,
+            ReadoutItemKey.fromValue("ace_windows_my_best_lap"),
+        )
     }
 
     @Test
@@ -133,5 +141,6 @@ class ReadoutItemKeyTest {
         assertEquals(true, ReadoutItemKey.AceWindows.RemainingFuel.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.AceWindows.Flag.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.AceWindows.TyreTemperature.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.AceWindows.MyBestLap.Root.supportsQueue)
     }
 }

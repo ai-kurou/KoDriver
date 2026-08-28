@@ -29,6 +29,7 @@ val READOUT_ENABLED_STATE_DEFAULT: Map<Simulator, Map<ReadoutItemKey, Boolean>> 
                 ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
                 ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
                 ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+                ReadoutItemKey.AceWindows.MyBestLap.Root to false,
             ),
     )
 
