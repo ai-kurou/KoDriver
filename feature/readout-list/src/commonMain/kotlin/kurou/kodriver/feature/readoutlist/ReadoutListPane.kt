@@ -84,7 +84,6 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
-import kurou.kodriver.feature.readoutlist.generated.resources.ace_readout_timing_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.drag_handle
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_label
@@ -137,8 +136,6 @@ private fun readoutItemIndex(
     readoutItemStartIndex: Int,
     itemCount: Int,
 ): Int = (lazyListIndex - readoutItemStartIndex).coerceIn(0, itemCount - 1)
-
-internal fun readoutItemStartIndex(isAceSelected: Boolean): Int = if (isAceSelected) 2 else 1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -201,16 +198,6 @@ internal fun PriorityHintSheetContent(modifier: Modifier = Modifier) {
     )
 }
 
-@Composable
-private fun AceReadoutTimingHintRow(modifier: Modifier = Modifier) {
-    Text(
-        text = stringResource(Res.string.ace_readout_timing_hint_description),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.error,
-        modifier = modifier.padding(bottom = 12.dp),
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReadoutListPane(
@@ -225,7 +212,8 @@ internal fun ReadoutListPane(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val isAceSelected = uiState.selectedSimulator is Simulator.AceWindows
-    val readoutItemStartIndex = readoutItemStartIndex(isAceSelected)
+    val isGt7Ps5DesktopHintShown = shouldShowGt7Ps5DesktopReadoutHint(uiState.selectedSimulator)
+    val readoutItemStartIndex = readoutItemStartIndex(isAceSelected, isGt7Ps5DesktopHintShown)
     val isAtTop by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
@@ -253,7 +241,12 @@ internal fun ReadoutListPane(
         ) {
             if (isAceSelected) {
                 item(key = "aceReadoutTimingHint") {
-                    AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
+                    AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+                }
+            }
+            if (isGt7Ps5DesktopHintShown) {
+                item(key = "gt7Ps5DesktopReadoutHint") {
+                    Gt7Ps5DesktopReadoutHintRow(modifier = Modifier.padding(start = 8.dp, end = 8.dp))
                 }
             }
             item(key = "priorityHint") {

@@ -5,7 +5,14 @@
 //   ./gradlew :readout-list:stabilityDump
 
 @Composable
-private fun kurou.kodriver.feature.readoutlist.AceReadoutTimingHintRow(modifier: androidx.compose.ui.Modifier): kotlin.Unit
+internal fun kurou.kodriver.feature.readoutlist.AceReadoutTimingHintRow(modifier: androidx.compose.ui.Modifier): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+
+@Composable
+internal fun kurou.kodriver.feature.readoutlist.Gt7Ps5DesktopReadoutHintRow(modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
   params:

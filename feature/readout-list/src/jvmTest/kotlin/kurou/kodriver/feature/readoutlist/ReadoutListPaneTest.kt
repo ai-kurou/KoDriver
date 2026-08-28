@@ -19,6 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ReadoutListPaneTest {
     @get:Rule
@@ -317,6 +318,56 @@ class ReadoutListPaneTest {
             ).assertIsDisplayed()
     }
 
+    @Test
+    fun `GT7選択時（デスクトップ）は再生元ヒントを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            items = listOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true),
+                        ),
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+
+        rule
+            .onNodeWithText("読み上げ音声はWindows PCから再生されます。PS5からは再生されません。")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun `GT7以外選択時は再生元ヒントを表示しない`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                        ),
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+
+        rule
+            .onNodeWithText("読み上げ音声はWindows PCから再生されます。PS5からは再生されません。")
+            .assertDoesNotExist()
+    }
+
     private fun hasSwitchRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)
 
     private fun hasQueueToggleRole(): SemanticsMatcher =
@@ -325,12 +376,30 @@ class ReadoutListPaneTest {
 
 class ReadoutItemStartIndexTest {
     @Test
-    fun `ACE以外を選択している場合はヘッダー1件分のオフセットを返す`() {
-        assertEquals(1, readoutItemStartIndex(isAceSelected = false))
+    fun `ACE以外・GT7デスクトップヒント非表示の場合はヘッダー1件分のオフセットを返す`() {
+        assertEquals(1, readoutItemStartIndex(isAceSelected = false, isGt7Ps5DesktopHintShown = false))
     }
 
     @Test
     fun `ACEを選択している場合はタイミングヒント分を加えた2件分のオフセットを返す`() {
-        assertEquals(2, readoutItemStartIndex(isAceSelected = true))
+        assertEquals(2, readoutItemStartIndex(isAceSelected = true, isGt7Ps5DesktopHintShown = false))
+    }
+
+    @Test
+    fun `GT7デスクトップヒント表示時は再生元ヒント分を加えた2件分のオフセットを返す`() {
+        assertEquals(2, readoutItemStartIndex(isAceSelected = false, isGt7Ps5DesktopHintShown = true))
+    }
+}
+
+class ShouldShowGt7Ps5DesktopReadoutHintTest {
+    @Test
+    fun `GT7選択時はtrueを返す（jvmTestはデスクトップ扱い）`() {
+        assertTrue(shouldShowGt7Ps5DesktopReadoutHint(Simulator.Gt7Ps5))
+    }
+
+    @Test
+    fun `GT7以外を選択している場合はfalseを返す`() {
+        assertFalse(shouldShowGt7Ps5DesktopReadoutHint(Simulator.LmuWindows))
+        assertFalse(shouldShowGt7Ps5DesktopReadoutHint(Simulator.AceWindows))
     }
 }
