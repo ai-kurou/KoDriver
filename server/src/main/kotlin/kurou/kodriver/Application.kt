@@ -12,6 +12,7 @@ import io.ktor.server.websocket.WebSockets
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
@@ -28,6 +29,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
@@ -42,6 +44,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
@@ -78,6 +81,7 @@ data class KoDriverServerUseCases(
     val observeAceWindowsStatus: ObserveAceWindowsStatusUseCase,
     val observeAceWindowsTyreCarcassTemperature: ObserveAceWindowsTyreCarcassTemperatureUseCase,
     val observeAceWindowsVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
+    val observeAceWindowsBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
     val observeLmuWindowsPitStatus: ObserveLmuWindowsPitStatusUseCase,
 )
 
@@ -118,6 +122,10 @@ fun main() {
                 observeAceWindowsVehicleApproach =
                     ObserveAceWindowsVehicleApproachUseCase(
                         EmptyAceWindowsVehicleApproachRepository,
+                    ),
+                observeAceWindowsBestLapTime =
+                    ObserveAceWindowsBestLapTimeUseCase(
+                        EmptyAceWindowsBestLapTimeRepository,
                     ),
                 observeLmuWindowsPitStatus =
                     ObserveLmuWindowsPitStatusUseCase(
@@ -220,6 +228,10 @@ fun createKoDriverServer(koin: Koin): KoDriverServer =
                     ObserveAceWindowsVehicleApproachUseCase(
                         koin.get<AceWindowsVehicleApproachRepository>(),
                     ),
+                observeAceWindowsBestLapTime =
+                    ObserveAceWindowsBestLapTimeUseCase(
+                        koin.get<AceWindowsBestLapTimeRepository>(),
+                    ),
                 observeLmuWindowsPitStatus =
                     ObserveLmuWindowsPitStatusUseCase(
                         koin.get<LmuWindowsPitStatusRepository>(),
@@ -298,6 +310,9 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         telemetryWebSocket(KoDriverServerFeature.VEHICLE_APPROACH, Simulator.AceWindows) {
             useCases.observeAceWindowsVehicleApproach()
         }
+        telemetryWebSocket(KoDriverServerFeature.MY_BEST_LAP, Simulator.AceWindows) {
+            useCases.observeAceWindowsBestLapTime()
+        }
         telemetryWebSocket(KoDriverServerFeature.PIT_STATUS, Simulator.LmuWindows) {
             useCases.observeLmuWindowsPitStatus()
         }
@@ -360,6 +375,10 @@ private object EmptyAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreC
 
 private object EmptyAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {
     override fun vehicleApproachStream(): Flow<AceWindowsVehicleApproachData> = emptyFlow()
+}
+
+private object EmptyAceWindowsBestLapTimeRepository : AceWindowsBestLapTimeRepository {
+    override fun bestLapTimeStream(): Flow<AceWindowsBestLapTimeData> = emptyFlow()
 }
 
 private object EmptyLmuWindowsPitStatusRepository : LmuWindowsPitStatusRepository {

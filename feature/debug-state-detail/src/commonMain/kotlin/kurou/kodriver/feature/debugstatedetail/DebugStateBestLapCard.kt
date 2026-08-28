@@ -2,6 +2,7 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.Simulator
@@ -14,12 +15,13 @@ internal fun BestLapContent(
     selectedSimulator: Simulator,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
     gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
+    aceWindowsBestLapTime: AceWindowsBestLapTimeData?,
 ) {
     val bestLapTimeMs =
         when (selectedSimulator) {
             is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.bestLapTimeMs
             is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.bestLapTimeMs?.toLong()
-            is Simulator.AceWindows -> null
+            is Simulator.AceWindows -> aceWindowsBestLapTime?.bestLapTimeMs?.toLong()
         }
     Text(
         text =

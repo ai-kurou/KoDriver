@@ -41,6 +41,7 @@ import kurou.kodriver.data.preferences.createThemePreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.release.HttpServerVersionRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
+import kurou.kodriver.data.websocket.WebSocketAceWindowsBestLapTimeRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsFlagRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsFuelRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsStatusRepository
@@ -56,6 +57,7 @@ import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleClassRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleDamageRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVirtualEnergyRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
+import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
@@ -284,6 +286,9 @@ private fun androidDataModuleAceWindows() =
         }
         single<AceWindowsVehicleApproachRepository> {
             WebSocketAceWindowsVehicleApproachRepository(serverIpRepository = get(), client = get())
+        }
+        single<AceWindowsBestLapTimeRepository> {
+            WebSocketAceWindowsBestLapTimeRepository(serverIpRepository = get(), client = get())
         }
     }
 
