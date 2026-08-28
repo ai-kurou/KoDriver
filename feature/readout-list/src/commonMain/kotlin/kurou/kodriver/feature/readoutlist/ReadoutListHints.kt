@@ -35,7 +35,7 @@ internal fun Gt7Ps5DesktopReadoutHintRow(modifier: Modifier = Modifier) {
     Text(
         text = stringResource(Res.string.gt7_ps5_desktop_readout_hint_description),
         style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = MaterialTheme.colorScheme.error,
         modifier = modifier.padding(bottom = 12.dp),
     )
 }
