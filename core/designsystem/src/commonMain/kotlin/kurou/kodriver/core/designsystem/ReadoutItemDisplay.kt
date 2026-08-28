@@ -120,10 +120,21 @@ private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
 @Composable
 private fun bestLapAndFuelDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
-        "lmu_windows_my_best_lap", "gt7_ps5_my_best_lap" -> stringResource(Res.string.readout_item_my_best_lap)
-        "gt7_ps5_remaining_fuel_laps" -> stringResource(Res.string.readout_item_remaining_fuel_laps)
-        "gt7_ps5_remaining_fuel", "ace_windows_remaining_fuel" -> stringResource(Res.string.readout_item_remaining_fuel)
-        else -> null
+        "lmu_windows_my_best_lap", "gt7_ps5_my_best_lap", "ace_windows_my_best_lap" -> {
+            stringResource(Res.string.readout_item_my_best_lap)
+        }
+
+        "gt7_ps5_remaining_fuel_laps" -> {
+            stringResource(Res.string.readout_item_remaining_fuel_laps)
+        }
+
+        "gt7_ps5_remaining_fuel", "ace_windows_remaining_fuel" -> {
+            stringResource(Res.string.readout_item_remaining_fuel)
+        }
+
+        else -> {
+            null
+        }
     }
 
 /**

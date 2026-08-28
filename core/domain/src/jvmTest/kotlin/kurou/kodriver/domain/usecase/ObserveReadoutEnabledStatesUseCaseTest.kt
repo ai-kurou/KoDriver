@@ -135,6 +135,7 @@ class ObserveReadoutEnabledStatesUseCaseTest {
                     ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+                    ReadoutItemKey.AceWindows.MyBestLap.Root to false,
                 ),
                 useCase("ace_windows").first(),
             )

@@ -169,6 +169,8 @@ class AppTest {
             "燃料残量",
             "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
         )
+        scrollToItem("自己ベストラップ")
+        waitUntilDisplayed("自己ベストラップ")
     }
 
     @Test
