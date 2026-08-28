@@ -241,12 +241,12 @@ internal fun ReadoutListPane(
         ) {
             if (isAceSelected) {
                 item(key = "aceReadoutTimingHint") {
-                    AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
+                    AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, end = 8.dp))
                 }
             }
             if (isGt7Ps5DesktopHintShown) {
                 item(key = "gt7Ps5DesktopReadoutHint") {
-                    Gt7Ps5DesktopReadoutHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
+                    Gt7Ps5DesktopReadoutHintRow(modifier = Modifier.padding(start = 8.dp, end = 8.dp))
                 }
             }
             item(key = "priorityHint") {
