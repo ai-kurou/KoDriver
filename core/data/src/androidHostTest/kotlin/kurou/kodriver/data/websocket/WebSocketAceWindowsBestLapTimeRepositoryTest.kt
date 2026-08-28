@@ -14,6 +14,7 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import kotlin.properties.Delegates
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -21,8 +22,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class WebSocketAceWindowsBestLapTimeRepositoryTest {
-    private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeAceBestLapTimeServerIpPreferencesRepository
+    private var server: MockWebServer by Delegates.notNull()
+    private var fakeIpRepository: FakeAceBestLapTimeServerIpPreferencesRepository by Delegates.notNull()
 
     @BeforeTest
     fun setUp() {
