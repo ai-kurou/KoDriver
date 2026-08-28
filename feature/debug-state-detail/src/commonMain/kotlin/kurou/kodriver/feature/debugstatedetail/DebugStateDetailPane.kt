@@ -172,7 +172,12 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
                 )
             },
         DebugStateCardKey.BEST_LAP to { uiState ->
-            BestLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
+            BestLapContent(
+                uiState.selectedSimulator,
+                uiState.lmuWindowsTelemetry,
+                uiState.gt7Ps5Telemetry,
+                uiState.aceWindowsBestLapTime,
+            )
         },
         DebugStateCardKey.TYRE_TEMPERATURE to
             { uiState -> TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry) },

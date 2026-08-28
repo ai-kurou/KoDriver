@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
@@ -54,6 +55,7 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
@@ -69,6 +71,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
@@ -139,6 +142,9 @@ class DebugStateDetailViewModelTest {
     private lateinit var aceWindowsVehicleApproachRepository: AceWindowsVehicleApproachRepository
 
     @MockK
+    private lateinit var aceWindowsBestLapTimeRepository: AceWindowsBestLapTimeRepository
+
+    @MockK
     private lateinit var lmuWindowsPitStatusRepository: LmuWindowsPitStatusRepository
 
     // saveCardOrder は戻り値 Unit の suspend 関数のため relaxUnitFun でスタブ不要にし、
@@ -185,6 +191,7 @@ class DebugStateDetailViewModelTest {
                         ObserveAceWindowsTyreCarcassTemperatureUseCase(aceWindowsTyreCarcassTemperatureRepository),
                     observeVehicleApproach =
                         ObserveAceWindowsVehicleApproachUseCase(aceWindowsVehicleApproachRepository),
+                    observeBestLapTime = ObserveAceWindowsBestLapTimeUseCase(aceWindowsBestLapTimeRepository),
                 ),
             cardOrderUseCases =
                 DebugStateCardOrderUseCases(
@@ -215,6 +222,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -235,6 +244,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -251,6 +261,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -277,6 +288,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -298,6 +311,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -314,6 +328,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -340,6 +355,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -360,6 +377,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -376,6 +394,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -402,6 +421,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -422,6 +443,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -438,6 +460,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -464,6 +487,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -484,6 +509,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -500,6 +526,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -526,6 +553,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -546,6 +575,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -562,6 +592,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -589,6 +620,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -609,6 +642,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -625,6 +659,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -651,6 +686,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -671,6 +708,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -687,6 +725,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -717,6 +756,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -737,6 +778,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -753,6 +795,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -780,6 +823,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -800,6 +845,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -816,6 +862,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -843,6 +890,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -863,6 +912,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -879,6 +929,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -906,6 +957,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -926,6 +979,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -942,6 +996,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -972,6 +1027,8 @@ class DebugStateDetailViewModelTest {
                         nearbyVehicles = listOf(AceWindowsNearbyVehicleData(distanceMeters = 5.0)),
                     ),
                 )
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -992,6 +1049,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1008,6 +1066,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -1034,6 +1093,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns
                 MutableStateFlow(samplePitStatus(pitState = LmuWindowsPitState.ENTERING))
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
@@ -1055,6 +1116,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1071,6 +1133,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -1097,6 +1160,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1136,6 +1201,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1152,6 +1218,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -1178,6 +1245,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns
                 MutableStateFlow(listOf(DebugStateCardKey.FUEL_CONSUMPTION, DebugStateCardKey.SIMULATOR))
@@ -1218,6 +1287,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1234,6 +1304,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -1260,6 +1331,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1267,7 +1340,7 @@ class DebugStateDetailViewModelTest {
             viewModel.moveCard(0, 1)
             val state = viewModel.uiState.first()
 
-            assertEquals(
+            val expectedCardOrder =
                 listOf(
                     DebugStateCardKey.VEHICLE_CLASS,
                     DebugStateCardKey.SIMULATOR,
@@ -1284,9 +1357,8 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.TYRE_WEAR,
                     DebugStateCardKey.FUEL_CONSUMPTION,
                     DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-                ),
-                state.cardOrder,
-            )
+                )
+            assertEquals(expectedCardOrder, state.cardOrder)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1300,29 +1372,10 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-            coVerify(exactly = 1) {
-                cardOrderRepository.saveCardOrder(
-                    listOf(
-                        DebugStateCardKey.VEHICLE_CLASS,
-                        DebugStateCardKey.SIMULATOR,
-                        DebugStateCardKey.VEHICLE_LOCATION,
-                        DebugStateCardKey.FLAG_INFO,
-                        DebugStateCardKey.GAME_PHASE,
-                        DebugStateCardKey.SESSION,
-                        DebugStateCardKey.YELLOW_FLAG_STATE,
-                        DebugStateCardKey.CURRENT_LAP,
-                        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-                        DebugStateCardKey.BEST_LAP,
-                        DebugStateCardKey.TYRE_TEMPERATURE,
-                        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-                        DebugStateCardKey.TYRE_WEAR,
-                        DebugStateCardKey.FUEL_CONSUMPTION,
-                        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-                    ),
-                )
-            }
+            coVerify(exactly = 1) { cardOrderRepository.saveCardOrder(expectedCardOrder) }
             confirmVerified(
                 simulatorPreferencesRepository,
                 flagRepository,
@@ -1337,6 +1390,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -1363,6 +1417,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1383,6 +1439,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1399,6 +1456,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -1425,6 +1483,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1454,6 +1514,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1470,6 +1531,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -1496,6 +1558,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1510,6 +1574,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.FUEL_CONSUMPTION,
                     DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
                     DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                    DebugStateCardKey.BEST_LAP,
                 ),
                 enabledCardKeys,
             )
@@ -1526,6 +1591,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
             confirmVerified(
@@ -1542,6 +1608,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
                 lmuWindowsPitStatusRepository,
                 cardOrderRepository,
             )
@@ -1569,6 +1636,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
@@ -1661,6 +1730,9 @@ private fun sampleAceWindowsStatus(carLocation: AceWindowsCarLocation = AceWindo
 private fun sampleAceWindowsTyreCarcassTemperature() = AceWindowsTyreCarcassTemperatureData(wheels = emptyMap())
 
 private fun sampleAceWindowsVehicleApproach() = AceWindowsVehicleApproachData(nearbyVehicles = emptyList())
+
+private fun sampleAceWindowsBestLapTime(bestLapTimeMs: Int = 0) =
+    AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)
 
 private fun samplePitStatus(pitState: LmuWindowsPitState = LmuWindowsPitState.NONE) =
     LmuWindowsPitStatusData(inPits = false, pitState = pitState, inGarageStall = false)

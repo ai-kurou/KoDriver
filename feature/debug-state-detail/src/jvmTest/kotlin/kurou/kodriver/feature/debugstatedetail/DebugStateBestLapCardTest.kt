@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -89,7 +90,7 @@ class DebugStateBestLapCardTest {
     }
 
     @Test
-    fun `selectedSimulatorがAceWindowsの場合は未取得の文言を表示する`() {
+    fun `selectedSimulatorがAceWindowsの場合はACEのbestLapTimeMsを表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -98,6 +99,51 @@ class DebugStateBestLapCardTest {
                             selectedSimulator = Simulator.AceWindows,
                             lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
                             gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                            aceWindowsBestLapTime = sampleAceWindowsBestLapTime(bestLapTimeMs = 95_123),
+                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
+        rule.onNodeWithText("1:35.123").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがAceWindowsでベストラップが未計測（0以下）の場合は未取得の文言を表示する`() {
+        listOf(0, -1).forEach { bestLapTimeMs ->
+            rule.setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.AceWindows,
+                                aceWindowsBestLapTime = sampleAceWindowsBestLapTime(bestLapTimeMs = bestLapTimeMs),
+                                cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+
+            rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
+            rule.onNodeWithText("未取得").assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun `selectedSimulatorがAceWindowsでaceWindowsBestLapTimeがnullの場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsBestLapTime = null,
                             cardOrder = listOf(DebugStateCardKey.BEST_LAP),
                         ),
                     canNavigateBack = true,
@@ -109,6 +155,9 @@ class DebugStateBestLapCardTest {
         rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
+
+    private fun sampleAceWindowsBestLapTime(bestLapTimeMs: Int) =
+        AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)
 
     private fun sampleLmuWindowsTelemetry(bestLapTimeMs: Long) =
         LmuWindowsTelemetryData(
