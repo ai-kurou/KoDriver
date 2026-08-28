@@ -23,6 +23,7 @@ class AceWindowsMapperTest {
         const val TYRE_STATE_STRIDE = 256
         const val OFF_TYRE_TEMPERATURE_C = 12
         const val OFF_CAR_LOCATION = 1388
+        const val OFF_BEST_LAPTIME_MS = 2400
         const val OFF_FLAG = 2404
         const val OFF_CAR_COORDINATES = 3124
         const val CAR_COORDINATES_STRIDE = 12
@@ -72,6 +73,11 @@ class AceWindowsMapperTest {
     private fun buffer(fuelPercent: Float): ByteBuffer =
         ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
             it.putFloat(OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT, fuelPercent)
+        }
+
+    private fun bestLapTimeBuffer(bestLapTimeMs: Int): ByteBuffer =
+        ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
+            it.putInt(OFF_BEST_LAPTIME_MS, bestLapTimeMs)
         }
 
     private fun flagBuffer(flagRawValue: Int): ByteBuffer =
@@ -125,6 +131,20 @@ class AceWindowsMapperTest {
         assertEquals(CelsiusReading(81.0f), result.wheels[WheelIndex.FRONT_RIGHT])
         assertEquals(CelsiusReading(82.0f), result.wheels[WheelIndex.REAR_LEFT])
         assertEquals(CelsiusReading(83.0f), result.wheels[WheelIndex.REAR_RIGHT])
+    }
+
+    @Test
+    fun `best_laptime_ms をbestLapTimeMsとして取得する`() {
+        val result = AceWindowsMapper.mapBestLapTime(bestLapTimeBuffer(91_234))
+
+        assertEquals(91_234, result.bestLapTimeMs)
+    }
+
+    @Test
+    fun `ベストラップ未計測のとき best_laptime_ms は0を返す`() {
+        val result = AceWindowsMapper.mapBestLapTime(bestLapTimeBuffer(0))
+
+        assertEquals(0, result.bestLapTimeMs)
     }
 
     @Test

@@ -5,16 +5,19 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMemorySource
+import kurou.kodriver.core.acewindowsdata.repository.AceWindowsBestLapTimeRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFlagRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFuelRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsStatusRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsTyreCarcassTemperatureRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsVehicleApproachRepositoryImpl
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
@@ -45,6 +48,13 @@ val aceWindowsDataModule =
         single<AceWindowsStatusRepository> {
             if (isWindows) AceWindowsStatusRepositoryImpl(source = get()) else NoOpAceWindowsStatusRepository()
         }
+        single<AceWindowsBestLapTimeRepository> {
+            if (isWindows) {
+                AceWindowsBestLapTimeRepositoryImpl(source = get())
+            } else {
+                NoOpAceWindowsBestLapTimeRepository()
+            }
+        }
         single<AceWindowsTyreCarcassTemperatureRepository> {
             if (isWindows) {
                 AceWindowsTyreCarcassTemperatureRepositoryImpl(source = get())
@@ -73,6 +83,10 @@ private class NoOpAceWindowsFlagRepository : AceWindowsFlagRepository {
 
 private class NoOpAceWindowsStatusRepository : AceWindowsStatusRepository {
     override fun statusStream(): Flow<AceWindowsStatusData> = emptyFlow()
+}
+
+private class NoOpAceWindowsBestLapTimeRepository : AceWindowsBestLapTimeRepository {
+    override fun bestLapTimeStream(): Flow<AceWindowsBestLapTimeData> = emptyFlow()
 }
 
 private class NoOpAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCarcassTemperatureRepository {
