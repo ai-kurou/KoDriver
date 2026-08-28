@@ -8,6 +8,7 @@ digraph G {
   ":feature:ace-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-remaining-fuel-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -81,5 +82,6 @@ digraph G {
   ":app:shared" -> ":feature:ace-windows-readout-flag-detail"
   ":app:shared" -> ":feature:ace-windows-readout-tyre-temperature-detail"
   ":app:shared" -> ":feature:ace-windows-readout-vehicle-approach-detail"
+  ":app:shared" -> ":feature:ace-windows-readout-my-best-lap-detail"
   ":app:webApp" -> ":app:shared"
 }
