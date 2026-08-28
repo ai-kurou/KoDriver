@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withTimeout
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
@@ -54,6 +55,7 @@ import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
@@ -68,6 +70,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
@@ -133,6 +136,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -184,6 +191,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -237,6 +248,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -307,6 +322,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -372,6 +391,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -429,6 +452,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -494,6 +521,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -555,6 +586,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -618,6 +653,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -684,6 +723,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -746,6 +789,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -812,6 +859,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -874,6 +925,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -940,6 +995,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1003,6 +1062,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1065,6 +1128,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1124,6 +1191,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1190,6 +1261,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1252,6 +1327,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1318,6 +1397,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1380,6 +1463,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1446,6 +1533,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1509,6 +1600,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1571,6 +1666,10 @@ class ApplicationTest {
                                 EmptyAceWindowsTyreCarcassTemperatureRepository,
                             ),
                         observeAceWindowsVehicleApproach = ObserveAceWindowsVehicleApproachUseCase(repository),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1588,6 +1687,68 @@ class ApplicationTest {
                     val message = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
                     assertEquals(ACE_VEHICLE_APPROACH_JSON, message)
+                }
+        }
+
+    @Test
+    fun `ACE自己ベストラップをJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeAceWindowsBestLapTimeRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsVehicleClass =
+                            ObserveLmuWindowsVehicleClassUseCase(
+                                EmptyLmuWindowsVehicleClassRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
+                        observeAceWindowsTyreCarcassTemperature =
+                            ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime = ObserveAceWindowsBestLapTimeUseCase(repository),
+                        observeLmuWindowsPitStatus =
+                            ObserveLmuWindowsPitStatusUseCase(
+                                EmptyLmuWindowsPitStatusRepository,
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/my_best_lap") {
+                    repository.emit(aceBestLapTimeData)
+
+                    val message = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(ACE_BEST_LAP_TIME_JSON, message)
                 }
         }
 
@@ -1631,6 +1792,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus = ObserveLmuWindowsPitStatusUseCase(repository),
                     ),
@@ -1691,6 +1856,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus = ObserveLmuWindowsPitStatusUseCase(repository),
                     ),
@@ -1754,6 +1923,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1812,6 +1985,10 @@ class ApplicationTest {
                         observeAceWindowsVehicleApproach =
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1876,6 +2053,10 @@ class ApplicationTest {
                             ObserveAceWindowsVehicleApproachUseCase(
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1923,6 +2104,7 @@ class ApplicationTest {
                             EmptyAceWindowsTyreCarcassTemperatureRepository
                         }
                         single<AceWindowsVehicleApproachRepository> { EmptyAceWindowsVehicleApproachRepository }
+                        single<AceWindowsBestLapTimeRepository> { EmptyAceWindowsBestLapTimeRepository }
                         single<LmuWindowsPitStatusRepository> { EmptyLmuWindowsPitStatusRepository }
                     },
                 )
@@ -2339,6 +2521,10 @@ private object EmptyAceWindowsVehicleApproachRepository : AceWindowsVehicleAppro
     override fun vehicleApproachStream(): Flow<AceWindowsVehicleApproachData> = emptyFlow()
 }
 
+private object EmptyAceWindowsBestLapTimeRepository : AceWindowsBestLapTimeRepository {
+    override fun bestLapTimeStream(): Flow<AceWindowsBestLapTimeData> = emptyFlow()
+}
+
 private class FakeAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {
     private val channel = Channel<AceWindowsVehicleApproachData>(capacity = Channel.UNLIMITED)
 
@@ -2353,6 +2539,20 @@ private val aceVehicleApproachData =
     AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(distanceMeters = 12.5)))
 
 private const val ACE_VEHICLE_APPROACH_JSON = """{"nearbyVehicles":[{"distanceMeters":12.5}]}"""
+
+private class FakeAceWindowsBestLapTimeRepository : AceWindowsBestLapTimeRepository {
+    private val channel = Channel<AceWindowsBestLapTimeData>(capacity = Channel.UNLIMITED)
+
+    override fun bestLapTimeStream(): Flow<AceWindowsBestLapTimeData> = channel.receiveAsFlow()
+
+    fun emit(data: AceWindowsBestLapTimeData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private val aceBestLapTimeData = AceWindowsBestLapTimeData(bestLapTimeMs = 95_123)
+
+private const val ACE_BEST_LAP_TIME_JSON = """{"bestLapTimeMs":95123}"""
 
 private val pitStatusData1 =
     LmuWindowsPitStatusData(inPits = true, pitState = LmuWindowsPitState.ENTERING, inGarageStall = false)
