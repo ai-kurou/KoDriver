@@ -48,9 +48,11 @@ data class AceWindowsNarratorReadoutDecision(
  * （[AceWindowsNarratorReadoutSettings.vehicleApproachThresholdMeters]）を下回る車両が1台でもいれば、
  * 左右を区別しない [SpeechEvent.AceWindowsVehicleApproach] を読み上げる。
  *
- * 自己ベストラップ（[ReadoutItemKey.AceWindows.MyBestLap.Root]）は listPane・detailPane（タイトルと説明のみ）
- * への項目追加のみ対応済みで、対応する [SpeechEvent] とWAVファイルが未整備のため、読み上げ判定はこの
- * UseCaseにまだ配線していない（follow-up PRで対応予定）。
+ * 自己ベストラップ（[ReadoutItemKey.AceWindows.MyBestLap.Root]）は listPane・detailPane（音声タイプ選択・試聴）
+ * および対応する [SpeechEvent]（[SpeechEvent.AceWindowsMyBestLapFormal]/[SpeechEvent.AceWindowsMyBestLapCasual]。
+ * WAVはLMUと同じ音源を流用）まで対応済みだが、ACEの共有メモリから取得できるベストラップ更新（
+ * [kurou.kodriver.domain.model.AceWindowsBestLapTimeData]）を監視して読み上げをトリガーする判定ロジックは
+ * このUseCaseにまだ配線していない（follow-up PRで対応予定）。
  */
 class DetermineAceWindowsNarratorReadoutUseCase {
     fun determineRemainingFuel(

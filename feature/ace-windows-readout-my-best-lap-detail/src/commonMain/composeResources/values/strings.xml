@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="my_best_lap_title">自己ベストラップ</string>
-    <string name="my_best_lap_description">自己ベストラップを更新した場合に、音声でお知らせします。</string>
+    <string name="my_best_lap_description">自己ベストラップを更新したときに音声でお知らせします。</string>
+    <string name="my_best_lap_enabled">自己ベストラップ更新</string>
+    <string name="my_best_lap_voice_type_formal">自己ベストラップ更新</string>
+    <string name="my_best_lap_voice_type_casual">ベストラップ</string>
 </resources>
