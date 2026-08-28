@@ -170,7 +170,7 @@ class AppTest {
             "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
         )
         scrollToItem("自己ベストラップ")
-        clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新した場合に、音声でお知らせします。")
+        clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
 
     @Test

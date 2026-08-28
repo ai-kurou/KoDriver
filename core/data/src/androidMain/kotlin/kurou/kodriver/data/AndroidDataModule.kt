@@ -12,6 +12,7 @@ import kurou.kodriver.data.preferences.AndroidReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
+import kurou.kodriver.data.preferences.createAceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsVehicleApproachPreferencesRepository
@@ -58,6 +59,7 @@ import kurou.kodriver.data.websocket.createWebSocketHttpClient
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -203,6 +205,9 @@ fun androidDataModule(context: Context) =
         }
         single<LmuWindowsMyBestLapPreferencesRepository> {
             createLmuWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<AceWindowsMyBestLapPreferencesRepository> {
+            createAceWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)
         }
         single<LmuWindowsRedFlagPreferencesRepository> {
             createLmuWindowsRedFlagPreferencesRepository(context.filesDir.absolutePath)
