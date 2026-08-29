@@ -68,6 +68,16 @@
   - **課題**: Compose Multiplatform 1.12.0でCompose Hot Reloadに「MCP server for AI agents」が追加され、AIコーディングエージェントが実行中アプリに接続してリロードのトリガー・スクリーンショット取得・UI検査・クリック/テキスト入力のシミュレーション・ログ読取が可能になった（参考: https://blog.jetbrains.com/kotlin/2026/08/compose-multiplatform-1-12-0/）。KoDriverのUI変更確認は現状目視・スクリーンショットテストに依存しており、この仕組みを使えばClaude Code自身がホットリロード中のデスクトップアプリを直接操作・検証できる可能性がある。
   - **改善案**: プロジェクトが依存するCompose Multiplatformのバージョンを1.12.0系へ更新するタイミングで、Hot ReloadのMCP serverを実際に有効化し、`preSubmitChecks` 前の手動UI確認フローに組み込めないか調査する。
 
+- **対象**: `.claude/worktrees/` を使った並行ワークツリー運用（CLAUDE.md「Git 操作ルール」の「複数のClaudeセッションが並行してワークツリーを使用している場合がある」という前提）
+  - **課題**: 現状のルールは「他セッションのワークツリー・ブランチを削除しない」という受動的な事故防止に留まっており、同一リポジトリを複数のAIエージェント（Claude Code・Codex等）が同時に操作する際に起こりうる `git pull`/`git push` 時のロックファイル残留による自滅ループや、セッションクラッシュ時の未コミット変更の放置については明文化されたルールがない。
+  - **改善案**: Zennの実例（作業宣言ファイルによる担当範囲の3行宣言・セッション開始時の未コミット変更確認とロック掃除など）を参考に、CLAUDE.mdの「作業開始時」チェックリストへ「他セッションが同一箇所を作業中でないかの確認」「開始時のロックファイル・未コミット変更の確認」を追加する余地がないか検討する。
+  - **参考URL**: https://zenn.dev/hilopon/articles/two-ai-git-ops-accident-prevention
+
+- **対象**: 夜間バッチ（`nightly-todo.yml`）・`docs/nightly-todo-list.md` の運用
+  - **課題**: 現状の夜間バッチは `/loop` 相当の定期実行の仕組み（GitHub Actionsのcron）に依存しているが、Claude Code自体が持つ `/goal`（完了条件駆動）・`/loop`（時間駆動）・Cron・Workflow（複数エージェント協調）の使い分けや、暴走時のキルスイッチ（`CLAUDE_CODE_DISABLE_CRON=1`等）・トークン消費監視（`/usage`）についてはドキュメント化されていない。
+  - **改善案**: Qiitaの整理記事を参考に、KoDriverの夜間バッチ・自動化フローで各機能をどう使い分けているか（またはなぜ使わないか）を `docs/nightly-todo-list.md` や `docs/ci-workflows.md` に補足できないか検討する。
+  - **参考URL**: https://qiita.com/NaokiIshimura/items/71af4e891b2f8f1e7943
+
 - **対象**: `app/desktopApp` のウィンドウ・ダイアログ生成部分
   - **課題**: Compose Multiplatform 1.12.0でWindow/DialogStateのv2 APIが追加され、画面選択・カスタム位置/サイズロジック・ウィンドウサイズの最小/最大設定・ダイアログの親ウィンドウ相対配置が可能になった（参考: https://blog.jetbrains.com/kotlin/2026/08/compose-multiplatform-1-12-0/）。現状KoDriverのデスクトップウィンドウ・各種設定ダイアログでこれらの制御が必要になった際の実装手段が不明瞭。
   - **改善案**: プロジェクトが依存するCompose Multiplatformのバージョンを1.12.0系へ更新した際、既存のウィンドウ/ダイアログ生成コードでv2 APIへの置き換えが有用な箇所がないか調査する。
