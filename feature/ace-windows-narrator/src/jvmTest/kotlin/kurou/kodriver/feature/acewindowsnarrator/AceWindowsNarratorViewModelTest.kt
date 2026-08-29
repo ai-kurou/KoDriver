@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
@@ -32,12 +33,15 @@ import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -49,9 +53,11 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
@@ -72,6 +78,12 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+
+    @MockK
+    private lateinit var bestLapTimeRepository: AceWindowsBestLapTimeRepository
+
+    @MockK
+    private lateinit var myBestLapPreferencesRepository: AceWindowsMyBestLapPreferencesRepository
 
     @MockK
     private lateinit var fuelRepository: AceWindowsFuelRepository
@@ -132,6 +144,7 @@ class AceWindowsNarratorViewModelTest {
         flagChannel: Channel<AceWindowsFlagData> = Channel(Channel.UNLIMITED),
         tyreCarcassTemperatureChannel: Channel<AceWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         vehicleApproachChannel: Channel<AceWindowsVehicleApproachData> = Channel(Channel.UNLIMITED),
+        bestLapTimeChannel: Channel<AceWindowsBestLapTimeData> = Channel(Channel.UNLIMITED),
         currentTimeMs: () -> Long = { 0L },
     ): AceWindowsNarratorViewModel {
         every { fuelRepository.fuelStream() } returns fuelChannel.receiveAsFlow()
@@ -142,7 +155,16 @@ class AceWindowsNarratorViewModelTest {
         every {
             vehicleApproachRepository.vehicleApproachStream()
         } returns vehicleApproachChannel.receiveAsFlow()
+        every { bestLapTimeRepository.bestLapTimeStream() } returns bestLapTimeChannel.receiveAsFlow()
         return AceWindowsNarratorViewModel(
+            myBestLapUseCases =
+                MyBestLapUseCases(
+                    observeBestLapTime = ObserveAceWindowsBestLapTimeUseCase(bestLapTimeRepository),
+                    observeMyBestLapVoiceType =
+                        ObserveAceWindowsMyBestLapVoiceTypeUseCase(
+                            myBestLapPreferencesRepository,
+                        ),
+                ),
             remainingFuelUseCases =
                 RemainingFuelUseCases(
                     observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(fuelRepository),
@@ -312,6 +334,8 @@ class AceWindowsNarratorViewModelTest {
                 tyreTemperaturePreferencesRepository.observeEnabledStates()
             } returns MutableStateFlow(emptyMap())
             every { statusRepository.statusStream() } returns statusChannel.receiveAsFlow()
+            every { myBestLapPreferencesRepository.observeVoiceType() } returns
+                MutableStateFlow(MyBestLapVoiceType.FORMAL)
             every {
                 vehicleApproachPreferencesRepository.observeEnabledStates()
             } returns MutableStateFlow(emptyMap())
@@ -443,8 +467,10 @@ class AceWindowsNarratorViewModelTest {
                 ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to true,
             ),
         vehicleApproachThresholdMeters: Double = 10.0,
+        myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
+        every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(myBestLapVoiceType)
         every {
             readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
         } returns MutableStateFlow(enabledOverrides)
@@ -818,6 +844,117 @@ class AceWindowsNarratorViewModelTest {
             )
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
         }
+
+    @Test
+    fun `自己ベストが更新されると読み上げる`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val bestLapTimeChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true),
+                orderOverride = listOf(ReadoutItemKey.AceWindows.MyBestLap.Root),
+            )
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                bestLapTimeChannel = bestLapTimeChannel,
+            )
+
+            bestLapTimeChannel.send(bestLapTime(90_000))
+            bestLapTimeChannel.send(bestLapTime(89_000))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsMyBestLapFormal), spokenTexts)
+        }
+
+    @Test
+    fun `声種別がCASUALならAceWindowsMyBestLapCasualを読み上げる`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val bestLapTimeChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true),
+                orderOverride = listOf(ReadoutItemKey.AceWindows.MyBestLap.Root),
+                myBestLapVoiceType = MyBestLapVoiceType.CASUAL,
+            )
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                bestLapTimeChannel = bestLapTimeChannel,
+            )
+
+            bestLapTimeChannel.send(bestLapTime(90_000))
+            bestLapTimeChannel.send(bestLapTime(89_000))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsMyBestLapCasual), spokenTexts)
+        }
+
+    @Test
+    fun `自己ベストラップ項目が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val bestLapTimeChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to false),
+            )
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                bestLapTimeChannel = bestLapTimeChannel,
+            )
+
+            bestLapTimeChannel.send(bestLapTime(90_000))
+            bestLapTimeChannel.send(bestLapTime(89_000))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `読み上げが発生したら現在と直前のベストラップデータを保存する`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val bestLapTimeChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val telemetryJsons = mutableListOf<String>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true),
+                orderOverride = listOf(ReadoutItemKey.AceWindows.MyBestLap.Root),
+            )
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.MyBestLap.Root,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                bestLapTimeChannel = bestLapTimeChannel,
+                currentTimeMs = { 123_456L },
+            )
+
+            bestLapTimeChannel.send(bestLapTime(90_000))
+            bestLapTimeChannel.send(bestLapTime(89_000))
+
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(true, telemetryJsons.single().contains(""""previousBestLapTime":{"bestLapTimeMs":90000}"""))
+            assertEquals(true, telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000}"""))
+            assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+        }
+
+    private fun bestLapTime(bestLapTimeMs: Int) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)
 
     private fun vehicleApproach(distanceMeters: Double) =
         AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(distanceMeters)))

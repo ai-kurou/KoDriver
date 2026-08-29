@@ -3,12 +3,15 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
+import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 
@@ -23,6 +26,8 @@ data class AceWindowsNarratorState(
     val previousFlag: AceWindowsFlagType? = null,
     val tyreOverheating: Boolean = false,
     val vehicleApproaching: Boolean = false,
+    val personalBestMs: Int = Int.MAX_VALUE,
+    val previousBestLapTimeMs: Int? = null,
 )
 
 /** ACE 向け読み上げ判定で参照するユーザー設定。 */
@@ -31,6 +36,7 @@ data class AceWindowsNarratorReadoutSettings(
     val remainingFuelThresholdPercentage: Int,
     val tyreTemperatureHighThresholdCelsius: Celsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
     val vehicleApproachThresholdMeters: Double = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
+    val myBestLapVoiceType: MyBestLapVoiceType = MY_BEST_LAP_VOICE_TYPE_DEFAULT,
 )
 
 /** ACE 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
@@ -48,13 +54,44 @@ data class AceWindowsNarratorReadoutDecision(
  * （[AceWindowsNarratorReadoutSettings.vehicleApproachThresholdMeters]）を下回る車両が1台でもいれば、
  * 左右を区別しない [SpeechEvent.AceWindowsVehicleApproach] を読み上げる。
  *
- * 自己ベストラップ（[ReadoutItemKey.AceWindows.MyBestLap.Root]）は listPane・detailPane（音声タイプ選択・試聴）
- * および対応する [SpeechEvent]（[SpeechEvent.AceWindowsMyBestLapFormal]/[SpeechEvent.AceWindowsMyBestLapCasual]。
- * WAVはLMUと同じ音源を流用）まで対応済みだが、ACEの共有メモリから取得できるベストラップ更新（
- * [kurou.kodriver.domain.model.AceWindowsBestLapTimeData]）を監視して読み上げをトリガーする判定ロジックは
- * このUseCaseにまだ配線していない（follow-up PRで対応予定）。
+ * 自己ベストラップ（[ReadoutItemKey.AceWindows.MyBestLap.Root]）は [AceWindowsBestLapTimeData.bestLapTimeMs] の
+ * 更新を [determineMyBestLap] で判定する。GT7（[DetermineGt7Ps5NarratorReadoutUseCase.determineMyBestLap]）と
+ * 同じく、共有メモリのベストラップタイムは Int（milliseconds）でセッション内の値を都度返すため、
+ * 前回値との比較（[AceWindowsNarratorState.previousBestLapTimeMs]）と読み上げ済みベスト
+ * （[AceWindowsNarratorState.personalBestMs]）の2段構えで二重読み上げを防ぐ。
  */
 class DetermineAceWindowsNarratorReadoutUseCase {
+    fun determineMyBestLap(
+        state: AceWindowsNarratorState,
+        data: AceWindowsBestLapTimeData,
+        settings: AceWindowsNarratorReadoutSettings,
+    ): AceWindowsNarratorReadoutDecision {
+        val current = data.bestLapTimeMs
+        val stateWithCurrentBestLap = state.copy(previousBestLapTimeMs = current)
+        val previous = state.previousBestLapTimeMs
+        if (previous == null) return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        if (current <= 0) return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        if (previous > 0 && current >= previous) {
+            return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        }
+        if (current >= state.personalBestMs) {
+            return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        }
+        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.Root)) {
+            return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        }
+
+        val event =
+            when (settings.myBestLapVoiceType) {
+                MyBestLapVoiceType.FORMAL -> SpeechEvent.AceWindowsMyBestLapFormal
+                MyBestLapVoiceType.CASUAL -> SpeechEvent.AceWindowsMyBestLapCasual
+            }
+        return AceWindowsNarratorReadoutDecision(
+            state = stateWithCurrentBestLap.copy(personalBestMs = current),
+            events = listOf(event),
+        )
+    }
+
     fun determineRemainingFuel(
         state: AceWindowsNarratorState,
         data: AceWindowsFuelData,

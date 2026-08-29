@@ -11,6 +11,7 @@ import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
@@ -35,6 +36,39 @@ internal class AceWindowsNarratorEventProcessor(
     private var previousFlag: AceWindowsFlagData? = null
     private var previousTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null
     private var previousVehicleApproach: AceWindowsVehicleApproachData? = null
+    private var previousBestLapTime: AceWindowsBestLapTimeData? = null
+
+    suspend fun processMyBestLap(
+        bestLapTime: AceWindowsBestLapTimeData,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: AceWindowsTelemetryLogContext,
+        isOnTrack: Boolean,
+    ) {
+        val previous = previousBestLapTime
+        if (isOnTrack) {
+            events.forEach { event ->
+                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                    saveTelemetryLogSafely(
+                        createdAt = observedAtMs,
+                        readoutItemKey = event.readoutItemKey,
+                        telemetryJson =
+                            buildMyBestLapTelemetryLogJson(
+                                state = logContext.state,
+                                previous = previous,
+                                current = bestLapTime,
+                                settings = logContext.settings,
+                                observedAtMs = observedAtMs,
+                                finalState = logContext.finalState,
+                            ),
+                    )
+                }
+            }
+        }
+        previousBestLapTime = bestLapTime
+    }
 
     suspend fun processFlag(
         flag: AceWindowsFlagData,
@@ -237,6 +271,33 @@ private val telemetryLogJson =
     Json(TelemetryLogJson) {
         allowSpecialFloatingPointValues = true
     }
+
+/**
+ * ACE の自己ベストラップ判定入力（[AceWindowsBestLapTimeData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineMyBestLap]）と
+ * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
+private fun buildMyBestLapTelemetryLogJson(
+    state: AceWindowsNarratorState,
+    previous: AceWindowsBestLapTimeData?,
+    current: AceWindowsBestLapTimeData,
+    settings: AceWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: AceWindowsNarratorState,
+): String =
+    buildTelemetryLogJson(
+        stateJson = state.toJsonString(),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousBestLapTime",
+                json = previous?.let { telemetryLogJson.encodeToString(it) },
+            ),
+        current = TelemetryLogJsonCurrentField(name = "bestLapTime", json = telemetryLogJson.encodeToString(current)),
+        settingsJson = settings.toJsonString(),
+        observedAtMs = observedAtMs,
+        finalStateJson = finalState.toJsonString(),
+    )
 
 /**
  * ACE のフラグ判定入力（[AceWindowsFlagData]）は判定ロジック（
