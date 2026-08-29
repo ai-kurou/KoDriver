@@ -158,6 +158,7 @@ class OtherContentTest {
 
     private fun ComposeContentTestRule.toggleSwitchesAndOpenDialogs(state: OtherContentTestState) {
         // KeepScreenOn（Android専用トグル。Switchで直接切り替える）
+        onNode(hasScrollAction()).performScrollToNode(hasText("テレメトリ受信中は画面をスリープさせない"))
         onNode(hasText("テレメトリ受信中は画面をスリープさせない")).performClick()
         waitForIdle()
 
@@ -165,6 +166,7 @@ class OtherContentTest {
         assertFalse(state.backEnabled)
 
         // ReadoutStartSound（ダイアログを開く）
+        onNode(hasScrollAction()).performScrollToNode(hasText("読み上げ開始音"))
         onNode(hasText("読み上げ開始音")).performClick()
         waitForIdle()
 

@@ -6,6 +6,7 @@ package kurou.kodriver.feature.otherlist
 enum class OtherListItemType(
     val id: String,
 ) {
+    AccessLocalNetworkPermission("access_local_network_permission"),
     ServerIp("server_ip"),
     ConsoleIp("console_ip"),
     Volume("volume"),

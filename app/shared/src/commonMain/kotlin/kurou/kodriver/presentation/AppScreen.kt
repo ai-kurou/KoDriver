@@ -285,6 +285,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
+                OtherListItemType.AccessLocalNetworkPermission,
                 -> {}
             }
         },
