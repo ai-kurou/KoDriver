@@ -1,2 +1,3 @@
 <resources>
+    <string name="select_simulator_hint">シミュレータを選択</string>
 </resources>
