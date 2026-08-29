@@ -11,6 +11,7 @@ import kurou.kodriver.domain.model.Simulator
  */
 data class AppScreenUiState(
     val hasAppUpdate: Boolean = false,
+    val accessLocalNetworkPermissionGranted: Boolean = true,
     /**
      * 実際に画面を常時オンにするかどうか。設定がONで、かつ選択中シミュレータのテレメトリを
      * 実際に受信中の場合のみ true になる（設定値そのものではない）。

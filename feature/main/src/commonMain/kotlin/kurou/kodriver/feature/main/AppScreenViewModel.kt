@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase
@@ -20,6 +21,7 @@ import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 /**
  * AppScreen 画面の状態管理とユーザー操作を扱う ViewModel。
  */
+@Suppress("LongParameterList")
 class AppScreenViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
@@ -28,19 +30,26 @@ class AppScreenViewModel(
     observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
     observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     private val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
+    private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
 ) : ViewModel() {
     private val _hasAppUpdate = MutableStateFlow(false)
+    private val _accessLocalNetworkPermissionGranted = MutableStateFlow(checkAccessLocalNetworkPermissionGranted())
+    private val badgeState =
+        combine(_hasAppUpdate, _accessLocalNetworkPermissionGranted) { hasUpdate, accessLocalNetworkPermissionGranted ->
+            hasUpdate to accessLocalNetworkPermissionGranted
+        }
 
     val uiState: StateFlow<AppScreenUiState> =
         combine(
-            _hasAppUpdate,
+            badgeState,
             observeEffectiveKeepScreenOn(),
             observeDynamicColorEnabled(),
             observeHapticFeedbackEnabled(),
             observeSelectedSimulator(),
-        ) { hasUpdate, keepOn, dynamicColorEnabled, hapticFeedbackEnabled, selectedSimulator ->
+        ) { (hasUpdate, permissionGranted), keepOn, dynamicColorEnabled, hapticFeedbackEnabled, selectedSimulator ->
             AppScreenUiState(
                 hasAppUpdate = hasUpdate,
+                accessLocalNetworkPermissionGranted = permissionGranted,
                 keepScreenOn = keepOn,
                 dynamicColorEnabled = dynamicColorEnabled,
                 hapticFeedbackEnabled = hapticFeedbackEnabled,
@@ -54,6 +63,10 @@ class AppScreenViewModel(
             val hasUpdate = checkAppUpdateAvailable(currentVersion)
             _hasAppUpdate.update { hasUpdate }
         }
+    }
+
+    fun checkAccessLocalNetworkPermission() {
+        _accessLocalNetworkPermissionGranted.update { checkAccessLocalNetworkPermissionGranted() }
     }
 
     /**
