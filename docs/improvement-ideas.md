@@ -34,9 +34,37 @@
 
 ## テスト
 
-- **対象**: `app/shared`（`OtherContent.kt`）・`feature:readout-list`（`ReadoutContent.kt`, `ReadoutListPane.kt`, `ReadoutDetailPane.kt`）・`feature:telemetry-log-list`（`TelemetryLogContent.kt`, `TelemetryLogListPane.kt`）・`feature:lmu-windows-readout-tyre-temperature-detail`（`LmuWindowsReadoutTyreTemperatureDetailPane.kt`）・`feature:lmu-windows-readout-flag-detail`（`LmuWindowsReadoutFlagDetailPane.kt`）・`app:shared`（`AppScreen.kt`）・`core:designsystem`（`DetailPane.kt` の `DetailPaneSubtitle`）
-  - **課題**: 各Composableには表示/非表示を切り替える条件分岐（`if`/`AnimatedVisibility(visible = ...)`/`when`）が存在するが、対応するスクリーンショットテストが片方のパターンしか検証していない、または検証自体が存在しない箇所が複数見つかった。特に `OtherContent.kt`・`ReadoutContent.kt`・`TelemetryLogContent.kt` は3モジュール共通で「`selectedItem != null`（detail表示）のみテストされ、`selectedItem == null`（一覧のみ表示）が未検証」という同型の抜けが同時発生している。その他、`AppScreen.kt` の接続バナー非表示（`bannerUiState.isVisible = false`）・`NavigationDrawer`レイアウト・アップデートバッジ非表示、`TelemetryLogListPane.kt` の新着ログボタン表示、`LmuWindowsReadoutTyreTemperatureDetailPane.kt` の警告OFF時のチップディム表示、`ReadoutListPane.kt` のスクロールトップボタン表示、`ReadoutDetailPane.kt` の戻るボタン非表示（スクリーンショットテスト自体が未整備）、`LmuWindowsReadoutFlagDetailPane.kt` の `redFlagVoiceType` 分岐、`DetailPaneSubtitle` の `trailingContent` 有無も同様に未カバー。
-  - **改善案**: 上記の各分岐について、表示/非表示（またはON/OFF）双方のパターンを網羅するスクリーンショットテストケースを追加する。特にlist/detail切り替えの「一覧のみ表示」パターンは3モジュール共通の抜けのため、優先して対応することを検討する。
+- **対象**: `app/shared`（`OtherContent.kt`）・`feature:readout-list`（`ReadoutContent.kt`）・`feature:telemetry-log-list`（`TelemetryLogContent.kt`）
+  - **課題**: list/detailペイン切り替えの「一覧のみ表示」パターン（`selectedItem == null`）が3モジュール共通で未検証。対応するスクリーンショットテストはいずれも `selectedItem != null`（detail表示）のケースしかない、同型の抜けが同時発生している。
+  - **改善案**: 3モジュールそれぞれのスクリーンショットテストに `selectedItem == null` のケースを追加する。
+
+- **対象**: `app:shared`（`AppScreen.kt`）の接続バナー・アップデートバッジ・NavigationDrawerレイアウト
+  - **課題**: `AnimatedVisibility(visible = bannerUiState.isVisible)` による接続バナー非表示、`hasAppUpdate` によるアップデートバッジ非表示、`resolvedLayoutType == NavigationDrawer`（デスクトップ広幅時想定）のレイアウトが、既存のスクリーンショットテストでは一切検証されていない。
+  - **改善案**: `bannerUiState.isVisible = false`、`hasAppUpdate = false`、`NavigationDrawer`レイアウトのケースをスクリーンショットテストに追加する。
+
+- **対象**: `feature:telemetry-log-list`（`TelemetryLogListPane.kt`）
+  - **課題**: `AnimatedVisibility(visible = showNewLogsButton)` による新着ログボタンの表示パターンが未検証。
+  - **改善案**: `showNewLogsButton = true` のケースをスクリーンショットテストに追加する。
+
+- **対象**: `feature:lmu-windows-readout-tyre-temperature-detail`（`LmuWindowsReadoutTyreTemperatureDetailPane.kt`）
+  - **課題**: 警告OFF時（`overheatWarningEnabled`/`lowWarningEnabled = false`）のチップディム表示が未検証。ユーザーが頻繁に触る設定画面のため優先度は高め。
+  - **改善案**: 警告OFF時のケースをスクリーンショットテストに追加する。
+
+- **対象**: `feature:readout-list`（`ReadoutListPane.kt`）
+  - **課題**: `AnimatedVisibility(visible = !isAtTop)` によるスクロールトップボタンの表示パターンが未検証。
+  - **改善案**: スクロールしてボタンが表示された状態のケースをスクリーンショットテストに追加する。
+
+- **対象**: `feature:readout-list`（`ReadoutDetailPane.kt`）
+  - **課題**: `if (canNavigateBack)` による戻るボタンの非表示パターンが、通常のUIテスト・スクリーンショットテストのいずれでも未検証。そもそもこのComposable単体のスクリーンショットテスト自体が存在しない。
+  - **改善案**: `canNavigateBack = false` のケースを含むスクリーンショットテストを新規に整備する。
+
+- **対象**: `feature:lmu-windows-readout-flag-detail`（`LmuWindowsReadoutFlagDetailPane.kt`）
+  - **課題**: `when (uiState.redFlagVoiceType)` による選択チップの強調表示分岐が、`redFlagVoiceType` の1パターンしか検証されていない。
+  - **改善案**: `redFlagVoiceType` の他の値（選択チップが変わるパターン）をスクリーンショットテストに追加する。
+
+- **対象**: `core:designsystem`（`DetailPane.kt` の `DetailPaneSubtitle`）
+  - **課題**: `if (trailingContent != null)` による表示分岐について、`DetailPaneSubtitle` 単独のスクリーンショットテストが存在しない。呼び出し側のテストで間接的に一部カバーされているのみで、`trailingContent`有無の対比検証はない。
+  - **改善案**: `DetailPaneSubtitle` 単独のスクリーンショットテストを新設し、`trailingContent`の有無双方のケースを追加する。
 
 ## Android
 
