@@ -84,6 +84,11 @@ jobs:
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
 
           pre_comment_count="$(gh issue view "${ISSUE_NUMBER}" --repo "${REPO}" --json comments --jq '.comments | length')"
+          pre_pr_numbers_json="$(gh pr list --repo "${REPO}" --head "claude/issue-${ISSUE_NUMBER}" --state all --json number --jq '[.[].number]')"
+          branch_existed_before="false"
+          if git ls-remote --exit-code --heads origin "claude/issue-${ISSUE_NUMBER}" >/dev/null 2>&1; then
+            branch_existed_before="true"
+          fi
 
           set +e
           claude -p "$(cat <<PROMPT
@@ -105,16 +110,25 @@ jobs:
           claude_exit=$?
           set -e
 
-          pr_count="$(gh pr list --repo "${REPO}" --head "claude/issue-${ISSUE_NUMBER}" --state all --json number --jq 'length')"
+          post_pr_numbers_json="$(gh pr list --repo "${REPO}" --head "claude/issue-${ISSUE_NUMBER}" --state all --json number --jq '[.[].number]')"
+          new_pr_count="$(jq -n --argjson pre "${pre_pr_numbers_json}" --argjson post "${post_pr_numbers_json}" '($post - $pre) | length')"
           post_comment_count="$(gh issue view "${ISSUE_NUMBER}" --repo "${REPO}" --json comments --jq '.comments | length')"
 
           # PRも作らず、issueへのコメントも一切残さないまま終了した場合は、
           # claude_exitが0であっても「preSubmitChecks待機中に応答が完了しないまま
           # 処理が終わった」等の無応答での中断とみなし、後始末を行う。
-          if [ "${pr_count:-0}" = "0" ] && [ "${post_comment_count:-0}" = "${pre_comment_count:-0}" ]; then
+          # pr_countは今回の実行で新規作成されたPRのみを数える（過去に同じブランチ名で
+          # close/mergeされたPRが残っていると、それを誤って成功と判定してしまうため）。
+          if [ "${new_pr_count:-0}" = "0" ] && [ "${post_comment_count:-0}" = "${pre_comment_count:-0}" ]; then
             echo "::warning::Claude Code CLI produced neither a PR nor an issue comment for issue #${ISSUE_NUMBER} (exit code: ${claude_exit})"
             git checkout -- . 2>/dev/null || true
             git clean -fd 2>/dev/null || true
+            # gh pr createの前にpushされたリモートブランチが残っていると、次回同じissueに
+            # 再度ラベルが付いた際にブランチ作成・pushが衝突するため、今回の実行で新規作成
+            # された場合のみ削除する（既存ブランチは残す）。
+            if [ "${branch_existed_before}" = "false" ]; then
+              git push origin --delete "claude/issue-${ISSUE_NUMBER}" 2>/dev/null || true
+            fi
             gh issue comment "${ISSUE_NUMBER}" --repo "${REPO}" --body "夜間バッチによる自動実装中に応答が完了しないまま処理が終了したため中断しました（Claude Code CLI exit code: ${claude_exit}）。ラベルを外すので、内容を見直したうえで再度ラベルを付与してください。"
             gh issue edit "${ISSUE_NUMBER}" --repo "${REPO}" --remove-label claude-implementable
             exit 1
