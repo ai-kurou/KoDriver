@@ -20,7 +20,7 @@ jobs:
       issues: ${{ steps.select.outputs.issues }}
 
     steps:
-      - name: Select up to 3 claude-implementable issues without a linked PR
+      - name: Select the oldest claude-implementable issue without a linked PR
         id: select
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
@@ -30,7 +30,7 @@ jobs:
             --search "is:open label:claude-implementable -linked:pr" \
             --json number,title,url \
             --limit 1000 \
-            | jq -c 'sort_by(.number) | .[:3]')"
+            | jq -c 'sort_by(.number) | .[:1]')"
           echo "issues=${issues}" >> "$GITHUB_OUTPUT"
           echo "Selected issues: ${issues}"
 
@@ -83,6 +83,8 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
 
+          pre_comment_count="$(gh issue view "${ISSUE_NUMBER}" --repo "${REPO}" --json comments --jq '.comments | length')"
+
           set +e
           claude -p "$(cat <<PROMPT
           KoDriverリポジトリの夜間バッチ処理として、GitHub issue #${ISSUE_NUMBER}（${ISSUE_URL}）を実装してPRを作成してください。
@@ -103,14 +105,22 @@ jobs:
           claude_exit=$?
           set -e
 
+          pr_count="$(gh pr list --repo "${REPO}" --head "claude/issue-${ISSUE_NUMBER}" --state all --json number --jq 'length')"
+          post_comment_count="$(gh issue view "${ISSUE_NUMBER}" --repo "${REPO}" --json comments --jq '.comments | length')"
+
+          # PRも作らず、issueへのコメントも一切残さないまま終了した場合は、
+          # claude_exitが0であっても「preSubmitChecks待機中に応答が完了しないまま
+          # 処理が終わった」等の無応答での中断とみなし、後始末を行う。
+          if [ "${pr_count:-0}" = "0" ] && [ "${post_comment_count:-0}" = "${pre_comment_count:-0}" ]; then
+            echo "::warning::Claude Code CLI produced neither a PR nor an issue comment for issue #${ISSUE_NUMBER} (exit code: ${claude_exit})"
+            git checkout -- . 2>/dev/null || true
+            git clean -fd 2>/dev/null || true
+            gh issue comment "${ISSUE_NUMBER}" --repo "${REPO}" --body "夜間バッチによる自動実装中に応答が完了しないまま処理が終了したため中断しました（Claude Code CLI exit code: ${claude_exit}）。ラベルを外すので、内容を見直したうえで再度ラベルを付与してください。"
+            gh issue edit "${ISSUE_NUMBER}" --repo "${REPO}" --remove-label claude-implementable
+            exit 1
+          fi
+
           if [ "$claude_exit" -ne 0 ]; then
             echo "::warning::Claude Code CLI exited with status ${claude_exit} for issue #${ISSUE_NUMBER}"
-            pr_count="$(gh pr list --repo "${REPO}" --head "claude/issue-${ISSUE_NUMBER}" --state all --json number --jq 'length')"
-            if [ "${pr_count:-0}" = "0" ]; then
-              git checkout -- . 2>/dev/null || true
-              git clean -fd 2>/dev/null || true
-              gh issue comment "${ISSUE_NUMBER}" --repo "${REPO}" --body "夜間バッチによる自動実装中に予期しないエラーが発生したため中断しました（Claude Code CLI exit code: ${claude_exit}）。ラベルを外すので、内容を見直したうえで再度ラベルを付与してください。"
-              gh issue edit "${ISSUE_NUMBER}" --repo "${REPO}" --remove-label claude-implementable
-            fi
             exit "$claude_exit"
           fi
