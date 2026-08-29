@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.main
 
+import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
@@ -43,6 +44,7 @@ val mainModule =
         factory { ObserveHapticFeedbackEnabledUseCase(get()) }
         factory { SaveHapticFeedbackEnabledUseCase(get()) }
         factory { CheckHapticFeedbackAvailableUseCase(get()) }
+        factory { CheckAccessLocalNetworkPermissionGrantedUseCase(get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { SaveSelectedSimulatorUseCase(get()) }
         factory { ObserveLmuWindowsUseCase(get()) }

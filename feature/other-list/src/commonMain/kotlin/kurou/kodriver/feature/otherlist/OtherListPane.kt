@@ -236,10 +236,17 @@ private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType): 
 private fun OtherListItemLeadingIcon(
     itemType: OtherListItemType,
     hasAppUpdate: Boolean,
+    accessLocalNetworkPermissionGranted: Boolean,
 ) {
     val imageVector = otherListItemLeadingIconVector(itemType)
-    if (itemType == OtherListItemType.ReleasePage) {
-        BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
+    val showBadge =
+        when (itemType) {
+            OtherListItemType.ReleasePage -> hasAppUpdate
+            OtherListItemType.AccessLocalNetworkPermission -> !accessLocalNetworkPermissionGranted
+            else -> false
+        }
+    if (itemType == OtherListItemType.ReleasePage || itemType == OtherListItemType.AccessLocalNetworkPermission) {
+        BadgedBox(badge = { if (showBadge) Badge() }) {
             Icon(imageVector = imageVector, contentDescription = null)
         }
     } else {
@@ -425,7 +432,9 @@ private fun OtherListItem(
 
     ListItem(
         headlineContent = { Text(otherItemDisplayName(item)) },
-        leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
+        leadingContent = {
+            OtherListItemLeadingIcon(item, uiState.hasAppUpdate, uiState.accessLocalNetworkPermissionGranted)
+        },
         trailingContent = {
             when (item) {
                 OtherListItemType.KeepScreenOn -> {

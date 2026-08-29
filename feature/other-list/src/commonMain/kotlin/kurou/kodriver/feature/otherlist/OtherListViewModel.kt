@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
@@ -40,6 +41,7 @@ class OtherListViewModel(
     observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
     private val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
     checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
+    private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
     private val startupRegistration: StartupRegistrationUseCases,
     appVersionInfo: OtherListAppVersionInfo,
 ) : ViewModel() {
@@ -54,6 +56,7 @@ class OtherListViewModel(
                     buildOtherListItems().filterNot {
                         it == OtherListItemType.HapticFeedback && !hapticFeedbackAvailable
                     },
+                accessLocalNetworkPermissionGranted = checkAccessLocalNetworkPermissionGranted(),
             ),
         )
     val uiState: StateFlow<OtherListUiState> =
@@ -76,6 +79,11 @@ class OtherListViewModel(
             val hasUpdate = checkAppUpdateAvailable(currentVersion)
             _uiState.update { it.copy(hasAppUpdate = hasUpdate) }
         }
+    }
+
+    fun checkAccessLocalNetworkPermission() {
+        val granted = checkAccessLocalNetworkPermissionGranted()
+        _uiState.update { it.copy(accessLocalNetworkPermissionGranted = granted) }
     }
 
     fun checkStartupEnabled() {

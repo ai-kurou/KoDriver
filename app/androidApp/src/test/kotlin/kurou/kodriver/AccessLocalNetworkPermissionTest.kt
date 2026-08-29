@@ -7,10 +7,10 @@ import org.junit.Test
 
 class AccessLocalNetworkPermissionTest {
     @Test
-    fun `Android16未満では権限が未許可でもリクエストしない`() {
+    fun `Android17未満では権限が未許可でもリクエストしない`() {
         val result =
             shouldRequestAccessLocalNetworkPermission(
-                sdkInt = Build.VERSION_CODES.BAKLAVA - 1,
+                sdkInt = Build.VERSION_CODES.CINNAMON_BUN - 1,
                 isPermissionGranted = false,
             )
 
@@ -18,10 +18,10 @@ class AccessLocalNetworkPermissionTest {
     }
 
     @Test
-    fun `Android16以降で未許可の場合はリクエストする`() {
+    fun `Android17以降で未許可の場合はリクエストする`() {
         val result =
             shouldRequestAccessLocalNetworkPermission(
-                sdkInt = Build.VERSION_CODES.BAKLAVA,
+                sdkInt = Build.VERSION_CODES.CINNAMON_BUN,
                 isPermissionGranted = false,
             )
 
@@ -29,10 +29,10 @@ class AccessLocalNetworkPermissionTest {
     }
 
     @Test
-    fun `Android16以降でも許可済みの場合はリクエストしない`() {
+    fun `Android17以降でも許可済みの場合はリクエストしない`() {
         val result =
             shouldRequestAccessLocalNetworkPermission(
-                sdkInt = Build.VERSION_CODES.BAKLAVA,
+                sdkInt = Build.VERSION_CODES.CINNAMON_BUN,
                 isPermissionGranted = true,
             )
 

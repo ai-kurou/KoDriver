@@ -27,12 +27,13 @@ private fun kurou.kodriver.feature.otherlist.OtherListItem(item: kurou.kodriver.
     - onItemClick: STABLE (function type)
 
 @Composable
-private fun kurou.kodriver.feature.otherlist.OtherListItemLeadingIcon(itemType: kurou.kodriver.feature.otherlist.OtherListItemType, hasAppUpdate: kotlin.Boolean): kotlin.Unit
+private fun kurou.kodriver.feature.otherlist.OtherListItemLeadingIcon(itemType: kurou.kodriver.feature.otherlist.OtherListItemType, hasAppUpdate: kotlin.Boolean, accessLocalNetworkPermissionGranted: kotlin.Boolean): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - itemType: STABLE (class with no mutable properties)
     - hasAppUpdate: STABLE (primitive type)
+    - accessLocalNetworkPermissionGranted: STABLE (primitive type)
 
 @Composable
 private fun kurou.kodriver.feature.otherlist.OtherListItemTrailingIcon(itemType: kurou.kodriver.feature.otherlist.OtherListItemType): kotlin.Unit

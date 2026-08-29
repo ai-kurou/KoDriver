@@ -25,6 +25,7 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
+                get(),
                 OtherListAppVersionInfo(
                     currentVersion = currentAppVersion(),
                     appVersionLabel = currentAppVersionLabel(),
