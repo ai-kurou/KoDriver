@@ -151,7 +151,7 @@ class OtherListViewModelTest {
         }
 
     @Test
-    fun `GitHubレポジトリまたはリリースページを選択しても状態は変わらない`() =
+    fun `GitHubレポジトリまたはリリースページまたはローカルネットワークへのアクセス許可を選択しても状態は変わらない`() =
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -161,6 +161,7 @@ class OtherListViewModelTest {
 
             viewModel.onItemSelected(OtherListItemType.GitHubRepository)
             viewModel.onItemSelected(OtherListItemType.ReleasePage)
+            viewModel.onItemSelected(OtherListItemType.AccessLocalNetworkPermission)
 
             assertEquals(initialState, viewModel.uiState.first())
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }

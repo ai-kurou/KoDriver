@@ -11,6 +11,7 @@
     <string name="item_feedback">フィードバックを送信</string>
     <string name="item_license">ライセンス</string>
     <string name="item_debug_state">デバッグ状態</string>
+    <string name="item_access_local_network_permission">ローカルネットワークへのアクセス許可</string>
     <string name="item_server_ip">Windows版KoDriverへ接続するIPアドレス</string>
     <string name="item_console_ip">ゲーム機・SimHubへ接続するIPアドレス</string>
     <string name="section_connection_settings">接続設定</string>

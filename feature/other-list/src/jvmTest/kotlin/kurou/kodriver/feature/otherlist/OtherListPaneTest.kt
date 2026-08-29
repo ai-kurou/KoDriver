@@ -421,6 +421,7 @@ class OtherListPaneTest {
                     OtherListUiState(
                         items =
                             listOf(
+                                OtherListItemType.AccessLocalNetworkPermission,
                                 OtherListItemType.ConsoleIp,
                                 OtherListItemType.Volume,
                                 OtherListItemType.Theme,

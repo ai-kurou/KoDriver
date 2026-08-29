@@ -96,6 +96,7 @@ private fun handleOtherItemClick(
 
         OtherListItemType.ReleasePage -> onOpenReleasePage()
 
+        OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,

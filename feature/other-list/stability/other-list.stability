@@ -92,3 +92,9 @@ private fun kurou.kodriver.feature.otherlist.otherListSectionTitle(section: kuro
   params:
     - section: STABLE (class with no mutable properties)
 
+@Composable
+public fun kurou.kodriver.feature.otherlist.rememberOpenAccessLocalNetworkPermissionSettings(): kotlin.Function0<kotlin.Unit>
+  skippable: false
+  restartable: false
+  params:
+
