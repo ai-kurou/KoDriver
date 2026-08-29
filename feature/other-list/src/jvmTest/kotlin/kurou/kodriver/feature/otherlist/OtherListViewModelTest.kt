@@ -17,12 +17,14 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
+import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
+import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
@@ -63,6 +65,9 @@ class OtherListViewModelTest {
     @MockK
     private lateinit var startupRegistrationRepository: StartupEnabledRepository
 
+    @MockK
+    private lateinit var accessLocalNetworkPermissionRepository: AccessLocalNetworkPermissionRepository
+
     private val keepScreenOnFlow = MutableStateFlow(true)
     private val dynamicColorFlow = MutableStateFlow(false)
     private val hapticFeedbackFlow = MutableStateFlow(true)
@@ -81,8 +86,12 @@ class OtherListViewModelTest {
     private fun createViewModel(
         currentVersion: String = "0.5.0",
         hapticFeedbackAvailable: Boolean = true,
+        accessLocalNetworkPermissionGranted: Boolean = true,
     ): OtherListViewModel {
         every { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() } returns hapticFeedbackAvailable
+        every {
+            accessLocalNetworkPermissionRepository.isGranted()
+        } returns accessLocalNetworkPermissionGranted
         return OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
             observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
@@ -92,6 +101,8 @@ class OtherListViewModelTest {
             observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
             saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
             checkHapticFeedbackAvailable = CheckHapticFeedbackAvailableUseCase(hapticFeedbackAvailabilityRepository),
+            checkAccessLocalNetworkPermissionGranted =
+                CheckAccessLocalNetworkPermissionGrantedUseCase(accessLocalNetworkPermissionRepository),
             startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
             appVersionInfo =
                 OtherListAppVersionInfo(
@@ -619,6 +630,81 @@ class OtherListViewModelTest {
                 hapticFeedbackEnabledRepository,
                 hapticFeedbackAvailabilityRepository,
                 startupRegistrationRepository,
+            )
+        }
+
+    @Test
+    fun `初期状態で権限が許可済みの場合accessLocalNetworkPermissionGrantedがtrueになる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            val viewModel = createViewModel(accessLocalNetworkPermissionGranted = true)
+
+            assertTrue(viewModel.uiState.first().accessLocalNetworkPermissionGranted)
+            verify(exactly = 1) { accessLocalNetworkPermissionRepository.isGranted() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+                accessLocalNetworkPermissionRepository,
+            )
+        }
+
+    @Test
+    fun `初期状態で権限が未許可の場合accessLocalNetworkPermissionGrantedがfalseになる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            val viewModel = createViewModel(accessLocalNetworkPermissionGranted = false)
+
+            assertFalse(viewModel.uiState.first().accessLocalNetworkPermissionGranted)
+            verify(exactly = 1) { accessLocalNetworkPermissionRepository.isGranted() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+                accessLocalNetworkPermissionRepository,
+            )
+        }
+
+    @Test
+    fun `checkAccessLocalNetworkPermissionで権限状態を再取得できる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            val viewModel = createViewModel(accessLocalNetworkPermissionGranted = false)
+            every { accessLocalNetworkPermissionRepository.isGranted() } returns true
+
+            viewModel.checkAccessLocalNetworkPermission()
+
+            assertTrue(viewModel.uiState.first().accessLocalNetworkPermissionGranted)
+            verify(exactly = 2) { accessLocalNetworkPermissionRepository.isGranted() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+                accessLocalNetworkPermissionRepository,
             )
         }
 }

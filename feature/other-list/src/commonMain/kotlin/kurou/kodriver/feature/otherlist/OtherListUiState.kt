@@ -15,6 +15,7 @@ data class OtherListUiState(
     // uiState の値を必ず変化させ、detailContent 側の LaunchedEffect(telemetryLogId) を再実行させるために使う。
     val feedbackAttachRequestId: Long = 0,
     val hasAppUpdate: Boolean = false,
+    val accessLocalNetworkPermissionGranted: Boolean = true,
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
     val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,
     val hapticFeedbackEnabled: Boolean = HAPTIC_FEEDBACK_ENABLED_DEFAULT,

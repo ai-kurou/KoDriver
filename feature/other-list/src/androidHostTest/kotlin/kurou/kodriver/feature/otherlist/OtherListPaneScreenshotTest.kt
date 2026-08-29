@@ -76,6 +76,29 @@ class OtherListPaneScreenshotTest {
     }
 
     @Test
+    fun `ローカルネットワークへのアクセス許可バッジを表示`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        OtherListPane(
+                            uiState = OtherListUiState(accessLocalNetworkPermissionGranted = false),
+                            onItemClick = {},
+                            onKeepScreenOnChange = {},
+                            onDynamicColorEnabledChange = {},
+                            onHapticFeedbackEnabledChange = {},
+                            onStartupEnabledChange = {},
+                        )
+                    }
+                }
+            }
+        }
+
+        rule.activity.window.decorView
+            .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
+    }
+
+    @Test
     fun `振動機能がない端末ではハプティックフィードバック項目が表示されない`() {
         rule.setContent {
             KoDriverTheme {
