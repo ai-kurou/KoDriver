@@ -15,6 +15,9 @@ import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.core.designsystem.simulatorShortName
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.feature.main.generated.resources.Res
+import kurou.kodriver.feature.main.generated.resources.select_simulator_hint
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータのアイコン。
@@ -27,7 +30,7 @@ fun AppScreenPrimarySimulatorIcon(
 ) {
     Image(
         painter = simulatorIcon(simulatorId),
-        contentDescription = null,
+        contentDescription = stringResource(Res.string.select_simulator_hint),
         modifier = modifier.clip(RoundedCornerShape(4.dp)),
     )
 }
