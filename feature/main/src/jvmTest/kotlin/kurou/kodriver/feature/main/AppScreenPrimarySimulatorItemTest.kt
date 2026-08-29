@@ -3,6 +3,7 @@ package kurou.kodriver.feature.main
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
@@ -20,6 +21,15 @@ class AppScreenPrimarySimulatorItemTest {
         rule.setContent {
             AppScreenPrimarySimulatorIcon(simulatorId = "lmu_windows")
         }
+    }
+
+    @Test
+    fun `アイコンには シミュレータを選択 のcontentDescriptionが設定される`() {
+        rule.setContent {
+            AppScreenPrimarySimulatorIcon(simulatorId = "lmu_windows")
+        }
+
+        rule.onNode(hasContentDescription("シミュレータを選択")).assertExists()
     }
 
     @Test
