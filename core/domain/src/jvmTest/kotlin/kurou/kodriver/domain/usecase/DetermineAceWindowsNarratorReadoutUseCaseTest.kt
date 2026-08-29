@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
@@ -10,14 +11,170 @@ import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class DetermineAceWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineAceWindowsNarratorReadoutUseCase()
+
+    @Test
+    fun `初回の自己ベスト値では読み上げない`() {
+        val decision =
+            useCase.determineMyBestLap(
+                state = AceWindowsNarratorState(),
+                data = bestLapTime(bestLapTimeMs = 90_000),
+                settings = myBestLapSettings(),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(90_000, decision.state.previousBestLapTimeMs)
+    }
+
+    @Test
+    fun `自己ベストが更新されたら設定された声種別で読み上げる`() {
+        val initialDecision =
+            useCase.determineMyBestLap(
+                state = AceWindowsNarratorState(),
+                data = bestLapTime(bestLapTimeMs = 90_000),
+                settings = myBestLapSettings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+            )
+        val decision =
+            useCase.determineMyBestLap(
+                state = initialDecision.state,
+                data = bestLapTime(bestLapTimeMs = 89_000),
+                settings = myBestLapSettings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+            )
+
+        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLapCasual), decision.events)
+        assertEquals(89_000, decision.state.personalBestMs)
+    }
+
+    @Test
+    fun `自己ベストが更新されFORMALならAceWindowsMyBestLapFormalを読み上げる`() {
+        val initialDecision =
+            useCase.determineMyBestLap(
+                state = AceWindowsNarratorState(),
+                data = bestLapTime(bestLapTimeMs = 90_000),
+                settings = myBestLapSettings(myBestLapVoiceType = MyBestLapVoiceType.FORMAL),
+            )
+        val decision =
+            useCase.determineMyBestLap(
+                state = initialDecision.state,
+                data = bestLapTime(bestLapTimeMs = 89_000),
+                settings = myBestLapSettings(myBestLapVoiceType = MyBestLapVoiceType.FORMAL),
+            )
+
+        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLapFormal), decision.events)
+    }
+
+    @Test
+    fun `ベストラップタイムが0以下なら自己ベストラップを読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = AceWindowsNarratorState(),
+                data = bestLapTime(bestLapTimeMs = 90_000),
+                settings = myBestLapSettings(),
+            )
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                data = bestLapTime(bestLapTimeMs = 0),
+                settings = myBestLapSettings(),
+            )
+
+        assertTrue(second.events.isEmpty())
+    }
+
+    @Test
+    fun `前回のベストラップタイムが0以下でも更新条件を満たせば自己ベストラップを読み上げる`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = AceWindowsNarratorState(),
+                data = bestLapTime(bestLapTimeMs = 0),
+                settings = myBestLapSettings(),
+            )
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                data = bestLapTime(bestLapTimeMs = 89_000),
+                settings = myBestLapSettings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLapFormal), second.events)
+    }
+
+    @Test
+    fun `前回より遅いラップタイムでは読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = AceWindowsNarratorState(),
+                data = bestLapTime(bestLapTimeMs = 90_000),
+                settings = myBestLapSettings(),
+            )
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                data = bestLapTime(bestLapTimeMs = 91_000),
+                settings = myBestLapSettings(),
+            )
+
+        assertTrue(second.events.isEmpty())
+    }
+
+    @Test
+    fun `既に記録している自己ベストより遅ければ読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = AceWindowsNarratorState(),
+                data = bestLapTime(bestLapTimeMs = 90_000),
+                settings = myBestLapSettings(),
+            )
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                data = bestLapTime(bestLapTimeMs = 89_000),
+                settings = myBestLapSettings(),
+            )
+
+        val third =
+            useCase.determineMyBestLap(
+                state = second.state.copy(previousBestLapTimeMs = 95_000),
+                data = bestLapTime(bestLapTimeMs = 90_000),
+                settings = myBestLapSettings(),
+            )
+
+        assertTrue(third.events.isEmpty())
+    }
+
+    @Test
+    fun `自己ベストの読み上げが無効なら読み上げない`() {
+        val initialDecision =
+            useCase.determineMyBestLap(
+                state = AceWindowsNarratorState(),
+                data = bestLapTime(bestLapTimeMs = 90_000),
+                settings =
+                    myBestLapSettings(
+                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to false),
+                    ),
+            )
+        val decision =
+            useCase.determineMyBestLap(
+                state = initialDecision.state,
+                data = bestLapTime(bestLapTimeMs = 89_000),
+                settings =
+                    myBestLapSettings(
+                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to false),
+                    ),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(Int.MAX_VALUE, decision.state.personalBestMs)
+    }
 
     @Test
     fun `enabledStatesが空でも例外にならずデフォルトtrueで読み上げる`() {
@@ -517,6 +674,17 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(true, decision.state.vehicleApproaching)
     }
+
+    private fun bestLapTime(bestLapTimeMs: Int) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)
+
+    private fun myBestLapSettings(
+        myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+        enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+    ) = AceWindowsNarratorReadoutSettings(
+        enabledStates = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true) + enabledOverrides,
+        remainingFuelThresholdPercentage = 0,
+        myBestLapVoiceType = myBestLapVoiceType,
+    )
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))
 

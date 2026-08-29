@@ -180,4 +180,17 @@ sealed interface SpeechEvent {
     data object AceWindowsVehicleApproach : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.VehicleApproach.Root
     }
+
+    /**
+     * ACE の自己ベストラップ更新を読み上げるイベント（フォーマル / カジュアルの2種）。
+     *
+     * 再生する WAV は LMU（[LmuWindowsMyBestLapFormal]/[LmuWindowsMyBestLapCasual]）と同じ音源を流用する。
+     */
+    data object AceWindowsMyBestLapFormal : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root
+    }
+
+    data object AceWindowsMyBestLapCasual : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root
+    }
 }

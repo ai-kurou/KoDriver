@@ -1,5 +1,6 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
@@ -68,6 +69,7 @@ import kotlin.math.sqrt
  *   [+2404] flag (int32, ACEVO_FLAG_TYPE、自車提示) ← Flag 取得対象
  *
  * [+4] status (int32, ACEVO_STATUS) ← Status 取得対象
+ * [+2400] best_laptime_ms (int32) ← BestLapTime 取得対象
  * [+1388] car_location (int32, ACEVO_CAR_LOCATION) ← CarLocation 取得対象
  * [+24/+32] player_car_id_a/b (uint64) ← VehicleApproach で自車特定に使用
  *
@@ -98,6 +100,7 @@ internal object AceWindowsMapper {
     private const val TYRE_STATE_STRIDE = 256
     private const val OFF_TYRE_TEMPERATURE_C = 12
     private const val OFF_CAR_LOCATION = 1388
+    private const val OFF_BEST_LAPTIME_MS = 2400
     private const val OFF_FLAG = 2404
     private const val OFF_CAR_COORDINATES = 3124
     private const val CAR_COORDINATES_STRIDE = 12
@@ -123,6 +126,11 @@ internal object AceWindowsMapper {
                     val tyreStateBase = OFF_TYRE_LF + wheel.ordinal * TYRE_STATE_STRIDE
                     CelsiusReading(buffer.getFloat(tyreStateBase + OFF_TYRE_TEMPERATURE_C))
                 },
+        )
+
+    fun mapBestLapTime(buffer: ByteBuffer): AceWindowsBestLapTimeData =
+        AceWindowsBestLapTimeData(
+            bestLapTimeMs = buffer.getInt(OFF_BEST_LAPTIME_MS),
         )
 
     fun mapFlag(buffer: ByteBuffer): AceWindowsFlagData =

@@ -3,6 +3,7 @@ package kurou.kodriver.presentation
 import kurou.kodriver.feature.acewindowsconnection.aceWindowsConnectionModule
 import kurou.kodriver.feature.acewindowsnarrator.aceWindowsNarratorModule
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.aceWindowsReadoutFlagDetailModule
+import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.aceWindowsReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.aceWindowsReadoutRemainingFuelDetailModule
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.aceWindowsReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.aceWindowsReadoutVehicleApproachDetailModule
@@ -83,5 +84,6 @@ val featureModules: List<Module> =
         aceWindowsReadoutFlagDetailModule,
         aceWindowsReadoutTyreTemperatureDetailModule,
         aceWindowsReadoutVehicleApproachDetailModule,
+        aceWindowsReadoutMyBestLapDetailModule,
         debugStateDetailModule,
     )

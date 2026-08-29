@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_C
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -24,9 +25,11 @@ import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
@@ -40,6 +43,11 @@ import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+
+internal data class MyBestLapUseCases(
+    val observeBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
+    val observeMyBestLapVoiceType: ObserveAceWindowsMyBestLapVoiceTypeUseCase,
+)
 
 internal data class RemainingFuelUseCases(
     val observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
@@ -73,6 +81,7 @@ internal data class ReadoutListUseCases(
 @Suppress("LongParameterList")
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 internal class AceWindowsNarratorViewModel(
+    myBestLapUseCases: MyBestLapUseCases,
     remainingFuelUseCases: RemainingFuelUseCases,
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
@@ -119,6 +128,11 @@ internal class AceWindowsNarratorViewModel(
             .observeQueueEnabledStates()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
+    private val voiceType =
+        myBestLapUseCases
+            .observeMyBestLapVoiceType()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, MY_BEST_LAP_VOICE_TYPE_DEFAULT)
+
     private val remainingFuelThreshold =
         remainingFuelUseCases
             .observeThresholdPercentage()
@@ -151,7 +165,14 @@ internal class AceWindowsNarratorViewModel(
                 remainingFuelThresholdPercentage = remainingFuelThreshold.value,
                 tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThreshold.value,
                 vehicleApproachThresholdMeters = vehicleApproachThreshold.value,
+                myBestLapVoiceType = voiceType.value,
             )
+
+    private val bestLapTimeFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.AceWindows) emptyFlow() else myBestLapUseCases.observeBestLapTime()
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val fuelFlow =
         selectedSimulator
@@ -201,6 +222,36 @@ internal class AceWindowsNarratorViewModel(
         get() =
             currentStatus.value?.status == AceWindowsStatusType.LIVE &&
                 currentStatus.value?.carLocation == AceWindowsCarLocation.TRACK
+
+    @Suppress("UnusedPrivateProperty")
+    private val myBestLapJob =
+        bestLapTimeFlow
+            .onEach { bestLapTime ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    determineAceWindowsNarratorReadout.determineMyBestLap(
+                        state = state,
+                        data = bestLapTime,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processMyBestLap(
+                    bestLapTime = bestLapTime,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        AceWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                    isOnTrack = isOnTrack,
+                )
+            }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
     private val fuelJob =

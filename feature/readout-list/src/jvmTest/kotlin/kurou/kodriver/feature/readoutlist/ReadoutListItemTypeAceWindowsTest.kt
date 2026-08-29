@@ -24,6 +24,14 @@ class ReadoutListItemTypeAceWindowsTest {
     }
 
     @Test
+    fun `ace_windows の my_best_lap は AceWindows_MyBestLap を返す`() {
+        assertEquals(
+            ReadoutListItemType.AceWindows.MyBestLap,
+            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.MyBestLap.Root),
+        )
+    }
+
+    @Test
     fun `ace_windows でシミュレータに属さないキーは null を返す`() {
         assertNull(ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root))
     }
@@ -45,13 +53,14 @@ class ReadoutListItemTypeAceWindowsTest {
     }
 
     @Test
-    fun `ace_windows のデフォルト並び順はフラッグ・車両接近・タイヤ温度・燃料残量の順`() {
+    fun `ace_windows のデフォルト並び順はフラッグ・車両接近・タイヤ温度・燃料残量・自己ベストラップの順`() {
         assertEquals(
             listOf(
                 ReadoutItemKey.AceWindows.Flag.Root,
                 ReadoutItemKey.AceWindows.VehicleApproach.Root,
                 ReadoutItemKey.AceWindows.TyreTemperature.Root,
                 ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                ReadoutItemKey.AceWindows.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.AceWindows),
         )

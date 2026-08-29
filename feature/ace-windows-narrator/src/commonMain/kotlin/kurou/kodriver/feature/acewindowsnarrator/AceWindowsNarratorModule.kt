@@ -10,9 +10,11 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
@@ -40,7 +42,7 @@ import org.koin.dsl.module
  * ACE (Assetto Corsa EVO) Windows版 アナウンス制御（ace-windows-narrator feature）の Koin モジュール。
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
- *   UseCase 集約 data class（RemainingFuelUseCases / ReadoutListUseCases / FlagUseCases /
+ *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / ReadoutListUseCases / FlagUseCases /
  *   TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
@@ -51,9 +53,10 @@ import org.koin.dsl.module
 val aceWindowsNarratorModule: Module =
     module {
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
+        factory { MyBestLapUseCases(get(), get()) }
         factory { RemainingFuelUseCases(get(), get()) }
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
@@ -64,6 +67,8 @@ val aceWindowsNarratorModule: Module =
         // ドメイン UseCase（:core:domain。get() は :core:ace-windows-data / :core:data の Repository を解決）
         factory { DetermineAceWindowsNarratorReadoutUseCase() }
         factory { SaveTelemetryLogUseCase(get()) }
+        factory { ObserveAceWindowsBestLapTimeUseCase(get()) }
+        factory { ObserveAceWindowsMyBestLapVoiceTypeUseCase(get()) }
         factory { ObserveAceWindowsFuelUseCase(get()) }
         factory { ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(get()) }
         factory { ObserveAceWindowsFlagUseCase(get()) }
@@ -119,6 +124,8 @@ private val aceWindowsEventToFile: Map<SpeechEvent, String> =
         SpeechEvent.AceWindowsRedYellowStripesFlag to "files/red_yellow_stripes_flag.wav",
         SpeechEvent.AceWindowsTyreOverheat to "files/tyre_overheat.wav",
         SpeechEvent.AceWindowsVehicleApproach to "files/vehicle_approach.wav",
+        SpeechEvent.AceWindowsMyBestLapFormal to "files/my_best_lap_formal.wav",
+        SpeechEvent.AceWindowsMyBestLapCasual to "files/my_best_lap_casual.wav",
     )
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =

@@ -57,6 +57,7 @@ import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.AceWindowsReadoutFlagDetailPane
+import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.AceWindowsReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.AceWindowsReadoutTyreTemperatureDetailPane
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.AceWindowsReadoutVehicleApproachDetailPane
@@ -719,10 +720,25 @@ private fun Gt7Ps5ReadoutItemDetailContent(itemType: ReadoutListItemType.Gt7Ps5)
 @Composable
 private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.AceWindows) {
     when (itemType) {
-        ReadoutListItemType.AceWindows.Flag -> AceWindowsReadoutFlagDetailPane()
-        ReadoutListItemType.AceWindows.TyreTemperature -> AceWindowsReadoutTyreTemperatureDetailPane()
-        ReadoutListItemType.AceWindows.RemainingFuel -> AceWindowsReadoutRemainingFuelDetailPane()
-        ReadoutListItemType.AceWindows.VehicleApproach -> AceWindowsReadoutVehicleApproachDetailPane()
+        ReadoutListItemType.AceWindows.Flag -> {
+            AceWindowsReadoutFlagDetailPane()
+        }
+
+        ReadoutListItemType.AceWindows.TyreTemperature -> {
+            AceWindowsReadoutTyreTemperatureDetailPane()
+        }
+
+        ReadoutListItemType.AceWindows.RemainingFuel -> {
+            AceWindowsReadoutRemainingFuelDetailPane()
+        }
+
+        ReadoutListItemType.AceWindows.VehicleApproach -> {
+            AceWindowsReadoutVehicleApproachDetailPane()
+        }
+
+        ReadoutListItemType.AceWindows.MyBestLap -> {
+            AceWindowsReadoutMyBestLapDetailPane()
+        }
     }
 }
 

@@ -12,6 +12,7 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
@@ -29,6 +30,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Suppress("TooManyFunctions")
 class AceWindowsNarratorEventProcessorTest {
     @MockK
     private lateinit var telemetryLogRepository: TelemetryLogRepository
@@ -290,6 +292,79 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `直前の自己ベストラップデータがないイベントはnullとして保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val key = ReadoutItemKey.AceWindows.MyBestLap.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
+
+            createProcessor().processMyBestLap(
+                bestLapTime = bestLapTime(89_000),
+                events = listOf(SpeechEvent.AceWindowsMyBestLapFormal),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+                isOnTrack = true,
+            )
+
+            assertEquals(true, telemetryJsons.single().contains("\"previousBestLapTime\":null"))
+            assertEquals(true, telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000}"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `読み上げた自己ベストラップイベントを直前と現在のベストラップデータとともに保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val processor = createProcessor()
+            val key = ReadoutItemKey.AceWindows.MyBestLap.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
+
+            processor.processMyBestLap(
+                bestLapTime(90_000),
+                emptyList(),
+                emptyList(),
+                emptyMap(),
+                100L,
+                logContext(),
+                true,
+            )
+            processor.processMyBestLap(
+                bestLapTime(89_000),
+                listOf(SpeechEvent.AceWindowsMyBestLapFormal),
+                listOf(key),
+                emptyMap(),
+                200L,
+                logContext(),
+                true,
+            )
+
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(true, telemetryJsons.single().contains(""""previousBestLapTime":{"bestLapTimeMs":90000}"""))
+            assertEquals(true, telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000}"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `直前のフラグデータがないイベントはnullとして保存する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
@@ -448,6 +523,8 @@ class AceWindowsNarratorEventProcessorTest {
         AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(frontLeftCelsius)))
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
+
+    private fun bestLapTime(bestLapTimeMs: Int) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)
 
     private fun createProcessor() =
         AceWindowsNarratorEventProcessor(
