@@ -32,6 +32,40 @@
   - **改善案**: プロジェクトが依存する Compose Multiplatform / Material3 Adaptive のバージョンで `MediaQuery` API が利用可能になった際、list/detailペインの表示切り替え判定を簡潔化できないか調査する。参考: https://android-developers.googleblog.com/2026/04/jetpack-compose-april-2026-updates.html
   - **調査結果（2026-08-23）**: プロジェクトが依存する `org.jetbrains.compose.ui:ui` `1.11.1` には `MediaQuery` API（`androidx.compose.ui.MediaQueryKt`、`derivedMediaQuery`、`UiMediaScope`、`LocalUiMediaScope`）が `commonMain` として同梱されており、`feature:readout-list` 等でのコンパイル自体は成功する（JVM・Androidいずれのターゲットでも確認済み）。しかし実際に3画面へ導入して `feature:readout-list` のユニットテストを実行したところ、`LocalUiMediaScope` を明示的に提供しなかったテストが軒並み `IllegalStateException`（`CompositionLocal LocalUiMediaScope not present`）で失敗した。原因を調査した結果、`androidx.compose.ui:ui-android`（AARの`classes.jar`）には `LocalUiMediaScope` へ実際の値を供給するプラットフォーム実装（`androidx/compose/ui/adaptive/MediaQuery_androidKt.obtainUiMediaScope` 等）が存在する一方、`org.jetbrains.compose.ui:ui-desktop:1.11.1` の jar にはこの配線が一切含まれていないことを確認した。**つまり `MediaQuery` API は現時点で Android ターゲットのみ実用可能で、KoDriver の主要配布形態である Desktop（Windows MSI）では `LocalUiMediaScope` が誰からも提供されず実行時にクラッシュする。** Compose Multiplatform がDesktopターゲット向けの `UiMediaScope` プロバイダ実装を追加するまでは導入を見送る。
 
+## テスト
+
+- **対象**: `app/shared`（`OtherContent.kt`）・`feature:readout-list`（`ReadoutContent.kt`）・`feature:telemetry-log-list`（`TelemetryLogContent.kt`）
+  - **課題**: list/detailペイン切り替えの「一覧のみ表示」パターン（`selectedItem == null`）が3モジュール共通で未検証。対応するスクリーンショットテストはいずれも `selectedItem != null`（detail表示）のケースしかない、同型の抜けが同時発生している。
+  - **改善案**: 3モジュールそれぞれのスクリーンショットテストに `selectedItem == null` のケースを追加する。
+
+- **対象**: `app:shared`（`AppScreen.kt`）の接続バナー・アップデートバッジ・NavigationDrawerレイアウト
+  - **課題**: `AnimatedVisibility(visible = bannerUiState.isVisible)` による接続バナー非表示、`hasAppUpdate` によるアップデートバッジ非表示、`resolvedLayoutType == NavigationDrawer`（デスクトップ広幅時想定）のレイアウトが、既存のスクリーンショットテストでは一切検証されていない。
+  - **改善案**: `bannerUiState.isVisible = false`、`hasAppUpdate = false`、`NavigationDrawer`レイアウトのケースをスクリーンショットテストに追加する。
+
+- **対象**: `feature:telemetry-log-list`（`TelemetryLogListPane.kt`）
+  - **課題**: `AnimatedVisibility(visible = showNewLogsButton)` による新着ログボタンの表示パターンが未検証。
+  - **改善案**: `showNewLogsButton = true` のケースをスクリーンショットテストに追加する。
+
+- **対象**: `feature:lmu-windows-readout-tyre-temperature-detail`（`LmuWindowsReadoutTyreTemperatureDetailPane.kt`）
+  - **課題**: 警告OFF時（`overheatWarningEnabled`/`lowWarningEnabled = false`）のチップディム表示が未検証。ユーザーが頻繁に触る設定画面のため優先度は高め。
+  - **改善案**: 警告OFF時のケースをスクリーンショットテストに追加する。
+
+- **対象**: `feature:readout-list`（`ReadoutListPane.kt`）
+  - **課題**: `AnimatedVisibility(visible = !isAtTop)` によるスクロールトップボタンの表示パターンが未検証。
+  - **改善案**: スクロールしてボタンが表示された状態のケースをスクリーンショットテストに追加する。
+
+- **対象**: `feature:readout-list`（`ReadoutDetailPane.kt`）
+  - **課題**: `if (canNavigateBack)` による戻るボタンの非表示パターンが、通常のUIテスト・スクリーンショットテストのいずれでも未検証。そもそもこのComposable単体のスクリーンショットテスト自体が存在しない。
+  - **改善案**: `canNavigateBack = false` のケースを含むスクリーンショットテストを新規に整備する。
+
+- **対象**: `feature:lmu-windows-readout-flag-detail`（`LmuWindowsReadoutFlagDetailPane.kt`）
+  - **課題**: `when (uiState.redFlagVoiceType)` による選択チップの強調表示分岐が、`redFlagVoiceType` の1パターンしか検証されていない。
+  - **改善案**: `redFlagVoiceType` の他の値（選択チップが変わるパターン）をスクリーンショットテストに追加する。
+
+- **対象**: `core:designsystem`（`DetailPane.kt` の `DetailPaneSubtitle`）
+  - **課題**: `if (trailingContent != null)` による表示分岐について、`DetailPaneSubtitle` 単独のスクリーンショットテストが存在しない。呼び出し側のテストで間接的に一部カバーされているのみで、`trailingContent`有無の対比検証はない。
+  - **改善案**: `DetailPaneSubtitle` 単独のスクリーンショットテストを新設し、`trailingContent`の有無双方のケースを追加する。
+
 ## Android
 
 - **対象**: `app/androidApp/src/main/AndroidManifest.xml`（`android-targetSdk = "36"`、`gradle/libs.versions.toml`）
