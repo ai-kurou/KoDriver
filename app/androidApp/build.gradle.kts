@@ -37,6 +37,8 @@ dependencies {
     androidTestImplementation(testFixtures(projects.app.shared))
     debugImplementation(libs.compose.uiTest)
 
+    testImplementation(libs.junit)
+
     baselineProfile(projects.app.androidBenchmark)
 }
 
