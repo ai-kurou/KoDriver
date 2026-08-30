@@ -65,6 +65,7 @@ kotlin {
             dependsOn(jvmAndroidMain)
             dependencies {
                 implementation(libs.androidx.datastore.preferences.android)
+                implementation(libs.androidx.core.ktx)
                 implementation(project.dependencies.platform(libs.ktor.bom))
                 implementation(libs.ktor.clientCore)
                 implementation(libs.ktor.clientOkhttp)

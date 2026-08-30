@@ -3,6 +3,7 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
+import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.preferences.AndroidDynamicColorEnabledRepository
@@ -57,6 +58,7 @@ import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleClassRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleDamageRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVirtualEnergyRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
+import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
@@ -261,6 +263,10 @@ private fun androidDataModuleAppSettings(context: Context) =
         // 端末が振動ハードウェアを備えているか（設定画面での項目表示可否に使用）
         single<HapticFeedbackAvailabilityRepository> {
             AndroidHapticFeedbackAvailabilityRepository(context)
+        }
+        // ACCESS_LOCAL_NETWORK 権限（Android 16+）が許可されているか（設定画面でのバッジ表示に使用）
+        single<AccessLocalNetworkPermissionRepository> {
+            AndroidAccessLocalNetworkPermissionRepository(context)
         }
     }
 

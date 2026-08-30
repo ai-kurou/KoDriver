@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
@@ -56,6 +57,11 @@ fun OtherContent(
     LaunchedEffect(Unit) {
         viewModel.checkUpdate()
         viewModel.checkStartupEnabled()
+    }
+
+    LifecycleResumeEffect(Unit) {
+        viewModel.checkAccessLocalNetworkPermission()
+        onPauseOrDispose {}
     }
 
     OtherContent(
@@ -96,6 +102,7 @@ private fun handleOtherItemClick(
 
         OtherListItemType.ReleasePage -> onOpenReleasePage()
 
+        OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,

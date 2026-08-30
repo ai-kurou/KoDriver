@@ -51,6 +51,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_log
@@ -285,6 +286,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
+                OtherListItemType.AccessLocalNetworkPermission,
                 -> {}
             }
         },
@@ -356,12 +358,18 @@ fun AppScreen(
 
     AppNarratorEffects()
 
+    LifecycleResumeEffect(Unit) {
+        viewModel.checkAccessLocalNetworkPermission()
+        onPauseOrDispose {}
+    }
+
     AppScreenContent(
         darkTheme = darkTheme,
         dynamicColorEnabled = uiState.dynamicColorEnabled,
         bannerUiState = bannerUiState,
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,
+        accessLocalNetworkPermissionGranted = uiState.accessLocalNetworkPermissionGranted,
         keepScreenOn = uiState.keepScreenOn,
         hapticFeedbackEnabled = uiState.hapticFeedbackEnabled,
         selectedSimulatorId = uiState.selectedSimulatorId,
@@ -433,6 +441,7 @@ internal fun AppScreenContent(
     bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     hasAppUpdate: Boolean = false,
+    accessLocalNetworkPermissionGranted: Boolean = true,
     keepScreenOn: Boolean = false,
     hapticFeedbackEnabled: Boolean = true,
     selectedSimulatorId: String = LMU_WINDOWS_SIMULATOR_ID,
@@ -470,6 +479,7 @@ internal fun AppScreenContent(
             AppScreenScaffold(
                 resolvedLayoutType = resolvedLayoutType,
                 hasAppUpdate = hasAppUpdate,
+                accessLocalNetworkPermissionGranted = accessLocalNetworkPermissionGranted,
                 selectedSimulatorId = selectedSimulatorId,
                 onSimulatorSelected = onSimulatorSelected,
                 bannerUiState = bannerUiState,
@@ -495,6 +505,7 @@ internal fun AppScreenContent(
 private fun AppScreenScaffold(
     resolvedLayoutType: NavigationSuiteType,
     hasAppUpdate: Boolean,
+    accessLocalNetworkPermissionGranted: Boolean,
     selectedSimulatorId: String,
     onSimulatorSelected: (String) -> Unit,
     bannerUiState: ConnectionBannerUiState,
@@ -540,7 +551,9 @@ private fun AppScreenScaffold(
                         } else {
                             Modifier
                         }
-                    val showBadge = dest == AppDestination.More && hasAppUpdate
+                    val showBadge =
+                        dest == AppDestination.More &&
+                            (hasAppUpdate || !accessLocalNetworkPermissionGranted)
                     item(
                         icon = {
                             if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {

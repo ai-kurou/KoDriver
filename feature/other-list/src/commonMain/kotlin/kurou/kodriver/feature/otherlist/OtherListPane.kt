@@ -27,6 +27,7 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.Vibration
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.HorizontalDivider
@@ -52,6 +53,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.feature.otherlist.generated.resources.Res
+import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
 import kurou.kodriver.feature.otherlist.generated.resources.item_debug_state
 import kurou.kodriver.feature.otherlist.generated.resources.item_dynamic_color
@@ -92,6 +94,7 @@ private val otherListSections =
 
 private fun OtherListItemType.section(): OtherListSection =
     when (this) {
+        OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         -> OtherListSection.ConnectionSettings
@@ -119,30 +122,54 @@ private fun OtherListItemType.section(): OtherListSection =
 @Composable
 private fun otherItemDisplayName(itemType: OtherListItemType): String =
     when (itemType) {
-        OtherListItemType.ServerIp -> stringResource(Res.string.item_server_ip)
+        OtherListItemType.AccessLocalNetworkPermission -> {
+            stringResource(Res.string.item_access_local_network_permission)
+        }
 
-        OtherListItemType.ConsoleIp -> stringResource(Res.string.item_console_ip)
+        OtherListItemType.ServerIp -> {
+            stringResource(Res.string.item_server_ip)
+        }
 
-        OtherListItemType.Volume -> stringResource(Res.string.item_volume)
+        OtherListItemType.ConsoleIp -> {
+            stringResource(Res.string.item_console_ip)
+        }
 
-        OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
+        OtherListItemType.Volume -> {
+            stringResource(Res.string.item_volume)
+        }
 
-        OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
+        OtherListItemType.ReadoutStartSound -> {
+            stringResource(Res.string.item_readout_start_sound)
+        }
 
-        OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
+        OtherListItemType.GitHubRepository -> {
+            stringResource(Res.string.item_github_repository)
+        }
 
-        OtherListItemType.Feedback -> stringResource(Res.string.item_feedback)
+        OtherListItemType.ReleasePage -> {
+            stringResource(Res.string.item_release_page)
+        }
 
-        OtherListItemType.License -> stringResource(Res.string.item_license)
+        OtherListItemType.Feedback -> {
+            stringResource(Res.string.item_feedback)
+        }
 
-        OtherListItemType.DebugState -> stringResource(Res.string.item_debug_state)
+        OtherListItemType.License -> {
+            stringResource(Res.string.item_license)
+        }
+
+        OtherListItemType.DebugState -> {
+            stringResource(Res.string.item_debug_state)
+        }
 
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
         OtherListItemType.DynamicColor,
         OtherListItemType.HapticFeedback,
         OtherListItemType.Startup,
-        -> otherAppSettingsItemDisplayName(itemType)
+        -> {
+            otherAppSettingsItemDisplayName(itemType)
+        }
     }
 
 @Composable
@@ -167,6 +194,8 @@ private fun otherListSectionTitle(section: OtherListSection): String =
 
 private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
     when (itemType) {
+        OtherListItemType.AccessLocalNetworkPermission -> Icons.Outlined.Wifi
+
         OtherListItemType.ServerIp -> Icons.Outlined.Computer
 
         OtherListItemType.ConsoleIp -> Icons.Outlined.SportsEsports
@@ -207,10 +236,17 @@ private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType): 
 private fun OtherListItemLeadingIcon(
     itemType: OtherListItemType,
     hasAppUpdate: Boolean,
+    accessLocalNetworkPermissionGranted: Boolean,
 ) {
     val imageVector = otherListItemLeadingIconVector(itemType)
-    if (itemType == OtherListItemType.ReleasePage) {
-        BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
+    val showBadge =
+        when (itemType) {
+            OtherListItemType.ReleasePage -> hasAppUpdate
+            OtherListItemType.AccessLocalNetworkPermission -> !accessLocalNetworkPermissionGranted
+            else -> false
+        }
+    if (itemType == OtherListItemType.ReleasePage || itemType == OtherListItemType.AccessLocalNetworkPermission) {
+        BadgedBox(badge = { if (showBadge) Badge() }) {
             Icon(imageVector = imageVector, contentDescription = null)
         }
     } else {
@@ -241,6 +277,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
 
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
+        OtherListItemType.AccessLocalNetworkPermission,
         -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
     }
 }
@@ -344,6 +381,7 @@ private fun OtherListItem(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
+    val openAccessLocalNetworkPermissionSettings = rememberOpenAccessLocalNetworkPermissionSettings()
     val onKeepScreenOnChangeWithHaptic: (Boolean) -> Unit = {
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onKeepScreenOnChange(it)
@@ -394,7 +432,9 @@ private fun OtherListItem(
 
     ListItem(
         headlineContent = { Text(otherItemDisplayName(item)) },
-        leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
+        leadingContent = {
+            OtherListItemLeadingIcon(item, uiState.hasAppUpdate, uiState.accessLocalNetworkPermissionGranted)
+        },
         trailingContent = {
             when (item) {
                 OtherListItemType.KeepScreenOn -> {
@@ -425,6 +465,7 @@ private fun OtherListItem(
                     )
                 }
 
+                OtherListItemType.AccessLocalNetworkPermission,
                 OtherListItemType.ServerIp,
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
@@ -453,39 +494,66 @@ private fun OtherListItem(
                 .semantics { selected = isSelected }
                 .clickable {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    when (item) {
-                        OtherListItemType.KeepScreenOn -> {
-                            onKeepScreenOnChange(!uiState.keepScreenOn)
-                        }
-
-                        OtherListItemType.DynamicColor -> {
-                            onDynamicColorEnabledChange(!uiState.dynamicColorEnabled)
-                        }
-
-                        OtherListItemType.HapticFeedback -> {
-                            onHapticFeedbackEnabledChange(!uiState.hapticFeedbackEnabled)
-                        }
-
-                        OtherListItemType.Startup -> {
-                            onStartupEnabledChange(!uiState.startupEnabled)
-                        }
-
-                        OtherListItemType.ServerIp,
-                        OtherListItemType.ConsoleIp,
-                        OtherListItemType.Volume,
-                        OtherListItemType.ReadoutStartSound,
-                        OtherListItemType.Theme,
-                        OtherListItemType.GitHubRepository,
-                        OtherListItemType.ReleasePage,
-                        OtherListItemType.Feedback,
-                        OtherListItemType.License,
-                        OtherListItemType.DebugState,
-                        -> {
-                            onItemClick(item)
-                        }
-                    }
+                    handleOtherListItemClick(
+                        item = item,
+                        uiState = uiState,
+                        onKeepScreenOnChange = onKeepScreenOnChange,
+                        onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                        onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
+                        onStartupEnabledChange = onStartupEnabledChange,
+                        openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
+                        onItemClick = onItemClick,
+                    )
                 },
     )
+}
+
+@Suppress("LongParameterList")
+private fun handleOtherListItemClick(
+    item: OtherListItemType,
+    uiState: OtherListUiState,
+    onKeepScreenOnChange: (Boolean) -> Unit,
+    onDynamicColorEnabledChange: (Boolean) -> Unit,
+    onHapticFeedbackEnabledChange: (Boolean) -> Unit,
+    onStartupEnabledChange: (Boolean) -> Unit,
+    openAccessLocalNetworkPermissionSettings: () -> Unit,
+    onItemClick: (OtherListItemType) -> Unit,
+) {
+    when (item) {
+        OtherListItemType.KeepScreenOn -> {
+            onKeepScreenOnChange(!uiState.keepScreenOn)
+        }
+
+        OtherListItemType.DynamicColor -> {
+            onDynamicColorEnabledChange(!uiState.dynamicColorEnabled)
+        }
+
+        OtherListItemType.HapticFeedback -> {
+            onHapticFeedbackEnabledChange(!uiState.hapticFeedbackEnabled)
+        }
+
+        OtherListItemType.Startup -> {
+            onStartupEnabledChange(!uiState.startupEnabled)
+        }
+
+        OtherListItemType.AccessLocalNetworkPermission -> {
+            openAccessLocalNetworkPermissionSettings()
+        }
+
+        OtherListItemType.ServerIp,
+        OtherListItemType.ConsoleIp,
+        OtherListItemType.Volume,
+        OtherListItemType.ReadoutStartSound,
+        OtherListItemType.Theme,
+        OtherListItemType.GitHubRepository,
+        OtherListItemType.ReleasePage,
+        OtherListItemType.Feedback,
+        OtherListItemType.License,
+        OtherListItemType.DebugState,
+        -> {
+            onItemClick(item)
+        }
+    }
 }
 
 private const val DEBUG_STATE_TAP_THRESHOLD = 5

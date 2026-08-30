@@ -1,5 +1,6 @@
 package kurou.kodriver.data
 
+import kurou.kodriver.data.device.JvmAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.JvmHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
@@ -36,6 +37,7 @@ import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
 import kurou.kodriver.data.preferences.createThemePreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
+import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -156,6 +158,8 @@ val desktopDataModule =
         // タップ時ハプティックフィードバック（プラットフォーム固有実装。Desktop は no-op 相当。Android専用設定）
         single<HapticFeedbackEnabledRepository> { JvmHapticFeedbackEnabledRepository() }
         single<HapticFeedbackAvailabilityRepository> { JvmHapticFeedbackAvailabilityRepository() }
+        // ACCESS_LOCAL_NETWORK 権限（プラットフォーム固有実装。Desktop はこの権限自体が存在しないため常に許可済み扱い）
+        single<AccessLocalNetworkPermissionRepository> { JvmAccessLocalNetworkPermissionRepository() }
         single<LmuWindowsTyreTemperaturePreferencesRepository> {
             createLmuWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
         }
