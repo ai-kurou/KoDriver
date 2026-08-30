@@ -92,6 +92,7 @@ jobs:
         run: echo "date=$(TZ=Asia/Tokyo date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
 
       - name: Implement issue with Claude Code
+        id: claude_implement
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_PAT }}
@@ -105,28 +106,26 @@ jobs:
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
 
           pre_comment_count="$(gh issue view "${ISSUE_NUMBER}" --repo "${REPO}" --json comments --jq '.comments | length')"
-          pre_pr_numbers_json="$(gh pr list --repo "${REPO}" --head "claude/issue-${ISSUE_NUMBER}" --state all --json number --jq '[.[].number]')"
-          branch_existed_before="false"
-          if git ls-remote --exit-code --heads origin "claude/issue-${ISSUE_NUMBER}" >/dev/null 2>&1; then
-            branch_existed_before="true"
-          fi
+          echo "pre_comment_count=${pre_comment_count}" >> "$GITHUB_OUTPUT"
+
+          rm -f /tmp/kodriver_status /tmp/kodriver_pr_title.txt /tmp/kodriver_pr_body.txt /tmp/kodriver_commit_message.txt
 
           set +e
           claude -p "$(cat <<PROMPT
-          KoDriverリポジトリの夜間バッチ処理として、GitHub issue #${ISSUE_NUMBER}（${ISSUE_URL}）を実装してPRを作成してください。
+          KoDriverリポジトリの夜間バッチ処理として、GitHub issue #${ISSUE_NUMBER}（${ISSUE_URL}）を実装してください。
+          このステップでは実装（コード変更・テスト追加）とPR用文言の下書きまでを行い、\`./gradlew preSubmitChecks\` の実行・コミット・プッシュ・PR作成は行わない（それらは実装完了後、別のワークフローステップが機械的に行う）。
 
           1. \`gh issue view ${ISSUE_NUMBER} --repo ${REPO} --json title,body,comments\` でissueの内容（本文・コメント）を確認する。
           2. CLAUDE.md の「実装前」チェックリストに従い、既存実装・依存モジュール・類似コードを確認する。
-          3. issueの要件が実装するには曖昧・情報不足だと判断した場合は、コード変更は一切行わず、\`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` で「要件が不十分なため保留する」旨と不足している情報を日本語で具体的にコメントし、issueには手を付けずに終了する（ラベルは外さない）。
+          3. issueの要件が実装するには曖昧・情報不足だと判断した場合は、コード変更は一切行わず、\`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` で「要件が不十分なため保留する」旨と不足している情報を日本語で具体的にコメントする。その後 \`echo "insufficient" > /tmp/kodriver_status\` を実行して終了する（issueのラベルは外さない）。
           4. 実装可能と判断した場合は、\`main\` から \`claude/issue-${ISSUE_NUMBER}\` のようなブランチを作成し実装する。CLAUDE.md のテスト方針・コーディング規約・Git操作ルールに従うこと。ユニットテストが必要な変更には同時にテストを追加・更新する。\`docs/improvement-ideas.md\` への新規追加・既存項目の書き換えは行わない（承認が必要なファイルのため）。ただし、\`docs/improvement-ideas.md\` に今回実装したissueの内容と一致する項目が既に存在する場合に限り、その項目のみを削除してよい（この場合、issue自体がユーザー承認済みの実装依頼であるため、削除に別途ユーザー承認は不要）。削除する場合は、実装本体と同じPRに含め、CLAUDE.md の規定どおり \`docs/resolved-improvement-ideas.md\` に \`- YYYY-MM-DD 一言サマリ（関連PR #番号）\` 形式で1行追記すること。
-          5. 実装後、\`./gradlew preSubmitChecks\` を実行する。このコマンドは実行に10分以上かかることがあり、Bashツールの1回の呼び出しでフォアグラウンド実行すると最大タイムアウト（10分）に達して打ち切られる可能性がある。そのため、以下の手順で実行すること。
-             - \`(./gradlew preSubmitChecks > /tmp/pre_submit_checks.log 2>&1; echo \$? > /tmp/pre_submit_checks.exit) & disown\` のようにOSレベルのバックグラウンドプロセスとして起動する（Bashツールの \`run_in_background\` パラメータは絶対に使用しないこと。これは無関係な別の仕組みであり、このワークフローの非対話実行では完了通知が届かない）。
-             - \`ScheduleWakeup\` や \`Monitor\` など、通知を待つツールは一切使用しない（\`/loop\`や対話セッション専用であり、このワークフローでは機能しない）。
-             - 起動後は、\`test -f /tmp/pre_submit_checks.exit\` で完了を確認しつつ、\`sleep 60\` を挟んだ短いフォアグラウンドのBash呼び出しを、\`/tmp/pre_submit_checks.exit\` が作成されるまで繰り返し実行してポーリングする（1回のBash呼び出し自体は短時間で終わるため、10分のタイムアウトには抵触しない）。
-             - 完了したら \`/tmp/pre_submit_checks.log\` の内容と \`/tmp/pre_submit_checks.exit\` の終了コードを確認し、成功・失敗を判定する。
-             - 成功した場合: わかりやすい日本語のコミットメッセージでコミットし、\`git push -u origin claude/issue-${ISSUE_NUMBER}\` でプッシュし、\`gh pr create --repo ${REPO} --base main --head claude/issue-${ISSUE_NUMBER} --title --body\` でPRを作成する（タイトル・説明は日本語、署名やセッションURLは含めない、本文に \"Closes #${ISSUE_NUMBER}\" を含める）。その後 \`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` と \`gh pr comment <PR番号> --repo ${REPO}\` の両方に、実装内容の要約とPRへのリンクを日本語でコメントする。
-             - 失敗した場合、または実装を完遂できないと判断した場合: 変更を破棄し（\`git checkout -- .\` 等でクリーンな状態に戻す）、\`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` で失敗の理由を日本語で具体的にコメントし、\`gh issue edit ${ISSUE_NUMBER} --repo ${REPO} --remove-label claude-implementable\` でラベルを外す。PRは作成しない。
-          6. 最後に、実施した内容（コメントあり/保留/失敗のいずれか）を簡潔に出力する。
+             実装が完了したら、以下のファイルを作成する（コミット・プッシュ・PR作成・\`preSubmitChecks\`の実行は絶対に行わないこと。後続のワークフローステップが機械的に行うため）。
+             - \`/tmp/kodriver_commit_message.txt\`: わかりやすい日本語のコミットメッセージ（1行目に要約、必要なら本文）
+             - \`/tmp/kodriver_pr_title.txt\`: 日本語のPRタイトル（1行のみ）
+             - \`/tmp/kodriver_pr_body.txt\`: 日本語のPR説明本文（署名やセッションURLは含めない。末尾に \"Closes #${ISSUE_NUMBER}\" を含める）
+             - 最後に \`echo "implemented" > /tmp/kodriver_status\` を実行する。
+          5. 実装を完遂できないと判断した場合（実装中に解決できない問題に遭遇した等）は、変更を破棄し（\`git checkout -- .\` \`git clean -fd\` 等でクリーンな状態に戻す）、\`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` で理由を日本語で具体的にコメントし、\`echo "failed" > /tmp/kodriver_status\` を実行して終了する（ラベルを外す処理は後続のワークフローステップが行う）。
+          6. 最後に、実施した内容（実装/保留/失敗のいずれか）を簡潔に出力する。
           PROMPT
           )" \
             --allowedTools "Read,Grep,Glob,Edit,Write,Bash" \
@@ -134,32 +133,102 @@ jobs:
             --model sonnet
           claude_exit=$?
           set -e
+          echo "claude_exit=${claude_exit}" >> "$GITHUB_OUTPUT"
 
-          post_pr_numbers_json="$(gh pr list --repo "${REPO}" --head "claude/issue-${ISSUE_NUMBER}" --state all --json number --jq '[.[].number]')"
-          new_pr_count="$(jq -n --argjson pre "${pre_pr_numbers_json}" --argjson post "${post_pr_numbers_json}" '($post - $pre) | length')"
+          status="unknown"
+          if [ -f /tmp/kodriver_status ]; then
+            status="$(cat /tmp/kodriver_status)"
+          fi
+          echo "status=${status}" >> "$GITHUB_OUTPUT"
+          echo "Claude Code CLI finished with status='${status}' (exit code: ${claude_exit})"
+
+      - name: Handle paused/failed/unknown outcome
+        if: steps.claude_implement.outputs.status != 'implemented'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          ISSUE_NUMBER: ${{ matrix.issue.number }}
+          REPO: ${{ github.repository }}
+          STATUS: ${{ steps.claude_implement.outputs.status }}
+          CLAUDE_EXIT: ${{ steps.claude_implement.outputs.claude_exit }}
+          PRE_COMMENT_COUNT: ${{ steps.claude_implement.outputs.pre_comment_count }}
+        run: |
+          git checkout -- . 2>/dev/null || true
+          git clean -fd 2>/dev/null || true
+
+          # 保留（insufficient）・明示的な失敗（failed）は、Claude自身が既にissueへ
+          # コメント済みのはずなので、ここでは何もしない。ラベルは failed のときのみ外す。
+          if [ "${STATUS}" = "insufficient" ]; then
+            echo "Issue #${ISSUE_NUMBER} was paused by Claude Code CLI (insufficient information)."
+            exit 0
+          fi
+
+          if [ "${STATUS}" = "failed" ]; then
+            echo "::warning::Claude Code CLI could not complete issue #${ISSUE_NUMBER} (reported failure)"
+            gh issue edit "${ISSUE_NUMBER}" --repo "${REPO}" --remove-label claude-implementable
+            exit 0
+          fi
+
+          # ここに到達するのは status が "implemented"/"insufficient"/"failed" の
+          # いずれでもない場合（Claude Code CLI がクラッシュした、ステータスファイルを
+          # 書き忘れた等）。コメント・PRのいずれも残さず終了した無応答な中断とみなす。
           post_comment_count="$(gh issue view "${ISSUE_NUMBER}" --repo "${REPO}" --json comments --jq '.comments | length')"
+          if [ "${post_comment_count:-0}" != "${PRE_COMMENT_COUNT:-0}" ]; then
+            echo "status is unrecognized ('${STATUS}') but a comment was posted; leaving the label as-is."
+            exit 0
+          fi
 
-          # PRも作らず、issueへのコメントも一切残さないまま終了した場合は、
-          # claude_exitが0であっても「preSubmitChecks待機中に応答が完了しないまま
-          # 処理が終わった」等の無応答での中断とみなし、後始末を行う。
-          # pr_countは今回の実行で新規作成されたPRのみを数える（過去に同じブランチ名で
-          # close/mergeされたPRが残っていると、それを誤って成功と判定してしまうため）。
-          if [ "${new_pr_count:-0}" = "0" ] && [ "${post_comment_count:-0}" = "${pre_comment_count:-0}" ]; then
-            echo "::warning::Claude Code CLI produced neither a PR nor an issue comment for issue #${ISSUE_NUMBER} (exit code: ${claude_exit})"
+          echo "::warning::Claude Code CLI produced neither a PR nor an issue comment for issue #${ISSUE_NUMBER} (status: ${STATUS}, exit code: ${CLAUDE_EXIT})"
+          gh issue comment "${ISSUE_NUMBER}" --repo "${REPO}" --body "夜間バッチによる自動実装中に応答が完了しないまま処理が終了したため中断しました（Claude Code CLI exit code: ${CLAUDE_EXIT}）。ラベルを外すので、内容を見直したうえで再度ラベルを付与してください。"
+          gh issue edit "${ISSUE_NUMBER}" --repo "${REPO}" --remove-label claude-implementable
+
+      - name: Run preSubmitChecks
+        id: presubmit
+        if: steps.claude_implement.outputs.status == 'implemented'
+        run: |
+          set +e
+          ./gradlew preSubmitChecks
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Create PR or report preSubmitChecks failure
+        if: steps.claude_implement.outputs.status == 'implemented'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          ISSUE_NUMBER: ${{ matrix.issue.number }}
+          REPO: ${{ github.repository }}
+          PRESUBMIT_EXIT_CODE: ${{ steps.presubmit.outputs.exit_code }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          branch_name="claude/issue-${ISSUE_NUMBER}"
+
+          if [ "${PRESUBMIT_EXIT_CODE}" != "0" ]; then
+            echo "::warning::preSubmitChecks failed (exit code: ${PRESUBMIT_EXIT_CODE}) for issue #${ISSUE_NUMBER}"
             git checkout -- . 2>/dev/null || true
             git clean -fd 2>/dev/null || true
-            # gh pr createの前にpushされたリモートブランチが残っていると、次回同じissueに
-            # 再度ラベルが付いた際にブランチ作成・pushが衝突するため、今回の実行で新規作成
-            # された場合のみ削除する（既存ブランチは残す）。
-            if [ "${branch_existed_before}" = "false" ]; then
-              git push origin --delete "claude/issue-${ISSUE_NUMBER}" 2>/dev/null || true
-            fi
-            gh issue comment "${ISSUE_NUMBER}" --repo "${REPO}" --body "夜間バッチによる自動実装中に応答が完了しないまま処理が終了したため中断しました（Claude Code CLI exit code: ${claude_exit}）。ラベルを外すので、内容を見直したうえで再度ラベルを付与してください。"
+            gh issue comment "${ISSUE_NUMBER}" --repo "${REPO}" --body "夜間バッチによる自動実装後、\`./gradlew preSubmitChecks\` が失敗したため変更を破棄しました（exit code: ${PRESUBMIT_EXIT_CODE}）。詳細はワークフロー実行ログを参照してください: ${RUN_URL}"
             gh issue edit "${ISSUE_NUMBER}" --repo "${REPO}" --remove-label claude-implementable
-            exit 1
+            exit 0
           fi
 
-          if [ "$claude_exit" -ne 0 ]; then
-            echo "::warning::Claude Code CLI exited with status ${claude_exit} for issue #${ISSUE_NUMBER}"
-            exit "$claude_exit"
+          # モジュール図・スクリーンショット画像はCIで自動更新される仕組みのため、
+          # preSubmitChecksの実行中に生成・変更されていてもコミットに含めない。
+          git add -A
+          mapfile -t excluded_files < <(git diff --cached --name-only | grep -E '(^|/)snapshots/[^/]+\.png$|^docs/graphs/[^/]+\.(gv|svg)$' || true)
+          if [ "${#excluded_files[@]}" -gt 0 ]; then
+            git reset -- "${excluded_files[@]}"
           fi
+
+          if git diff --cached --quiet; then
+            echo "::warning::No staged changes after excluding generated files for issue #${ISSUE_NUMBER}"
+            gh issue comment "${ISSUE_NUMBER}" --repo "${REPO}" --body "夜間バッチによる自動実装後、コミット対象の変更が見つかりませんでした。ラベルを外すので、内容を見直したうえで再度ラベルを付与してください。"
+            gh issue edit "${ISSUE_NUMBER}" --repo "${REPO}" --remove-label claude-implementable
+            exit 0
+          fi
+
+          git commit -F /tmp/kodriver_commit_message.txt
+          git push -u origin "${branch_name}"
+
+          pr_url="$(gh pr create --repo "${REPO}" --base main --head "${branch_name}" --title "$(cat /tmp/kodriver_pr_title.txt)" --body-file /tmp/kodriver_pr_body.txt)"
+          pr_number="${pr_url##*/}"
+
+          gh issue comment "${ISSUE_NUMBER}" --repo "${REPO}" --body "夜間バッチにより実装し、PRを作成しました: ${pr_url}"
+          gh pr comment "${pr_number}" --repo "${REPO}" --body "夜間バッチにより実装しました。issue #${ISSUE_NUMBER} を参照してください。"
