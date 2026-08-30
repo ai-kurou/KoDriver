@@ -49,6 +49,10 @@
   - **課題**: `%1$s%` のように書式指定子の直後に単独の `%` を置いている。Android/Compose Resourcesの文字列フォーマット処理では、書式指定子中の `%` はエスケープ（`%%`）しないとフォーマット例外や表示崩れの原因になりうる。実際 `feature/ace-windows-readout-remaining-fuel-detail/src/commonMain/composeResources/values/strings.xml` の `remaining_fuel_threshold_label`（L8）は `%1$s%%` と正しくエスケープしており、モジュール間で書き方が不統一。
   - **改善案**: `debug-state-detail` の該当4文字列リソースを `%1$s%%` 表記に修正し、実際に `stringResource` 経由でフォーマットして表示崩れ・例外が起きないことを確認する。
 
+- **対象**: `core/data/src/jvmAndroidMain/kotlin/kurou/kodriver/data/release/GitHubAppReleaseRepository.kt`（L34-38, L53-55）・`feature/other-server-ip-detail/src/commonMain/kotlin/kurou/kodriver/feature/otherserveripdetail/SaveServerIpWithConnectivityCheckUseCase.kt`（L31-35）・`feature/other-feedback-detail/src/commonMain/kotlin/kurou/kodriver/feature/otherfeedbackdetail/OtherFeedbackDetailViewModel.kt`（L135-139）・`feature/other-console-ip-detail/src/commonMain/kotlin/kurou/kodriver/feature/otherconsoleipdetail/OtherConsoleIpDetailViewModel.kt`（L77-81）・`feature/telemetry-log-list/src/commonMain/kotlin/kurou/kodriver/feature/telemetryloglist/TelemetryLogListViewModel.kt`（L78-82, L129-133）
+  - **課題**: これらは `catch (e: CancellationException) { throw e } catch (e: Exception) { ... }` の形で例外を捕捉した後、`Sentry.captureException` などの記録を一切行わず `null`／固定の失敗状態（`SaveFailed`・`FeedbackSendStatus.Failed`・`saveFailed = true`・`false`）へ握りつぶしている。同じリポジトリ内の `HttpServerVersionRepository`・`WebSocketFlowFactory`・`PreferencesSerializerFactory`・`Gt7Ps5UdpPortPreferencesSerializer` 等は同種の例外を `Sentry.captureException` で記録してから失敗として扱っており、この慣習から外れている。特に `TelemetryLogListViewModel` の対象操作はDB全削除・個別削除という破壊的操作で、失敗原因が完全に失われるとユーザー報告時の原因特定が困難になる。
+  - **改善案**: 上記の各 `catch (e: Exception)` ブロックで、他のRepository/DataSourceと同様に `Sentry.captureException(e)`（または `core:narrator` の `captureNarratorError` に相当する共通ヘルパー）を呼んでから失敗状態へフォールバックするよう統一する。
+
 ## セキュリティ
 
 - **対象**: `server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt` の `hostNameProvider`（L19）・`sanitizedHostName()`（L36）
@@ -77,6 +81,11 @@
   - **課題**: 現状の夜間バッチは `/loop` 相当の定期実行の仕組み（GitHub Actionsのcron）に依存しているが、Claude Code自体が持つ `/goal`（完了条件駆動）・`/loop`（時間駆動）・Cron・Workflow（複数エージェント協調）の使い分けや、暴走時のキルスイッチ（`CLAUDE_CODE_DISABLE_CRON=1`等）・トークン消費監視（`/usage`）についてはドキュメント化されていない。
   - **改善案**: Qiitaの整理記事を参考に、KoDriverの夜間バッチ・自動化フローで各機能をどう使い分けているか（またはなぜ使わないか）を `docs/nightly-todo-list.md` や `docs/ci-workflows.md` に補足できないか検討する。
   - **参考URL**: https://qiita.com/NaokiIshimura/items/71af4e891b2f8f1e7943
+
+- **対象**: `.claude/settings.json` / `.claude/settings.local.json`（現状リポジトリには未コミット。ローカル環境の許可設定が対象）の Bash/MCPツール許可ルール
+  - **課題**: Zennの実例では、152件の許可ルールのうち完全一致（ワイルドカードなし）で書かれた92件が、10万9762回のツール実行で一度も発火していなかったことが実測で判明している。許可ルールは一度追加すると削除されにくく、コマンドの引数やパスが少し変わるだけで完全一致ルールは無効化されるため、「許可したつもりが実際には毎回確認ダイアログが出ている」状態に気づきにくい。KoDriverでは `fewer-permission-prompts` スキルで許可ルールの追加は行っているが、逆方向（一度も発火していない死んだルールの棚卸し）は運用に組み込まれていない。
+  - **改善案**: `fewer-permission-prompts` スキルの運用に、追加だけでなく定期的な棚卸し（トランスクリプトや実行ログから実際に発火した許可ルールを集計し、一定期間発火していない完全一致ルールをワイルドカード化または削除する）の手順を補足できないか検討する。
+  - **参考URL**: https://zenn.dev/tsutomusaito/articles/permission-rules-decay-ja
 
 - **対象**: `app/desktopApp` のウィンドウ・ダイアログ生成部分
   - **課題**: Compose Multiplatform 1.12.0でWindow/DialogStateのv2 APIが追加され、画面選択・カスタム位置/サイズロジック・ウィンドウサイズの最小/最大設定・ダイアログの親ウィンドウ相対配置が可能になった（参考: https://blog.jetbrains.com/kotlin/2026/08/compose-multiplatform-1-12-0/）。現状KoDriverのデスクトップウィンドウ・各種設定ダイアログでこれらの制御が必要になった際の実装手段が不明瞭。
