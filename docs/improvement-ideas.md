@@ -87,12 +87,6 @@
   - **課題**: これらは `catch (e: CancellationException) { throw e } catch (e: Exception) { ... }` の形で例外を捕捉した後、`Sentry.captureException` などの記録を一切行わず `null`／固定の失敗状態（`SaveFailed`・`FeedbackSendStatus.Failed`・`saveFailed = true`・`false`）へ握りつぶしている。同じリポジトリ内の `HttpServerVersionRepository`・`WebSocketFlowFactory`・`PreferencesSerializerFactory`・`Gt7Ps5UdpPortPreferencesSerializer` 等は同種の例外を `Sentry.captureException` で記録してから失敗として扱っており、この慣習から外れている。特に `TelemetryLogListViewModel` の対象操作はDB全削除・個別削除という破壊的操作で、失敗原因が完全に失われるとユーザー報告時の原因特定が困難になる。
   - **改善案**: 上記の各 `catch (e: Exception)` ブロックで、他のRepository/DataSourceと同様に `Sentry.captureException(e)`（または `core:narrator` の `captureNarratorError` に相当する共通ヘルパー）を呼んでから失敗状態へフォールバックするよう統一する。
 
-## セキュリティ
-
-- **対象**: `server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt` の `hostNameProvider`（L19）・`sanitizedHostName()`（L36）
-  - **課題**: mDNS広告のサービスインスタンス名にOSのホスト名（`InetAddress.getLocalHost().hostName` をドメイン部分だけ除去したもの）をそのまま使用している。ユーザーが個人名を含むPC名（例: `Taro-PC`）を設定している場合、LAN内の第三者にその名前がmDNS経由で広告されてしまう。既存のホスト名サニタイズ（PR #610）はサービスタイプ重複やリーク対策が目的で、この個人情報露出は未検討。
-  - **改善案**: サービスインスタンス名をホスト名依存ではなくアプリ固有の識別子（例: 固定文字列+ランダムサフィックスや設定可能な表示名）に変更する、またはREADMEに「PC名がLAN内に広告される」ことを既知の制約として明記することを検討する。
-
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)
