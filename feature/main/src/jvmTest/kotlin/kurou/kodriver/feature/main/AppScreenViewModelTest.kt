@@ -31,6 +31,7 @@ import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
@@ -39,6 +40,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
@@ -58,6 +60,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class AppScreenViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -85,6 +88,9 @@ class AppScreenViewModelTest {
     @MockK
     private lateinit var aceWindowsStatusRepository: AceWindowsStatusRepository
 
+    @MockK
+    private lateinit var accessLocalNetworkPermissionRepository: AccessLocalNetworkPermissionRepository
+
     @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
@@ -96,6 +102,7 @@ class AppScreenViewModelTest {
         Dispatchers.resetMain()
     }
 
+    @Suppress("LongParameterList")
     private fun createViewModel(
         tagName: String? = null,
         version: String = "1.0.0",
@@ -104,12 +111,16 @@ class AppScreenViewModelTest {
         dynamicColorEnabled: Boolean = false,
         hapticFeedbackEnabled: Boolean = true,
         selectedSimulator: Simulator = Simulator.LmuWindows,
+        accessLocalNetworkPermissionGranted: Boolean = true,
     ): AppScreenViewModel {
         coEvery { appUpdateRepository.getLatestRelease() } returns tagName?.let { AppUpdate(it) }
         every { keepScreenOnRepository.keepScreenOn() } returns flowOf(keepScreenOnEnabled)
         every { dynamicColorEnabledRepository.dynamicColorEnabled() } returns flowOf(dynamicColorEnabled)
         every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns flowOf(hapticFeedbackEnabled)
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(selectedSimulator)
+        every {
+            accessLocalNetworkPermissionRepository.isGranted()
+        } returns accessLocalNetworkPermissionGranted
         stubTelemetryStreams(selectedSimulator, isTelemetryReceiving)
 
         return AppScreenViewModel(
@@ -130,6 +141,8 @@ class AppScreenViewModelTest {
                         ),
                 ),
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
+            checkAccessLocalNetworkPermissionGranted =
+                CheckAccessLocalNetworkPermissionGrantedUseCase(accessLocalNetworkPermissionRepository),
         )
     }
 
@@ -319,6 +332,33 @@ class AppScreenViewModelTest {
                 )
 
             assertFalse(viewModel.uiState.first().keepScreenOn)
+        }
+
+    @Test
+    fun `初期状態で権限が許可済みの場合accessLocalNetworkPermissionGrantedがtrueになる`() =
+        runTest {
+            val viewModel = createViewModel(accessLocalNetworkPermissionGranted = true)
+
+            assertTrue(viewModel.uiState.first().accessLocalNetworkPermissionGranted)
+        }
+
+    @Test
+    fun `初期状態で権限が未許可の場合accessLocalNetworkPermissionGrantedがfalseになる`() =
+        runTest {
+            val viewModel = createViewModel(accessLocalNetworkPermissionGranted = false)
+
+            assertFalse(viewModel.uiState.first().accessLocalNetworkPermissionGranted)
+        }
+
+    @Test
+    fun `checkAccessLocalNetworkPermissionで権限状態を再取得できる`() =
+        runTest {
+            val viewModel = createViewModel(accessLocalNetworkPermissionGranted = false)
+            every { accessLocalNetworkPermissionRepository.isGranted() } returns true
+
+            viewModel.checkAccessLocalNetworkPermission()
+
+            assertTrue(viewModel.uiState.first().accessLocalNetworkPermissionGranted)
         }
 
     private companion object {

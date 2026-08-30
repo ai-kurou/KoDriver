@@ -32,7 +32,7 @@ import org.koin.dsl.module
 val mainModule =
     module {
         // ViewModel
-        viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get(), get(), get(), get()) }
+        viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get(), get(), get(), get(), get()) }
         viewModelOf(::ConnectionBannerViewModel)
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
