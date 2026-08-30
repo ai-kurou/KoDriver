@@ -22,6 +22,6 @@ internal fun CurrentLapContent(
             is Simulator.AceWindows -> null
         }
     Text(
-        text = currentLap?.toString() ?: stringResource(Res.string.debug_state_flag_info_unavailable),
+        text = currentLap?.let { it.toString() } ?: stringResource(Res.string.debug_state_flag_info_unavailable),
     )
 }
