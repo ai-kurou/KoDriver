@@ -12,7 +12,7 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 
 ## mDNS 広告（サーバー自動検出）
 
-`KoDriverServer.start()` は Ktor サーバー起動と同時に `KoDriverServiceAdvertiser`（`javax.jmdns.JmDNS` によるラッパー）でサービスタイプ `_kodriver._tcp.local.`（`core:domain` の `MdnsConstants.KO_DRIVER_SERVICE_TYPE` として `:server` と `:feature:other-server-ip-detail`（JVM 実装）から共有）を LAN 内へ mDNS 広告する。インスタンス名にはホスト名を使用し、複数台の Windows PC が同一 LAN 上で起動している場合でも Android 側がホスト名で区別できるようにしている。ホスト名が FQDN（ドット区切り）で返る環境向けに、ドット以降を除去してから使用する。`start()` は呼び出しごとに既存の `JmDNS` インスタンスを `stop()` してから新規生成するため、多重起動してもソケットはリークしない。mDNS の登録・解除に失敗しても（`IOException`）ログ出力のみで Ktor サーバー自体の起動・停止は妨げない。
+`KoDriverServer.start()` は Ktor サーバー起動と同時に `KoDriverServiceAdvertiser`（`javax.jmdns.JmDNS` によるラッパー）でサービスタイプ `_kodriver._tcp.local.`（`core:domain` の `MdnsConstants.KO_DRIVER_SERVICE_TYPE` として `:server` と `:feature:other-server-ip-detail`（JVM 実装）から共有）を LAN 内へ mDNS 広告する。インスタンス名には OS のホスト名（PC所有者名などの個人情報を含みうる）を使わず、`KoDriver-<ランダムな英数字4桁>`（例: `KoDriver-A1B2`）という固定プレフィックス＋ランダムサフィックスの識別子を使用する。ランダムサフィックスは `KoDriverServiceAdvertiser` のインスタンス生成時に一度だけ生成し、サーバーが再起動するまで同一の値を維持するため、複数台の Windows PC が同一 LAN 上で起動している場合でも Android 側が識別子で区別できる。`start()` は呼び出しごとに既存の `JmDNS` インスタンスを `stop()` してから新規生成するため、多重起動してもソケットはリークしない。mDNS の登録・解除に失敗しても（`IOException`）ログ出力のみで Ktor サーバー自体の起動・停止は妨げない。
 
 `:feature:other-server-ip-detail` の接続先 IP 入力画面（detailPane）は、画面が表示されている間だけ `WindowsServerDiscovery`（プラットフォーム実装: JVM は JmDNS、Android は `NsdManager`）で上記の mDNS 広告を検出する。`OtherServerIpDetailViewModel` は検出結果を `SharingStarted.WhileSubscribed` で `uiState` の購読に連動させており、アプリ起動時ではなく detailPane 表示中のみ検出が動作する。検出できた場合はホスト名・IP アドレスを選べるダイアログを自動表示し、「選択する」で選択した IP アドレスを入力欄へ自動入力する。
 
