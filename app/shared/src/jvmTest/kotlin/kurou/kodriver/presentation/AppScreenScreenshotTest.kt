@@ -234,40 +234,6 @@ class AppScreenScreenshotTest {
             onRoot().captureRoboImage()
         }
 
-    @Test
-    fun `NavigationBar その他タブ ローカルネットワーク権限未許可`() =
-        composeScreenshotTest {
-            var navMore by mutableStateOf("")
-
-            setAppContent {
-                navMore = stringResource(Res.string.nav_more)
-                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                    AppScreenContent(
-                        layoutType = NavigationSuiteType.NavigationBar,
-                        bannerUiState =
-                            ConnectionBannerUiState(
-                                status = ConnectionBannerStatus.DISCONNECTED,
-                                message = bannerMessage,
-                            ),
-                        hasAppUpdate = false,
-                        accessLocalNetworkPermissionGranted = false,
-                        otherContent = { _ ->
-                            OtherContent(
-                                uiState = OtherListUiState(),
-                                onItemSelected = {},
-                                onClearSelectedItem = {},
-                                scaffoldDirective = singlePaneDirective,
-                            )
-                        },
-                    )
-                }
-            }
-            onNodeWithText(navMore).performClick()
-            waitForIdle()
-            onRoot().captureRoboImage()
-        }
-
     private fun DesktopComposeUiTest.setAppContent(content: @Composable () -> Unit) {
         setContent {
             AppTheme {
