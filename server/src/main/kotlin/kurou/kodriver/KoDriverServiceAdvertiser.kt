@@ -6,34 +6,36 @@ import java.io.IOException
 import java.net.InetAddress
 import javax.jmdns.JmDNS
 import javax.jmdns.ServiceInfo
+import kotlin.random.Random
 
 /**
  * KoDriver サーバーを mDNS / DNS-SD で LAN 内へ広告する。
  *
- * 広告名にはホスト名を使い、複数台の Windows PC が同一 LAN 上で起動していても
- * Android 側がホスト名で区別できるようにする。ホスト名が FQDN（ドット区切り）として
- * 返る環境向けに、ドット以降を除去してから使用する。
+ * 広告名には OS のホスト名（PC所有者名などの個人情報を含みうる）を使わず、
+ * 固定プレフィックス＋ランダムサフィックスのアプリ固有識別子を使う。これにより、
+ * 複数台の Windows PC が同一 LAN 上で起動していても Android 側が広告名で区別できる。
+ * ランダムサフィックスはインスタンス生成時に一度だけ生成し、サーバーが再起動するまで
+ * 同一の値を維持する。
  */
 class KoDriverServiceAdvertiser(
     private val jmdnsFactory: () -> JmDNS = { JmDNS.create(InetAddress.getLocalHost()) },
-    private val hostNameProvider: () -> String = { InetAddress.getLocalHost().hostName },
+    suffixProvider: () -> String = { randomSuffix() },
 ) {
     private var jmdns: JmDNS? = null
+    private val instanceName = "$INSTANCE_NAME_PREFIX${suffixProvider()}"
 
     /** 指定ポートで KoDriver サービスの広告を開始する。既存広告があれば先に停止する。 */
     fun start(port: Int) {
         stop()
         try {
             val instance = jmdnsFactory()
-            instance.registerService(ServiceInfo.create(SERVICE_TYPE, sanitizedHostName(), port, ""))
+            instance.registerService(ServiceInfo.create(SERVICE_TYPE, instanceName, port, ""))
             jmdns = instance
         } catch (e: IOException) {
             logger.warn("mDNSサービスの登録に失敗しました", e)
             jmdns = null
         }
     }
-
-    private fun sanitizedHostName(): String = hostNameProvider().substringBefore(".")
 
     /** 現在の広告を解除し、JmDNS のソケットを閉じる。 */
     fun stop() {
@@ -51,6 +53,12 @@ class KoDriverServiceAdvertiser(
 
     companion object {
         const val SERVICE_TYPE = MdnsConstants.KO_DRIVER_SERVICE_TYPE
+        private const val INSTANCE_NAME_PREFIX = "KoDriver-"
+        private const val SUFFIX_LENGTH = 4
+        private val SUFFIX_CHARS = ('A'..'Z') + ('0'..'9')
         private val logger = LoggerFactory.getLogger(KoDriverServiceAdvertiser::class.java)
+
+        private fun randomSuffix(): String =
+            (1..SUFFIX_LENGTH).joinToString("") { SUFFIX_CHARS.random(Random).toString() }
     }
 }

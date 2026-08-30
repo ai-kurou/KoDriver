@@ -24,11 +24,11 @@ class KoDriverServiceAdvertiserTest {
     }
 
     @Test
-    fun `startするとホスト名でmDNSサービスを登録する`() {
+    fun `startするとKoDriverプレフィックス＋サフィックスでmDNSサービスを登録する`() {
         val advertiser =
             KoDriverServiceAdvertiser(
                 jmdnsFactory = { jmdns },
-                hostNameProvider = { "my-pc" },
+                suffixProvider = { "AB12" },
             )
 
         advertiser.start(port = 8080)
@@ -37,7 +37,7 @@ class KoDriverServiceAdvertiserTest {
             jmdns.registerService(
                 withArg<ServiceInfo> {
                     assert(it.type == KoDriverServiceAdvertiser.SERVICE_TYPE)
-                    assert(it.name == "my-pc")
+                    assert(it.name == "KoDriver-AB12")
                     assert(it.port == 8080)
                 },
             )
@@ -47,7 +47,7 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `stopすると登録済みのサービスを解除してクローズする`() {
-        val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, hostNameProvider = { "my-pc" })
+        val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
         advertiser.start(port = 8080)
 
         advertiser.stop()
@@ -61,32 +61,12 @@ class KoDriverServiceAdvertiserTest {
     }
 
     @Test
-    fun `FQDNのホスト名はドット以降を除去してサービス名に使う`() {
-        val advertiser =
-            KoDriverServiceAdvertiser(
-                jmdnsFactory = { jmdns },
-                hostNameProvider = { "my-pc.local" },
-            )
-
-        advertiser.start(port = 8080)
-
-        verify(exactly = 1) {
-            jmdns.registerService(
-                withArg<ServiceInfo> {
-                    assert(it.name == "my-pc")
-                },
-            )
-        }
-        confirmVerified(jmdns)
-    }
-
-    @Test
-    fun `startを2回呼ぶと前のインスタンスを解除してから新規登録する`() {
+    fun `startを2回呼んでも同一のサフィックスを維持する`() {
         var callCount = 0
         val advertiser =
             KoDriverServiceAdvertiser(
                 jmdnsFactory = { if (callCount++ == 0) jmdns else secondJmdns },
-                hostNameProvider = { "my-pc" },
+                suffixProvider = { "AB12" },
             )
 
         advertiser.start(port = 8080)
@@ -99,7 +79,7 @@ class KoDriverServiceAdvertiserTest {
             secondJmdns.registerService(
                 withArg<ServiceInfo> {
                     assert(it.type == KoDriverServiceAdvertiser.SERVICE_TYPE)
-                    assert(it.name == "my-pc")
+                    assert(it.name == "KoDriver-AB12")
                     assert(it.port == 8081)
                 },
             )
@@ -121,16 +101,32 @@ class KoDriverServiceAdvertiserTest {
         val advertiser =
             KoDriverServiceAdvertiser(
                 jmdnsFactory = { throw IOException("network unavailable") },
-                hostNameProvider = { "my-pc" },
+                suffixProvider = { "AB12" },
             )
 
         advertiser.start(port = 8080)
     }
 
     @Test
+    fun `suffixProvider省略時はKoDriver-英数字4桁形式のランダムな名前で登録する`() {
+        val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns })
+
+        advertiser.start(port = 8080)
+
+        verify(exactly = 1) {
+            jmdns.registerService(
+                withArg<ServiceInfo> {
+                    assert(Regex("KoDriver-[A-Z0-9]{4}").matches(it.name)) { "unexpected name: ${it.name}" }
+                },
+            )
+        }
+        confirmVerified(jmdns)
+    }
+
+    @Test
     fun `stopでIOExceptionが発生しても例外を伝播しない`() {
         every { jmdns.unregisterAllServices() } throws IOException("close failed")
-        val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, hostNameProvider = { "my-pc" })
+        val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
         advertiser.start(port = 8080)
 
         advertiser.stop()
