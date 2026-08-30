@@ -118,7 +118,7 @@ jobs:
           1. \`gh issue view ${ISSUE_NUMBER} --repo ${REPO} --json title,body,comments\` でissueの内容（本文・コメント）を確認する。
           2. CLAUDE.md の「実装前」チェックリストに従い、既存実装・依存モジュール・類似コードを確認する。
           3. issueの要件が実装するには曖昧・情報不足だと判断した場合は、コード変更は一切行わず、\`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` で「要件が不十分なため保留する」旨と不足している情報を日本語で具体的にコメントし、issueには手を付けずに終了する（ラベルは外さない）。
-          4. 実装可能と判断した場合は、\`main\` から \`claude/issue-${ISSUE_NUMBER}\` のようなブランチを作成し実装する。CLAUDE.md のテスト方針・コーディング規約・Git操作ルールに従うこと。ユニットテストが必要な変更には同時にテストを追加・更新する。\`docs/improvement-ideas.md\` は変更しない（承認が必要なファイルのため）。
+          4. 実装可能と判断した場合は、\`main\` から \`claude/issue-${ISSUE_NUMBER}\` のようなブランチを作成し実装する。CLAUDE.md のテスト方針・コーディング規約・Git操作ルールに従うこと。ユニットテストが必要な変更には同時にテストを追加・更新する。\`docs/improvement-ideas.md\` への新規追加・既存項目の書き換えは行わない（承認が必要なファイルのため）。ただし、\`docs/improvement-ideas.md\` に今回実装したissueの内容と一致する項目が既に存在する場合に限り、その項目のみを削除してよい（この場合、issue自体がユーザー承認済みの実装依頼であるため、削除に別途ユーザー承認は不要）。削除する場合は、実装本体と同じPRに含め、CLAUDE.md の規定どおり \`docs/resolved-improvement-ideas.md\` に \`- YYYY-MM-DD 一言サマリ（関連PR #番号）\` 形式で1行追記すること。
           5. 実装後、\`./gradlew preSubmitChecks\` を実行する。このコマンドは実行に10分以上かかることがあり、Bashツールの1回の呼び出しでフォアグラウンド実行すると最大タイムアウト（10分）に達して打ち切られる可能性がある。そのため、以下の手順で実行すること。
              - \`(./gradlew preSubmitChecks > /tmp/pre_submit_checks.log 2>&1; echo \$? > /tmp/pre_submit_checks.exit) & disown\` のようにOSレベルのバックグラウンドプロセスとして起動する（Bashツールの \`run_in_background\` パラメータは絶対に使用しないこと。これは無関係な別の仕組みであり、このワークフローの非対話実行では完了通知が届かない）。
              - \`ScheduleWakeup\` や \`Monitor\` など、通知を待つツールは一切使用しない（\`/loop\`や対話セッション専用であり、このワークフローでは機能しない）。
