@@ -87,6 +87,10 @@
   - **課題**: これらは `catch (e: CancellationException) { throw e } catch (e: Exception) { ... }` の形で例外を捕捉した後、`Sentry.captureException` などの記録を一切行わず `null`／固定の失敗状態（`SaveFailed`・`FeedbackSendStatus.Failed`・`saveFailed = true`・`false`）へ握りつぶしている。同じリポジトリ内の `HttpServerVersionRepository`・`WebSocketFlowFactory`・`PreferencesSerializerFactory`・`Gt7Ps5UdpPortPreferencesSerializer` 等は同種の例外を `Sentry.captureException` で記録してから失敗として扱っており、この慣習から外れている。特に `TelemetryLogListViewModel` の対象操作はDB全削除・個別削除という破壊的操作で、失敗原因が完全に失われるとユーザー報告時の原因特定が困難になる。
   - **改善案**: 上記の各 `catch (e: Exception)` ブロックで、他のRepository/DataSourceと同様に `Sentry.captureException(e)`（または `core:narrator` の `captureNarratorError` に相当する共通ヘルパー）を呼んでから失敗状態へフォールバックするよう統一する。
 
+- **対象**: `feature/other-console-ip-detail/src/commonMain/kotlin/kurou/kodriver/feature/otherconsoleipdetail/OtherConsoleIpDetailPane.kt`（L243）
+  - **課題**: `saveFailed` 表示のエラーメッセージが `Text(text = "保存に失敗しました", ...)` とハードコードされた日本語文字列リテラルになっており、`composeResources`（`strings.xml`）を経由していない。同一モジュール内の `console_ip_port_33741_label`（L236）など他の文言は `stringResource` 経由で `strings.xml` から参照しており、この1箇所だけが慣習から外れている。リポジトリ全体を検索してもこの文字列リテラルは他にヒットせず、文字列リソース化の抜けになっている。
+  - **改善案**: `feature/other-console-ip-detail/src/commonMain/composeResources/values/strings.xml` に `console_ip_save_failed`（仮称）等のキーで文字列リソースを追加し、`OtherConsoleIpDetailPane.kt:243` を `stringResource(Res.string.console_ip_save_failed)` に置き換える。
+
 ## CI/CD
 
 - **対象**: `app/desktopApp/build.gradle.kts` の `windows { }` ブロック(PR #1142)
