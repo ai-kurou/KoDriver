@@ -25,12 +25,33 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          issues="$(gh issue list \
+          # 検索演算子 `-linked:pr` は、過去にマージ済み・クローズ済みのPRが
+          # 本文で issue 番号に言及しただけ（例: 別issue対応の夜間バッチ修正PRが
+          # "Closes #NNNN" 等で偶然言及した場合）でも「linked」と判定してしまい、
+          # 該当issueが以後ずっと選択対象から除外され続ける不具合がある
+          # （#1286, #1290 で発生）。そのため、この演算子には頼らず、
+          # 「現在オープン中のPRが実際にそのissueをクローズする予定か」を
+          # GraphQLの closingIssuesReferences で個別に確認する。
+          all_issues="$(gh issue list \
             --repo "${{ github.repository }}" \
-            --search "is:open label:claude-implementable -linked:pr" \
+            --search "is:open label:claude-implementable" \
             --json number,title,url \
             --limit 1000 \
-            | jq -c 'sort_by(.number) | .[:1]')"
+            | jq -c 'sort_by(.number)')"
+
+          blocked_issue_numbers="$(gh api graphql -f query='
+            query($owner: String!, $name: String!) {
+              repository(owner: $owner, name: $name) {
+                pullRequests(states: OPEN, first: 100) {
+                  nodes { closingIssuesReferences(first: 20) { nodes { number } } }
+                }
+              }
+            }' -f owner="${{ github.event.repository.owner.login }}" -f name="${{ github.event.repository.name }}" \
+            --jq '[.data.repository.pullRequests.nodes[].closingIssuesReferences.nodes[].number] | unique')"
+
+          issues="$(jq -c --argjson blocked "${blocked_issue_numbers}" \
+            '[.[] | select(.number as $n | $blocked | index($n) | not)] | .[:1]' \
+            <<< "${all_issues}")"
           echo "issues=${issues}" >> "$GITHUB_OUTPUT"
           echo "Selected issues: ${issues}"
 
