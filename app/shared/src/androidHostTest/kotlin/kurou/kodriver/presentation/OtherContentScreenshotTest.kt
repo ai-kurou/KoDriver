@@ -16,6 +16,7 @@ import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneConte
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailUiState
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
+import kurou.kodriver.feature.otherserveripdetail.DiscoveredServer
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPaneContent
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
@@ -57,7 +58,21 @@ class OtherContentScreenshotTest {
                             detailContent = { itemType, canNavigateBack, onBack, _, _ ->
                                 if (itemType == OtherListItemType.ServerIp) {
                                     OtherServerIpDetailPaneContent(
-                                        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100"),
+                                        uiState =
+                                            OtherServerIpDetailUiState(
+                                                inputIp = "192.168.1.100",
+                                                // discoveredServersが空のままだと検出中の
+                                                // CircularProgressIndicatorが表示され、アニメーションの
+                                                // 描画タイミングによってスクリーンショットが不安定になるため、
+                                                // 検出済みサーバーがある状態にしてインジケーターを回避する。
+                                                discoveredServers =
+                                                    listOf(
+                                                        DiscoveredServer(
+                                                            hostName = "DESKTOP-ABC123",
+                                                            ipAddress = "192.168.1.10",
+                                                        ),
+                                                    ),
+                                            ),
                                         canNavigateBack = canNavigateBack,
                                         onBack = onBack,
                                     )
