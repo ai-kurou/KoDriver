@@ -58,6 +58,11 @@
   - **課題**: `if (trailingContent != null)` による表示分岐について、`DetailPaneSubtitle` 単独のスクリーンショットテストが存在しない。呼び出し側のテストで間接的に一部カバーされているのみで、`trailingContent`有無の対比検証はない。
   - **改善案**: `DetailPaneSubtitle` 単独のスクリーンショットテストを新設し、`trailingContent`の有無双方のケースを追加する。
 
+- **対象**: `compose-state-and-effects` スキルが対象とする各画面の `LaunchedEffect` 使用箇所全般（例: 一覧/詳細ペインでの一度きりの副作用実行）
+  - **課題**: Jetpack Compose 1.12で `SideEffect` にキー引数（`SideEffect(keys) { ... }`）が追加され、suspend不要・後片付け不要な「一度だけ実行し、キー変更時のみ再発火する」処理について、従来 `LaunchedEffect` を代用していたケースをより軽量なAPIに置き換えられるようになった（記事によれば`LaunchedEffect`比で最大90%高速とされる）。ただしレイアウト確定前に実行される点、キー変更時に「前回分の取り消し」ができない点（撃ちっぱなしのログ記録等のみ対象）に注意が必要。KoDriverが依存する `composeMultiplatform`（現状1.11.1）がこのAPIを含む1.12系へ追随した際に、該当する`LaunchedEffect`使用箇所を洗い出す余地がある。
+  - **改善案**: `composeMultiplatform`を1.12系へ更新するタイミング（`docs/improvement-ideas.md`「開発体験」節のHot Reload MCP server化・material3/material3-adaptive追随待ちの項目と合わせて検討）で、`compose-state-and-effects`スキルの対象範囲を`rg`等で確認し、suspend・後片付けが不要な`LaunchedEffect`が`SideEffect(keys)`へ置き換えられないか調査する。
+  - **参考URL**: https://zenn.dev/uphyca/articles/00f497f365cc1e
+
 ## Android
 
 - **対象**: `app/androidApp/src/main/AndroidManifest.xml`（`android-targetSdk = "36"`、`gradle/libs.versions.toml`）
