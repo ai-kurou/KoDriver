@@ -34,10 +34,6 @@
 
 ## テスト
 
-- **対象**: `app/shared`（`OtherContent.kt`）・`feature:readout-list`（`ReadoutContent.kt`）・`feature:telemetry-log-list`（`TelemetryLogContent.kt`）
-  - **課題**: list/detailペイン切り替えの「一覧のみ表示」パターン（`selectedItem == null`）が3モジュール共通で未検証。対応するスクリーンショットテストはいずれも `selectedItem != null`（detail表示）のケースしかない、同型の抜けが同時発生している。
-  - **改善案**: 3モジュールそれぞれのスクリーンショットテストに `selectedItem == null` のケースを追加する。
-
 - **対象**: `app:shared`（`AppScreen.kt`）の接続バナー・アップデートバッジ・NavigationDrawerレイアウト
   - **課題**: `AnimatedVisibility(visible = bannerUiState.isVisible)` による接続バナー非表示、`hasAppUpdate` によるアップデートバッジ非表示、`resolvedLayoutType == NavigationDrawer`（デスクトップ広幅時想定）のレイアウトが、既存のスクリーンショットテストでは一切検証されていない。
   - **改善案**: `bannerUiState.isVisible = false`、`hasAppUpdate = false`、`NavigationDrawer`レイアウトのケースをスクリーンショットテストに追加する。
