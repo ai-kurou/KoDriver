@@ -91,6 +91,14 @@ jobs:
         id: jst
         run: echo "date=$(TZ=Asia/Tokyo date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
 
+      - name: Create working branch
+        env:
+          ISSUE_NUMBER: ${{ matrix.issue.number }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "claude/issue-${ISSUE_NUMBER}"
+
       - name: Implement issue with Claude Code
         id: claude_implement
         env:
@@ -101,8 +109,6 @@ jobs:
           ISSUE_URL: ${{ matrix.issue.url }}
           REPO: ${{ github.repository }}
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
 
           pre_comment_count="$(gh issue view "${ISSUE_NUMBER}" --repo "${REPO}" --json comments --jq '.comments | length')"
@@ -118,7 +124,7 @@ jobs:
           1. \`gh issue view ${ISSUE_NUMBER} --repo ${REPO} --json title,body,comments\` でissueの内容（本文・コメント）を確認する。
           2. CLAUDE.md の「実装前」チェックリストに従い、既存実装・依存モジュール・類似コードを確認する。
           3. issueの要件が実装するには曖昧・情報不足だと判断した場合は、コード変更は一切行わず、\`gh issue comment ${ISSUE_NUMBER} --repo ${REPO}\` で「要件が不十分なため保留する」旨と不足している情報を日本語で具体的にコメントする。その後 \`echo "insufficient" > /tmp/kodriver_status\` を実行して終了する（issueのラベルは外さない）。
-          4. 実装可能と判断した場合は、\`main\` から \`claude/issue-${ISSUE_NUMBER}\` のようなブランチを作成し実装する。CLAUDE.md のテスト方針・コーディング規約・Git操作ルールに従うこと。ユニットテストが必要な変更には同時にテストを追加・更新する。\`docs/improvement-ideas.md\` への新規追加・既存項目の書き換えは行わない（承認が必要なファイルのため）。ただし、\`docs/improvement-ideas.md\` に今回実装したissueの内容と一致する項目が既に存在する場合に限り、その項目のみを削除してよい（この場合、issue自体がユーザー承認済みの実装依頼であるため、削除に別途ユーザー承認は不要）。削除する場合は、実装本体と同じPRに含め、CLAUDE.md の規定どおり \`docs/resolved-improvement-ideas.md\` に \`- YYYY-MM-DD 一言サマリ（関連PR #番号）\` 形式で1行追記すること。
+          4. 実装可能と判断した場合は実装する（既に \`claude/issue-${ISSUE_NUMBER}\` ブランチにチェックアウト済みのため、ブランチ作成は不要）。CLAUDE.md のテスト方針・コーディング規約・Git操作ルールに従うこと。ユニットテストが必要な変更には同時にテストを追加・更新する。\`docs/improvement-ideas.md\` への新規追加・既存項目の書き換えは行わない（承認が必要なファイルのため）。ただし、\`docs/improvement-ideas.md\` に今回実装したissueの内容と一致する項目が既に存在する場合に限り、その項目のみを削除してよい（この場合、issue自体がユーザー承認済みの実装依頼であるため、削除に別途ユーザー承認は不要）。削除する場合は、実装本体と同じPRに含め、CLAUDE.md の規定どおり \`docs/resolved-improvement-ideas.md\` に \`- YYYY-MM-DD 一言サマリ（関連PR #番号）\` 形式で1行追記すること。
              実装が完了したら、以下のファイルを作成する（コミット・プッシュ・PR作成・\`preSubmitChecks\`の実行は絶対に行わないこと。後続のワークフローステップが機械的に行うため）。
              - \`/tmp/kodriver_commit_message.txt\`: わかりやすい日本語のコミットメッセージ（1行目に要約、必要なら本文）
              - \`/tmp/kodriver_pr_title.txt\`: 日本語のPRタイトル（1行のみ）
