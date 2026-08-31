@@ -40,6 +40,33 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
         }
 
     @Test
+    fun `警告OFF時`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        overheatWarningEnabled = false,
+                                        lowWarningEnabled = false,
+                                        vehicleClassHighThresholdCelsius =
+                                            lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
+                                                lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                                    vehicleClass,
+                                                ).value
+                                            },
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
     fun `ヘルプボトムシート`() =
         composeScreenshotTest {
             setContent {
