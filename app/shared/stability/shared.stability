@@ -58,7 +58,7 @@ internal fun kurou.kodriver.presentation.AppScreenContent(darkTheme: kotlin.Bool
   params:
     - darkTheme: STABLE (primitive type)
     - dynamicColorEnabled: STABLE (primitive type)
-    - layoutType: UNSTABLE (cross-module type without @Stable/@Immutable)
+    - layoutType: RUNTIME (requires runtime check)
     - bannerUiState: STABLE (class with no mutable properties)
     - snackbarHostState: STABLE (marked @Stable or @Immutable)
     - hasAppUpdate: STABLE (primitive type)
@@ -84,14 +84,14 @@ private fun kurou.kodriver.presentation.AppScreenScaffold(resolvedLayoutType: an
   skippable: false
   restartable: true
   params:
-    - resolvedLayoutType: UNSTABLE (cross-module type without @Stable/@Immutable)
+    - resolvedLayoutType: RUNTIME (requires runtime check)
     - hasAppUpdate: STABLE (primitive type)
     - accessLocalNetworkPermissionGranted: STABLE (primitive type)
     - selectedSimulatorId: STABLE (String is immutable)
     - onSimulatorSelected: STABLE (function type)
     - bannerUiState: STABLE (class with no mutable properties)
     - snackbarHostState: STABLE (marked @Stable or @Immutable)
-    - navigationState: RUNTIME (requires runtime check)
+    - navigationState: STABLE (class with no mutable properties)
     - onBannerTapWithTabSwitch: STABLE (function type)
     - onFeedbackClickWithTabSwitch: STABLE (function type)
     - onReadoutTabReselected: STABLE (function type)

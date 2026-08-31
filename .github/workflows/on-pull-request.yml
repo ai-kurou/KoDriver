@@ -109,13 +109,7 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - run: ./gradlew ":app:shared:stabilityDump"
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: stability-dump-tmp
-          path: app/shared/stability/shared.stability
-          retention-days: 1
+      - run: ./gradlew stabilityCheck
 
   unit-test:
     runs-on: ubuntu-latest
