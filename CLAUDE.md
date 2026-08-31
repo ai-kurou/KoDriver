@@ -102,18 +102,11 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 ./gradlew koverXmlReport
 
 # 完了報告・PR 作成前の必須チェック一式（detekt・モジュールグラフ検証・
-# Compose コンポーザブルの安定性検証・全ユニットテスト（カバレッジ付き）・
-# 両アプリのビルド・デスクトップ統合テスト）
+# 全ユニットテスト（カバレッジ付き）・両アプリのビルド・デスクトップ統合テスト）
 ./gradlew preSubmitChecks
 
 # 静的解析とモジュール依存関係の検証
 ./gradlew detekt assertModuleGraph
-
-# Compose コンポーザブルの安定性ベースライン更新・検証
-# （Compose Stability Analyzer。stabilityDump は stable/unstable の意図的な変更時のみ実行し、
-#  生成された stability/*.stability を同じ PR でコミットする）
-./gradlew stabilityDump
-./gradlew stabilityCheck
 
 # ktlint（コードスタイル）チェック・自動整形
 ./gradlew ktlintCheck
@@ -186,7 +179,7 @@ GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [
    - ユニットテストを書ける実装コードを変更・追加する場合は、実装と同時にテストを追加・更新する。
    - 画面項目・表示名・一覧項目を追加した場合は、listPane / detailPane のテスト、displayName 変換テスト、スクリーンショットテストの要否に加え、`MainActivityTest.kt`（Android）・`AppTest.kt`（Desktop）のE2Eタップ順テストへの追加要否も確認する。
    - UI を変更した場合は、既存のスクリーンショットテスト対象か、新規スクリーンショットテストが必要かを確認する。
-   - モジュールを追加した場合は、Kover 集計対象、Gradle 設定、GitHub Actions ワークフロー、ドキュメントの更新要否を確認する。特に `settings.gradle.kts` の `include(...)` を追加・削除した場合は、**同じ PR で必ず `docs/architecture.md` のモジュール一覧表も更新する**（詳細・確認コマンドは同ファイル末尾の「モジュール一覧の更新漏れ防止」を参照）。`feature-compose`（または `feature-compose-screenshot`）convention plugin を使う Compose モジュールを新設した場合、Compose Stability Analyzer が自動適用されるため、初回は `./gradlew :<module-path>:stabilityDump` でベースライン（`stability/*.stability`）を生成し、同じ PR でコミットする（未生成だと `stabilityCheck` が失敗する）。
+   - モジュールを追加した場合は、Kover 集計対象、Gradle 設定、GitHub Actions ワークフロー、ドキュメントの更新要否を確認する。特に `settings.gradle.kts` の `include(...)` を追加・削除した場合は、**同じ PR で必ず `docs/architecture.md` のモジュール一覧表も更新する**（詳細・確認コマンドは同ファイル末尾の「モジュール一覧の更新漏れ防止」を参照）。
    - GitHub Actions のスクリーンショットテストは集約タスクを使い、モジュール追加のたびに workflow を変更しない構成を維持する。
 4. 完了前
    - 変更範囲に応じたスクリーンショットテストを実行する。

@@ -34,7 +34,6 @@ kotlinx-serialization = "1.11.0"
 roborazzi = "1.72.0"
 robolectric = "4.16.1"
 modulesGraphAssert = "2.9.1"
-composeStabilityAnalyzer = "0.13.0"
 # 1.6.x はJava 21ビルド前提の破壊的変更(非推奨API削除等)を含むメジャーアップデートのため、互換性未確認により更新を見送っている
 logback = "1.5.34"
 mockk = "1.14.11"
@@ -128,7 +127,6 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-composeStabilityAnalyzer = { id = "com.github.skydoves.compose.stability.analyzer", version.ref = "composeStabilityAnalyzer" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
