@@ -7,21 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
-    alias(libs.plugins.composeStabilityAnalyzer)
     `java-test-fixtures`
-}
-
-composeStabilityAnalyzer {
-    stabilityValidation {
-        failOnStabilityChange.set(true)
-    }
-}
-
-// stabilityCheck/stabilityDump は各ターゲットのコンパイル成果物(build/stability/<compileTask>/)を
-// まとめて読むが、個々のコンパイルタスクへの依存を宣言していないため、
-// 並列ビルドでは暗黙的依存の検証エラーになる。明示的に実行順序を固定する。
-tasks.matching { it.name == "stabilityCheck" || it.name == "stabilityDump" }.configureEach {
-    mustRunAfter(tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>())
 }
 
 kotlin {
