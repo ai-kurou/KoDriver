@@ -42,10 +42,6 @@
   - **課題**: `AnimatedVisibility(visible = showNewLogsButton)` による新着ログボタンの表示パターンが未検証。
   - **改善案**: `showNewLogsButton = true` のケースをスクリーンショットテストに追加する。
 
-- **対象**: `feature:lmu-windows-readout-tyre-temperature-detail`（`LmuWindowsReadoutTyreTemperatureDetailPane.kt`）
-  - **課題**: 警告OFF時（`overheatWarningEnabled`/`lowWarningEnabled = false`）のチップディム表示が未検証。ユーザーが頻繁に触る設定画面のため優先度は高め。
-  - **改善案**: 警告OFF時のケースをスクリーンショットテストに追加する。
-
 - **対象**: `feature:readout-list`（`ReadoutListPane.kt`）
   - **課題**: `AnimatedVisibility(visible = !isAtTop)` によるスクロールトップボタンの表示パターンが未検証。
   - **改善案**: スクロールしてボタンが表示された状態のケースをスクリーンショットテストに追加する。
