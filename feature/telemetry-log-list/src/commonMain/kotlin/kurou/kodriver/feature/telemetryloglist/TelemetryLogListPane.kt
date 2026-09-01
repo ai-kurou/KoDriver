@@ -54,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -139,6 +140,7 @@ internal fun TelemetryLogListPane(
                 state = listState,
                 modifier =
                     Modifier
+                        .testTag(TELEMETRY_LOG_LIST_TEST_TAG)
                         .fillMaxSize()
                         .padding(vertical = 8.dp),
             ) {
@@ -452,6 +454,7 @@ private fun Long.pad(length: Int): String = toString().padStart(length, '0')
 
 private const val FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL = 1
 private const val RESET_ITEM_KEY = "telemetry_log_reset_item"
+internal const val TELEMETRY_LOG_LIST_TEST_TAG = "telemetryLogList"
 private const val MILLISECONDS_PER_SECOND = 1_000L
 private const val MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND
 private const val MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE

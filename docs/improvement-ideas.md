@@ -34,10 +34,6 @@
 
 ## テスト
 
-- **対象**: `feature:telemetry-log-list`（`TelemetryLogListPane.kt`）
-  - **課題**: `AnimatedVisibility(visible = showNewLogsButton)` による新着ログボタンの表示パターンが未検証。
-  - **改善案**: `showNewLogsButton = true` のケースをスクリーンショットテストに追加する。
-
 - **対象**: `feature:readout-list`（`ReadoutListPane.kt`）
   - **課題**: `AnimatedVisibility(visible = !isAtTop)` によるスクロールトップボタンの表示パターンが未検証。
   - **改善案**: スクロールしてボタンが表示された状態のケースをスクリーンショットテストに追加する。
