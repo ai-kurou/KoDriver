@@ -83,7 +83,7 @@ class LmuWindowsMapperTest {
         buf.putDouble(vb + OFF_ENGINE_RPM, 8_500.0)
         buf.putDouble(vb + OFF_ENGINE_MAX_RPM, 9_500.0)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(5, result.engine.gear)
         assertEquals(8_500.0, result.engine.rpm)
@@ -99,7 +99,7 @@ class LmuWindowsMapperTest {
         buf.putDouble(vb + OFF_UNFILTERED_CLUTCH, 0.0)
         buf.putDouble(vb + OFF_UNFILTERED_STEERING, -0.3)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(0.75, result.inputs.throttle)
         assertEquals(0.1, result.inputs.brake)
@@ -114,7 +114,7 @@ class LmuWindowsMapperTest {
         buf.putDouble(vb + OFF_FUEL, 45.5)
         buf.putDouble(vb + OFF_FUEL_CAPACITY, 100.0)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(LmuWindowsFuelUnit(45.5), result.fuel.currentLiters)
         assertEquals(LmuWindowsFuelUnit(100.0), result.fuel.capacityLiters)
@@ -126,7 +126,7 @@ class LmuWindowsMapperTest {
         val buf = emptyBuffer()
         buf.putInt(vb + OFF_LAP_NUMBER, 7)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(7, result.timing.currentLap)
     }
@@ -144,7 +144,7 @@ class LmuWindowsMapperTest {
         buf.putFloat(scoringBase + OFF_SCORING_BEST_LAP_SECTOR1, 30.123f)
         buf.putFloat(scoringBase + OFF_SCORING_BEST_LAP_SECTOR2, 60.456f)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(23_456L, result.timing.currentLapTimeMs)
         assertEquals(92_345L, result.timing.lastLapTimeMs)
@@ -162,7 +162,7 @@ class LmuWindowsMapperTest {
         buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 1)
         buf.putDouble(scoringBase + OFF_SCORING_LAP_START_ET, 100.500)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(0L, result.timing.currentLapTimeMs)
     }
@@ -176,7 +176,7 @@ class LmuWindowsMapperTest {
         buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 1)
         buf.putDouble(scoringBase + OFF_SCORING_LAP_START_ET, 100.000)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(0L, result.timing.currentLapTimeMs)
     }
@@ -190,7 +190,7 @@ class LmuWindowsMapperTest {
         buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 0)
         buf.putDouble(scoringBase + OFF_SCORING_BEST_LAP_TIME, 91.234)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(0L, result.timing.currentLapTimeMs)
         assertEquals(0L, result.timing.lastLapTimeMs)
@@ -207,7 +207,7 @@ class LmuWindowsMapperTest {
         buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 1)
         buf.putDouble(scoringBase + OFF_SCORING_BEST_LAP_TIME, 88.765)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(0L, result.timing.bestLapTimeMs)
     }
@@ -220,7 +220,7 @@ class LmuWindowsMapperTest {
         buf.putDouble(vb + OFF_POS_Y, 200.0)
         buf.putDouble(vb + OFF_POS_Z, 300.0)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(100.0, result.vehicle.positionX)
         assertEquals(200.0, result.vehicle.positionY)
@@ -236,7 +236,7 @@ class LmuWindowsMapperTest {
         buf.putDouble(vb + OFF_LOCAL_VEL_Y, 4.0)
         buf.putDouble(vb + OFF_LOCAL_VEL_Z, 0.0)
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(5.0, result.vehicle.speedMs, 1e-9)
         assertEquals(18.0, result.vehicle.speedKmh, 1e-9)
@@ -256,7 +256,7 @@ class LmuWindowsMapperTest {
             buf.putDouble(wb + OFF_WHEEL_WEAR, 0.9 - i * 0.05)
         }
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(4, result.tyres.wheels.size)
         WheelIndex.entries.forEachIndexed { i, wheel ->
@@ -279,14 +279,14 @@ class LmuWindowsMapperTest {
         buf.putInt(vb0 + OFF_GEAR, 1) // playerIdx=0 スロット（読まれないはず）
         buf.putInt(vb1 + OFF_GEAR, 6) // playerIdx=1 スロット（読まれるはず）
 
-        val result = LmuWindowsMapper.map(buf)!!
+        val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(6, result.engine.gear)
     }
 
     @Test
     fun `タイヤマップに全WheelIndexが含まれる`() {
-        val result = LmuWindowsMapper.map(emptyBuffer())!!
+        val result = requireNotNull(LmuWindowsMapper.map(emptyBuffer()))
 
         assertTrue(WheelIndex.FRONT_LEFT in result.tyres.wheels)
         assertTrue(WheelIndex.FRONT_RIGHT in result.tyres.wheels)
