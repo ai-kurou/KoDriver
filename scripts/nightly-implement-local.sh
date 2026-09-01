@@ -10,6 +10,7 @@ cd "${REPO_ROOT}"
 REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
 LOG_PREFIX="[nightly-implement-local]"
 
+# log outputs a timestamped message with the script's log prefix.
 log() {
   echo "${LOG_PREFIX} $(date '+%Y-%m-%d %H:%M:%S') $*"
 }
@@ -65,6 +66,7 @@ fi
 
 git worktree add "${worktree_dir}" -b "${branch_name}" origin/main
 
+# cleanup removes the dedicated worktree and its local branch, ignoring errors when either is already absent.
 cleanup() {
   git worktree remove --force "${worktree_dir}" 2>/dev/null || true
   git branch -D "${branch_name}" 2>/dev/null || true
@@ -190,6 +192,7 @@ git commit -F "${commit_message_file}"
 # push成功後はコミットを復旧できるようリモートブランチ・ワークツリーを残し、
 # push自体が失敗した場合のみ後始末（cleanup）する。
 pushed=false
+# publish_failure handles failures during commit publication by notifying the issue and either preserving the pushed branch for manual PR creation or removing the label and cleaning up.
 publish_failure() {
   if [ "${pushed}" = true ]; then
     gh issue comment "${issue_number}" --repo "${REPO}" --body "夜間バッチ（ローカル実行）による自動実装後、コミットのプッシュ後にPR作成が失敗しました。ブランチ \`${branch_name}\` にコミット済みのため、手動でPRを作成してください。"
