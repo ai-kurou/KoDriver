@@ -137,8 +137,8 @@ internal object LmuWindowsMapper {
     private const val OFF_WHEEL_WEAR = 152
     private const val OFF_WHEEL_TIRE_CARCASS_TEMPERATURE = 204
 
-    fun map(buffer: ByteBuffer): LmuWindowsTelemetryData {
-        val vehicleBase = vehicleTelemetryBase(readPlayerVehicleIdx(buffer))
+    fun map(buffer: ByteBuffer): LmuWindowsTelemetryData? {
+        val vehicleBase = findPlayerVehicleBase(buffer) ?: return null
         val vehicleScoringBase = findPlayerVehicleScoringBase(buffer)
 
         return LmuWindowsTelemetryData(
