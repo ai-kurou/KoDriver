@@ -34,10 +34,6 @@
 
 ## テスト
 
-- **対象**: `feature:readout-list`（`ReadoutListPane.kt`）
-  - **課題**: `AnimatedVisibility(visible = !isAtTop)` によるスクロールトップボタンの表示パターンが未検証。
-  - **改善案**: スクロールしてボタンが表示された状態のケースをスクリーンショットテストに追加する。
-
 - **対象**: `feature:readout-list`（`ReadoutDetailPane.kt`）
   - **課題**: `if (canNavigateBack)` による戻るボタンの非表示パターンが、通常のUIテスト・スクリーンショットテストのいずれでも未検証。そもそもこのComposable単体のスクリーンショットテスト自体が存在しない。
   - **改善案**: `canNavigateBack = false` のケースを含むスクリーンショットテストを新規に整備する。
