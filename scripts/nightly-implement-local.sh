@@ -66,6 +66,16 @@ fi
 
 git worktree add "${worktree_dir}" -b "${branch_name}" origin/main
 
+# local.properties はマシン固有でgit管理外のため新規ワークツリーには存在せず、
+# そのままだと preSubmitChecks が「SDK location not found」で失敗する。
+# ただし local.properties には app/androidApp/build.gradle.kts が読む
+# STORE_PASSWORD 等の署名鍵の秘匿情報が含まれる場合があり、ファイルを
+# 丸ごと複製すると Claude Code CLI（Bashツールでワークツリー内を読める）に
+# 露出してしまう。preSubmitChecks に必要な sdk.dir のみを複製する。
+if [ -f "${REPO_ROOT}/local.properties" ]; then
+  grep '^sdk\.dir=' "${REPO_ROOT}/local.properties" > "${worktree_dir}/local.properties" || true
+fi
+
 # cleanup removes the dedicated worktree and its local branch, ignoring errors when either is already absent.
 cleanup() {
   git worktree remove --force "${worktree_dir}" 2>/dev/null || true
