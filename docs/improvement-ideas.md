@@ -34,10 +34,6 @@
 
 ## テスト
 
-- **対象**: `app:shared`（`AppScreen.kt`）の接続バナー・アップデートバッジ・NavigationDrawerレイアウト
-  - **課題**: `AnimatedVisibility(visible = bannerUiState.isVisible)` による接続バナー非表示、`hasAppUpdate` によるアップデートバッジ非表示、`resolvedLayoutType == NavigationDrawer`（デスクトップ広幅時想定）のレイアウトが、既存のスクリーンショットテストでは一切検証されていない。
-  - **改善案**: `bannerUiState.isVisible = false`、`hasAppUpdate = false`、`NavigationDrawer`レイアウトのケースをスクリーンショットテストに追加する。
-
 - **対象**: `feature:telemetry-log-list`（`TelemetryLogListPane.kt`）
   - **課題**: `AnimatedVisibility(visible = showNewLogsButton)` による新着ログボタンの表示パターンが未検証。
   - **改善案**: `showNewLogsButton = true` のケースをスクリーンショットテストに追加する。

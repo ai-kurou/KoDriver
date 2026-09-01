@@ -234,6 +234,52 @@ class AppScreenScreenshotTest {
             onRoot().captureRoboImage()
         }
 
+    @Test
+    fun `アップデートバッジ非表示`() =
+        composeScreenshotTest {
+            setAppContent {
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationRail,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = false,
+                        readoutContent = {
+                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                        },
+                    )
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `NavigationDrawer レイアウト`() =
+        composeScreenshotTest {
+            setAppContent {
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationDrawer,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        readoutContent = {
+                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                        },
+                    )
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
     private fun DesktopComposeUiTest.setAppContent(content: @Composable () -> Unit) {
         setContent {
             AppTheme {
