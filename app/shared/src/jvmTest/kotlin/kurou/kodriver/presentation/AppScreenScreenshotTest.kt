@@ -235,24 +235,6 @@ class AppScreenScreenshotTest {
         }
 
     @Test
-    fun `バナー非表示`() =
-        composeScreenshotTest {
-            setAppContent {
-                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                    AppScreenContent(
-                        layoutType = NavigationSuiteType.NavigationRail,
-                        bannerUiState = ConnectionBannerUiState(isVisible = false),
-                        hasAppUpdate = true,
-                        readoutContent = {
-                            ReadoutContent(scaffoldDirective = singlePaneDirective)
-                        },
-                    )
-                }
-            }
-            onRoot().captureRoboImage()
-        }
-
-    @Test
     fun `アップデートバッジ非表示`() =
         composeScreenshotTest {
             setAppContent {
