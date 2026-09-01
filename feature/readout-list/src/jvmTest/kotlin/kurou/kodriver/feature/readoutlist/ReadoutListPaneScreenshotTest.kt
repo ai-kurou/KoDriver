@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
@@ -144,6 +147,44 @@ class ReadoutListPaneScreenshotTest {
                 }
             }
             onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `リストを下にスクロールすると先頭へ戻るボタンを表示する`() =
+        composeScreenshotTest {
+            every { repository.observeReadoutEnabledStates("lmu_windows") } returns MutableStateFlow(emptyMap())
+            val enabledStates = observeReadoutEnabledStates("lmu_windows")
+            val items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows)
+            var lastItemText = ""
+
+            setContent {
+                lastItemText = itemDisplayName(items.last())
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            ReadoutListPane(
+                                uiState =
+                                    ReadoutListUiState(
+                                        selectedSimulator = Simulator.LmuWindows,
+                                        items = items,
+                                        readoutEnabledStates = enabledStates,
+                                    ),
+                                onMove = { _, _ -> },
+                                onReadoutEnabledChanged = { _, _ -> },
+                                onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
+                                onItemClick = { _ -> },
+                            )
+                        }
+                    }
+                }
+            }
+            onNode(hasScrollAction()).performScrollToNode(hasText(lastItemText))
+            waitForIdle()
+
+            onRoot().captureRoboImage()
+            verify(exactly = 1) { repository.observeReadoutEnabledStates("lmu_windows") }
+            confirmVerified(repository)
         }
 
     @Test
