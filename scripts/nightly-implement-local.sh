@@ -180,7 +180,11 @@ cd "${worktree_dir}"
 # このスクリプトが作成した runner-control ファイル（.nightly-implement-*）も、
 # gitignore対象ではなく git add -A で拾われてしまうため同様に除外する。
 git add -A
-mapfile -t excluded_files < <(git diff --cached --name-only | grep -E '(^|/)snapshots/[^/]+\.png$|^docs/graphs/[^/]+\.(gv|svg)$|^\.nightly-implement-' || true)
+# macOS標準の/bin/bashはbash 3.2で mapfile（bash 4.0以降のビルトイン）が使えないため、while read で代替する。
+excluded_files=()
+while IFS= read -r excluded_file; do
+  excluded_files+=("${excluded_file}")
+done < <(git diff --cached --name-only | grep -E '(^|/)snapshots/[^/]+\.png$|^docs/graphs/[^/]+\.(gv|svg)$|^\.nightly-implement-' || true)
 if [ "${#excluded_files[@]}" -gt 0 ]; then
   git reset -- "${excluded_files[@]}"
 fi
