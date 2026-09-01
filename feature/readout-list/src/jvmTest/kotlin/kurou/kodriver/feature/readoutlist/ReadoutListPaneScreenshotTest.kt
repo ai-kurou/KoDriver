@@ -161,7 +161,7 @@ class ReadoutListPaneScreenshotTest {
                 lastItemText = itemDisplayName(items.last())
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                        Box(modifier = Modifier.requiredSize(360.dp, 400.dp)) {
                             ReadoutListPane(
                                 uiState =
                                     ReadoutListUiState(
