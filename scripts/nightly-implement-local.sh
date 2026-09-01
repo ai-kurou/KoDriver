@@ -109,6 +109,15 @@ if [ -f "${status_file}" ]; then
 fi
 log "status=${status}"
 
+if [ "${status}" = "implemented" ]; then
+  if [ ! -s "${commit_message_file}" ] || [ ! -s "${pr_title_file}" ] || [ ! -s "${pr_body_file}" ] \
+    || ! grep -q "Closes #${issue_number}" "${pr_body_file}"; then
+    log "statusはimplementedですが、PR用文言の下書きが不足しているため無応答中断として扱います。"
+    status="unknown"
+    echo "unknown" > "${status_file}"
+  fi
+fi
+
 if [ "${status}" != "implemented" ]; then
   (cd "${worktree_dir}" && git checkout -- . 2>/dev/null || true; git clean -fd 2>/dev/null || true)
 
@@ -156,8 +165,10 @@ cd "${worktree_dir}"
 
 # モジュール図・スクリーンショット画像はCIで自動更新される仕組みのため、
 # preSubmitChecksの実行中に生成・変更されていてもコミットに含めない。
+# このスクリプトが作成した runner-control ファイル（.nightly-implement-*）も、
+# gitignore対象ではなく git add -A で拾われてしまうため同様に除外する。
 git add -A
-mapfile -t excluded_files < <(git diff --cached --name-only | grep -E '(^|/)snapshots/[^/]+\.png$|^docs/graphs/[^/]+\.(gv|svg)$' || true)
+mapfile -t excluded_files < <(git diff --cached --name-only | grep -E '(^|/)snapshots/[^/]+\.png$|^docs/graphs/[^/]+\.(gv|svg)$|^\.nightly-implement-' || true)
 if [ "${#excluded_files[@]}" -gt 0 ]; then
   git reset -- "${excluded_files[@]}"
 fi
@@ -172,7 +183,27 @@ if git diff --cached --quiet; then
 fi
 
 git commit -F "${commit_message_file}"
+
+# push/PR作成のいずれかが失敗した場合、set -e により即座に終了すると
+# ワークツリー・ローカルブランチが残り続け、次回以降の実行が
+# 「ブランチ/ワークツリーが既に存在する」としてこのissueをスキップし続けてしまう。
+# push成功後はコミットを復旧できるようリモートブランチ・ワークツリーを残し、
+# push自体が失敗した場合のみ後始末（cleanup）する。
+pushed=false
+publish_failure() {
+  if [ "${pushed}" = true ]; then
+    gh issue comment "${issue_number}" --repo "${REPO}" --body "夜間バッチ（ローカル実行）による自動実装後、コミットのプッシュ後にPR作成が失敗しました。ブランチ \`${branch_name}\` にコミット済みのため、手動でPRを作成してください。"
+  else
+    gh issue comment "${issue_number}" --repo "${REPO}" --body "夜間バッチ（ローカル実行）による自動実装後、コミットのプッシュに失敗したため中断しました。ラベルを外すので、内容を見直したうえで再度ラベルを付与してください。"
+    gh issue edit "${issue_number}" --repo "${REPO}" --remove-label claude-implementable
+    cd "${REPO_ROOT}"
+    cleanup
+  fi
+}
+trap publish_failure ERR
+
 git push -u origin "${branch_name}"
+pushed=true
 
 pr_url="$(gh pr create --repo "${REPO}" --base main --head "${branch_name}" --title "$(cat "${pr_title_file}")" --body-file "${pr_body_file}")"
 pr_number="${pr_url##*/}"
@@ -180,6 +211,7 @@ pr_number="${pr_url##*/}"
 gh issue comment "${issue_number}" --repo "${REPO}" --body "夜間バッチ（ローカル実行）により実装し、PRを作成しました: ${pr_url}"
 gh pr comment "${pr_number}" --repo "${REPO}" --body "夜間バッチ（ローカル実行）により実装しました。issue #${issue_number} を参照してください。"
 
+trap - ERR
 log "PR #${pr_number} を作成しました: ${pr_url}"
 
 cd "${REPO_ROOT}"
