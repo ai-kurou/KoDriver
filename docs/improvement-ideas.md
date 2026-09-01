@@ -46,6 +46,14 @@
   - **課題**: `if (trailingContent != null)` による表示分岐について、`DetailPaneSubtitle` 単独のスクリーンショットテストが存在しない。呼び出し側のテストで間接的に一部カバーされているのみで、`trailingContent`有無の対比検証はない。
   - **改善案**: `DetailPaneSubtitle` 単独のスクリーンショットテストを新設し、`trailingContent`の有無双方のケースを追加する。
 
+- **対象**: `feature/other-list/src/commonMain/kotlin/kurou/kodriver/feature/otherlist/OtherListPane.kt:313`
+  - **課題**: `LazyColumn` ビルダーラムダ内で `val groupedItems = uiState.items.groupBy { it.section() }` を `remember` なしで実行している。`uiState`（`collectAsState` 由来）は `keepScreenOn`・ダイナミックカラー・ハプティクス等どの設定が変わっても更新されるため、`uiState.items` 自体に変化がなくても毎回再グルーピングが走る。
+  - **改善案**: `remember(uiState.items) { uiState.items.groupBy { it.section() } }` のように `items` をキーにした `remember` でラップし、無関係な状態変化での再計算を避ける。
+
+- **対象**: `feature/telemetry-log-list/src/commonMain/kotlin/kurou/kodriver/feature/telemetryloglist/TelemetryLogListPane.kt:163-165`
+  - **課題**: `items(items = uiState.logs, key = { it.id })` のループボディ内で `onClick = { onLogClick(log.id) }` 等、`log` をキャプチャする3つのラムダを `remember` せず直書きしている。呼び出し先の `TelemetryLogListItem` は選択状態変化時に `animateColorAsState` で再コンポジションされるため、そのたびにこれら3ラムダが再生成される。
+  - **改善案**: `remember(log.id) { { onLogClick(log.id) } }` 等でラップするか、`onClick` を `log.id` を引数に取る安定したコールバック形へ変更し、不要な再生成を避ける。
+
 - **対象**: `compose-state-and-effects` スキルが対象とする各画面の `LaunchedEffect` 使用箇所全般（例: 一覧/詳細ペインでの一度きりの副作用実行）
   - **課題**: Jetpack Compose 1.12で `SideEffect` にキー引数（`SideEffect(keys) { ... }`）が追加され、suspend不要・後片付け不要な「一度だけ実行し、キー変更時のみ再発火する」処理について、従来 `LaunchedEffect` を代用していたケースをより軽量なAPIに置き換えられるようになった（記事によれば`LaunchedEffect`比で最大90%高速とされる）。ただしレイアウト確定前に実行される点、キー変更時に「前回分の取り消し」ができない点（撃ちっぱなしのログ記録等のみ対象）に注意が必要。KoDriverが依存する `composeMultiplatform`（現状1.11.1）がこのAPIを含む1.12系へ追随した際に、該当する`LaunchedEffect`使用箇所を洗い出す余地がある。
   - **改善案**: `composeMultiplatform`を1.12系へ更新するタイミング（`docs/improvement-ideas.md`「開発体験」節のHot Reload MCP server化・material3/material3-adaptive追随待ちの項目と合わせて検討）で、`compose-state-and-effects`スキルの対象範囲を`rg`等で確認し、suspend・後片付けが不要な`LaunchedEffect`が`SideEffect(keys)`へ置き換えられないか調査する。
@@ -98,6 +106,11 @@
   - **課題**: 現状の夜間バッチは `/loop` 相当の定期実行の仕組み（GitHub Actionsのcron）に依存しているが、Claude Code自体が持つ `/goal`（完了条件駆動）・`/loop`（時間駆動）・Cron・Workflow（複数エージェント協調）の使い分けや、暴走時のキルスイッチ（`CLAUDE_CODE_DISABLE_CRON=1`等）・トークン消費監視（`/usage`）についてはドキュメント化されていない。
   - **改善案**: Qiitaの整理記事を参考に、KoDriverの夜間バッチ・自動化フローで各機能をどう使い分けているか（またはなぜ使わないか）を `docs/nightly-todo-list.md` や `docs/ci-workflows.md` に補足できないか検討する。
   - **参考URL**: https://qiita.com/NaokiIshimura/items/71af4e891b2f8f1e7943
+
+- **対象**: `docs/ci-workflows.md`、夜間バッチ（`nightly-todo.yml`）、`explain-pr-feedback`/`fix-pr-feedback`スキル
+  - **課題**: Claude Codeの「routine」機能を使うと、PRレビューやエラー調査といった定型タスクを定額コストで自動実行できる事例が紹介されている。KoDriverの夜間バッチ・PR指摘対応フローは現状Claude Code CLI呼び出し（GitHub Actions cron）ベースで、コスト・運用面でroutine化できる余地があるか未調査。
+  - **改善案**: 夜間バッチ・PR指摘対応フローのうち、routine機能への置き換えでコスト最適化やレイテンシ改善が見込める箇所がないか調査する。
+  - **参考URL**: https://zenn.dev/yutake27/articles/6be03483c0110b
 
 - **対象**: `.claude/settings.json` / `.claude/settings.local.json`（現状リポジトリには未コミット。ローカル環境の許可設定が対象）の Bash/MCPツール許可ルール
   - **課題**: Zennの実例では、152件の許可ルールのうち完全一致（ワイルドカードなし）で書かれた92件が、10万9762回のツール実行で一度も発火していなかったことが実測で判明している。許可ルールは一度追加すると削除されにくく、コマンドの引数やパスが少し変わるだけで完全一致ルールは無効化されるため、「許可したつもりが実際には毎回確認ダイアログが出ている」状態に気づきにくい。KoDriverでは `fewer-permission-prompts` スキルで許可ルールの追加は行っているが、逆方向（一度も発火していない死んだルールの棚卸し）は運用に組み込まれていない。
