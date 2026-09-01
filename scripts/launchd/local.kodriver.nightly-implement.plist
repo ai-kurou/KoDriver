@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.kodriver.nightly-implement</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <!-- REPO_ROOT を実際のリポジトリの絶対パスに書き換えてから使用すること -->
+        <string>REPO_ROOT/scripts/nightly-implement-local.sh</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>4</integer>
+        <key>Minute</key>
+        <integer>37</integer>
+    </dict>
+
+    <!-- Macがスリープ・シャットダウンしていた場合、この時刻ちょうどには発火しない。
+         起動時にも実行したい場合は RunAtLoad を true にする（推奨しない。ログイン毎に走るため）。 -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/kodriver-nightly-implement.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/kodriver-nightly-implement.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>
