@@ -66,6 +66,13 @@ fi
 
 git worktree add "${worktree_dir}" -b "${branch_name}" origin/main
 
+# local.properties（Android SDKパス等）はマシン固有でgit管理外のため、
+# 新規ワークツリーには存在せず、そのままだと preSubmitChecks が
+# 「SDK location not found」で失敗する。メインの作業ツリーにあれば複製する。
+if [ -f "${REPO_ROOT}/local.properties" ]; then
+  cp "${REPO_ROOT}/local.properties" "${worktree_dir}/local.properties"
+fi
+
 # cleanup removes the dedicated worktree and its local branch, ignoring errors when either is already absent.
 cleanup() {
   git worktree remove --force "${worktree_dir}" 2>/dev/null || true
