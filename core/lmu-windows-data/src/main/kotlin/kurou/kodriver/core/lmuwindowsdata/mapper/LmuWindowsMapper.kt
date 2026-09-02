@@ -137,8 +137,8 @@ internal object LmuWindowsMapper {
     private const val OFF_WHEEL_WEAR = 152
     private const val OFF_WHEEL_TIRE_CARCASS_TEMPERATURE = 204
 
-    fun map(buffer: ByteBuffer): LmuWindowsTelemetryData {
-        val vehicleBase = vehicleTelemetryBase(readPlayerVehicleIdx(buffer))
+    fun map(buffer: ByteBuffer): LmuWindowsTelemetryData? {
+        val vehicleBase = findPlayerVehicleBase(buffer) ?: return null
         val vehicleScoringBase = findPlayerVehicleScoringBase(buffer)
 
         return LmuWindowsTelemetryData(
@@ -192,7 +192,9 @@ internal object LmuWindowsMapper {
         val activeVehicles = readActiveVehicleCount(buffer)
         val playerIdx = readPlayerVehicleIdx(buffer)
         if (activeVehicles == 0 || playerIdx >= activeVehicles) return null
-        return vehicleTelemetryBase(playerIdx)
+        val vehicleBase = vehicleTelemetryBase(playerIdx)
+        if (vehicleBase + VEHICLE_STRIDE > buffer.limit()) return null
+        return vehicleBase
     }
 
     /** telemetry セグメントの activeVehicles (uint8) を返す。 */

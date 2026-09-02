@@ -8,6 +8,7 @@ class FakeWindowsSharedMemoryReader(
     openResults: List<Boolean> = listOf(true),
     private val bufferSize: Int,
     private val returnNullBuffer: Boolean = false,
+    private val configureBuffer: (ByteBuffer) -> Unit = {},
 ) : SharedMemoryReader {
     private var opened = initialOpen
     private val remainingOpenResults = ArrayDeque(openResults)
@@ -23,7 +24,7 @@ class FakeWindowsSharedMemoryReader(
 
     override fun readBuffer(): ByteBuffer? =
         if (opened && !returnNullBuffer) {
-            ByteBuffer.allocate(bufferSize).order(ByteOrder.LITTLE_ENDIAN)
+            ByteBuffer.allocate(bufferSize).order(ByteOrder.LITTLE_ENDIAN).also(configureBuffer)
         } else {
             null
         }

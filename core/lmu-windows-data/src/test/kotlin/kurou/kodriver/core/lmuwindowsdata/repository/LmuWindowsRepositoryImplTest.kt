@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.windowssharedmemory.datasource.FakeWindowsSharedMemoryReader
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -27,6 +28,18 @@ class LmuWindowsRepositoryImplTest {
         currentTimeMs = System::currentTimeMillis,
         scope = CoroutineScope(SupervisorJob()),
     )
+
+    /** activeVehicles=1・playerVehicleIdx=0 を設定し、map() が有効なテレメトリを返す状態にする。 */
+    private fun withPlayerVehicle(buffer: java.nio.ByteBuffer) {
+        buffer.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 1)
+        buffer.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, 0)
+    }
+
+    private companion object {
+        const val TELEMETRY_BASE = 128_464
+        const val OFF_ACTIVE_VEHICLES = 0
+        const val OFF_PLAYER_VEHICLE_IDX = 1
+    }
 
     @Test
     fun `reader が open 済みかつデータを読み取れるとき isConnected は true を返す`() =
@@ -87,7 +100,12 @@ class LmuWindowsRepositoryImplTest {
     @Test
     fun `reader が open 済みのときデータを emit する`() =
         runBlocking<Unit> {
-            val fake = FakeWindowsSharedMemoryReader(initialOpen = true, bufferSize = 135_000)
+            val fake =
+                FakeWindowsSharedMemoryReader(
+                    initialOpen = true,
+                    bufferSize = 135_000,
+                    configureBuffer = ::withPlayerVehicle,
+                )
             val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
 
             repo.telemetryStream().first()
@@ -97,7 +115,12 @@ class LmuWindowsRepositoryImplTest {
     fun `未接続から open に成功するとデータを emit する`() =
         runBlocking<Unit> {
             val fake =
-                FakeWindowsSharedMemoryReader(initialOpen = false, openResults = listOf(true), bufferSize = 135_000)
+                FakeWindowsSharedMemoryReader(
+                    initialOpen = false,
+                    openResults = listOf(true),
+                    bufferSize = 135_000,
+                    configureBuffer = ::withPlayerVehicle,
+                )
             val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
 
             repo.telemetryStream().first()
@@ -113,6 +136,7 @@ class LmuWindowsRepositoryImplTest {
                     initialOpen = false,
                     openResults = listOf(false, true),
                     bufferSize = 135_000,
+                    configureBuffer = ::withPlayerVehicle,
                 )
             val repo =
                 LmuWindowsRepositoryImpl(
@@ -127,6 +151,21 @@ class LmuWindowsRepositoryImplTest {
             withTimeout(1_000) { repo.telemetryStream().first() }
 
             assertEquals(2, fake.openCallCount)
+        }
+
+    @Test
+    fun `activeVehiclesが0のときは例外を投げずemitしない`() =
+        runBlocking {
+            // playerVehicleIdx/activeVehicles を設定しない = activeVehicles 0 のまま
+            val fake = FakeWindowsSharedMemoryReader(initialOpen = true, bufferSize = 135_000)
+            val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
+            val emitCount = AtomicInteger(0)
+
+            val job = launch { repo.telemetryStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
+
+            assertEquals(0, emitCount.get())
         }
 
     @Test
