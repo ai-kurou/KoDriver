@@ -192,7 +192,9 @@ internal object LmuWindowsMapper {
         val activeVehicles = readActiveVehicleCount(buffer)
         val playerIdx = readPlayerVehicleIdx(buffer)
         if (activeVehicles == 0 || playerIdx >= activeVehicles) return null
-        return vehicleTelemetryBase(playerIdx)
+        val vehicleBase = vehicleTelemetryBase(playerIdx)
+        if (vehicleBase + VEHICLE_STRIDE > buffer.limit()) return null
+        return vehicleBase
     }
 
     /** telemetry セグメントの activeVehicles (uint8) を返す。 */

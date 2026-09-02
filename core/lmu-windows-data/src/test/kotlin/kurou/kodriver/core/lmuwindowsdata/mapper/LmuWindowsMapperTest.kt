@@ -337,6 +337,23 @@ class LmuWindowsMapperTest {
     }
 
     @Test
+    fun `findPlayerVehicleBaseはvehicleBaseがバッファ範囲を超えるときnullを返す`() {
+        // playerIdx=3 の telemInfo スロットはバッファサイズ(135_000)を超える
+        val buf = emptyBuffer(playerIdx = 3)
+        buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 4)
+
+        assertEquals(null, LmuWindowsMapper.findPlayerVehicleBase(buf))
+    }
+
+    @Test
+    fun `mapはvehicleBaseがバッファ範囲を超えるときnullを返す`() {
+        val buf = emptyBuffer(playerIdx = 3)
+        buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 4)
+
+        assertEquals(null, LmuWindowsMapper.map(buf))
+    }
+
+    @Test
     fun `maxVehicleCountはバッファサイズと1台あたりのヘッダーサイズから車両数上限を算出する`() {
         val headerSizePerVehicle = 8
         val headerSize = vehicleBase(playerIdx = 0) + headerSizePerVehicle
