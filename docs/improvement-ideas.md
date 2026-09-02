@@ -68,6 +68,10 @@
 
 ## バグ
 
+- **対象**: `feature/gt7-ps5-readout-remaining-fuel-laps-detail/src/commonMain/composeResources/values/strings.xml:3`（`remaining_fuel_laps_description`）・`feature/lmu-windows-readout-pit-timing-detail/src/commonMain/composeResources/values/strings.xml:3`（`pit_timing_description`）
+  - **課題**: どちらも「直近のベストラップの30秒前のタイミングで残り燃料/エナジーを判定する」という同一仕様を説明しているが、GT7版は「現在の**最速ラップ**の30秒前」、LMU版は「毎周**ベストラップ**の30秒前」と用語が不統一。他の箇所（`my_best_lap`系、`debug_state_best_lap_title`、`readout_item_my_best_lap`等）は一貫して「ベストラップ」「自己ベストラップ」表記に統一されており、`remaining_fuel_laps_description`の「最速ラップ」だけが用語として孤立している。
+  - **改善案**: `remaining_fuel_laps_description` の「最速ラップ」を「ベストラップ」に統一する。
+
 - **対象**: `feature/debug-state-detail/src/commonMain/composeResources/values/strings.xml` の `debug_state_tyre_wear_fl`（L69, `_fr`/`_rl`/`_rr`も同様に計4件）・`debug_state_fuel_consumption_per_lap_ratio`（L74）・`debug_state_fuel_consumption_remaining_percent`（L77）
   - **課題**: `%1$s%` のように書式指定子の直後に単独の `%` を置いている。Android/Compose Resourcesの文字列フォーマット処理では、書式指定子中の `%` はエスケープ（`%%`）しないとフォーマット例外や表示崩れの原因になりうる。実際 `feature/ace-windows-readout-remaining-fuel-detail/src/commonMain/composeResources/values/strings.xml` の `remaining_fuel_threshold_label`（L8）は `%1$s%%` と正しくエスケープしており、モジュール間で書き方が不統一。
   - **改善案**: `debug-state-detail` の該当4文字列リソースを `%1$s%%` 表記に修正し、実際に `stringResource` 経由でフォーマットして表示崩れ・例外が起きないことを確認する。
@@ -88,6 +92,11 @@
   - **調査結果（2026-08-27）**: Compose Multiplatform最新版（1.12.0、2026年8月リリース）のリリースノート・`AbstractJPackageTask`のソース（GitHub master）を確認したが、`winShortcutPrompt`等の専用DSLプロパティは依然として未追加。ただし`AbstractJPackageTask`には任意のjpackage引数をそのまま渡せる`freeArgs`プロパティが存在し、GitHub Issue #773（ファイル関連付け要望）のコメントでは`freeArgs`経由で`--file-associations`等の未サポート引数を注入するワークアラウンドが確認できる。理論上は`freeArgs.add("--win-shortcut-prompt")`のような形で本件も実現できる可能性が高いが、実際にWindows環境で動作するかは未検証。DSL標準サポートはまだ無いため、実機検証を行うか、DSLが対応するまで着手を見送る。
 
 ## 開発体験
+
+- **対象**: `.claude/settings.json` の `hooks.PreToolUse`（Bashツール呼び出し前のガード）
+  - **課題**: CLAUDE.mdの「実行するアクションの慎重さ」節では、破壊的な操作（`rm -rf`等）を実行前に確認するようエージェントの振る舞いとして定義しているが、誤った作業ディレクトリでの実行や変数展開ミスなど、モデル側の判断ミスに起因する事故を機械的に防ぐ仕組み（フックによる強制ガード）は導入されていない。
+  - **改善案**: Zennで紹介されている、Bashツールの`rm`呼び出しをインターセプトし、`/`・ホームディレクトリ・`~/.ssh`等の保護対象パスを`deny`、それ以外の破壊的操作を`ask`で一時停止する`PreToolUse`フック（Python標準ライブラリのみで実装可能）を参考に、`.claude/settings.json`への導入余地を検討する。
+  - **参考URL**: https://zenn.dev/gorizawa/articles/claude-code-guard-delete-hook
 
 - **対象**: `app/desktopApp` のホットリロード開発フロー（`./gradlew :app:desktopApp:hotRun --auto`）
   - **課題**: Compose Multiplatform 1.12.0でCompose Hot Reloadに「MCP server for AI agents」が追加され、AIコーディングエージェントが実行中アプリに接続してリロードのトリガー・スクリーンショット取得・UI検査・クリック/テキスト入力のシミュレーション・ログ読取が可能になった（参考: https://blog.jetbrains.com/kotlin/2026/08/compose-multiplatform-1-12-0/）。KoDriverのUI変更確認は現状目視・スクリーンショットテストに依存しており、この仕組みを使えばClaude Code自身がホットリロード中のデスクトップアプリを直接操作・検証できる可能性がある。
