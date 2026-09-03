@@ -53,17 +53,22 @@ class LmuWindowsReadoutVehicleDamageDetailPaneTest {
     @Test
     fun `部品脱落の有効状態を表示して操作できる`() {
         var enabled: Boolean? = null
+        var previewCount = 0
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutVehicleDamageDetailPaneContent(
                     uiState = LmuWindowsReadoutVehicleDamageDetailUiState(partDetachedEnabled = true),
                     onPartDetachedEnabledChanged = { enabled = it },
+                    onPartDetachedPreviewClicked = { previewCount++ },
                 )
             }
         }
 
         rule.onAllNodesWithText("部品脱落")[0].assertIsDisplayed().performClick()
         assertEquals(false, enabled)
+
+        rule.onAllNodesWithText("部品脱落")[1].assertIsEnabled().performClick()
+        assertEquals(1, previewCount)
     }
 
     @Test

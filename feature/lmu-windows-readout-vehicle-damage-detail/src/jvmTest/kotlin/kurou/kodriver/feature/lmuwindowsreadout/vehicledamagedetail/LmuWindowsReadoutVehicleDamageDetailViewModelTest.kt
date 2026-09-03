@@ -120,24 +120,52 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
     }
 
     @Test
-    fun `初期状態は partDetachedEnabled がデフォルト値 true の UiState を返す`() =
+    fun `リポジトリに partDetached=false が保存済みのとき partDetachedEnabled が false の UiState を返す`() =
         runTest {
-            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeEnabledStates() } returns
+                MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false))
             val viewModel = createViewModel()
 
-            assertEquals(true, viewModel.uiState.first().partDetachedEnabled)
+            assertEquals(
+                LmuWindowsReadoutVehicleDamageDetailUiState(partDetachedEnabled = false),
+                viewModel.uiState.first(),
+            )
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            confirmVerified(repository)
         }
 
     @Test
-    fun `onPartDetachedEnabledChanged を呼ぶと UiState の partDetachedEnabled が更新される（永続化はされない）`() =
+    fun `onPartDetachedEnabledChanged を呼ぶと UiState の partDetachedEnabled が更新される`() =
         runTest {
-            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { repository.observeEnabledStates() } returns enabledStatesFlow
+            coEvery {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, false)
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false) }
+            }
             val viewModel = createViewModel()
 
             viewModel.onPartDetachedEnabledChanged(false)
 
             assertEquals(false, viewModel.uiState.first().partDetachedEnabled)
             verify(exactly = 1) { repository.observeEnabledStates() }
+            coVerify(exactly = 1) {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, false)
+            }
             confirmVerified(repository)
         }
+
+    @Test
+    fun `onPartDetachedPreviewClicked を呼ぶと PartDetached イベントが再生される`() {
+        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { ttsEngine.speak(SpeechEvent.PartDetached, false) } returns Unit
+        val viewModel = createViewModel()
+
+        viewModel.onPartDetachedPreviewClicked()
+
+        verify(exactly = 1) { repository.observeEnabledStates() }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PartDetached, false) }
+        confirmVerified(repository, ttsEngine)
+    }
 }

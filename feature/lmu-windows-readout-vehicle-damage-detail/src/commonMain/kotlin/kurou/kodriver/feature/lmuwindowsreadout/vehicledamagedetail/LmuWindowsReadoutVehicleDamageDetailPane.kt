@@ -35,6 +35,7 @@ fun LmuWindowsReadoutVehicleDamageDetailPane(modifier: Modifier = Modifier) {
         onOverheatEnabledChanged = viewModel::onOverheatEnabledChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
         onPartDetachedEnabledChanged = viewModel::onPartDetachedEnabledChanged,
+        onPartDetachedPreviewClicked = viewModel::onPartDetachedPreviewClicked,
         modifier = modifier,
     )
 }
@@ -45,6 +46,7 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
     onOverheatEnabledChanged: (Boolean) -> Unit = {},
     onPreviewClicked: () -> Unit = {},
     onPartDetachedEnabledChanged: (Boolean) -> Unit = {},
+    onPartDetachedPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -82,7 +84,7 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
                     chipLabels = listOf(partDetachedChipLabel),
                     selectedChipLabels = setOf(partDetachedChipLabel),
                     chipEnabled = uiState.partDetachedEnabled,
-                    onChipClick = {},
+                    onChipClick = { onPartDetachedPreviewClicked() },
                 )
             },
         )

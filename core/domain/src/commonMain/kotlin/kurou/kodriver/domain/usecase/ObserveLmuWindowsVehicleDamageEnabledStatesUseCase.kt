@@ -10,6 +10,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 private val vehicleDamageEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
         ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
+        ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
     )
 
 class ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(

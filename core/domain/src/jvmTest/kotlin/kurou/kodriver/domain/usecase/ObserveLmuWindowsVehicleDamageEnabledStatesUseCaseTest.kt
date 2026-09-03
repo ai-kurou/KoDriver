@@ -26,6 +26,7 @@ private fun createLmuWindowsVehicleDamagePreferencesRepository(
     every { repository.observeEnabledStates() } returns states
     listOf(
         ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
+        ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached,
         ReadoutItemKey.LmuWindows.VehicleDamage.Root,
     ).forEach { key ->
         listOf(true, false).forEach { enabled ->
@@ -47,12 +48,16 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はOverheatのデフォルトtrueを返す`() =
+    fun `初期値はOverheatとPartDetachedのデフォルトtrueを返す`() =
         runTest {
             val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
-            val expected = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true)
+            val expected =
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
+                )
             assertEquals(expected, useCase().first())
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)
@@ -66,7 +71,11 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
             repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
 
-            val expected = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false)
+            val expected =
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
+                )
             assertEquals(expected, useCase().first())
             coVerify(exactly = 1) {
                 repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
@@ -86,6 +95,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
                     ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
                 ),
                 useCase().first(),
