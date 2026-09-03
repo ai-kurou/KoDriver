@@ -57,6 +57,11 @@
   - **課題**: Android 17でGoogleが新設した「ローカルネットワーク保護」により、アプリが同一LAN上の他デバイスをスキャン（mDNS探索を含む）する際にユーザーの明示的な許可が必要になった（参考: https://blog.google/security/new-Android-network-security-protections/ )。`:feature:other-server-ip-detail` はKoDriverサーバーが広告するmDNSサービスを検出して接続先IPを自動入力する機能を持つため、Android 17端末では権限ダイアログの表示・拒否時のフォールバック挙動（手動IP入力への案内など）の対応が必要になる可能性がある。上記のAndroid 16向け `ACCESS_LOCAL_NETWORK` 権限との関係・重複の有無も含めて未調査。
   - **改善案**: Android 17実機またはエミュレータでmDNS自動検出フローを検証し、権限ダイアログが表示されるか、拒否時に自動検出が失敗した場合のUI（エラーメッセージ・手動入力への誘導）が適切かを確認する。必要であれば権限リクエスト導線・フォールバックUIを追加する。
 
+- **対象**: `app/androidApp/build.gradle.kts`（`buildTypes { getByName("release") { isMinifyEnabled = false } }`）
+  - **課題**: [Android公式のメモリ管理ガイド](https://developer.android.com/topic/performance/memory/manage-app-memory?hl=ja)ではR8オプティマイザーの有効化（デッドコード削除・クラス統合等によるRAM使用量削減）が推奨されているが、releaseビルドでも`isMinifyEnabled = false`のままで、コード最適化・不要リソース削除が一切行われていない。`app/androidApp`配下に`proguard-rules.pro`も存在せずkeepルールも未整備。
+  - **改善案**: `isMinifyEnabled = true`を有効化し、Koin（サービスロケーターパターン、リフレクションを直接は使わないが実行時にクラス参照する）・kotlinx.serialization等、リフレクション/実行時クラス参照に依存するライブラリの動作を壊さないkeepルールを`proguard-rules.pro`に整備する。有効化後はリリースビルドの動作確認（特にKoin DI解決・シリアライズ）を必須とする。
+  - **参考URL**: https://developer.android.com/topic/performance/memory/manage-app-memory?hl=ja
+
 ## バグ
 
 - **対象**: `feature/other-console-ip-detail/src/commonMain/kotlin/kurou/kodriver/feature/otherconsoleipdetail/OtherConsoleIpDetailPane.kt`（L243）
