@@ -14,6 +14,8 @@
 
 旧 `nightly-implement.yml`（GitHub Actions版）は削除し、`scripts/nightly-implement-local.sh` をユーザーのローカル Mac から launchd で定期実行する方式に置き換えた（2026-09-01）。ロジック自体（`claude-implementable` ラベル付きの最古issueを選定し、専用ワークツリーで Claude Code CLI に実装させ、`./gradlew preSubmitChecks` 通過後にコミット・プッシュ・PR作成する一連の流れ）は旧ワークフローと同一で、実行主体を GitHub Actions ランナーからローカル Mac に変えただけ。
 
+1回の実行で処理するissue件数はスクリプト先頭の `MAX_ISSUES_PER_RUN`（デフォルト2件）で制御する。`claude-implementable` ラベル付きの未ブロックissueを番号順に最大でこの件数だけ選び、issueごとに独立したワークツリー・ブランチで上記の一連の流れ（実装→`preSubmitChecks`→コミット・プッシュ・PR作成）を順番に実行する。あるissueの処理が保留・失敗しても、後続のissueの処理は継続する。
+
 ### 移行した理由・制約
 
 このリポジトリの `CronCreate`（Claude Codeセッション内のスケジューラ）はセッション起動中のみ発火し、セッション終了で消える・7日で自動失効するため、無人の夜間バッチの置き換えには使わず、macOS 標準の `launchd` を使う。launchd はセッションに依存せず、Mac の電源が入っていれば動作する（スリープ中に発火時刻を過ぎた場合はその回はスキップされる。次回の予定時刻には動く）。
