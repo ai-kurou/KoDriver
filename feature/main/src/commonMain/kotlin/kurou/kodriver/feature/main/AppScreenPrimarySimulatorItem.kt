@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
@@ -80,7 +81,7 @@ fun AppScreenPrimarySimulatorIndicator(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
         ) {
             Row(
                 modifier =
@@ -131,11 +132,13 @@ private fun SimulatorCard(
                     .align(Alignment.BottomStart)
                     .background(Color.Black.copy(alpha = 0.6f))
                     .padding(12.dp),
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = simulatorDisplayName(simulatorId),
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
+                textAlign = TextAlign.Center,
             )
         }
     }
