@@ -298,6 +298,7 @@ fun OtherListPane(
     scrollToTopRequest: Int = 0,
 ) {
     val listState = rememberLazyListState()
+    val groupedItems = remember(uiState.items) { uiState.items.groupBy { it.section() } }
 
     ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
         listState.animateScrollToItem(0)
@@ -310,7 +311,6 @@ fun OtherListPane(
                 .fillMaxSize()
                 .padding(vertical = 8.dp),
     ) {
-        val groupedItems = uiState.items.groupBy { it.section() }
         otherListSections.forEach { section ->
             val sectionItems = groupedItems[section].orEmpty()
             if (sectionItems.isNotEmpty()) {
