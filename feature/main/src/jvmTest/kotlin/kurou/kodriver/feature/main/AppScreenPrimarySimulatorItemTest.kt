@@ -7,6 +7,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -106,7 +107,9 @@ class AppScreenPrimarySimulatorItemTest {
             )
         }
 
-        rule.onNode(hasText("Gran Turismo 7（PS5）")).performClick()
+        val node = rule.onNode(hasText("Gran Turismo 7（PS5）"))
+        node.performScrollTo()
+        node.performClick()
 
         assertEquals("gt7_ps5", selectedId)
         assertFalse(expanded)
