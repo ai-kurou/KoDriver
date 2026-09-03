@@ -16,6 +16,14 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
         }
+        androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.sentry.bom))
+            implementation(libs.sentry)
+        }
+        jvmMain.dependencies {
+            implementation(project.dependencies.platform(libs.sentry.bom))
+            implementation(libs.sentry)
+        }
         named("androidHostTest") {
             kotlin.srcDir(
                 rootProject.layout.projectDirectory.dir(
