@@ -88,7 +88,7 @@ class MainActivityTest {
         waitUntilDisplayed("燃料残り周回数")
         clickItemAndVerifyDescription(
             "燃料残り周回数",
-            "各ラップごとに燃料と走行可能な残り周回数を計算します。現在の最速ラップの30秒前にあたるタイミングで判定し、" +
+            "各ラップごとに燃料と走行可能な残り周回数を計算します。現在のベストラップの30秒前にあたるタイミングで判定し、" +
                 "設定した周回数以下になると音声でお知らせします。",
         )
         clickItemAndVerifyDescription("燃料残量", "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。")
