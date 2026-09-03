@@ -93,3 +93,4 @@
 - 2026-09-03 ACCESS_LOCAL_NETWORK権限のマニフェスト宣言・ランタイムリクエスト導線は実装済みのため削除（PR #1352）
 - 2026-09-03 ReadoutDetailPaneのcanNavigateBack有無にスクリーンショットテストを追加して削除
 - 2026-09-03 remaining_fuel_laps_descriptionの「最速ラップ」を「ベストラップ」に統一して削除（PR #1353）
+- 2026-09-03 例外握りつぶし5箇所にSentry.captureExceptionでの記録を追加して削除

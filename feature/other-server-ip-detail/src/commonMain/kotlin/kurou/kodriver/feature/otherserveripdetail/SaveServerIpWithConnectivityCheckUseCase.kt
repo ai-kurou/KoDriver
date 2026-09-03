@@ -31,6 +31,7 @@ internal class SaveServerIpWithConnectivityCheckUseCase(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            captureOtherServerIpDetailError(e)
             SaveServerIpResult.SaveFailed
         }
     }

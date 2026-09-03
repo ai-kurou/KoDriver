@@ -1,5 +1,6 @@
 package kurou.kodriver.data.release
 
+import io.sentry.Sentry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -33,7 +34,8 @@ internal class GitHubAppReleaseRepository(
                 tagName?.let { AppUpdate(it) }
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                Sentry.captureException(e)
                 null
             }
         }
@@ -50,7 +52,8 @@ private fun fetchLatestReleaseBody(): String? {
         connection.readTimeout = TIMEOUT_MS
         if (connection.responseCode != HttpURLConnection.HTTP_OK) return null
         connection.inputStream.bufferedReader().readText()
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        Sentry.captureException(e)
         null
     }
 }

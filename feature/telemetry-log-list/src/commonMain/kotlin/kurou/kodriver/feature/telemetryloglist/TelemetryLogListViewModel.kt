@@ -78,6 +78,7 @@ class TelemetryLogListViewModel internal constructor(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
+                    captureTelemetryLogListError(e)
                     false
                 }
             _resetState.update { it.copy(isResetting = false, resetSucceeded = succeeded) }
@@ -129,6 +130,7 @@ class TelemetryLogListViewModel internal constructor(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
+                    captureTelemetryLogListError(e)
                     false
                 }
             _deleteState.update { it.copy(isDeleting = false, deleteSucceeded = succeeded) }
