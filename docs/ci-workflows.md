@@ -10,6 +10,15 @@
 - 夜間実装バッチは GitHub Actions ではなく、ユーザーのローカル Mac 上で `scripts/nightly-implement-local.sh` を launchd 経由で定期実行する方式に移行した（旧 `nightly-implement.yml` は削除、2026-09-01）。詳細は「[夜間実装バッチ（ローカル実行）](#夜間実装バッチローカル実行)」を参照
 - `nightly-todo.yml`: 毎日 JST 午前5時ごろ（`workflow_dispatch` でも手動実行可）に起動する。JST の日付・曜日をシェル側で明示的に算出したうえで、Claude Code CLI（`CLAUDE_CODE_OAUTH_TOKEN` シークレットで認証、Pro/Max サブスクリプション枠を使用）に `docs/nightly-todo-list.md` の「毎晩実行する項目」とその曜日の「曜日ローテーション項目」を調査させ、`docs/improvement-ideas.md` の編集権限のみを与える（`Edit`/`Write` ツールを同ファイルに限定し、`git`/`gh` 操作の権限は与えない）。追記前には `docs/resolved-improvement-ideas.md`（対応済み改善案の1行ログ、読み取り専用）も確認させ、過去に対応済みの内容を重複して追記しないようにする。Claude Code の最終出力（各項目の確認内容・追記有無の判断理由）は `nightly-todo-summary.txt` に保存され、下書き PR の説明欄に転記される（改善案の追記が無かった夜でも、何を調査してなぜ追記しなかったかを PR 上で確認できるようにするため）。Claude Code 実行後、ワークフロー側で `docs/improvement-ideas.md` 以外が変更されていないことを検証してから、ブランチ作成・コミット・プッシュ・下書き PR 作成をワークフローの固定処理として行う（`docs/improvement-ideas.md` の変更は事前承認が必要という CLAUDE.md のルールを守るため、直接 main には書き込まない）。GitHub への操作には `GH_PAT` シークレットを使用する（`GITHUB_TOKEN` で作成した PR は後続の CI ワークフローをトリガーしないため）
 
+### 定期実行系機能の使い分け
+
+KoDriverの夜間バッチ・自動化フローでは、Claude Code自体が持つ `/goal`（完了条件駆動）・`/loop`（時間駆動）・`Cron`（`CronCreate` によるセッション内スケジューラ）・`Workflow`（複数エージェント協調）はいずれも使用せず、GitHub Actions の cron（`nightly-todo.yml`）とユーザーのローカル Mac 上の `launchd`（`nightly-implement-local.sh`、詳細は次節）に統一している。
+
+- `/goal` ・`/loop` ・`Workflow`: いずれも対話セッションに紐づく機能であり、無人・定期実行が前提の夜間バッチとは実行モデルが合わないため採用していない。
+- `Cron`（`CronCreate`）: セッション起動中のみ発火し、セッション終了で消える・7日で自動失効するため、無人の夜間バッチの置き換えには使わない（詳細は次節「[夜間実装バッチ（ローカル実行）](#夜間実装バッチローカル実行)」の「移行した理由・制約」を参照）。
+- 暴走時のキルスイッチ: GitHub Actions 側の `nightly-todo.yml` は `workflow_dispatch` で起動でき、暴走時は GitHub の Actions 画面からワークフローを無効化（Disable workflow）すれば止められる。ローカル `launchd` 側（`nightly-implement-local.sh`）は `launchctl bootout gui/$(id -u)/local.kodriver.nightly-implement` で即座に停止できる（詳細は次節「登録解除する場合」を参照）。`CLAUDE_CODE_DISABLE_CRON=1` 等の環境変数によるキルスイッチは、`Cron`（`CronCreate`）自体を使っていないため対象外。
+- トークン消費監視: `nightly-todo.yml` ・`nightly-implement-local.sh` とも Pro/Max サブスクリプション枠（`CLAUDE_CODE_OAUTH_TOKEN` ・ローカル `claude` CLI の認証）を使用し、API従量課金ではない。想定外の実行量になっていないかは `/usage`（Claude Code CLI）で随時確認できる。
+
 ## 夜間実装バッチ（ローカル実行）
 
 旧 `nightly-implement.yml`（GitHub Actions版）は削除し、`scripts/nightly-implement-local.sh` をユーザーのローカル Mac から launchd で定期実行する方式に置き換えた（2026-09-01）。ロジック自体（`claude-implementable` ラベル付きの最古issueを選定し、専用ワークツリーで Claude Code CLI に実装させ、`./gradlew preSubmitChecks` 通過後にコミット・プッシュ・PR作成する一連の流れ）は旧ワークフローと同一で、実行主体を GitHub Actions ランナーからローカル Mac に変えただけ。
