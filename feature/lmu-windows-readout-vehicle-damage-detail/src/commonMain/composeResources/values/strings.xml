@@ -3,4 +3,6 @@
     <string name="vehicle_damage_description">車両の故障状況を音声でお知らせします。</string>
     <string name="vehicle_damage_overheat_switch_label">オーバーヒート</string>
     <string name="vehicle_damage_overheat_chip_label">GP2 GP2… ahhh!!!</string>
+    <string name="vehicle_damage_part_detached_switch_label">部品脱落</string>
+    <string name="vehicle_damage_part_detached_chip_label">部品脱落</string>
 </resources>

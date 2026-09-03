@@ -18,6 +18,8 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.re
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_description
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_chip_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_switch_label
+import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_part_detached_chip_label
+import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_part_detached_switch_label
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -32,6 +34,7 @@ fun LmuWindowsReadoutVehicleDamageDetailPane(modifier: Modifier = Modifier) {
         uiState = uiState,
         onOverheatEnabledChanged = viewModel::onOverheatEnabledChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
+        onPartDetachedEnabledChanged = viewModel::onPartDetachedEnabledChanged,
         modifier = modifier,
     )
 }
@@ -41,6 +44,7 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
     uiState: LmuWindowsReadoutVehicleDamageDetailUiState,
     onOverheatEnabledChanged: (Boolean) -> Unit = {},
     onPreviewClicked: () -> Unit = {},
+    onPartDetachedEnabledChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -64,6 +68,21 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
                     selectedChipLabels = setOf(chipLabel),
                     chipEnabled = uiState.overheatEnabled,
                     onChipClick = { onPreviewClicked() },
+                )
+            },
+        )
+        val partDetachedChipLabel = stringResource(Res.string.vehicle_damage_part_detached_chip_label)
+        DetailPaneCard(
+            title = stringResource(Res.string.vehicle_damage_part_detached_switch_label),
+            checked = uiState.partDetachedEnabled,
+            onCheckedChange = onPartDetachedEnabledChanged,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = listOf(partDetachedChipLabel),
+                    selectedChipLabels = setOf(partDetachedChipLabel),
+                    chipEnabled = uiState.partDetachedEnabled,
+                    onChipClick = {},
                 )
             },
         )
