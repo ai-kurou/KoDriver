@@ -16,8 +16,8 @@ KoDriverの夜間バッチ・自動化フローでは、Claude Code自体が持�
 
 - `/goal` ・`/loop` ・`Workflow`: いずれも対話セッションに紐づく機能であり、無人・定期実行が前提の夜間バッチとは実行モデルが合わないため採用していない。
 - `Cron`（`CronCreate`）: セッション起動中のみ発火し、セッション終了で消える・7日で自動失効するため、無人の夜間バッチの置き換えには使わない（詳細は次節「[夜間実装バッチ（ローカル実行）](#夜間実装バッチローカル実行)」の「移行した理由・制約」を参照）。
-- 暴走時のキルスイッチ: GitHub Actions 側の `nightly-todo.yml` は `workflow_dispatch` で起動でき、暴走時は GitHub の Actions 画面からワークフローを無効化（Disable workflow）すれば止められる。ローカル `launchd` 側（`nightly-implement-local.sh`）は `launchctl bootout gui/$(id -u)/local.kodriver.nightly-implement` で即座に停止できる（詳細は次節「登録解除する場合」を参照）。`CLAUDE_CODE_DISABLE_CRON=1` 等の環境変数によるキルスイッチは、`Cron`（`CronCreate`）自体を使っていないため対象外。
-- トークン消費監視: `nightly-todo.yml` ・`nightly-implement-local.sh` とも Pro/Max サブスクリプション枠（`CLAUDE_CODE_OAUTH_TOKEN` ・ローカル `claude` CLI の認証）を使用し、API従量課金ではない。想定外の実行量になっていないかは `/usage`（Claude Code CLI）で随時確認できる。
+- 暴走時のキルスイッチ: GitHub Actions 側の `nightly-todo.yml` は、今後のスケジュール実行や手動起動を停止するには GitHub の Actions 画面からワークフローを無効化（Disable workflow）し、すでに実行中の処理を停止するには対象の run で `Cancel workflow` を実行する（Disable workflow は今後の起動を抑止するのみで、実行中のジョブはキャンセルしない）。ローカル `launchd` 側（`nightly-implement-local.sh`）は `launchctl bootout gui/$(id -u)/local.kodriver.nightly-implement` で即座に停止できる（詳細は次節「登録解除する場合」を参照）。`CLAUDE_CODE_DISABLE_CRON=1` 等の環境変数によるキルスイッチは、`Cron`（`CronCreate`）自体を使っていないため対象外。
+- トークン消費監視: `nightly-todo.yml` は `CLAUDE_CODE_OAUTH_TOKEN`（Pro/Max サブスクリプション枠）を使用する。`nightly-implement-local.sh` はローカル `claude` CLI の認証設定に依存するため、課金形態を断定しない。想定外の実行量になっていないかは、認証設定に応じて `/usage`（Claude Code CLI）または該当する請求画面で確認する。
 
 ## 夜間実装バッチ（ローカル実行）
 
