@@ -242,7 +242,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 state = state.copy(previousVehicleDamage = vehicleDamage),
                 events = emptyList(),
             )
-        val event =
+        val overheatEvent =
             if (
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.Root) &&
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat) &&
@@ -253,9 +253,20 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             } else {
                 null
             }
+        val partDetachedEvent =
+            if (
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached) &&
+                !previous.partDetached &&
+                vehicleDamage.partDetached
+            ) {
+                SpeechEvent.PartDetached
+            } else {
+                null
+            }
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(previousVehicleDamage = vehicleDamage),
-            events = listOfNotNull(event),
+            events = listOfNotNull(overheatEvent, partDetachedEvent),
         )
     }
 

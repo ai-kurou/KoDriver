@@ -16,6 +16,7 @@ import kurou.kodriver.core.designsystem.generated.resources.readout_item_flag
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_full_course_yellow
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_my_best_lap
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_overheat
+import kurou.kodriver.core.designsystem.generated.resources.readout_item_part_detached
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_pit_timing
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_red_flag
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_remaining_fuel
@@ -103,6 +104,7 @@ private fun vehicleDamageDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
         "lmu_windows_vehicle_damage" -> stringResource(Res.string.readout_item_vehicle_damage)
         "lmu_windows_overheat" -> stringResource(Res.string.readout_item_overheat)
+        "lmu_windows_part_detached" -> stringResource(Res.string.readout_item_part_detached)
         else -> null
     }
 
