@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -86,6 +87,47 @@ class OtherServerIpDetailPaneContentTest {
         rule.onNodeWithText("インストールガイドを開く").performClick()
 
         assertEquals(1, guideCount)
+    }
+
+    @Test
+    fun `入力欄でEnterキーを押すとonSaveが呼ばれる`() {
+        var saveCount = 0
+        setContent(onSave = { saveCount++ })
+
+        rule.onNodeWithText("IPアドレス").performImeAction()
+
+        assertEquals(1, saveCount)
+    }
+
+    @Test
+    fun `接続警告表示中に入力欄でEnterキーを押すとonSaveAnywayが呼ばれる`() {
+        var saveAnywayCount = 0
+        setContent(
+            uiState =
+                OtherServerIpDetailUiState(
+                    inputIp = "192.168.1.1",
+                    isInputValid = true,
+                    connectivityWarning = true,
+                ),
+            onSaveAnyway = { saveAnywayCount++ },
+        )
+
+        rule.onNodeWithText("IPアドレス").performImeAction()
+
+        assertEquals(1, saveAnywayCount)
+    }
+
+    @Test
+    fun `保存ボタンが無効な状態で入力欄でEnterキーを押してもonSaveは呼ばれない`() {
+        var saveCount = 0
+        setContent(
+            uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
+            onSave = { saveCount++ },
+        )
+
+        rule.onNodeWithText("IPアドレス").performImeAction()
+
+        assertEquals(0, saveCount)
     }
 
     @Test

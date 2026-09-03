@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
@@ -29,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -106,6 +109,13 @@ fun OtherServerIpDetailPaneContent(
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onOpenGuide()
     }
+    val onSaveConfirmedByKeyboard: () -> Unit = {
+        if (uiState.connectivityWarning) {
+            onSaveAnyway()
+        } else if (uiState.isInputValid && uiState.inputIp.isNotEmpty() && !uiState.isCheckingConnectivity) {
+            onSave()
+        }
+    }
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
             onDismiss()
@@ -153,6 +163,8 @@ fun OtherServerIpDetailPaneContent(
                         null
                     },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onSaveConfirmedByKeyboard() }),
                 modifier = Modifier.fillMaxWidth(),
             )
             if (uiState.connectivityWarning) {
