@@ -59,10 +59,6 @@
 
 ## バグ
 
-- **対象**: `feature/gt7-ps5-readout-remaining-fuel-laps-detail/src/commonMain/composeResources/values/strings.xml:3`（`remaining_fuel_laps_description`）・`feature/lmu-windows-readout-pit-timing-detail/src/commonMain/composeResources/values/strings.xml:3`（`pit_timing_description`）
-  - **課題**: どちらも「直近のベストラップの30秒前のタイミングで残り燃料/エナジーを判定する」という同一仕様を説明しているが、GT7版は「現在の**最速ラップ**の30秒前」、LMU版は「毎周**ベストラップ**の30秒前」と用語が不統一。他の箇所（`my_best_lap`系、`debug_state_best_lap_title`、`readout_item_my_best_lap`等）は一貫して「ベストラップ」「自己ベストラップ」表記に統一されており、`remaining_fuel_laps_description`の「最速ラップ」だけが用語として孤立している。
-  - **改善案**: `remaining_fuel_laps_description` の「最速ラップ」を「ベストラップ」に統一する。
-
 - **対象**: `feature/debug-state-detail/src/commonMain/composeResources/values/strings.xml` の `debug_state_tyre_wear_fl`（L69, `_fr`/`_rl`/`_rr`も同様に計4件）・`debug_state_fuel_consumption_per_lap_ratio`（L74）・`debug_state_fuel_consumption_remaining_percent`（L77）
   - **課題**: `%1$s%` のように書式指定子の直後に単独の `%` を置いている。Android/Compose Resourcesの文字列フォーマット処理では、書式指定子中の `%` はエスケープ（`%%`）しないとフォーマット例外や表示崩れの原因になりうる。実際 `feature/ace-windows-readout-remaining-fuel-detail/src/commonMain/composeResources/values/strings.xml` の `remaining_fuel_threshold_label`（L8）は `%1$s%%` と正しくエスケープしており、モジュール間で書き方が不統一。
   - **改善案**: `debug-state-detail` の該当4文字列リソースを `%1$s%%` 表記に修正し、実際に `stringResource` 経由でフォーマットして表示崩れ・例外が起きないことを確認する。
