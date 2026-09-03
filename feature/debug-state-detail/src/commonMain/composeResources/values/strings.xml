@@ -102,4 +102,7 @@
     <string name="debug_state_vehicle_location_pit_state_unknown">不明</string>
     <string name="debug_state_vehicle_location_yes">はい</string>
     <string name="debug_state_vehicle_location_no">いいえ</string>
+    <string name="debug_state_vehicle_damage_title">車両故障 (LMUのみ)</string>
+    <string name="debug_state_vehicle_damage_overheating">オーバーヒート: %1$s</string>
+    <string name="debug_state_vehicle_damage_part_detached">部品脱落: %1$s</string>
 </resources>
