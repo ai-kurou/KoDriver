@@ -29,7 +29,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
         }
 
         rule
-            .onNodeWithText("現在の最速ラップの30秒前にあたるタイミングで判定し", substring = true)
+            .onNodeWithText("現在のベストラップの30秒前にあたるタイミングで判定し", substring = true)
             .assertIsDisplayed()
         rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
         rule.onNodeWithText("燃料残り周回数").assertIsDisplayed()
