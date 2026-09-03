@@ -3,27 +3,30 @@ package kurou.kodriver.feature.main
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
-import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
+import kurou.kodriver.core.designsystem.simulatorLargeImage
 import kurou.kodriver.core.designsystem.simulatorShortName
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.main.generated.resources.Res
@@ -53,18 +56,17 @@ fun AppScreenPrimarySimulatorIcon(
 @Composable
 fun appScreenPrimarySimulatorLabel(simulatorId: String): String = simulatorShortName(simulatorId)
 
-private val SimulatorCarouselItemWidth = 160.dp
-private val SimulatorCarouselItemHeight = 140.dp
-private val SimulatorCarouselItemSpacing = 8.dp
-private val SimulatorCarouselWidth = 320.dp
+private val SimulatorCardWidth = 320.dp
+private val SimulatorCardHeight = 280.dp
+private val SimulatorCardSpacing = 16.dp
+private val SimulatorPopupWidth = 640.dp
 
 /**
  * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータのアイコンと、
  * それをタップして開くシミュレータ選択メニュー。
- * メニューの中身は [HorizontalMultiBrowseCarousel] で表示する。
+ * メニューの中身は、カード全体にシミュレータ画像を敷き詰めた等幅カードの横スクロールで表示する。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScreenPrimarySimulatorIndicator(
     simulatorId: String,
@@ -79,41 +81,61 @@ fun AppScreenPrimarySimulatorIndicator(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
         ) {
-            val carouselState = rememberCarouselState { Simulator.entries.size }
-            HorizontalMultiBrowseCarousel(
-                state = carouselState,
-                preferredItemWidth = SimulatorCarouselItemWidth,
-                itemSpacing = SimulatorCarouselItemSpacing,
+            Row(
                 modifier =
                     Modifier
-                        .width(SimulatorCarouselWidth)
-                        .height(SimulatorCarouselItemHeight)
-                        .padding(horizontal = 8.dp),
-            ) { index ->
-                val simulator = Simulator.entries[index]
-                Column(
-                    modifier =
-                        Modifier
-                            .maskClip(MaterialTheme.shapes.extraLarge)
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                            .clickable {
-                                onSimulatorSelected(simulator.id)
-                                onExpandedChange(false)
-                            }.padding(12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(
-                        painter = simulatorIcon(simulator.id),
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)),
-                    )
-                    Text(
-                        text = simulatorDisplayName(simulator.id),
-                        style = MaterialTheme.typography.labelLarge,
+                        .width(SimulatorPopupWidth)
+                        .horizontalScroll(rememberScrollState())
+                        .padding(SimulatorCardSpacing),
+                horizontalArrangement = Arrangement.spacedBy(SimulatorCardSpacing),
+            ) {
+                Simulator.entries.forEach { simulator ->
+                    SimulatorCard(
+                        simulatorId = simulator.id,
+                        onClick = {
+                            onSimulatorSelected(simulator.id)
+                            onExpandedChange(false)
+                        },
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SimulatorCard(
+    simulatorId: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier =
+            modifier
+                .width(SimulatorCardWidth)
+                .height(SimulatorCardHeight)
+                .clip(MaterialTheme.shapes.extraLarge)
+                .clickable(onClick = onClick),
+    ) {
+        Image(
+            painter = simulatorLargeImage(simulatorId),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomStart)
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .padding(12.dp),
+        ) {
+            Text(
+                text = simulatorDisplayName(simulatorId),
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+            )
         }
     }
 }
