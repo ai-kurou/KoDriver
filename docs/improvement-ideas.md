@@ -92,11 +92,6 @@
   - **改善案**: Qiitaの整理記事を参考に、KoDriverの夜間バッチ・自動化フローで各機能をどう使い分けているか（またはなぜ使わないか）を `docs/nightly-todo-list.md` や `docs/ci-workflows.md` に補足できないか検討する。
   - **参考URL**: https://qiita.com/NaokiIshimura/items/71af4e891b2f8f1e7943
 
-- **対象**: `docs/ci-workflows.md`、夜間バッチ（`nightly-todo.yml`）、`explain-pr-feedback`/`fix-pr-feedback`スキル
-  - **課題**: Claude Codeの「routine」機能を使うと、PRレビューやエラー調査といった定型タスクを定額コストで自動実行できる事例が紹介されている。KoDriverの夜間バッチ・PR指摘対応フローは現状Claude Code CLI呼び出し（GitHub Actions cron）ベースで、コスト・運用面でroutine化できる余地があるか未調査。
-  - **改善案**: 夜間バッチ・PR指摘対応フローのうち、routine機能への置き換えでコスト最適化やレイテンシ改善が見込める箇所がないか調査する。
-  - **参考URL**: https://zenn.dev/yutake27/articles/6be03483c0110b
-
 - **対象**: `app/desktopApp` のウィンドウ・ダイアログ生成部分
   - **課題**: Compose Multiplatform 1.12.0でWindow/DialogStateのv2 APIが追加され、画面選択・カスタム位置/サイズロジック・ウィンドウサイズの最小/最大設定・ダイアログの親ウィンドウ相対配置が可能になった（参考: https://blog.jetbrains.com/kotlin/2026/08/compose-multiplatform-1-12-0/）。現状KoDriverのデスクトップウィンドウ・各種設定ダイアログでこれらの制御が必要になった際の実装手段が不明瞭。
   - **改善案**: プロジェクトが依存するCompose Multiplatformのバージョンを1.12.0系へ更新した際、既存のウィンドウ/ダイアログ生成コードでv2 APIへの置き換えが有用な箇所がないか調査する。
