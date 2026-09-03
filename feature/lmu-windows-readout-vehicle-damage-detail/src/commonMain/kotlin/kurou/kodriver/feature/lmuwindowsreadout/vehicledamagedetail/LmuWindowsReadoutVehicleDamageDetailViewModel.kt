@@ -23,6 +23,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
             .map { states ->
                 LmuWindowsReadoutVehicleDamageDetailUiState(
                     overheatEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat),
+                    partDetachedEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached),
                 )
             }.stateIn(
                 viewModelScope,
@@ -36,5 +37,13 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
 
     fun onPreviewClicked() {
         playSpeechEvent(SpeechEvent.Overheating)
+    }
+
+    fun onPartDetachedEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch { saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, enabled) }
+    }
+
+    fun onPartDetachedPreviewClicked() {
+        playSpeechEvent(SpeechEvent.PartDetached)
     }
 }

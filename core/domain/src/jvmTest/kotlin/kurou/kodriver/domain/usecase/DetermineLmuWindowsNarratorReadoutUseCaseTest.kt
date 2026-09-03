@@ -1028,6 +1028,72 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `部品脱落がfalseからtrueに変化するとPartDetachedを返す`() {
+        val first =
+            useCase.determineVehicleDamage(
+                state = LmuWindowsNarratorState(),
+                vehicleDamage = damage(partDetached = false),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineVehicleDamage(
+                state = first.state,
+                vehicleDamage = damage(partDetached = true),
+                settings = settings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.PartDetached), second.events)
+    }
+
+    @Test
+    fun `部品脱落が継続しても再度読み上げない`() {
+        val first =
+            useCase.determineVehicleDamage(
+                state = LmuWindowsNarratorState(previousVehicleDamage = damage(partDetached = true)),
+                vehicleDamage = damage(partDetached = true),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), first.events)
+    }
+
+    @Test
+    fun `部品脱落項目が無効なら読み上げない`() {
+        val decision =
+            useCase.determineVehicleDamage(
+                state = LmuWindowsNarratorState(previousVehicleDamage = damage(partDetached = false)),
+                vehicleDamage = damage(partDetached = true),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
+    fun `オーバーヒートと部品脱落が同時にtrueへ変化すると両方読み上げる`() {
+        val first =
+            useCase.determineVehicleDamage(
+                state = LmuWindowsNarratorState(),
+                vehicleDamage = damage(overheating = false, partDetached = false),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineVehicleDamage(
+                state = first.state,
+                vehicleDamage = damage(overheating = true, partDetached = true),
+                settings = settings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.Overheating, SpeechEvent.PartDetached), second.events)
+    }
+
+    @Test
     fun `いずれかのタイヤが閾値以上になると TyreOverheat を返す`() {
         val decision =
             useCase.determineTyreTemperatureOverheat(
@@ -1996,6 +2062,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
         ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
         ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
+        ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
@@ -2147,12 +2214,14 @@ private fun clearFlags(
     playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
 )
 
-private fun damage(overheating: Boolean) =
-    LmuWindowsVehicleDamageData(
-        overheating = overheating,
-        partDetached = false,
-        lastImpactMagnitude = 0.0,
-    )
+private fun damage(
+    overheating: Boolean = false,
+    partDetached: Boolean = false,
+) = LmuWindowsVehicleDamageData(
+    overheating = overheating,
+    partDetached = partDetached,
+    lastImpactMagnitude = 0.0,
+)
 
 private fun tyreTemperatureInput(
     fl: Double = 20.0,

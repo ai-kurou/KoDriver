@@ -976,6 +976,46 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `部品脱落が発生するとPartDetachedを読み上げる`() =
+        runTest(testDispatcher) {
+            val damageChannel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                damageChannel = damageChannel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+            )
+
+            damageChannel.send(noDamage())
+            damageChannel.send(noDamage(partDetached = true))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.PartDetached), spokenTexts)
+        }
+
+    @Test
+    fun `PART_DETACHEDが無効のときは部品脱落を読み上げない`() =
+        runTest(testDispatcher) {
+            val damageChannel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                damageChannel = damageChannel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                vehicleDamageEnabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false,
+                    ),
+            )
+
+            damageChannel.send(noDamage())
+            damageChannel.send(noDamage(partDetached = true))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
     fun `BLUE_FLAGが無効のときは青旗を読み上げない`() =
         runTest(testDispatcher) {
             val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
@@ -2056,12 +2096,14 @@ private fun clearFlags(
     playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
 )
 
-private fun noDamage(overheating: Boolean = false) =
-    LmuWindowsVehicleDamageData(
-        overheating = overheating,
-        partDetached = false,
-        lastImpactMagnitude = 0.0,
-    )
+private fun noDamage(
+    overheating: Boolean = false,
+    partDetached: Boolean = false,
+) = LmuWindowsVehicleDamageData(
+    overheating = overheating,
+    partDetached = partDetached,
+    lastImpactMagnitude = 0.0,
+)
 
 private fun fakeTelemetryData(
     currentLap: Int = 0,

@@ -69,6 +69,10 @@ sealed interface SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
     }
 
+    data object PartDetached : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
+    }
+
     data object TyreOverheat : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
     }

@@ -150,6 +150,7 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.SessionStop, "files/session_stopped.wav")
         put(SpeechEvent.RedFlag, "files/red_flag.wav")
         put(SpeechEvent.Overheating, "files/gp2_gp2.wav")
+        put(SpeechEvent.PartDetached, "files/part_detached.wav")
         put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
         put(SpeechEvent.TyreOverheat, "files/tyre_overheat.wav")
