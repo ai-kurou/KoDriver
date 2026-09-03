@@ -47,6 +47,11 @@
   - **改善案**: `composeMultiplatform`を1.12系へ更新するタイミング（`docs/improvement-ideas.md`「開発体験」節のHot Reload MCP server化・material3/material3-adaptive追随待ちの項目と合わせて検討）で、`compose-state-and-effects`スキルの対象範囲を`rg`等で確認し、suspend・後片付けが不要な`LaunchedEffect`が`SideEffect(keys)`へ置き換えられないか調査する。
   - **参考URL**: https://zenn.dev/uphyca/articles/00f497f365cc1e
 
+- **対象**: 全モジュールのユニットテスト（`kotlin-test`/`kotlin-test-junit`を使用、`docs/testing-guidelines.md`参照）
+  - **課題**: Kotlin 2.0で正式サポートされた`org.jetbrains.kotlin.plugin.power-assert`コンパイラープラグイン（アサーション失敗時に式の中間値を含む詳細メッセージを自動生成する）が未導入。現状はアサーション失敗時に期待値と実際値のみのシンプルなメッセージしか得られず、`docs/testing-guidelines.md`にある`withArg<T> { assert(...) }`のような複合条件の検証で失敗原因の特定に手間がかかるケースがある。
+  - **改善案**: テスト用ソースセットに`power-assert`プラグインを導入し、`assert`/`assertTrue`/`assertEquals`等の対象関数を設定することで、失敗時に変数の中身を自動出力させる。プロジェクト全体の`build-logic`規約プラグイン（`jvmTest`/`androidHostTest`向け）への組み込み方法を調査する。
+  - **参考URL**: https://kotlinlang.org/docs/power-assert.html
+
 ## Android
 
 - **対象**: `:feature:other-server-ip-detail`、`server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt`（mDNS広告 `_kodriver._tcp.local.`）
