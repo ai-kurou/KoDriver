@@ -59,10 +59,6 @@
 
 ## バグ
 
-- **対象**: `feature/debug-state-detail/src/commonMain/composeResources/values/strings.xml` の `debug_state_tyre_wear_fl`（L69, `_fr`/`_rl`/`_rr`も同様に計4件）・`debug_state_fuel_consumption_per_lap_ratio`（L74）・`debug_state_fuel_consumption_remaining_percent`（L77）
-  - **課題**: `%1$s%` のように書式指定子の直後に単独の `%` を置いている。Android/Compose Resourcesの文字列フォーマット処理では、書式指定子中の `%` はエスケープ（`%%`）しないとフォーマット例外や表示崩れの原因になりうる。実際 `feature/ace-windows-readout-remaining-fuel-detail/src/commonMain/composeResources/values/strings.xml` の `remaining_fuel_threshold_label`（L8）は `%1$s%%` と正しくエスケープしており、モジュール間で書き方が不統一。
-  - **改善案**: `debug-state-detail` の該当4文字列リソースを `%1$s%%` 表記に修正し、実際に `stringResource` 経由でフォーマットして表示崩れ・例外が起きないことを確認する。
-
 - **対象**: `feature/other-console-ip-detail/src/commonMain/kotlin/kurou/kodriver/feature/otherconsoleipdetail/OtherConsoleIpDetailPane.kt`（L243）
   - **課題**: `saveFailed` 表示のエラーメッセージが `Text(text = "保存に失敗しました", ...)` とハードコードされた日本語文字列リテラルになっており、`composeResources`（`strings.xml`）を経由していない。同一モジュール内の `console_ip_port_33741_label`（L236）など他の文言は `stringResource` 経由で `strings.xml` から参照しており、この1箇所だけが慣習から外れている。リポジトリ全体を検索してもこの文字列リテラルは他にヒットせず、文字列リソース化の抜けになっている。
   - **改善案**: `feature/other-console-ip-detail/src/commonMain/composeResources/values/strings.xml` に `console_ip_save_failed`（仮称）等のキーで文字列リソースを追加し、`OtherConsoleIpDetailPane.kt:243` を `stringResource(Res.string.console_ip_save_failed)` に置き換える。
