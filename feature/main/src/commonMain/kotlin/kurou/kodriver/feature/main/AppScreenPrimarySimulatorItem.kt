@@ -3,17 +3,18 @@ package kurou.kodriver.feature.main
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -60,12 +61,12 @@ fun appScreenPrimarySimulatorLabel(simulatorId: String): String = simulatorShort
 private val SimulatorCardWidth = 320.dp
 private val SimulatorCardHeight = 180.dp
 private val SimulatorCardSpacing = 16.dp
-private val SimulatorPopupWidth = 640.dp
+private val SimulatorPopupMaxHeight = 480.dp
 
 /**
  * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータのアイコンと、
  * それをタップして開くシミュレータ選択メニュー。
- * メニューの中身は、カード全体にシミュレータ画像を敷き詰めた等幅カードの横スクロールで表示する。
+ * メニューの中身は、カード全体にシミュレータ画像を敷き詰めた等幅カードの縦スクロールで表示する。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
@@ -83,13 +84,14 @@ fun AppScreenPrimarySimulatorIndicator(
             onDismissRequest = { onExpandedChange(false) },
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
         ) {
-            Row(
+            Column(
                 modifier =
                     Modifier
-                        .width(SimulatorPopupWidth)
-                        .horizontalScroll(rememberScrollState())
+                        .width(SimulatorCardWidth + SimulatorCardSpacing * 2)
+                        .heightIn(max = SimulatorPopupMaxHeight)
+                        .verticalScroll(rememberScrollState())
                         .padding(SimulatorCardSpacing),
-                horizontalArrangement = Arrangement.spacedBy(SimulatorCardSpacing),
+                verticalArrangement = Arrangement.spacedBy(SimulatorCardSpacing),
             ) {
                 Simulator.entries.forEach { simulator ->
                     SimulatorCard(
