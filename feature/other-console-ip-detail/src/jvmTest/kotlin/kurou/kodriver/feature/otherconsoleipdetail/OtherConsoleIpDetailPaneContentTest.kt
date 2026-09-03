@@ -8,6 +8,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
 import org.junit.Rule
@@ -152,5 +153,30 @@ class OtherConsoleIpDetailPaneContentTest {
         rule.onNodeWithText("33741（SimHub経由で接続）").performClick()
 
         assertEquals(33741, selected)
+    }
+
+    @Test
+    fun `入力欄でEnterキーを押すとonSaveが呼ばれる`() {
+        var saveCount = 0
+        setContent(ContentParams(onSave = { saveCount++ }))
+
+        rule.onNodeWithText("IPアドレス").performImeAction()
+
+        assertEquals(1, saveCount)
+    }
+
+    @Test
+    fun `保存ボタンが無効な状態で入力欄でEnterキーを押してもonSaveは呼ばれない`() {
+        var saveCount = 0
+        setContent(
+            ContentParams(
+                uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
+                onSave = { saveCount++ },
+            ),
+        )
+
+        rule.onNodeWithText("IPアドレス").performImeAction()
+
+        assertEquals(0, saveCount)
     }
 }

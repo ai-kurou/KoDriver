@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
@@ -122,6 +125,11 @@ fun OtherConsoleIpDetailPaneContent(
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onOpenSimHub()
     }
+    val onSaveConfirmedByKeyboard: () -> Unit = {
+        if (uiState.isInputValid && uiState.inputAddress.isNotEmpty()) {
+            onSave()
+        }
+    }
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) {
             onDismiss()
@@ -203,6 +211,8 @@ fun OtherConsoleIpDetailPaneContent(
                         null
                     },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onSaveConfirmedByKeyboard() }),
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(16.dp))
