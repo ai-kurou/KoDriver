@@ -33,6 +33,7 @@ import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_t
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_temperature_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_class_title
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_damage_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.navigate_back
@@ -134,6 +135,7 @@ private val debugStateCardTitles: Map<DebugStateCardKey, StringResource> =
         DebugStateCardKey.TYRE_WEAR to Res.string.debug_state_tyre_wear_title,
         DebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to Res.string.debug_state_pit_timing_title,
+        DebugStateCardKey.VEHICLE_DAMAGE to Res.string.debug_state_vehicle_damage_title,
     )
 
 private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugStateDetailUiState) -> Unit> =
@@ -207,6 +209,7 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
                 uiState.lmuWindowsTelemetry,
             )
         },
+        DebugStateCardKey.VEHICLE_DAMAGE to { uiState -> VehicleDamageContent(uiState.vehicleDamage) },
     )
 
 @Composable
