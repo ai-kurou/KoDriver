@@ -42,10 +42,6 @@
   - **課題**: `LazyColumn` ビルダーラムダ内で `val groupedItems = uiState.items.groupBy { it.section() }` を `remember` なしで実行している。`uiState`（`collectAsState` 由来）は `keepScreenOn`・ダイナミックカラー・ハプティクス等どの設定が変わっても更新されるため、`uiState.items` 自体に変化がなくても毎回再グルーピングが走る。
   - **改善案**: `remember(uiState.items) { uiState.items.groupBy { it.section() } }` のように `items` をキーにした `remember` でラップし、無関係な状態変化での再計算を避ける。
 
-- **対象**: `feature/telemetry-log-list/src/commonMain/kotlin/kurou/kodriver/feature/telemetryloglist/TelemetryLogListPane.kt:163-165`
-  - **課題**: `items(items = uiState.logs, key = { it.id })` のループボディ内で `onClick = { onLogClick(log.id) }` 等、`log` をキャプチャする3つのラムダを `remember` せず直書きしている。呼び出し先の `TelemetryLogListItem` は選択状態変化時に `animateColorAsState` で再コンポジションされるため、そのたびにこれら3ラムダが再生成される。
-  - **改善案**: `remember(log.id) { { onLogClick(log.id) } }` 等でラップするか、`onClick` を `log.id` を引数に取る安定したコールバック形へ変更し、不要な再生成を避ける。
-
 - **対象**: `compose-state-and-effects` スキルが対象とする各画面の `LaunchedEffect` 使用箇所全般（例: 一覧/詳細ペインでの一度きりの副作用実行）
   - **課題**: Jetpack Compose 1.12で `SideEffect` にキー引数（`SideEffect(keys) { ... }`）が追加され、suspend不要・後片付け不要な「一度だけ実行し、キー変更時のみ再発火する」処理について、従来 `LaunchedEffect` を代用していたケースをより軽量なAPIに置き換えられるようになった（記事によれば`LaunchedEffect`比で最大90%高速とされる）。ただしレイアウト確定前に実行される点、キー変更時に「前回分の取り消し」ができない点（撃ちっぱなしのログ記録等のみ対象）に注意が必要。KoDriverが依存する `composeMultiplatform`（現状1.11.1）がこのAPIを含む1.12系へ追随した際に、該当する`LaunchedEffect`使用箇所を洗い出す余地がある。
   - **改善案**: `composeMultiplatform`を1.12系へ更新するタイミング（`docs/improvement-ideas.md`「開発体験」節のHot Reload MCP server化・material3/material3-adaptive追随待ちの項目と合わせて検討）で、`compose-state-and-effects`スキルの対象範囲を`rg`等で確認し、suspend・後片付けが不要な`LaunchedEffect`が`SideEffect(keys)`へ置き換えられないか調査する。

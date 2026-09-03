@@ -96,3 +96,4 @@
 - 2026-09-03 例外握りつぶし5箇所にSentry.captureExceptionでの記録を追加して削除
 - 2026-09-03 debug-state-detailの%%エスケープ提案は誤りと判明したため削除（PR #1355）
 - 2026-09-03 R8/ProGuard未有効化を解消（難読化はせずminifyのみ有効化）（PR #1364）
+- 2026-09-03 TelemetryLogListPaneのラムダremember化は既存パターンに前例なく費用対効果も低いため見送りとして削除
