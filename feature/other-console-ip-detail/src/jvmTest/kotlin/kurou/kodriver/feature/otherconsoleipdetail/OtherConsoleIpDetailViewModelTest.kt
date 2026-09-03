@@ -113,6 +113,20 @@ class OtherConsoleIpDetailViewModelTest {
         }
 
     @Test
+    fun `保存時に例外が発生するとsaveFailedがtrueになる`() =
+        runTest {
+            addressRepository = FailingConsoleAddressPreferencesRepository()
+            viewModel = buildViewModel(addrRepo = addressRepository)
+
+            viewModel.onAddressChanged("10.0.0.3")
+            viewModel.onSave()
+
+            val state = viewModel.uiState.first()
+            assertTrue(state.saveFailed)
+            assertFalse(state.isSaved)
+        }
+
+    @Test
     fun `ポート33741を選択してから保存するとリポジトリに33741が保存される`() =
         runTest {
             viewModel.onAddressChanged("10.0.0.1")
@@ -142,7 +156,7 @@ class OtherConsoleIpDetailViewModelTest {
         }
 }
 
-private class FakeConsoleAddressPreferencesRepository(
+private open class FakeConsoleAddressPreferencesRepository(
     initial: String? = null,
 ) : ConsoleAddressPreferencesRepository {
     private val flow = MutableStateFlow(initial)
@@ -151,6 +165,12 @@ private class FakeConsoleAddressPreferencesRepository(
 
     override suspend fun saveConsoleAddress(address: String) {
         flow.update { address }
+    }
+}
+
+private class FailingConsoleAddressPreferencesRepository : FakeConsoleAddressPreferencesRepository() {
+    override suspend fun saveConsoleAddress(address: String) {
+        error("保存に失敗しました")
     }
 }
 

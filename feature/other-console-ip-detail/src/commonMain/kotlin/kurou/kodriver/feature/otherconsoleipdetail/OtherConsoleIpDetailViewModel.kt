@@ -77,6 +77,7 @@ internal class OtherConsoleIpDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                captureOtherConsoleIpDetailError(e)
                 _mutable.update { it.copy(saveFailed = true) }
             }
         }

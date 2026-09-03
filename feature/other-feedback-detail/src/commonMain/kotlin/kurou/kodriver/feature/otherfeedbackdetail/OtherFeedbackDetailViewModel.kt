@@ -135,6 +135,7 @@ internal class OtherFeedbackDetailViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                captureOtherFeedbackDetailError(e)
                 _uiState.update { it.copy(sendStatus = FeedbackSendStatus.Failed) }
             }
         }
