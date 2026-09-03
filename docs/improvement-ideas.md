@@ -57,11 +57,6 @@
 
 ## Android
 
-- **対象**: `app/androidApp/src/main/AndroidManifest.xml`（`android-targetSdk = "36"`、`gradle/libs.versions.toml`）
-  - **課題**: Android 16（API 36）以降、`targetSdk` 36以上のアプリがプライベートアドレス（例: `192.168.x.x`）へ接続する際は `android.permission.ACCESS_LOCAL_NETWORK`（dangerous権限、実行時リクエストが必要）がないと接続パケットが**エラーを返さず黙って破棄される**（ループバック`127.0.0.1`は対象外）。KoDriverのAndroidアプリは `:feature:other-server-ip-detail` で設定したLAN内KoDriverサーバー（`:server`、`0.0.0.0:8080`）へWebSocket接続する構成のため、`targetSdk = 36` の現状構成では、マニフェストに権限宣言・実行時リクエストがない場合Android 16実機でサイレントにタイムアウトし、原因特定が困難な接続不能バグとなるおそれがある。現在の `AndroidManifest.xml` には `INTERNET` 権限のみが宣言されている。
-  - **改善案**: `AndroidManifest.xml` に `<uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" android:minSdkVersion="36" />` を追加し、`ActivityResultContracts.RequestPermission()` 等でランタイム許可を取得する導線を検討する。実機がなくても `adb shell appops get <package> | grep -i local` で拒否状態を確認できる。
-  - **参考URL**: https://zenn.dev/ace_toshi/articles/android-access-local-network
-
 - **対象**: `:feature:other-server-ip-detail`、`server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt`（mDNS広告 `_kodriver._tcp.local.`）
   - **課題**: Android 17でGoogleが新設した「ローカルネットワーク保護」により、アプリが同一LAN上の他デバイスをスキャン（mDNS探索を含む）する際にユーザーの明示的な許可が必要になった（参考: https://blog.google/security/new-Android-network-security-protections/ )。`:feature:other-server-ip-detail` はKoDriverサーバーが広告するmDNSサービスを検出して接続先IPを自動入力する機能を持つため、Android 17端末では権限ダイアログの表示・拒否時のフォールバック挙動（手動IP入力への案内など）の対応が必要になる可能性がある。上記のAndroid 16向け `ACCESS_LOCAL_NETWORK` 権限との関係・重複の有無も含めて未調査。
   - **改善案**: Android 17実機またはエミュレータでmDNS自動検出フローを検証し、権限ダイアログが表示されるか、拒否時に自動検出が失敗した場合のUI（エラーメッセージ・手動入力への誘導）が適切かを確認する。必要であれば権限リクエスト導線・フォールバックUIを追加する。
