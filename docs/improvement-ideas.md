@@ -87,11 +87,6 @@
   - **改善案**: Zennの実例（作業宣言ファイルによる担当範囲の3行宣言・セッション開始時の未コミット変更確認とロック掃除など）を参考に、CLAUDE.mdの「作業開始時」チェックリストへ「他セッションが同一箇所を作業中でないかの確認」「開始時のロックファイル・未コミット変更の確認」を追加する余地がないか検討する。
   - **参考URL**: https://zenn.dev/hilopon/articles/two-ai-git-ops-accident-prevention
 
-- **対象**: 夜間バッチ（`nightly-todo.yml`）・`docs/nightly-todo-list.md` の運用
-  - **課題**: 現状の夜間バッチは `/loop` 相当の定期実行の仕組み（GitHub Actionsのcron）に依存しているが、Claude Code自体が持つ `/goal`（完了条件駆動）・`/loop`（時間駆動）・Cron・Workflow（複数エージェント協調）の使い分けや、暴走時のキルスイッチ（`CLAUDE_CODE_DISABLE_CRON=1`等）・トークン消費監視（`/usage`）についてはドキュメント化されていない。
-  - **改善案**: Qiitaの整理記事を参考に、KoDriverの夜間バッチ・自動化フローで各機能をどう使い分けているか（またはなぜ使わないか）を `docs/nightly-todo-list.md` や `docs/ci-workflows.md` に補足できないか検討する。
-  - **参考URL**: https://qiita.com/NaokiIshimura/items/71af4e891b2f8f1e7943
-
 - **対象**: `app/desktopApp` のウィンドウ・ダイアログ生成部分
   - **課題**: Compose Multiplatform 1.12.0でWindow/DialogStateのv2 APIが追加され、画面選択・カスタム位置/サイズロジック・ウィンドウサイズの最小/最大設定・ダイアログの親ウィンドウ相対配置が可能になった（参考: https://blog.jetbrains.com/kotlin/2026/08/compose-multiplatform-1-12-0/）。現状KoDriverのデスクトップウィンドウ・各種設定ダイアログでこれらの制御が必要になった際の実装手段が不明瞭。
   - **改善案**: プロジェクトが依存するCompose Multiplatformのバージョンを1.12.0系へ更新した際、既存のウィンドウ/ダイアログ生成コードでv2 APIへの置き換えが有用な箇所がないか調査する。
