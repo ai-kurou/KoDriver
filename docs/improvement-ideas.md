@@ -34,10 +34,6 @@
 
 ## テスト
 
-- **対象**: `core:designsystem`（`DetailPane.kt` の `DetailPaneSubtitle`）
-  - **課題**: `if (trailingContent != null)` による表示分岐について、`DetailPaneSubtitle` 単独のスクリーンショットテストが存在しない。呼び出し側のテストで間接的に一部カバーされているのみで、`trailingContent`有無の対比検証はない。
-  - **改善案**: `DetailPaneSubtitle` 単独のスクリーンショットテストを新設し、`trailingContent`の有無双方のケースを追加する。
-
 - **対象**: `feature/other-list/src/commonMain/kotlin/kurou/kodriver/feature/otherlist/OtherListPane.kt:313`
   - **課題**: `LazyColumn` ビルダーラムダ内で `val groupedItems = uiState.items.groupBy { it.section() }` を `remember` なしで実行している。`uiState`（`collectAsState` 由来）は `keepScreenOn`・ダイナミックカラー・ハプティクス等どの設定が変わっても更新されるため、`uiState.items` 自体に変化がなくても毎回再グルーピングが走る。
   - **改善案**: `remember(uiState.items) { uiState.items.groupBy { it.section() } }` のように `items` をキーにした `remember` でラップし、無関係な状態変化での再計算を避ける。
