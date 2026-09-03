@@ -57,7 +57,7 @@ fun AppScreenPrimarySimulatorIcon(
 fun appScreenPrimarySimulatorLabel(simulatorId: String): String = simulatorShortName(simulatorId)
 
 private val SimulatorCardWidth = 320.dp
-private val SimulatorCardHeight = 280.dp
+private val SimulatorCardHeight = 180.dp
 private val SimulatorCardSpacing = 16.dp
 private val SimulatorPopupWidth = 640.dp
 
@@ -80,6 +80,7 @@ fun AppScreenPrimarySimulatorIndicator(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         ) {
             Row(
                 modifier =
