@@ -118,4 +118,26 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Overheating, false) }
         confirmVerified(repository, ttsEngine)
     }
+
+    @Test
+    fun `初期状態は partDetachedEnabled がデフォルト値 true の UiState を返す`() =
+        runTest {
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel = createViewModel()
+
+            assertEquals(true, viewModel.uiState.first().partDetachedEnabled)
+        }
+
+    @Test
+    fun `onPartDetachedEnabledChanged を呼ぶと UiState の partDetachedEnabled が更新される（永続化はされない）`() =
+        runTest {
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel = createViewModel()
+
+            viewModel.onPartDetachedEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().partDetachedEnabled)
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            confirmVerified(repository)
+        }
 }
