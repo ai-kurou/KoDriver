@@ -51,13 +51,13 @@ jobs:
 
           1. docs/nightly-todo-list.md を読み、「毎晩実行する項目」と、上記のJST曜日に対応する「曜日ローテーション項目」だけを対象にする（他の曜日の項目は対象外）。
           2. 対象項目それぞれについて調査し、KoDriverにIssueとして起票する価値があると判断した改善案をまとめる。
-          3. 改善案がある場合は、`gh issue list --search "<キーワード>"`（オープン・クローズ問わず）で同趣旨のIssueが既に存在しないか確認する。既存Issueがあれば、その改善案は起票しない。
-          4. 重複がなければ `gh issue create --title "<タイトル>" --body "<本文>"` でIssueを起票する。ラベルは付けない。タイトルは対象がわかる簡潔なもの、本文は「対象・課題・改善案」がわかる粒度で書く（既存Issueの書式を `gh issue list` 等で確認し、それに合わせる）。同一バッチ内で重複するIssueを複数起票しない。
-          5. リポジトリ内のファイルは一切変更しない（`gh issue create` によるIssue起票のみを行う）。起票する改善案が1件もない場合は何も起票しない。
+          3. 改善案がある場合は、\`gh issue list --search "<キーワード>"\`（オープン・クローズ問わず）で同趣旨のIssueが既に存在しないか確認する。既存Issueがあれば、その改善案は起票しない。
+          4. 重複がなければ \`gh issue create --title "<タイトル>" --body "<本文>"\` でIssueを起票する。ラベルは付けない。タイトルは対象がわかる簡潔なもの、本文は「対象・課題・改善案」がわかる粒度で書く（既存Issueの書式を \`gh issue list\` 等で確認し、それに合わせる）。同一バッチ内で重複するIssueを複数起票しない。
+          5. リポジトリ内のファイルは一切変更しない（\`gh issue create\` によるIssue起票のみを行う）。起票する改善案が1件もない場合は何も起票しない。
           6. 最後に、調査した各項目について「確認した内容」「起票した/しなかった判断とその理由（起票した場合はIssue番号）」を簡潔にまとめて出力する（このまとめはワークフローのジョブサマリーに転記される）。ZennとQiitaについては、docs/nightly-todo-list.md の当該項目の指示に従い、過去24時間以内に確認した全記事のURLと1行要約の一覧も出力に含めること。
           PROMPT
           )" \
-            --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Bash(gh issue list:*),Bash(gh issue create:*)" \
+            --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Bash(gh issue list:*),Bash(gh issue create:*),Bash(gh run list:*),Bash(gh api repos/*/actions/runs*)" \
             --permission-mode acceptEdits \
             --model sonnet \
             --effort low \
