@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -21,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -62,6 +62,7 @@ private val SimulatorCardWidth = 320.dp
 private val SimulatorCardHeight = 180.dp
 private val SimulatorCardSpacing = 16.dp
 private val SimulatorPopupMaxHeight = 480.dp
+private val SimulatorCardImageBlur = 2.dp
 
 /**
  * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータのアイコンと、
@@ -82,6 +83,7 @@ fun AppScreenPrimarySimulatorIndicator(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
+            shape = MaterialTheme.shapes.extraLarge,
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
         ) {
             Column(
@@ -125,14 +127,13 @@ private fun SimulatorCard(
             painter = simulatorLargeImage(simulatorId),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().blur(SimulatorCardImageBlur),
         )
         Box(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomStart)
-                    .background(Color.Black.copy(alpha = 0.6f))
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))
                     .padding(12.dp),
             contentAlignment = Alignment.Center,
         ) {
