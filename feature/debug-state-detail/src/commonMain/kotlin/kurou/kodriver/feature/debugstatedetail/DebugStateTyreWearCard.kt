@@ -44,6 +44,8 @@ internal fun TyreWearContent(
     }
 }
 
+// デバッグ表示専用の固定4輪分Mapのため、ImmutableMap化のコストに見合わない。
+@Suppress("UnstableCollections")
 @Composable
 private fun WheelWearText(
     wheels: Map<WheelIndex, LmuWindowsTyreWheelData>,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -518,7 +519,7 @@ class ReadoutContentTest {
     fun `scrollToTopRequestが増えるとリストを先頭へ戻す`() {
         val priorityHintLabelText = "読み上げ優先度"
         var lastItemText by mutableStateOf("")
-        var scrollToTopRequest by mutableStateOf(0)
+        var scrollToTopRequest by mutableIntStateOf(0)
         val items =
             listOf(
                 ReadoutItemKey.LmuWindows.Flag.Root,

@@ -63,6 +63,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -326,7 +327,6 @@ private fun ReadoutListItemCard(
     item: ReadoutItemKey,
     index: Int,
     itemName: String,
-    dragHandleModifier: Modifier,
     readoutEnabled: Boolean,
     queueEnabled: Boolean,
     startSoundEnabled: Boolean,
@@ -335,11 +335,13 @@ private fun ReadoutListItemCard(
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onStartSoundEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    dragHandleModifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
     ElevatedCard(
         modifier =
-            Modifier
+            modifier
                 .padding(horizontal = 8.dp, vertical = 4.dp)
                 .fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
@@ -582,9 +584,10 @@ private fun ScrollToTopEffect(
     scrollToTopRequest: Int,
     scrollToTop: suspend () -> Unit,
 ) {
+    val currentScrollToTop by rememberUpdatedState(scrollToTop)
     LaunchedEffect(scrollToTopRequest) {
         if (scrollToTopRequest > 0) {
-            scrollToTop()
+            currentScrollToTop()
         }
     }
 }

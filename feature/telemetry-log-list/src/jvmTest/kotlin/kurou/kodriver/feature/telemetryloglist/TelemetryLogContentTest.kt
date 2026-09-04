@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -301,7 +302,7 @@ class TelemetryLogContentTest {
 
     @Test
     fun `scrollToTopRequestが増えるとリストを先頭へ戻す`() {
-        var scrollToTopRequest by mutableStateOf(0)
+        var scrollToTopRequest by mutableIntStateOf(0)
         val logs = createTelemetryLogs()
 
         rule.setContent {

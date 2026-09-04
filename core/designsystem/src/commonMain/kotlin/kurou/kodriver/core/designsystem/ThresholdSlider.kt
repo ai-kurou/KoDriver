@@ -14,7 +14,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,7 +42,7 @@ fun ThresholdSlider(
     resetContentDescription: String? = null,
 ) {
     val haptic = LocalHapticFeedback.current
-    var sliderValue by remember(value) { mutableStateOf(value) }
+    var sliderValue by remember(value) { mutableFloatStateOf(value) }
     val isDifferentFromDefault = defaultValue != null && abs(sliderValue - defaultValue) > 0.001f
     val resetButtonAlpha by animateFloatAsState(targetValue = if (isDifferentFromDefault) 1f else 0f)
 

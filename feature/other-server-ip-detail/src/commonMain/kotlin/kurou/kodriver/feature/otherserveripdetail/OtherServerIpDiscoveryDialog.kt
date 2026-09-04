@@ -23,6 +23,8 @@ import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_title
 import org.jetbrains.compose.resources.stringResource
 
+// mDNSで発見されたLAN内サーバーの一覧(数件程度)のため、ImmutableList化のコストに見合わない。
+@Suppress("UnstableCollections")
 @Composable
 internal fun OtherServerIpDiscoveryDialog(
     discoveredServers: List<DiscoveredServer>,

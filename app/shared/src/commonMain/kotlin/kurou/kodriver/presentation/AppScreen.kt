@@ -39,6 +39,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -338,9 +339,9 @@ fun AppScreen(
     val readoutListUiState by readoutListViewModel.uiState.collectAsState()
     val telemetryLogListUiState by telemetryLogListViewModel.uiState.collectAsState()
     val otherListUiState by otherListViewModel.uiState.collectAsState()
-    var readoutListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
-    var telemetryLogListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
-    var otherListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
+    var readoutListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
+    var telemetryLogListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
+    var otherListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
 
     AppStartupEffects(
         darkTheme = darkTheme,

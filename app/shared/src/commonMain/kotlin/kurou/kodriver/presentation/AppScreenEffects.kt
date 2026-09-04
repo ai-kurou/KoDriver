@@ -2,7 +2,9 @@ package kurou.kodriver.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import kurou.kodriver.feature.acewindowsnarrator.AceWindowsNarratorEffect
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
@@ -45,12 +47,15 @@ internal fun AppStartupEffects(
     checkUpdate: suspend () -> Unit,
     onDarkThemeChanged: (Boolean) -> Unit,
 ) {
+    val currentCheckUpdate by rememberUpdatedState(checkUpdate)
+    val currentOnDarkThemeChange by rememberUpdatedState(onDarkThemeChanged)
+
     LaunchedEffect(Unit) {
-        checkUpdate()
+        currentCheckUpdate()
     }
 
     LaunchedEffect(darkTheme) {
-        onDarkThemeChanged(darkTheme)
+        currentOnDarkThemeChange(darkTheme)
     }
 }
 

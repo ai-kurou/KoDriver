@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedback
@@ -486,7 +486,7 @@ class OtherListPaneTest {
 
     @Test
     fun `scrollToTopRequestが増えるとリストを先頭へ戻す`() {
-        var scrollToTopRequest by mutableStateOf(0)
+        var scrollToTopRequest by mutableIntStateOf(0)
 
         rule.setContent {
             Box(modifier = Modifier.height(160.dp)) {

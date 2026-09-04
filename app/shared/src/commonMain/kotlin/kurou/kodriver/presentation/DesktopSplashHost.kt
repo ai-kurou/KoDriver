@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.CancellationException
@@ -42,6 +43,7 @@ fun DesktopSplashHost(
     val progress = remember { DesktopSplashProgress() }
     val uiState by progress.uiState.collectAsState()
     var error by remember { mutableStateOf<Throwable?>(null) }
+    val currentOnReady by rememberUpdatedState(onReady)
 
     LaunchedEffect(Unit) {
         try {
@@ -49,7 +51,7 @@ fun DesktopSplashHost(
                 initializeModules = initializeModules,
                 startServer = startServer,
             )
-            onReady()
+            currentOnReady()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Throwable) {

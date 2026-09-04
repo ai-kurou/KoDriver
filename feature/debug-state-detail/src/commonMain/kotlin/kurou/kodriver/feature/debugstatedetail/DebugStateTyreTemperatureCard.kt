@@ -44,6 +44,8 @@ internal fun TyreTemperatureContent(
     }
 }
 
+// デバッグ表示専用の固定4輪分Mapのため、ImmutableMap化のコストに見合わない。
+@Suppress("UnstableCollections")
 @Composable
 private fun WheelTemperatureText(
     wheels: Map<WheelIndex, LmuWindowsTyreWheelData>,

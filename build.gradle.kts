@@ -98,6 +98,7 @@ subprojects {
     }
     dependencies {
         "detektPlugins"(rootProject.libs.detekt.formatting)
+        "detektPlugins"(rootProject.libs.detekt.composeRules)
     }
     pluginManager.withPlugin("org.jetbrains.kotlinx.kover") {
         extensions.configure<kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension> {
