@@ -9,4 +9,4 @@ KoDriverリポジトリ内で利用するClaude Code向けSkillを配置する�
 - `compose-state-and-effects/` — Compose の状態所有権・Effectライフサイクル設計の指針。KoDriverのViewModel設計規約（`uiState` への集約、`stateIn`/`combine` による宣言的な状態組み立て）と親和性が高い。
 - `kotlin-concurrency-and-flow/` — コルーチンの所有権・キャンセル・Flowの状態/イベントモデリングの指針。KoDriverのコルーチンエラーハンドリング規約（`runCatching` 禁止、`CancellationException` の再スロー）と親和性が高い。
 
-改善案メモ（`docs/improvement-ideas.md`）での調査・検討を経て導入した。
+改善案としての調査・検討を経て導入した。

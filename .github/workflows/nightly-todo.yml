@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   nightly-todo:
@@ -38,9 +39,10 @@ jobs:
           echo "date=$(TZ=Asia/Tokyo date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           echo "weekday=$(TZ=Asia/Tokyo date +%A)" >> "$GITHUB_OUTPUT"
 
-      - name: Run Claude Code to draft improvement-ideas.md changes
+      - name: Run Claude Code to file improvement issues
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JST_DATE: ${{ steps.jst.outputs.date }}
           JST_WEEKDAY: ${{ steps.jst.outputs.weekday }}
         run: |
@@ -48,59 +50,34 @@ jobs:
           KoDriverリポジトリの深夜バッチ処理を行ってください。今日の日付は ${JST_DATE}（JSTの曜日: ${JST_WEEKDAY}）です。
 
           1. docs/nightly-todo-list.md を読み、「毎晩実行する項目」と、上記のJST曜日に対応する「曜日ローテーション項目」だけを対象にする（他の曜日の項目は対象外）。
-          2. 対象項目それぞれについて調査し、KoDriverに追記する価値があると判断した改善案をまとめる。
-          3. 改善案がある場合は、docs/resolved-improvement-ideas.md を読み、同趣旨の内容が既に対応済みとして記録されていないか確認する。記録があれば、その改善案は追記しない。
-          4. 記録がなければ docs/improvement-ideas.md のみを編集し、既存の記述スタイル・見出し構成に合わせて「対象・課題・改善案」がわかる粒度で追記する。docs/improvement-ideas.md 内で重複する項目があれば追記せず既存項目を優先する。
-          5. docs/improvement-ideas.md 以外のファイルは一切変更しない（docs/resolved-improvement-ideas.md も読み取り専用として扱い、変更しない）。改善案が1件もない場合は何も変更しない。
-          6. 最後に、調査した各項目について「確認した内容」「追記した/しなかった判断とその理由」を簡潔にまとめて出力する（このまとめはPRの説明欄に転記されるため、改善案の追記有無にかかわらず必ず出力すること）。ZennとQiitaについては、docs/nightly-todo-list.md の当該項目の指示に従い、過去24時間以内に確認した全記事のURLと1行要約の一覧も出力に含めること。
+          2. 対象項目それぞれについて調査し、KoDriverにIssueとして起票する価値があると判断した改善案をまとめる。
+          3. 改善案がある場合は、`gh issue list --search "<キーワード>"`（オープン・クローズ問わず）で同趣旨のIssueが既に存在しないか確認する。既存Issueがあれば、その改善案は起票しない。
+          4. 重複がなければ `gh issue create --title "<タイトル>" --body "<本文>"` でIssueを起票する。ラベルは付けない。タイトルは対象がわかる簡潔なもの、本文は「対象・課題・改善案」がわかる粒度で書く（既存Issueの書式を `gh issue list` 等で確認し、それに合わせる）。同一バッチ内で重複するIssueを複数起票しない。
+          5. リポジトリ内のファイルは一切変更しない（`gh issue create` によるIssue起票のみを行う）。起票する改善案が1件もない場合は何も起票しない。
+          6. 最後に、調査した各項目について「確認した内容」「起票した/しなかった判断とその理由（起票した場合はIssue番号）」を簡潔にまとめて出力する（このまとめはワークフローのジョブサマリーに転記される）。ZennとQiitaについては、docs/nightly-todo-list.md の当該項目の指示に従い、過去24時間以内に確認した全記事のURLと1行要約の一覧も出力に含めること。
           PROMPT
           )" \
-            --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Edit(docs/improvement-ideas.md),Write(docs/improvement-ideas.md)" \
+            --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Bash(gh issue list:*),Bash(gh issue create:*)" \
             --permission-mode acceptEdits \
             --model sonnet \
             --effort low \
             | tee nightly-todo-summary.txt
 
-      - name: Verify only improvement-ideas.md changed
+      - name: Verify no repository files changed
         run: |
           changed_files="$(git status --porcelain -- . ':!nightly-todo-summary.txt' | awk '{print $2}')"
-          if [ -z "$changed_files" ]; then
-            echo "changed=false" >> "$GITHUB_ENV"
-            exit 0
-          fi
-          if [ "$changed_files" != "docs/improvement-ideas.md" ]; then
+          if [ -n "$changed_files" ]; then
             echo "::error::Unexpected files changed by Claude Code: $changed_files"
             git checkout -- .
             exit 1
           fi
-          echo "changed=true" >> "$GITHUB_ENV"
 
-      - name: Create draft pull request
-        if: env.changed == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-          JST_DATE: ${{ steps.jst.outputs.date }}
+      - name: Publish job summary
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          branch="chore/nightly-todo-${JST_DATE}"
-          git checkout -b "$branch"
-          git add docs/improvement-ideas.md
-          git commit -m "docs: 夜間バッチによるimprovement-ideas.mdの追記案 (${JST_DATE})"
-          git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$branch"
-
           {
-            echo "夜間バッチ（nightly-todo.yml）が docs/nightly-todo-list.md を調査し、docs/improvement-ideas.md への追記案をまとめました。内容を確認のうえマージしてください。"
+            echo "夜間バッチ（nightly-todo.yml）が docs/nightly-todo-list.md を調査し、改善案をGitHub Issueとして起票しました。"
             echo
             echo "## 実行ログの要約"
             echo
             cat nightly-todo-summary.txt
-          } > pr-body.md
-
-          gh pr create \
-            --base main \
-            --head "$branch" \
-            --draft \
-            --title "docs: 夜間バッチによるimprovement-ideas.mdの追記案 (${JST_DATE})" \
-            --body-file pr-body.md
+          } >> "$GITHUB_STEP_SUMMARY"
