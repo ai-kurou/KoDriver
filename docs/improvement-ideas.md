@@ -25,6 +25,10 @@
   - **改善案**: Navigation3のサンプル・公式ドキュメントにあるMaterial3 AdaptiveとNavDisplayの統合パターン（両者で単一のバックスタックを共有する設計）への寄せ替えを検討する。ただし現状の実装（PR #1069, #1075, #1077, #1078）で機能的な不具合は出ていないため、優先度は低め。
   - **調査結果（2026-08-14）**: 統合用ライブラリ`org.jetbrains.compose.material3.adaptive:adaptive-navigation3`（AndroidX本家の`ListDetailSceneStrategy`に相当、`rememberListDetailSceneStrategy()`をNavDisplayに渡す構成）はJetBrains公式ドキュメント（https://kotlinlang.org/docs/multiplatform/compose-navigation-3.html）に記載されており存在する。ただし現時点のバージョンは`1.3.0-beta02`で、プロジェクトが依存している`adaptive-layout`/`adaptive-navigation`の安定版`1.2.0`系とは異なるベータ系列。CLAUDE.mdの「致命的なバグや互換性問題がない限り最新安定版を使用する」方針とも相性が悪いため、この統合ライブラリが安定版としてリリースされてから改めて移行を検討する。
 
+- **対象**: `core/data`（`:core:data`モジュール、`docs/architecture.md`上の説明は「DataStore・HTTP/WebSocketクライアント・リポジトリ実装」）
+  - **課題**: `core/data/src/jvmAndroidMain/kotlin/kurou/kodriver/data/feedback/SentryFeedbackSenderRepository.kt`（Sentry SDKを使ったクラッシュ/フィードバック送信）、`core/data/src/androidMain/.../release/HttpServerVersionRepository.kt`（アプリ更新バージョンチェック）、および十数個に及ぶAce/GT7/LMU固有のDataStore/Serializer/Factoryが同一モジュールに同居しており、`:core:lmu-windows-data`・`:core:gt7-ps5-data`・`:core:ace-windows-data`がテレメトリ読み取り側をシミュレーター別に分離しているのと対照的に、書き込み・設定永続化側は`core:data`に一括で集約されてしまっている。`docs/architecture.md`の一行説明もSentry送信の責務には触れていない。`moduleGraphAssert`の依存パターン自体は問題なく通っているため見過ごされやすい。
+  - **改善案**: シミュレーター固有のPreferences群をシミュレーター別モジュール（または`core:data`内のパッケージ分割に留めず物理モジュール分割）に、Sentryフィードバック送信・バージョンチェックをそれぞれ独立した責務のモジュールに切り出せないか検討する。優先度は低めだが、`core:data`の肥大化が進む前に検討する価値がある。
+
 ## UI/UX
 
 - **対象**: `ReadoutContent.kt`（`feature:readout-list`）・`OtherContent.kt`（`app:shared`）・`TelemetryLogContent.kt`（`feature:telemetry-log-list`）の `ListDetailPaneScaffold`／画面幅判定まわり
@@ -47,6 +51,11 @@
   - **課題**: Kotlin 2.0で正式サポートされた`org.jetbrains.kotlin.plugin.power-assert`コンパイラープラグイン（アサーション失敗時に式の中間値を含む詳細メッセージを自動生成する）が未導入。現状はアサーション失敗時に期待値と実際値のみのシンプルなメッセージしか得られず、`docs/testing-guidelines.md`にある`withArg<T> { assert(...) }`のような複合条件の検証で失敗原因の特定に手間がかかるケースがある。
   - **改善案**: テスト用ソースセットに`power-assert`プラグインを導入し、`assert`/`assertTrue`/`assertEquals`等の対象関数を設定することで、失敗時に変数の中身を自動出力させる。プロジェクト全体の`build-logic`規約プラグイン（`jvmTest`/`androidHostTest`向け）への組み込み方法を調査する。
   - **参考URL**: https://kotlinlang.org/docs/power-assert.html
+
+- **対象**: `feature:readout-list`・`app:shared`・`feature:telemetry-log-list`のlist/detailペイン（`ListDetailPaneScaffold`）のAndroid実機/エミュレータでの表示確認
+  - **課題**: 現状の画面幅ごとの表示確認はスクリーンショットテスト（固定サイズのレンダリング）が中心で、実際にAndroidエミュレータ上でウィンドウサイズや折りたたみ状態を動的に変えながらlist/detail切り替えの挙動を確認する手段が定まっていない。
+  - **改善案**: Android Developers Blogで2026年8月末に紹介された`adb emu`コマンド（`adb emu fold`/`unfold`、`adb emu rotate`、`adb emu posture <id>`、`adb emu resize-display <index>`）を使うと、フォルダブル状態・回転・画面サイズ切り替えをターミナルから即座にトリガーできる。手動UI確認フロー（CLAUDE.mdの「UIまたはフロントエンドの変更」時の実機確認）に組み込み、list/detailペイン3画面の折りたたみ/回転時の挙動を素早く確認できないか調査する。
+  - **参考URL**: https://android-developers.googleblog.com/2026/08/emulator-adaptive.html
 
 ## Android
 
@@ -91,3 +100,8 @@
 - **対象**: `config/detekt/detekt.yml`、全モジュールのComposable実装（`@Composable`関数の`Modifier`パラメータ・`remember`系関数の命名規則等）
   - **課題**: DroidKaigi 2025のセッション「これでもう迷わない！Jetpack Composeの書き方実践ガイド」（ZOZO、b4tchkn氏、https://speakerdeck.com/zozotech/jetpack-compose-practical-guide ）で紹介されている、AndroidX公式の`runtime-lint`やSlack製`compose-lints`のようなCompose専用lintが導入されていない。現状の`config/detekt/detekt.yml`にある`ModifierOrdering`ルールはktlint由来の**キーワード修飾子**（`public`/`private`等）の順序チェックであり、Composeの`Modifier`パラメータの並び順（引数に持つ・デフォルト値設定・チェーン先頭に配置等の7原則）やremember関数の命名規則を検証するものではない。
   - **改善案**: `runtime-lint`（AndroidX公式）または`compose-lints`（Slack製）をdetekt/lintパイプラインへ導入し、Composable関数のModifier引数の扱い・命名規則・不要な再コンポジションにつながる実装パターンを機械的に検出できないか調査する。KMP対応状況（Desktop/JVMターゲットで動作するか）を事前に確認すること。
+
+- **対象**: CLAUDE.mdの「デフォルトでコメントを書かない」ルール（本ファイル冒頭の「コーディング規約」節、および「作業単位・PR単位の時系列チェックリスト」）の遵守状況
+  - **課題**: 現状はCLAUDE.mdに静的なルールとして記載するのみで、実装後にコメントが増えていないかを機械的にチェックする仕組みがない。Zennの実例（`uzu_tech`氏、`/pr`スキル内で`git diff | grep`によりコメント行を機械抽出し判定表と突き合わせる）では、ルールを`.claude/rules/`や`CLAUDE.md`に書くだけよりも、実行可能なスキルのステップとして組み込む方がPRあたりのコメント行数を実際に削減できたと報告されている。
+  - **改善案**: PR作成・完了報告前のフロー（`start-implementation`スキルや`update-pr-description`スキル等）に、diff中の追加コメント行を機械抽出してCLAUDE.mdの許容基準（「隠れた制約・非自明な不変条件・特定バグの回避策・読み手が驚く挙動」以外は書かない）と突き合わせる簡易チェックステップを組み込めないか調査する。
+  - **参考URL**: https://zenn.dev/uzu_tech/articles/58a84a9346b910
