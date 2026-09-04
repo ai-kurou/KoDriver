@@ -11,6 +11,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -68,7 +69,7 @@ val lmuWindowsNarratorModule: Module =
         viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-        factory { NarratorUseCases(get(), get(), get()) }
+        factory { NarratorUseCases(get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
         factory { VehicleDamageUseCases(get(), get()) }
@@ -85,6 +86,7 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
         factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
         factory { ObserveLmuWindowsRedFlagVoiceTypeUseCase(get()) }
+        factory { ObserveLmuWindowsOverheatVoiceTypeUseCase(get()) }
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
         factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
@@ -150,6 +152,7 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.SessionStop, "files/session_stopped.wav")
         put(SpeechEvent.RedFlag, "files/red_flag.wav")
         put(SpeechEvent.Overheating, "files/gp2_gp2.wav")
+        put(SpeechEvent.OverheatingStandard, "files/overheat.wav")
         put(SpeechEvent.PartDetached, "files/part_detached.wav")
         put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")

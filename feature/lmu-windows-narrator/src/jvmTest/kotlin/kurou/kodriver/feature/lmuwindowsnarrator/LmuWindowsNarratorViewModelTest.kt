@@ -43,6 +43,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
@@ -58,6 +59,7 @@ import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
@@ -81,6 +83,7 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -185,6 +188,9 @@ class LmuWindowsNarratorViewModelTest {
     private lateinit var redFlagPreferencesRepository: LmuWindowsRedFlagPreferencesRepository
 
     @MockK
+    private lateinit var overheatPreferencesRepository: LmuWindowsOverheatPreferencesRepository
+
+    @MockK
     private lateinit var telemetryLogRepository: TelemetryLogRepository
 
     @MockK
@@ -222,6 +228,7 @@ class LmuWindowsNarratorViewModelTest {
         orderOverride: List<ReadoutItemKey>,
         voiceType: MyBestLapVoiceType,
         redFlagVoiceType: RedFlagVoiceType,
+        overheatVoiceType: OverheatVoiceType,
         skipFirstLap: Boolean,
         startReadoutEnabled: Boolean,
         startReadoutType: VehicleApproachStartReadoutType,
@@ -297,6 +304,7 @@ class LmuWindowsNarratorViewModelTest {
             MutableStateFlow(pitTimingTyreWearLapsThreshold)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
         every { redFlagPreferencesRepository.observeVoiceType() } returns MutableStateFlow(redFlagVoiceType)
+        every { overheatPreferencesRepository.observeVoiceType() } returns MutableStateFlow(overheatVoiceType)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns
             MutableStateFlow(queueEnabledOverrides)
     }
@@ -321,6 +329,7 @@ class LmuWindowsNarratorViewModelTest {
             ),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         redFlagVoiceType: RedFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
+        overheatVoiceType: OverheatVoiceType = OverheatVoiceType.GP2_GP2,
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
@@ -355,6 +364,7 @@ class LmuWindowsNarratorViewModelTest {
             orderOverride = orderOverride,
             voiceType = voiceType,
             redFlagVoiceType = redFlagVoiceType,
+            overheatVoiceType = overheatVoiceType,
             skipFirstLap = skipFirstLap,
             startReadoutEnabled = startReadoutEnabled,
             startReadoutType = startReadoutType,
@@ -483,6 +493,10 @@ class LmuWindowsNarratorViewModelTest {
                     observeRedFlagVoiceType =
                         ObserveLmuWindowsRedFlagVoiceTypeUseCase(
                             redFlagPreferencesRepository,
+                        ),
+                    observeOverheatVoiceType =
+                        ObserveLmuWindowsOverheatVoiceTypeUseCase(
+                            overheatPreferencesRepository,
                         ),
                 ),
             currentTimeMs = currentTimeMs,
@@ -973,6 +987,25 @@ class LmuWindowsNarratorViewModelTest {
             damageChannel.send(noDamage(overheating = true))
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `オーバーヒート音声タイプがSTANDARDのときはOverheatingStandardを読み上げる`() =
+        runTest(testDispatcher) {
+            val damageChannel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                damageChannel = damageChannel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                overheatVoiceType = OverheatVoiceType.STANDARD,
+            )
+
+            damageChannel.send(noDamage())
+            damageChannel.send(noDamage(overheating = true))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.OverheatingStandard), spokenTexts)
         }
 
     @Test

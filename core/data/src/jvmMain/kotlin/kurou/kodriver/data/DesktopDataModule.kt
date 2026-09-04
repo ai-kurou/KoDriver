@@ -19,6 +19,7 @@ import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelPreferencesRepos
 import kurou.kodriver.data.preferences.createGt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.data.preferences.createLmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsRemainingVirtualEnergyPreferencesRepository
@@ -57,6 +58,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
@@ -145,6 +147,9 @@ val desktopDataModule =
         }
         single<LmuWindowsRedFlagPreferencesRepository> {
             createLmuWindowsRedFlagPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsOverheatPreferencesRepository> {
+            createLmuWindowsOverheatPreferencesRepository(directory = kodriverDirectory)
         }
         single<ConsoleAddressPreferencesRepository> {
             createConsoleAddressPreferencesRepository(directory = kodriverDirectory)

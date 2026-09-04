@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOU
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
+import kurou.kodriver.domain.model.OVERHEAT_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.RED_FLAG_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
@@ -36,6 +37,7 @@ import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -120,6 +122,7 @@ internal data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
     val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
+    val observeOverheatVoiceType: ObserveLmuWindowsOverheatVoiceTypeUseCase,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
@@ -214,6 +217,11 @@ internal class LmuWindowsNarratorViewModel(
         narratorUseCases
             .observeRedFlagVoiceType()
             .stateIn(viewModelScope, SharingStarted.Eagerly, RED_FLAG_VOICE_TYPE_DEFAULT)
+
+    private val overheatVoiceType =
+        narratorUseCases
+            .observeOverheatVoiceType()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, OVERHEAT_VOICE_TYPE_DEFAULT)
 
     private val vehicleClassFlow =
         selectedSimulator
@@ -596,6 +604,7 @@ internal class LmuWindowsNarratorViewModel(
                 enabledStates = mergedEnabledStates.value,
                 myBestLapVoiceType = voiceType.value,
                 redFlagVoiceType = redFlagVoiceType.value,
+                overheatVoiceType = overheatVoiceType.value,
                 currentLap = currentLap.value,
                 skipFirstLap = skipFirstLap.value,
                 vehicleApproachStartReadoutType = startReadoutType.value,
