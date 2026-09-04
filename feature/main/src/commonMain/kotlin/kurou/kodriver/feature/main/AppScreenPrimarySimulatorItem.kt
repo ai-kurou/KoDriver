@@ -3,6 +3,7 @@ package kurou.kodriver.feature.main
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,6 +73,7 @@ private val SimulatorPopupMaxHeight = 480.dp
 private val SimulatorCardImageBlur = 2.dp
 private val SimulatorCardSelectedBorderWidth = 2.dp
 private val SimulatorCardCheckBadgeSize = 28.dp
+private val SimulatorPopupBorderWidth = 1.dp
 
 /**
  * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータのアイコンと、
@@ -94,6 +96,12 @@ fun AppScreenPrimarySimulatorIndicator(
             onDismissRequest = { onExpandedChange(false) },
             shape = MaterialTheme.shapes.extraLarge,
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            modifier =
+                Modifier.border(
+                    width = SimulatorPopupBorderWidth,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    shape = MaterialTheme.shapes.extraLarge,
+                ),
         ) {
             Column(
                 modifier =
