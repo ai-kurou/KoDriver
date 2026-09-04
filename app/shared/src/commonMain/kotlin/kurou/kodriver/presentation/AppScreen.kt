@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DividerDefaults
@@ -174,7 +175,9 @@ private fun AppNavIcon(
  * NavigationRail / NavigationBar の先頭に表示する、現在選択中のシミュレータの項目。
  * 他の [AppDestination] とは異なりタブ切り替えの対象ではないため、常に非選択（[selected] = false）とする。
  * タップするとシミュレータ選択メニューを開く。ラベル横にドロップダウン矢印アイコンを添えて、
- * 単なるタブではなくメニューを開く操作対象であることを視覚的に示す。
+ * 単なるタブではなくメニューを開く操作対象であることを視覚的に示す。画面下部の NavigationBar では
+ * メニューが上方向に展開されるため矢印を上向き（[Icons.Filled.ArrowDropUp]）にし、画面横の
+ * NavigationRail / NavigationDrawer では下向き（[Icons.Filled.ArrowDropDown]）のままとする。
  * NavigationDrawer ではラベルの横幅に余裕があるため、[MaterialTheme.typography.titleMedium] を使って
  * 他のタブラベルより強調表示する。
  */
@@ -192,6 +195,12 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                 .padding(4.dp)
         } else {
             Modifier
+        }
+    val dropdownArrowIcon =
+        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+            Icons.Filled.ArrowDropUp
+        } else {
+            Icons.Filled.ArrowDropDown
         }
     item(
         icon = {
@@ -228,7 +237,7 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
+                        imageVector = dropdownArrowIcon,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                     )
@@ -237,7 +246,7 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
                     Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
+                        imageVector = dropdownArrowIcon,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                     )
