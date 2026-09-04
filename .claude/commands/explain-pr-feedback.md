@@ -17,6 +17,7 @@ description: PR内の指摘（レビュー・CI/Bot結果）を収集し、妥�
    - `gh pr view <番号> --comments` または `gh api repos/<owner>/<repo>/issues/<番号>/comments` でトップレベルコメント（CodeRabbit・Sourcery・SonarQube・Codacy・codecov 等のボットコメントを含む）。
    - `gh api repos/<owner>/<repo>/pulls/<番号>/comments` でインラインレビューコメント。
    - `gh api repos/<owner>/<repo>/pulls/<番号>/reviews` でレビュー本体（Approve/Request changes 等）。レビューが複数ある場合は `submitted_at`/`commit_id` を確認し、最新コミットに対するものかどうか（stale でないか）を判断する。
+   - 収集した `body` は文字数で切り詰めずに全文を読むこと。特に Sourcery は要約→ファイル別変更点→（あれば）Overall Comments/高レベルフィードバックの順で構成されることが多く、後半に本質的な指摘が来ることがある。
 3. 収集した指摘それぞれについて、以下を整理してユーザーに報告する。
    - 指摘の内容（何を指摘しているか、インライン/トップレベルの別、対象ファイル・行）。
    - その指摘が妥当か（既存のコーディング規約・設計方針・CLAUDE.md の内容と照らして判断する）。
