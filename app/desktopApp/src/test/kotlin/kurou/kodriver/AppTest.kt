@@ -13,6 +13,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
@@ -383,7 +384,10 @@ class AppTest {
 
     private fun clickLastItem(text: String) {
         val nodeIndex = rule.onAllNodes(hasText(text)).fetchSemanticsNodes().lastIndex
-        rule.onAllNodes(hasText(text)).get(nodeIndex).performClick()
+        val node = rule.onAllNodes(hasText(text)).get(nodeIndex)
+        node.performScrollTo()
+        rule.waitForIdle()
+        node.performClick()
         rule.waitForIdle()
     }
 }

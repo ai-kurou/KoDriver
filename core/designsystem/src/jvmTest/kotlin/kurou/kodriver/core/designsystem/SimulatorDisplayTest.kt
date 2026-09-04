@@ -94,6 +94,45 @@ class SimulatorDisplayTest {
     }
 
     @Test
+    fun `lmu_windowsの大きな画像を返す`() {
+        var painter by mutableStateOf<Painter?>(null)
+        composeRule.setContent {
+            painter = simulatorLargeImage("lmu_windows")
+        }
+
+        assertNotNull(painter)
+    }
+
+    @Test
+    fun `gt7_ps5の大きな画像を返す`() {
+        var painter by mutableStateOf<Painter?>(null)
+        composeRule.setContent {
+            painter = simulatorLargeImage("gt7_ps5")
+        }
+
+        assertNotNull(painter)
+    }
+
+    @Test
+    fun `ace_windowsの大きな画像を返す`() {
+        var painter by mutableStateOf<Painter?>(null)
+        composeRule.setContent {
+            painter = simulatorLargeImage("ace_windows")
+        }
+
+        assertNotNull(painter)
+    }
+
+    @Test
+    fun `未対応のsimulatorIdを渡すと大きな画像の取得で例外が発生する`() {
+        assertFailsWith<IllegalStateException> {
+            composeRule.setContent {
+                simulatorLargeImage("unknown_simulator")
+            }
+        }
+    }
+
+    @Test
     fun `lmu_windowsの短縮名を返す`() {
         assertEquals("LMU", simulatorShortName("lmu_windows"))
     }

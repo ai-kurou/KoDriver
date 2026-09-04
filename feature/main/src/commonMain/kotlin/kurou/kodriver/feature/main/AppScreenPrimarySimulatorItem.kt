@@ -1,18 +1,41 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
+import kurou.kodriver.core.designsystem.simulatorLargeImage
 import kurou.kodriver.core.designsystem.simulatorShortName
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.main.generated.resources.Res
@@ -42,9 +65,18 @@ fun AppScreenPrimarySimulatorIcon(
 @Composable
 fun appScreenPrimarySimulatorLabel(simulatorId: String): String = simulatorShortName(simulatorId)
 
+private val SimulatorCardWidth = 320.dp
+private val SimulatorCardHeight = 180.dp
+private val SimulatorCardSpacing = 16.dp
+private val SimulatorPopupMaxHeight = 480.dp
+private val SimulatorCardImageBlur = 2.dp
+private val SimulatorCardSelectedBorderWidth = 2.dp
+private val SimulatorCardCheckBadgeSize = 28.dp
+
 /**
  * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータのアイコンと、
  * それをタップして開くシミュレータ選択メニュー。
+ * メニューの中身は、カード全体にシミュレータ画像を敷き詰めた等幅カードの縦スクロールで表示する。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
@@ -60,22 +92,93 @@ fun AppScreenPrimarySimulatorIndicator(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
+            shape = MaterialTheme.shapes.extraLarge,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         ) {
-            Simulator.entries.forEach { simulator ->
-                DropdownMenuItem(
-                    text = { Text(simulatorDisplayName(simulator.id)) },
-                    leadingIcon = {
-                        Image(
-                            painter = simulatorIcon(simulator.id),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp).clip(RoundedCornerShape(4.dp)),
-                        )
-                    },
-                    onClick = {
-                        onSimulatorSelected(simulator.id)
-                        onExpandedChange(false)
-                    },
+            Column(
+                modifier =
+                    Modifier
+                        .width(SimulatorCardWidth + SimulatorCardSpacing * 2)
+                        .heightIn(max = SimulatorPopupMaxHeight)
+                        .verticalScroll(rememberScrollState())
+                        .padding(SimulatorCardSpacing),
+                verticalArrangement = Arrangement.spacedBy(SimulatorCardSpacing),
+            ) {
+                Simulator.entries.forEach { simulator ->
+                    SimulatorCard(
+                        simulatorId = simulator.id,
+                        selected = simulator.id == simulatorId,
+                        onClick = {
+                            onSimulatorSelected(simulator.id)
+                            onExpandedChange(false)
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SimulatorCard(
+    simulatorId: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val displayName = simulatorDisplayName(simulatorId)
+    Card(
+        onClick = onClick,
+        modifier = modifier.width(SimulatorCardWidth).height(SimulatorCardHeight),
+        shape = MaterialTheme.shapes.extraLarge,
+        border =
+            if (selected) {
+                BorderStroke(SimulatorCardSelectedBorderWidth, MaterialTheme.colorScheme.primary)
+            } else {
+                null
+            },
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = simulatorLargeImage(simulatorId),
+                contentDescription = displayName,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize().blur(SimulatorCardImageBlur),
+            )
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f))
+                        .padding(12.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = displayName,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
                 )
+            }
+            if (selected) {
+                Box(
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 24.dp, end = 24.dp)
+                            .size(SimulatorCardCheckBadgeSize)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
             }
         }
     }
