@@ -48,9 +48,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.window.core.layout.WindowSizeClass
@@ -171,6 +173,8 @@ private fun AppNavIcon(
 /**
  * NavigationRail / NavigationBar の先頭に表示する、現在選択中のシミュレータの項目。
  * 他の [AppDestination] とは異なりタブ切り替えの対象ではないため、常に非選択（[selected] = false）とする。
+ * `NavigationSuiteScope` には項目間へ独立した `HorizontalDivider` を挿入する手段がないため、
+ * 項目自体の下端に区切り線を描画し、他の項目と地続きに並んでいないことを示す。
  * タップするとシミュレータ選択メニューを開く。
  */
 private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
@@ -179,14 +183,27 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onSimulatorSelected: (String) -> Unit,
+    dividerColor: Color,
+    dividerThickness: Dp,
 ) {
     val itemModifier =
-        if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-            Modifier
-                .fillMaxWidth()
-                .padding(4.dp)
-        } else {
-            Modifier
+        (
+            if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
+                Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            } else {
+                Modifier
+            }
+        ).drawWithContent {
+            drawContent()
+            val strokeWidth = dividerThickness.toPx()
+            drawLine(
+                color = dividerColor,
+                start = Offset(0f, size.height - strokeWidth / 2),
+                end = Offset(size.width, size.height - strokeWidth / 2),
+                strokeWidth = strokeWidth,
+            )
         }
     item(
         icon = {
@@ -530,6 +547,8 @@ private fun AppScreenScaffold(
                 .background(MaterialTheme.colorScheme.background)
                 .safeDrawingPadding(),
     ) {
+        val primarySimulatorItemDividerColor = DividerDefaults.color
+        val primarySimulatorItemDividerThickness = DividerDefaults.Thickness
         NavigationSuiteScaffold(
             modifier = Modifier.padding(top = 4.dp),
             layoutType = resolvedLayoutType,
@@ -540,6 +559,8 @@ private fun AppScreenScaffold(
                     expanded = simulatorMenuExpanded,
                     onExpandedChange = { simulatorMenuExpanded = it },
                     onSimulatorSelected = onSimulatorSelected,
+                    dividerColor = primarySimulatorItemDividerColor,
+                    dividerThickness = primarySimulatorItemDividerThickness,
                 )
                 AppDestination.entries.forEach { dest ->
                     val itemModifier =
