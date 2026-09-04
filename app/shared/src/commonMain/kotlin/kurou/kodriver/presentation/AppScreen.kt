@@ -21,6 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DividerDefaults
@@ -171,7 +174,13 @@ private fun AppNavIcon(
 /**
  * NavigationRail / NavigationBar の先頭に表示する、現在選択中のシミュレータの項目。
  * 他の [AppDestination] とは異なりタブ切り替えの対象ではないため、常に非選択（[selected] = false）とする。
- * タップするとシミュレータ選択メニューを開く。
+ * タップするとシミュレータ選択メニューを開く。ラベル横にドロップダウン矢印アイコンを添えて、
+ * 単なるタブではなくメニューを開く操作対象であることを視覚的に示す。画面下部の NavigationBar では
+ * メニューが上方向に展開されるため矢印を上向き（[Icons.Filled.ArrowDropUp]）にし、画面横の
+ * NavigationRail / NavigationDrawer ではメニューが右方向に展開されるため矢印を右向き
+ * （[Icons.AutoMirrored.Filled.ArrowRight]）にする。
+ * NavigationDrawer ではラベルの横幅に余裕があるため、[MaterialTheme.typography.titleMedium] を使って
+ * 他のタブラベルより強調表示する。
  */
 private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
     resolvedLayoutType: NavigationSuiteType,
@@ -187,6 +196,12 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                 .padding(4.dp)
         } else {
             Modifier
+        }
+    val dropdownArrowIcon =
+        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+            Icons.Filled.ArrowDropUp
+        } else {
+            Icons.AutoMirrored.Filled.ArrowRight
         }
     item(
         icon = {
@@ -218,10 +233,25 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                         modifier = Modifier.size(24.dp),
                     )
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
+                    Text(
+                        text = appScreenPrimarySimulatorLabel(selectedSimulatorId),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Icon(
+                        imageVector = dropdownArrowIcon,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
                 }
             } else {
-                Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
+                    Icon(
+                        imageVector = dropdownArrowIcon,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
             }
         },
         selected = false,
