@@ -6,8 +6,8 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import kurou.kodriver.domain.model.OverheatVoiceType
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -19,22 +19,63 @@ class LmuWindowsReadoutVehicleDamageDetailPaneTest {
     @Test
     fun `過熱警告の有効状態を表示して操作できる`() {
         var enabled: Boolean? = null
-        var previewCount = 0
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutVehicleDamageDetailPaneContent(
                     uiState = LmuWindowsReadoutVehicleDamageDetailUiState(overheatEnabled = true),
                     onOverheatEnabledChanged = { enabled = it },
-                    onPreviewClicked = { previewCount++ },
                 )
             }
         }
 
-        rule.onNodeWithText("オーバーヒート").assertIsDisplayed().performClick()
+        rule.onAllNodesWithText("オーバーヒート")[0].assertIsDisplayed().performClick()
         assertEquals(false, enabled)
+    }
 
-        rule.onNodeWithText("GP2 GP2… ahhh!!!").assertIsEnabled().performClick()
-        assertEquals(1, previewCount)
+    @Test
+    fun `GP2チップをタップするとonOverheatVoiceTypeChangedとonPreviewClickedが呼ばれる`() {
+        var changedVoiceType: OverheatVoiceType? = null
+        var previewedVoiceType: OverheatVoiceType? = null
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleDamageDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutVehicleDamageDetailUiState(
+                            overheatVoiceType = OverheatVoiceType.STANDARD,
+                        ),
+                    onOverheatVoiceTypeChanged = { changedVoiceType = it },
+                    onPreviewClicked = { previewedVoiceType = it },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("GP2 GP2… ahhh!!!")[0].assertIsEnabled().performClick()
+
+        assertEquals(OverheatVoiceType.GP2_GP2, changedVoiceType)
+        assertEquals(OverheatVoiceType.GP2_GP2, previewedVoiceType)
+    }
+
+    @Test
+    fun `standardチップをタップするとonOverheatVoiceTypeChangedとonPreviewClickedが呼ばれる`() {
+        var changedVoiceType: OverheatVoiceType? = null
+        var previewedVoiceType: OverheatVoiceType? = null
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleDamageDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutVehicleDamageDetailUiState(
+                            overheatVoiceType = OverheatVoiceType.GP2_GP2,
+                        ),
+                    onOverheatVoiceTypeChanged = { changedVoiceType = it },
+                    onPreviewClicked = { previewedVoiceType = it },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("オーバーヒート")[1].assertIsEnabled().performClick()
+
+        assertEquals(OverheatVoiceType.STANDARD, changedVoiceType)
+        assertEquals(OverheatVoiceType.STANDARD, previewedVoiceType)
     }
 
     @Test
@@ -47,7 +88,8 @@ class LmuWindowsReadoutVehicleDamageDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("GP2 GP2… ahhh!!!").assertIsNotEnabled()
+        rule.onAllNodesWithText("GP2 GP2… ahhh!!!")[0].assertIsNotEnabled()
+        rule.onAllNodesWithText("オーバーヒート")[1].assertIsNotEnabled()
     }
 
     @Test

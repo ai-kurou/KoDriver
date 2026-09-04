@@ -11,6 +11,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
@@ -95,6 +96,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val myBestLapVoiceType: MyBestLapVoiceType,
     val redFlagVoiceType: RedFlagVoiceType,
+    val overheatVoiceType: OverheatVoiceType,
     val currentLap: Int,
     val skipFirstLap: Boolean,
     val vehicleApproachStartReadoutType: VehicleApproachStartReadoutType,
@@ -249,7 +251,10 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 !previous.overheating &&
                 vehicleDamage.overheating
             ) {
-                SpeechEvent.Overheating
+                when (settings.overheatVoiceType) {
+                    OverheatVoiceType.GP2_GP2 -> SpeechEvent.Overheating
+                    OverheatVoiceType.STANDARD -> SpeechEvent.OverheatingStandard
+                }
             } else {
                 null
             }

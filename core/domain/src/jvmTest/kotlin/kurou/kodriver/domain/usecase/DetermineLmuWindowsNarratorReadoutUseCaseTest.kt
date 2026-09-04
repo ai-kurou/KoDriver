@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
@@ -963,6 +964,25 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(listOf(SpeechEvent.Overheating), second.events)
+    }
+
+    @Test
+    fun `overheatVoiceTypeがSTANDARDのときOverheatingStandardを返す`() {
+        val first =
+            useCase.determineVehicleDamage(
+                state = LmuWindowsNarratorState(),
+                vehicleDamage = damage(overheating = false),
+                settings = settings(overheatVoiceType = OverheatVoiceType.STANDARD),
+            )
+
+        val second =
+            useCase.determineVehicleDamage(
+                state = first.state,
+                vehicleDamage = damage(overheating = true),
+                settings = settings(overheatVoiceType = OverheatVoiceType.STANDARD),
+            )
+
+        assertEquals(listOf(SpeechEvent.OverheatingStandard), second.events)
     }
 
     @Test
@@ -2084,6 +2104,7 @@ private fun settings(
     enabledStates: Map<ReadoutItemKey, Boolean> = allEnabledStates,
     myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
     redFlagVoiceType: RedFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
+    overheatVoiceType: OverheatVoiceType = OverheatVoiceType.GP2_GP2,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,
     startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
@@ -2098,6 +2119,7 @@ private fun settings(
     enabledStates = enabledStates,
     myBestLapVoiceType = myBestLapVoiceType,
     redFlagVoiceType = redFlagVoiceType,
+    overheatVoiceType = overheatVoiceType,
     currentLap = currentLap,
     skipFirstLap = skipFirstLap,
     vehicleApproachStartReadoutType = startReadoutType,
