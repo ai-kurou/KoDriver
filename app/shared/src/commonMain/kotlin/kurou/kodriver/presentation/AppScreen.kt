@@ -172,7 +172,7 @@ private fun AppNavIcon(
  * NavigationRail / NavigationBar の先頭に表示する、現在選択中のシミュレータの項目。
  * 他の [AppDestination] とは異なりタブ切り替えの対象ではないため、常に非選択（[selected] = false）とする。
  * タップするとシミュレータ選択メニューを開く。
- * NavigationDrawer ではラベルの横幅に余裕があるため、[MaterialTheme.typography.titleSmall] を使って
+ * NavigationDrawer ではラベルの横幅に余裕があるため、[MaterialTheme.typography.titleMedium] を使って
  * 他のタブラベルより強調表示する。
  */
 private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
@@ -222,7 +222,7 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = appScreenPrimarySimulatorLabel(selectedSimulatorId),
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleMedium,
                     )
                 }
             } else {
