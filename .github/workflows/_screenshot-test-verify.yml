@@ -36,11 +36,14 @@ jobs:
       - name: Verify screenshot tests
         id: verify
         continue-on-error: true
-        run: ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests
+        # --continue を付けないと、いずれかのモジュールの検証が失敗した時点で
+        # Gradle が以降の未実行タスクのスケジューリングを止めてしまい、他のモジュールの
+        # スクリーンショット差分が実行されないまま見逃されることがある（#1395）。
+        run: ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests --continue
 
       - name: Record golden images
         if: steps.verify.outcome == 'failure'
-        run: ./gradlew recordRoborazzi${{ inputs.taskSuffix }}Tests
+        run: ./gradlew recordRoborazzi${{ inputs.taskSuffix }}Tests --continue
 
       - name: Commit updated golden images
         if: steps.verify.outcome == 'failure'

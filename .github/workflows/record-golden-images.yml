@@ -26,7 +26,7 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Record JVM golden images
-        run: ./gradlew recordRoborazziJvmTests
+        run: ./gradlew recordRoborazziJvmTests --continue
 
       - name: Upload JVM snapshots
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -48,7 +48,7 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Record Android golden images
-        run: ./gradlew recordRoborazziAndroidHostTests
+        run: ./gradlew recordRoborazziAndroidHostTests --continue
 
       - name: Upload Android snapshots
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
