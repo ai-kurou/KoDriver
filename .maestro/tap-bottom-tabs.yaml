@@ -4,6 +4,11 @@ appId: kurou.kodriver
 - extendedWaitUntil:
     visible: "ルール"
     timeout: 30000
+- tapOn: "LMU"
+- tapOn: "Gran Turismo 7（PS5）"
+- tapOn: "GT7"
+- scroll
+- tapOn: "Assetto Corsa EVO（Windows版）"
 - tapOn: "ログ"
 - assertVisible: "ログはまだありません"
 - tapOn: "その他"
