@@ -46,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -397,6 +398,11 @@ fun AppScreen(
         disconnectedMessage = bannerUiState.snackbarDisconnectedMessage,
     )
 
+    SimulatorChangeScrollToTopEffect(
+        selectedSimulatorId = uiState.selectedSimulatorId,
+        requestScrollToTop = { readoutListScrollToTopRequest++ },
+    )
+
     AppNarratorEffects()
 
     LifecycleResumeEffect(Unit) {
@@ -449,6 +455,28 @@ fun AppScreen(
         telemetryLogContent = telemetryLogContent,
         otherContent = otherContent,
     )
+}
+
+/**
+ * シミュレータ選択が変更されたときに、ルールタブのlistPaneを最上部までスクロールさせる。
+ * ACE選択時の注意文言などlistPane先頭の項目が、スクロールしたままの状態だと
+ * シミュレータ変更後も見えなくなるため、変更を検知して自動的に先頭へ戻す。
+ * 初回コンポジション時には発火させない。
+ */
+@Composable
+internal fun SimulatorChangeScrollToTopEffect(
+    selectedSimulatorId: String,
+    requestScrollToTop: () -> Unit,
+) {
+    val previousSimulatorId = remember { mutableStateOf<String?>(null) }
+    val currentRequestScrollToTop = rememberUpdatedState(requestScrollToTop)
+    LaunchedEffect(selectedSimulatorId) {
+        val prev = previousSimulatorId.value
+        previousSimulatorId.value = selectedSimulatorId
+        if (prev != null && prev != selectedSimulatorId) {
+            currentRequestScrollToTop.value()
+        }
+    }
 }
 
 @Composable
