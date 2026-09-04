@@ -2,6 +2,7 @@ package kurou.kodriver.presentation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -50,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -105,6 +107,11 @@ import org.koin.compose.viewmodel.koinViewModel
  * app:shared は `:core:domain` に依存しないため、Preview / デフォルト値用にリテラルで保持する。
  */
 private const val LMU_WINDOWS_SIMULATOR_ID = "lmu_windows"
+
+/**
+ * シミュレータ選択項目のドロップダウン矢印アイコンを、メニュー展開時に回転させる角度。
+ */
+private const val HALF_ROTATION_DEGREES = 180f
 
 private fun withTabSwitch(
     action: (() -> Unit)?,
@@ -181,6 +188,8 @@ private fun AppNavIcon(
  * （[Icons.AutoMirrored.Filled.ArrowRight]）にする。
  * NavigationDrawer ではラベルの横幅に余裕があるため、[MaterialTheme.typography.titleMedium] を使って
  * 他のタブラベルより強調表示する。
+ * ポップアップメニューの開閉状態（[expanded]）に応じて矢印アイコンを180度回転させ、
+ * 開いているときは向きが反対になり、閉じると元の向きに戻ることでメニューの開閉状態を視覚的に示す。
  */
 private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
     resolvedLayoutType: NavigationSuiteType,
@@ -216,6 +225,7 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
             }
         },
         label = {
+            val dropdownArrowRotation by animateFloatAsState(targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f)
             if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
                 Row(
                     modifier =
@@ -240,7 +250,7 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                     Icon(
                         imageVector = dropdownArrowIcon,
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(16.dp).rotate(dropdownArrowRotation),
                     )
                 }
             } else {
@@ -249,7 +259,7 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                     Icon(
                         imageVector = dropdownArrowIcon,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(20.dp).rotate(dropdownArrowRotation),
                     )
                 }
             }
