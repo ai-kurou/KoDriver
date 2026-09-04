@@ -61,6 +61,7 @@ import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_i
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_port_33741_label
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_port_label
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_save
+import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_save_failed
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_title
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
@@ -253,7 +254,7 @@ fun OtherConsoleIpDetailPaneContent(
             if (uiState.saveFailed) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "保存に失敗しました",
+                    text = stringResource(Res.string.console_ip_save_failed),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                 )
