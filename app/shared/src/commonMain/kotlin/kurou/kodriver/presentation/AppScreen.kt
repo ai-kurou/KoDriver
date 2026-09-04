@@ -26,15 +26,11 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItemColors
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -176,7 +172,8 @@ private fun AppNavIcon(
  * NavigationRail / NavigationBar の先頭に表示する、現在選択中のシミュレータの項目。
  * 他の [AppDestination] とは異なりタブ切り替えの対象ではないため、[selected] にはタブ選択状態ではなく
  * シミュレータ選択メニューの開閉状態（[expanded]）を渡し、開いている間だけ選択色でハイライトする。
- * 未選択時も他のタブ項目と区別できるよう、[colors] で常時プライマリカラーのアイコン・ラベル色を適用する。
+ * アイコンは [AppScreenPrimarySimulatorIndicator] 側で他の項目より一回り大きい円形背景Chipとして
+ * 表示することで、単なるアイコンではなく現在の選択状態を示すコントロールであることを強調する。
  * タップするとシミュレータ選択メニューを開く。
  */
 private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
@@ -185,7 +182,6 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onSimulatorSelected: (String) -> Unit,
-    colors: NavigationSuiteItemColors,
 ) {
     val itemModifier =
         if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
@@ -203,7 +199,6 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                     expanded = expanded,
                     onExpandedChange = onExpandedChange,
                     onSimulatorSelected = onSimulatorSelected,
-                    modifier = Modifier.size(24.dp),
                 )
             }
         },
@@ -222,7 +217,6 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                         expanded = expanded,
                         onExpandedChange = onExpandedChange,
                         onSimulatorSelected = onSimulatorSelected,
-                        modifier = Modifier.size(24.dp),
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
@@ -233,7 +227,6 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
         },
         selected = expanded,
         onClick = { onExpandedChange(true) },
-        colors = colors,
         modifier = itemModifier.testTag("primarySimulatorNavItem"),
     )
 }
@@ -533,24 +526,6 @@ private fun AppScreenScaffold(
     otherListScrollToTopRequest: Int,
 ) {
     var simulatorMenuExpanded by remember { mutableStateOf(false) }
-    val primarySimulatorItemColors =
-        NavigationSuiteItemColors(
-            navigationBarItemColors =
-                NavigationBarItemDefaults.colors(
-                    unselectedIconColor = MaterialTheme.colorScheme.primary,
-                    unselectedTextColor = MaterialTheme.colorScheme.primary,
-                ),
-            navigationRailItemColors =
-                NavigationRailItemDefaults.colors(
-                    unselectedIconColor = MaterialTheme.colorScheme.primary,
-                    unselectedTextColor = MaterialTheme.colorScheme.primary,
-                ),
-            navigationDrawerItemColors =
-                NavigationDrawerItemDefaults.colors(
-                    unselectedIconColor = MaterialTheme.colorScheme.primary,
-                    unselectedTextColor = MaterialTheme.colorScheme.primary,
-                ),
-        )
     Box(
         modifier =
             Modifier
@@ -568,7 +543,6 @@ private fun AppScreenScaffold(
                     expanded = simulatorMenuExpanded,
                     onExpandedChange = { simulatorMenuExpanded = it },
                     onSimulatorSelected = onSimulatorSelected,
-                    colors = primarySimulatorItemColors,
                 )
                 AppDestination.entries.forEach { dest ->
                     val itemModifier =

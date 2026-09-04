@@ -72,10 +72,13 @@ private val SimulatorPopupMaxHeight = 480.dp
 private val SimulatorCardImageBlur = 2.dp
 private val SimulatorCardSelectedBorderWidth = 2.dp
 private val SimulatorCardCheckBadgeSize = 28.dp
+private val SimulatorIndicatorBackgroundSize = 36.dp
+private val SimulatorIndicatorIconPadding = 6.dp
 
 /**
  * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータのアイコンと、
  * それをタップして開くシミュレータ選択メニュー。
+ * 他の項目と並んだ場合でも一目で識別できるよう、アイコンの背後に色付きの円形背景を敷く。
  * メニューの中身は、カード全体にシミュレータ画像を敷き詰めた等幅カードの縦スクロールで表示する。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
@@ -87,8 +90,18 @@ fun AppScreenPrimarySimulatorIndicator(
     onSimulatorSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier) {
-        AppScreenPrimarySimulatorIcon(simulatorId = simulatorId)
+    Box(
+        modifier =
+            modifier
+                .size(SimulatorIndicatorBackgroundSize)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.secondaryContainer),
+        contentAlignment = Alignment.Center,
+    ) {
+        AppScreenPrimarySimulatorIcon(
+            simulatorId = simulatorId,
+            modifier = Modifier.size(SimulatorIndicatorBackgroundSize - SimulatorIndicatorIconPadding * 2),
+        )
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
