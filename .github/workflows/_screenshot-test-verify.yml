@@ -43,6 +43,9 @@ jobs:
 
       - name: Record golden images
         if: steps.verify.outcome == 'failure'
+        # record タスク自体が失敗（コンパイルエラー等）しても、後続の commit ステップで
+        # 正常に記録できたモジュール分の golden 画像だけはコミットできるようにする。
+        continue-on-error: true
         run: ./gradlew recordRoborazzi${{ inputs.taskSuffix }}Tests --continue
 
       - name: Commit updated golden images

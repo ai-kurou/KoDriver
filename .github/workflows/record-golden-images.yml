@@ -26,9 +26,13 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Record JVM golden images
+        # record タスク自体が失敗（コンパイルエラー等）しても、正常に記録できたモジュール分の
+        # golden 画像だけはアップロード・コミットできるようにする。
+        continue-on-error: true
         run: ./gradlew recordRoborazziJvmTests --continue
 
       - name: Upload JVM snapshots
+        if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: jvm-snapshots
@@ -48,9 +52,13 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Record Android golden images
+        # record タスク自体が失敗（コンパイルエラー等）しても、正常に記録できたモジュール分の
+        # golden 画像だけはアップロード・コミットできるようにする。
+        continue-on-error: true
         run: ./gradlew recordRoborazziAndroidHostTests --continue
 
       - name: Upload Android snapshots
+        if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: android-snapshots
@@ -58,7 +66,9 @@ jobs:
           if-no-files-found: ignore
 
   commit:
-    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'record-golden-images'
+    # record-desktop / record-android のいずれかが失敗しても、正常に記録できたモジュール分の
+    # golden 画像だけはコミットできるようにする。
+    if: always() && (github.event_name == 'workflow_dispatch' || github.event.label.name == 'record-golden-images')
     needs: [record-desktop, record-android]
     runs-on: ubuntu-latest
     timeout-minutes: 10
