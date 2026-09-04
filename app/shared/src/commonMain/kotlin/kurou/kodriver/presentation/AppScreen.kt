@@ -196,7 +196,6 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                     expanded = expanded,
                     onExpandedChange = onExpandedChange,
                     onSimulatorSelected = onSimulatorSelected,
-                    modifier = Modifier.size(24.dp),
                 )
             }
         },
@@ -215,7 +214,6 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
                         expanded = expanded,
                         onExpandedChange = onExpandedChange,
                         onSimulatorSelected = onSimulatorSelected,
-                        modifier = Modifier.size(24.dp),
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
