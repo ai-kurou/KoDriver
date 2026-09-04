@@ -87,8 +87,8 @@ fun AppScreenPrimarySimulatorIndicator(
     onSimulatorSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box {
-        AppScreenPrimarySimulatorIcon(simulatorId = simulatorId, modifier = modifier)
+    Box(modifier = modifier) {
+        AppScreenPrimarySimulatorIcon(simulatorId = simulatorId)
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },

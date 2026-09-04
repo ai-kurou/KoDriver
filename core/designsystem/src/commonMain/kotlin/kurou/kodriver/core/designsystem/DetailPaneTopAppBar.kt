@@ -26,11 +26,13 @@ fun DetailPaneTopAppBar(
     canNavigateBack: Boolean,
     navigateBackContentDescription: String,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
     navigationIconModifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     val haptic = LocalHapticFeedback.current
     TopAppBar(
+        modifier = modifier,
         title = { Text(title) },
         navigationIcon = {
             if (canNavigateBack) {

@@ -134,7 +134,11 @@ private fun DetailPaneCardLayout(
 
 /**
  * DetailPaneCardChips を提供する公開関数。
+ *
+ * FilterChip を複数のルート要素として並べて出すため、単一のルートに適用するmodifierパラメータを持たない。
+ * 呼び出し元(DetailPaneCardLayoutのbottomContent)側のFlowRowが配置を担う。
  */
+@Suppress("ModifierMissing", "UnstableCollections")
 @Composable
 fun DetailPaneCardChips(
     chipLabels: List<String>,

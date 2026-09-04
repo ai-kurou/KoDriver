@@ -2,6 +2,7 @@ package kurou.kodriver.feature.desktopsplash
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -38,7 +39,7 @@ class DesktopSplashScreenTest {
 
     @Test
     fun `引数が変わらない再コンポーズでは表示を維持する`() {
-        var tick by mutableStateOf(0)
+        var tick by mutableIntStateOf(0)
         val uiState = DesktopSplashUiState(step = DesktopSplashStep.STARTING_SERVER)
 
         rule.setContent {

@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -241,10 +242,11 @@ private fun TelemetryLogResultSnackbarEffect(
     failureMessage: String,
     onResultConsumed: () -> Unit,
 ) {
+    val currentOnResultConsumed by rememberUpdatedState(onResultConsumed)
     LaunchedEffect(succeeded) {
         val result = succeeded ?: return@LaunchedEffect
         snackbarHostState.showSnackbar(if (result) successMessage else failureMessage)
-        onResultConsumed()
+        currentOnResultConsumed()
     }
 }
 

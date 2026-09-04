@@ -43,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -350,9 +351,10 @@ private fun ScrollToTopEffect(
     scrollToTopRequest: Int,
     scrollToTop: suspend () -> Unit,
 ) {
+    val currentScrollToTop by rememberUpdatedState(scrollToTop)
     LaunchedEffect(scrollToTopRequest) {
         if (scrollToTopRequest > 0) {
-            scrollToTop()
+            currentScrollToTop()
         }
     }
 }

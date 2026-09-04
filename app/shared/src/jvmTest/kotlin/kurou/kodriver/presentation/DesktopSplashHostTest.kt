@@ -3,7 +3,7 @@ package kurou.kodriver.presentation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertCountEquals
@@ -51,7 +51,7 @@ class DesktopSplashHostTest {
 
     @Test
     fun `引数が変わらない再コンポーズでもメイン画面を維持する`() {
-        var tick by mutableStateOf(0)
+        var tick by mutableIntStateOf(0)
 
         rule.setContent {
             MaterialTheme {
