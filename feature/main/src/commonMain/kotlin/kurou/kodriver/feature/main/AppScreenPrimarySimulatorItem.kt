@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -30,9 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
@@ -94,7 +93,7 @@ fun AppScreenPrimarySimulatorIndicator(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
             shape = MaterialTheme.shapes.extraLarge,
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         ) {
             Column(
                 modifier =
@@ -150,18 +149,16 @@ private fun SimulatorCard(
             Box(
                 modifier =
                     Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomStart)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
-                            ),
-                        ).padding(12.dp),
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f))
+                        .padding(12.dp),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = displayName,
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White,
+                    textAlign = TextAlign.Center,
                 )
             }
             if (selected) {
@@ -169,7 +166,7 @@ private fun SimulatorCard(
                     modifier =
                         Modifier
                             .align(Alignment.TopEnd)
-                            .padding(8.dp)
+                            .padding(top = 24.dp, end = 24.dp)
                             .size(SimulatorCardCheckBadgeSize)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primary),
