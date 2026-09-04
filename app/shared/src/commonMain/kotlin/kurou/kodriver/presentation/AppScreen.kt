@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -177,7 +177,8 @@ private fun AppNavIcon(
  * タップするとシミュレータ選択メニューを開く。ラベル横にドロップダウン矢印アイコンを添えて、
  * 単なるタブではなくメニューを開く操作対象であることを視覚的に示す。画面下部の NavigationBar では
  * メニューが上方向に展開されるため矢印を上向き（[Icons.Filled.ArrowDropUp]）にし、画面横の
- * NavigationRail / NavigationDrawer では下向き（[Icons.Filled.ArrowDropDown]）のままとする。
+ * NavigationRail / NavigationDrawer ではメニューが右方向に展開されるため矢印を右向き
+ * （[Icons.AutoMirrored.Filled.ArrowRight]）にする。
  * NavigationDrawer ではラベルの横幅に余裕があるため、[MaterialTheme.typography.titleMedium] を使って
  * 他のタブラベルより強調表示する。
  */
@@ -200,7 +201,7 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
         if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
             Icons.Filled.ArrowDropUp
         } else {
-            Icons.Filled.ArrowDropDown
+            Icons.AutoMirrored.Filled.ArrowRight
         }
     item(
         icon = {
