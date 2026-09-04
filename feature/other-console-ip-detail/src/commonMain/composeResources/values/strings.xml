@@ -5,6 +5,7 @@
     <string name="console_ip_save">保存</string>
     <string name="navigate_back">戻る</string>
     <string name="console_ip_invalid">無効なIPアドレスです</string>
+    <string name="console_ip_save_failed">保存に失敗しました</string>
     <string name="console_ip_description_prefix">ゲーム機または</string>
     <string name="console_ip_description_simhub_link">SimHub</string>
     <string name="console_ip_description_suffix">を実行しているPCのIPアドレスを入力してください。</string>
