@@ -25,7 +25,7 @@ class ReadoutItemDisplayTest {
             "lmu_windows_red_flag" to "レッドフラッグ",
             "lmu_windows_vehicle_damage" to "車両故障",
             "lmu_windows_overheat" to "オーバーヒート",
-            "lmu_windows_part_detached" to "部品脱落",
+            "lmu_windows_part_detached" to "部品脱落（ホイール除く）",
             "lmu_windows_tyre_temperature" to "タイヤ温度",
             "lmu_windows_tyre_temperature_overheat_warning" to "過熱警告",
             "lmu_windows_tyre_temperature_low_warning" to "低温警告",
