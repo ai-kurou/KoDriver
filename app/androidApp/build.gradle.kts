@@ -38,6 +38,10 @@ dependencies {
     debugImplementation(libs.compose.uiTest)
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.testExt.junit)
+    testImplementation(platform(libs.koin.bom))
+    testImplementation(libs.koin.test)
 
     baselineProfile(projects.app.androidBenchmark)
 }
