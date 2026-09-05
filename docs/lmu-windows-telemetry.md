@@ -552,5 +552,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 |---|---|---|
 | ゲーム内 `Support\SharedMemoryInterface` | C++ | S397 純正ヘッダ。`LMU_Data` の構造体定義の正典 |
 | [TinyPedal/pyLMUSharedMemory](https://github.com/TinyPedal/pyLMUSharedMemory) | Python | 純正ヘッダの ctypes 移植（`lmu_data.py`）。本ドキュメントのオフセット算出元 |
+| [pyLMUSharedMemory `lmu_enum.py`](https://github.com/TinyPedal/pyLMUSharedMemory/blob/master/lmu_enum.py) | Python | 各 enum フィールドの値マッピング。LMU API 1.3 spec 対応（2026年3月）で追加された |
+| [pyLMUSharedMemory `tests/read_lmu_api.py`](https://github.com/TinyPedal/pyLMUSharedMemory/blob/master/tests/read_lmu_api.py) | Python | 構造体サイズの照合（`compare_struct_size`）と全フィールドのダンプを行う検証スクリプト。Windows 実機でレイアウトの一致を確認する際に使う |
 | [TinyPedal/TinyPedal](https://github.com/TinyPedal/TinyPedal) | Python | 最も活発な LMU 対応オーバーレイ。フィールド利用例が豊富 |
 | [TheIronWolfModding/rF2SharedMemoryMapPlugin](https://github.com/TheIronWolfModding/rF2SharedMemoryMapPlugin) | C++/C# | rFactor 2 用共有メモリプラグイン。`LMU_Data` とは別物だが構造体の系譜が共通 |
