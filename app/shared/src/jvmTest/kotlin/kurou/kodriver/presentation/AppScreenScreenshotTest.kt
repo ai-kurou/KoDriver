@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.DesktopComposeUiTest
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -174,6 +175,7 @@ class AppScreenScreenshotTest {
                 }
             }
             onNodeWithTag("primarySimulatorNavItem").performClick()
+            waitUntil { onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty() }
             waitForIdle()
             onRoot().captureRoboImage()
         }
@@ -281,6 +283,7 @@ class AppScreenScreenshotTest {
                 }
             }
             onNodeWithTag("primarySimulatorNavItem").performClick()
+            waitUntil { onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty() }
             waitForIdle()
             onRoot().captureRoboImage()
         }
