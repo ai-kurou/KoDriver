@@ -134,6 +134,16 @@ style:
   active: true
   MagicNumber:
     active: false
+  # @Preview関数はCompose Multiplatformのツール（IDEプレビュー/Screenshotテスト）から
+  # アノテーション経由で呼び出されるため直接の呼び出し元コードは存在しないが、未使用ではない。
+  # UnusedPrivateMemberにignoreAnnotated設定は無いため、命名規則（Xxx...Preview）で除外する。
+  UnusedPrivateMember:
+    active: true
+    allowedNames: '.*Preview'
+  UnusedPrivateProperty:
+    active: true
+  UnusedParameter:
+    active: true
 
 formatting:
   active: true

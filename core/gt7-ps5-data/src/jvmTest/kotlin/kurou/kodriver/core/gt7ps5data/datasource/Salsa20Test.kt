@@ -14,15 +14,6 @@ class Salsa20Test {
 
         val ciphertext = Salsa20.decrypt(key, iv, plaintext)
 
-        // First 4 bytes of the expected keystream for this key/iv (verified against spec)
-        // The decrypt of zeros equals the keystream itself
-        val firstWord =
-            (ciphertext[0].toInt() and 0xFF) or
-                ((ciphertext[1].toInt() and 0xFF) shl 8) or
-                ((ciphertext[2].toInt() and 0xFF) shl 16) or
-                ((ciphertext[3].toInt() and 0xFF) shl 24)
-        // Salsa20 output for key=0..31, iv=0..7: first block output is well-defined
-        // We verify the result is non-zero (decryption ran) and symmetric (encrypt==decrypt)
         val reEncrypted = Salsa20.decrypt(key, iv, ciphertext)
         assertContentEquals(plaintext, reEncrypted)
     }
