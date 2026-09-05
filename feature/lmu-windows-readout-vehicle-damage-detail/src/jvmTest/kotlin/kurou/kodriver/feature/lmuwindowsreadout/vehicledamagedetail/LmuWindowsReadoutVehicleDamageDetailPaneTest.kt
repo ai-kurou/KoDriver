@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.domain.model.OverheatVoiceType
 import org.junit.Rule
@@ -106,10 +107,10 @@ class LmuWindowsReadoutVehicleDamageDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("部品脱落（ホイール除く）")[0].assertIsDisplayed().performClick()
+        rule.onNodeWithText("部品脱落（ホイール除く）").assertIsDisplayed().performClick()
         assertEquals(false, enabled)
 
-        rule.onAllNodesWithText("部品脱落（ホイール除く）")[1].assertIsEnabled().performClick()
+        rule.onNodeWithText("部品脱落").assertIsEnabled().performClick()
         assertEquals(1, previewCount)
     }
 
@@ -123,6 +124,6 @@ class LmuWindowsReadoutVehicleDamageDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("部品脱落（ホイール除く）")[1].assertIsNotEnabled()
+        rule.onNodeWithText("部品脱落").assertIsNotEnabled()
     }
 }
