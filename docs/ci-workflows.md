@@ -41,7 +41,7 @@ KoDriverの夜間バッチ・自動化フローでは、Claude Code自体が持�
    ```bash
    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/local.kodriver.nightly-implement.plist
    ```
-4. ログは `/tmp/kodriver-nightly-implement.log` に出力される。
+4. ログは実行ごとに `/tmp/kodriver-nightly-implement-YYYYMMDD_HHMMSS.log`（実行開始時刻付き）へ出力される。plistの `StandardOutPath`/`StandardErrorPath`（`/tmp/kodriver-nightly-implement.log`固定）は、スクリプトがこのリダイレクト設定に到達する前に失敗した場合のフォールバック用。
 
 登録解除する場合は `launchctl bootout gui/$(id -u)/local.kodriver.nightly-implement` を実行し、plist ファイルを削除する。
 

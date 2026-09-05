@@ -25,6 +25,9 @@
     <key>RunAtLoad</key>
     <false/>
 
+    <!-- 通常のログはスクリプト側が実行開始時刻付きのファイル名（/tmp/kodriver-nightly-implement-YYYYMMDD_HHMMSS.log）へ
+         自前でリダイレクトする。ここでの StandardOutPath/StandardErrorPath は、スクリプトが
+         リダイレクト設定に到達する前（bash自体の起動失敗等）のフォールバック用。 -->
     <key>StandardOutPath</key>
     <string>/tmp/kodriver-nightly-implement.log</string>
     <key>StandardErrorPath</key>
