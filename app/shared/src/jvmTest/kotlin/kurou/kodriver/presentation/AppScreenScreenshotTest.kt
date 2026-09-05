@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToString
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -174,6 +175,11 @@ class AppScreenScreenshotTest {
                     )
                 }
             }
+            val debugNodeCount = onAllNodesWithTag("primarySimulatorNavItem").fetchSemanticsNodes().size
+            println("DEBUG_NAV_ITEM_COUNT_RAIL=$debugNodeCount")
+            println("DEBUG_TREE_RAIL_BEGIN")
+            println(onRoot().printToString())
+            println("DEBUG_TREE_RAIL_END")
             onNodeWithTag("primarySimulatorNavItem").performClick()
             waitUntil { onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty() }
             waitForIdle()
