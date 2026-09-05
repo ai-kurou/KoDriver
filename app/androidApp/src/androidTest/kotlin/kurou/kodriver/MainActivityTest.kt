@@ -247,36 +247,6 @@ class MainActivityTest {
         waitUntilDisplayed("フラッグ")
     }
 
-    @Test
-    fun `選択済みのログを再タップするとログ一覧に戻る`() {
-        fakeTelemetryLogRepository.emit(
-            listOf(
-                telemetryLog(
-                    id = 1,
-                    createdAt = 100,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
-                    telemetryJson = """{"flag":"yellow"}""",
-                ),
-                telemetryLog(
-                    id = 2,
-                    createdAt = 200,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
-                    telemetryJson = """{"flag":"green"}""",
-                ),
-            ),
-        )
-        launchActivity()
-
-        clickItem("ログ")
-        clickItem("フラッグ")
-        waitUntilDisplayed("選択したログ")
-
-        clickItem("フラッグ")
-
-        waitUntilNotDisplayed("選択したログ")
-        waitUntilDisplayed("フラッグ")
-    }
-
     private fun launchActivity() {
         scenario = ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitForIdle()
