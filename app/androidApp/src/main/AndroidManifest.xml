@@ -15,6 +15,7 @@
         android:theme="@style/Theme.KoDriver">
         <meta-data android:name="io.sentry.auto-init" android:value="false" />
         <activity
+            android:configChanges="screenLayout|smallestScreenSize|screenSize|orientation"
             android:exported="true"
             android:name=".MainActivity"
             android:theme="@style/Theme.KoDriver.Starting">
