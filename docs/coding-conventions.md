@@ -6,6 +6,7 @@
 - `core:data` は `kotlinMultiplatform` プラグイン（JVM + Android ターゲット）を使用する。JVM 実装は `src/jvmMain/kotlin`、Android 実装は `src/androidMain/kotlin` に置く。
 - LMU Windows共有メモリ固有の実装はJVM専用の `core:lmu-windows-data` に置き、`core:data` へ依存させない。
 - `@Preview` 関数は実体の `@Composable` と同一ファイルに記述する。`@Preview` のインポートは `androidx.compose.ui.tooling.preview.Preview` を使う（`org.jetbrains.compose.ui.tooling.preview.Preview` は commonMain で解決されないため使用不可）。
+- `@Preview` 関数名は末尾を `Preview` で終える（例: `XxxScreenPreview`）こと。detekt の `UnusedPrivateMember`（`config/detekt/detekt.yml`）は `@Preview` にアノテーション除外設定が無いため、`allowedNames: '.*Preview'` という命名規則ベースの除外で対応している。この命名から外れると、IDEプレビュー/スクリーンショットテストからのみ呼び出される `@Preview` 関数が未使用コードとして detekt に検出される。
 - 文字スタイルは `MaterialTheme.typography.*` を参照し、`fontSize` / `FontWeight` を Composable 内で直接指定しない。アプリ全体のタイポグラフィは `:core:designsystem` の `KoDriverTypography` で一元管理する。
 - DataStore のキーには **ASCII の内部 ID を使うこと**。日本語などのマルチバイト文字をキーに使うと、表示名の変更でデータが孤立する。内部 ID（例: `"vehicle_approach"`）と表示名（例: `"車両接近"`）は `XxxViewModel` 内の `xxxDisplayNames: Map<String, String>` で分離する。
 
