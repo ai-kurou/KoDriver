@@ -106,10 +106,10 @@ class LmuWindowsReadoutVehicleDamageDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("部品脱落")[0].assertIsDisplayed().performClick()
+        rule.onAllNodesWithText("部品脱落（ホイール除く）")[0].assertIsDisplayed().performClick()
         assertEquals(false, enabled)
 
-        rule.onAllNodesWithText("部品脱落")[1].assertIsEnabled().performClick()
+        rule.onAllNodesWithText("部品脱落（ホイール除く）")[1].assertIsEnabled().performClick()
         assertEquals(1, previewCount)
     }
 
@@ -123,6 +123,6 @@ class LmuWindowsReadoutVehicleDamageDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("部品脱落")[1].assertIsNotEnabled()
+        rule.onAllNodesWithText("部品脱落（ホイール除く）")[1].assertIsNotEnabled()
     }
 }

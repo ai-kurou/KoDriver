@@ -4,6 +4,6 @@
     <string name="vehicle_damage_overheat_switch_label">オーバーヒート</string>
     <string name="vehicle_damage_overheat_gp2_gp2_chip_label">GP2 GP2… ahhh!!!</string>
     <string name="vehicle_damage_overheat_standard_chip_label">オーバーヒート</string>
-    <string name="vehicle_damage_part_detached_switch_label">部品脱落</string>
-    <string name="vehicle_damage_part_detached_chip_label">部品脱落</string>
+    <string name="vehicle_damage_part_detached_switch_label">部品脱落（ホイール除く）</string>
+    <string name="vehicle_damage_part_detached_chip_label">部品脱落（ホイール除く）</string>
 </resources>
