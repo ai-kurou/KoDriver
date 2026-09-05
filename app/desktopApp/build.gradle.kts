@@ -22,6 +22,8 @@ dependencies {
     implementation(libs.kotlinx.coroutinesSwing)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
+    testImplementation(platform(libs.koin.bom))
+    testImplementation(libs.koin.test)
     implementation(platform(libs.sentry.bom))
     implementation(libs.sentry)
 

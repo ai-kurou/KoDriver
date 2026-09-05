@@ -27,6 +27,20 @@
 
 新規追加・移動したスクリーンショットテストのゴールデン画像は、手元で生成してコミットしてはならない。ゴールデン画像の追加・更新は CI（`on-pull-request.yml` の verify → 失敗時の自動再記録）で行われる。動作確認などで手元に `**/snapshots/*.png` が生成・更新された場合は、PR 作成や報告の前に必ず破棄すること。Android 向けスクリーンショットテストを追加する場合は、PR 説明に Desktop/JVM 版と見た目が異なる理由を書くこと。
 
+## Koin モジュールグラフの検証
+
+`app:desktopApp`（`DesktopKoinModuleGraphTest`）・`app:androidApp`（`AndroidKoinModuleGraphTest`）には、
+Main.kt / KoDriverApplication.kt の composition root と同一のモジュール構成を Koin の
+`checkKoinModules()`（`org.koin.test.check`）で実際に解決してみるテストがある。DI の登録漏れ・型不一致・
+依存解決不能な構成は、これまで実際にその画面/機能を操作するまで実行時エラーとして顕在化しなかった
+（#1445）。これらのテストは Main.kt / KoDriverApplication.kt が束ねるモジュール一覧を変更したときは
+必ず追随して更新すること。
+
+Windows 共有メモリ（JNA/kernel32）のように非 Windows 環境でインスタンス化できない single や、
+プラットフォーム間で非対称な登録（Android にしかない Repository を Desktop 共通の featureModules が
+参照する等）は、各テストファイル内でダミー実装・Fake モジュールに置き換えて検証する。置き換えの理由は
+各テストのコメントに明記すること。
+
 ## テストパターン
 
 - テスト名は日本語のバッククォート記法（`` `初期状態は Connecting を返す`() ``）
