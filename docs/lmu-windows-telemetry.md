@@ -82,7 +82,7 @@ rF2 プラグイン側にのみ存在する構造体（`rF2Rules`, `rF2MultiRule
 | `scoringInfo` | LMUScoringInfo | 1,632 | 548 bytes |
 | `scoringStreamSize` | uint8[12] | 2,180 | 12 bytes |
 | `vehScoringInfo[104]` | LMUVehicleScoring×104 | 2,192 | 584 bytes × 104 |
-| `scoringStream` | char[65536] | 63,928 | 65,536 bytes |
+| `scoringStream` | char[65536] | 62,928 | 65,536 bytes |
 
 ### LMUScoringInfo（ScoringInfoV01、レース全体情報）
 
