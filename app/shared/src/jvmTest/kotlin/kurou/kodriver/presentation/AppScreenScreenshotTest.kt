@@ -178,9 +178,19 @@ class AppScreenScreenshotTest {
                     )
                 }
             }
-            onNodeWithTag("primarySimulatorNavItem").performClick()
-            waitUntil(timeoutMillis = SIMULATOR_POPUP_WAIT_TIMEOUT_MILLIS) {
-                onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty()
+            try {
+                onNodeWithTag("primarySimulatorNavItem").performClick()
+            } catch (e: AssertionError) {
+                println("DEBUG_CLICK_ERROR_RAIL=${e.message}")
+                throw e
+            }
+            try {
+                waitUntil(timeoutMillis = SIMULATOR_POPUP_WAIT_TIMEOUT_MILLIS) {
+                    onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty()
+                }
+            } catch (e: Throwable) {
+                println("DEBUG_WAITUNTIL_ERROR_RAIL=${e.message}")
+                throw e
             }
             waitForIdle()
             onRoot().captureRoboImage()
