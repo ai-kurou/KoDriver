@@ -3,6 +3,7 @@ package kurou.kodriver.feature.debugstatedetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -50,6 +51,7 @@ private fun LmuWindowsFuelContent(
                     Res.string.debug_state_fuel_consumption_remaining_percent,
                     formatOneDecimal(remainingPercent),
                 ),
+            style = koDriverNumericTextStyle(),
         )
         if (consumption != null) {
             Text(
@@ -58,6 +60,7 @@ private fun LmuWindowsFuelContent(
                         Res.string.debug_state_fuel_consumption_per_lap_ratio,
                         formatOneDecimal(consumption.consumptionPerLap),
                     ),
+                style = koDriverNumericTextStyle(),
             )
             Text(
                 text =
@@ -65,6 +68,7 @@ private fun LmuWindowsFuelContent(
                         Res.string.debug_state_fuel_consumption_remaining_laps,
                         formatOneDecimal(consumption.preciseRemainingLaps),
                     ),
+                style = koDriverNumericTextStyle(),
             )
         }
     }
@@ -85,6 +89,7 @@ private fun Gt7Ps5FuelContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
                     Res.string.debug_state_fuel_consumption_remaining_percent,
                     formatOneDecimal(remainingPercent),
                 ),
+            style = koDriverNumericTextStyle(),
         )
         if (fuelConsumption != null) {
             Text(
@@ -93,6 +98,7 @@ private fun Gt7Ps5FuelContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
                         Res.string.debug_state_fuel_consumption_per_lap_liters,
                         formatOneDecimal(fuelConsumption.consumptionPerLap),
                     ),
+                style = koDriverNumericTextStyle(),
             )
             Text(
                 text =
@@ -100,6 +106,7 @@ private fun Gt7Ps5FuelContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
                         Res.string.debug_state_fuel_consumption_remaining_laps,
                         formatOneDecimal(fuelConsumption.preciseRemainingLaps),
                     ),
+                style = koDriverNumericTextStyle(),
             )
         }
     }
@@ -117,6 +124,7 @@ private fun AceWindowsFuelContent(aceWindowsFuel: AceWindowsFuelData?) {
                 Res.string.debug_state_fuel_consumption_remaining_percent,
                 formatOneDecimal(aceWindowsFuel.remainingPercent.value),
             ),
+        style = koDriverNumericTextStyle(),
     )
 }
 

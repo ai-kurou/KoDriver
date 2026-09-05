@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.Simulator
@@ -56,5 +57,6 @@ private fun WheelTemperatureText(
         text = stringResource(labelRes, wheelTemperatureText(wheels, wheelIndex)),
         modifier = Modifier.width(WHEEL_COLUMN_WIDTH),
         softWrap = false,
+        style = koDriverNumericTextStyle(),
     )
 }

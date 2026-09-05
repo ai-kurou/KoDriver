@@ -2,6 +2,7 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.Simulator
@@ -23,5 +24,6 @@ internal fun CurrentLapContent(
         }
     Text(
         text = currentLap?.let { it.toString() } ?: stringResource(Res.string.debug_state_flag_info_unavailable),
+        style = koDriverNumericTextStyle(),
     )
 }
