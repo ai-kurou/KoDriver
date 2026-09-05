@@ -178,32 +178,12 @@ class AppScreenScreenshotTest {
                     )
                 }
             }
-            try {
-                onNodeWithTag("primarySimulatorNavItem").performClick()
-            } catch (e: AssertionError) {
-                println("DEBUG_CLICK_ERROR_RAIL=${e.message}")
-                throw e
+            onNodeWithTag("primarySimulatorNavItem").performClick()
+            waitUntil(timeoutMillis = SIMULATOR_POPUP_WAIT_TIMEOUT_MILLIS) {
+                onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty()
             }
-            try {
-                waitUntil(timeoutMillis = SIMULATOR_POPUP_WAIT_TIMEOUT_MILLIS) {
-                    onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty()
-                }
-            } catch (e: Throwable) {
-                println("DEBUG_WAITUNTIL_ERROR_RAIL=${e.message}")
-                throw e
-            }
-            try {
-                waitForIdle()
-            } catch (e: Throwable) {
-                println("DEBUG_WAITFORIDLE_ERROR_RAIL=${e.message}")
-                throw e
-            }
-            try {
-                onRoot().captureRoboImage()
-            } catch (e: Throwable) {
-                println("DEBUG_CAPTURE_ERROR_RAIL=${e.message}")
-                throw e
-            }
+            waitForIdle()
+            onNodeWithTag("simulatorSelectionPopup").captureRoboImage()
         }
 
     @Test
@@ -313,7 +293,7 @@ class AppScreenScreenshotTest {
                 onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty()
             }
             waitForIdle()
-            onRoot().captureRoboImage()
+            onNodeWithTag("simulatorSelectionPopup").captureRoboImage()
         }
 
     @Test

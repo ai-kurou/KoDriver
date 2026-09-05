@@ -191,10 +191,3 @@ tasks.named("compileTestKotlinJvm") {
 }
 
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
-
-// TODO: CI調査用の一時的なデバッグ出力設定。原因特定後に削除する。
-tasks.withType<Test> {
-    testLogging {
-        showStandardStreams = true
-    }
-}
