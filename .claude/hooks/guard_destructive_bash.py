@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Claude Code の PreToolUse フック。Bashツールで実行されようとしている
 `rm` 呼び出しを解析し、保護対象パスへの削除は deny、それ以外の `-r`/`-f` を
-伴う削除は ask（一時停止して確認）にする。標準ライブラリのみを使用する。
+伴う削除は ask（一時停止して確認）にする。また `gh issue create` /
+`gh issue delete` の実行を ask（実行前確認）にする。標準ライブラリのみを使用する。
 """
 
 import json
@@ -57,6 +58,35 @@ def _is_protected_path(path: str) -> bool:
     return False
 
 
+def _find_gh_issue_subcommands(command: str) -> list[str]:
+    """`;`, `&&`, `||`, `|` で連結された各サブコマンドから
+    `gh issue <subcommand>` の `<subcommand>` を抽出する。"""
+    segments = re.split(r"&&|\|\||;|\|", command)
+    subcommands = []
+    for segment in segments:
+        tokens = _split_command(segment.strip())
+        for index, token in enumerate(tokens):
+            if token != "gh":
+                continue
+            rest = tokens[index + 1 :]
+            issue_index = None
+            for rest_index, rest_token in enumerate(rest):
+                if rest_token.startswith("-"):
+                    continue
+                if rest_token == "issue":
+                    issue_index = rest_index
+                break
+            if issue_index is None:
+                continue
+            after_issue = rest[issue_index + 1 :]
+            for after_token in after_issue:
+                if after_token.startswith("-"):
+                    continue
+                subcommands.append(after_token)
+                break
+    return subcommands
+
+
 def _evaluate_rm_invocation(args: list[str]) -> str | None:
     """危険度に応じて 'deny' / 'ask' / None（安全）を返す。"""
     targets = [arg for arg in args if not arg.startswith("-")]
@@ -89,6 +119,7 @@ def main() -> int:
 
     worst_decision = None
     worst_invocation: list[str] = []
+    reason = ""
     for invocation in _find_rm_invocations(command):
         decision = _evaluate_rm_invocation(invocation)
         if decision == "deny":
@@ -99,16 +130,28 @@ def main() -> int:
             worst_decision = "ask"
             worst_invocation = invocation
 
+    if worst_decision == "deny":
+        reason = (
+            "保護対象パスに対する rm の実行が検出されたため拒否しました: "
+            f"rm {' '.join(worst_invocation)}"
+        )
+    elif worst_decision == "ask":
+        reason = (
+            "再帰的/強制的な rm 呼び出しが検出されたため、実行前の確認を要求します: "
+            f"rm {' '.join(worst_invocation)}"
+        )
+
+    if worst_decision is None:
+        gh_subcommands = _find_gh_issue_subcommands(command)
+        if "create" in gh_subcommands:
+            worst_decision = "ask"
+            reason = "GitHub Issue の新規作成（gh issue create）が検出されたため、実行前の確認を要求します。"
+        elif "delete" in gh_subcommands:
+            worst_decision = "ask"
+            reason = "GitHub Issue の削除（gh issue delete）が検出されたため、実行前の確認を要求します。"
+
     if worst_decision is None:
         return 0
-
-    reason = (
-        "保護対象パスに対する rm の実行が検出されたため拒否しました: "
-        f"rm {' '.join(worst_invocation)}"
-        if worst_decision == "deny"
-        else "再帰的/強制的な rm 呼び出しが検出されたため、実行前の確認を要求します: "
-        f"rm {' '.join(worst_invocation)}"
-    )
 
     output = {
         "hookSpecificOutput": {
