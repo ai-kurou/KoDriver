@@ -25,7 +25,7 @@ internal suspend inline fun <reified T> DefaultWebSocketServerSession.sendJsonMe
             }
         val incomingJob =
             launch {
-                for (frame in incoming) {
+                for (ignored in incoming) {
                     // Consume close/control frames so client initiated close cancels the sender promptly.
                 }
             }
