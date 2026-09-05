@@ -217,6 +217,66 @@ class MainActivityTest {
         waitUntilDisplayed("""{"flag":"yellow"}""")
     }
 
+    @Test
+    fun `ログタブを再タップするとログ一覧に戻る`() {
+        fakeTelemetryLogRepository.emit(
+            listOf(
+                telemetryLog(
+                    id = 1,
+                    createdAt = 100,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+                    telemetryJson = """{"flag":"yellow"}""",
+                ),
+                telemetryLog(
+                    id = 2,
+                    createdAt = 200,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    telemetryJson = """{"flag":"green"}""",
+                ),
+            ),
+        )
+        launchActivity()
+
+        clickItem("ログ")
+        clickItem("フラッグ")
+        waitUntilDisplayed("選択したログ")
+
+        clickItem("ログ")
+
+        waitUntilNotDisplayed("選択したログ")
+        waitUntilDisplayed("フラッグ")
+    }
+
+    @Test
+    fun `選択済みのログを再タップするとログ一覧に戻る`() {
+        fakeTelemetryLogRepository.emit(
+            listOf(
+                telemetryLog(
+                    id = 1,
+                    createdAt = 100,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+                    telemetryJson = """{"flag":"yellow"}""",
+                ),
+                telemetryLog(
+                    id = 2,
+                    createdAt = 200,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    telemetryJson = """{"flag":"green"}""",
+                ),
+            ),
+        )
+        launchActivity()
+
+        clickItem("ログ")
+        clickItem("フラッグ")
+        waitUntilDisplayed("選択したログ")
+
+        clickItem("フラッグ")
+
+        waitUntilNotDisplayed("選択したログ")
+        waitUntilDisplayed("フラッグ")
+    }
+
     private fun launchActivity() {
         scenario = ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitForIdle()
@@ -236,6 +296,12 @@ class MainActivityTest {
         // 5秒では不足してタイムアウトすることがあるため、実機テストのみ余裕を持たせる。
         composeTestRule.waitUntil(timeoutMillis = 8_000L) {
             composeTestRule.onAllNodes(hasText(text, substring = substring)).fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+
+    private fun waitUntilNotDisplayed(text: String) {
+        composeTestRule.waitUntil(timeoutMillis = 8_000L) {
+            composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isEmpty()
         }
     }
 
