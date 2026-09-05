@@ -192,8 +192,18 @@ class AppScreenScreenshotTest {
                 println("DEBUG_WAITUNTIL_ERROR_RAIL=${e.message}")
                 throw e
             }
-            waitForIdle()
-            onRoot().captureRoboImage()
+            try {
+                waitForIdle()
+            } catch (e: Throwable) {
+                println("DEBUG_WAITFORIDLE_ERROR_RAIL=${e.message}")
+                throw e
+            }
+            try {
+                onRoot().captureRoboImage()
+            } catch (e: Throwable) {
+                println("DEBUG_CAPTURE_ERROR_RAIL=${e.message}")
+                throw e
+            }
         }
 
     @Test
