@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.simulatorDisplayName
@@ -97,11 +98,13 @@ fun AppScreenPrimarySimulatorIndicator(
             shape = MaterialTheme.shapes.extraLarge,
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
             modifier =
-                Modifier.border(
-                    width = SimulatorPopupBorderWidth,
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    shape = MaterialTheme.shapes.extraLarge,
-                ),
+                Modifier
+                    .testTag("simulatorSelectionPopup")
+                    .border(
+                        width = SimulatorPopupBorderWidth,
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        shape = MaterialTheme.shapes.extraLarge,
+                    ),
         ) {
             Column(
                 modifier =

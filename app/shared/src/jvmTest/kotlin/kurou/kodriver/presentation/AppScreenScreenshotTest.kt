@@ -9,6 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.DesktopComposeUiTest
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -153,6 +155,34 @@ class AppScreenScreenshotTest {
         }
 
     @Test
+    fun `NavigationRail シミュレータ選択ポップアップ`() =
+        composeScreenshotTest {
+            setAppContent {
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationRail,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        readoutContent = {
+                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                        },
+                    )
+                }
+            }
+            onNodeWithTag("primarySimulatorNavItem").performClick()
+            waitUntil {
+                onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty()
+            }
+            waitForIdle()
+            onNodeWithTag("simulatorSelectionPopup").captureRoboImage()
+        }
+
+    @Test
     fun `NavigationBar ルールタブ`() =
         composeScreenshotTest {
             setAppContent {
@@ -232,6 +262,34 @@ class AppScreenScreenshotTest {
             onNodeWithText(navMore).performClick()
             waitForIdle()
             onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `NavigationBar シミュレータ選択ポップアップ`() =
+        composeScreenshotTest {
+            setAppContent {
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationBar,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        readoutContent = {
+                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                        },
+                    )
+                }
+            }
+            onNodeWithTag("primarySimulatorNavItem").performClick()
+            waitUntil {
+                onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty()
+            }
+            waitForIdle()
+            onNodeWithTag("simulatorSelectionPopup").captureRoboImage()
         }
 
     @Test
