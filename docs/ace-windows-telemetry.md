@@ -653,5 +653,7 @@ acevo-shared-memory（公式ヘッダ転記）の定義。早期アクセスの�
 |---|---|---|
 | [Assetto Corsa EVO — Shared Memory Documentation（Steam ガイド #3707421508）](https://steamcommunity.com/sharedfiles/filedetails/?id=3707421508) | 公式 | Kunos による一次情報。構造体・列挙・整数値の正典 |
 | [albertowd/live-telemetry-evo](https://github.com/albertowd/live-telemetry-evo)（[docs/SHARED_MEMORY.md](https://github.com/albertowd/live-telemetry-evo/blob/develop/docs/SHARED_MEMORY.md)） | OSS | オーバーレイ実装。Physics の全オフセットと実測検証（tyreWear 死亡、carDamage 絶対値、camber 符号など）が豊富 |
+| [live-telemetry-evo `sources/ac_evo.py`](https://github.com/albertowd/live-telemetry-evo/blob/develop/src/live_telemetry_evo/sources/ac_evo.py) | Python | 上記リポジトリ内の ctypes 構造体定義（`_pack_=4`）。`docs/SHARED_MEMORY.md` より更新が新しく、オフセットを実行時に算出したい場合はこちらが実質の正 |
 | [dSyncro/acevo-shared-memory](https://github.com/dSyncro/acevo-shared-memory)（[crate](https://lib.rs/crates/acevo-shared-memory)） | OSS (Rust) | 公式ヘッダの C++ 転記（`src/bindings/source/wrapper.hpp`）。全サブ構造体・列挙値の定義と `static_assert` によるサイズ検証を含む |
 | [Live Telemetry Evo（OverTake.gg）](https://www.overtake.gg/downloads/live-telemetry-evo.84121/) | 配布 | 上記オーバーレイの配布ページ |
+| [ACE の Steam ニュース一覧](https://store.steampowered.com/news/app/3058630/) | 公式 | 各アップデートのパッチノート。共有メモリの変更は 0.6 / 0.6.2 / 0.6.3 のノートに記載された。早期アクセス中のため、仕様変更の有無はまずここで確認する |

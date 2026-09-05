@@ -261,10 +261,10 @@ GT7 Update 1.68 前後で追加。ハートビート `'C'` で取得できる。
 | リポジトリ | 言語 | 概要 |
 |---|---|---|
 | [Nenkai/PDTools](https://github.com/Nenkai/PDTools) | C# (.NET) | 最も権威ある実装。フィールド定義・復号ロジック完全実装（GT6/GT Sport/GT7 対応） |
-| [MacManley/gt7-udp](https://github.com/MacManley/gt7-udp) | C++ | ESP32/ESP8266向け。全パケット型（A/B/~/C）対応。C パケットのフィールド定義が明確 |
+| [MacManley/gt7-udp](https://github.com/MacManley/gt7-udp) | C++ | ESP32/ESP8266向け。全パケット型（A/B/~/C）対応。C パケットのフィールド定義が明確。[README](https://github.com/MacManley/gt7-udp/blob/main/README.md) に `surfaceType` の ID 一覧と `carCode` → 車両名の対応表がある |
 | [Bornhall/gt7telemetry](https://github.com/Bornhall/gt7telemetry) | Python | シンプルなPython実装・Salsa20復号付き |
 | [GeekyDeaks/raw-sim-telemetry](https://github.com/GeekyDeaks/raw-sim-telemetry) | Python | ロガー実装、復号ロジックが明快 |
 | [snipem/gt7dashboard](https://github.com/snipem/gt7dashboard) | Python | ダッシュボードUI付きの実装 |
 | [granturismo (PyPI)](https://pypi.org/project/granturismo/) | Python | パッケージ化されたライブラリ |
 | [carlos-menezes/gran-turismo-query](https://github.com/carlos-menezes/gran-turismo-query) | TypeScript | Node.js向け実装 |
-| [vwhitteron/gt-telemetry](https://pkg.go.dev/github.com/vwhitteron/gt-telemetry) | Go | Go言語実装 |
+| [zetetos/gt-telemetry](https://github.com/zetetos/gt-telemetry) | Go | Go言語実装。パケット全体を Kaitai Struct で宣言的に定義（[`internal/kaitai/gran_turismo_telemetry.ksy`](https://github.com/zetetos/gt-telemetry/blob/main/internal/kaitai/gran_turismo_telemetry.ksy)）。旧 `vwhitteron/gt-telemetry` からの移転先で、旧リポジトリは2025年5月に更新終了 |
