@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -79,5 +80,6 @@ private fun WheelCarcassTemperatureText(
         text = stringResource(labelRes, wheelCarcassTemperatureText(wheels, wheelIndex)),
         modifier = Modifier.width(WHEEL_COLUMN_WIDTH),
         softWrap = false,
+        style = koDriverNumericTextStyle(),
     )
 }

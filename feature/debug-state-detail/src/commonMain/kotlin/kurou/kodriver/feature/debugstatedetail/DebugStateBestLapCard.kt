@@ -2,6 +2,7 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -27,5 +28,6 @@ internal fun BestLapContent(
         text =
             bestLapTimeMs?.takeIf { it > 0L }?.let { formatLapTimeMs(it) }
                 ?: stringResource(Res.string.debug_state_flag_info_unavailable),
+        style = koDriverNumericTextStyle(),
     )
 }
