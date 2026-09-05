@@ -10,18 +10,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.ArrowDropUp
@@ -185,10 +180,8 @@ private fun AppNavIcon(
  * タップするとシミュレータ選択メニューを開く。ラベル横にドロップダウン矢印アイコンを添えて、
  * 単なるタブではなくメニューを開く操作対象であることを視覚的に示す。画面下部の NavigationBar では
  * メニューが上方向に展開されるため矢印を上向き（[Icons.Filled.ArrowDropUp]）にし、画面横の
- * NavigationRail / NavigationDrawer ではメニューが右方向に展開されるため矢印を右向き
+ * NavigationRail ではメニューが右方向に展開されるため矢印を右向き
  * （[Icons.AutoMirrored.Filled.ArrowRight]）にする。
- * NavigationDrawer ではラベルの横幅に余裕があるため、[MaterialTheme.typography.titleMedium] を使って
- * 他のタブラベルより強調表示する。
  * ポップアップメニューの開閉状態（[expanded]）に応じて矢印アイコンを180度回転させ、
  * 開いているときは向きが反対になり、閉じると元の向きに戻ることでメニューの開閉状態を視覚的に示す。
  */
@@ -199,14 +192,6 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
     onExpandedChange: (Boolean) -> Unit,
     onSimulatorSelected: (String) -> Unit,
 ) {
-    val itemModifier =
-        if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-            Modifier
-                .fillMaxWidth()
-                .padding(4.dp)
-        } else {
-            Modifier
-        }
     val dropdownArrowIcon =
         if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
             Icons.Filled.ArrowDropUp
@@ -215,59 +200,28 @@ private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
         }
     item(
         icon = {
-            if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
-                AppScreenPrimarySimulatorIndicator(
-                    simulatorId = selectedSimulatorId,
-                    expanded = expanded,
-                    onExpandedChange = onExpandedChange,
-                    onSimulatorSelected = onSimulatorSelected,
-                    modifier = Modifier.size(24.dp),
-                )
-            }
+            AppScreenPrimarySimulatorIndicator(
+                simulatorId = selectedSimulatorId,
+                expanded = expanded,
+                onExpandedChange = onExpandedChange,
+                onSimulatorSelected = onSimulatorSelected,
+                modifier = Modifier.size(24.dp),
+            )
         },
         label = {
             val dropdownArrowRotation by animateFloatAsState(targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f)
-            if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .offset(x = (-6).dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    AppScreenPrimarySimulatorIndicator(
-                        simulatorId = selectedSimulatorId,
-                        expanded = expanded,
-                        onExpandedChange = onExpandedChange,
-                        onSimulatorSelected = onSimulatorSelected,
-                        modifier = Modifier.size(24.dp),
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = appScreenPrimarySimulatorLabel(selectedSimulatorId),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Icon(
-                        imageVector = dropdownArrowIcon,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp).rotate(dropdownArrowRotation),
-                    )
-                }
-            } else {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
-                    Icon(
-                        imageVector = dropdownArrowIcon,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp).rotate(dropdownArrowRotation),
-                    )
-                }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
+                Icon(
+                    imageVector = dropdownArrowIcon,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp).rotate(dropdownArrowRotation),
+                )
             }
         },
         selected = false,
         onClick = { onExpandedChange(true) },
-        modifier = itemModifier.testTag("primarySimulatorNavItem"),
+        modifier = Modifier.testTag("primarySimulatorNavItem"),
     )
 }
 
@@ -612,45 +566,12 @@ private fun AppScreenScaffold(
                     onSimulatorSelected = onSimulatorSelected,
                 )
                 AppDestination.entries.forEach { dest ->
-                    val itemModifier =
-                        if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp)
-                        } else {
-                            Modifier
-                        }
                     val showBadge =
                         dest == AppDestination.More &&
                             (hasAppUpdate || !accessLocalNetworkPermissionGranted)
                     item(
-                        icon = {
-                            if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
-                                AppNavIcon(dest = dest, showBadge = showBadge)
-                            }
-                        },
-                        label = {
-                            if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-                                Row(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .offset(x = (-6).dp),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    AppNavIcon(
-                                        dest = dest,
-                                        showBadge = showBadge,
-                                        modifier = Modifier.size(24.dp),
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(dest.label())
-                                }
-                            } else {
-                                Text(dest.label())
-                            }
-                        },
+                        icon = { AppNavIcon(dest = dest, showBadge = showBadge) },
+                        label = { Text(dest.label()) },
                         selected = navigationState.current == dest,
                         onClick = {
                             navigationState.handleTabClick(dest) { reselected ->
@@ -661,7 +582,6 @@ private fun AppScreenScaffold(
                                 }
                             }
                         },
-                        modifier = itemModifier,
                     )
                 }
             },
