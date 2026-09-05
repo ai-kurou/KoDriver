@@ -20,6 +20,10 @@ Le Mans Ultimate（LMU）から Windows 共有メモリ経由で、Gran Turismo 
 
 改善案の記録方法・起票ルールの詳細は「[改善案の記録](#改善案の記録)」を参照。
 
+### 破壊的なBashコマンドは PreToolUse フックで機械的にガードされる
+
+`.claude/settings.json` の `hooks.PreToolUse` が `.claude/hooks/guard_destructive_bash.py`（Python標準ライブラリのみで実装）を登録しており、Bashツールで実行しようとした `rm` 呼び出しを解析する。`/`・ホームディレクトリ・`~/.ssh` 等の保護対象パスへの削除は `deny`、それ以外の再帰的（`-r`）・強制的（`-f`）な削除は `ask`（実行前に確認）となる。この仕組みは「実行するアクションの慎重さ」の運用ルールを補完する機械的なガードであり、フック自体の判定ロジックを緩める変更（保護対象パスの削除・`ask`条件の縮小等）は事前にユーザーへ確認すること。
+
 ### app:androidBenchmark の targetProjectPath は app 間依存の例外
 
 `app:androidBenchmark`（`com.android.test` モジュール）は `targetProjectPath = ":app:androidApp"` で `app:androidApp` を計装対象として参照する。これは Gradle の `implementation`/`api` 依存ではなく AGP 固有のテスト対象指定であり、`moduleGraphAssert` の対象外（`app:.*App` を含む `allowed` パターンにも含まれない）。「app モジュール同士は依存しない」という原則の例外として、この参照のみ容認する（PR #1126）。技術的な背景は `app/androidBenchmark/README.md` を参照。
