@@ -7,6 +7,12 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPO_ROOT}"
 
+# plistのStandardOutPath/StandardErrorPathは固定パスのため、いつの実行分のログか
+# ファイル名からは判別できない。実行開始時刻を埋め込んだファイルへ自前でリダイレクトし、
+# 実行ごとに別ファイルとして残す。
+LOG_FILE="/tmp/kodriver-nightly-implement-$(date '+%Y%m%d_%H%M%S').log"
+exec >> "${LOG_FILE}" 2>&1
+
 REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
 LOG_PREFIX="[nightly-implement-local]"
 
