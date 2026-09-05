@@ -43,10 +43,6 @@ import org.koin.core.context.stopKoin as koinStop
 
 class AppScreenScreenshotTest {
     companion object {
-        // CI(Linux)ではDropdownMenuの展開アニメーションがデフォルトのwaitUntilタイムアウト(1000ms)より
-        // 遅く完了することがあるため、余裕を持たせたタイムアウトを使う。
-        private const val SIMULATOR_POPUP_WAIT_TIMEOUT_MILLIS = 5_000L
-
         @OptIn(ExperimentalCoroutinesApi::class)
         private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -179,7 +175,7 @@ class AppScreenScreenshotTest {
                 }
             }
             onNodeWithTag("primarySimulatorNavItem").performClick()
-            waitUntil(timeoutMillis = SIMULATOR_POPUP_WAIT_TIMEOUT_MILLIS) {
+            waitUntil {
                 onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty()
             }
             waitForIdle()
@@ -289,7 +285,7 @@ class AppScreenScreenshotTest {
                 }
             }
             onNodeWithTag("primarySimulatorNavItem").performClick()
-            waitUntil(timeoutMillis = SIMULATOR_POPUP_WAIT_TIMEOUT_MILLIS) {
+            waitUntil {
                 onAllNodesWithTag("simulatorSelectionPopup").fetchSemanticsNodes().isNotEmpty()
             }
             waitForIdle()
