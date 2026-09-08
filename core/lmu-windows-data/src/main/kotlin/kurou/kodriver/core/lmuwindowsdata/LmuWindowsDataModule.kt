@@ -9,6 +9,7 @@ import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepositoryImp
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsPitStatusRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreCarcassTemperatureRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreDetachedRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreWearRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleApproachRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleClassRepositoryImpl
@@ -18,6 +19,7 @@ import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
@@ -27,6 +29,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreDetachedRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
@@ -82,6 +85,9 @@ val lmuWindowsDataModule =
         single<LmuWindowsTyreWearRepository> {
             if (isWindows) LmuWindowsTyreWearRepositoryImpl(source = get()) else NoOpTyreWearRepository()
         }
+        single<LmuWindowsTyreDetachedRepository> {
+            if (isWindows) LmuWindowsTyreDetachedRepositoryImpl(source = get()) else NoOpTyreDetachedRepository()
+        }
         single<LmuWindowsVehicleClassRepository> {
             if (isWindows) LmuWindowsVehicleClassRepositoryImpl(source = get()) else NoOpVehicleClassRepository()
         }
@@ -120,6 +126,10 @@ private class NoOpTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemper
 
 private class NoOpTyreWearRepository : LmuWindowsTyreWearRepository {
     override fun tyreWearStream(): Flow<LmuWindowsTyreWearData> = emptyFlow()
+}
+
+private class NoOpTyreDetachedRepository : LmuWindowsTyreDetachedRepository {
+    override fun tyreDetachedStream(): Flow<LmuWindowsTyreDetachedData> = emptyFlow()
 }
 
 private class NoOpVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {

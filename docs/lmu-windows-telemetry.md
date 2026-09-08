@@ -532,6 +532,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | タイヤ表面温度（中央） | `mTemperature[1]` | wheelBase+136 |
 | タイヤ摩耗 | `mWear` | wheelBase+152 |
 | タイヤカーカス温度 | `mTireCarcassTemperature` | wheelBase+204 |
+| タイヤ脱落（ホイール単位） | `mDetached` | wheelBase+178 |
 | ゲームフェーズ | `mGamePhase` | 1632+108 |
 | イエローフラッグ状態 | `mYellowFlagState` | 1632+109 |
 | セクターフラッグ | `mSectorFlag[3]` | 1632+110 |
