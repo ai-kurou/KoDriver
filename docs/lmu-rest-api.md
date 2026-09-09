@@ -2,7 +2,7 @@
 
 Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム内 WebUI が動作する土台として、ローカル REST API サーバーを内蔵している。本ドキュメントは、[`:core:windows-shared-memory`](../core/windows-shared-memory) が読み取る `LMU_Data` 共有メモリ（→ [`docs/lmu-windows-telemetry.md`](lmu-windows-telemetry.md)）には**存在しない情報**（天候予報、Virtual Energy 消費履歴、ピットメニューの状態等）を KoDriver に取り込めるかどうかを検討するための事前調査メモである。
 
-> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、[該当セクション](#restsessionsweather-のレスポンス構造)に反映済み。それ以外のエンドポイントの実測・疎通確認は別タスクで行う。
+> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` と `/rest/strategy/usage` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、該当セクションに反映済み。それ以外のエンドポイントの実測・疎通確認は別タスクで行う。
 
 ---
 
@@ -12,10 +12,11 @@ Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム�
 2. [基本情報](#基本情報)
 3. [判明しているエンドポイント一覧](#判明しているエンドポイント一覧)
 4. [`/rest/sessions/weather` のレスポンス構造](#restsessionsweather-のレスポンス構造)
-5. [既知の注意点・落とし穴](#既知の注意点落とし穴)
-6. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
-7. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
-8. [参考リポジトリ・情報源](#参考リポジトリ情報源)
+5. [`/rest/strategy/usage` のレスポンス構造](#reststrategyusage-のレスポンス構造)
+6. [既知の注意点・落とし穴](#既知の注意点落とし穴)
+7. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
+8. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
+9. [参考リポジトリ・情報源](#参考リポジトリ情報源)
 
 ---
 
@@ -160,6 +161,45 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ---
 
+## `/rest/strategy/usage` のレスポンス構造
+
+**実機（Windows 機で LMU 起動中に `http://localhost:6397/rest/strategy/usage` へブラウザでアクセス）で取得したレスポンスを基に記載する。**
+
+トップレベルはドライバー名（表示名）をキーとするオブジェクトで、値は「スティントごとのレコード」を要素とする配列になっている。
+
+| フィールド | 概要 |
+|---|---|
+| `fuel` | 燃料消費量（単位未確認。0〜1 に近い小数のため、タンク容量に対する割合、または L 単位の消費量の可能性がある） |
+| `lap` | そのレコード時点の周回数 |
+| `pit` | ピットイン中かどうかの真偽値 |
+| `stint` | スティント番号（1 始まり） |
+| `tyres` | タイヤ 4 輪分の残量配列（`[FL, FR, RL, RR]` の順と推測。実測ではすべて `100.0` で新品タイヤの状態） |
+| `ve` | Virtual Energy 残量（0.0〜1.0 の割合と推測。実測では `1.0` で満タンの状態） |
+
+<details>
+<summary>実測レスポンス例</summary>
+
+```json
+{
+  "yusuke saito": [
+    {
+      "fuel": 0.904347836971283,
+      "lap": 0,
+      "pit": false,
+      "stint": 1,
+      "tyres": [100.0, 100.0, 100.0, 100.0],
+      "ve": 1.0
+    }
+  ]
+}
+```
+
+</details>
+
+> 実測はセッション開始直後・1 スティント目のみのため、複数スティント時に配列がどう追記されるか、`fuel`/`ve` の単位・値域、タイヤ摩耗が進んだ場合の `tyres` の値の意味は未確認。
+
+---
+
 ## 既知の注意点・落とし穴
 
 [race-engineer プロジェクトの統合ドキュメント](https://github.com/Alexander-Gro/race-engineer/blob/main/docs/03-LMU-INTEGRATION.md) が報告している実運用上の注意点。
@@ -184,9 +224,10 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ## 未確認・追加調査が必要な点
 
-- `/rest/sessions/weather` 以外のエンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
+- `/rest/sessions/weather` と `/rest/strategy/usage` 以外のエンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
 - `WNV_SKY` の `stringValue` が日本語ロケールで文字化けする件の原因（レスポンスヘッダーの文字コード指定、クライアント側のデコード方法等）。
 - `WNV_RAIN_CHANCE` が 0% 以外の値を取るケースでの `currentValue` の値域（整数か小数か、100 分率か 1 分率か）。
+- `/rest/strategy/usage` の `fuel`/`ve` の正確な単位・値域（実測はセッション開始直後の 1 レコードのみ）、複数スティント時の配列の追記され方、タイヤ摩耗後の `tyres` 値の意味。
 - サードパーティ製オーバーレイアプリの REST API 呼び出し実装本体（リクエスト間隔、タイムアウト、エラー時のフォールバック処理）の詳細。
 - CrewChief の実装（C#）における書き込み系エンドポイントの具体的なリクエストボディ形式。
 - rFactor2（非 LMU）と LMU で REST API 仕様がどこまで共通か（rF2 用と LMU 用でアダプタ実装が分離されている事例があることから差異があることは分かっているが、詳細な差分は未整理）。
