@@ -28,6 +28,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
@@ -137,6 +138,9 @@ private val sampleLmuWindowsPitStatus =
 private val sampleVehicleDamage =
     LmuWindowsVehicleDamageData(overheating = true, partDetached = false, lastImpactMagnitude = 0.0)
 
+private val sampleTyreDetached =
+    LmuWindowsTyreDetachedData(wheels = WheelIndex.entries.associateWith { it == WheelIndex.REAR_LEFT })
+
 private val sampleVehicleApproach =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(4),
@@ -178,6 +182,7 @@ class DebugStateDetailPaneScreenshotTest {
             aceWindowsStatus = sampleAceWindowsStatus,
             lmuWindowsPitStatus = sampleLmuWindowsPitStatus,
             vehicleDamage = sampleVehicleDamage,
+            tyreDetached = sampleTyreDetached,
             enabledCardKeys = defaultDebugStateCardOrder.toSet(),
         )
 

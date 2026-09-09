@@ -209,7 +209,9 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
                 uiState.lmuWindowsTelemetry,
             )
         },
-        DebugStateCardKey.VEHICLE_DAMAGE to { uiState -> VehicleDamageContent(uiState.vehicleDamage) },
+        DebugStateCardKey.VEHICLE_DAMAGE to { uiState ->
+            VehicleDamageContent(uiState.vehicleDamage, uiState.tyreDetached)
+        },
     )
 
 @Composable
