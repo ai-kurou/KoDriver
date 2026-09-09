@@ -2,7 +2,7 @@
 
 Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム内 WebUI が動作する土台として、ローカル REST API サーバーを内蔵している。本ドキュメントは、[`:core:windows-shared-memory`](../core/windows-shared-memory) が読み取る `LMU_Data` 共有メモリ（→ [`docs/lmu-windows-telemetry.md`](lmu-windows-telemetry.md)）には**存在しない情報**（天候予報、Virtual Energy 消費履歴、ピットメニューの状態等）を KoDriver に取り込めるかどうかを検討するための事前調査メモである。
 
-> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` と `/rest/strategy/usage` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、該当セクションに反映済み。それ以外のエンドポイントの実測・疎通確認は別タスクで行う。
+> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、該当セクションに反映済み。それ以外のエンドポイントの実測・疎通確認は別タスクで行う。
 
 ---
 
@@ -13,10 +13,11 @@ Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム�
 3. [判明しているエンドポイント一覧](#判明しているエンドポイント一覧)
 4. [`/rest/sessions/weather` のレスポンス構造](#restsessionsweather-のレスポンス構造)
 5. [`/rest/strategy/usage` のレスポンス構造](#reststrategyusage-のレスポンス構造)
-6. [既知の注意点・落とし穴](#既知の注意点落とし穴)
-7. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
-8. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
-9. [参考リポジトリ・情報源](#参考リポジトリ情報源)
+6. [`/rest/garage/UIScreen/RepairAndRefuel` のレスポンス構造](#restgarageuiscreenrepairandrefuel-のレスポンス構造)
+7. [既知の注意点・落とし穴](#既知の注意点落とし穴)
+8. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
+9. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
+10. [参考リポジトリ・情報源](#参考リポジトリ情報源)
 
 ---
 
@@ -200,6 +201,68 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ---
 
+## `/rest/garage/UIScreen/RepairAndRefuel` のレスポンス構造
+
+**実機（Windows 機で LMU 起動中に `http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel` へブラウザでアクセス）で取得したレスポンスを基に記載する。** 他のエンドポイントと比べて情報量が非常に多く、複数のドメインをまとめて返す構造になっている。
+
+トップレベルは以下のキーを持つオブジェクト。
+
+| キー | 概要 |
+|---|---|
+| `currentWeather` | 現在の天候（気圧・気温・湿度・雲量・降雨強度等）。単位はいずれもケルビン・SI 単位系相当で、`/rest/sessions/weather` の `WNV_*`（`currentValue`/`stringValue` 形式）とは**異なるフォーマット**。気温は `ambientTempKelvin`（絶対温度）、路面温度は `trackTempKelvin` |
+| `fuelInfo` | `currentFuel`/`maxFuel`（燃料、単位はおそらく L）、`currentVirtualEnergy`/`maxVirtualEnergy`（Virtual Energy。実測値は `851000000.0` のような巨大な数値で、`/rest/strategy/usage` の `ve`（0.0〜1.0 の割合）とは**異なるスケール**。`currentBattery`/`maxBattery` は今回の車両（LMP2 相当）では `0.0` で未使用 |
+| `pitMenu.pitMenu` | ピットメニューの全項目を配列で返す（`DAMAGE:`/`DRIVER:`/`VIRTUAL ENERGY:`/`FUEL RATIO:`/`TIRES:`/`FL TIRE:`等の各輪別/`R WING:`/`GRILLE:`/各輪の`PRESS:`/`BRAKE DUCT:`/`REPLACE BRAKES:`）。各項目は `PMC Value`（内部コード）、`currentSetting`（現在選択中のインデックス）、`default`、`name`、`settings`（選択可能な全選択肢の配列。ラベル文字列に日本語ロケールでの文字化けが多数含まれる）を持つ。**選択肢一覧を含むため 1 項目あたりの情報量が大きく、ピット設定 UI 操作向けのデータであり、読み上げ用途では `currentSetting` に対応する `settings[currentSetting].text` だけを使う想定になりそう** |
+| `pitRecommendations` | タイヤ（`TIRES:`/輪別）・`fuel`・`virtualEnergy` それぞれの推奨要否フラグ（実測はすべて `0` = 走行直後で推奨なし） |
+| `pitStopLength.timeInSeconds` | 現在の設定でのピットストップ所要時間予測（秒） |
+| `pitStopTimes.times` | ピット作業ごとの所要時間定数テーブル（`FourTireChange`/`FuelFillRate`/`BrakeChange`等）。コース・レギュレーション固有の定数と推測され、走行状況によって変化しない可能性が高い |
+| `racePosition` | 順位（`placeOverall`/`placeInClass`）、クラス内トップ・最後尾とのギャップ（`gapToFirstInClassTime`/`gapToLastInClassTime`等） |
+| `sessionTime.timeOfDay` | セッション内の時刻（秒。実測値 `29659.5` は 1 日 86400 秒に対する経過秒数の可能性がある） |
+| `teamInfo` | `teamName`/`vehicleName`（チーム名・車両名の文字列）に加え、`driverNames` はドライバー名を **1 文字ずつの ASCII コード配列** として返す（例: `[121, 117, ...]` は `"yusuke saito"` の各文字コード＋null終端）。文字列としてそのまま返す `teamName`/`vehicleName` と扱いが異なる点に注意 |
+| `wearables` | `body.aero`（エアロダメージ）、`body.detachableParts`（脱落可能パーツごとの脱落フラグ配列）、`brakes`/`suspension`/`tires`（各 4 輪分の摩耗・状態を表す配列） |
+| `weatherForecast.nodes` | `Duration`/`Humidity`/`RainChance`/`Sky`/`StartTime`/`Temperature`/`WindDirection`/`WindSpeed` の各キーが **5 要素の配列**（`START`/`NODE_25`/`NODE_50`/`NODE_75`/`FINISH` に対応すると推測）になっている。`/rest/sessions/weather` と同じ天候予報情報を**フィールド名ごとに配列化した別フォーマット**で重複して持っている。`StartTime` は実測ではすべて `0` で、ノードの相対位置を表す値は今回も確認できなかった |
+
+<details>
+<summary>実測レスポンス例（`fuelInfo` / `racePosition` / `weatherForecast` 抜粋。`pitMenu` は情報量が大きいため省略）</summary>
+
+```json
+{
+  "fuelInfo": {
+    "currentBattery": 0.0,
+    "currentFuel": 103.27770233154297,
+    "currentVirtualEnergy": 851000000.0,
+    "maxBattery": 0.0,
+    "maxFuel": 115.0,
+    "maxVirtualEnergy": 851000000.0
+  },
+  "racePosition": {
+    "gapToFirstInClassLaps": 0,
+    "gapToFirstInClassTime": 0.0,
+    "gapToLastInClassLaps": 0,
+    "gapToLastInClassTime": 0.0,
+    "placeInClass": 1,
+    "placeOverall": 1
+  },
+  "weatherForecast": {
+    "nodes": {
+      "Duration": [0, 0, 0, 0, 0],
+      "Humidity": [84, 78, 72, 70, 67],
+      "RainChance": [0, 0, 0, 0, 0],
+      "Sky": [1, 1, 0, 0, 0],
+      "StartTime": [0, 0, 0, 0, 0],
+      "Temperature": [18, 19, 21, 21, 22],
+      "WindDirection": [2, 0, 1, 1, 1],
+      "WindSpeed": [2, 5, 11, 10, 5]
+    }
+  }
+}
+```
+
+</details>
+
+> `pitMenu` は UI 操作（ピット設定変更）向けの選択肢一覧を含むため情報量が非常に大きい。読み上げ・テレメトリ用途で有用なのは主に `fuelInfo`/`racePosition`/`wearables`/`weatherForecast` で、`pitMenu`/`pitStopTimes` はコース・車両固有の設定値テーブルとしての参照に留まりそう。
+
+---
+
 ## 既知の注意点・落とし穴
 
 [race-engineer プロジェクトの統合ドキュメント](https://github.com/Alexander-Gro/race-engineer/blob/main/docs/03-LMU-INTEGRATION.md) が報告している実運用上の注意点。
@@ -224,10 +287,14 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ## 未確認・追加調査が必要な点
 
-- `/rest/sessions/weather` と `/rest/strategy/usage` 以外のエンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
-- `WNV_SKY` の `stringValue` が日本語ロケールで文字化けする件の原因（レスポンスヘッダーの文字コード指定、クライアント側のデコード方法等）。
-- `WNV_RAIN_CHANCE` が 0% 以外の値を取るケースでの `currentValue` の値域（整数か小数か、100 分率か 1 分率か）。
+- `/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` 以外のエンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
+- `WNV_SKY`・ピットメニューの選択肢テキスト等、日本語ロケールで文字化けする文字列の原因（レスポンスヘッダーの文字コード指定、クライアント側のデコード方法等）。
+- `WNV_RAIN_CHANCE`（および `RepairAndRefuel` の `weatherForecast.nodes.RainChance`）が 0% 以外の値を取るケースでの値域（整数か小数か、100 分率か 1 分率か）。
 - `/rest/strategy/usage` の `fuel`/`ve` の正確な単位・値域（実測はセッション開始直後の 1 レコードのみ）、複数スティント時の配列の追記され方、タイヤ摩耗後の `tyres` 値の意味。
+- `RepairAndRefuel` の `fuelInfo.currentVirtualEnergy`（巨大な数値）と `/rest/strategy/usage` の `ve`（0.0〜1.0 の割合）の関係・換算方法。
+- `weatherForecast.nodes.StartTime` が常に `0` であった理由（今回のセッションが START ノード付近だったため他ノードの値が未確定なだけか、そもそも別の意味を持つ値か）と、各ノードの相対位置（開始からの時間・割合）を取得する正式な方法。
+- `sessionTime.timeOfDay` の基準（1 日 86400 秒に対する経過秒数かどうか）。
+- `teamInfo.driverNames` が ASCII コード配列で返る理由・固定長（実測では 32 要素）の仕様。
 - サードパーティ製オーバーレイアプリの REST API 呼び出し実装本体（リクエスト間隔、タイムアウト、エラー時のフォールバック処理）の詳細。
 - CrewChief の実装（C#）における書き込み系エンドポイントの具体的なリクエストボディ形式。
 - rFactor2（非 LMU）と LMU で REST API 仕様がどこまで共通か（rF2 用と LMU 用でアダプタ実装が分離されている事例があることから差異があることは分かっているが、詳細な差分は未整理）。
