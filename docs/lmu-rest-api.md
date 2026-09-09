@@ -2,7 +2,7 @@
 
 Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム内 WebUI が動作する土台として、ローカル REST API サーバーを内蔵している。本ドキュメントは、[`:core:windows-shared-memory`](../core/windows-shared-memory) が読み取る `LMU_Data` 共有メモリ（→ [`docs/lmu-windows-telemetry.md`](lmu-windows-telemetry.md)）には**存在しない情報**（天候予報、Virtual Energy 消費履歴、ピットメニューの状態等）を KoDriver に取り込めるかどうかを検討するための事前調査メモである。
 
-> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた**未検証の調査結果**であり、KoDriver 実機での REST API 疎通確認・レスポンス実測は行っていない。実機確認は別タスクで行う。
+> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、[該当セクション](#restsessionsweather-のレスポンス構造)に反映済み。それ以外のエンドポイントの実測・疎通確認は別タスクで行う。
 
 ---
 
@@ -37,6 +37,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 ## 基本情報
 
 - **ベース URL**: `http://localhost:6397`（既定ポート。IPv4 推奨。古いビルドでは IPv6 の `http://[::1]:6397` へのフォールバックが必要という報告もある）
+- **バインド範囲**: **ループバック（`localhost`）限定**（実機確認済み）。LMU が動作している Windows 機自身の `http://localhost:6397/...` へは到達できるが、同一 LAN 内の別端末から `http://<Windows機のIP>:6397/...` へアクセスすると接続がタイムアウトし応答が返らない（`curl` の接続タイムアウト・ブラウザの読み込み中止まりを確認済み）。KoDriver がこの API を利用する場合、**Windows 版デスクトップアプリ自身のプロセスから `localhost` 経由で叩く構成が前提**になる。
 - **有効化設定**: 明示的な有効化は不要。ゲーム内 WebUI（ガレージ・観戦画面等）自体がこの REST API サーバー上で動作しており、LMU が起動していれば常時待ち受けている。
 - **認証**: なし（ローカルの非暗号化 HTTP API）。
 - **HTTP メソッド**: GET/POST/PUT/DELETE が混在するフル REST API。ゲーム内 UI の操作（セットアップ変更・ピットメニュー設定・リプレイ操作等）に使う書き込み系エンドポイントが大半を占める。
@@ -122,21 +123,40 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ## `/rest/sessions/weather` のレスポンス構造
 
-サードパーティ製オーバーレイアプリの実装から読み取れる範囲では、レスポンスは `PRACTICE` / `QUALIFY` / `RACE` の各セッション種別ごとに、以下 5 つの予報ノードを持つ構造になっている。
+**実機（Windows 機で LMU 起動中に `http://localhost:6397/rest/sessions/weather` へブラウザでアクセス）で取得したレスポンスを基に記載する。**
+
+トップレベルは `PRACTICE` / `QUALIFY` / `RACE` の各セッション種別をキーとするオブジェクトで、それぞれの値が以下 5 つの予報ノードを持つオブジェクトになっている。
 
 - `START` / `NODE_25` / `NODE_50` / `NODE_75` / `FINISH`
 
-各ノードは次のフィールドを持つ（`currentValue` を参照する実装例が確認できている）。
+各ノードは次の 6 フィールドを持ち、各フィールドは `{"currentValue": <number>, "stringValue": <string>}` の形式になっている。
 
-| フィールド | 概要 |
-|---|---|
-| `WNV_SKY` | 空模様の種別インデックス |
-| `WNV_TEMPERATURE` | 気温（℃） |
-| `WNV_RAIN_CHANCE` | 降雨確率（100 分率。0.01 倍し 0.0〜1.0 にクランプして扱う実装例が確認できている） |
+| フィールド | 概要 | `stringValue` の例 |
+|---|---|---|
+| `WNV_SKY` | 空模様の種別インデックス（`0`=晴天、`1`=薄曇り、`2`=一部曇り 等） | `"晴天"` 等（**日本語ロケール時は文字化けした状態で返ってくる**。エンコーディングの取り扱いに要注意） |
+| `WNV_TEMPERATURE` | 気温（℃） | `"22 °"` |
+| `WNV_RAIN_CHANCE` | 降雨確率。`currentValue` は `stringValue` の `%` 表記とそのまま一致する整数（例: `currentValue: 0` に対し `stringValue: "0%"`）。**実測ではすべてのノードで降雨確率が 0% のケースしか確認できておらず、降雨がある場合の値域・小数の有無は未確認** | `"0%"` |
+| `WNV_HUMIDITY` | 湿度（%）。`currentValue` はそのまま整数の湿度 | `"67%"` |
+| `WNV_WINDDIRECTION` | 風向インデックス（`0`=North, `1`=North East, `2`=East, `3`=South East, `5`=South West 等の 8 方位相当） | `"North East"` |
+| `WNV_WINDSPEED` | 風速。`currentValue` は km/h とは異なる内部単位の整数値で、`stringValue` が `currentValue × 3.6` きっかりの km/h 表記になっている（例: `currentValue: 5` → `"18.0 kph"`、`currentValue: 11` → `"39.6 kph"`）。**表示用には `stringValue` を使うのが安全** | `"18.0 kph"` |
 
-各ノードの `start` は、セッション長に対する相対位置（0.0〜1.0）として扱われている。**API 自体が「あと何分」というタイマー値を返すわけではない**点に注意。「セッション長 × start − 経過時間」をクライアント側で計算し、「あと何分で天候が変わるか」を逆算して表示する実装例が確認できている。
+各ノード名（`START`/`NODE_25`/`NODE_50`/`NODE_75`/`FINISH`）はセッション長に対する相対位置を表すと推測されるが、**レスポンス自体にはノードの相対位置を示す数値フィールド（`start` 等）は含まれていない**。「あと何分で天候が変わるか」を算出するには、ノード名から相対位置を固定値（`START`=0%, `NODE_25`=25%, `NODE_50`=50%, `NODE_75`=75%, `FINISH`=100%）として解釈し、別途取得したセッション長・経過時間と組み合わせてクライアント側で計算する必要がある。
 
-> 生の JSON 全体（キーの階層構造・単位・欠損時の挙動等）は未確認。実機での `swagger-schema.json` 取得、または実際にゲームを起動して `curl http://localhost:6397/rest/sessions/weather` 相当のリクエストを送るまでは確定情報とは言えない。
+<details>
+<summary>実測レスポンス例（`RACE`.`START` ノード抜粋）</summary>
+
+```json
+{
+  "WNV_HUMIDITY": { "currentValue": 75, "stringValue": "75%" },
+  "WNV_RAIN_CHANCE": { "currentValue": 0, "stringValue": "0%" },
+  "WNV_SKY": { "currentValue": 0, "stringValue": "晴天" },
+  "WNV_TEMPERATURE": { "currentValue": 23, "stringValue": "23 °" },
+  "WNV_WINDDIRECTION": { "currentValue": 1, "stringValue": "North East" },
+  "WNV_WINDSPEED": { "currentValue": 5, "stringValue": "18.0 kph" }
+}
+```
+
+</details>
 
 ---
 
@@ -164,8 +184,9 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ## 未確認・追加調査が必要な点
 
-- 各エンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
-- `/rest/sessions/weather` の全体構造（セッション種別のキー名、ノード配列かオブジェクトか等）・単位の確定。
+- `/rest/sessions/weather` 以外のエンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
+- `WNV_SKY` の `stringValue` が日本語ロケールで文字化けする件の原因（レスポンスヘッダーの文字コード指定、クライアント側のデコード方法等）。
+- `WNV_RAIN_CHANCE` が 0% 以外の値を取るケースでの `currentValue` の値域（整数か小数か、100 分率か 1 分率か）。
 - サードパーティ製オーバーレイアプリの REST API 呼び出し実装本体（リクエスト間隔、タイムアウト、エラー時のフォールバック処理）の詳細。
 - CrewChief の実装（C#）における書き込み系エンドポイントの具体的なリクエストボディ形式。
 - rFactor2（非 LMU）と LMU で REST API 仕様がどこまで共通か（rF2 用と LMU 用でアダプタ実装が分離されている事例があることから差異があることは分かっているが、詳細な差分は未整理）。
