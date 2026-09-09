@@ -2,7 +2,7 @@
 
 Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム内 WebUI が動作する土台として、ローカル REST API サーバーを内蔵している。本ドキュメントは、[`:core:windows-shared-memory`](../core/windows-shared-memory) が読み取る `LMU_Data` 共有メモリ（→ [`docs/lmu-windows-telemetry.md`](lmu-windows-telemetry.md)）には**存在しない情報**（天候予報、Virtual Energy 消費履歴、ピットメニューの状態等）を KoDriver に取り込めるかどうかを検討するための事前調査メモである。
 
-> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` / `/rest/watch/standings` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、該当セクションに反映済み。それ以外のエンドポイントの実測・疎通確認は別タスクで行う。
+> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` / `/rest/watch/standings` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、該当セクションに反映済み。加えて `/swagger-schema.json` の実測取得、および `/rest/sessions/GetGameState` / `/rest/watch/sessionInfo` / `/rest/garage/getPlayerGarageData` / `/rest/strategy/pitstop-estimate` / `/rest/strategy/overall` / `/rest/garage/PitMenu/receivePitMenu` の疎通・レスポンス概要確認を行い、[「その他の実測エンドポイント」](#その他の実測エンドポイント)と[「未確認・追加調査が必要な点」](#未確認追加調査が必要な点)に反映済み。それ以外のエンドポイントの実測・疎通確認は別タスクで行う。
 
 ---
 
@@ -15,10 +15,11 @@ Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム�
 5. [`/rest/strategy/usage` のレスポンス構造](#reststrategyusage-のレスポンス構造)
 6. [`/rest/garage/UIScreen/RepairAndRefuel` のレスポンス構造](#restgarageuiscreenrepairandrefuel-のレスポンス構造)
 7. [`/rest/watch/standings` のレスポンス構造](#restwatchstandings-のレスポンス構造)
-8. [既知の注意点・落とし穴](#既知の注意点落とし穴)
-9. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
-10. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
-11. [参考リポジトリ・情報源](#参考リポジトリ情報源)
+8. [その他の実測エンドポイント](#その他の実測エンドポイント)
+9. [既知の注意点・落とし穴](#既知の注意点落とし穴)
+10. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
+11. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
+12. [参考リポジトリ・情報源](#参考リポジトリ情報源)
 
 ---
 
@@ -44,9 +45,10 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 - **有効化設定**: 明示的な有効化は不要。ゲーム内 WebUI（ガレージ・観戦画面等）自体がこの REST API サーバー上で動作しており、LMU が起動していれば常時待ち受けている。
 - **認証**: なし（ローカルの非暗号化 HTTP API）。
 - **HTTP メソッド**: GET/POST/PUT/DELETE が混在するフル REST API。ゲーム内 UI の操作（セットアップ変更・ピットメニュー設定・リプレイ操作等）に使う書き込み系エンドポイントが大半を占める。
-- **API 仕様書**: LMU 実行中に `http://localhost:6397/swagger-schema.json` で OpenAPI 2.0 形式の定義を取得できる（`swagger/index.html` に Swagger UI もある）。ある時点のビルドで **全 179 パス、うち非 GET（書き込み系）が 107** という報告がある（[snipem/go-lmu-api](https://github.com/snipem/go-lmu-api) による）。
+- **API 仕様書**: LMU 実行中に `http://localhost:6397/swagger-schema.json` で OpenAPI 2.0 形式の定義を取得できる（`swagger/index.html` に Swagger UI もある）。**実機（`swagger: "2.0"`）で実測**したところ、全 179 パス中 GET が 79、非 GET（書き込み系）を含むパスが 107 と、[snipem/go-lmu-api](https://github.com/snipem/go-lmu-api) の報告（全 179 パス、非 GET 107）と一致することを確認した。
 - **プッシュ型 API**: 存在しない。WebSocket 等は提供されておらず、すべてステートレスな HTTP ポーリングで取得する。
 - **公式ドキュメント**: Studio 397 による一般公開の公式リファレンスは確認できていない。上記の `swagger-schema.json` が事実上の一次情報源。
+- **レスポンスの `Content-Type`**: 実測した GET エンドポイント（`/rest/sessions/weather` / `/rest/watch/standings` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` / `/rest/sessions/GetGameState` 等）はいずれも `Content-Type: text/plain`（**`charset` パラメータなし**）でレスポンスを返す。ボディの実バイト列は UTF-8 だが `charset` 指定がないため、クライアント側で明示的に UTF-8 としてデコードしないと文字化けする（→ [既知の注意点・落とし穴](#既知の注意点落とし穴)）。
 
 ---
 
@@ -315,11 +317,88 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ---
 
+## その他の実測エンドポイント
+
+上記 4 エンドポイントほど深掘りはしていないが、実機で疎通確認とレスポンス概要の把握を行ったエンドポイント。
+
+### `/rest/sessions/GetGameState`
+
+ゲームフェーズ・ピット状態等の enum 文字列をまとめたスナップショット。`timeOfDay` は `RepairAndRefuel.sessionTime.timeOfDay`（後述）と同一系列の値を返す（実測差は数秒程度で、同じ内部クロックを指していると推測される）。`closeestWeatherNode`（**綴りは実際にこの typo のまま**）は現在最も近い天候予報ノード 1 件を返す（`weatherForecast.nodes` と同じフィールド構成）。
+
+```json
+{
+  "MultiStintState": "DRIVING",
+  "PitState": "EXITING",
+  "closeestWeatherNode": { "Duration": 0, "Humidity": 84, "RainChance": 0, "Sky": 1, "StartTime": 0, "Temperature": 18, "WindDirection": 2, "WindSpeed": 2 },
+  "gamePhase": "GPHASE_GREEN",
+  "inControlOfVehicle": true,
+  "playerVehicleLoaded": true,
+  "raceFinished": false,
+  "teamVehicleState": "IN CONTROL",
+  "timeOfDay": 29115.037109375
+}
+```
+
+### `/rest/watch/sessionInfo`
+
+セッション全体のメタ情報。`/rest/watch/standings` の各車両レコードとは異なり、**セッション単位で 1 件のみ**返す。`currentEventTime`/`endEventTime`/`startEventTime`/`maxTime` は `timeOfDay`（時刻）とは別系統の「セッション開始からの経過時間・残り時間」を表す値と推測される（実測値は `currentEventTime: 323.4`, `startEventTime: 5.0`, `maxTime: 8100.0` で、いずれも数百〜数千秒オーダーの小さい値であり、`timeOfDay`（約 29115 秒 = 1 日の時刻相当）とスケールが異なる）。`sectorFlag` は 3 要素（セクターごとのフラッグ状態、実測は全て `"UNKNOWN"`）。
+
+```json
+{
+  "ambientTemp": 18.14,
+  "currentEventTime": 323.4,
+  "endEventTime": 300.0,
+  "lapDistance": 5733.8,
+  "maxTime": 8100.0,
+  "raceCompletion": { "timeCompletion": 0.0393 },
+  "sectorFlag": ["UNKNOWN", "UNKNOWN", "UNKNOWN"],
+  "session": "PRACTICE1",
+  "startEventTime": 5.0,
+  "trackName": "Daytona International Speedway Road Course",
+  "yellowFlagState": "NONE"
+}
+```
+
+### `/rest/garage/getPlayerGarageData`
+
+`VM_*`（車両全体のセットアップ項目）・`WM_*`（4 輪個別の項目）をキーとするフラットなオブジェクト。各値は共通のスキーマを持ち、`value`（内部値）・`stringValue`/`lastSavedStringValue`（表示用文字列）・`minValue`/`maxValue`（設定可能範囲）・`available`（設定可能かどうか）等を含む、セットアップ UI 向けの構造。
+
+```json
+{
+  "VM_VIRTUAL_ENERGY": {
+    "available": true,
+    "key": "VM_VIRTUAL_ENERGY",
+    "lastSavedStringValue": "100% (28.7 ラップ)",
+    "maxValue": 101,
+    "minValue": 0,
+    "stringValue": "100%",
+    "value": 100
+  }
+}
+```
+
+`VM_VIRTUAL_ENERGY.value` は 0〜101 の**パーセンテージ**表現で、`RepairAndRefuel.fuelInfo.currentVirtualEnergy`（巨大な内部単位の数値）・`/rest/strategy/usage` の `ve` および `/rest/watch/standings` の `veFraction`（いずれも 0.0〜1.0 の割合）とは異なる、**3 つ目の VE 表現**であることを確認した。[「既知の注意点」](#既知の注意点落とし穴)で述べた通り、このエンドポイントの値はコックピット内操作に追従しないフリーズしたスナップショットである点にも注意。
+
+### `/rest/strategy/pitstop-estimate`
+
+`/rest/garage/UIScreen/RepairAndRefuel.pitStopLength` と似た、ピット作業ごとの所要時間予測（秒）。実測ではタイヤ・ブレーキ・ダメージ交換が不要な状態のため、`fuel`（給油分の秒数）以外はすべて `0.0` だった。
+
+```json
+{ "brakeDucts": 0.0, "brakes": 0.0, "damage": 0.0, "driverSwap": 0.0, "fuel": 2.073, "penalties": 0.0, "tires": 0.0, "total": 2.073, "ve": 0.0 }
+```
+
+### `/rest/strategy/overall` / `/rest/garage/PitMenu/receivePitMenu`
+
+`/rest/strategy/overall` は実測（1 台のみ出走のプラクティスセッション）では **空ボディ（`Content-Length: 0`）** が返り、構造を確認できなかった。複数台出走時や特定のセッションフェーズでのみデータを返す可能性がある。`/rest/garage/PitMenu/receivePitMenu` は `RepairAndRefuel.pitMenu.pitMenu` と同様、ピットメニュー全項目（選択肢一覧込み）を返す構造で、情報量が大きいため詳細な構造把握は見送った。
+
+---
+
 ## 既知の注意点・落とし穴
 
 [race-engineer プロジェクトの統合ドキュメント](https://github.com/Alexander-Gro/race-engineer/blob/main/docs/03-LMU-INTEGRATION.md) が報告している実運用上の注意点。
 
 - **`getPlayerGarageData` はフリーズしたスナップショット**: 走行中にドライバーがコックピット内で TC/ABS 等のアシストレベルを変更しても、このエンドポイントの値はライブ更新されない（数分間走行しても値が変わらないことを確認済みとの報告）。ライブのアシストレベルは REST API からは外部的に読み取れない可能性が高い。
+- **文字化けの原因は `Content-Type` の `charset` 未指定**: 実機で確認したところ、GET エンドポイントのレスポンスはいずれも `Content-Type: text/plain`（`charset` パラメータなし）で返る。ボディの実バイト列は UTF-8 だが、`charset` 指定がないため、ブラウザ等クライアント側のデフォルトエンコーディング（Latin-1/windows-1252 相当）で解釈すると `WNV_SKY` の `"晴天"` が `"æ™´å¤©"` のように文字化けする。**レスポンスボディを明示的に UTF-8 としてデコードすれば正しく復元できる**ことを確認済み（例: ブラウザの `fetch` で `arrayBuffer()` を取得し `new TextDecoder('utf-8').decode(...)` する。素朴に `res.text()` や `String(bytes)` に頼らず、UTF-8 デコーダを明示的に使う実装が必要）。
 - **書き込み系は使わない方針が無難**: CrewChief はピットメニュー設定（燃料/リペア選択）に POST 系エンドポイントを使っているとの言及があるが、KoDriver は読み取り専用アプリであるため、意図せずゲーム状態を変更しないよう **GET 専用の利用に限定すべき**。
 - **ポーリング頻度**: 1〜5Hz 程度でキャッシュしながらポーリングすることが推奨されている（ゲーム側・API サーバーへの負荷軽減のため）。共有メモリ（16ms/60fps 相当）と比べてはるかに低頻度が前提。
 - **バージョン依存**: 公式ドキュメントがなく非公式リバースエンジニアリングに頼っているため、LMU のアップデートでエンドポイントやレスポンス構造が変わる可能性がある（v1.3.3 前後で挙動が変化したという報告あり）。
@@ -339,15 +418,17 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ## 未確認・追加調査が必要な点
 
-- `/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` / `/rest/watch/standings` 以外のエンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
-- `/rest/watch/standings` の `pathLateral`/`trackEdge`/`timeIntoLap` が負値を取る場合の意味、複数台出走時の配列の並び順（順位順か固定スロット順か）。
-- `WNV_SKY`・ピットメニューの選択肢テキスト等、日本語ロケールで文字化けする文字列の原因（レスポンスヘッダーの文字コード指定、クライアント側のデコード方法等）。
-- `WNV_RAIN_CHANCE`（および `RepairAndRefuel` の `weatherForecast.nodes.RainChance`）が 0% 以外の値を取るケースでの値域（整数か小数か、100 分率か 1 分率か）。
+- **[解決]** `WNV_SKY`・ピットメニューの選択肢テキスト等が日本語ロケールで文字化けする原因: レスポンスの `Content-Type: text/plain` に `charset` パラメータが付与されておらず、実バイト列（UTF-8）がクライアント側でデフォルトエンコーディング（Latin-1 相当）として解釈されるためと判明。UTF-8 として明示的にデコードすれば正しい文字列を取得できる（→ [既知の注意点・落とし穴](#既知の注意点落とし穴)）。
+- **[解決]** `swagger-schema.json` の全パス数・非 GET 数: 実機取得で全 179 パス・GET 79・非 GET を含むパス 107 と確認（→ [基本情報](#基本情報)）。
+- **[部分解決]** `sessionTime.timeOfDay` の基準: `/rest/sessions/GetGameState` の `timeOfDay` と同一系列の値であることを確認した（→ [その他の実測エンドポイント](#その他の実測エンドポイント)）。一方で `/rest/watch/sessionInfo` の `currentEventTime`/`startEventTime`/`maxTime` は明らかに異なるスケール（数百〜数千秒オーダー）の「セッション経過時間系」の値であり、両者の関係・`timeOfDay` が「1 日 86400 秒に対する経過秒数」かどうかは未確認のまま。
+- **[部分解決]** `teamInfo.driverNames` の構造: 実機では **ドライバーごとの 32 要素配列を要素とする配列**（`[[121, 117, ...], ...]`）であり、当初想定していた単一の 32 要素フラット配列ではなかった。また実測では ASCII 文字列の null 終端（`0`）の直後にも非ゼロの値（`97`）が含まれており、終端後のバイトが必ずしも全てゼロにはならない点が判明。複数ドライバー（マルチスティント/エンデュランス）時に配列がどう埋まるかは未確認。
+- `/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` / `/rest/watch/standings` / `/rest/sessions/GetGameState` / `/rest/watch/sessionInfo` / `/rest/garage/getPlayerGarageData` / `/rest/strategy/pitstop-estimate` 以外のエンドポイントの正確な JSON レスポンス構造（`swagger-schema.json` 自体は型定義を持たないケースが多く、実際のレスポンス例は個別に実機確認が必要）。
+- `/rest/watch/standings` の `pathLateral`/`trackEdge`/`timeIntoLap` が負値を取る場合の意味: 実測では `lapDistance` が負値（`-123.98`、ピットアウト直後でスタートラインを跨いでいない状態）のときに `pathLateral`/`trackEdge`/`timeIntoLap` も負値になっていたため、「ラップカウント開始前（スタート/フィニッシュラインを跨ぐ前）を負値で表す」という仮説は立てられるが、正の値域も含めた正式な意味・複数台出走時の配列の並び順（順位順か固定スロット順か）は未確認。
+- `WNV_RAIN_CHANCE`（および `RepairAndRefuel` の `weatherForecast.nodes.RainChance`）が 0% 以外の値を取るケースでの値域（整数か小数か、100 分率か 1 分率か）。実測時は降雨のないセッションのみだったため確認できず。
 - `/rest/strategy/usage` の `fuel`/`ve` の正確な単位・値域（実測はセッション開始直後の 1 レコードのみ）、複数スティント時の配列の追記され方、タイヤ摩耗後の `tyres` 値の意味。
-- `RepairAndRefuel` の `fuelInfo.currentVirtualEnergy`（巨大な数値）と `/rest/strategy/usage` の `ve`（0.0〜1.0 の割合）の関係・換算方法。
-- `weatherForecast.nodes.StartTime` が常に `0` であった理由（今回のセッションが START ノード付近だったため他ノードの値が未確定なだけか、そもそも別の意味を持つ値か）と、各ノードの相対位置（開始からの時間・割合）を取得する正式な方法。
-- `sessionTime.timeOfDay` の基準（1 日 86400 秒に対する経過秒数かどうか）。
-- `teamInfo.driverNames` が ASCII コード配列で返る理由・固定長（実測では 32 要素）の仕様。
+- `RepairAndRefuel` の `fuelInfo.currentVirtualEnergy`（巨大な数値）・`/rest/garage/getPlayerGarageData` の `VM_VIRTUAL_ENERGY.value`（0〜101 のパーセンテージ）・`/rest/strategy/usage` の `ve`（0.0〜1.0 の割合）という **VE を表す 3 種類の異なる表現**の相互換算方法。
+- `weatherForecast.nodes.StartTime`（および `GetGameState.closeestWeatherNode.StartTime`）が常に `0` であった理由（今回のセッションが START ノード付近だったため他ノードの値が未確定なだけか、そもそも別の意味を持つ値か）と、各ノードの相対位置（開始からの時間・割合）を取得する正式な方法。
+- `/rest/strategy/overall` が実測（1 台のみ出走のプラクティスセッション）では空ボディを返した理由。複数台出走時・特定のセッションフェーズ限定でデータを返す可能性があり未確認。
 - サードパーティ製オーバーレイアプリの REST API 呼び出し実装本体（リクエスト間隔、タイムアウト、エラー時のフォールバック処理）の詳細。
 - CrewChief の実装（C#）における書き込み系エンドポイントの具体的なリクエストボディ形式。
 - rFactor2（非 LMU）と LMU で REST API 仕様がどこまで共通か（rF2 用と LMU 用でアダプタ実装が分離されている事例があることから差異があることは分かっているが、詳細な差分は未整理）。
