@@ -75,15 +75,36 @@ class ObserveSortedTelemetryLogsUseCaseTest {
             verify(exactly = 1) { repository.observeTelemetryLogs() }
             confirmVerified(repository)
         }
+
+    @Test
+    fun `ace_windowsのログを含む場合も並び替えて観測する`() =
+        runTest {
+            every { repository.observeTelemetryLogs() } returns logs
+            logs.value =
+                listOf(
+                    telemetryLog(id = 1, createdAt = 100, simulator = Simulator.AceWindows),
+                    telemetryLog(id = 2, createdAt = 300, simulator = Simulator.AceWindows),
+                )
+
+            assertEquals(listOf(2L, 1L), useCase().first().map { it.id })
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
 }
 
 private fun telemetryLog(
     id: Long,
     createdAt: Long,
+    simulator: Simulator = Simulator.LmuWindows,
 ) = TelemetryLog(
     id = id,
     createdAt = createdAt,
-    simulator = Simulator.LmuWindows,
-    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+    simulator = simulator,
+    readoutItemKey =
+        if (simulator == Simulator.AceWindows) {
+            ReadoutItemKey.AceWindows.Flag.Root
+        } else {
+            ReadoutItemKey.LmuWindows.Flag.Root
+        },
     telemetryJson = "{}",
 )

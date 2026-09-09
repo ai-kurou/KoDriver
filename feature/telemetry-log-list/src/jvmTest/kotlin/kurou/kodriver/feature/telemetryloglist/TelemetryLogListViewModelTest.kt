@@ -93,6 +93,27 @@ class TelemetryLogListViewModelTest {
         }
 
     @Test
+    fun `ace_windowsのログも観測する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
+
+            logsFlow.update {
+                listOf(telemetryLog(id = 1, createdAt = 100, simulator = Simulator.AceWindows))
+            }
+
+            assertEquals(
+                listOf(Simulator.AceWindows),
+                viewModel.uiState
+                    .first { it.logs.isNotEmpty() }
+                    .logs
+                    .map { it.simulator },
+            )
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `selectLogで未選択のログIDを選択する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
@@ -263,10 +284,16 @@ class TelemetryLogListViewModelTest {
 private fun telemetryLog(
     id: Long,
     createdAt: Long,
+    simulator: Simulator = Simulator.LmuWindows,
 ) = TelemetryLog(
     id = id,
     createdAt = createdAt,
-    simulator = Simulator.LmuWindows,
-    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+    simulator = simulator,
+    readoutItemKey =
+        if (simulator == Simulator.AceWindows) {
+            ReadoutItemKey.AceWindows.Flag.Root
+        } else {
+            ReadoutItemKey.LmuWindows.Flag.Root
+        },
     telemetryJson = "{}",
 )

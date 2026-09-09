@@ -115,6 +115,30 @@ class TelemetryLogListViewModelDeleteTest {
         }
 
     @Test
+    fun `ace_windowsのログもonDeleteConfirmで削除できる`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            coEvery { repository.deleteTelemetryLog(1L) } answers { logsFlow.update { emptyList() } }
+            val viewModel = createViewModel()
+
+            logsFlow.update {
+                listOf(telemetryLog(id = 1, createdAt = 100, simulator = Simulator.AceWindows))
+            }
+            viewModel.uiState.first { it.logs.isNotEmpty() }
+            viewModel.onDeleteClick(1L)
+            viewModel.uiState.first { it.pendingDeleteLogId == 1L }
+
+            viewModel.onDeleteConfirm()
+
+            val state = viewModel.uiState.first { it.deleteSucceeded != null }
+            assertNull(state.pendingDeleteLogId)
+            assertEquals(true, state.deleteSucceeded)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteTelemetryLog(1L) }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `deleteTelemetryLogが失敗するとdeleteSucceededがfalseになる`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
@@ -169,10 +193,16 @@ class TelemetryLogListViewModelDeleteTest {
 private fun telemetryLog(
     id: Long,
     createdAt: Long,
+    simulator: Simulator = Simulator.LmuWindows,
 ) = TelemetryLog(
     id = id,
     createdAt = createdAt,
-    simulator = Simulator.LmuWindows,
-    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+    simulator = simulator,
+    readoutItemKey =
+        if (simulator == Simulator.AceWindows) {
+            ReadoutItemKey.AceWindows.Flag.Root
+        } else {
+            ReadoutItemKey.LmuWindows.Flag.Root
+        },
     telemetryJson = "{}",
 )

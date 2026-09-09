@@ -101,11 +101,21 @@ private const val SCROLL_TARGET_INDEX = 15
 
 private val manyTelemetryLogs =
     (30 downTo 1).map { index ->
-        TelemetryLog(
-            id = index.toLong(),
-            createdAt = 1_800_000L + index * 1_000L,
-            simulator = Simulator.LmuWindows,
-            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
-            telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
-        )
+        if (index == 10) {
+            TelemetryLog(
+                id = index.toLong(),
+                createdAt = 1_800_000L + index * 1_000L,
+                simulator = Simulator.AceWindows,
+                readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root,
+                telemetryJson = """{"flag":"green"}""",
+            )
+        } else {
+            TelemetryLog(
+                id = index.toLong(),
+                createdAt = 1_800_000L + index * 1_000L,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
+            )
+        }
     }

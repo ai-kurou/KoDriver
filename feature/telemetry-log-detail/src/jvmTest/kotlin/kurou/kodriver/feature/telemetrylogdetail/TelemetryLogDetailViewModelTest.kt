@@ -155,16 +155,65 @@ class TelemetryLogDetailViewModelTest {
             verify(exactly = 1) { repository.observeTelemetryLogDetail(999L) }
             confirmVerified(repository)
         }
+
+    @Test
+    fun `ace_windowsの選択したログと一つ前のログのJSONを表示項目に変換する`() =
+        runTest {
+            val current =
+                telemetryLog(
+                    id = 2L,
+                    createdAt = 200L,
+                    telemetryJson = """{"remainingFuelLiters":8.2}""",
+                    simulator = Simulator.AceWindows,
+                )
+            val previous =
+                telemetryLog(
+                    id = 1L,
+                    createdAt = 100L,
+                    telemetryJson = """{"remainingFuelLiters":8.5}""",
+                    simulator = Simulator.AceWindows,
+                )
+            every { repository.observeTelemetryLogDetail(2L) } returns
+                flowOf(TelemetryLogDetail(current = current, previous = previous))
+
+            viewModel.setLogId(2L)
+
+            assertEquals(
+                TelemetryLogDetailUiState(
+                    logId = 2L,
+                    items =
+                        listOf(
+                            TelemetryLogDetailItemUiState(
+                                title = "選択したログ",
+                                telemetryJson = """{"remainingFuelLiters":8.2}""",
+                            ),
+                            TelemetryLogDetailItemUiState(
+                                title = "一つ前のログ",
+                                telemetryJson = """{"remainingFuelLiters":8.5}""",
+                            ),
+                        ),
+                ),
+                viewModel.uiState.first { it.items.size == 2 },
+            )
+            verify(exactly = 1) { repository.observeTelemetryLogDetail(2L) }
+            confirmVerified(repository)
+        }
 }
 
 private fun telemetryLog(
     id: Long,
     createdAt: Long,
     telemetryJson: String,
+    simulator: Simulator = Simulator.LmuWindows,
 ) = TelemetryLog(
     id = id,
     createdAt = createdAt,
-    simulator = Simulator.LmuWindows,
-    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+    simulator = simulator,
+    readoutItemKey =
+        if (simulator == Simulator.AceWindows) {
+            ReadoutItemKey.AceWindows.RemainingFuel.Root
+        } else {
+            ReadoutItemKey.LmuWindows.Flag.Root
+        },
     telemetryJson = telemetryJson,
 )

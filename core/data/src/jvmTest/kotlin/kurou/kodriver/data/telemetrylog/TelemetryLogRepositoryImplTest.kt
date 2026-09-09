@@ -42,6 +42,32 @@ class TelemetryLogRepositoryImplTest {
         }
 
     @Test
+    fun `saveTelemetryLogはace_windowsのEntityへ変換して保存する`() =
+        runTest {
+            val dao = FakeTelemetryLogDao()
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            repository.saveTelemetryLog(
+                createdAt = 1000L,
+                simulator = Simulator.AceWindows,
+                readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                telemetryJson = """{"remainingFuelLiters":8.2}""",
+            )
+
+            assertEquals(
+                listOf(
+                    TelemetryLogEntity(
+                        createdAt = 1000L,
+                        simulatorId = Simulator.AceWindows.id,
+                        readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
+                        telemetryJson = """{"remainingFuelLiters":8.2}""",
+                    ),
+                ),
+                dao.logs.first(),
+            )
+        }
+
+    @Test
     fun `deleteAllTelemetryLogsは全てのログを削除する`() =
         runTest {
             val dao =
@@ -99,6 +125,38 @@ class TelemetryLogRepositoryImplTest {
                         simulator = Simulator.LmuWindows,
                         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                         telemetryJson = """{"currentLap":2}""",
+                    ),
+                ),
+                repository.observeTelemetryLogs().first(),
+            )
+        }
+
+    @Test
+    fun `observeTelemetryLogsはace_windowsのログもDomainへ変換して観測する`() =
+        runTest {
+            val dao =
+                FakeTelemetryLogDao(
+                    initialLogs =
+                        listOf(
+                            TelemetryLogEntity(
+                                id = 1L,
+                                createdAt = 2000L,
+                                simulatorId = Simulator.AceWindows.id,
+                                readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
+                                telemetryJson = """{"remainingFuelLiters":8.2}""",
+                            ),
+                        ),
+                )
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(
+                listOf(
+                    TelemetryLog(
+                        id = 1L,
+                        createdAt = 2000L,
+                        simulator = Simulator.AceWindows,
+                        readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                        telemetryJson = """{"remainingFuelLiters":8.2}""",
                     ),
                 ),
                 repository.observeTelemetryLogs().first(),
@@ -171,6 +229,26 @@ class TelemetryLogRepositoryImplTest {
         }
 
     @Test
+    fun `observeTelemetryLogDetailはace_windowsの指定idのログとその一つ前のログをDomainへ変換して観測する`() =
+        runTest {
+            val current = telemetryLogEntity(id = 3L, createdAt = 2000L, simulator = Simulator.AceWindows)
+            val previous = telemetryLogEntity(id = 2L, createdAt = 1000L, simulator = Simulator.AceWindows)
+            val dao =
+                FakeTelemetryLogDao(
+                    initialLogs = listOf(previous, current),
+                )
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(
+                TelemetryLogDetail(
+                    current = current.toDomainLog(),
+                    previous = previous.toDomainLog(),
+                ),
+                repository.observeTelemetryLogDetail(3L).first(),
+            )
+        }
+
+    @Test
     fun `observeTelemetryLogDetailは指定idのログがない場合nullを返す`() =
         runTest {
             val dao =
@@ -224,11 +302,17 @@ private class FakeTelemetryLogDao(
 private fun telemetryLogEntity(
     id: Long,
     createdAt: Long,
+    simulator: Simulator = Simulator.LmuWindows,
 ) = TelemetryLogEntity(
     id = id,
     createdAt = createdAt,
-    simulatorId = Simulator.LmuWindows.id,
-    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
+    simulatorId = simulator.id,
+    readoutItemKey =
+        if (simulator == Simulator.AceWindows) {
+            ReadoutItemKey.AceWindows.Flag.Root.value
+        } else {
+            ReadoutItemKey.LmuWindows.Flag.Root.value
+        },
     telemetryJson = """{"id":$id}""",
 )
 

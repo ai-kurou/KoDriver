@@ -264,6 +264,13 @@ internal val previewTelemetryLogListUiState =
         logs =
             listOf(
                 TelemetryLog(
+                    id = 3,
+                    createdAt = 1_840_000,
+                    simulator = Simulator.AceWindows,
+                    readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    telemetryJson = """{"remainingFuelLiters":8.2}""",
+                ),
+                TelemetryLog(
                     id = 2,
                     createdAt = 1_820_000,
                     simulator = Simulator.LmuWindows,
