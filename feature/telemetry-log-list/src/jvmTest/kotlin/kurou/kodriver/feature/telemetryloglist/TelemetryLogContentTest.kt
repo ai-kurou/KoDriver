@@ -73,7 +73,7 @@ class TelemetryLogContentTest {
                                     id = 1,
                                     createdAt = 1_800_000,
                                     simulator = Simulator.AceWindows,
-                                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                                    readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root,
                                     telemetryJson = """{"flag":"green"}""",
                                 ),
                             ),
@@ -169,7 +169,13 @@ class TelemetryLogContentTest {
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to "燃料残り周回数",
                 ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to "燃料残量",
+                ReadoutItemKey.AceWindows.VehicleApproach.Root to "車両接近",
+                ReadoutItemKey.AceWindows.Flag.Root to "フラッグ",
+                ReadoutItemKey.AceWindows.Flag.BlueFlag to "ブルーフラッグ",
+                ReadoutItemKey.AceWindows.Flag.RedFlag to "レッドフラッグ",
                 ReadoutItemKey.AceWindows.RemainingFuel.Root to "燃料残量",
+                ReadoutItemKey.AceWindows.MyBestLap.Root to "自己ベストラップ",
+                ReadoutItemKey.AceWindows.TyreTemperature.Root to "タイヤ温度",
             )
 
         rule.setContent {
@@ -327,10 +333,12 @@ private fun createTelemetryLogs(): List<TelemetryLog> =
     (30 downTo 1).map { id ->
         createTelemetryLog(
             id = id.toLong(),
+            simulator = if (id == 10) Simulator.AceWindows else Simulator.LmuWindows,
             readoutItemKey =
                 when (id) {
                     30 -> ReadoutItemKey.LmuWindows.TyreWear.Root
                     20 -> ReadoutItemKey.LmuWindows.VehicleDamage.Overheat
+                    10 -> ReadoutItemKey.AceWindows.RemainingFuel.Root
                     else -> ReadoutItemKey.LmuWindows.Flag.Root
                 },
         )
@@ -339,10 +347,11 @@ private fun createTelemetryLogs(): List<TelemetryLog> =
 internal fun createTelemetryLog(
     id: Long,
     readoutItemKey: ReadoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+    simulator: Simulator = Simulator.LmuWindows,
 ) = TelemetryLog(
     id = id,
     createdAt = id,
-    simulator = Simulator.LmuWindows,
+    simulator = simulator,
     readoutItemKey = readoutItemKey,
     telemetryJson = """{"id":$id}""",
 )
