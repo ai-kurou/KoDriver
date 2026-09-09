@@ -2,7 +2,7 @@
 
 Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム内 WebUI が動作する土台として、ローカル REST API サーバーを内蔵している。本ドキュメントは、[`:core:windows-shared-memory`](../core/windows-shared-memory) が読み取る `LMU_Data` 共有メモリ（→ [`docs/lmu-windows-telemetry.md`](lmu-windows-telemetry.md)）には**存在しない情報**（天候予報、Virtual Energy 消費履歴、ピットメニューの状態等）を KoDriver に取り込めるかどうかを検討するための事前調査メモである。
 
-> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、該当セクションに反映済み。それ以外のエンドポイントの実測・疎通確認は別タスクで行う。
+> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` / `/rest/watch/standings` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、該当セクションに反映済み。それ以外のエンドポイントの実測・疎通確認は別タスクで行う。
 
 ---
 
@@ -14,10 +14,11 @@ Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム�
 4. [`/rest/sessions/weather` のレスポンス構造](#restsessionsweather-のレスポンス構造)
 5. [`/rest/strategy/usage` のレスポンス構造](#reststrategyusage-のレスポンス構造)
 6. [`/rest/garage/UIScreen/RepairAndRefuel` のレスポンス構造](#restgarageuiscreenrepairandrefuel-のレスポンス構造)
-7. [既知の注意点・落とし穴](#既知の注意点落とし穴)
-8. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
-9. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
-10. [参考リポジトリ・情報源](#参考リポジトリ情報源)
+7. [`/rest/watch/standings` のレスポンス構造](#restwatchstandings-のレスポンス構造)
+8. [既知の注意点・落とし穴](#既知の注意点落とし穴)
+9. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
+10. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
+11. [参考リポジトリ・情報源](#参考リポジトリ情報源)
 
 ---
 
@@ -263,6 +264,57 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ---
 
+## `/rest/watch/standings` のレスポンス構造
+
+**実機（Windows 機で LMU 起動中に `http://localhost:6397/rest/watch/standings` へブラウザでアクセス）で取得したレスポンスを基に記載する。**
+
+レスポンスは**出走車両ごとのレコードを要素とする配列**（トップレベルが `[...]`）で、既存の共有メモリ（`Scoring`/`Telemetry`）に近い、ドライバー単位のリアルタイム系情報をまとめて返す。実測は 1 台のみ出走のセッションのため配列要素は 1 件のみ確認できた。主なフィールドは以下の通り。
+
+| フィールド | 概要 |
+|---|---|
+| `driverName`/`fullTeamName`/`vehicleName`/`vehicleFilename`/`carClass`/`carNumber`/`carId` | ドライバー名・チーム名・車両名・車両クラス等の識別情報（文字列のまま取得できる。`RepairAndRefuel.teamInfo.driverNames` のような ASCII コード配列ではない） |
+| `position`/`qualification`/`placeInClass` 相当 | `position`（総合順位）。予選順位は `qualification` |
+| `lapsCompleted`/`lapDistance`/`lapStartET`/`estimatedLapTime`/`bestLapTime`/`lastLapTime` | 周回数・コース上距離・推定/ベスト/直前ラップタイム |
+| `bestLapSectorTime1`/`bestLapSectorTime2`/`bestSectorTime1`/`bestSectorTime2`/`currentSectorTime1`/`currentSectorTime2`/`lastSectorTime1`/`lastSectorTime2`/`sector` | 各セクタータイムと現在のセクター（`SECTOR1`等の文字列 enum） |
+| `timeBehindLeader`/`timeBehindNext`/`timeBehindClassLeader`/`lapsBehindLeader`/`lapsBehindNext`/`lapsBehindClassLeader` | 前走車・首位とのタイム差・周回差 |
+| `carPosition`（`x`/`y`/`z`）、`carVelocity`（`velocity`+`x`/`y`/`z`）、`carAcceleration`（同） | 3 次元座標・速度ベクトル・加速度ベクトル |
+| `fuelFraction`/`veFraction` | 燃料・Virtual Energy の残量割合（0.0〜1.0）。`RepairAndRefuel.fuelInfo` とは異なり**割合表現**で、`/rest/strategy/usage` の `fuel`/`ve` に近い形式 |
+| `pitting`/`pitState`/`pitLapDistance`/`pitGroup`/`pitstops`/`penalties` | ピット関連状態（`pitState` は `EXITING` 等の文字列 enum）とペナルティ数 |
+| `flag`/`gamePhase`/`underYellow`/`countLapFlag`/`finishStatus` | フラッグ状態（`GREEN` 等）、ゲームフェーズ、イエロー中かどうか、周回カウント方式、リザルト状態（`FSTAT_NONE` 等） |
+| `drsActive`/`headlights`/`inControl`/`inGarageStall`/`player`/`focus`/`hasFocus`/`serverScored` | DRS 作動・ヘッドライト点灯・操作主体・ガレージ内かどうか・自車かどうか・観戦フォーカス中かどうか等の真偽値/フラグ |
+| `attackMode` | `remainingCount`/`totalCount`/`timeRemaining`（Attack Mode 系。今回のクラス・イベントでは全て `0`） |
+| `pathLateral`/`trackEdge`/`timeIntoLap` | コース基準でのライン取り（横方向オフセット）・コース端からの距離・ラップ内経過時間相当（実測は `-1.87` 等の負値も含まれ、意味は未確認） |
+| `steamID`/`slotID`/`upgradePack` | Steam ID（実測は `0`）、スロット番号、アップグレードパック識別文字列 |
+
+<details>
+<summary>実測レスポンス例（1 台分、抜粋）</summary>
+
+```json
+{
+  "driverName": "yusuke saito",
+  "fullTeamName": "Proton Competition",
+  "vehicleName": "Proton Competition 2025 #77:LM",
+  "carClass": "GT3",
+  "carNumber": "77",
+  "position": 1,
+  "qualification": 1,
+  "lapsCompleted": 0,
+  "fuelFraction": 0.8941177129745483,
+  "veFraction": 1.0,
+  "flag": "GREEN",
+  "gamePhase": "GREEN",
+  "pitting": true,
+  "pitState": "EXITING",
+  "carPosition": { "type": -1, "x": 23.500583648681640, "y": 8.878329277038574, "z": 16.617443084716797 }
+}
+```
+
+</details>
+
+> 共有メモリの `Scoring`/`Telemetry` 構造体（[`docs/lmu-windows-telemetry.md`](lmu-windows-telemetry.md)）とかなり重複する内容だが、REST API 側は文字列 enum（`"GREEN"`/`"SECTOR1"` 等）で状態を返すため、共有メモリの数値コードより人間可読な形式になっている点が異なる。共有メモリで取得できないアプリ内表示用の追加情報（`focus`/`hasFocus` 等の観戦フォーカス状態、`attackMode`）も含む。
+
+---
+
 ## 既知の注意点・落とし穴
 
 [race-engineer プロジェクトの統合ドキュメント](https://github.com/Alexander-Gro/race-engineer/blob/main/docs/03-LMU-INTEGRATION.md) が報告している実運用上の注意点。
@@ -287,7 +339,8 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ## 未確認・追加調査が必要な点
 
-- `/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` 以外のエンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
+- `/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` / `/rest/watch/standings` 以外のエンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
+- `/rest/watch/standings` の `pathLateral`/`trackEdge`/`timeIntoLap` が負値を取る場合の意味、複数台出走時の配列の並び順（順位順か固定スロット順か）。
 - `WNV_SKY`・ピットメニューの選択肢テキスト等、日本語ロケールで文字化けする文字列の原因（レスポンスヘッダーの文字コード指定、クライアント側のデコード方法等）。
 - `WNV_RAIN_CHANCE`（および `RepairAndRefuel` の `weatherForecast.nodes.RainChance`）が 0% 以外の値を取るケースでの値域（整数か小数か、100 分率か 1 分率か）。
 - `/rest/strategy/usage` の `fuel`/`ve` の正確な単位・値域（実測はセッション開始直後の 1 レコードのみ）、複数スティント時の配列の追記され方、タイヤ摩耗後の `tyres` 値の意味。
