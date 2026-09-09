@@ -403,7 +403,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | `mABSActive` | bool | +746 | — | ABS 作動中 |
 | `mTCActive` | bool | +747 | — | TC 作動中 |
 | `mSpeedLimiterActive` | bool | +748 | — | スピードリミッター作動中 |
-| `mWiperState` | uint8 | +749 | — | ワイパー（0=オフ, 1=自動, 2=低速, 3=高速） |
+| `mWiperState` | uint8 | +749 | enum | ワイパー（下表参照） |
 | `mTC` | uint8 | +750 | — | TC 設定値 |
 | `mTCMax` | uint8 | +751 | — | TC 最大ステップ数 |
 | `mTCSlip` | uint8 | +752 | — | TC スリップ設定値 |
@@ -430,10 +430,44 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | `mTimeGapPlaceAhead` | float | +788 | s | 前順位車両とのギャップ |
 | `mTimeGapPlaceBehind` | float | +792 | s | 後順位車両とのギャップ |
 | `mVehicleModel[30]` | char[30] | +796 | — | ブランド＆モデル名 |
-| `mVehicleClass` | uint8 | +826 | — | クラス識別値 |
-| `mVehicleChampionship` | uint8 | +827 | — | 選手権＆年度識別値 |
+| `mVehicleClass` | uint8 | +826 | enum | クラス識別値（下表参照） |
+| `mVehicleChampionship` | uint8 | +827 | enum | 選手権＆年度識別値（下表参照） |
 | `mExpansion[20]` | uint8[20] | +828 | — | 将来拡張用 |
 | `mWheels[4]` | LMUWheel[4] | +848 | — | ホイール情報（FL/FR/RL/RR、下表参照） |
+
+### mVehicleClass 列挙値
+
+| 値 | 意味 |
+|---|---|
+| 0x00 | Hypercar |
+| 0x02 | LMP2_ELMS |
+| 0x03 | LMP2 |
+| 0x04 | LMP3 |
+| 0x05 | GTE |
+| 0x06 | GT3 |
+| 0x08 | PaceCar |
+| 0xFF | Unknown |
+
+### mVehicleChampionship 列挙値
+
+| 値 | 意味 |
+|---|---|
+| 0x00 | WEC_2023 |
+| 0x01 | WEC_2024 |
+| 0x02 | WEC_2025 |
+| 0x03 | WEC_2026 |
+| 0x10 | ELMS_2025 |
+| 0x11 | ELMS_2026 |
+| 0xFF | Unknown |
+
+### mWiperState 列挙値
+
+| 値 | 意味 |
+|---|---|
+| 0 | オフ |
+| 1 | 自動 |
+| 2 | 低速 |
+| 3 | 高速 |
 
 ---
 
@@ -473,7 +507,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | `mTireInnerLayerTemperature[3]` | double[3] | +212 | K | タイヤ内層温度（左/中央/右） |
 | `mOptimalTemp` | float | +236 | ℃ | 最適温度 |
 | `mCompoundIndex` | uint8 | +240 | — | 車両・トラック別の利用可能コンパウンドリスト内インデックス |
-| `mCompoundType` | uint8 | +241 | enum | 0=ソフト, 1=ミディアム, 2=ハード, 3=ウェット |
+| `mCompoundType` | uint8 | +241 | enum | タイヤコンパウンド種別（下表参照） |
 | `mExpansion[18]` | uint8[18] | +242 | — | 将来拡張用 |
 
 ### mSurfaceType 列挙値
@@ -487,6 +521,15 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | 4 | Gravel（砂利） |
 | 5 | Rumblestrip（縁石） |
 | 6 | Special（特殊） |
+
+### mCompoundType 列挙値
+
+| 値 | 意味 |
+|---|---|
+| 0 | ソフト |
+| 1 | ミディアム |
+| 2 | ハード |
+| 3 | ウェット |
 
 ---
 
