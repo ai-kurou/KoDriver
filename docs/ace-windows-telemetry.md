@@ -15,8 +15,8 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | ブロック名 | 構造体名 | 実データサイズ | 更新頻度 | 用途 |
 |---|---|---|---|---|
 | `Local\acevo_pmf_physics` | `SPageFilePhysics` | 800 bytes | 物理ステップ毎（約 333 Hz） | 高頻度に変化する車両ダイナミクス |
-| `Local\acevo_pmf_graphics` | `SPageFileGraphicEvo` | 約 6〜8 KB（60台分の座標・ID テーブルを内包） | 描画フレーム毎（HUD レート） | HUD / UI / セッション・順位情報 |
-| `Local\acevo_pmf_static` | `SPageFileStaticEvo` | 約 210 bytes | セッションロード時に1回 | トラック・セッションのメタデータ |
+| `Local\acevo_pmf_graphics` | `SPageFileGraphicEvo` | 4,900 bytes（60台分の座標・ID テーブルを内包） | 描画フレーム毎（HUD レート） | HUD / UI / セッション・順位情報 |
+| `Local\acevo_pmf_static` | `SPageFileStaticEvo` | 208 bytes | セッションロード時に1回 | トラック・セッションのメタデータ |
 
 読み取り側は実データより大きめの領域（例: 4096 / 8192 / 2048 bytes）をマップしてよい。Windows では書き込みサイズを超えた領域はゼロ埋めで読めるため無害で、正確なバイトサイズを事前に知らなくて済む。
 
@@ -140,7 +140,7 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 
 ## Graphics ブロック（`Local\acevo_pmf_graphics`）
 
-描画フレーム毎に更新される。以下は `SPageFileGraphicEvo` の**宣言順**のフィールド一覧（`char[33]` / `bool` によるアライメントパディングが入るため固定オフセットは記載しない。オフセットが必要な場合は ctypes / C++ の `offsetof` で実行時に算出すること）。
+描画フレーム毎に更新される。以下は `SPageFileGraphicEvo` の**宣言順**のフィールド一覧（合計 4,900 bytes、`_pack_=4` の下で `char[33]` / `bool` によるアライメントパディングを含む）。主要フィールドの固定オフセットは「[Graphics 主要オフセット一覧](#graphics-主要オフセット一覧)」を参照。
 
 ### ヘッダー・フォーカス
 
@@ -372,6 +372,29 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | bool | `use_single_compound` | 単一コンパウンドルール適用中 |
 | `uint64[60][2]` | `car_ids` | `car_coordinates` に対応する車両 128bit GUID テーブル（960 B） |
 
+### Graphics 主要オフセット一覧
+
+`_pack_=4` で算出した実測値（[live-telemetry-evo `sources/ac_evo.py`](https://github.com/albertowd/live-telemetry-evo/blob/develop/src/live_telemetry_evo/sources/ac_evo.py) および [dSyncro/acevo-shared-memory](https://github.com/dSyncro/acevo-shared-memory) `wrapper.hpp` の両方で一致を確認）。早期アクセス中のため今後のアップデートでオフセットが変わりうる点に注意。
+
+| オフセット | フィールド |
+|---|---|
+| 0 / 4 | `packetId` / `status` |
+| 8 / 16 / 24 / 32 | `focused_car_id_a/b`, `player_car_id_a/b` |
+| 40 | `rpm`（uint16） |
+| 196 / 200 | `fuel_liter_current_quantity` / `_percent` |
+| 220 / 476 / 732 / 988 | `tyre_lf` / `tyre_rf` / `tyre_lr` / `tyre_rr`（各 256 B） |
+| 1260 / 1388 / 1392 | `car_damage`(128 B) / `car_location` / `pit_info`(64 B) |
+| 1488〜2383 | `instrumentation` ×3・`electronics` ×4（各 128 B） |
+| 2396 / 2400 / 2404 / 2408 | `last_laptime_ms` / `best_laptime_ms` / `flag` / `global_flag` |
+| 2476 / 2732 | `session_state`(256 B) / `timing_state`(256 B) |
+| 3020 / 3053 / 3086 | `driver_name` / `driver_surname` / `car_model`（各 33 B） |
+| 3124 | `car_coordinates`（720 B） |
+| 3844 / 3848 / 3852 | `gap_ahead` / `gap_behind` / `active_cars` |
+| 3864 / 3928 / 3932 / 3936 | `assists_state`(64 B) / `max_fuel` / `max_turbo_boost` / `use_single_compound` |
+| 3940 | `car_ids`（960 B、末尾。合計 4,900 B） |
+
+`:core:ace-windows-data` の `AceWindowsMapper` はこの実測値と一致するオフセット定数（`OFF_CAR_LOCATION = 1388`、`OFF_CAR_COORDINATES = 3124`、`OFF_CAR_IDS = 3940` 等）をハードコードしている。
+
 ---
 
 ## Graphics 内サブ構造体
@@ -563,6 +586,8 @@ acevo-shared-memory（公式ヘッダ転記）による定義。各構造体は�
 | char[33] | `track` | トラックID（例: "silverstone"） |
 | char[33] | `track_configuration` | レイアウトID（"gp" 等、空=デフォルト） |
 | float | `track_length_m` | m |
+
+合計 208 bytes。固定オフセット（`_pack_=4` での実測値）: `sm_version` 0 / `ac_evo_version` 15 / `session` 32 / `session_name` 36 / `event_id` 69 / `session_id` 70 / `starting_grip` 72 / `starting_ambient_temperature_c` 76 / `starting_ground_temperature_c` 80 / `is_static_weather` 84 / `is_timed_race` 85 / `is_online` 86 / `number_of_sessions` 88 / `nation` 92 / `longitude` 128 / `latitude` 132 / `track` 136 / `track_configuration` 169 / `track_length_m` 204。
 
 ---
 
