@@ -4,7 +4,7 @@ Assetto Corsa EVO（ACE、Kunos Simulazioni）は、初代 Assetto Corsa / Asset
 
 本ドキュメントは、公式 Steam ガイド（#3707421508）を正典とする 2 つの OSS 実装 — [albertowd/live-telemetry-evo](https://github.com/albertowd/live-telemetry-evo) の `docs/SHARED_MEMORY.md`（実測検証付き）と [dSyncro/acevo-shared-memory](https://github.com/dSyncro/acevo-shared-memory) の `wrapper.hpp`（公式ヘッダの C++ 転記、`static_assert` によるサイズ検証付き）— を突き合わせて作成した。
 
-> **注意（早期アクセス）**: ACE は本ドキュメント作成時点（2026年7月）で早期アクセス中であり、共有メモリのレイアウト・フィールド・列挙値は更新で変更される可能性がある。物理ブロックの先頭部（0〜415バイト）は初代 AC の `SPageFilePhysics` と互換だが、それ以降の領域や Graphics ブロックは ACE 独自。Static ブロックの `sm_version` でフォーマットバージョンを検証すること。
+> **注意（早期アクセス）**: ACE は早期アクセス中であり、共有メモリのレイアウト・フィールド・列挙値は更新で変更される可能性がある。物理ブロックの先頭部（0〜415バイト）は初代 AC の `SPageFilePhysics` と互換だが、それ以降の領域や Graphics ブロックは ACE 独自。Static ブロックの `sm_version` でフォーマットバージョンを検証すること。確認済みの対象バージョン: ACE 0.6.3〜0.9.1（2026-09-05 時点。0.7 以降のパッチノートに共有メモリ構造の変更なし）。公式 Steam ガイドの最終更新: 2026-04-17。
 
 ---
 
@@ -118,7 +118,7 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | 624 | float[4] | `fy` | N（横方向タイヤ力） |
 | 640 | float[4] | `slipRatio` | 無次元（縦スリップ） |
 | 656 | float[4] | `slipAngle` | rad（横スリップ角） |
-| 672 | int32 | `tcInAction` | 0/1（**現在 TC がパワーカット中**。UI の点滅表示にはこちらを使う） |
+| 672 | int32 | `tcInAction`（公式ヘッダでは `tcinAction`） | 0/1（**現在 TC がパワーカット中**。UI の点滅表示にはこちらを使う） |
 | 676 | int32 | `absInAction` | 0/1（現在 ABS が介入中） |
 | 680 | float[4] | `suspensionDamage` | 0–1（各輪） |
 | 696 | float[4] | `tyreTemp` | ℃（代表表面温度。`tyreTempI/M/O` とはサンプリングが異なる） |
@@ -190,7 +190,7 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | float | `clutch_percent` | 0–1 |
 | float | `steering_percent` | -1〜1 |
 | float | `ffb_strength` | 0–1（1.0=クリッピング） |
-| float | `car_ffb_multiplier` | 車種別 FFB スケール |
+| float | `car_ffb_multiplier`（公式ヘッダでは `car_ffb_mupliplier`） | 車種別 FFB スケール |
 
 ### エンジン計器値
 
@@ -384,7 +384,7 @@ acevo-shared-memory（公式ヘッダ転記）による定義。各構造体は�
 |---|---|---|
 | float | `slip` | 複合スリップ |
 | bool | `lock` | ロック中（ゲーム提供の判定） |
-| float | `tyre_pressure` | psi |
+| float | `tyre_pressure`（公式ヘッダでは `tyre_pression`） | psi |
 | float | `tyre_temperature_c` | ℃（カーカス平均） |
 | float | `brake_temperature_c` | ℃ |
 | float | `brake_pressure` | bar（このコーナーの油圧） |
