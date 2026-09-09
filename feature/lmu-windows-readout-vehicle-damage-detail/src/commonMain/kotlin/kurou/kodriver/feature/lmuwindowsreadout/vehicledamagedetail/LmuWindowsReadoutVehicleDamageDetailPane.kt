@@ -22,6 +22,8 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.re
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_switch_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_part_detached_chip_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_part_detached_switch_label
+import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_tyre_detached_chip_label
+import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_tyre_detached_switch_label
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -39,6 +41,8 @@ fun LmuWindowsReadoutVehicleDamageDetailPane(modifier: Modifier = Modifier) {
         onPreviewClicked = viewModel::onPreviewClicked,
         onPartDetachedEnabledChanged = viewModel::onPartDetachedEnabledChanged,
         onPartDetachedPreviewClicked = viewModel::onPartDetachedPreviewClicked,
+        onTyreDetachedEnabledChanged = viewModel::onTyreDetachedEnabledChanged,
+        onTyreDetachedPreviewClicked = viewModel::onTyreDetachedPreviewClicked,
         modifier = modifier,
     )
 }
@@ -52,6 +56,8 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
     onPreviewClicked: (OverheatVoiceType) -> Unit = {},
     onPartDetachedEnabledChanged: (Boolean) -> Unit = {},
     onPartDetachedPreviewClicked: () -> Unit = {},
+    onTyreDetachedEnabledChanged: (Boolean) -> Unit = {},
+    onTyreDetachedPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -105,6 +111,21 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
                     selectedChipLabels = setOf(partDetachedChipLabel),
                     chipEnabled = uiState.partDetachedEnabled,
                     onChipClick = { onPartDetachedPreviewClicked() },
+                )
+            },
+        )
+        val tyreDetachedChipLabel = stringResource(Res.string.vehicle_damage_tyre_detached_chip_label)
+        DetailPaneCard(
+            title = stringResource(Res.string.vehicle_damage_tyre_detached_switch_label),
+            checked = uiState.tyreDetachedEnabled,
+            onCheckedChange = onTyreDetachedEnabledChanged,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = listOf(tyreDetachedChipLabel),
+                    selectedChipLabels = setOf(tyreDetachedChipLabel),
+                    chipEnabled = uiState.tyreDetachedEnabled,
+                    onChipClick = { onTyreDetachedPreviewClicked() },
                 )
             },
         )

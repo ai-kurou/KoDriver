@@ -27,6 +27,7 @@ private fun createLmuWindowsVehicleDamagePreferencesRepository(
     listOf(
         ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
         ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached,
+        ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached,
         ReadoutItemKey.LmuWindows.VehicleDamage.Root,
     ).forEach { key ->
         listOf(true, false).forEach { enabled ->
@@ -48,7 +49,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はOverheatとPartDetachedのデフォルトtrueを返す`() =
+    fun `初期値はOverheatとPartDetachedとTyreDetachedのデフォルトtrueを返す`() =
         runTest {
             val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
@@ -57,6 +58,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
                     ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
                 )
             assertEquals(expected, useCase().first())
             verify(exactly = 1) { repo.observeEnabledStates() }
@@ -75,6 +77,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false,
                     ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
                 )
             assertEquals(expected, useCase().first())
             coVerify(exactly = 1) {
@@ -96,6 +99,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
                     ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
                 ),
                 useCase().first(),

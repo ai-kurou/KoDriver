@@ -18,6 +18,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
@@ -72,7 +73,7 @@ val lmuWindowsNarratorModule: Module =
         factory { NarratorUseCases(get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
-        factory { VehicleDamageUseCases(get(), get()) }
+        factory { VehicleDamageUseCases(get(), get(), get()) }
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get(), get(), get()) }
         factory { TyreWearUseCases(get(), get()) }
@@ -100,6 +101,7 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase(get()) }
         factory { ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(get()) }
         factory { ObserveLmuWindowsVehicleDamageUseCase(get()) }
+        factory { ObserveLmuWindowsTyreDetachedUseCase(get()) }
         factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
         factory { ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(get()) }
         factory { ObserveLmuWindowsVehicleClassUseCase(get()) }
@@ -154,6 +156,7 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.Overheating, "files/gp2_gp2.wav")
         put(SpeechEvent.OverheatingStandard, "files/overheat.wav")
         put(SpeechEvent.PartDetached, "files/part_detached.wav")
+        put(SpeechEvent.TyreDetached, "files/tyre_detached.wav")
         put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
         put(SpeechEvent.TyreOverheat, "files/tyre_overheat.wav")

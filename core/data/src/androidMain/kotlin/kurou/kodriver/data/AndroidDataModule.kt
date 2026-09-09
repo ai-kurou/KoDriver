@@ -53,6 +53,7 @@ import kurou.kodriver.data.websocket.WebSocketLmuWindowsFlagRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsPitStatusRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.data.websocket.WebSocketLmuWindowsTyreDetachedRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsTyreWearRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleApproachRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleClassRepository
@@ -93,6 +94,7 @@ import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreDetachedRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
@@ -238,12 +240,15 @@ fun androidDataModule(context: Context) =
     }
 
 /**
- * androidDataModule から分離した LMU のピット状態取得用バインド（LongMethod 対策）。
+ * androidDataModule から分離した LMU のピット状態・タイヤ脱落状態取得用バインド（LongMethod 対策）。
  */
 private fun androidDataModuleLmuWindowsPitStatus() =
     module {
         single<LmuWindowsPitStatusRepository> {
             WebSocketLmuWindowsPitStatusRepository(serverIpRepository = get(), client = get())
+        }
+        single<LmuWindowsTyreDetachedRepository> {
+            WebSocketLmuWindowsTyreDetachedRepository(serverIpRepository = get(), client = get())
         }
     }
 

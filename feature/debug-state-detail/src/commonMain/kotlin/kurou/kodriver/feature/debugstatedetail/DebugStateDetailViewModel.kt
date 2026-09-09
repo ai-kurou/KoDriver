@@ -23,6 +23,7 @@ import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
@@ -41,6 +42,7 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
@@ -58,6 +60,7 @@ private data class RaceState(
     val lmuWindowsVehicleClass: LmuWindowsVehicleClassData?,
     val lmuWindowsPitStatus: LmuWindowsPitStatusData?,
     val vehicleDamage: LmuWindowsVehicleDamageData?,
+    val tyreDetached: LmuWindowsTyreDetachedData?,
 )
 
 private data class OptionalTelemetry(
@@ -128,6 +131,7 @@ internal data class LmuWindowsDebugStateUseCases(
     val observeVehicleClass: ObserveLmuWindowsVehicleClassUseCase,
     val observePitStatus: ObserveLmuWindowsPitStatusUseCase,
     val observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
+    val observeTyreDetached: ObserveLmuWindowsTyreDetachedUseCase,
 )
 
 internal data class Gt7Ps5DebugStateUseCases(
@@ -213,8 +217,9 @@ internal class DebugStateDetailViewModel(
                 lmuWindowsVehicleClass,
                 null,
                 null,
+                null,
             )
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, RaceState(null, null, null, null, null, null, null))
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, RaceState(null, null, null, null, null, null, null, null))
 
     private val _lmuWindowsPitStatus: StateFlow<LmuWindowsPitStatusData?> =
         lmuWindowsUseCases
@@ -230,14 +235,26 @@ internal class DebugStateDetailViewModel(
                 markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.VEHICLE_DAMAGE)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    private val _lmuWindowsTyreDetached: StateFlow<LmuWindowsTyreDetachedData?> =
+        lmuWindowsUseCases
+            .observeTyreDetached()
+            .onEach {
+                markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.VEHICLE_DAMAGE)
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
     private val _raceState: StateFlow<RaceState> =
         combine(
             _raceStateBase,
             _lmuWindowsPitStatus,
             _lmuWindowsVehicleDamage,
-        ) { base, lmuWindowsPitStatus, vehicleDamage ->
-            base.copy(lmuWindowsPitStatus = lmuWindowsPitStatus, vehicleDamage = vehicleDamage)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, RaceState(null, null, null, null, null, null, null))
+            _lmuWindowsTyreDetached,
+        ) { base, lmuWindowsPitStatus, vehicleDamage, tyreDetached ->
+            base.copy(
+                lmuWindowsPitStatus = lmuWindowsPitStatus,
+                vehicleDamage = vehicleDamage,
+                tyreDetached = tyreDetached,
+            )
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, RaceState(null, null, null, null, null, null, null, null))
 
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
     private val _localCardOrder = MutableStateFlow<List<DebugStateCardKey>?>(null)
@@ -373,6 +390,7 @@ internal class DebugStateDetailViewModel(
                 lmuWindowsVehicleClass = raceState.lmuWindowsVehicleClass,
                 gt7Ps5VehicleClass = optionalTelemetry.gt7Ps5VehicleClass,
                 vehicleDamage = raceState.vehicleDamage,
+                tyreDetached = raceState.tyreDetached,
                 enabledCardKeys =
                     receivedCardKeys[selectedSimulator].orEmpty() intersect supportedCardKeys(selectedSimulator),
                 cardOrder = cardOrder,

@@ -126,4 +126,38 @@ class LmuWindowsReadoutVehicleDamageDetailPaneTest {
 
         rule.onNodeWithText("部品脱落").assertIsNotEnabled()
     }
+
+    @Test
+    fun `タイヤ脱落の有効状態を表示して操作できる`() {
+        var enabled: Boolean? = null
+        var previewCount = 0
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleDamageDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleDamageDetailUiState(tyreDetachedEnabled = true),
+                    onTyreDetachedEnabledChanged = { enabled = it },
+                    onTyreDetachedPreviewClicked = { previewCount++ },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("タイヤ脱落")[0].assertIsDisplayed().performClick()
+        assertEquals(false, enabled)
+
+        rule.onAllNodesWithText("タイヤ脱落")[1].assertIsEnabled().performClick()
+        assertEquals(1, previewCount)
+    }
+
+    @Test
+    fun `タイヤ脱落が無効ならプレビューチップも無効になる`() {
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleDamageDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleDamageDetailUiState(tyreDetachedEnabled = false),
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("タイヤ脱落")[1].assertIsNotEnabled()
+    }
 }

@@ -44,6 +44,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
@@ -81,6 +82,7 @@ internal data class VehicleApproachUseCases(
 internal data class VehicleDamageUseCases(
     val observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
     val observeVehicleDamageEnabledStates: ObserveLmuWindowsVehicleDamageEnabledStatesUseCase,
+    val observeTyreDetached: ObserveLmuWindowsTyreDetachedUseCase,
 )
 
 internal data class ReadoutListUseCases(
@@ -382,6 +384,38 @@ internal class LmuWindowsNarratorViewModel(
                 narratorState = decision.state
                 eventProcessor.processVehicleDamage(
                     vehicleDamage = vehicleDamage,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val tyreDetachedJob =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+                vehicleDamageUseCases.observeTyreDetached()
+            }.onEach { tyreDetached ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    narratorUseCases.determineReadout.determineTyreDetached(
+                        state = state,
+                        tyreDetached = tyreDetached,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processTyreDetached(
+                    tyreDetached = tyreDetached,
                     events = decision.events,
                     readoutOrder = readoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,

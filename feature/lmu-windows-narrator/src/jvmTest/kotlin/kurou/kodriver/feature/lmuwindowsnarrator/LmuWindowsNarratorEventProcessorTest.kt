@@ -33,6 +33,7 @@ import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
@@ -464,6 +465,69 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `読み上げたタイヤ脱落イベントを直前と現在のデータとともに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.TyreDetached, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor()
+
+            processor.processTyreDetached(
+                tyreDetached = tyreDetached(),
+                events = emptyList(),
+                readoutOrder = emptyList(),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+                logContext = logContext(),
+            )
+            processor.processTyreDetached(
+                tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
+                events = listOf(SpeechEvent.TyreDetached),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            val telemetryJson = telemetryJsonSlot.captured
+            val root = Json.parseToJsonElement(telemetryJson).jsonObject
+            assertEquals(
+                false,
+                root["previousTyreDetached"]!!
+                    .jsonObject["wheels"]!!
+                    .jsonObject["FRONT_LEFT"]!!
+                    .jsonPrimitive.boolean,
+            )
+            assertEquals(
+                true,
+                root["tyreDetached"]!!
+                    .jsonObject["wheels"]!!
+                    .jsonObject["FRONT_LEFT"]!!
+                    .jsonPrimitive.boolean,
+            )
+            assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreDetached, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    telemetryJson = telemetryJson,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `読み上げたピットタイミングイベントにタイヤ摩耗データがシリアライズされて保存される`() =
         runTest {
             val telemetryJsonSlot = slot<String>()
@@ -730,6 +794,11 @@ private fun vehicleDamage(overheating: Boolean) =
         overheating = overheating,
         partDetached = false,
         lastImpactMagnitude = 0.0,
+    )
+
+private fun tyreDetached(vararg detachedWheels: WheelIndex) =
+    LmuWindowsTyreDetachedData(
+        wheels = WheelIndex.entries.associateWith { it in detachedWheels },
     )
 
 private fun raceFlags(playerFlag: PrimaryFlag) =

@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
@@ -58,6 +59,7 @@ data class DebugStateDetailUiState(
     val lmuWindowsVehicleClass: LmuWindowsVehicleClassData? = null,
     val gt7Ps5VehicleClass: Gt7Ps5VehicleClassData? = null,
     val vehicleDamage: LmuWindowsVehicleDamageData? = null,
+    val tyreDetached: LmuWindowsTyreDetachedData? = null,
     val enabledCardKeys: Set<DebugStateCardKey> = emptySet(),
     val cardOrder: List<DebugStateCardKey> = defaultDebugStateCardOrder,
 )

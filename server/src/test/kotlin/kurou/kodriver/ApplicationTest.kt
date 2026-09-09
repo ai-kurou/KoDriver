@@ -40,6 +40,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
@@ -65,6 +66,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreDetachedRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
@@ -79,6 +81,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
@@ -144,6 +147,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -199,6 +206,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -256,6 +267,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -330,6 +345,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -399,6 +418,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -460,6 +483,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -529,6 +556,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -594,6 +625,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -661,6 +696,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -731,6 +770,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -797,6 +840,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -867,6 +914,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -933,6 +984,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -1003,6 +1058,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1070,6 +1129,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1136,6 +1199,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1199,6 +1266,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -1269,6 +1340,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1335,6 +1410,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -1405,6 +1484,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1471,6 +1554,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -1541,6 +1628,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1608,6 +1699,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1674,6 +1769,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1735,6 +1834,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -1798,6 +1901,10 @@ class ApplicationTest {
                                 EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus = ObserveLmuWindowsPitStatusUseCase(repository),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1862,6 +1969,10 @@ class ApplicationTest {
                                 EmptyAceWindowsBestLapTimeRepository,
                             ),
                         observeLmuWindowsPitStatus = ObserveLmuWindowsPitStatusUseCase(repository),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -1879,6 +1990,144 @@ class ApplicationTest {
 
                     assertEquals(PIT_STATUS_JSON_1, first)
                     assertEquals(PIT_STATUS_JSON_2, second)
+                }
+        }
+
+    @Test
+    fun `タイヤ脱落状態をJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeLmuWindowsTyreDetachedRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsVehicleClass =
+                            ObserveLmuWindowsVehicleClassUseCase(
+                                EmptyLmuWindowsVehicleClassRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
+                        observeAceWindowsTyreCarcassTemperature =
+                            ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeLmuWindowsPitStatus =
+                            ObserveLmuWindowsPitStatusUseCase(
+                                EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached = ObserveLmuWindowsTyreDetachedUseCase(repository),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/lmu_windows/tyre_detached") {
+                    repository.emit(tyreDetachedData1)
+
+                    val message =
+                        withTimeout(1_000) {
+                            (incoming.receive() as Frame.Text).readText()
+                        }
+                    assertEquals(TYRE_DETACHED_JSON_1, message)
+                }
+        }
+
+    @Test
+    fun `タイヤ脱落状態の同一値は重複して送信されない`() =
+        testApplication {
+            val repository = FakeLmuWindowsTyreDetachedRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsVehicleClass =
+                            ObserveLmuWindowsVehicleClassUseCase(
+                                EmptyLmuWindowsVehicleClassRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
+                        observeAceWindowsTyreCarcassTemperature =
+                            ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeLmuWindowsPitStatus =
+                            ObserveLmuWindowsPitStatusUseCase(
+                                EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached = ObserveLmuWindowsTyreDetachedUseCase(repository),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/lmu_windows/tyre_detached") {
+                    repository.emit(tyreDetachedData1)
+                    repository.emit(tyreDetachedData1)
+                    repository.emit(tyreDetachedData2)
+
+                    val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(TYRE_DETACHED_JSON_1, first)
+                    assertEquals(TYRE_DETACHED_JSON_2, second)
                 }
         }
 
@@ -1930,6 +2179,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 port = port,
@@ -1993,6 +2246,10 @@ class ApplicationTest {
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
                             ),
                     ),
                 )
@@ -2061,6 +2318,10 @@ class ApplicationTest {
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
                             ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
                     ),
                 )
             }
@@ -2106,6 +2367,7 @@ class ApplicationTest {
                         single<AceWindowsVehicleApproachRepository> { EmptyAceWindowsVehicleApproachRepository }
                         single<AceWindowsBestLapTimeRepository> { EmptyAceWindowsBestLapTimeRepository }
                         single<LmuWindowsPitStatusRepository> { EmptyLmuWindowsPitStatusRepository }
+                        single<LmuWindowsTyreDetachedRepository> { EmptyLmuWindowsTyreDetachedRepository }
                     },
                 )
             }.koin
@@ -2261,6 +2523,34 @@ private const val TYRE_WEAR_JSON_1 =
 
 private const val TYRE_WEAR_JSON_2 =
     """{"wheels":{"FRONT_LEFT":0.5,"FRONT_RIGHT":0.51,"REAR_LEFT":0.52,"REAR_RIGHT":0.53}}"""
+
+private val tyreDetachedData1 =
+    LmuWindowsTyreDetachedData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to false,
+                WheelIndex.FRONT_RIGHT to false,
+                WheelIndex.REAR_LEFT to false,
+                WheelIndex.REAR_RIGHT to false,
+            ),
+    )
+
+private val tyreDetachedData2 =
+    LmuWindowsTyreDetachedData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to true,
+                WheelIndex.FRONT_RIGHT to false,
+                WheelIndex.REAR_LEFT to false,
+                WheelIndex.REAR_RIGHT to false,
+            ),
+    )
+
+private const val TYRE_DETACHED_JSON_1 =
+    """{"wheels":{"FRONT_LEFT":false,"FRONT_RIGHT":false,"REAR_LEFT":false,"REAR_RIGHT":false}}"""
+
+private const val TYRE_DETACHED_JSON_2 =
+    """{"wheels":{"FRONT_LEFT":true,"FRONT_RIGHT":false,"REAR_LEFT":false,"REAR_RIGHT":false}}"""
 
 // --- Fake リポジトリ ---
 
@@ -2572,6 +2862,20 @@ private class FakeLmuWindowsPitStatusRepository : LmuWindowsPitStatusRepository 
     override fun pitStatusStream(): Flow<LmuWindowsPitStatusData> = channel.receiveAsFlow()
 
     fun emit(data: LmuWindowsPitStatusData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private object EmptyLmuWindowsTyreDetachedRepository : LmuWindowsTyreDetachedRepository {
+    override fun tyreDetachedStream(): Flow<LmuWindowsTyreDetachedData> = emptyFlow()
+}
+
+private class FakeLmuWindowsTyreDetachedRepository : LmuWindowsTyreDetachedRepository {
+    private val channel = Channel<LmuWindowsTyreDetachedData>(capacity = Channel.UNLIMITED)
+
+    override fun tyreDetachedStream(): Flow<LmuWindowsTyreDetachedData> = channel.receiveAsFlow()
+
+    fun emit(data: LmuWindowsTyreDetachedData) {
         channel.trySend(data).getOrThrow()
     }
 }

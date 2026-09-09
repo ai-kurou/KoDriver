@@ -7,4 +7,5 @@ internal data class LmuWindowsReadoutVehicleDamageDetailUiState(
     val overheatEnabled: Boolean = true,
     val overheatVoiceType: OverheatVoiceType = OVERHEAT_VOICE_TYPE_DEFAULT,
     val partDetachedEnabled: Boolean = true,
+    val tyreDetachedEnabled: Boolean = true,
 )

@@ -29,6 +29,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
                 overheatEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat),
                 overheatVoiceType = overheatVoiceType,
                 partDetachedEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached),
+                tyreDetachedEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached),
             )
         }.stateIn(
             viewModelScope,
@@ -59,5 +60,13 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
 
     fun onPartDetachedPreviewClicked() {
         playSpeechEvent(SpeechEvent.PartDetached)
+    }
+
+    fun onTyreDetachedEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch { saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, enabled) }
+    }
+
+    fun onTyreDetachedPreviewClicked() {
+        playSpeechEvent(SpeechEvent.TyreDetached)
     }
 }
