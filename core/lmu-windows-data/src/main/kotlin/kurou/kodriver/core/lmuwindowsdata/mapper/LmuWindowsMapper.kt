@@ -79,6 +79,7 @@ import kotlin.time.Clock
  *   mPressure            : +120
  *   mTemperature[3]      : +128 (Kelvin, 中央値=+136)
  *   mWear                : +152
+ *   mDetached            : +178 (bool、ホイールが外れているか)
  *   mTireCarcassTemperature : +204 (Kelvin)
  */
 internal object LmuWindowsMapper {
