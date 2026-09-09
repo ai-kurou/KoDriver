@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
+import kurou.kodriver.buildlogic.screenshottest.rememberFoldedVerticalHingeDirective
 import kurou.kodriver.buildlogic.screenshottest.twoPaneDirective
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailUiState
@@ -150,6 +151,33 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = singlePaneDirective,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `折りたたみ端末の展開状態では縦ヒンジを避けて一覧・詳細の両ペインを表示`() {
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
+            AppTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        OtherContent(
+                            uiState = OtherListUiState(selectedItem = OtherListItemType.Volume),
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            scaffoldDirective = rememberFoldedVerticalHingeDirective(),
+                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                if (itemType == OtherListItemType.Volume) {
+                                    OtherVolumeDetailPaneContent(
+                                        uiState = OtherVolumeDetailUiState(volume = 80),
+                                        canNavigateBack = canNavigateBack,
+                                        onBack = onBack,
+                                    )
+                                }
+                            },
                         )
                     }
                 }
