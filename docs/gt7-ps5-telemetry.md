@@ -198,12 +198,25 @@ GT7 Update 1.68 前後で追加。ハートビート `'C'` で取得できる。
 
 | オフセット | フィールド名 | 型 | サイズ | 内容 |
 |---|---|---|---|---|
-| 0x158 | surfaceType[4] | char[4] | 4 | 各輪の接地路面種別（FL/FR/RL/RR。`T`=舗装路, `C`=縁石, `D`=土・芝） |
+| 0x158 | surfaceType[4] | char[4] | 4 | 各輪の接地路面種別（FL/FR/RL/RR。ID一覧は下表を参照） |
 | 0x15C | currentLapTime | int32 | 4 | 現在周回の経過タイム（ms） |
 | 0x160 | wheelSteeringAngle[0] | float | 4 | 前左輪の舵角（ラジアン） |
 | 0x164 | wheelSteeringAngle[1] | float | 4 | 前右輪の舵角（ラジアン） |
 | 0x168 | wheelBase | float | 4 | ホイールベース（前後車軸間距離、m） |
-| 0x16C | carCategory[4] | char[4] | 4 | 車両カテゴリ（NULL終端文字列。GR3, GRX 等） |
+| 0x16C | carCategory[4] | char[4] | 4 | 車両カテゴリ（NULL終端文字列。GR3, GRX 等。実際のカテゴリ判定には3文字目のみを見ればよく、先頭の `GR` は多くの場合無視できる） |
+
+### surfaceType の値
+
+`S`（Sand）と `s`（Snow）は大文字・小文字で区別されるため注意すること。
+
+| ID | 路面 |
+|---|---|
+| `C` | Curb/Kerb（縁石） |
+| `D` | Dirt（土） |
+| `G` | Grass（芝） |
+| `S` | Sand（砂） |
+| `s` | Snow（雪、小文字） |
+| `T` | Tarmac（舗装路） |
 
 ---
 
