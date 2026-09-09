@@ -10,6 +10,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +57,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -339,6 +341,7 @@ private fun ReadoutListItemCard(
     dragHandleModifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
+    val itemInteractionSource = remember { MutableInteractionSource() }
     ElevatedCard(
         modifier =
             modifier
@@ -350,6 +353,7 @@ private fun ReadoutListItemCard(
             modifier =
                 Modifier
                     .fillMaxWidth()
+                    .indication(itemInteractionSource, ripple())
                     .padding(start = 8.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -380,7 +384,10 @@ private fun ReadoutListItemCard(
                             .fillMaxWidth()
                             .heightIn(min = 48.dp)
                             .semantics { contentDescription = itemName }
-                            .clickable {
+                            .clickable(
+                                indication = null,
+                                interactionSource = itemInteractionSource,
+                            ) {
                                 haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                 onItemClick(item)
                             },
@@ -434,7 +441,10 @@ private fun ReadoutListItemCard(
                     Modifier
                         .size(width = 24.dp, height = 48.dp)
                         .testTag("readoutListChevronTouchTarget:${item.value}")
-                        .clickable {
+                        .clickable(
+                            indication = null,
+                            interactionSource = itemInteractionSource,
+                        ) {
                             onItemClick(item)
                         },
             )
