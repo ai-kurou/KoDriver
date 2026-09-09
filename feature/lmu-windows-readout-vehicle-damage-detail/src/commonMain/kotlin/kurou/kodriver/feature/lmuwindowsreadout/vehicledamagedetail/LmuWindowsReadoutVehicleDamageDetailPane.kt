@@ -42,6 +42,7 @@ fun LmuWindowsReadoutVehicleDamageDetailPane(modifier: Modifier = Modifier) {
         onPartDetachedEnabledChanged = viewModel::onPartDetachedEnabledChanged,
         onPartDetachedPreviewClicked = viewModel::onPartDetachedPreviewClicked,
         onTyreDetachedEnabledChanged = viewModel::onTyreDetachedEnabledChanged,
+        onTyreDetachedPreviewClicked = viewModel::onTyreDetachedPreviewClicked,
         modifier = modifier,
     )
 }
@@ -56,6 +57,7 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
     onPartDetachedEnabledChanged: (Boolean) -> Unit = {},
     onPartDetachedPreviewClicked: () -> Unit = {},
     onTyreDetachedEnabledChanged: (Boolean) -> Unit = {},
+    onTyreDetachedPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -123,7 +125,7 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
                     chipLabels = listOf(tyreDetachedChipLabel),
                     selectedChipLabels = setOf(tyreDetachedChipLabel),
                     chipEnabled = uiState.tyreDetachedEnabled,
-                    onChipClick = {},
+                    onChipClick = { onTyreDetachedPreviewClicked() },
                 )
             },
         )
