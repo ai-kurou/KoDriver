@@ -393,6 +393,43 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 `/rest/strategy/overall` は実測（1 台のみ出走のプラクティスセッション）では **空ボディ（`Content-Length: 0`）** が返り、構造を確認できなかった。複数台出走時や特定のセッションフェーズでのみデータを返す可能性がある。`/rest/garage/PitMenu/receivePitMenu` は `RepairAndRefuel.pitMenu.pitMenu` と同様、ピットメニュー全項目（選択肢一覧込み）を返す構造で、情報量が大きいため詳細な構造把握は見送った。
 
+### `/rest/garage/tireinfo`
+
+4 輪分のタイヤ状態を返す、テレメトリ用途で有用性が高いエンドポイント。トップレベルは `frontLeft`/`frontRight`/`rearLeft`/`rearRight`（各輪オブジェクト）+ `unitSystem`。
+
+| フィールド | 概要 |
+|---|---|
+| `centerTemperature`/`leftTemperature`/`rightTemperature` | タイヤ接地面の中央/左/右のトレッド温度（**ケルビン**。実測 `350.26K` ≒ `77.1℃`）。共有メモリの `Telemetry.mWheel[].mTemperature` に近い情報を REST 経由でも取得可能 |
+| `load` | タイヤ荷重（単位不明。実測ではフロント `365.16`、リア `369.34` で、リアの方がわずかに大きい） |
+| `pressure` | タイヤ空気圧（実測 `136.0`。単位系は `unitSystem` に依存すると推測されるが、`kPa` 相当の値域） |
+| `unitSystem` | `"US_METRIC"` 等、値の単位系（実測は `US_METRIC` 固定） |
+
+実測時は 3 本のトレッド温度（`center`/`left`/`right`）がすべて同一値（`350.260009765625`）だったため、直進走行直後の均一な熱分布か、あるいは静止状態のため差が出ていないだけかは未確認。
+
+### `/rest/garage/brakeinfo`
+
+4 輪分の数値配列のみを返すシンプルなエンドポイント。`[0.036, 0.036, 0.032, 0.032]`（実測、フロント 2 輪が `0.036`、リア 2 輪が `0.032`）の並びは `[FL, FR, RL, RR]` と推測され、値域・小数第 2 桁までの精度からブレーキパッド摩耗率（0.0〜1.0）またはブレーキバイアス関連の係数の可能性がある。`getPlayerGarageData` の `WM_BRAKEPAD-W_FL` 等（0〜100 のセットアップ値）とは値域が異なるため、**別の表現**（消耗の割合等）と推測されるが、正確な意味・単位は未確認。
+
+### `/rest/garage/UIScreen/TireManagement`
+
+タイヤ管理 UI 向けのエンドポイントで、燃料/VE 消費予測を含む点でテレメトリ用途上の価値が高い。主要なサブキーは以下の通り。
+
+| キー | 概要 |
+|---|---|
+| `expectedUsage.compoundsWearPerLap` | コンパウンド種別（`Medium`/`Wet` 等）ごとの 1 周あたり摩耗率予測の配列 |
+| `expectedUsage.fuelConsumption`/`fuelFractionPerLap` | 1 周あたりの燃料消費量（実測 `3.55`、単位は L と推測）と、タンク容量に対する割合（実測 `0.0309`） |
+| `expectedUsage.virtualEnergyConsumption`/`virtualEnergyFractionPerLap` | 1 周あたりの VE 消費。`virtualEnergyConsumption`（実測 `29641884`）は `RepairAndRefuel.fuelInfo.currentVirtualEnergy`（実測 `851000000` オーダー）と同じ巨大な内部単位、`virtualEnergyFractionPerLap`（実測 `0.0348`）は `/rest/strategy/usage` の `ve` と同じ 0.0〜1.0 の割合表現。**VE の 2 つの表現（内部単位/割合）が 1 レスポンス内に混在**する点に注意 |
+| `optimalCompoundConditions.compounds` | コンパウンドごとの最適温度（実測: `Medium`=92、`Wet`=50。単位は `tireinfo` と同じケルビンか摂氏かは未確認だが、値域からすると摂氏の可能性が高い） |
+| `wheelInfo.wheelLocs` | **4 輪分のライブ値**の配列。`brakeTemp`（ケルビン、実測 `291.16K`≒`18℃`）・`tireTemp`（ケルビン、実測 `310.0K`≒`36.9℃`）・`tirePressure`（実測 `159.0`）・`compound`（コンパウンド種別インデックス、実測 `0`）。**`getPlayerGarageData` と異なりフリーズしたスナップショットではなく、`tireinfo`/`getVehicleCondition` に近いライブ値**と推測される（要継続実測での裏付け） |
+| `tireInventory` | `maxAvailableTires`/`newTires`（利用可能タイヤ本数）、`bestConditionsUsed`（コンディション別の使用状況、実測は `[-1,-1,-1,-1]` と `[100,100,100,100]` の 2 要素配列で意味不明瞭） |
+| `tireInvGarageOptions.selectedTires`/`tireOptions` | ピット時に選択可能なタイヤセットの一覧。各セットは `compoundIndex`/`index`/`isUsed`/`type`/`wearValue`（0〜100 の残量）を持つ |
+
+`wheelInfo.wheelLocs` は 4 輪すべて実測でほぼ同一の値（走行直後の均一な状態）だったため、輪ごとの並び順（`[FL, FR, RL, RR]` 等）は他の輪別配列との整合性からの推測に留まり、確定的な検証はできていない。
+
+### `/rest/garage/UIScreen/CarSetupOverview`
+
+`carSetup.garageValues` は `/rest/garage/getPlayerGarageData` と**同一のキー構造**（`VM_*`/`WM_*`、`value`/`stringValue`/`minValue`/`maxValue` 等を持つオブジェクト）であることを実機で確認した。つまり `getPlayerGarageData` 相当のデータを `carSetup.garageValues` というパスでも取得できる（実装上は同じデータソースを異なる UI 画面向けにラップして返している可能性が高い）。`carPresetSetups.presets` は保存済みプリセットの一覧（`/rest/garage/setup` の GET 結果に近いと推測されるが、要素の詳細構造までは未確認）。
+
 ---
 
 ## GET エンドポイント全数実測結果
@@ -408,65 +445,131 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 **実測結果一覧**（本ドキュメントの他セクションで詳細を記載済みの `weather`/`GetGameState`/`sessionInfo`/`standings`/`usage`/`RepairAndRefuel`/`getPlayerGarageData`/`pitstop-estimate`/`overall`/`PitMenu/receivePitMenu` は表中の「詳細」列で参照先を示す）。
 
-| エンドポイント | ステータス | レスポンス概要（キー構造 or 値） |
-|---|---|---|
-| `/navigation/GetLoadingScreen` | 200 | `selectedCar`/`trackInfo` を持つオブジェクト（ロード画面表示用） |
-| `/navigation/getReferrer` | 200 | `{"referrer": ""}` |
-| `/navigation/state` | 200 | `loadingStatus`/`state` を持つオブジェクト |
-| `/rest/chat/` | 200 | `[]`（チャット履歴。未発言のため空配列） |
-| `/rest/garage/UIScreen/CarSetupOverview` | 200 | `carPresetSetups`/`carSetup`/`currentWeather`/`racePosition`/`sessionTime`/`teamInfo`/`weatherForecast`。`RepairAndRefuel` と共通のサブ構造（`currentWeather`/`sessionTime`/`teamInfo`/`weatherForecast`）を持ちつつ、セットアップ全体（`carSetup`）を返す |
-| `/rest/garage/UIScreen/CoopOverview` | **404** | ボディなし。協力プレイセッションでない場合は 404 を返す（本調査はソロのプラクティスセッションのため） |
-| `/rest/garage/UIScreen/SessionSetup` | 200 | `classesSelection`/`fullGrid`/`selectedCar`/`trackInfo`（セッション設定 UI 向け） |
-| `/rest/garage/UIScreen/TireManagement` | 200 | `currentWeather`/`expectedUsage`/`optimalCompoundConditions`/`pitMenu`/`racePosition`/`sessionTime`/`teamInfo`/`tireInvGarageOptions`/`tireInventory`/`wearables`/`weatherForecast`/`wheelInfo`。タイヤ管理 UI 向けで `RepairAndRefuel` と多くのサブ構造を共有 |
-| `/rest/garage/brakeinfo` | 200 | `[0.036, 0.036, 0.032, 0.032]` のような 4 輪分の数値配列（単位不明。ブレーキバイアス/摩耗係数の可能性） |
-| `/rest/garage/getVehicleCondition` | 200 | `{"brakeCondition":[1,1,1,1],"fuel":103.4,"fuelCapacity":115.0,"suspensionDamage":[0,0,0,0],"tireCondition":[1,1,1,1],"vehicleDamage":0.0}`。4 輪分のコンディション（1.0=良好）とダメージ・燃料をまとめたシンプルな構造 |
-| `/rest/garage/isRefreshInProgress` | 200 | `false`（真偽値のみ） |
-| `/rest/garage/setup` | 200 | 保存済みセットアッププリセットの配列（実測 25 件）。各要素は `created`/`modified`/`name`/`numDiffUpgrades`/`sameVehicleClass` 等を持つ |
-| `/rest/garage/showOnlyRelevantSetups` | 200 | `false`（真偽値のみ） |
-| `/rest/garage/summary` | 200 | `activeSetup`/`activeSetupRawData`/`car`/`compareToSetup`/`currentTrackFolder`/`defaultSetup`/`fixedSetupRace`/`settingSummaries`/`track`/`unsavedChanges`。ガレージ画面全体のサマリー |
-| `/rest/garage/tireinfo` | 200 | `frontLeft`/`frontRight`/`rearLeft`/`rearRight`/`unitSystem` を持つオブジェクト（4 輪別タイヤ情報） |
-| `/rest/hud` | 200 | `{"chat":true,"mfd":true,"speedo":true,"timing":true,"trackMap":true}`。HUD 各要素の表示 ON/OFF 状態 |
-| `/rest/materialeditor/liveryeditor/getCustomSkinInfo` | 200 | `albedo_texture`/`region_texture`（リバリーエディタ用テクスチャ情報） |
-| `/rest/multiplayer/join/state` | 200 | `"JOIN_IDLE"`（文字列 enum のみ） |
-| `/rest/multiplayer/steam/status` | 200 | `true`（真偽値のみ） |
-| `/rest/multiplayer/teams` | 200 | `null`（ソロセッションのため） |
-| `/rest/options/UIScreen/Controls` | 200 | `allControls` 1 キーのみ（コントローラー割り当て一覧、情報量が大きい） |
-| `/rest/options/commandline` | 200 | `{"commandLine": "\"C:\\...\\Le Mans Ultimate.exe\""}`（**実行ファイルのローカルパスを含む**） |
-| `/rest/options/display` | 200 | `GAMEOPT_*`/`GRAPHOPT_*` の表示・グラフィック設定値（26 キー） |
-| `/rest/options/getAllHapticsDevices` | 200 | `Available`/`Selected`（ハプティクスデバイス一覧） |
-| `/rest/options/getAllResolutions` | 200 | 解像度候補の配列（実測 12 件）。各要素は `Height`/`RefreshRate`/`Width` |
-| `/rest/options/getAllSoundDevices` | 200 | `Available`/`Selected`（サウンドデバイス一覧） |
-| `/rest/options/getLanguage` | 200 | `{"language": "japanese"}` |
-| `/rest/options/liveInputs` | 200 | `liveInputs` 1 キー（現在の入力デバイス状態、情報量が大きい） |
-| `/rest/options/occlusionCullingSupported` | 200 | `{"occlusionCullingSupported": true}` |
-| `/rest/options/settings` | 200 | `DRIVEAIDS_*`/`GAMEOPT_*`/`GRAPHOPT_*`/`SERVEROPT_*`/`SOUNDOPT_*`/`VIDEOOPT_*` 等、**約 220 キー**に及ぶゲーム全設定のスナップショット。運転支援（`DRIVEAIDS_stability_control` 等）の現在値も含むため、コックピット内でのアシスト変更が反映されるかは別途要検証（[既知の注意点](#既知の注意点落とし穴)の `getPlayerGarageData` 同様フリーズの可能性あり） |
-| `/rest/profile/` | 200 | `{"name":"yusuke saito","nick":"yusuke saito","steamID":"（64bit SteamID）"}`。**Steam アカウント識別情報を含むため取り扱い注意**（ドキュメントには実値を記載しない） |
-| `/rest/profile/eacActive` | 200 | `true`（Easy Anti-Cheat 有効化状態） |
-| `/rest/profile/firstRun` | 200 | `false` |
-| `/rest/profile/inDevMode` | 200 | `false` |
-| `/rest/profile/profileInfo/getProfileInfo` | 200 | `/rest/profile/` に `nationality`（`"JP"`）を加えた上位互換の構造。同様に SteamID を含む |
-| `/rest/race/car` | 200 | インストール済み全車両の配列（実測 566 件、レスポンス約 43 万文字）。`displayProperties`/`engine`/`id`/`manufacturer`/`name`/`owned`/`vehFile` 等を持つ |
-| `/rest/race/getAllowedToStartRacing` | 200 | `true`（レース開始可否） |
-| `/rest/race/track` | 200 | 全コースの配列（実測 37 件）。`length`/`name`/`sceneDesc`/`trackLength`/`type` 等 |
-| `/rest/replay/CameraController/getCameraInfo` | 200 | `{"cameraName":"COCKPIT","currentCameraGroup":"Driving"}`（現在の観戦カメラ） |
-| `/rest/replay/isActive` | 200 | `false`（リプレイ再生中かどうか） |
-| `/rest/sessions/?` | 200 | `SESSSET_*` 形式のセッション設定キー約 60 件（AI 強度・タイヤ摩耗・フラッグルール等、レースウィークエンド設定 UI に対応） |
-| `/rest/sessions/GetSessionsInfoForEvent` | 200 | `{"scheduledSessions":[{"airTemp":20,"lengthTime":135,"name":"PRACTICE","rainChance":0}]}` |
-| `/rest/sessions/SaveLoad/getSaveJSON` | 200 | `RealRoad`/`SessionPreset`/`VehicleSetup`/`Weather`/`aiVehicles`/`currentSession`/`gamePhase`/`sessionET`/`timeOfDay`/`uniqueSessionID` 等、**セーブデータそのもの**に近い網羅的な構造（約 14 万文字）。`timeOfDay`/`gamePhase` は `GetGameState` と重複するフィールド名だが同一のセーブスキーマ内の値 |
-| `/rest/sessions/amount` | 200 | `{"PRACTICE":1,"QUALIFY":0,"RACE":0,"WARMUP":0}`（各セッション種別の設定数） |
-| `/rest/sessions/getAllVehicles` | 200 | インストール済み全車両×チーム構成の配列（実測 486 件）。`classes`/`drivers`/`fullTeam`/`number`/`team` 等、`race/car` より参戦チーム目線の情報を持つ |
-| `/rest/sessions/getTracksAll` | 200 | 全コース情報の配列（実測 37 件）。`race/track` とほぼ同じだが `corners`/`countryCode`/`defaultRaceWeather` 等イベント既定値を追加で持つ |
-| `/rest/sessions/getTracksInSeries` | 200 | 現在のシリーズで選択可能なコースの配列（実測 32 件、`getTracksAll` のサブセット） |
-| `/rest/sessions/opponents` | 200 | `id`/`name` のみを持つ軽量な対戦相手一覧（実測 486 件） |
-| `/rest/sessions/opponents/all` | 200 | `opponents` と同一内容（実測時は同じ 486 件） |
-| `/rest/sessions/restartStintAvailable` | 200 | `{"isRestartStintActionAvailable": false}` |
-| `/rest/watch/focus` | 200 | `0`（現在の観戦フォーカス対象の `slotID` のみ） |
-| `/rest/watch/getBookmarkedTimestamps` | 200 | `[]`（リプレイのブックマーク、未設定のため空配列） |
-| `/rest/watch/replay/getReplayFolder` | 200 | `custom`/`default` のリプレイ保存先パス（**ローカルファイルパスを含む**） |
-| `/rest/watch/replays` | 200 | 保存済みリプレイの配列（実測 242 件）。`id`/`metadata`/`replayName`/`size`/`timestamp` |
-| `/rest/watch/standings/history` | 200 | `{"0": [...]}` のようにラップ数（or 何らかのインデックス）をキーとするオブジェクトで、各値が `/rest/watch/standings` に近い簡略版のスナップショット配列。実測は 1 スナップショットのみで、複数ラップ経過後の蓄積のされ方は未確認 |
-| `/rest/watch/trackmap` | 200 | コース形状の座標点配列（実測 1891 点）。各要素は `type`/`x`/`y`/`z` |
-| `/rest/watch/getIncidentsList/{minTimeBetweenContacts}` | 200 | `[]`（インシデント履歴。パラメータは接触判定の最小間隔秒数と推測、実測は `0` を指定し空配列が返った） |
+実測時のステータスは、`/rest/garage/UIScreen/CoopOverview`（協力プレイ専用画面のため非協力プレイセッションでは **404**）を除き全て **200**。以下、カテゴリ別にフィールド単位で構造を記載する（キー名は実際のレスポンスのアルファベット順ではなく、実測 JSON の出現順）。
+
+### `/navigation/...` `/rest/chat/`
+
+**`/navigation/GetLoadingScreen`** — `selectedCar`（後述の `race/car` 1 件分と同一スキーマ: `desc`/`engine`/`fullPathTree`/`fullTeam`/`id`/`manufacturer`/`number`/`sig`/`team`/`vehFile`/`vehicle` 等）+ `trackInfo`（`race/track` に `corners`/`countryCode`/`defaultPracticeStartTime`/`defaultPracticeWeather`（5 要素の天候配列）/`defaultRaceLengthLaps`/`officialEvent`/`openingYear` 等のイベント既定値を加えた上位互換スキーマ、後述の `sessions/getTracksAll` と共通）。ロード画面に表示する車両・コース情報のスナップショット。
+
+**`/navigation/getReferrer`** — `{"referrer": ""}` のみ。遷移元 URL/画面の識別子と推測されるが実測は空文字列。
+
+**`/navigation/state`** — `loadingStatus`（`loading`(bool)/`loadingData`(内部状態を表す JSON 文字列、実測は `loading:false` のため空に近い断片)/`percentage`(実測 `-1` = ロード中でない)/`track`）+ `state`（`appBuild`(実測 `14130`、ビルド番号)/`gamePhase`/`gameSession`/`gameState`(`"GSTATE_DYN"`)/`internalStateCode`(`"OP_RAN_REALTIME_PASS"`)/`navigationState`(`"NAV_REALTIME"`)/`settingMode`(`"SETTING_GRANDPRIX"`)/`steamBetaBranchName`/`user`(`admin`(bool)/`userState`)）。アプリのビルド番号・内部状態遷移を把握できる、デバッグ用途寄りのエンドポイント。
+
+**`/rest/chat/`** — `[]`。チャットメッセージの配列と推測されるが実測は未発言のため空。
+
+### `/rest/garage/UIScreen/...`
+
+**`/rest/garage/UIScreen/CarSetupOverview`** — `carPresetSetups.presets`（保存済みプリセットの配列、実測 3 件）、`carSetup.garageValues`（[`getPlayerGarageData`](#restgaragegetplayergaragedata) と**同一のキー構造**の `VM_*`/`WM_*` オブジェクト。実装上同じデータソースを異なる画面向けに再利用していると推測される）、`currentWeather`（`airPressure`(実測 `99`)/`ambientTempKelvin`/`cloudCoverage`(0.0〜1.0)/`humidity`(0.0〜1.0)/`lightLevel`(0.0〜1.0)/`rainIntensity`/`raining`/`trackTempKelvin`。[`RepairAndRefuel.currentWeather`](#restgarageuiscreenrepairandrefuel-のレスポンス構造)と同一スキーマ）、`racePosition`/`sessionTime`/`teamInfo`/`weatherForecast` は `RepairAndRefuel` と共通のサブ構造。
+
+**`/rest/garage/UIScreen/CoopOverview`** — 実測は **404**（協力プレイでないセッションのため）。構造未確認。
+
+**`/rest/garage/UIScreen/SessionSetup`** — `classesSelection`（選択中のクラス配列、実測 `["GTE"]`）、`fullGrid`(bool)、`selectedCar`/`trackInfo` は `GetLoadingScreen` と同一スキーマ。レースウィークエンド設定画面（クラス選択・グリッド）向け。
+
+**`/rest/garage/UIScreen/TireManagement`** — 詳細は[「その他の実測エンドポイント」](#その他の実測エンドポイント)を参照。上記に加え `pitMenu.pitMenu`（`RepairAndRefuel` と同型のピットメニュー全項目配列）、`wearables`（`body.aero`(数値)/`body.detachableParts`/`brakes`/`suspension`/`tires` の 4 輪配列、`RepairAndRefuel.wearables` と同一スキーマ）を含む。
+
+### `/rest/garage/...`（タイヤ・車両状態・セットアップ管理）
+
+**`/rest/garage/brakeinfo`** / **`/rest/garage/getVehicleCondition`** / **`/rest/garage/tireinfo`** / **`/rest/garage/UIScreen/TireManagement`** は[「その他の実測エンドポイント」](#その他の実測エンドポイント)の各節に詳細を記載済み。
+
+**`/rest/garage/isRefreshInProgress`** — `false`（bool のみ）。セットアップ一覧の再読み込み中かどうかのフラグ（`refreshSetups` POST と対）。
+
+**`/rest/garage/setup`** — 保存済みセットアッププリセットの配列（実測 25 件）。各要素は `created`/`modified`（実測は空文字列 `""`。タイムスタンプ未設定 or 未実装の可能性）、`name`（プリセット名、実測に日本語コース名を含む例あり）、`numDiffUpgrades`（アップグレードパーツとの差分数）、`sameVehicleClass`（bool、現在の車両クラスと一致するプリセットかどうか）を持つ。
+
+**`/rest/garage/showOnlyRelevantSetups`** — `false`（bool のみ）。
+
+**`/rest/garage/summary`** — ガレージ画面全体のサマリー。`activeSetup`（適用中セットアップ名）、`activeSetupRawData`（16 進数文字列、内部エンコード済みセットアップデータと推測）、`car`（`displayProperties.displayName`/`fullTreePath` を含む `race/car` 相当のオブジェクト）、`compareToSetup`（比較対象セットアップ名、実測は空）、`currentTrackFolder`、`defaultSetup`（実測 `"<出荷時の設定>"`）、`fixedSetupRace`（bool、レースでセットアップ固定かどうか）、`track`（`race/track` 相当）、`unsavedChanges`（bool）に加えて、**`settingSummaries`** が特徴的: `AERODYNAMICS_FRONT`/`AERODYNAMICS_REAR`/`ENGINE`/`GEARS`/`SUSPENSION_FRONT`/`SUSPENSION_REAR`/`TIRES_FRONT`/`TIRES_REAR` のカテゴリ別に関連する `VM_*`/`WM_*` キーをグルーピングし、各カテゴリに `diffCount`（既定値からの変更項目数）を付与した集計ビュー。セットアップ UI のカテゴリタブ表示に対応すると推測される。
+
+### `/rest/hud` `/rest/materialeditor/...` `/rest/multiplayer/...`
+
+**`/rest/hud`** — `{"chat":true,"mfd":true,"speedo":true,"timing":true,"trackMap":true}`。HUD 各要素の表示 ON/OFF 状態（`POST /rest/hud/toggle/{component}` の `component` 名と一致）。
+
+**`/rest/materialeditor/liveryeditor/getCustomSkinInfo`** — `albedo_texture`/`region_texture`。いずれも `data:image/png;base64,...` 形式の **Base64 埋め込み画像**（リバリーエディタのプレビューテクスチャ）。
+
+**`/rest/multiplayer/join/state`** — `"JOIN_IDLE"`（文字列 enum。参加試行中は別の値になると推測されるが未確認）。
+
+**`/rest/multiplayer/steam/status`** — `true`（bool。Steam 接続状態）。
+
+**`/rest/multiplayer/teams`** — `null`（ソロセッションのため。マルチプレイ時にチーム編成情報が入ると推測）。
+
+### `/rest/options/...`
+
+**`/rest/options/UIScreen/Controls`** — `allControls.directInput`/`gamepad`/`keyboard` それぞれに `Device`/`Input`（デバイス別の割当一覧）+ `Type` を持ち、`global` にステアリング/フォースフィードバック等の共通設定（`Alternate Neutral Activation`/`Auto Reverse`/`Force Feedback`/`Steering Wheel Range` 等）を持つ、コントロール設定画面の全データ。
+
+**`/rest/options/commandline`** — `{"commandLine": "\"...\\Le Mans Ultimate.exe\""}`。LMU 実行ファイルのローカルパスを含む（本ドキュメントには実際のフルパスを転記していない）。
+
+**`/rest/options/display`** — `GAMEOPT_*`/`GRAPHOPT_*` の表示・グラフィック設定 26 キー。各値は共通スキーマ `{currentValue, maxValue, minValue, stepValue, stringValue, valueType}` を持つ（`stringValue` が表示用文字列、`valueType` は `"LONG"` 等）。例: `GAMEOPT_units`（`currentValue:0` → `"metric"`）、`GRAPHOPT_starting_view`（`currentValue:1` → `"Cockpit"`）。この `{currentValue/maxValue/minValue/stepValue/stringValue/valueType}` パターンは `/rest/options/settings`・`/rest/sessions/?` の値オブジェクトとも共通する定型フォーマット。
+
+**`/rest/options/getAllHapticsDevices`** / **`/rest/options/getAllSoundDevices`** — 共通スキーマ: `Available`（`HardwareDevice`/`Name`/`OutputOnDevice`/`Renderer` を持つデバイス一覧、実測 Haptics 3 件・Sound 4 件）+ `Selected`（現在選択中のデバイス。実測は Haptics が `"Disabled"`、Sound が `"Default"`/`Renderer:"OpenAL Soft"`）。
+
+**`/rest/options/getAllResolutions`** — 解像度候補の配列（実測 12 件）。各要素は `Height`/`Width`（ピクセル）+ `RefreshRate`（対応リフレッシュレートの配列、実測 6 件、Hz 単位と推測）。
+
+**`/rest/options/getLanguage`** — `{"language": "japanese"}`。
+
+**`/rest/options/liveInputs`** — `liveInputs.di`（DirectInput デバイスごとの生値の配列）、`gamepad`/`keyboard`（`minmax`/`raw inputs`）、**`processed inputs`**（`brakes`/`clutch`/`handbrake`/`handfrontbrake`/`steerLeft`/`steerRight`/`throttle`(数値、0.0〜1.0 と推測) + `directManualShift`/`launchControl`/`shiftDown`/`shiftToNeutral`/`shiftUp`/`tcOverride`(bool)）。**ライブのペダル/ステアリング入力値を返す**ため、共有メモリ以外からドライバー入力を取得できる数少ない経路。ポーリング頻度次第では入力デバイスのデバッグ・可視化に使える可能性がある。
+
+**`/rest/options/occlusionCullingSupported`** — `{"occlusionCullingSupported": true}`。
+
+**`/rest/options/settings`** — `/rest/options/display` と同じ `{currentValue/maxValue/minValue/stepValue/stringValue/valueType}` スキーマを持つ約 220 キーの巨大な設定スナップショット。プレフィックスの内訳（実測）は概ね `DRIVEAIDS_*`（運転支援。ABS/TC/オートブリップ等）、`GAMEOPT_*`（AI 強度・ダメージ倍率・自動保存等）、`GRAPHOPT_*`（画質・VR・HUD 表示詳細）、`SERVEROPT_*`（マルチプレイサーバー設定。ソロセッションでも既定値が存在）、`SOUNDOPT_*`（音量各種）、`VIDEOOPT_*`（解像度・vsync・アップスケール）、`CONTROL_*`/`COPY_*`/`DISPLAYOPT_*`/`MP_NETWORK_*`/`REPLAYOPT_*`。運転支援設定（`DRIVEAIDS_stability_control` 等）の現在値も含むため、コックピット内でのアシスト変更が実際にライブ反映されるかは別途要検証（[既知の注意点](#既知の注意点落とし穴)の `getPlayerGarageData` 同様フリーズの可能性あり）。全 220 キーの個別列挙は情報量過多のため本ドキュメントでは省略し、プレフィックスからカテゴリを推測できる形に留める。
+
+### `/rest/profile/...`
+
+**`/rest/profile/`** — `name`/`nick`（表示名、実測は同一値）+ `steamID`（64bit SteamID64 文字列）。**Steam アカウント識別情報のため、本ドキュメントには実際の値を記載しない。**
+
+**`/rest/profile/eacActive`** — `true`（Easy Anti-Cheat 有効化状態）。
+
+**`/rest/profile/firstRun`** — `false`（初回起動フラグ）。
+
+**`/rest/profile/inDevMode`** — `false`（開発者モードフラグ）。
+
+**`/rest/profile/profileInfo/getProfileInfo`** — `/rest/profile/` に `nationality`（実測 `"JP"`）と `language`（実測 `"japanese"`）を加えた上位互換の構造。同様に SteamID を含むため実値は記載しない。
+
+### `/rest/race/...` `/rest/replay/...`
+
+**`/rest/race/car`** — インストール済み全車両の配列（実測 566 件、レスポンス約 44 万文字）。各要素は `displayProperties`（`displayName`/`fullTreePath`）、`dlcappID`、`engine`（実測例: `"Twin-turbo 4.0-litre V8"`）、`fullPathTree`（シリーズ名を含む階層パス文字列、実測例: `"ELMS 2025, GT3, Aston Martin Vantage AMR"`）、`id`（車両固有 ID）、`image`/`thumbnail`（画像を返す `/rest/race/car/{id}/image` への相対パス）、`manufacturer`、`name`、`owned`(bool)、`premId`、`sig`（署名/ハッシュ文字列）、`vehFile`（ローカルファイルパス）を持つ。
+
+**`/rest/race/getAllowedToStartRacing`** — `true`（bool。レース開始条件を満たしているか）。
+
+**`/rest/race/track`** — 全コースの配列（実測 37 件）。各要素は `displayProperties`（`name`/`shortName`）、`length`（文字列、km 単位、実測例 `"4.653"`）、`sceneDesc`（内部シーン識別子）、`trackLength`、`type`（実測 `"Road Course"`）等、`race/car` と対になる構造。
+
+**`/rest/replay/CameraController/getCameraInfo`** — `{"cameraName":"COCKPIT","currentCameraGroup":"Driving"}`。現在の観戦/走行カメラ状態。
+
+**`/rest/replay/isActive`** — `false`（bool。リプレイ再生中かどうか）。
+
+### `/rest/sessions/...`（設定・イベント情報）
+
+**`/rest/sessions/?`** — `SESSSET_*` 形式のレースウィークエンド設定、実測約 60 キー。値は `/rest/options/display` に近いが `{currentValue, numStepsTotal, settingID, stringValue, uiSelectionType, valueType}` という**別のスキーマ**（`uiSelectionType` が `"Arrow"`/`"Switch"` 等の UI 部品種別を表す点が特徴）。代表的なキー: `SESSSET_AI_Aggression`/`SESSSET_AI_Strength`（AI 強度）、`SESSSET_Damage_Multi`（ダメージ倍率、%）、`SESSSET_Finish_Criteria`（決勝の終了条件）、`SESSSET_Fuel_Usage`/`SESSSET_Tire_Wear`（燃料/タイヤ消費倍率、実測は両方 `"Realistic"`）、`SESSSET_Practice_Length`/`SESSSET_Qualify_Length`/`SESSSET_WarmUp_Length`（各セッション長、分単位）、`SESSSET_blue_flags`/`SESSSET_cut_rules`/`SESSSET_flag_rules`（フラッグ・カット判定ルール）、`SESSSET_pract1`〜`4`（各プラクティスセッションの有効/無効）、`SESSSET_pract1_realroad_init`等（各セッションのリアルロード＝路面グリップ初期状態プリセット）。全 60 キーの完全な列挙は情報量過多のため代表例に留める。
+
+**`/rest/sessions/GetSessionsInfoForEvent`** — `{"scheduledSessions":[{"airTemp":20,"lengthTime":135,"name":"PRACTICE","rainChance":0}]}`。イベントで予定されているセッションの配列（実測はプラクティスのみの 1 件）。
+
+**`/rest/sessions/SaveLoad/getSaveJSON`** — **セーブデータそのもの**に近い網羅的な構造（約 14 万文字）。主なフィールド: `RealRoad`（実測 `null`）、`SessionPreset`（`Grid`/`Player`（`DRIVER`/`Game Options`/`Mechanical Failures`/`Race Conditions`/`SCENE`）/`Weather`（`Practice`/`Qualifying`/`Race`）というプリセット全体）、`VehicleSetup`（実測は空文字列）、`Weather`（3 要素の配列、各要素が `Nodes`(内部データ文字列)/`unCompressedDataSize`/`unEncodedDataSize` を持つ圧縮天候データ）、`aiVehicles`（実測空配列）、`allowedVehiclesFilter`（`Optional`/`Required` の車両フィルタ）、`currentSession`（実測 `1`）、`endET`/`greenET`/`redLightET`/`startET`（セッション内の各種イベント経過時間、秒）、`gamePhase`（数値、`GetGameState.gamePhase` の文字列 enum とは異なる**数値表現**）、`maxLaps`（実測 `2147483647` = `int32` の最大値、無制限を表すセンチネル値と推測）、`playerVehicle.slotID`（実測 `-2`）、`sessionState`（数値 enum、実測 `8`）、`sessionTimescale`（実測 `1` = 等倍）、`startTime`/`timeOfDay`（実測どちらも `28800` 秒 = 8:00、`GetGameState.timeOfDay` と同系列だが値が異なりセーブ時点のスナップショット）、`uniqueSessionID`（セッション固有 ID、実測 10 桁の数値）。
+
+**`/rest/sessions/amount`** — `{"PRACTICE":1,"QUALIFY":0,"RACE":0,"WARMUP":0}`（各セッション種別の設定数）。
+
+**`/rest/sessions/getAllVehicles`** — インストール済み全車両×チーム構成の配列（実測 486 件）。`race/car` と多くのフィールドを共有しつつ、`classes`（クラス配列）、`classesOverride`、`drivers`（実測 6 要素、複数ドライバー編成に対応するエンデュランスチーム想定の配列）、`fullTeam`/`team`/`teamFounded`/`teamHeadquarters`（チーム詳細）、`isOwned`（`race/car` の `owned` と同義だが命名が異なる）、`number`（ゼッケン番号）を持つ、より参戦チーム目線の情報。
+
+**`/rest/sessions/getTracksAll`** — 全コース情報の配列（実測 37 件）。`race/track` に `corners`（コーナー数、文字列）、`countryCode`、`defaultPracticeStartTime`/`defaultQualifyStartTime`/`defaultRaceStartTime`（既定開始時刻、分単位と推測）、`defaultPracticeWeather`/`defaultQualifyWeather`/`defaultRaceWeather`（各 5 要素の天候既定値配列）、`eventName`/`grandPrixName`、`location`、`officialEvent`(bool)、`openingYear` を加えたイベント既定値付き上位互換。
+
+**`/rest/sessions/getTracksInSeries`** — 現在のシリーズで選択可能なコースの配列（実測 32 件）。スキーマは `getTracksAll` と同一。
+
+**`/rest/sessions/opponents`** / **`/rest/sessions/opponents/all`** — `id`(number)/`name` のみを持つ軽量な対戦相手一覧（実測どちらも同じ 486 件）。両エンドポイントの違い（`all` が付く/付かない）は実測条件下では確認できず。
+
+**`/rest/sessions/restartStintAvailable`** — `{"isRestartStintActionAvailable": false}`（bool。スティント再開始アクションの実行可否）。
+
+### `/rest/watch/...`
+
+**`/rest/watch/focus`** — `0`（number。現在の観戦フォーカス対象 `slotID`）。
+
+**`/rest/watch/getBookmarkedTimestamps`** — `[]`（リプレイのブックマーク時刻一覧、未設定のため空配列）。
+
+**`/rest/watch/replay/getReplayFolder`** — `custom`/`default` の 2 キー、いずれもリプレイ保存先のローカルディレクトリパス（実測では同一パス）。
+
+**`/rest/watch/replays`** — 保存済みリプレイの配列（実測 242 件）。各要素は `id`（number）、`metadata`（`eventType`/`sceneDesc`/`session`）、`replayDirectory`（ローカルパス）、`replayName`（イベント名）、`size`（バイト数）、`timestamp`（Unix 時刻と推測される 10 桁の数値）。
+
+**`/rest/watch/standings/history`** — `{"0": [...]}` のように**キーが `"0"` から始まる文字列インデックス**（実測はキー `"0"` のみ）を持つオブジェクトで、各値が `/rest/watch/standings` の簡略版（`carClass`/`driverName`/`finishStatus`/`lapTime`/`pitting`/`position`/`sectorTime1`/`sectorTime2`/`slotID`/`totalLaps`/`vehicleName`）の配列。キー `"0"` が「1 周目」を表すのか、それとも別のスナップショット単位かは実測（1 周未満のセッション）では判別できず、複数ラップ経過後にキーがどう増えるかも未確認。
+
+**`/rest/watch/trackmap`** — コース形状の座標点配列（実測 1891 点）。各要素は `type`（number、実測 `0`。コーナー/ストレート等の区間種別と推測）、`x`/`y`/`z`（3 次元座標、共有メモリの `carPosition` と同じスケール感の数値）。
+
+**`/rest/watch/getIncidentsList/{minTimeBetweenContacts}`** — `[]`（インシデント履歴。パラメータは接触判定の最小間隔秒数と推測、実測は `0` を指定し空配列が返った。接触イベントが発生した場合の要素構造は未確認）。
 
 ---
 
@@ -662,7 +765,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 - **[解決]** `swagger-schema.json` の全パス数・非 GET 数: 実機取得で全 179 パス・GET 79・非 GET を含むパス 107 と確認（→ [基本情報](#基本情報)）。
 - **[部分解決]** `sessionTime.timeOfDay` の基準: `/rest/sessions/GetGameState` の `timeOfDay` と同一系列の値であることを確認した（→ [その他の実測エンドポイント](#その他の実測エンドポイント)）。一方で `/rest/watch/sessionInfo` の `currentEventTime`/`startEventTime`/`maxTime` は明らかに異なるスケール（数百〜数千秒オーダー）の「セッション経過時間系」の値であり、両者の関係・`timeOfDay` が「1 日 86400 秒に対する経過秒数」かどうかは未確認のまま。
 - **[部分解決]** `teamInfo.driverNames` の構造: 実機では **ドライバーごとの 32 要素配列を要素とする配列**（`[[121, 117, ...], ...]`）であり、当初想定していた単一の 32 要素フラット配列ではなかった。また実測では ASCII 文字列の null 終端（`0`）の直後にも非ゼロの値（`97`）が含まれており、終端後のバイトが必ずしも全てゼロにはならない点が判明。複数ドライバー（マルチスティント/エンデュランス）時に配列がどう埋まるかは未確認。
-- **[部分解決]** GET 系エンドポイントの網羅的な疎通確認: パス引数必須・副作用ありと判断したものを除く GET 系 65 パスすべてを実機で叩き、キー構造・値の概要を[「GET エンドポイント全数実測結果」](#get-エンドポイント全数実測結果)に記載した。ただし多くはキー一覧・代表値の把握に留まり、`weather`/`standings`/`usage`/`RepairAndRefuel`/`GetGameState`/`sessionInfo`/`getPlayerGarageData`/`pitstop-estimate` のような**フィールド単位の詳細な意味付け**までは行っていない。特に `/rest/options/settings`（約 220 キー）・`/rest/garage/summary`・`/rest/sessions/SaveLoad/getSaveJSON`（約 14 万文字）等の大規模なレスポンスはキー一覧の把握のみで、各フィールドの詳細調査は未着手。パス引数必須の 7 パス（`/rest/materialeditor/...` 各種、`/rest/race/car/{id}/image`、`/rest/race/track/{id}/trackmap`、`/rest/garage/setup/notes/(.*)`、`/webdata/.*`）と、副作用のリスクから意図的に見送った 4 パス（`/rest/multiplayer/join`、`/rest/watch/play/{id}`、`/rest/options/resetVRView`、`/rest/options/assign/changestatus`）、認証情報を含む `/rest/profile/getAuthSessionTicket` は未実測のまま。
+- **[解決]** GET 系エンドポイントの網羅的な疎通確認・フィールド単位の詳細化: パス引数必須・副作用ありと判断したものを除く GET 系 65 パスすべてを実機で叩き、[「GET エンドポイント全数実測結果」](#get-エンドポイント全数実測結果)にフィールド単位の意味・型・実測値を記載した。ただし `/rest/options/settings`（約 220 キー）・`/rest/sessions/?`（約 60 キー）はプレフィックス／代表例からのカテゴリ推測に留め、全キーの個別列挙はしていない（情報量過多のため）。パス引数必須の 7 パス（`/rest/materialeditor/...` 各種、`/rest/race/car/{id}/image`、`/rest/race/track/{id}/trackmap`、`/rest/garage/setup/notes/(.*)`、`/webdata/.*`）と、副作用のリスクから意図的に見送った 4 パス（`/rest/multiplayer/join`、`/rest/watch/play/{id}`、`/rest/options/resetVRView`、`/rest/options/assign/changestatus`）、認証情報を含む `/rest/profile/getAuthSessionTicket` は未実測のまま。
 - `/rest/watch/standings` の `pathLateral`/`trackEdge`/`timeIntoLap` が負値を取る場合の意味: 実測では `lapDistance` が負値（`-123.98`、ピットアウト直後でスタートラインを跨いでいない状態）のときに `pathLateral`/`trackEdge`/`timeIntoLap` も負値になっていたため、「ラップカウント開始前（スタート/フィニッシュラインを跨ぐ前）を負値で表す」という仮説は立てられるが、正の値域も含めた正式な意味・複数台出走時の配列の並び順（順位順か固定スロット順か）は未確認。
 - `WNV_RAIN_CHANCE`（および `RepairAndRefuel` の `weatherForecast.nodes.RainChance`）が 0% 以外の値を取るケースでの値域（整数か小数か、100 分率か 1 分率か）。実測時は降雨のないセッションのみだったため確認できず。
 - `/rest/strategy/usage` の `fuel`/`ve` の正確な単位・値域（実測はセッション開始直後の 1 レコードのみ）、複数スティント時の配列の追記され方、タイヤ摩耗後の `tyres` 値の意味。
