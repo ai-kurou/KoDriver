@@ -242,4 +242,32 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PartDetached, false) }
         confirmVerified(repository, overheatRepository, ttsEngine)
     }
+
+    @Test
+    fun `初期状態は tyreDetachedEnabled がデフォルト値 true の UiState を返す`() =
+        runTest {
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
+            val viewModel = createViewModel()
+
+            assertEquals(true, viewModel.uiState.first().tyreDetachedEnabled)
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { overheatRepository.observeVoiceType() }
+            confirmVerified(repository, overheatRepository)
+        }
+
+    @Test
+    fun `onTyreDetachedEnabledChanged を呼ぶと UiState の tyreDetachedEnabled が更新されリポジトリへの保存は行われない`() =
+        runTest {
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
+            val viewModel = createViewModel()
+
+            viewModel.onTyreDetachedEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().tyreDetachedEnabled)
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { overheatRepository.observeVoiceType() }
+            confirmVerified(repository, overheatRepository)
+        }
 }
