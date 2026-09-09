@@ -2,10 +2,12 @@ package kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.OverheatVoiceType
@@ -23,12 +25,20 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     private val saveOverheatVoiceType: SaveLmuWindowsOverheatVoiceTypeUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
+    // タイヤ脱落は永続化未対応のため、ViewModel内のみで保持する表示専用の状態
+    private val tyreDetachedEnabled = MutableStateFlow(true)
+
     val uiState: StateFlow<LmuWindowsReadoutVehicleDamageDetailUiState> =
-        combine(observeEnabledStates(), observeOverheatVoiceType()) { states, overheatVoiceType ->
+        combine(
+            observeEnabledStates(),
+            observeOverheatVoiceType(),
+            tyreDetachedEnabled,
+        ) { states, overheatVoiceType, tyreDetachedEnabled ->
             LmuWindowsReadoutVehicleDamageDetailUiState(
                 overheatEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat),
                 overheatVoiceType = overheatVoiceType,
                 partDetachedEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached),
+                tyreDetachedEnabled = tyreDetachedEnabled,
             )
         }.stateIn(
             viewModelScope,
@@ -59,5 +69,10 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
 
     fun onPartDetachedPreviewClicked() {
         playSpeechEvent(SpeechEvent.PartDetached)
+    }
+
+    // タイヤ脱落は永続化・実際の音声再生とも未実装（表示のみ）
+    fun onTyreDetachedEnabledChanged(enabled: Boolean) {
+        tyreDetachedEnabled.update { enabled }
     }
 }
