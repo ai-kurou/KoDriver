@@ -7,3 +7,12 @@
 - 各NarratorViewModelを独立させておくことで、モックが単純なテストのまま保てる。共通基底化すると基底クラス側のテストとサブクラス固有のテストの両方が必要になり、テストの複雑さが増す。
 
 新しいシミュレーター向けのNarratorViewModelを実装する際は、既存の類似ViewModel（`CLAUDE.md` の「実装前の類似コード確認」を参照）の構成をそのままコピーして書いてよい。
+
+## NarratorEventProcessor のAPI形状はテレメトリソースの型構造に従う
+
+`Gt7Ps5NarratorEventProcessor` は `process(sourceKey, telemetry, events, ...)` という汎用1メソッドで全項目を処理する一方、`AceWindowsNarratorEventProcessor`・`LmuWindowsNarratorEventProcessor` は `processMyBestLap` / `processTyreWear` のような項目別メソッドを持つ。この違いは恣意的な設計差ではなく、各シミュレーターのテレメトリ取得方式の違いに起因する。
+
+- GT7 PS5 は UDP から取得する単一の `Gt7Ps5TelemetryData` に全項目が含まれるため、`process()` は同じ型の `telemetry` を受け取りつつ `sourceKey`（`ReadoutItemKey`）で呼び出し元の項目を区別すれば足りる。項目ごとにメソッドを分けても、パラメータの型は変わらず本質的な違いが生まれない。
+- ACE Windows / LMU Windows は共有メモリ由来のデータが `AceWindowsFuelData` / `LmuWindowsTyreWearData` のように項目ごとに別の型へ分解されているため、各項目でメソッドの引数の型そのものが異なる。これを1メソッドに統合するには sealed class 等でのラップが必要になり、素直な項目別メソッドより複雑になる。
+
+新しいシミュレーターを追加する場合は、そのシミュレーターのテレメトリ取得方式（単一構造体か、項目別に分解された構造体か）に応じて、上記いずれかの既存パターン（GT7 PS5 or ACE Windows/LMU Windows）を踏襲すること。
