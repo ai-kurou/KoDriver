@@ -30,5 +30,9 @@ class KoDriverServerFeatureTest {
             "/ws/lmu_windows/pit_status",
             KoDriverServerFeature.PIT_STATUS.webSocketPath(Simulator.LmuWindows),
         )
+        assertEquals(
+            "/ws/lmu_windows/tyre_detached",
+            KoDriverServerFeature.TYRE_DETACHED.webSocketPath(Simulator.LmuWindows),
+        )
     }
 }
