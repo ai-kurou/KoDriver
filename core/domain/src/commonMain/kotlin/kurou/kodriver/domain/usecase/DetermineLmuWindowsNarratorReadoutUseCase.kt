@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
@@ -33,6 +34,7 @@ data class LmuWindowsNarratorState(
     val vehicleApproachState: LmuWindowsVehicleApproachState = LmuWindowsVehicleApproachState(),
     val previousRaceFlags: LmuWindowsRaceFlagsData? = null,
     val previousVehicleDamage: LmuWindowsVehicleDamageData? = null,
+    val previousTyreDetached: LmuWindowsTyreDetachedData? = null,
     val personalBestMs: Long = Long.MAX_VALUE,
     val previousBestLapTimeMs: Long? = null,
     val tyreOverheating: Boolean = false,
@@ -272,6 +274,34 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(previousVehicleDamage = vehicleDamage),
             events = listOfNotNull(overheatEvent, partDetachedEvent),
+        )
+    }
+
+    fun determineTyreDetached(
+        state: LmuWindowsNarratorState,
+        tyreDetached: LmuWindowsTyreDetachedData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): LmuWindowsNarratorReadoutDecision {
+        val previous =
+            state.previousTyreDetached ?: return LmuWindowsNarratorReadoutDecision(
+                state = state.copy(previousTyreDetached = tyreDetached),
+                events = emptyList(),
+            )
+        val newlyDetached =
+            tyreDetached.wheels.any { (wheel, detached) -> detached && previous.wheels[wheel] != true }
+        val event =
+            if (
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached) &&
+                newlyDetached
+            ) {
+                SpeechEvent.TyreDetached
+            } else {
+                null
+            }
+        return LmuWindowsNarratorReadoutDecision(
+            state = state.copy(previousTyreDetached = tyreDetached),
+            events = listOfNotNull(event),
         )
     }
 

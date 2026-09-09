@@ -244,23 +244,33 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
     }
 
     @Test
-    fun `初期状態は tyreDetachedEnabled がデフォルト値 true の UiState を返す`() =
+    fun `リポジトリに tyreDetached=false が保存済みのとき tyreDetachedEnabled が false の UiState を返す`() =
         runTest {
-            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeEnabledStates() } returns
+                MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false))
             every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
             val viewModel = createViewModel()
 
-            assertEquals(true, viewModel.uiState.first().tyreDetachedEnabled)
+            assertEquals(
+                LmuWindowsReadoutVehicleDamageDetailUiState(tyreDetachedEnabled = false),
+                viewModel.uiState.first(),
+            )
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { overheatRepository.observeVoiceType() }
             confirmVerified(repository, overheatRepository)
         }
 
     @Test
-    fun `onTyreDetachedEnabledChanged を呼ぶと UiState の tyreDetachedEnabled が更新されリポジトリへの保存は行われない`() =
+    fun `onTyreDetachedEnabledChanged を呼ぶと UiState の tyreDetachedEnabled が更新される`() =
         runTest {
-            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { repository.observeEnabledStates() } returns enabledStatesFlow
             every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
+            coEvery {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, false)
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false) }
+            }
             val viewModel = createViewModel()
 
             viewModel.onTyreDetachedEnabledChanged(false)
@@ -268,6 +278,24 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().tyreDetachedEnabled)
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { overheatRepository.observeVoiceType() }
+            coVerify(exactly = 1) {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, false)
+            }
             confirmVerified(repository, overheatRepository)
         }
+
+    @Test
+    fun `onTyreDetachedPreviewClicked を呼ぶと TyreDetached イベントが再生される`() {
+        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
+        every { ttsEngine.speak(SpeechEvent.TyreDetached, false) } returns Unit
+        val viewModel = createViewModel()
+
+        viewModel.onTyreDetachedPreviewClicked()
+
+        verify(exactly = 1) { repository.observeEnabledStates() }
+        verify(exactly = 1) { overheatRepository.observeVoiceType() }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreDetached, false) }
+        confirmVerified(repository, overheatRepository, ttsEngine)
+    }
 }

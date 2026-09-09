@@ -11,6 +11,7 @@ private val vehicleDamageEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
         ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
         ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
+        ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
     )
 
 class ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(

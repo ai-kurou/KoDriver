@@ -85,6 +85,10 @@ sealed interface ReadoutItemKey {
             data object PartDetached : VehicleDamage {
                 override val value = "lmu_windows_part_detached"
             }
+
+            data object TyreDetached : VehicleDamage {
+                override val value = "lmu_windows_tyre_detached"
+            }
         }
 
         sealed interface TyreTemperature : LmuWindows {
@@ -266,6 +270,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.VehicleDamage.Root,
                 LmuWindows.VehicleDamage.Overheat,
                 LmuWindows.VehicleDamage.PartDetached,
+                LmuWindows.VehicleDamage.TyreDetached,
                 LmuWindows.TyreTemperature.Root,
                 LmuWindows.TyreTemperature.OverheatWarning,
                 LmuWindows.TyreTemperature.LowWarning,

@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
@@ -1114,6 +1115,100 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `初回のデータでは読み上げず previousTyreDetached を保存する`() {
+        val decision =
+            useCase.determineTyreDetached(
+                state = LmuWindowsNarratorState(),
+                tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(tyreDetached(WheelIndex.FRONT_LEFT), decision.state.previousTyreDetached)
+    }
+
+    @Test
+    fun `タイヤ脱落がfalseからtrueに変化するとTyreDetachedを返す`() {
+        val first =
+            useCase.determineTyreDetached(
+                state = LmuWindowsNarratorState(),
+                tyreDetached = tyreDetached(),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineTyreDetached(
+                state = first.state,
+                tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
+                settings = settings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.TyreDetached), second.events)
+    }
+
+    @Test
+    fun `タイヤ脱落が継続しても再度読み上げない`() {
+        val first =
+            useCase.determineTyreDetached(
+                state = LmuWindowsNarratorState(previousTyreDetached = tyreDetached(WheelIndex.FRONT_LEFT)),
+                tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), first.events)
+    }
+
+    @Test
+    fun `タイヤ脱落項目が無効なら読み上げない`() {
+        val decision =
+            useCase.determineTyreDetached(
+                state = LmuWindowsNarratorState(previousTyreDetached = tyreDetached()),
+                tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
+    fun `VehicleDamage項目全体が無効なら読み上げない`() {
+        val decision =
+            useCase.determineTyreDetached(
+                state = LmuWindowsNarratorState(previousTyreDetached = tyreDetached()),
+                tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
+                settings =
+                    settings(
+                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
+    fun `別のタイヤが新たに脱落しても再度読み上げる`() {
+        val first =
+            useCase.determineTyreDetached(
+                state = LmuWindowsNarratorState(),
+                tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
+                settings = settings(),
+            )
+
+        val second =
+            useCase.determineTyreDetached(
+                state = first.state,
+                tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT, WheelIndex.REAR_RIGHT),
+                settings = settings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.TyreDetached), second.events)
+    }
+
+    @Test
     fun `いずれかのタイヤが閾値以上になると TyreOverheat を返す`() {
         val decision =
             useCase.determineTyreTemperatureOverheat(
@@ -2083,6 +2178,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
         ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
         ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
+        ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
@@ -2244,6 +2340,11 @@ private fun damage(
     partDetached = partDetached,
     lastImpactMagnitude = 0.0,
 )
+
+private fun tyreDetached(vararg detachedWheels: WheelIndex) =
+    LmuWindowsTyreDetachedData(
+        wheels = WheelIndex.entries.associateWith { it in detachedWheels },
+    )
 
 private fun tyreTemperatureInput(
     fl: Double = 20.0,

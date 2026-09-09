@@ -34,6 +34,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
@@ -65,6 +66,7 @@ import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreDetachedRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
@@ -90,6 +92,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
@@ -139,6 +142,9 @@ class LmuWindowsNarratorViewModelTest {
 
     @MockK
     private lateinit var vehicleDamagePreferencesRepository: LmuWindowsVehicleDamagePreferencesRepository
+
+    @MockK
+    private lateinit var tyreDetachedRepository: LmuWindowsTyreDetachedRepository
 
     @MockK
     private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
@@ -218,6 +224,7 @@ class LmuWindowsNarratorViewModelTest {
         vehicleApproachChannel: Channel<LmuWindowsVehicleApproachData>,
         flagChannel: Channel<LmuWindowsRaceFlagsData>,
         damageChannel: Channel<LmuWindowsVehicleDamageData>,
+        tyreDetachedChannel: Channel<LmuWindowsTyreDetachedData>,
         telemetryChannel: Channel<LmuWindowsTelemetryData>,
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData>,
         tyreWearChannel: Channel<LmuWindowsTyreWearData>,
@@ -267,6 +274,7 @@ class LmuWindowsNarratorViewModelTest {
         every { vehicleDamageRepository.vehicleDamageStream() } returns damageChannel.receiveAsFlow()
         every { vehicleDamagePreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(vehicleDamageEnabledOverrides)
+        every { tyreDetachedRepository.tyreDetachedStream() } returns tyreDetachedChannel.receiveAsFlow()
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(simulator)
         every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
             MutableStateFlow(enabledOverrides)
@@ -314,6 +322,7 @@ class LmuWindowsNarratorViewModelTest {
         vehicleApproachChannel: Channel<LmuWindowsVehicleApproachData> = Channel(Channel.UNLIMITED),
         flagChannel: Channel<LmuWindowsRaceFlagsData> = Channel(Channel.UNLIMITED),
         damageChannel: Channel<LmuWindowsVehicleDamageData> = Channel(Channel.UNLIMITED),
+        tyreDetachedChannel: Channel<LmuWindowsTyreDetachedData> = Channel(Channel.UNLIMITED),
         telemetryChannel: Channel<LmuWindowsTelemetryData> = Channel(Channel.UNLIMITED),
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         tyreWearChannel: Channel<LmuWindowsTyreWearData> = Channel(Channel.UNLIMITED),
@@ -354,6 +363,7 @@ class LmuWindowsNarratorViewModelTest {
             vehicleApproachChannel = vehicleApproachChannel,
             flagChannel = flagChannel,
             damageChannel = damageChannel,
+            tyreDetachedChannel = tyreDetachedChannel,
             telemetryChannel = telemetryChannel,
             tyreTemperatureChannel = tyreTemperatureChannel,
             tyreWearChannel = tyreWearChannel,
@@ -418,6 +428,7 @@ class LmuWindowsNarratorViewModelTest {
                         ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(
                             vehicleDamagePreferencesRepository,
                         ),
+                    observeTyreDetached = ObserveLmuWindowsTyreDetachedUseCase(tyreDetachedRepository),
                 ),
             readoutListUseCases =
                 ReadoutListUseCases(
@@ -1044,6 +1055,46 @@ class LmuWindowsNarratorViewModelTest {
 
             damageChannel.send(noDamage())
             damageChannel.send(noDamage(partDetached = true))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `タイヤ脱落が発生するとTyreDetachedを読み上げる`() =
+        runTest(testDispatcher) {
+            val tyreDetachedChannel = Channel<LmuWindowsTyreDetachedData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                tyreDetachedChannel = tyreDetachedChannel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+            )
+
+            tyreDetachedChannel.send(noTyreDetached())
+            tyreDetachedChannel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreDetached), spokenTexts)
+        }
+
+    @Test
+    fun `TYRE_DETACHEDが無効のときはタイヤ脱落を読み上げない`() =
+        runTest(testDispatcher) {
+            val tyreDetachedChannel = Channel<LmuWindowsTyreDetachedData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                tyreDetachedChannel = tyreDetachedChannel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                vehicleDamageEnabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(
+                        ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false,
+                    ),
+            )
+
+            tyreDetachedChannel.send(noTyreDetached())
+            tyreDetachedChannel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
@@ -2137,6 +2188,11 @@ private fun noDamage(
     partDetached = partDetached,
     lastImpactMagnitude = 0.0,
 )
+
+private fun noTyreDetached(vararg detachedWheels: WheelIndex) =
+    LmuWindowsTyreDetachedData(
+        wheels = WheelIndex.entries.associateWith { it in detachedWheels },
+    )
 
 private fun fakeTelemetryData(
     currentLap: Int = 0,

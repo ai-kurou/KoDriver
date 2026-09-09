@@ -130,17 +130,22 @@ class LmuWindowsReadoutVehicleDamageDetailPaneTest {
     @Test
     fun `タイヤ脱落の有効状態を表示して操作できる`() {
         var enabled: Boolean? = null
+        var previewCount = 0
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutVehicleDamageDetailPaneContent(
                     uiState = LmuWindowsReadoutVehicleDamageDetailUiState(tyreDetachedEnabled = true),
                     onTyreDetachedEnabledChanged = { enabled = it },
+                    onTyreDetachedPreviewClicked = { previewCount++ },
                 )
             }
         }
 
         rule.onAllNodesWithText("タイヤ脱落")[0].assertIsDisplayed().performClick()
         assertEquals(false, enabled)
+
+        rule.onAllNodesWithText("タイヤ脱落")[1].assertIsEnabled().performClick()
+        assertEquals(1, previewCount)
     }
 
     @Test

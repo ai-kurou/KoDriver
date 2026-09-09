@@ -11,6 +11,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
@@ -54,6 +55,7 @@ internal class LmuWindowsNarratorEventProcessor(
     private var previousTelemetry: LmuWindowsTelemetryData? = null
     private var previousVehicleApproach: LmuWindowsVehicleApproachData? = null
     private var previousVehicleDamage: LmuWindowsVehicleDamageData? = null
+    private var previousTyreDetached: LmuWindowsTyreDetachedData? = null
     private var previousRaceFlags: LmuWindowsRaceFlagsData? = null
     private var previousTyreWear: LmuWindowsTyreWearData? = null
     private var previousRemainingVirtualEnergy: LmuWindowsVirtualEnergyData? = null
@@ -143,6 +145,35 @@ internal class LmuWindowsNarratorEventProcessor(
             }
         }
         previousVehicleDamage = vehicleDamage
+    }
+
+    suspend fun processTyreDetached(
+        tyreDetached: LmuWindowsTyreDetachedData,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: LmuWindowsTelemetryLogContext,
+    ) {
+        val previous = previousTyreDetached
+        events.forEach { event ->
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                saveTelemetryLogSafely(
+                    createdAt = observedAtMs,
+                    readoutItemKey = event.readoutItemKey,
+                    telemetryJson =
+                        buildTelemetryLogJson(
+                            state = logContext.state,
+                            previous = previous,
+                            current = tyreDetached,
+                            settings = logContext.settings,
+                            observedAtMs = observedAtMs,
+                            finalState = logContext.finalState,
+                        ),
+                )
+            }
+        }
+        previousTyreDetached = tyreDetached
     }
 
     suspend fun processRaceFlags(
@@ -394,6 +425,30 @@ private fun buildTelemetryLogJson(
                     },
             ),
         current = TelemetryLogJsonCurrentField(name = "vehicleDamage", json = TelemetryLogJson.encodeToString(current)),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
+
+private fun buildTelemetryLogJson(
+    state: LmuWindowsNarratorState,
+    previous: LmuWindowsTyreDetachedData?,
+    current: LmuWindowsTyreDetachedData,
+    settings: LmuWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: LmuWindowsNarratorState,
+): String =
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousTyreDetached",
+                json =
+                    previous?.let {
+                        TelemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current = TelemetryLogJsonCurrentField(name = "tyreDetached", json = TelemetryLogJson.encodeToString(current)),
         settingsJson = TelemetryLogJson.encodeToString(settings),
         observedAtMs = observedAtMs,
         finalStateJson = TelemetryLogJson.encodeToString(finalState),
