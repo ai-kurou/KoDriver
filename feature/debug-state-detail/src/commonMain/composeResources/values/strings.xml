@@ -105,4 +105,8 @@
     <string name="debug_state_vehicle_damage_title">車両故障 (LMUのみ)</string>
     <string name="debug_state_vehicle_damage_overheating">オーバーヒート: %1$s</string>
     <string name="debug_state_vehicle_damage_part_detached">部品脱落: %1$s</string>
+    <string name="debug_state_vehicle_damage_tyre_detached_fl">タイヤ脱落 FL: %1$s</string>
+    <string name="debug_state_vehicle_damage_tyre_detached_fr">タイヤ脱落 FR: %1$s</string>
+    <string name="debug_state_vehicle_damage_tyre_detached_rl">タイヤ脱落 RL: %1$s</string>
+    <string name="debug_state_vehicle_damage_tyre_detached_rr">タイヤ脱落 RR: %1$s</string>
 </resources>
