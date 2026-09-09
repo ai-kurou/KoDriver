@@ -3,8 +3,6 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
@@ -55,13 +53,13 @@ import kurou.kodriver.data.websocket.WebSocketLmuWindowsFlagRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsPitStatusRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.data.websocket.WebSocketLmuWindowsTyreDetachedRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsTyreWearRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleApproachRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleClassRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleDamageRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVirtualEnergyRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
-import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
@@ -242,16 +240,16 @@ fun androidDataModule(context: Context) =
     }
 
 /**
- * androidDataModule から分離した LMU のピット状態・タイヤ脱落用バインド（LongMethod 対策）。
- * タイヤ脱落は server 側の WebSocket エンドポイントが未実装のため、Android では NoOp。
- * Desktop（共有メモリ経由）でのみ実際に読み上げられる。Android 対応は別Issueで管理する。
+ * androidDataModule から分離した LMU のピット状態・タイヤ脱落状態取得用バインド（LongMethod 対策）。
  */
 private fun androidDataModuleLmuWindowsPitStatus() =
     module {
         single<LmuWindowsPitStatusRepository> {
             WebSocketLmuWindowsPitStatusRepository(serverIpRepository = get(), client = get())
         }
-        single<LmuWindowsTyreDetachedRepository> { NoOpLmuWindowsTyreDetachedRepository() }
+        single<LmuWindowsTyreDetachedRepository> {
+            WebSocketLmuWindowsTyreDetachedRepository(serverIpRepository = get(), client = get())
+        }
     }
 
 /**
@@ -350,8 +348,3 @@ private fun androidDataModuleThresholdPreferences(context: Context) =
             createTelemetryLogRepository(context = context)
         }
     }
-
-/** タイヤ脱落の server WebSocket エンドポイントが実装されるまでの暫定 NoOp 実装。 */
-private class NoOpLmuWindowsTyreDetachedRepository : LmuWindowsTyreDetachedRepository {
-    override fun tyreDetachedStream(): Flow<LmuWindowsTyreDetachedData> = emptyFlow()
-}

@@ -23,6 +23,7 @@ import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
@@ -39,6 +40,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreDetachedRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
@@ -53,6 +55,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
@@ -83,6 +86,7 @@ data class KoDriverServerUseCases(
     val observeAceWindowsVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
     val observeAceWindowsBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
     val observeLmuWindowsPitStatus: ObserveLmuWindowsPitStatusUseCase,
+    val observeLmuWindowsTyreDetached: ObserveLmuWindowsTyreDetachedUseCase,
 )
 
 fun main() {
@@ -130,6 +134,10 @@ fun main() {
                 observeLmuWindowsPitStatus =
                     ObserveLmuWindowsPitStatusUseCase(
                         EmptyLmuWindowsPitStatusRepository,
+                    ),
+                observeLmuWindowsTyreDetached =
+                    ObserveLmuWindowsTyreDetachedUseCase(
+                        EmptyLmuWindowsTyreDetachedRepository,
                     ),
             ),
     ).start(wait = true)
@@ -236,6 +244,10 @@ fun createKoDriverServer(koin: Koin): KoDriverServer =
                     ObserveLmuWindowsPitStatusUseCase(
                         koin.get<LmuWindowsPitStatusRepository>(),
                     ),
+                observeLmuWindowsTyreDetached =
+                    ObserveLmuWindowsTyreDetachedUseCase(
+                        koin.get<LmuWindowsTyreDetachedRepository>(),
+                    ),
             ),
     )
 
@@ -316,6 +328,9 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         telemetryWebSocket(KoDriverServerFeature.PIT_STATUS, Simulator.LmuWindows) {
             useCases.observeLmuWindowsPitStatus()
         }
+        telemetryWebSocket(KoDriverServerFeature.TYRE_DETACHED, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsTyreDetached()
+        }
     }
 }
 
@@ -383,4 +398,8 @@ private object EmptyAceWindowsBestLapTimeRepository : AceWindowsBestLapTimeRepos
 
 private object EmptyLmuWindowsPitStatusRepository : LmuWindowsPitStatusRepository {
     override fun pitStatusStream(): Flow<LmuWindowsPitStatusData> = emptyFlow()
+}
+
+private object EmptyLmuWindowsTyreDetachedRepository : LmuWindowsTyreDetachedRepository {
+    override fun tyreDetachedStream(): Flow<LmuWindowsTyreDetachedData> = emptyFlow()
 }
