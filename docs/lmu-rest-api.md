@@ -2,7 +2,7 @@
 
 Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム内 WebUI が動作する土台として、ローカル REST API サーバーを内蔵している。本ドキュメントは、[`:core:windows-shared-memory`](../core/windows-shared-memory) が読み取る `LMU_Data` 共有メモリ（→ [`docs/lmu-windows-telemetry.md`](lmu-windows-telemetry.md)）には**存在しない情報**（天候予報、Virtual Energy 消費履歴、ピットメニューの状態等）を KoDriver に取り込めるかどうかを検討するための事前調査メモである。
 
-> **調査時点の限界**: 本ドキュメントは TinyPedal 等のソースコード・サードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた**未検証の調査結果**であり、KoDriver 実機での REST API 疎通確認・レスポンス実測は行っていない。実機確認は別タスクで行う。
+> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた**未検証の調査結果**であり、KoDriver 実機での REST API 疎通確認・レスポンス実測は行っていない。実機確認は別タスクで行う。
 
 ---
 
@@ -37,7 +37,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 ## 基本情報
 
 - **ベース URL**: `http://localhost:6397`（既定ポート。IPv4 推奨。古いビルドでは IPv6 の `http://[::1]:6397` へのフォールバックが必要という報告もある）
-- **有効化設定**: 明示的な有効化は不要。ゲーム内 WebUI（ガレージ・観戦画面等）自体がこの REST API サーバー上で動作しており、LMU が起動していれば常時待ち受けている（TinyPedal 側では利用の ON/OFF 設定があるが、これはあくまでクライアント側の取得可否設定であり、サーバー側の有効化ではない）。
+- **有効化設定**: 明示的な有効化は不要。ゲーム内 WebUI（ガレージ・観戦画面等）自体がこの REST API サーバー上で動作しており、LMU が起動していれば常時待ち受けている。
 - **認証**: なし（ローカルの非暗号化 HTTP API）。
 - **HTTP メソッド**: GET/POST/PUT/DELETE が混在するフル REST API。ゲーム内 UI の操作（セットアップ変更・ピットメニュー設定・リプレイ操作等）に使う書き込み系エンドポイントが大半を占める。
 - **API 仕様書**: LMU 実行中に `http://localhost:6397/swagger-schema.json` で OpenAPI 2.0 形式の定義を取得できる（`swagger/index.html` に Swagger UI もある）。ある時点のビルドで **全 179 パス、うち非 GET（書き込み系）が 107** という報告がある（[snipem/go-lmu-api](https://github.com/snipem/go-lmu-api) による）。
@@ -48,7 +48,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ## 判明しているエンドポイント一覧
 
-TinyPedal のソースコード（`tinypedal/adapter/rf2_restapi.py`, `tinypedal/adapter/lmu_restapi.py`）、および `swagger-schema.json` を解析するサードパーティツール [snipem/go-lmu-api](https://github.com/snipem/go-lmu-api) から判明したものを、テレメトリ・アナウンス用途での有用性を軸にカテゴリ別に整理する。**書き込み系（POST/PUT/DELETE）はゲーム内 UI 操作用が大半のため、KoDriver での利用は GET 系に限定する想定。**
+`swagger-schema.json` を解析するサードパーティツール [snipem/go-lmu-api](https://github.com/snipem/go-lmu-api) の解析結果から判明したものを、テレメトリ・アナウンス用途での有用性を軸にカテゴリ別に整理する。**書き込み系（POST/PUT/DELETE）はゲーム内 UI 操作用が大半のため、KoDriver での利用は GET 系に限定する想定。**
 
 ### セッション系（`/rest/sessions/...`）
 
@@ -122,19 +122,19 @@ TinyPedal のソースコード（`tinypedal/adapter/rf2_restapi.py`, `tinypedal
 
 ## `/rest/sessions/weather` のレスポンス構造
 
-TinyPedal の `tinypedal/process/weather.py`（`forecast_rf2()`）から読み取れる範囲では、レスポンスは `PRACTICE` / `QUALIFY` / `RACE` の各セッション種別ごとに、以下 5 つの予報ノードを持つ構造になっている。
+サードパーティ製オーバーレイアプリの実装から読み取れる範囲では、レスポンスは `PRACTICE` / `QUALIFY` / `RACE` の各セッション種別ごとに、以下 5 つの予報ノードを持つ構造になっている。
 
 - `START` / `NODE_25` / `NODE_50` / `NODE_75` / `FINISH`
 
-各ノードは次のフィールドを持つ（TinyPedal 側は `currentValue` を読んでいる）。
+各ノードは次のフィールドを持つ（`currentValue` を参照する実装例が確認できている）。
 
 | フィールド | 概要 |
 |---|---|
 | `WNV_SKY` | 空模様の種別インデックス |
 | `WNV_TEMPERATURE` | 気温（℃） |
-| `WNV_RAIN_CHANCE` | 降雨確率（100 分率。TinyPedal 側で 0.01 倍し 0.0〜1.0 にクランプして扱っている） |
+| `WNV_RAIN_CHANCE` | 降雨確率（100 分率。0.01 倍し 0.0〜1.0 にクランプして扱う実装例が確認できている） |
 
-各ノードの `start` は、セッション長に対する相対位置（0.0〜1.0）として扱われている。**API 自体が「あと何分」というタイマー値を返すわけではない**点に注意。TinyPedal は「セッション長 × start − 経過時間」をクライアント側で計算し、「あと何分で天候が変わるか」を逆算して表示している。
+各ノードの `start` は、セッション長に対する相対位置（0.0〜1.0）として扱われている。**API 自体が「あと何分」というタイマー値を返すわけではない**点に注意。「セッション長 × start − 経過時間」をクライアント側で計算し、「あと何分で天候が変わるか」を逆算して表示する実装例が確認できている。
 
 > 生の JSON 全体（キーの階層構造・単位・欠損時の挙動等）は未確認。実機での `swagger-schema.json` 取得、または実際にゲームを起動して `curl http://localhost:6397/rest/sessions/weather` 相当のリクエストを送るまでは確定情報とは言えない。
 
@@ -166,9 +166,9 @@ TinyPedal の `tinypedal/process/weather.py`（`forecast_rf2()`）から読み�
 
 - 各エンドポイントの正確な JSON レスポンス構造（実機で `http://localhost:6397/swagger-schema.json` を取得するか、[go-lmu-api](https://github.com/snipem/go-lmu-api) の生成コードを確認する必要がある）。
 - `/rest/sessions/weather` の全体構造（セッション種別のキー名、ノード配列かオブジェクトか等）・単位の確定。
-- TinyPedal の REST API 呼び出し実装本体（リクエスト間隔、タイムアウト、エラー時のフォールバック処理）の詳細。
+- サードパーティ製オーバーレイアプリの REST API 呼び出し実装本体（リクエスト間隔、タイムアウト、エラー時のフォールバック処理）の詳細。
 - CrewChief の実装（C#）における書き込み系エンドポイントの具体的なリクエストボディ形式。
-- rFactor2（非 LMU）と LMU で REST API 仕様がどこまで共通か（TinyPedal 側で `rf2_restapi.py` と `lmu_restapi.py` に分離されていることから差異があることは分かっているが、詳細な差分は未整理）。
+- rFactor2（非 LMU）と LMU で REST API 仕様がどこまで共通か（rF2 用と LMU 用でアダプタ実装が分離されている事例があることから差異があることは分かっているが、詳細な差分は未整理）。
 
 ---
 
@@ -176,11 +176,7 @@ TinyPedal の `tinypedal/process/weather.py`（`forecast_rf2()`）から読み�
 
 | リソース | 概要 |
 |---|---|
-| [TinyPedal/TinyPedal `adapter/rf2_restapi.py`](https://github.com/TinyPedal/TinyPedal/blob/master/tinypedal/adapter/rf2_restapi.py) | rF2/LMU 共通の REST API 呼び出し定義 |
-| [TinyPedal/TinyPedal `adapter/lmu_restapi.py`](https://github.com/TinyPedal/TinyPedal/blob/master/tinypedal/adapter/lmu_restapi.py) | LMU 固有の REST API 拡張 |
-| [TinyPedal/TinyPedal `process/weather.py`](https://github.com/TinyPedal/TinyPedal/blob/master/tinypedal/process/weather.py) | 天候予報レスポンスの解析・残り時間の逆算ロジック |
 | [snipem/go-lmu-api](https://github.com/snipem/go-lmu-api) | `swagger-schema.json` から Go 構造体を推論生成するサードパーティツール。全エンドポイント一覧の把握に利用 |
 | [Alexander-Gro/race-engineer `docs/03-LMU-INTEGRATION.md`](https://github.com/Alexander-Gro/race-engineer/blob/main/docs/03-LMU-INTEGRATION.md) | 共有メモリと REST API の使い分け・落とし穴に関する実運用知見 |
 | [thecrewchief.org フォーラム](https://thecrewchief.org/archive/index.php/t-38.html) | CrewChief における LMU REST API 利用に関する言及 |
 | [news.racecontrol.gg の関連記事](https://news.racecontrol.gg/general-tips/le-mans-ultimate-working-with-crew-chief/) | CrewChief × LMU 連携の解説記事 |
-| `docs/tinypedal-guide.md` | TinyPedal 側の REST API 設定（`Enable RestAPI Access` 等）に関する KoDriver 内の既存ドキュメント |
