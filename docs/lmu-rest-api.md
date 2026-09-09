@@ -2,7 +2,7 @@
 
 Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム内 WebUI が動作する土台として、ローカル REST API サーバーを内蔵している。本ドキュメントは、[`:core:windows-shared-memory`](../core/windows-shared-memory) が読み取る `LMU_Data` 共有メモリ（→ [`docs/lmu-windows-telemetry.md`](lmu-windows-telemetry.md)）には**存在しない情報**（天候予報、Virtual Energy 消費履歴、ピットメニューの状態等）を KoDriver に取り込めるかどうかを検討するための事前調査メモである。
 
-> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` / `/rest/watch/standings` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、該当セクションに反映済み。加えて `/swagger-schema.json` に載っている **GET 系 79 パスのうち、パス引数が必須のものと副作用がありそうなもの（後述）を除く 65 パスすべて**を実機で叩き、疎通確認・レスポンス概要の把握を行った（→ [その他の実測エンドポイント](#その他の実測エンドポイント) / [GET エンドポイント全数実測結果](#get-エンドポイント全数実測結果)）。非 GET（書き込み系）107 パスは、KoDriver が読み取り専用アプリであり意図せずゲーム状態を変更するリスクを避けるため、本調査では意図的に実行していない。
+> **調査時点の限界**: 本ドキュメントはサードパーティのリバースエンジニアリング成果物・コミュニティの一次情報を基にまとめた調査結果である。`/rest/sessions/weather` / `/rest/strategy/usage` / `/rest/garage/UIScreen/RepairAndRefuel` / `/rest/watch/standings` については実機（Windows 機の `localhost:6397`）でのレスポンス実測を行い、該当セクションに反映済み。加えて `/swagger-schema.json` に載っている **GET 系 79 パスのうち、パス引数が必須のものと副作用がありそうなもの（後述）を除く 65 パスすべて**を実機で叩き、疎通確認・レスポンス概要の把握を行った（→ [その他の実測エンドポイント](#その他の実測エンドポイント) / [GET エンドポイント全数実測結果](#get-エンドポイント全数実測結果)）。非 GET（書き込み系）108 パス（107 エンドポイント、`/rest/garage/setup` のみ POST/PUT の 2 メソッド）は、KoDriver が読み取り専用アプリであり意図せずゲーム状態を変更するリスクを避けるため、**実機での呼び出しは行わず** `swagger-schema.json` の定義情報のみを整理した（→ [非 GET（書き込み系）エンドポイント一覧](#非-get書き込み系エンドポイント一覧)）。調査の過程で実機呼び出しを試みたところ、ブラウザの CORS 制約によりリクエスト自体がほぼ全て失敗（`Failed to fetch`）した直後に LMU 本体がクラッシュする事象が発生したため、以降は安全のため書き込み系エンドポイントの実機実行を打ち切っている（因果関係は未特定）。
 
 ---
 
@@ -17,10 +17,11 @@ Le Mans Ultimate（LMU）はガレージ画面・観戦画面などのゲーム�
 7. [`/rest/watch/standings` のレスポンス構造](#restwatchstandings-のレスポンス構造)
 8. [その他の実測エンドポイント](#その他の実測エンドポイント)
 9. [GET エンドポイント全数実測結果](#get-エンドポイント全数実測結果)
-10. [既知の注意点・落とし穴](#既知の注意点落とし穴)
-11. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
-12. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
-13. [参考リポジトリ・情報源](#参考リポジトリ情報源)
+10. [非 GET（書き込み系）エンドポイント一覧](#非-get書き込み系エンドポイント一覧)
+11. [既知の注意点・落とし穴](#既知の注意点落とし穴)
+12. [KoDriver への組み込みを検討する場合の論点](#kodriver-への組み込みを検討する場合の論点)
+13. [未確認・追加調査が必要な点](#未確認追加調査が必要な点)
+14. [参考リポジトリ・情報源](#参考リポジトリ情報源)
 
 ---
 
@@ -469,6 +470,167 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ---
 
+## 非 GET（書き込み系）エンドポイント一覧
+
+> **本セクションは実機での呼び出し結果ではなく、`swagger-schema.json` の定義（パス・メソッド・パラメータ）のみを整理したものである。** 実機呼び出しを試みた際に LMU がクラッシュする事象が発生したため（詳細は上記の限界の記載を参照）、書き込み系エンドポイントは意図的に**実行していない**。KoDriver は読み取り専用アプリであり、これらのエンドポイントを実装で使う予定はないが、REST API の全体像を把握するための参考情報として一覧化する。
+
+`swagger-schema.json` の非 GET（POST/PUT/DELETE）は 107 パス・108 メソッド定義（`/rest/garage/setup` のみ POST と PUT の 2 定義を持つ）。カテゴリ別に、パス・メソッド・パスパラメータ／ボディの有無と、パス名・既存の GET 系調査から推測される用途をまとめる。**「推測用途」はパス名からの推測であり実機検証はしていない点に注意。**
+
+### `/navigation/...`
+
+| パス | メソッド | パラメータ | 推測用途 |
+|---|---|---|---|
+| `/navigation/action/{action}` | POST | パス: `action` | UI ナビゲーションアクションの実行（戻る等） |
+| `/navigation/openLiveryEditor` | POST | なし | リバリーエディタ画面を開く |
+| `/navigation/sendToLog` | POST | ボディ | ゲーム内ログへの書き込み |
+| `/navigation/setReferrer` | POST | ボディ | `/navigation/getReferrer` が返す参照元情報の設定 |
+
+### `/rest/cancelSteamAuth` `/rest/chat/`
+
+| パス | メソッド | パラメータ | 推測用途 |
+|---|---|---|---|
+| `/rest/cancelSteamAuth` | POST | なし | Steam 認証フローのキャンセル |
+| `/rest/chat/` | POST | ボディ | チャットメッセージ送信 |
+
+### `/rest/garage/...`
+
+| パス | メソッド | パラメータ | 推測用途 |
+|---|---|---|---|
+| `/rest/garage/` | PUT | ボディ | ガレージ状態の一括更新 |
+| `/rest/garage/(VM_.*)` | POST | パス: `mod`（正規表現）、ボディ | `VM_*`（車両全体セットアップ項目）の値変更。CarSetupOverview 等の UI 操作用 |
+| `/rest/garage/(WM_.*)-(.*)` | POST | パス: `mod`/`wheel`（正規表現）、ボディ | `WM_*`（4 輪個別項目）の値変更（例: タイヤ圧・キャンバー） |
+| `/rest/garage/PitMenu/loadPitMenu` | POST | なし | ピットメニュー状態の読み込み |
+| `/rest/garage/SetCurrentVehicle` | POST | ボディ | 現在選択中の車両の設定 |
+| `/rest/garage/SetPreviewSaveFile` | POST | ボディ | プレビュー用セーブファイルの指定 |
+| `/rest/garage/drive` | POST | なし | ガレージから走行を開始する（コースイン） |
+| `/rest/garage/refreshSetups` | POST | ボディ | 保存済みセットアップ一覧の再読み込み |
+| `/rest/garage/setup` | POST | ボディ | セットアップの新規保存 |
+| `/rest/garage/setup` | PUT | ボディ | セットアップの上書き保存 |
+| `/rest/garage/setup/(.*)` | **DELETE** | パス: `setup`（正規表現） | 指定したセットアップの削除（**恒久的なデータ削除に該当するため実行対象外**） |
+| `/rest/garage/setup/compare` | POST | ボディ | セットアップ比較 |
+| `/rest/garage/setup/default` | POST | なし | セットアップを既定値にリセット |
+| `/rest/garage/setup/notes` | POST | ボディ | セットアップのメモ保存 |
+| `/rest/garage/showOnlyRelevantSetups` | POST | ボディ | 「関連セットアップのみ表示」フラグの変更（GET 版と対） |
+| `/rest/garage/toRaceMenu` | POST | なし | レースメニューへ遷移 |
+
+### `/rest/hud/...` `/rest/liveryeditor/...` `/rest/materialeditor/...`
+
+| パス | メソッド | パラメータ | 推測用途 |
+|---|---|---|---|
+| `/rest/hud/toggle/{component}` | POST | パス: `component` | HUD 個別要素（`speedo`/`chat`/`mfd`/`timing`/`trackMap` 等）の表示切替 |
+| `/rest/hud/toggleAllComponents/{visible}` | POST | パス: `visible`(bool) | HUD 全要素の表示・非表示一括切替 |
+| `/rest/liveryeditor/setCamera/{camera}` | POST | パス: `camera` | リバリーエディタのカメラ切替 |
+| `/rest/liveryeditor/showRegionTexture/{active}` | POST | パス: `active`(bool) | リバリーエディタの領域テクスチャ表示切替 |
+| `/rest/liveryeditor/submitCustomSkin` | POST | なし | カスタムスキンの適用申請 |
+| `/rest/materialeditor/liveryeditor/reloadCustomSkin` | POST | なし | カスタムスキンの再読み込み |
+| `/rest/materialeditor/{materialGuid}` | PUT | パス: `materialGuid`、ボディ | マテリアル定義の更新 |
+| `/rest/materialeditor/{materialGuid}/persist` | POST | パス: `materialGuid`、ボディ | マテリアル定義の永続化保存 |
+| `/rest/materialeditor/{materialGuid}/shader` | PUT | パス: `materialGuid`、ボディ | マテリアルのシェーダー設定更新 |
+
+### `/rest/multiplayer/...`
+
+| パス | メソッド | パラメータ | 推測用途 |
+|---|---|---|---|
+| `/rest/multiplayer/cancelJoinRequest` | POST | なし | マルチプレイヤー参加リクエストのキャンセル |
+| `/rest/multiplayer/exitVehicle` | POST | なし | 車両からの降車（観戦モードへの移行等） |
+| `/rest/multiplayer/takeControlOfVehicle` | POST | なし | 車両の操作権を取得 |
+
+### `/rest/options/...`
+
+| パス | メソッド | パラメータ | 推測用途 |
+|---|---|---|---|
+| `/rest/options/ApplyVideoOptions` | POST | なし | 変更したビデオ設定の適用 |
+| `/rest/options/assign/cancel` | POST | なし | 入力デバイス割り当てのキャンセル |
+| `/rest/options/assign/confirm` | POST | なし | 入力デバイス割り当ての確定 |
+| `/rest/options/float` | POST | ボディ | float 型オプション値の設定（汎用） |
+| `/rest/options/graphics/confirmgraphics` | POST | なし | グラフィック設定変更の確定 |
+| `/rest/options/graphics/resetgraphics` | POST | なし | グラフィック設定を既定値にリセット |
+| `/rest/options/long` | POST | ボディ | 整数型オプション値の設定（汎用） |
+| `/rest/options/setConfigControl` | POST | ボディ | キー/ボタン割り当ての設定 |
+| `/rest/options/setControls` | POST | ボディ | コントロール設定全般の保存 |
+| `/rest/options/setHapticsDevice` | POST | クエリ: `Name` | ハプティクスデバイスの選択 |
+| `/rest/options/setInMenuGfxEffects` | PUT | ボディ | メニュー内グラフィックエフェクトの設定 |
+| `/rest/options/setInputAxisProperties` | POST | ボディ | 入力軸（ステアリング等）のプロパティ設定 |
+| `/rest/options/setSoundDevice` | POST | クエリ: `Name` | サウンドデバイスの選択 |
+| `/rest/options/unsetConfigControl` | POST | ボディ | キー/ボタン割り当ての解除 |
+
+### `/rest/profile/...` `/rest/race/...` `/rest/replay/...`
+
+| パス | メソッド | パラメータ | 推測用途 |
+|---|---|---|---|
+| `/rest/profile/DLC/viewDLC` | POST | なし | DLC 購入ページ（Steam ストア等）を開く |
+| `/rest/profile/profileInfo/setProfileInfo` | POST | ボディ | プロフィール情報（表示名・国籍等）の更新 |
+| `/rest/race/startRace` | POST | なし | レース（セッション）の開始 |
+| `/rest/race/track` | POST | ボディ | コース情報の登録・更新 |
+| `/rest/replay/CameraController/setCamera` | POST | ボディ | 観戦カメラの切替 |
+| `/rest/replay/toggleactive` | POST | なし | リプレイコントローラーの有効/無効切替 |
+
+### `/rest/sessions/...`
+
+| パス | メソッド | パラメータ | 推測用途 |
+|---|---|---|---|
+| `/rest/sessions/Championship/getCurrentChampTemplate` | POST | なし | 現在のチャンピオンシップテンプレート取得 |
+| `/rest/sessions/Championship/getGrid` | POST | なし | チャンピオンシップのグリッド取得 |
+| `/rest/sessions/Championship/setCurrentChampionshipTemplate` | POST | ボディ | チャンピオンシップテンプレートの設定 |
+| `/rest/sessions/Coop/setCoopDriverID` | POST | ボディ | 協力プレイのドライバー ID 設定 |
+| `/rest/sessions/FFtoRaceEnd` | POST | なし | セッションをレース終了までファストフォワード |
+| `/rest/sessions/MultiStintRace/Drive` | POST | なし | マルチスティントレースでの走行開始 |
+| `/rest/sessions/MultiStintRace/UnPause` | POST | なし | マルチスティントレースの一時停止解除 |
+| `/rest/sessions/MultiStintRace/setDriverInfo` | POST | ボディ | マルチスティントのドライバー情報設定 |
+| `/rest/sessions/SaveLoad/compressSaveFile` | POST | なし | セーブファイルの圧縮 |
+| `/rest/sessions/SaveLoad/decompressSaveFile` | POST | なし | セーブファイルの展開 |
+| `/rest/sessions/SaveLoad/deleteSaveFile` | POST | なし | セーブファイルの削除（**恒久的なデータ削除に該当するため実行対象外**） |
+| `/rest/sessions/SaveLoad/doesBackupExistForThisSession` | POST | なし | 現セッションのバックアップ存在確認 |
+| `/rest/sessions/SaveLoad/generateSaveFileFromSessionPreset` | POST | ボディ | セッションプリセットからのセーブファイル生成 |
+| `/rest/sessions/SaveLoad/getEveryLocalSave` | POST | なし | ローカルセーブファイル一覧取得 |
+| `/rest/sessions/SaveLoad/getNumSaves` | POST | なし | セーブファイル数取得 |
+| `/rest/sessions/SaveLoad/isSaveNameValid` | POST | ボディ | セーブ名のバリデーション |
+| `/rest/sessions/SaveLoad/loadGame` | POST | なし | セーブデータのロード |
+| `/rest/sessions/SaveLoad/saveGame` | POST | なし | 現在の状態をセーブ |
+| `/rest/sessions/SaveLoad/saveLastBackup` | POST | なし | 直近バックアップの保存 |
+| `/rest/sessions/SaveLoad/saveTemplateToFile` | POST | なし | テンプレートのファイル保存 |
+| `/rest/sessions/SessionPresets/applyPreset` | POST | なし | セッションプリセットの適用 |
+| `/rest/sessions/SessionPresets/getDefaultPresetForTrack` | POST | なし | コースの既定プリセット取得 |
+| `/rest/sessions/SessionPresets/requestPreset` | POST | なし | プリセットのリクエスト |
+| `/rest/sessions/ai/TakeDriverControl` | POST | なし | AI にドライバー操作を引き渡す |
+| `/rest/sessions/ai/forcePlayerVehAiPit` | POST | なし | プレイヤー車両を強制的に AI 操作でピットへ |
+| `/rest/sessions/clearEventNotification` | POST | ボディ | イベント通知のクリア |
+| `/rest/sessions/continueGame` | POST | なし | ゲームの続行（ポーズ解除等） |
+| `/rest/sessions/getAllAvailableVehicles` | POST | ボディ | 選択可能な車両一覧取得（フィルタ条件付き） |
+| `/rest/sessions/notifyInPauseSettings` | POST | ボディ | ポーズ中設定変更の通知 |
+| `/rest/sessions/playVOTrigger` | POST | なし | ボイスオーバー（アナウンス音声）トリガーの再生 |
+| `/rest/sessions/playerSettings/backupPlayerSettings` | POST | なし | プレイヤー設定のバックアップ |
+| `/rest/sessions/playerSettings/restorePlayerSettingsFromBackup` | POST | なし | バックアップからのプレイヤー設定復元 |
+| `/rest/sessions/raceControlVerification` | POST | なし | レースコントロールの検証 |
+| `/rest/sessions/restartStintAvailable` | POST | なし | スティント再開始可否フラグの設定（GET 版と対） |
+| `/rest/sessions/resumePitStop` | POST | なし | ピットストップ処理の再開 |
+| `/rest/sessions/returnToMonitor` | POST | なし | 観戦モニター画面へ戻る |
+| `/rest/sessions/saveload/getSaveFileJSONFromFilename` | POST | ボディ | 指定ファイル名のセーブデータ JSON 取得 |
+| `/rest/sessions/setEventNotification` | POST | ボディ | イベント通知の設定 |
+| `/rest/sessions/setHudOnWatchScreen` | POST | ボディ | 観戦画面での HUD 表示設定 |
+| `/rest/sessions/settings` | POST | ボディ | セッション設定（`SESSSET_*`、GET `/rest/sessions/?` 相当）の一括更新 |
+| `/rest/sessions/weather/{session}/{node}/{setting}` | POST | パス: `session`/`node`/`setting`、ボディ | 天候予報ノードの個別設定値変更（プラクティス UI 操作用） |
+| `/rest/sessions/weather/{session}/{preset}` | POST | パス: `session`/`preset` | 天候プリセットの適用 |
+| `/rest/sessions/{session}/sessions` | POST | パス: `session` | セッション構成（プラクティス/予選/レース数等）の変更 |
+
+### `/rest/start/...` `/rest/watch/...` `/webdata/...`
+
+| パス | メソッド | パラメータ | 推測用途 |
+|---|---|---|---|
+| `/rest/start/openExternalBrowserToURL` | POST | ボディ | 既定の外部ブラウザで指定 URL を開く |
+| `/rest/watch/focus/{cameraType}/{trackSideGroup}/{shouldAdvance}` | PUT | パス: `cameraType`/`trackSideGroup`(int)/`shouldAdvance`(bool) | 観戦カメラのフォーカス対象を条件指定で変更 |
+| `/rest/watch/focus/{slotid}` | PUT | パス: `slotid`(int) | 観戦フォーカス対象をスロット ID で指定（GET `/rest/watch/focus` と対） |
+| `/rest/watch/focusBackward` | PUT | なし | 観戦フォーカスを前の車両へ |
+| `/rest/watch/focusForward` | PUT | なし | 観戦フォーカスを次の車両へ |
+| `/rest/watch/replay/setCurrentMetadata` | PUT | ボディ | リプレイのメタデータ設定 |
+| `/rest/watch/replay/setReplayFolder` | PUT | ボディ | リプレイ保存先フォルダの設定 |
+| `/rest/watch/replay/setReplayUIVisible` | POST | ボディ | リプレイ UI の表示切替 |
+| `/rest/watch/replayCommand/{command}` | PUT | パス: `command` | リプレイ操作コマンド（再生/一時停止等）の実行 |
+| `/rest/watch/replaytime/{time}` | PUT | パス: `time`(number) | リプレイ再生位置（時刻）の指定 |
+| `/webdata/.*` | POST | ワイルドカード | 汎用 Web データエンドポイント（用途不明） |
+
+---
+
 ## 既知の注意点・落とし穴
 
 [race-engineer プロジェクトの統合ドキュメント](https://github.com/Alexander-Gro/race-engineer/blob/main/docs/03-LMU-INTEGRATION.md) が報告している実運用上の注意点。
@@ -476,6 +638,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 - **`getPlayerGarageData` はフリーズしたスナップショット**: 走行中にドライバーがコックピット内で TC/ABS 等のアシストレベルを変更しても、このエンドポイントの値はライブ更新されない（数分間走行しても値が変わらないことを確認済みとの報告）。ライブのアシストレベルは REST API からは外部的に読み取れない可能性が高い。
 - **文字化けの原因は `Content-Type` の `charset` 未指定**: 実機で確認したところ、GET エンドポイントのレスポンスはいずれも `Content-Type: text/plain`（`charset` パラメータなし）で返る。ボディの実バイト列は UTF-8 だが、`charset` 指定がないため、ブラウザ等クライアント側のデフォルトエンコーディング（Latin-1/windows-1252 相当）で解釈すると `WNV_SKY` の `"晴天"` が `"æ™´å¤©"` のように文字化けする。**レスポンスボディを明示的に UTF-8 としてデコードすれば正しく復元できる**ことを確認済み（例: ブラウザの `fetch` で `arrayBuffer()` を取得し `new TextDecoder('utf-8').decode(...)` する。素朴に `res.text()` や `String(bytes)` に頼らず、UTF-8 デコーダを明示的に使う実装が必要）。
 - **書き込み系は使わない方針が無難**: CrewChief はピットメニュー設定（燃料/リペア選択）に POST 系エンドポイントを使っているとの言及があるが、KoDriver は読み取り専用アプリであるため、意図せずゲーム状態を変更しないよう **GET 専用の利用に限定すべき**。
+- **書き込み系エンドポイントの実機呼び出し試行時に LMU がクラッシュした事例あり**: 本調査で非 GET 系エンドポイント（[一覧](#非-get書き込み系エンドポイント一覧)参照）をブラウザの `fetch` で呼び出そうとしたところ、CORS 制約によりリクエストの大半が `TypeError: Failed to fetch` でブロックされたにもかかわらず、その直後に LMU 本体がクラッシュする事象が発生した。リクエストが実際に LMU へ到達していたかどうかは確認できておらず、書き込み系の実行との因果関係は特定できていないが、**書き込み系エンドポイントを不用意に呼び出すことに対しては、通常のリバースエンジニアリング一般のリスクに加えてアプリケーションクラッシュの実例が伴った**という事実として記録しておく。KoDriver の実装で書き込み系エンドポイントを利用することは想定していないが、追加調査を行う場合は保存中のデータがない状態で行う、事前にセーブする等の対策を推奨する。
 - **ポーリング頻度**: 1〜5Hz 程度でキャッシュしながらポーリングすることが推奨されている（ゲーム側・API サーバーへの負荷軽減のため）。共有メモリ（16ms/60fps 相当）と比べてはるかに低頻度が前提。
 - **バージョン依存**: 公式ドキュメントがなく非公式リバースエンジニアリングに頼っているため、LMU のアップデートでエンドポイントやレスポンス構造が変わる可能性がある（v1.3.3 前後で挙動が変化したという報告あり）。
 
@@ -494,6 +657,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ## 未確認・追加調査が必要な点
 
+- **[未着手]** 非 GET（書き込み系）108 メソッド定義の実機での実際のレスポンス・挙動: 実機呼び出しの試行中に LMU がクラッシュする事象が発生したため、実行を打ち切った。[「非 GET（書き込み系）エンドポイント一覧」](#非-get書き込み系エンドポイント一覧)は `swagger-schema.json` のパス・パラメータ定義とパス名からの用途推測のみであり、実際のリクエストボディの形式・レスポンス形式・副作用は未検証。特にゲーム状態を変更する系統（`/rest/garage/(VM_.*)` 等のセットアップ変更、`/rest/sessions/settings`、`/rest/race/startRace` 等）を安全に検証するには、専用の検証環境（本番の走行セッションとは別のセーブデータ等）を用意した上で改めて調査する必要がある。
 - **[解決]** `WNV_SKY`・ピットメニューの選択肢テキスト等が日本語ロケールで文字化けする原因: レスポンスの `Content-Type: text/plain` に `charset` パラメータが付与されておらず、実バイト列（UTF-8）がクライアント側でデフォルトエンコーディング（Latin-1 相当）として解釈されるためと判明。UTF-8 として明示的にデコードすれば正しい文字列を取得できる（→ [既知の注意点・落とし穴](#既知の注意点落とし穴)）。
 - **[解決]** `swagger-schema.json` の全パス数・非 GET 数: 実機取得で全 179 パス・GET 79・非 GET を含むパス 107 と確認（→ [基本情報](#基本情報)）。
 - **[部分解決]** `sessionTime.timeOfDay` の基準: `/rest/sessions/GetGameState` の `timeOfDay` と同一系列の値であることを確認した（→ [その他の実測エンドポイント](#その他の実測エンドポイント)）。一方で `/rest/watch/sessionInfo` の `currentEventTime`/`startEventTime`/`maxTime` は明らかに異なるスケール（数百〜数千秒オーダー）の「セッション経過時間系」の値であり、両者の関係・`timeOfDay` が「1 日 86400 秒に対する経過秒数」かどうかは未確認のまま。
