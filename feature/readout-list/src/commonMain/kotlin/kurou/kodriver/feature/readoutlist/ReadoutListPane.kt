@@ -380,10 +380,7 @@ private fun ReadoutListItemCard(
                             .fillMaxWidth()
                             .heightIn(min = 48.dp)
                             .semantics { contentDescription = itemName }
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() },
-                            ) {
+                            .clickable {
                                 haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                 onItemClick(item)
                             },
@@ -437,10 +434,7 @@ private fun ReadoutListItemCard(
                     Modifier
                         .size(width = 24.dp, height = 48.dp)
                         .testTag("readoutListChevronTouchTarget:${item.value}")
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                        ) {
+                        .clickable {
                             onItemClick(item)
                         },
             )
@@ -485,8 +479,6 @@ private fun ReadoutListBottomChip(
                 ).testTag(testTag)
                 .clickable(
                     enabled = enabled,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
                     role = Role.Checkbox,
                 ) {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
