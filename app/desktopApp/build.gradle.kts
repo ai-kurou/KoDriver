@@ -11,6 +11,7 @@ dependencies {
     implementation(projects.app.shared)
     implementation(projects.core.data)
     implementation(projects.core.lmuWindowsData)
+    implementation(projects.core.lmuWindowsRestApiData)
     implementation(projects.core.gt7Ps5Data)
     implementation(projects.core.aceWindowsData)
     implementation(projects.core.deviceVolumeData)

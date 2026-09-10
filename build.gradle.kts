@@ -521,6 +521,7 @@ dependencies {
     kover(project(":core:domain"))
     kover(project(":core:data"))
     kover(project(":core:lmu-windows-data"))
+    kover(project(":core:lmu-windows-rest-api-data"))
     kover(project(":core:gt7-ps5-data"))
     kover(project(":core:ace-windows-data"))
     kover(project(":core:device-volume-data"))
