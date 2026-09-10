@@ -53,10 +53,6 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.LmuWindows.Rain.Root,
             ReadoutItemKey.fromValue("lmu_windows_rain"),
         )
-        assertEquals(
-            ReadoutItemKey.LmuWindows.Rain.Start,
-            ReadoutItemKey.fromValue("lmu_windows_rain_start"),
-        )
         assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
         assertEquals(
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,

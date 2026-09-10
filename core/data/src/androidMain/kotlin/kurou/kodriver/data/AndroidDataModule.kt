@@ -27,7 +27,6 @@ import kurou.kodriver.data.preferences.createLmuWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsPitTimingPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsRainPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsTyreTemperaturePreferencesRepository
@@ -91,7 +90,6 @@ import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsRainPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -236,7 +234,6 @@ fun androidDataModule(context: Context) =
         includes(androidDataModuleThresholdPreferences(context))
         includes(androidDataModuleLmuWindowsPitStatus())
         includes(androidDataModuleAppSettings(context))
-        includes(androidDataModuleLmuWindowsRain(context))
     }
 
 /**
@@ -261,16 +258,6 @@ private fun androidDataModuleNetwork() =
         single<ServerVersionRepository> { HttpServerVersionRepository() }
         single<AppUpdateRepository> { GitHubAppReleaseRepository() }
         single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
-    }
-
-/**
- * androidDataModule から分離した LMU の降雨アナウンス設定バインド（LongMethod 対策）。
- */
-private fun androidDataModuleLmuWindowsRain(context: Context) =
-    module {
-        single<LmuWindowsRainPreferencesRepository> {
-            createLmuWindowsRainPreferencesRepository(context.filesDir.absolutePath)
-        }
     }
 
 /**

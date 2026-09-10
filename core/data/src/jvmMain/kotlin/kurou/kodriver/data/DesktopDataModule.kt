@@ -21,7 +21,6 @@ import kurou.kodriver.data.preferences.createLmuWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsPitTimingPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsRainPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsTyreTemperaturePreferencesRepository
@@ -61,7 +60,6 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsRainPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -122,9 +120,6 @@ val desktopDataModule =
         }
         single<LmuWindowsFlagPreferencesRepository> {
             createLmuWindowsFlagPreferencesRepository(directory = kodriverDirectory)
-        }
-        single<LmuWindowsRainPreferencesRepository> {
-            createLmuWindowsRainPreferencesRepository(directory = kodriverDirectory)
         }
         single<LmuWindowsVehicleApproachPreferencesRepository> {
             createLmuWindowsVehicleApproachPreferencesRepository(directory = kodriverDirectory)
