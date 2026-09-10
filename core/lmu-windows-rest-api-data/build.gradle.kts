@@ -4,6 +4,16 @@ plugins {
 }
 
 dependencies {
+    implementation(projects.core.domain)
+    implementation(platform(libs.ktor.bom))
+    implementation(libs.ktor.clientCore)
+    implementation(libs.ktor.clientOkhttp)
+    implementation(platform(libs.kotlinx.coroutines.bom))
+    implementation(libs.kotlinx.coroutinesCore)
+    implementation(libs.kotlinx.datetime)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)
     testImplementation(platform(libs.kotlinx.coroutines.bom))
