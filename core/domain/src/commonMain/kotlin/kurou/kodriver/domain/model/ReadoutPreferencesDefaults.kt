@@ -14,6 +14,7 @@ val READOUT_ENABLED_STATE_DEFAULT: Map<Simulator, Map<ReadoutItemKey, Boolean>> 
                 ReadoutItemKey.LmuWindows.PitTiming.Root to true,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
                 ReadoutItemKey.LmuWindows.TyreWear.Root to false,
+                ReadoutItemKey.LmuWindows.Rain.Root to false,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
             ),
         Simulator.Gt7Ps5 to

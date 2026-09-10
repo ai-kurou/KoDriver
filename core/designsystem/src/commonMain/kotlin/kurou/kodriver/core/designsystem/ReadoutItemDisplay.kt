@@ -18,6 +18,8 @@ import kurou.kodriver.core.designsystem.generated.resources.readout_item_my_best
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_overheat
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_part_detached
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_pit_timing
+import kurou.kodriver.core.designsystem.generated.resources.readout_item_rain
+import kurou.kodriver.core.designsystem.generated.resources.readout_item_rain_start
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_red_flag
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_remaining_fuel
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_remaining_fuel_laps
@@ -118,6 +120,14 @@ private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
         else -> null
     }
 
+@Composable
+private fun rainDisplayName(readoutItemKeyValue: String): String? =
+    when (readoutItemKeyValue) {
+        "lmu_windows_rain" -> stringResource(Res.string.readout_item_rain)
+        "lmu_windows_rain_start" -> stringResource(Res.string.readout_item_rain_start)
+        else -> null
+    }
+
 /** LMU・GT7・ACE をまたいで存在する自己ベストラップ・燃料関連の項目。 */
 @Composable
 private fun bestLapAndFuelDisplayName(readoutItemKeyValue: String): String? =
@@ -150,5 +160,6 @@ fun readoutItemDisplayName(readoutItemKeyValue: String): String =
         ?: vehicleDamageDisplayName(readoutItemKeyValue)
         ?: tyreTemperatureDisplayName(readoutItemKeyValue)
         ?: lmuStandaloneDisplayName(readoutItemKeyValue)
+        ?: rainDisplayName(readoutItemKeyValue)
         ?: bestLapAndFuelDisplayName(readoutItemKeyValue)
         ?: error("未対応のreadoutItemKeyValue: $readoutItemKeyValue")

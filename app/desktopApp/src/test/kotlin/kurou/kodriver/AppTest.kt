@@ -125,6 +125,8 @@ class AppTest {
             "タイヤ摩耗",
             "タイヤの摩耗率が設定した閾値以上になった場合に音声でお知らせします。いずれかのタイヤが条件を満たすと読み上げ、全タイヤが閾値未満に戻るまでは再度読み上げません。",
         )
+        scrollToItem("降雨")
+        clickItemAndVerifyDescription("降雨", "降雨の開始・終了を音声でお知らせします。")
         scrollToItem("車両故障")
         clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
         scrollToItem("自己ベストラップ")
