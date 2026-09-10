@@ -27,6 +27,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsPitTimingPreferencesRepository
+import kurou.kodriver.data.preferences.createLmuWindowsRainPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsTyreTemperaturePreferencesRepository
@@ -90,6 +91,7 @@ import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsRainPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -229,14 +231,12 @@ fun androidDataModule(context: Context) =
         single<ConsoleAddressPreferencesRepository> {
             createConsoleAddressPreferencesRepository(context.filesDir.absolutePath)
         }
-        // ネットワーク（KoDriver サーバーのバージョン取得 / GitHub リリース確認）
-        single<ServerVersionRepository> { HttpServerVersionRepository() }
-        single<AppUpdateRepository> { GitHubAppReleaseRepository() }
-        single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
+        includes(androidDataModuleNetwork())
         includes(androidDataModuleAceWindows())
         includes(androidDataModuleThresholdPreferences(context))
         includes(androidDataModuleLmuWindowsPitStatus())
         includes(androidDataModuleAppSettings(context))
+        includes(androidDataModuleLmuWindowsRain(context))
     }
 
 /**
@@ -249,6 +249,27 @@ private fun androidDataModuleLmuWindowsPitStatus() =
         }
         single<LmuWindowsTyreDetachedRepository> {
             WebSocketLmuWindowsTyreDetachedRepository(serverIpRepository = get(), client = get())
+        }
+    }
+
+/**
+ * androidDataModule から分離したネットワーク系バインド
+ * （KoDriver サーバーのバージョン取得 / GitHub リリース確認 / フィードバック送信。LongMethod 対策）。
+ */
+private fun androidDataModuleNetwork() =
+    module {
+        single<ServerVersionRepository> { HttpServerVersionRepository() }
+        single<AppUpdateRepository> { GitHubAppReleaseRepository() }
+        single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
+    }
+
+/**
+ * androidDataModule から分離した LMU の降雨アナウンス設定バインド（LongMethod 対策）。
+ */
+private fun androidDataModuleLmuWindowsRain(context: Context) =
+    module {
+        single<LmuWindowsRainPreferencesRepository> {
+            createLmuWindowsRainPreferencesRepository(context.filesDir.absolutePath)
         }
     }
 

@@ -2,7 +2,9 @@
 
 LMU の降雨（降り始め・止み）を読み上げる機能の詳細設定画面。
 
-現時点では GUI のみ先行実装で、永続化・実際の読み上げ判定ロジックへの配線は未実装（#1500）。画面を離れると設定は破棄される。
+「降り始めの読み上げ」スイッチは `LmuWindowsRainPreferencesRepository`（DataStore）で永続化する。listPane のスイッチ（読み上げON/OFF）・開始音・キューの有効状態は `:feature:readout-list` が使う既存の汎用 Repository（`ReadoutPreferencesRepository` / `ReadoutStartSoundEnabledPreferencesRepository` / `QueuePreferencesRepository`）でともに永続化される。
+
+Narrator側の実際の読み上げ判定ロジックへの配線（降雨検知のデータソース連携含む）は未実装（#1500）。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
