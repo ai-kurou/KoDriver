@@ -31,7 +31,7 @@ Le Mans Ultimate（LMU）から Windows 共有メモリ経由で、Gran Turismo 
 `:server` は Windows 版デスクトップアプリと同一プロセスで起動し、`0.0.0.0:8080` で待ち受ける。WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。現時点では認証・暗号化を実装していないため、信頼できる LAN 内でのみ使用すること。`KoDriverServer.start()` は mDNS（`_kodriver._tcp.local.`）でサーバーを LAN 内へ広告し、`:feature:other-server-ip-detail` がそれを検出して接続先 IP の自動入力に使う。エンドポイント仕様・CSWSH対策・mDNS広告の詳細は `server/README.md` を参照。
 
 ### LMU Windows共有メモリのパース詳細
-`LmuWindowsMapper` のラップタイム系フィールドの扱い（Scoringのプレイヤー車両フォールバック等）、車両クラス名、共有メモリのオフセット情報は `core/lmu-windows-data/README.md` を参照。
+`LmuWindowsMapper` のラップタイム系フィールドの扱い（Scoringのプレイヤー車両フォールバック等）、車両クラス名、共有メモリのオフセット情報は `core/lmu-windows-data/README.md` を参照。共有メモリに含まれない情報（天候予報、Virtual Energy消費履歴等）をLMU内蔵のローカルREST APIから補えないかの調査メモは [`docs/lmu-windows-rest-api.md`](docs/lmu-windows-rest-api.md) を参照（未統合）。
 
 ### ReadoutItemKey の配線（listPane / detailPane とNarratorの読み上げ判定の一致）
 `ReadoutItemKey` を新設・変更する際は、listPane/detailPaneのスイッチの保存先 `DataStore` と、Narrator側の実際の読み上げ判定ロジックへの配線が一致しているかを必ず確認すること。片方だけ実装すると、スイッチが存在するのに効果がない死んだ実装になる（過去に #464, #472 のバグが発生）。詳細・確認手順は [`docs/readout-item-key-wiring.md`](docs/readout-item-key-wiring.md) を参照。
