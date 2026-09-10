@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -115,6 +116,7 @@ private fun lmuWindowsItemIcon(itemId: ReadoutItemKey.LmuWindows): ImageVector =
         is ReadoutItemKey.LmuWindows.PitTiming.Root -> Icons.Filled.AccessTime
         is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DonutLarge
+        is ReadoutItemKey.LmuWindows.Rain -> Icons.Filled.WaterDrop
         is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
     }
 

@@ -24,6 +24,8 @@ sealed class ReadoutListItemType(
 
         data object TyreWear : LmuWindows(ReadoutItemKey.LmuWindows.TyreWear.Root)
 
+        data object Rain : LmuWindows(ReadoutItemKey.LmuWindows.Rain.Root)
+
         data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap.Root)
     }
 
@@ -80,6 +82,7 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.LmuWindows.PitTiming.Root -> LmuWindows.PitTiming
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
                 ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
+                ReadoutItemKey.LmuWindows.Rain.Root -> LmuWindows.Rain
                 ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
                 else -> null
             }
@@ -134,8 +137,9 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.LmuWindows.PitTiming.Root -> 3
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> 4
                 ReadoutItemKey.LmuWindows.TyreWear.Root -> 5
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 6
-                ReadoutItemKey.LmuWindows.MyBestLap.Root -> 7
+                ReadoutItemKey.LmuWindows.Rain.Root -> 6
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 7
+                ReadoutItemKey.LmuWindows.MyBestLap.Root -> 8
             }
 
         private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int =

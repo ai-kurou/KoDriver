@@ -1,0 +1,4 @@
+<resources>
+    <string name="rain_description">降雨の開始・終了を音声でお知らせします。</string>
+    <string name="rain_start_switch_label">降り始めの読み上げ</string>
+</resources>

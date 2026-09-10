@@ -96,10 +96,19 @@ class ReadoutListItemTypeFromIdTest {
                 ReadoutItemKey.LmuWindows.PitTiming.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
                 ReadoutItemKey.LmuWindows.TyreWear.Root,
+                ReadoutItemKey.LmuWindows.Rain.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+        )
+    }
+
+    @Test
+    fun `lmu_windows の rain は LmuWindows_Rain を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.Rain,
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.Rain.Root),
         )
     }
 
