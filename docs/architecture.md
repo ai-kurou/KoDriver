@@ -14,7 +14,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
 | `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-lmu-windows-data.svg) |
-| `:core:lmu-windows-rest-api` | LMU内蔵ローカルREST API利用（JVM、モジュールの枠組みのみで未実装） | [図](graphs/core-lmu-windows-rest-api.svg) |
+| `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM、モジュールの枠組みのみで未実装） | [図](graphs/core-lmu-windows-rest-api-data.svg) |
 | `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |
 | `:core:ace-windows-data` | Assetto Corsa EVO Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-ace-windows-data.svg) |
 | `:core:device-volume-data` | 端末（OS）のマスター音量取得・設定のリポジトリ実装 | [図](graphs/core-device-volume-data.svg) |
