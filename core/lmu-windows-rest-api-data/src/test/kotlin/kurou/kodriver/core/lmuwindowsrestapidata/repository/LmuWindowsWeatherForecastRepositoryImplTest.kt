@@ -66,6 +66,7 @@ class LmuWindowsWeatherForecastRepositoryImplTest {
             }
         val client =
             HttpClient(mockEngine) {
+                expectSuccess = true
                 install(ContentNegotiation) {
                     json(Json { ignoreUnknownKeys = true })
                 }

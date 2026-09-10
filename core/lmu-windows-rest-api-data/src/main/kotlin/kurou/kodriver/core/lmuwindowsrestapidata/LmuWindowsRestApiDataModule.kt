@@ -18,6 +18,7 @@ val lmuWindowsRestApiDataModule =
     module {
         single {
             HttpClient(OkHttp) {
+                expectSuccess = true
                 install(ContentNegotiation) {
                     json(Json { ignoreUnknownKeys = true })
                 }
