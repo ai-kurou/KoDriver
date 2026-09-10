@@ -19,6 +19,7 @@ digraph G {
   ":feature:lmu-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-pit-timing-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-readout-rain-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-remaining-virtual-energy-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-tyre-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -53,6 +54,7 @@ digraph G {
   ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-my-best-lap-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-pit-timing-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-readout-rain-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-remaining-virtual-energy-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-tyre-wear-detail" -> ":core:designsystem"
