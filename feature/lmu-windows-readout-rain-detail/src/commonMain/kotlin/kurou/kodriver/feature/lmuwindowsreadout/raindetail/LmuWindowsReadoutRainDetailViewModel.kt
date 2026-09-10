@@ -1,19 +1,33 @@
 package kurou.kodriver.feature.lmuwindowsreadout.raindetail
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRainEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsRainEnabledStateUseCase
 
-/**
- * 永続化は未実装（GUIのみ先行実装）。設定はViewModelのインメモリ状態にのみ保持し、
- * 画面を離れると破棄される。
- */
-internal class LmuWindowsReadoutRainDetailViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(LmuWindowsReadoutRainDetailUiState())
-    val uiState: StateFlow<LmuWindowsReadoutRainDetailUiState> = _uiState
+internal class LmuWindowsReadoutRainDetailViewModel(
+    observeRainEnabledStates: ObserveLmuWindowsRainEnabledStatesUseCase,
+    private val saveRainEnabledState: SaveLmuWindowsRainEnabledStateUseCase,
+) : ViewModel() {
+    val uiState: StateFlow<LmuWindowsReadoutRainDetailUiState> =
+        observeRainEnabledStates()
+            .map { states ->
+                LmuWindowsReadoutRainDetailUiState(
+                    startReadoutEnabled = states.getValue(ReadoutItemKey.LmuWindows.Rain.Start),
+                )
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                LmuWindowsReadoutRainDetailUiState(),
+            )
 
     fun onStartReadoutEnabledChanged(enabled: Boolean) {
-        _uiState.update { it.copy(startReadoutEnabled = enabled) }
+        viewModelScope.launch { saveRainEnabledState(ReadoutItemKey.LmuWindows.Rain.Start, enabled) }
     }
 }
