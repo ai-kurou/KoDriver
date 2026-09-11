@@ -19,7 +19,6 @@ import kurou.kodriver.core.designsystem.generated.resources.readout_item_overhea
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_part_detached
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_pit_timing
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_rain
-import kurou.kodriver.core.designsystem.generated.resources.readout_item_rain_start
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_red_flag
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_remaining_fuel
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_remaining_fuel_laps
@@ -124,7 +123,6 @@ private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
 private fun rainDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
         "lmu_windows_rain" -> stringResource(Res.string.readout_item_rain)
-        "lmu_windows_rain_start" -> stringResource(Res.string.readout_item_rain_start)
         else -> null
     }
 

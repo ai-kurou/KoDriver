@@ -132,10 +132,6 @@ sealed interface ReadoutItemKey {
                 override val value = "lmu_windows_rain"
                 override val supportsQueue = true
             }
-
-            data object Start : Rain {
-                override val value = "lmu_windows_rain_start"
-            }
         }
     }
 
@@ -289,7 +285,6 @@ sealed interface ReadoutItemKey {
                 LmuWindows.RemainingVirtualEnergy.Root,
                 LmuWindows.TyreWear.Root,
                 LmuWindows.Rain.Root,
-                LmuWindows.Rain.Start,
                 LmuWindows.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,
