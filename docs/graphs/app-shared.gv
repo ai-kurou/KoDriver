@@ -25,6 +25,7 @@ digraph G {
   ":feature:lmu-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-pit-timing-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-readout-rain-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-remaining-virtual-energy-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-tyre-wear-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -74,6 +75,7 @@ digraph G {
   ":app:shared" -> ":feature:lmu-windows-readout-pit-timing-detail"
   ":app:shared" -> ":feature:lmu-windows-readout-remaining-virtual-energy-detail"
   ":app:shared" -> ":feature:lmu-windows-readout-tyre-wear-detail"
+  ":app:shared" -> ":feature:lmu-windows-readout-rain-detail"
   ":app:shared" -> ":feature:gt7-ps5-readout-my-best-lap-detail"
   ":app:shared" -> ":feature:gt7-ps5-readout-remaining-fuel-detail"
   ":app:shared" -> ":feature:gt7-ps5-readout-remaining-fuel-laps-detail"

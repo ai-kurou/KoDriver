@@ -229,10 +229,7 @@ fun androidDataModule(context: Context) =
         single<ConsoleAddressPreferencesRepository> {
             createConsoleAddressPreferencesRepository(context.filesDir.absolutePath)
         }
-        // ネットワーク（KoDriver サーバーのバージョン取得 / GitHub リリース確認）
-        single<ServerVersionRepository> { HttpServerVersionRepository() }
-        single<AppUpdateRepository> { GitHubAppReleaseRepository() }
-        single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
+        includes(androidDataModuleNetwork())
         includes(androidDataModuleAceWindows())
         includes(androidDataModuleThresholdPreferences(context))
         includes(androidDataModuleLmuWindowsPitStatus())
@@ -250,6 +247,17 @@ private fun androidDataModuleLmuWindowsPitStatus() =
         single<LmuWindowsTyreDetachedRepository> {
             WebSocketLmuWindowsTyreDetachedRepository(serverIpRepository = get(), client = get())
         }
+    }
+
+/**
+ * androidDataModule から分離したネットワーク系バインド
+ * （KoDriver サーバーのバージョン取得 / GitHub リリース確認 / フィードバック送信。LongMethod 対策）。
+ */
+private fun androidDataModuleNetwork() =
+    module {
+        single<ServerVersionRepository> { HttpServerVersionRepository() }
+        single<AppUpdateRepository> { GitHubAppReleaseRepository() }
+        single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
     }
 
 /**

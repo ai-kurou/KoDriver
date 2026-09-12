@@ -76,6 +76,7 @@ class MainActivityTest {
             "タイヤ摩耗",
             "タイヤの摩耗率が設定した閾値以上になった場合に音声でお知らせします。いずれかのタイヤが条件を満たすと読み上げ、全タイヤが閾値未満に戻るまでは再度読み上げません。",
         )
+        clickItemAndVerifyDescription("降雨", "セッション開始時に降雨の予報を音声でお知らせします。")
         clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
         clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }

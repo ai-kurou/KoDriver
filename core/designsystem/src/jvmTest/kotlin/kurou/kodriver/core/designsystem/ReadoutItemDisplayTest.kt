@@ -32,6 +32,7 @@ class ReadoutItemDisplayTest {
             "lmu_windows_pit_timing" to "ピットタイミング",
             "lmu_windows_remaining_virtual_energy" to "バーチャルエナジー残量",
             "lmu_windows_tyre_wear" to "タイヤ摩耗",
+            "lmu_windows_rain" to "降雨",
             "lmu_windows_my_best_lap" to "自己ベストラップ",
             "gt7_ps5_my_best_lap" to "自己ベストラップ",
             "gt7_ps5_remaining_fuel_laps" to "燃料残り周回数",

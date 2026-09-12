@@ -126,6 +126,13 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = true
             }
         }
+
+        sealed interface Rain : LmuWindows {
+            data object Root : Rain, TopLevel {
+                override val value = "lmu_windows_rain"
+                override val supportsQueue = true
+            }
+        }
     }
 
     sealed interface Gt7Ps5 : ReadoutItemKey {
@@ -277,6 +284,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.PitTiming.Root,
                 LmuWindows.RemainingVirtualEnergy.Root,
                 LmuWindows.TyreWear.Root,
+                LmuWindows.Rain.Root,
                 LmuWindows.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,

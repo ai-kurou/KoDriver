@@ -132,6 +132,9 @@ data class TyreTemperatureReadoutInput(
 
 /**
  * LMU の共有メモリ由来データから、今回読み上げるべき音声イベントを決定する UseCase。
+ *
+ * TODO: ReadoutItemKey.LmuWindows.Rain.Root は listPane のGUIのみ先行実装済みで、
+ *   この判定ロジックへの配線は未実装（#1500）。降雨予報はセッション開始時に読み上げる想定。
  */
 class DetermineLmuWindowsNarratorReadoutUseCase {
     fun determineMyBestLap(
