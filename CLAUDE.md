@@ -84,68 +84,18 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 ## ビルド・実行コマンド
 
-```bash
-# デスクトップアプリ起動（通常）
-./gradlew :app:desktopApp:run
-
-# デスクトップアプリ起動（ホットリロード）
-./gradlew :app:desktopApp:hotRun --auto
-
-# Ktor サーバー単体起動（共有メモリ由来のフラッグ情報は配信しない）
-./gradlew :server:run
-
-# Windows MSI パッケージビルド（CI: GitHub Actions / ローカル Windows 環境）
-./gradlew :app:desktopApp:packageMsi
-
-# Kover 対象モジュールのテストとカバレッジレポート生成
-./gradlew koverXmlReport
-
-# 完了報告・PR 作成前の必須チェック一式（detekt・モジュールグラフ検証・
-# 全ユニットテスト（カバレッジ付き）・両アプリのビルド・デスクトップ統合テスト）
-./gradlew preSubmitChecks
-
-# 静的解析とモジュール依存関係の検証
-./gradlew detekt assertModuleGraph
-
-# ktlint（コードスタイル）チェック・自動整形
-./gradlew ktlintCheck
-./gradlew ktlintFormat
-
-# Android・デスクトップアプリのビルドと統合テスト
-./gradlew :app:androidApp:assembleDebug
-./gradlew :app:desktopApp:jar
-./gradlew :app:desktopApp:test
-
-# 特定モジュールだけを確認する場合
-./gradlew :<module-path>:jvmTest
-```
-
-`:app:webApp` は Gradle ビルド設定のみで独自機能が未実装のため、現在はテスト・ビルド確認の対象外。
-
-GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [`docs/ci-workflows.md`](docs/ci-workflows.md) を参照。
+主要コマンド一覧は [`docs/build-commands.md`](docs/build-commands.md) を参照。特に完了報告・PR 作成前は `./gradlew preSubmitChecks` を実行すること。GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [`docs/ci-workflows.md`](docs/ci-workflows.md) を参照。
 
 ---
 
 ## Git 操作ルール
 
-- **feature ブランチでのコミット・プッシュ・PR の作成は、ユーザーの明示的な指示を待たずに自発的に実行してよい。** `start-implementation` などのフローで実装が一区切りついた時点で、コミット・プッシュ・PR作成まで自動的に進めること。
-- **`main` ブランチへの直接コミット・プッシュは、実行前に必ずユーザーに確認すること。** これは feature ブランチの自動化ルールの例外として維持する。
-- **作業用ワークツリーは、必ずこのリポジトリの `.claude/worktrees/` 配下に作成すること。** リポジトリ外やその他のディレクトリに作成してはならない。
-  - 例: `git worktree add .claude/worktrees/<worktree-name> -b <branch-name>`
-- **ワークツリーの削除は、自分のセッションで作成したものだけに限定すること。** 複数の Claude セッションが並行してワークツリーを使用している場合があるため、他のワークツリーは削除してはならない。
-- **マージ済み PR のワークツリー・ブランチを片付ける際は、ローカルブランチだけでなくリモートブランチ（`origin/<ブランチ名>`）も削除すること。** 既にリモートブランチが存在しない（GitHub 側の自動削除等）場合はエラーを無視してよい。
-- **PR のタイトルと説明は日本語で書くこと。**
-- **PR の説明欄に「Generated with Claude Code」などの署名やセッション URL（`https://claude.ai/code/session_...`）を含めないこと。**
-- **`feature/base/` 系のベースブランチ向け PR には、取り込み済み PR を記録する専用セクションを設けること。** そのベースブランチへ feature ブランチをプッシュ・マージした際、または `update-pr-description` を実行した際は、説明欄末尾の「## 取り込み済みPR」セクションに `- <PRタイトル>: #<番号>` の形式で1行追記する。フルURLを貼るとGitHubがリンクカードとして展開しPRタイトルが二重に表示されるため、番号参照（`#<番号>`）のみを使うこと。詳細な変更内容は各 PR 自体の説明に任せ、ベース PR 側の説明欄はタイトルと番号参照の一覧に留めて肥大化を防ぐ。
-- **モジュール図・スクリーンショットテストの画像は `git add` してはならない。** `assertModuleGraph` が生成するモジュール図（例: `docs/graphs/*.gv`, `docs/graphs/*.svg`）や、スクリーンショットテストが生成・更新するスクリーンショット画像（例: `**/snapshots/*.png`）は CI で自動更新される仕組みのため、手元での変更をコミットすると CI の更新と競合する。動作確認のために生成されることがあるが、**ステージングすること自体を禁止する**。ファイルを指定してステージングするときは、これらのファイルを絶対に含めないこと。また、動作確認でこれらのファイルが生成・変更された場合は、**報告前に必ず `git checkout -- <file>` または `git clean -f <file>` で変更を破棄すること**。ただし、ユーザーから古いスクリーンショットテストや不要になったゴールデン画像の削除を明示的に指示された場合に限り、既存の `**/snapshots/*.png` の削除はステージングしてよい。
+ワークツリー運用・PR のタイトル/説明・署名禁止・取り込み済みPRセクション・モジュール図/スクリーンショット画像のステージング禁止など、詳細なルールは [`docs/git-workflow.md`](docs/git-workflow.md) を参照。特に次の2点は必ず守ること。
 
-### moduleGraphAssert の変更禁止
+- **feature ブランチでのコミット・プッシュ・PR の作成は、ユーザーの明示的な指示を待たずに自発的に実行してよい。**
+- **`main` ブランチへの直接コミット・プッシュは、実行前に必ずユーザーに確認すること。**
 
-`build.gradle.kts` の `moduleGraphAssert { ... }` ブロックは、ClaudeCode / Codex が自律的に変更してはならない。
-
-- ユーザーが明示的に `moduleGraphAssert` の変更を指示した場合のみ変更してよい。
-- モジュール追加・依存関係修正・CI 修正の一環であっても、事前確認なしに `allowed` / `restricted` / `configurations` を変更してはならない。
-- `assertModuleGraph` が失敗した場合は、まず依存関係やモジュール構成側を修正し、`moduleGraphAssert` の緩和で解決しない。
+`build.gradle.kts` の `moduleGraphAssert { ... }` ブロックは、ユーザーが明示的に指示した場合を除き変更してはならない（詳細は [`docs/git-workflow.md`](docs/git-workflow.md) を参照）。
 
 ---
 
@@ -165,31 +115,7 @@ GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [
 
 ### 作業単位・PR 単位の時系列チェックリスト
 
-作業を開始してから PR マージ後の片付けまで、実装内容に応じて以下を確認すること。
-
-1. 作業開始時
-   - 対象ブランチ、ベースブランチ、worktree の有無、作業範囲を確認する。
-   - ユーザーが「コミットしない」「PR だけ作る」「ベースブランチは main 以外」などの条件を指定している場合は、その条件を優先する。
-2. 実装前
-   - 既存実装を読み、Repository / UseCase / ViewModel / UI の責務と命名が既存パターンに合うことを確認する。
-   - 実装対象のモジュール・依存方向が妥当であることを確認する。`:core:designsystem` と `:core:domain` の相互依存や不要な依存追加は避ける。
-   - 追加・変更するテストの対象を先に洗い出す。正常系・異常系・境界値・全項目の確認が必要な箇所を確認する。
-3. 実装中
-   - ユニットテストを書ける実装コードを変更・追加する場合は、実装と同時にテストを追加・更新する。
-   - 画面項目・表示名・一覧項目を追加した場合は、listPane / detailPane のテスト、displayName 変換テスト、スクリーンショットテストの要否に加え、`MainActivityTest.kt`（Android）・`AppTest.kt`（Desktop）のE2Eタップ順テストへの追加要否も確認する。
-   - UI を変更した場合は、既存のスクリーンショットテスト対象か、新規スクリーンショットテストが必要かを確認する。
-   - モジュールを追加した場合は、Kover 集計対象、Gradle 設定、GitHub Actions ワークフロー、ドキュメントの更新要否を確認する。特に `settings.gradle.kts` の `include(...)` を追加・削除した場合は、**同じ PR で必ず `docs/architecture.md` のモジュール一覧表も更新する**（詳細・確認コマンドは同ファイル末尾の「モジュール一覧の更新漏れ防止」を参照）。
-   - GitHub Actions のスクリーンショットテストは集約タスクを使い、モジュール追加のたびに workflow を変更しない構成を維持する。
-4. 完了前
-   - 変更範囲に応じたスクリーンショットテストを実行する。
-   - 「[コード変更時の必須確認](#コード変更時の必須確認)」を実行する。
-5. PR 作成後
-   - GitHub checks / Codacy / Actions の結果を確認し、指摘があれば修正する。
-   - PR のタイトルと説明が実装内容を正しく表していることを確認する。
-   - PR に変更をプッシュした場合は、追加した変更内容に合わせて PR のタイトルと説明欄を更新する。
-6. PR マージ後
-   - ユーザーから指示があった場合は、自分が作成した worktree / branch だけを削除する。
-   - 指定されたベースブランチを最新化し、作業ツリーが clean であることを確認する。
+作業開始時からPRマージ後の片付けまでの時系列チェックリストは [`docs/pr-workflow-checklist.md`](docs/pr-workflow-checklist.md) を参照。ユーザーが「コミットしない」「PR だけ作る」「ベースブランチは main 以外」などの条件を指定している場合は、その条件を優先する。
 
 ### コード変更時の必須確認
 
@@ -206,23 +132,7 @@ GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [
 
 `preSubmitChecks` は Codacy や CI で検出される基本的な問題を作業者側で事前に検出するための最低必須チェックであり、モジュール単位の detekt や個別テストだけで代替してはならない。実行できなかった場合は、完了報告で理由を明記すること。
 
-作業中に個別のチェックを素早く回したい場合は、以下を利用できる（完了報告前の `preSubmitChecks` 実行は省略不可）。
-
-```bash
-# 完了報告・PR 作成前の必須チェック一式
-./gradlew preSubmitChecks
-
-# 変更したモジュールのテストだけを実行（例: feature:readout-list を変更した場合）
-./gradlew :feature:readout-list:jvmTest
-
-# server モジュールを変更した場合
-./gradlew :server:test
-
-# androidMain に変更がある場合は androidHostTest も実行（例: core:data を変更した場合）
-./gradlew :core:data:testAndroidHostTest
-```
-
-detekt の閾値設定は `config/detekt/detekt.yml` を参照（`MagicNumber` は無効化済みで数値リテラルは許容、`@Composable` は `LongMethod` の対象外）。
+作業中に個別のチェックを素早く回したい場合のコマンド例、detekt の閾値設定については [`docs/build-commands.md`](docs/build-commands.md) を参照（完了報告前の `preSubmitChecks` 実行は省略不可）。
 
 テストが失敗・detekt で指摘がある・assertModuleGraph で違反がある・ビルドエラーがある場合は修正してからレポートする。
 
