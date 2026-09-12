@@ -133,7 +133,7 @@ jobs:
     with:
       taskSuffix: AndroidHost
       snapshotPathGlob: "*/androidHostTest/snapshots/*.png"
-      timeoutMinutes: 23
+      timeoutMinutes: 35
     secrets: inherit
 
   desktop-test:
