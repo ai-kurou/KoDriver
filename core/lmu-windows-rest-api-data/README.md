@@ -2,13 +2,9 @@
 
 Le Mans Ultimateが内蔵するローカルREST API（`http://localhost:6397`）を利用するためのJVM専用モジュールです。
 
-## 実装済み: 天気予報（`/rest/sessions/weather`）
+## 現状
 
-- `GetLmuWindowsWeatherForecastUseCase`（`:core:domain`）: `LmuWindowsWeatherForecastRepository.weatherForecasts()` を呼び出し、`PRACTICE`/`QUALIFY`/`RACE` 各セッションの `LmuWindowsWeatherForecast`（`START`/`NODE_25`/`NODE_50`/`NODE_75`/`FINISH` ノードごとの気象データ）のリストを返す。
-- `LmuWindowsWeatherForecastRepositoryImpl` → `LmuWindowsRestApiWeatherDataSource`（Ktorクライアントで `GET /rest/sessions/weather` を呼び出し、`kotlinx.serialization` でJSONをDTOへパース） → `LmuWindowsRestApiWeatherMapper`（DTOをドメインモデルへ変換）という構成。
-- レスポンスの `WNV_SKY` の `stringValue`（空模様の日本語表記）は日本語ロケール時に文字化けするため使用せず、`currentValue`（インデックス値）のみをドメインモデルへマッピングする。
-- `WNV_WINDSPEED` の `currentValue` はkm/hと異なる内部単位のため、マッパー内で `× 3.6` してkm/hへ変換する（詳細は [`docs/lmu-windows-rest-api.md`](../../docs/lmu-windows-rest-api.md) を参照）。
-- Koinモジュール `lmuWindowsRestApiDataModule`（`core.lmuwindowsrestapidata` パッケージ）でHttpClient・DataSource・Repositoryをバインドする。現時点ではこのモジュールを利用するfeatureが無いため、composition root（`app:desktopApp` の `Main.kt`）へは未登録。
+天気予報（`/rest/sessions/weather`）の実装（UseCase・Repository・DataSource・Mapper・Koinモジュール）は削除済み。本モジュールには現時点で実装コードが無い。調査結果・エンドポイント仕様は [`docs/lmu-windows-rest-api.md`](../../docs/lmu-windows-rest-api.md) を参照。
 
 ## 想定する依存関係
 
