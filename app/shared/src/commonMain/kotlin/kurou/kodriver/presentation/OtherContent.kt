@@ -3,6 +3,7 @@ package kurou.kodriver.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,7 @@ private const val RELEASE_PAGE_URL = "$GITHUB_REPOSITORY_URL/releases"
 fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     onOpenReadoutStartSoundDialog: () -> Unit = {},
@@ -79,6 +82,7 @@ fun OtherContent(
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
+        windowPosture = windowPosture,
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
         detailContent = detailContent,
@@ -135,6 +139,7 @@ internal fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+    windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
@@ -209,7 +214,7 @@ internal fun OtherContent(
         scaffoldState = navigator.scaffoldState,
         paneExpansionState = paneExpansionState,
         paneExpansionDragHandle = { VerticalDivider() },
-        modifier = modifier,
+        modifier = modifier.constrainToTabletopTopPane(windowPosture, LocalDensity.current),
         listPane = {
             OtherListPane(
                 uiState = uiState,

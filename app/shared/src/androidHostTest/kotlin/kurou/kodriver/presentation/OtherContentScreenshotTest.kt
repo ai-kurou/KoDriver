@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.buildlogic.screenshottest.rememberFoldedVerticalHingeDirective
+import kurou.kodriver.buildlogic.screenshottest.rememberTabletopPosture
 import kurou.kodriver.buildlogic.screenshottest.twoPaneDirective
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailUiState
@@ -169,6 +170,33 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = rememberFoldedVerticalHingeDirective(),
+                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                if (itemType == OtherListItemType.Volume) {
+                                    OtherVolumeDetailPaneContent(
+                                        uiState = OtherVolumeDetailUiState(volume = 80),
+                                        canNavigateBack = canNavigateBack,
+                                        onBack = onBack,
+                                    )
+                                }
+                            },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `テーブルトップ姿勢ではヒンジより上側にコンテンツを収める`() {
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
+            AppTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        OtherContent(
+                            uiState = OtherListUiState(selectedItem = OtherListItemType.Volume),
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            windowPosture = rememberTabletopPosture(),
                             detailContent = { itemType, canNavigateBack, onBack, _, _ ->
                                 if (itemType == OtherListItemType.Volume) {
                                     OtherVolumeDetailPaneContent(

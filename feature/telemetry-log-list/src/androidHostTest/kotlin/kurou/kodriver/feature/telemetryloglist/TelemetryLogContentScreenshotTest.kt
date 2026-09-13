@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.buildlogic.screenshottest.rememberFoldedVerticalHingeDirective
+import kurou.kodriver.buildlogic.screenshottest.rememberTabletopPosture
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,6 +33,23 @@ class TelemetryLogContentScreenshotTest {
                         TelemetryLogContentScaffold(
                             uiState = previewTelemetryLogListUiState.copy(selectedLogId = 2),
                             scaffoldDirective = rememberFoldedVerticalHingeDirective(),
+                            detailContent = { logId -> Text("Detail: $logId") },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `テーブルトップ姿勢ではヒンジより上側にコンテンツを収める`() {
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        TelemetryLogContentScaffold(
+                            uiState = previewTelemetryLogListUiState.copy(selectedLogId = 2),
+                            windowPosture = rememberTabletopPosture(),
                             detailContent = { logId -> Text("Detail: $logId") },
                         )
                     }

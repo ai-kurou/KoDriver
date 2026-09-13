@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.buildlogic.screenshottest.rememberFoldedVerticalHingeDirective
+import kurou.kodriver.buildlogic.screenshottest.rememberTabletopPosture
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Test
@@ -44,6 +45,34 @@ class ReadoutContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = rememberFoldedVerticalHingeDirective(),
+                            detailContent = { item -> Text("Detail: $item") },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `テーブルトップ姿勢ではヒンジより上側にコンテンツを収める`() {
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        ReadoutContent(
+                            uiState =
+                                ReadoutListUiState(
+                                    selectedSimulator = Simulator.LmuWindows,
+                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                    selectedItem = ReadoutListItemType.LmuWindows.Flag,
+                                ),
+                            onMove = { _, _ -> },
+                            onReadoutEnabledChanged = { _, _ -> },
+                            onQueueEnabledChanged = { _, _ -> },
+                            onStartSoundEnabledChanged = { _, _ -> },
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            windowPosture = rememberTabletopPosture(),
                             detailContent = { item -> Text("Detail: $item") },
                         )
                     }

@@ -67,3 +67,42 @@ fun rememberFoldedVerticalHingeDirective(
         )
     }
 }
+
+/**
+ * テーブルトップ姿勢（水平ヒンジで半開き）をシミュレートした [Posture] を返す。
+ * list/detail 2ペイン構成の画面が、ヒンジより下側にコンテンツをはみ出させずに
+ * 上側の領域に収めることを確認するスクリーンショットテストで使用する。
+ */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+fun rememberTabletopPosture(
+    windowWidthDp: Float = 840f,
+    windowHeightDp: Float = 640f,
+    hingeHeightDp: Float = 20f,
+): Posture {
+    val density = LocalDensity.current
+    return remember(density, windowWidthDp, windowHeightDp, hingeHeightDp) {
+        val hingeTopDp = windowHeightDp / 2f - hingeHeightDp / 2f
+        Posture(
+            isTabletop = true,
+            hingeList =
+                listOf(
+                    HingeInfo(
+                        bounds =
+                            with(density) {
+                                Rect(
+                                    left = 0f,
+                                    top = hingeTopDp.dp.toPx(),
+                                    right = windowWidthDp.dp.toPx(),
+                                    bottom = (hingeTopDp + hingeHeightDp).dp.toPx(),
+                                )
+                            },
+                        isFlat = true,
+                        isVertical = false,
+                        isSeparating = true,
+                        isOccluding = false,
+                    ),
+                ),
+        )
+    }
+}
