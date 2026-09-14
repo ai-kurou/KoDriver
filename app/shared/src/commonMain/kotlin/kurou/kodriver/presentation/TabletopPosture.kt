@@ -48,3 +48,15 @@ internal fun Posture.tabletopTopPaneHeightPx(): Float? {
     if (!isTabletop) return null
     return separatingHorizontalHingeBounds.firstOrNull()?.top
 }
+
+/**
+ * list/detail の2ペイン表示を維持するには実質的な表示領域が不足している姿勢かどうかを返す。
+ *
+ * テーブルトップ姿勢（水平ヒンジで半開き）のほか、分離するヒンジが完全には平らに開いて
+ * いない場合（[HingeInfo.isFlat] が `false` の縦ヒンジ等、折りたたみ端末を本のように
+ * 途中まで開いた状態）も対象とする。完全に平ら（180度展開）な縦ヒンジは、ヒンジ帯を
+ * 避けて2ペインを表示するのに十分な幅があるため対象外。
+ */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+val Posture.shouldCollapseDetailPane: Boolean
+    get() = isTabletop || hingeList.any { it.isSeparating && !it.isFlat }

@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
+import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -175,11 +176,12 @@ internal fun TelemetryLogContentScaffold(
         )
     }
 
-    // テーブルトップ姿勢ではヒンジより下側にdetailPaneが潰れて表示されてしまうため、
+    // テーブルトップ姿勢や、縦ヒンジが完全には平らに開いていない姿勢では、
+    // detailPaneを表示する幅が確保できず潰れて表示されてしまうため、
     // listPaneの選択を解除して一覧のみの表示に戻す。
     val currentOnClearSelectedLog by rememberUpdatedState(onClearSelectedLog)
-    LaunchedEffect(windowPosture.isTabletop) {
-        if (windowPosture.isTabletop) {
+    LaunchedEffect(windowPosture.shouldCollapseDetailPane) {
+        if (windowPosture.shouldCollapseDetailPane) {
             currentOnClearSelectedLog()
         }
     }

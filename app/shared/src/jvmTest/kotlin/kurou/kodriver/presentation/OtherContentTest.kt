@@ -2,11 +2,13 @@ package kurou.kodriver.presentation
 
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.HingeInfo
 import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -189,6 +191,49 @@ class OtherContentTest {
         }
 
         rule.runOnIdle { windowPosture = Posture(isTabletop = true) }
+
+        rule.waitUntil { clearSelectedItemCallCount == 1 }
+        assertEquals(null, selectedItem)
+    }
+
+    @Test
+    fun `detailPane表示中に平らでない縦ヒンジの姿勢になると選択解除コールバックを呼ぶ`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(OtherListItemType.Volume)
+        var windowPosture by mutableStateOf(Posture())
+        var clearSelectedItemCallCount = 0
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(selectedItem = selectedItem),
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {
+                    clearSelectedItemCallCount++
+                    selectedItem = null
+                },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                windowPosture = windowPosture,
+                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit, _: Long?, _: Long ->
+                    Text("Detail: ${item.id}")
+                },
+            )
+        }
+
+        rule.runOnIdle {
+            windowPosture =
+                Posture(
+                    hingeList =
+                        listOf(
+                            HingeInfo(
+                                bounds = Rect(left = 400f, top = 0f, right = 420f, bottom = 800f),
+                                isFlat = false,
+                                isVertical = true,
+                                isSeparating = true,
+                                isOccluding = false,
+                            ),
+                        ),
+                )
+        }
 
         rule.waitUntil { clearSelectedItemCallCount == 1 }
         assertEquals(null, selectedItem)

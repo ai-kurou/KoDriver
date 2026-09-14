@@ -207,11 +207,12 @@ internal fun OtherContent(
         )
     }
 
-    // テーブルトップ姿勢ではヒンジより下側にdetailPaneが潰れて表示されてしまうため、
+    // テーブルトップ姿勢や、縦ヒンジが完全には平らに開いていない姿勢では、
+    // detailPaneを表示する幅が確保できず潰れて表示されてしまうため、
     // listPaneの選択を解除して一覧のみの表示に戻す。
     val currentOnClearSelectedItem by rememberUpdatedState(onClearSelectedItem)
-    LaunchedEffect(windowPosture.isTabletop) {
-        if (windowPosture.isTabletop) {
+    LaunchedEffect(windowPosture.shouldCollapseDetailPane) {
+        if (windowPosture.shouldCollapseDetailPane) {
             currentOnClearSelectedItem()
         }
     }

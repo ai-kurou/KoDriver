@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.HingeInfo
 import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.LaunchedEffect
@@ -13,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
@@ -176,6 +178,50 @@ class TelemetryLogContentTest {
         rule.onNodeWithText("selected: 2").assertExists()
 
         rule.runOnIdle { windowPosture = Posture(isTabletop = true) }
+
+        rule.waitUntil { clearSelectedLogCallCount == 1 }
+        rule.onNodeWithText("フラッグ").assertExists()
+    }
+
+    @Test
+    fun `detailPane表示中に平らでない縦ヒンジの姿勢になると選択解除コールバックを呼ぶ`() {
+        var windowPosture by mutableStateOf(Posture())
+        var clearSelectedLogCallCount = 0
+
+        rule.setContent {
+            var selectedLogId by remember { mutableStateOf<Long?>(null) }
+            LaunchedEffect(Unit) { selectedLogId = 2L }
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(selectedLogId = selectedLogId),
+                onLogSelected = { selectedLogId = it },
+                onClearSelectedLog = {
+                    clearSelectedLogCallCount++
+                    selectedLogId = null
+                },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                windowPosture = windowPosture,
+                detailContent = { id -> Text("selected: $id") },
+            )
+        }
+
+        rule.onNodeWithText("selected: 2").assertExists()
+
+        rule.runOnIdle {
+            windowPosture =
+                Posture(
+                    hingeList =
+                        listOf(
+                            HingeInfo(
+                                bounds = Rect(left = 400f, top = 0f, right = 420f, bottom = 800f),
+                                isFlat = false,
+                                isVertical = true,
+                                isSeparating = true,
+                                isOccluding = false,
+                            ),
+                        ),
+                )
+        }
 
         rule.waitUntil { clearSelectedLogCallCount == 1 }
         rule.onNodeWithText("フラッグ").assertExists()

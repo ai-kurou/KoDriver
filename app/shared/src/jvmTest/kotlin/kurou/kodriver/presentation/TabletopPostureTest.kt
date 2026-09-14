@@ -6,7 +6,9 @@ import androidx.compose.material3.adaptive.Posture
 import androidx.compose.ui.geometry.Rect
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class TabletopPostureTest {
@@ -88,6 +90,65 @@ class TabletopPostureTest {
 
         assertEquals(500f, posture.tabletopTopPaneHeightPx())
     }
+
+    @Test
+    fun `テーブルトップ姿勢の場合はshouldCollapseDetailPaneがtrueになる`() {
+        val posture = Posture(isTabletop = true, hingeList = emptyList())
+
+        assertTrue(posture.shouldCollapseDetailPane)
+    }
+
+    @Test
+    fun `テーブルトップ姿勢でなく分離するヒンジも無い場合はshouldCollapseDetailPaneがfalseになる`() {
+        val posture = Posture(isTabletop = false, hingeList = emptyList())
+
+        assertFalse(posture.shouldCollapseDetailPane)
+    }
+
+    @Test
+    fun `テーブルトップ姿勢でなく完全に平らな縦ヒンジのみの場合はshouldCollapseDetailPaneがfalseになる`() {
+        val posture =
+            Posture(
+                isTabletop = false,
+                hingeList = listOf(verticalSeparatingHinge(isFlat = true)),
+            )
+
+        assertFalse(posture.shouldCollapseDetailPane)
+    }
+
+    @Test
+    fun `テーブルトップ姿勢でなく平らでない縦ヒンジがある場合はshouldCollapseDetailPaneがtrueになる`() {
+        val posture =
+            Posture(
+                isTabletop = false,
+                hingeList = listOf(verticalSeparatingHinge(isFlat = false)),
+            )
+
+        assertTrue(posture.shouldCollapseDetailPane)
+    }
+
+    @Test
+    fun `平らでなくても分離しない縦ヒンジの場合はshouldCollapseDetailPaneがfalseになる`() {
+        val posture =
+            Posture(
+                isTabletop = false,
+                hingeList = listOf(verticalSeparatingHinge(isFlat = false, isSeparating = false)),
+            )
+
+        assertFalse(posture.shouldCollapseDetailPane)
+    }
+
+    private fun verticalSeparatingHinge(
+        isFlat: Boolean,
+        isSeparating: Boolean = true,
+    ): HingeInfo =
+        HingeInfo(
+            bounds = Rect(left = 400f, top = 0f, right = 420f, bottom = 800f),
+            isFlat = isFlat,
+            isVertical = true,
+            isSeparating = isSeparating,
+            isOccluding = false,
+        )
 
     private fun horizontalSeparatingHinge(
         top: Float,
