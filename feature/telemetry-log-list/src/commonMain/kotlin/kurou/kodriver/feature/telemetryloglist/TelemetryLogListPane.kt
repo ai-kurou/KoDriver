@@ -131,6 +131,8 @@ internal fun TelemetryLogListPane(
         }
     }
 
+    // visible は常に true。表示/非表示の切り替えではなく、初回コンポジション時の
+    // スライドイン＋フェードイン演出のみを目的とした AnimatedVisibility。
     AnimatedVisibility(
         visible = true,
         enter =
