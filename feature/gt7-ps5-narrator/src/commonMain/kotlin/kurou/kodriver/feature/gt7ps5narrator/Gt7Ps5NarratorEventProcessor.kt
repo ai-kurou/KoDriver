@@ -59,6 +59,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
+                    narratedText = event.narratedText,
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
@@ -91,6 +92,7 @@ internal class Gt7Ps5NarratorEventProcessor(
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
         readoutItemKey: ReadoutItemKey,
+        narratedText: String,
         telemetryJson: String,
     ) {
         try {
@@ -98,6 +100,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                 createdAt = createdAt,
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = readoutItemKey,
+                narratedText = narratedText,
                 telemetryJson = telemetryJson,
             )
         } catch (e: CancellationException) {

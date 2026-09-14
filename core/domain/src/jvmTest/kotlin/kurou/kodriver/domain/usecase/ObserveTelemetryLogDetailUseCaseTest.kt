@@ -52,6 +52,7 @@ private fun createTelemetryLogRepository(
             createdAt = 1000L,
             simulator = Simulator.Gt7Ps5,
             readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+            narratedText = "燃料は残り約1周",
             telemetryJson = """{"lapCount":1}""",
         ),
         TelemetryLog(
@@ -59,11 +60,18 @@ private fun createTelemetryLogRepository(
             createdAt = 2000L,
             simulator = Simulator.LmuWindows,
             readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+            narratedText = "イエローフラッグ",
             telemetryJson = """{"currentLap":2}""",
         ),
     ).forEach { log ->
         coEvery {
-            repository.saveTelemetryLog(log.createdAt, log.simulator, log.readoutItemKey, log.telemetryJson)
+            repository.saveTelemetryLog(
+                log.createdAt,
+                log.simulator,
+                log.readoutItemKey,
+                log.narratedText,
+                log.telemetryJson,
+            )
         } answers {
             val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
             logs.update { it + log.copy(id = nextId) }
@@ -158,5 +166,6 @@ private fun telemetryLog(
     createdAt = createdAt,
     simulator = Simulator.LmuWindows,
     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+    narratedText = "イエローフラッグ",
     telemetryJson = """{"id":$id}""",
 )

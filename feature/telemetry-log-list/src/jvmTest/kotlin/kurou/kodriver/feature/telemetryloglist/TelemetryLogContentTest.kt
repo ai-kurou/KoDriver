@@ -78,6 +78,7 @@ class TelemetryLogContentTest {
                                     createdAt = 1_800_000,
                                     simulator = Simulator.AceWindows,
                                     readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root,
+                                    narratedText = "イエローフラッグ",
                                     telemetryJson = """{"flag":"green"}""",
                                 ),
                             ),
@@ -426,10 +427,12 @@ internal fun createTelemetryLog(
     id: Long,
     readoutItemKey: ReadoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
     simulator: Simulator = Simulator.LmuWindows,
+    narratedText: String = "イエローフラッグ",
 ) = TelemetryLog(
     id = id,
     createdAt = id,
     simulator = simulator,
     readoutItemKey = readoutItemKey,
+    narratedText = narratedText,
     telemetryJson = """{"id":$id}""",
 )

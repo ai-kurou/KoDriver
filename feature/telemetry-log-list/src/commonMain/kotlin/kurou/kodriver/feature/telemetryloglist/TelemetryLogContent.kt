@@ -284,6 +284,7 @@ internal val previewTelemetryLogListUiState =
                     createdAt = 1_840_000,
                     simulator = Simulator.AceWindows,
                     readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    narratedText = "残り燃料警告",
                     telemetryJson = """{"remainingFuelLiters":8.2}""",
                 ),
                 TelemetryLog(
@@ -291,6 +292,7 @@ internal val previewTelemetryLogListUiState =
                     createdAt = 1_820_000,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    narratedText = "イエローフラッグ",
                     telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
                 ),
                 TelemetryLog(
@@ -298,6 +300,7 @@ internal val previewTelemetryLogListUiState =
                     createdAt = 1_800_000,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    narratedText = "燃料は残り約3周",
                     telemetryJson = """{"remainingFuelLaps":3.6,"fuelPercent":18.2}""",
                 ),
             ),

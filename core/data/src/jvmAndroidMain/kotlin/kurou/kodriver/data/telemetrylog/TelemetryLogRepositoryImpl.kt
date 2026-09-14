@@ -17,6 +17,9 @@ internal class TelemetryLogRepositoryImpl(
     override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> =
         dao.observeTelemetryLogs().map { logs -> logs.mapNotNull { it.toDomain() } }
 
+    override fun observeLatestTelemetryLog(): Flow<TelemetryLog?> =
+        dao.observeLatestTelemetryLog().map { it?.toDomain() }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?> =
         dao.observeTelemetryLog(id).flatMapLatest { current ->
@@ -42,6 +45,7 @@ internal class TelemetryLogRepositoryImpl(
         createdAt: Long,
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
+        narratedText: String,
         telemetryJson: String,
     ) {
         dao.insert(
@@ -49,6 +53,7 @@ internal class TelemetryLogRepositoryImpl(
                 createdAt = createdAt,
                 simulatorId = simulator.id,
                 readoutItemKey = readoutItemKey.value,
+                narratedText = narratedText,
                 telemetryJson = telemetryJson,
             ),
         )

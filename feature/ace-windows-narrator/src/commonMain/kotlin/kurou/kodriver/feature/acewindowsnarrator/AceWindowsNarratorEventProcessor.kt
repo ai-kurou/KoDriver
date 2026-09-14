@@ -54,6 +54,7 @@ internal class AceWindowsNarratorEventProcessor(
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
+                        narratedText = event.narratedText,
                         telemetryJson =
                             buildMyBestLapTelemetryLogJson(
                                 state = logContext.state,
@@ -86,6 +87,7 @@ internal class AceWindowsNarratorEventProcessor(
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
+                        narratedText = event.narratedText,
                         telemetryJson =
                             buildFlagTelemetryLogJson(
                                 state = logContext.state,
@@ -118,6 +120,7 @@ internal class AceWindowsNarratorEventProcessor(
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
+                        narratedText = event.narratedText,
                         telemetryJson =
                             buildTelemetryLogJson(
                                 state = logContext.state,
@@ -150,6 +153,7 @@ internal class AceWindowsNarratorEventProcessor(
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
+                        narratedText = event.narratedText,
                         telemetryJson =
                             buildTyreTemperatureTelemetryLogJson(
                                 state = logContext.state,
@@ -182,6 +186,7 @@ internal class AceWindowsNarratorEventProcessor(
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
+                        narratedText = event.narratedText,
                         telemetryJson =
                             buildVehicleApproachTelemetryLogJson(
                                 state = logContext.state,
@@ -215,6 +220,7 @@ internal class AceWindowsNarratorEventProcessor(
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
         readoutItemKey: ReadoutItemKey,
+        narratedText: String,
         telemetryJson: String,
     ) {
         try {
@@ -222,6 +228,7 @@ internal class AceWindowsNarratorEventProcessor(
                 createdAt = createdAt,
                 simulator = Simulator.AceWindows,
                 readoutItemKey = readoutItemKey,
+                narratedText = narratedText,
                 telemetryJson = telemetryJson,
             )
         } catch (e: CancellationException) {

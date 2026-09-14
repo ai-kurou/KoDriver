@@ -402,5 +402,6 @@ private fun telemetryLog(
     createdAt = createdAt,
     simulator = Simulator.LmuWindows,
     readoutItemKey = readoutItemKey,
+    narratedText = "イエローフラッグ",
     telemetryJson = telemetryJson,
 )
