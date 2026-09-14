@@ -7,10 +7,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.buildlogic.screenshottest.rememberFoldedVerticalHingeDirective
+import kurou.kodriver.buildlogic.screenshottest.rememberNonFlatVerticalHingePosture
 import kurou.kodriver.buildlogic.screenshottest.rememberTabletopPosture
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.Simulator
@@ -75,6 +80,40 @@ class ReadoutContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             windowPosture = rememberTabletopPosture(),
+                            detailContent = { item -> Text("Detail: $item") },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `平らでない縦ヒンジの姿勢では一覧のみを表示する`() {
+        // 平らでない縦ヒンジ（本を途中まで開いた姿勢）へ遷移すると、選択中だった detailPane が
+        // shouldCollapseDetailPane 経由で自動的に閉じられ、一覧のみが潰れずに表示されることを確認する。
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        var selectedItem by
+                            remember {
+                                mutableStateOf<ReadoutListItemType?>(ReadoutListItemType.LmuWindows.Flag)
+                            }
+                        ReadoutContent(
+                            uiState =
+                                ReadoutListUiState(
+                                    selectedSimulator = Simulator.LmuWindows,
+                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                    selectedItem = selectedItem,
+                                ),
+                            onMove = { _, _ -> },
+                            onReadoutEnabledChanged = { _, _ -> },
+                            onQueueEnabledChanged = { _, _ -> },
+                            onStartSoundEnabledChanged = { _, _ -> },
+                            onItemSelected = {},
+                            onClearSelectedItem = { selectedItem = null },
+                            windowPosture = rememberNonFlatVerticalHingePosture(),
                             detailContent = { item -> Text("Detail: $item") },
                         )
                     }
