@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -146,6 +148,36 @@ class TelemetryLogContentTest {
         rule.waitUntil { !backEnabled }
 
         assertFalse(backEnabled)
+        rule.onNodeWithText("フラッグ").assertExists()
+    }
+
+    @Test
+    fun `detailPane表示中にテーブルトップ姿勢になると選択解除コールバックを呼ぶ`() {
+        var windowPosture by mutableStateOf(Posture())
+        var clearSelectedLogCallCount = 0
+
+        rule.setContent {
+            var selectedLogId by remember { mutableStateOf<Long?>(null) }
+            LaunchedEffect(Unit) { selectedLogId = 2L }
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(selectedLogId = selectedLogId),
+                onLogSelected = { selectedLogId = it },
+                onClearSelectedLog = {
+                    clearSelectedLogCallCount++
+                    selectedLogId = null
+                },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                windowPosture = windowPosture,
+                detailContent = { id -> Text("selected: $id") },
+            )
+        }
+
+        rule.onNodeWithText("selected: 2").assertExists()
+
+        rule.runOnIdle { windowPosture = Posture(isTabletop = true) }
+
+        rule.waitUntil { clearSelectedLogCallCount == 1 }
         rule.onNodeWithText("フラッグ").assertExists()
     }
 

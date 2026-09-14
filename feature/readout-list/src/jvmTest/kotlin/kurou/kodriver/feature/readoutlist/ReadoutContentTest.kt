@@ -3,6 +3,7 @@ package kurou.kodriver.feature.readoutlist
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -135,6 +136,42 @@ class ReadoutContentTest {
         }
 
         rule.onNodeWithText(tyreWearText).assertExists()
+    }
+
+    @Test
+    fun `detailPane表示中にテーブルトップ姿勢になると選択解除コールバックを呼ぶ`() {
+        var selectedItem by mutableStateOf<ReadoutListItemType?>(ReadoutListItemType.LmuWindows.TyreWear)
+        var windowPosture by mutableStateOf(Posture())
+        var clearSelectedItemCallCount = 0
+
+        rule.setContent {
+            ReadoutContent(
+                uiState =
+                    ReadoutListUiState(
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
+                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to true),
+                        selectedItem = selectedItem,
+                    ),
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
+                onStartSoundEnabledChanged = { _, _ -> },
+                onItemSelected = {},
+                onClearSelectedItem = {
+                    clearSelectedItemCallCount++
+                    selectedItem = null
+                },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                windowPosture = windowPosture,
+            )
+        }
+
+        rule.runOnIdle { windowPosture = Posture(isTabletop = true) }
+
+        rule.waitUntil { clearSelectedItemCallCount == 1 }
+        assertEquals(null, selectedItem)
     }
 
     @Test

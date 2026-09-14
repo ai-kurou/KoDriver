@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -143,6 +144,15 @@ internal fun ReadoutContent(
                 ListDetailPaneScaffoldRole.List
             },
         )
+    }
+
+    // テーブルトップ姿勢ではヒンジより下側にdetailPaneが潰れて表示されてしまうため、
+    // listPaneの選択を解除して一覧のみの表示に戻す。
+    val currentOnClearSelectedItem by rememberUpdatedState(onClearSelectedItem)
+    LaunchedEffect(windowPosture.isTabletop) {
+        if (windowPosture.isTabletop) {
+            currentOnClearSelectedItem()
+        }
     }
 
     backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }

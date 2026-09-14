@@ -175,6 +175,15 @@ internal fun TelemetryLogContentScaffold(
         )
     }
 
+    // テーブルトップ姿勢ではヒンジより下側にdetailPaneが潰れて表示されてしまうため、
+    // listPaneの選択を解除して一覧のみの表示に戻す。
+    val currentOnClearSelectedLog by rememberUpdatedState(onClearSelectedLog)
+    LaunchedEffect(windowPosture.isTabletop) {
+        if (windowPosture.isTabletop) {
+            currentOnClearSelectedLog()
+        }
+    }
+
     backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }
 
     val snackbarHostState = remember { SnackbarHostState() }

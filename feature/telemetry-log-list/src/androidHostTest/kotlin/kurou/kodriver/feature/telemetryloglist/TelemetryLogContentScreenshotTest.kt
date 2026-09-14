@@ -42,13 +42,15 @@ class TelemetryLogContentScreenshotTest {
     }
 
     @Test
-    fun `テーブルトップ姿勢ではヒンジより上側にコンテンツを収める`() {
+    fun `テーブルトップ姿勢では一覧のみをヒンジより上側に収めて表示する`() {
+        // テーブルトップ姿勢では detailPane を閉じて一覧のみ表示するため、
+        // 無選択状態（selectedLogId = null）の一覧がヒンジ上端までに収まることを確認する。
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         TelemetryLogContentScaffold(
-                            uiState = previewTelemetryLogListUiState.copy(selectedLogId = 2),
+                            uiState = previewTelemetryLogListUiState.copy(selectedLogId = null),
                             windowPosture = rememberTabletopPosture(),
                             detailContent = { logId -> Text("Detail: $logId") },
                         )

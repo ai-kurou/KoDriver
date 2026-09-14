@@ -2,6 +2,7 @@ package kurou.kodriver.presentation
 
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +19,7 @@ import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -161,5 +163,34 @@ class OtherContentTest {
         rule.waitUntil { !backEnabled }
 
         assertFalse(backEnabled)
+    }
+
+    @Test
+    fun `detailPane表示中にテーブルトップ姿勢になると選択解除コールバックを呼ぶ`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(OtherListItemType.Volume)
+        var windowPosture by mutableStateOf(Posture())
+        var clearSelectedItemCallCount = 0
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(selectedItem = selectedItem),
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {
+                    clearSelectedItemCallCount++
+                    selectedItem = null
+                },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                windowPosture = windowPosture,
+                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit, _: Long?, _: Long ->
+                    Text("Detail: ${item.id}")
+                },
+            )
+        }
+
+        rule.runOnIdle { windowPosture = Posture(isTabletop = true) }
+
+        rule.waitUntil { clearSelectedItemCallCount == 1 }
+        assertEquals(null, selectedItem)
     }
 }

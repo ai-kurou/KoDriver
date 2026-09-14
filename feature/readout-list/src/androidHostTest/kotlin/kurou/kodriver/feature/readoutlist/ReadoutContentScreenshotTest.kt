@@ -54,7 +54,9 @@ class ReadoutContentScreenshotTest {
     }
 
     @Test
-    fun `テーブルトップ姿勢ではヒンジより上側にコンテンツを収める`() {
+    fun `テーブルトップ姿勢では一覧のみをヒンジより上側に収めて表示する`() {
+        // テーブルトップ姿勢では detailPane を閉じて一覧のみ表示するため、
+        // 無選択状態（selectedItem = null）の一覧がヒンジ上端までに収まることを確認する。
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             KoDriverTheme {
                 Surface {
@@ -64,7 +66,7 @@ class ReadoutContentScreenshotTest {
                                 ReadoutListUiState(
                                     selectedSimulator = Simulator.LmuWindows,
                                     items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
-                                    selectedItem = ReadoutListItemType.LmuWindows.Flag,
+                                    selectedItem = null,
                                 ),
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
