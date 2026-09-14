@@ -295,5 +295,6 @@ private fun telemetryLog(
         } else {
             ReadoutItemKey.LmuWindows.Flag.Root
         },
+    narratedText = "イエローフラッグ",
     telemetryJson = "{}",
 )

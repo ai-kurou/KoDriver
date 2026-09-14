@@ -21,6 +21,7 @@ class TelemetryLogRepositoryFactoryTest {
                 createdAt = 123L,
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                narratedText = "自己ベストラップ更新",
                 telemetryJson = """{"current":{}}""",
             )
 
@@ -31,6 +32,7 @@ class TelemetryLogRepositoryFactoryTest {
                         createdAt = 123L,
                         simulator = Simulator.Gt7Ps5,
                         readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                        narratedText = "自己ベストラップ更新",
                         telemetryJson = """{"current":{}}""",
                     ),
                 ),

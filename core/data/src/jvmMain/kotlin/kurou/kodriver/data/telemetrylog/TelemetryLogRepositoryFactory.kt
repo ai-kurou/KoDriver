@@ -16,6 +16,7 @@ fun createTelemetryLogRepository(directory: String): TelemetryLogRepository {
                 name = File(directory, "telemetry_logs.db").absolutePath,
                 factory = { TelemetryLogDatabaseConstructor.initialize() },
             ).setDriver(BundledSQLiteDriver())
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     return TelemetryLogRepositoryImpl(database.telemetryLogDao())
 }

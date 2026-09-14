@@ -51,7 +51,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    capture(telemetryJsons),
+                )
             } just Runs
 
             createProcessor().processRemainingFuel(
@@ -69,7 +75,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -83,7 +95,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    capture(telemetryJsons),
+                )
             } just Runs
 
             processor.processRemainingFuel(fuel(50.0), emptyList(), emptyList(), emptyMap(), 100L, logContext(), true)
@@ -104,7 +122,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -140,7 +164,13 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, queue = true) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    capture(telemetryJsons),
+                )
             } just Runs
             val processor = createProcessor()
 
@@ -157,7 +187,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 0) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, queue = true) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -172,7 +208,13 @@ class AceWindowsNarratorEventProcessorTest {
             every { ttsEngine.stop() } just Runs
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    capture(telemetryJsons),
+                )
             } just Runs
             val processor = createProcessor()
 
@@ -190,7 +232,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -202,7 +250,7 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, any())
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, "残り燃料警告", any())
             } throws RuntimeException("db error")
 
             createProcessor().processRemainingFuel(
@@ -217,7 +265,9 @@ class AceWindowsNarratorEventProcessorTest {
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
-            coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, any()) }
+            coVerify(
+                exactly = 1,
+            ) { telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, "残り燃料警告", any()) }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
@@ -229,7 +279,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    capture(telemetryJsons),
+                )
             } just Runs
 
             createProcessor().processRemainingFuel(
@@ -246,7 +302,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -259,7 +321,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    capture(telemetryJsons),
+                )
             } just Runs
             val processor = createProcessor()
 
@@ -286,7 +354,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -299,7 +373,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.MyBestLap.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "自己ベストラップ更新",
+                    capture(telemetryJsons),
+                )
             } just Runs
 
             createProcessor().processMyBestLap(
@@ -317,7 +397,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "自己ベストラップ更新",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -331,7 +417,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.MyBestLap.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "自己ベストラップ更新",
+                    capture(telemetryJsons),
+                )
             } just Runs
 
             processor.processMyBestLap(
@@ -359,7 +451,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "自己ベストラップ更新",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -372,7 +470,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.Flag.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "ブルーフラッグ",
+                    capture(telemetryJsons),
+                )
             } just Runs
 
             createProcessor().processFlag(
@@ -390,7 +494,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "ブルーフラッグ",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -404,7 +514,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.Flag.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "ブルーフラッグ",
+                    capture(telemetryJsons),
+                )
             } just Runs
 
             processor.processFlag(
@@ -432,7 +548,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "ブルーフラッグ",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -445,7 +567,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "タイヤ過熱警告",
+                    capture(telemetryJsons),
+                )
             } just Runs
 
             createProcessor().processTyreTemperature(
@@ -466,7 +594,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "タイヤ過熱警告",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -480,7 +614,13 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "タイヤ過熱警告",
+                    capture(telemetryJsons),
+                )
             } just Runs
 
             processor.processTyreTemperature(
@@ -514,7 +654,13 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "タイヤ過熱警告",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }

@@ -47,6 +47,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     sourceKey,
+                    "自己ベストラップ更新",
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -65,7 +66,13 @@ class Gt7Ps5NarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.Gt7Ps5, sourceKey, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    sourceKey,
+                    "自己ベストラップ更新",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -83,6 +90,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     200L,
                     Simulator.Gt7Ps5,
                     sourceKey,
+                    "自己ベストラップ更新",
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -120,7 +128,13 @@ class Gt7Ps5NarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(200L, Simulator.Gt7Ps5, sourceKey, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.Gt7Ps5,
+                    sourceKey,
+                    "自己ベストラップ更新",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -137,6 +151,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     sourceKey,
+                    "自己ベストラップ更新",
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -154,7 +169,13 @@ class Gt7Ps5NarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
             coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.Gt7Ps5, sourceKey, telemetryJsons.single())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    sourceKey,
+                    "自己ベストラップ更新",
+                    telemetryJsons.single(),
+                )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -173,6 +194,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     myBestLapKey,
+                    "自己ベストラップ更新",
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -196,6 +218,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     myBestLapKey,
+                    "自己ベストラップ更新",
                     telemetryJsons.single(),
                 )
             }
@@ -236,6 +259,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    "燃料は残り約2周",
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -257,6 +281,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    "燃料は残り約2周",
                     telemetryJsons.single(),
                 )
             }
@@ -277,6 +302,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    "自己ベストラップ更新",
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -299,6 +325,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    "自己ベストラップ更新",
                     telemetryJsons.single(),
                 )
             }
@@ -318,6 +345,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     createdAt = 100L,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
+                    narratedText = "自己ベストラップ更新",
                     telemetryJson = capture(slot<String>()),
                 )
             } answers {
@@ -329,6 +357,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     createdAt = 200L,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
+                    narratedText = "自己ベストラップ更新",
                     telemetryJson = capture(slot<String>()),
                 )
             } answers { saveCount += 1 }
@@ -363,6 +392,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     createdAt = 100L,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
+                    narratedText = "自己ベストラップ更新",
                     telemetryJson = capture(slot<String>()),
                 )
             }
@@ -371,6 +401,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     createdAt = 200L,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
+                    narratedText = "自己ベストラップ更新",
                     telemetryJson = capture(slot<String>()),
                 )
             }

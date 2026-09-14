@@ -7,7 +7,7 @@ import androidx.room.RoomDatabaseConstructor
 
 @Database(
     entities = [TelemetryLogEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 @ConstructedBy(TelemetryLogDatabaseConstructor::class)

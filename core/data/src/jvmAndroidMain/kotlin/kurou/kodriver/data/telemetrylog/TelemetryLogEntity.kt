@@ -13,6 +13,7 @@ internal data class TelemetryLogEntity(
     val createdAt: Long,
     val simulatorId: String,
     val readoutItemKey: String,
+    val narratedText: String,
     val telemetryJson: String,
 )
 
@@ -24,6 +25,7 @@ internal fun TelemetryLogEntity.toDomain(): TelemetryLog? {
         createdAt = createdAt,
         simulator = simulator,
         readoutItemKey = readoutItemKey,
+        narratedText = narratedText,
         telemetryJson = telemetryJson,
     )
 }

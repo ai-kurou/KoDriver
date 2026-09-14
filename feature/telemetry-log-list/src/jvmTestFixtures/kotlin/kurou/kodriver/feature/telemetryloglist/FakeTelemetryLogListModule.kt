@@ -42,6 +42,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
         createdAt: Long,
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
+        narratedText: String,
         telemetryJson: String,
     ) {
         val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
@@ -52,6 +53,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
                     createdAt = createdAt,
                     simulator = simulator,
                     readoutItemKey = readoutItemKey,
+                    narratedText = narratedText,
                     telemetryJson = telemetryJson,
                 ),
         )
