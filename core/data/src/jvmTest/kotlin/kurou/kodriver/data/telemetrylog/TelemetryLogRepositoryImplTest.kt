@@ -172,6 +172,28 @@ class TelemetryLogRepositoryImplTest {
         }
 
     @Test
+    fun `observeLatestTelemetryLogは最新のログをDomainへ変換して観測する`() =
+        runTest {
+            val latest = telemetryLogEntity(id = 2L, createdAt = 2000L)
+            val dao =
+                FakeTelemetryLogDao(
+                    initialLogs = listOf(telemetryLogEntity(id = 1L, createdAt = 1000L), latest),
+                )
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(latest.toDomainLog(), repository.observeLatestTelemetryLog().first())
+        }
+
+    @Test
+    fun `observeLatestTelemetryLogはログが存在しない場合nullを返す`() =
+        runTest {
+            val dao = FakeTelemetryLogDao()
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertNull(repository.observeLatestTelemetryLog().first())
+        }
+
+    @Test
     fun `observeTelemetryLogDetailは指定idのログとその一つ前のログをDomainへ変換して観測する`() =
         runTest {
             val latest = telemetryLogEntity(id = 4L, createdAt = 3000L)
@@ -282,6 +304,11 @@ private class FakeTelemetryLogDao(
                 it.id ==
                     id
             }
+        }
+
+    override fun observeLatestTelemetryLog(): Flow<TelemetryLogEntity?> =
+        logs.map { logs ->
+            logs.maxWithOrNull(compareBy<TelemetryLogEntity> { it.createdAt }.thenBy { it.id })
         }
 
     override fun observePreviousTelemetryLog(

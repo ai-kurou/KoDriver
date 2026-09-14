@@ -11,6 +11,8 @@ interface TelemetryLogRepository {
 
     fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?>
 
+    fun observeLatestTelemetryLog(): Flow<TelemetryLog?>
+
     suspend fun saveTelemetryLog(
         createdAt: Long,
         simulator: Simulator,
