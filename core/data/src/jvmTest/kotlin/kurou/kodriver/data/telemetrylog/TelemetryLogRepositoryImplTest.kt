@@ -25,6 +25,7 @@ class TelemetryLogRepositoryImplTest {
                 createdAt = 1000L,
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                narratedText = "燃料は残り約1周",
                 telemetryJson = """{"lapCount":1}""",
             )
 
@@ -34,6 +35,7 @@ class TelemetryLogRepositoryImplTest {
                         createdAt = 1000L,
                         simulatorId = Simulator.Gt7Ps5.id,
                         readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                        narratedText = "燃料は残り約1周",
                         telemetryJson = """{"lapCount":1}""",
                     ),
                 ),
@@ -51,6 +53,7 @@ class TelemetryLogRepositoryImplTest {
                 createdAt = 1000L,
                 simulator = Simulator.AceWindows,
                 readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                narratedText = "残り燃料警告",
                 telemetryJson = """{"remainingFuelLiters":8.2}""",
             )
 
@@ -60,6 +63,7 @@ class TelemetryLogRepositoryImplTest {
                         createdAt = 1000L,
                         simulatorId = Simulator.AceWindows.id,
                         readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
+                        narratedText = "残り燃料警告",
                         telemetryJson = """{"remainingFuelLiters":8.2}""",
                     ),
                 ),
@@ -111,6 +115,7 @@ class TelemetryLogRepositoryImplTest {
                                 createdAt = 2000L,
                                 simulatorId = Simulator.LmuWindows.id,
                                 readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
+                                narratedText = "イエローフラッグ",
                                 telemetryJson = """{"currentLap":2}""",
                             ),
                         ),
@@ -124,6 +129,7 @@ class TelemetryLogRepositoryImplTest {
                         createdAt = 2000L,
                         simulator = Simulator.LmuWindows,
                         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                        narratedText = "イエローフラッグ",
                         telemetryJson = """{"currentLap":2}""",
                     ),
                 ),
@@ -143,6 +149,7 @@ class TelemetryLogRepositoryImplTest {
                                 createdAt = 2000L,
                                 simulatorId = Simulator.AceWindows.id,
                                 readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
+                                narratedText = "残り燃料警告",
                                 telemetryJson = """{"remainingFuelLiters":8.2}""",
                             ),
                         ),
@@ -156,6 +163,7 @@ class TelemetryLogRepositoryImplTest {
                         createdAt = 2000L,
                         simulator = Simulator.AceWindows,
                         readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                        narratedText = "残り燃料警告",
                         telemetryJson = """{"remainingFuelLiters":8.2}""",
                     ),
                 ),
@@ -313,6 +321,7 @@ private fun telemetryLogEntity(
         } else {
             ReadoutItemKey.LmuWindows.Flag.Root.value
         },
+    narratedText = "イエローフラッグ",
     telemetryJson = """{"id":$id}""",
 )
 
@@ -322,5 +331,6 @@ private fun TelemetryLogEntity.toDomainLog() =
         createdAt = createdAt,
         simulator = Simulator.fromId(simulatorId) ?: error("Unknown simulatorId: $simulatorId"),
         readoutItemKey = ReadoutItemKey.fromValue(readoutItemKey) ?: error("Unknown readoutItemKey: $readoutItemKey"),
+        narratedText = narratedText,
         telemetryJson = telemetryJson,
     )

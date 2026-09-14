@@ -11,12 +11,14 @@ class SaveTelemetryLogUseCase(
         createdAt: Long,
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
+        narratedText: String,
         telemetryJson: String,
     ) {
         repository.saveTelemetryLog(
             createdAt = createdAt,
             simulator = simulator,
             readoutItemKey = readoutItemKey,
+            narratedText = narratedText,
             telemetryJson = telemetryJson,
         )
     }
