@@ -50,18 +50,28 @@ set +e
 
 # 縦ヒンジが完全に平らに開いた状態（OPENED）。
 # list/detail の2ペイン表示を維持できる姿勢で detailPane を開き、表示されることを確認する。
+# device state の切り替え自体が失敗した場合、直前の姿勢のままMaestroフローが実行され
+# 誤って成功扱いになるのを防ぐため、切り替えの終了コードもチェックする。
 adb shell cmd device_state state "$opened_state_id"
-sleep "$posture_settle_seconds"
-maestro test .maestro/foldable-open-detail.yaml
 maestro_exit_code=$?
+
+if [ "$maestro_exit_code" -eq 0 ]; then
+  sleep "$posture_settle_seconds"
+  maestro test .maestro/foldable-open-detail.yaml
+  maestro_exit_code=$?
+fi
 
 if [ "$maestro_exit_code" -eq 0 ]; then
   # 縦ヒンジが完全には平らに開いていない状態（HALF_OPENED）。
   # shouldCollapseDetailPane が true になり、detailPane の選択が自動的に解除されることを確認する。
   adb shell cmd device_state state "$half_opened_state_id"
-  sleep "$posture_settle_seconds"
-  maestro test .maestro/foldable-detail-collapsed.yaml
   maestro_exit_code=$?
+
+  if [ "$maestro_exit_code" -eq 0 ]; then
+    sleep "$posture_settle_seconds"
+    maestro test .maestro/foldable-detail-collapsed.yaml
+    maestro_exit_code=$?
+  fi
 fi
 
 adb shell cmd device_state state reset
