@@ -26,7 +26,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -208,13 +207,13 @@ internal fun TelemetryLogContentScaffold(
         )
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier.constrainToTabletopTopPane(windowPosture)) {
         ListDetailPaneScaffold(
             directive = navigator.scaffoldDirective,
             scaffoldState = navigator.scaffoldState,
             paneExpansionState = paneExpansionState,
             paneExpansionDragHandle = { VerticalDivider() },
-            modifier = Modifier.fillMaxSize().constrainToTabletopTopPane(windowPosture, LocalDensity.current),
+            modifier = Modifier.fillMaxSize(),
             listPane = {
                 TelemetryLogListPane(
                     uiState = uiState,
