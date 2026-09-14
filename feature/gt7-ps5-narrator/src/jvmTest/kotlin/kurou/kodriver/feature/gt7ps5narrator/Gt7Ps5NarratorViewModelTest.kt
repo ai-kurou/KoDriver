@@ -842,12 +842,13 @@ class Gt7Ps5NarratorViewModelTest {
             queuePreferencesRepository.observeQueueEnabledStates()
         } returns MutableStateFlow(queueEnabledOverrides)
         val telemetryJsons = mutableListOf<String>()
+        val myBestLapNarratedText = if (voiceType == MyBestLapVoiceType.FORMAL) "自己ベストラップ更新" else "ベストラップ"
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
-                any(),
+                myBestLapNarratedText,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -865,7 +866,7 @@ class Gt7Ps5NarratorViewModelTest {
                 any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                any(),
+                "残り燃料警告",
                 capture(telemetryJsons),
             )
         } just Runs
@@ -874,7 +875,7 @@ class Gt7Ps5NarratorViewModelTest {
                 any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
-                any(),
+                "タイヤ過熱警告",
                 capture(telemetryJsons),
             )
         } just Runs

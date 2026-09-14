@@ -347,7 +347,7 @@ class AceWindowsNarratorViewModelTest {
                     any(),
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root,
-                    any(),
+                    "残り燃料警告",
                     any(),
                 )
             } just Runs
