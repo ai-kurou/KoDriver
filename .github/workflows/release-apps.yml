@@ -14,8 +14,14 @@ jobs:
       ref: main
     secrets: inherit
 
+  e2e-android-foldable:
+    uses: ./.github/workflows/_e2e-android-foldable-maestro.yml
+    with:
+      ref: main
+    secrets: inherit
+
   version-bump:
-    needs: e2e-android
+    needs: [e2e-android, e2e-android-foldable]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

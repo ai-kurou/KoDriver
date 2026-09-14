@@ -1,0 +1,3 @@
+appId: kurou.kodriver
+---
+- assertNotVisible: "戻る"

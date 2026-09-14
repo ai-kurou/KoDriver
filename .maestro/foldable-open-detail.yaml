@@ -1,0 +1,8 @@
+appId: kurou.kodriver
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "ルール"
+    timeout: 30000
+- tapOn: "車両接近"
+- assertVisible: "戻る"
