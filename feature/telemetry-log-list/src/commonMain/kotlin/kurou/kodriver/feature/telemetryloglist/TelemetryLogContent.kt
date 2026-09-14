@@ -6,6 +6,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -31,7 +32,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
+import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
+import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -51,6 +54,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun TelemetryLogContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     onFeedbackClick: (Long) -> Unit = {},
@@ -72,6 +76,7 @@ fun TelemetryLogContent(
         onDeleteResultConsumed = viewModel::consumeDeleteResult,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
+        windowPosture = windowPosture,
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
         onFeedbackClick = onFeedbackClick,
@@ -96,6 +101,7 @@ internal fun TelemetryLogContentScaffold(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+    windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     onFeedbackClick: (Long) -> Unit = {},
@@ -170,6 +176,16 @@ internal fun TelemetryLogContentScaffold(
         )
     }
 
+    // テーブルトップ姿勢や、縦ヒンジが完全には平らに開いていない姿勢では、
+    // detailPaneを表示する幅が確保できず潰れて表示されてしまうため、
+    // listPaneの選択を解除して一覧のみの表示に戻す。
+    val currentOnClearSelectedLog by rememberUpdatedState(onClearSelectedLog)
+    LaunchedEffect(windowPosture.shouldCollapseDetailPane) {
+        if (windowPosture.shouldCollapseDetailPane) {
+            currentOnClearSelectedLog()
+        }
+    }
+
     backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -202,7 +218,7 @@ internal fun TelemetryLogContentScaffold(
         )
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier.constrainToTabletopTopPane(windowPosture)) {
         ListDetailPaneScaffold(
             directive = navigator.scaffoldDirective,
             scaffoldState = navigator.scaffoldState,

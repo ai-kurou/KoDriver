@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.buildlogic.screenshottest.rememberFoldedVerticalHingeDirective
+import kurou.kodriver.buildlogic.screenshottest.rememberTabletopPosture
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Test
@@ -44,6 +45,36 @@ class ReadoutContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = rememberFoldedVerticalHingeDirective(),
+                            detailContent = { item -> Text("Detail: $item") },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `テーブルトップ姿勢では一覧のみをヒンジより上側に収めて表示する`() {
+        // テーブルトップ姿勢では detailPane を閉じて一覧のみ表示するため、
+        // 無選択状態（selectedItem = null）の一覧がヒンジ上端までに収まることを確認する。
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        ReadoutContent(
+                            uiState =
+                                ReadoutListUiState(
+                                    selectedSimulator = Simulator.LmuWindows,
+                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                    selectedItem = null,
+                                ),
+                            onMove = { _, _ -> },
+                            onReadoutEnabledChanged = { _, _ -> },
+                            onQueueEnabledChanged = { _, _ -> },
+                            onStartSoundEnabledChanged = { _, _ -> },
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            windowPosture = rememberTabletopPosture(),
                             detailContent = { item -> Text("Detail: $item") },
                         )
                     }

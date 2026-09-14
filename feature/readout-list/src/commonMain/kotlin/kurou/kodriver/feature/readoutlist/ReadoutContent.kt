@@ -3,6 +3,7 @@ package kurou.kodriver.feature.readoutlist
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,7 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
+import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
+import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.koin.compose.viewmodel.koinViewModel
@@ -38,6 +42,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
@@ -54,6 +59,7 @@ fun ReadoutContent(
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
+        windowPosture = windowPosture,
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
         detailContent = detailContent,
@@ -74,6 +80,7 @@ internal fun ReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+    windowPosture: Posture = currentWindowAdaptiveInfo().windowPosture,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
@@ -140,6 +147,16 @@ internal fun ReadoutContent(
         )
     }
 
+    // テーブルトップ姿勢や、縦ヒンジが完全には平らに開いていない姿勢では、
+    // detailPaneを表示する幅が確保できず潰れて表示されてしまうため、
+    // listPaneの選択を解除して一覧のみの表示に戻す。
+    val currentOnClearSelectedItem by rememberUpdatedState(onClearSelectedItem)
+    LaunchedEffect(windowPosture.shouldCollapseDetailPane) {
+        if (windowPosture.shouldCollapseDetailPane) {
+            currentOnClearSelectedItem()
+        }
+    }
+
     backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }
 
     ListDetailPaneScaffold(
@@ -147,7 +164,7 @@ internal fun ReadoutContent(
         scaffoldState = navigator.scaffoldState,
         paneExpansionState = paneExpansionState,
         paneExpansionDragHandle = { VerticalDivider() },
-        modifier = modifier,
+        modifier = modifier.constrainToTabletopTopPane(windowPosture),
         listPane = {
             ReadoutListPane(
                 uiState = uiState,
