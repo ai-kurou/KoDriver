@@ -60,6 +60,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:ace-windows-readout-my-best-lap-detail` | ACE 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-my-best-lap-detail.svg) |
 | `:feature:telemetry-log-list` | テレメトリログの一覧表示 UI | [図](graphs/feature-telemetry-log-list.svg) |
 | `:feature:telemetry-log-detail` | テレメトリログの詳細表示 UI | [図](graphs/feature-telemetry-log-detail.svg) |
+| `:feature:narrator-overlay` | TelemetryLog の最新の読み上げ内容をライブ購読して表示するオーバーレイ（画面・ViewModel は未実装） | [図](graphs/feature-narrator-overlay.svg) |
 | `:server` | デスクトップアプリと同一プロセスで起動する Ktor サーバー。`/ws/<Simulator.id>/<feature>` WebSocket で共有メモリ由来の走行情報を配信する | [図](graphs/server.svg) |
 
 ## モジュール一覧の更新漏れ防止
