@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.buildlogic.screenshottest.rememberFoldedVerticalHingeDirective
+import kurou.kodriver.buildlogic.screenshottest.rememberNonFlatVerticalHingePosture
 import kurou.kodriver.buildlogic.screenshottest.rememberTabletopPosture
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.Simulator
@@ -75,6 +76,36 @@ class ReadoutContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             windowPosture = rememberTabletopPosture(),
+                            detailContent = { item -> Text("Detail: $item") },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `平らでない縦ヒンジの姿勢では一覧のみを表示する`() {
+        // 平らでない縦ヒンジ（本を途中まで開いた姿勢）では detailPane を閉じて一覧のみ表示するため、
+        // 無選択状態（selectedItem = null）の一覧が潰れずに表示されることを確認する。
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        ReadoutContent(
+                            uiState =
+                                ReadoutListUiState(
+                                    selectedSimulator = Simulator.LmuWindows,
+                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                    selectedItem = null,
+                                ),
+                            onMove = { _, _ -> },
+                            onReadoutEnabledChanged = { _, _ -> },
+                            onQueueEnabledChanged = { _, _ -> },
+                            onStartSoundEnabledChanged = { _, _ -> },
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            windowPosture = rememberNonFlatVerticalHingePosture(),
                             detailContent = { item -> Text("Detail: $item") },
                         )
                     }

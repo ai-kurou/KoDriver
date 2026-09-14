@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.buildlogic.screenshottest.rememberFoldedVerticalHingeDirective
+import kurou.kodriver.buildlogic.screenshottest.rememberNonFlatVerticalHingePosture
 import kurou.kodriver.buildlogic.screenshottest.rememberTabletopPosture
 import kurou.kodriver.buildlogic.screenshottest.twoPaneDirective
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent
@@ -199,6 +200,35 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             windowPosture = rememberTabletopPosture(),
+                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                if (itemType == OtherListItemType.Volume) {
+                                    OtherVolumeDetailPaneContent(
+                                        uiState = OtherVolumeDetailUiState(volume = 80),
+                                        canNavigateBack = canNavigateBack,
+                                        onBack = onBack,
+                                    )
+                                }
+                            },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `平らでない縦ヒンジの姿勢では一覧のみを表示する`() {
+        // 平らでない縦ヒンジ（本を途中まで開いた姿勢）では detailPane を閉じて一覧のみ表示するため、
+        // 無選択状態（selectedItem = null）の一覧が潰れずに表示されることを確認する。
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
+            AppTheme {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        OtherContent(
+                            uiState = OtherListUiState(selectedItem = null),
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            windowPosture = rememberNonFlatVerticalHingePosture(),
                             detailContent = { itemType, canNavigateBack, onBack, _, _ ->
                                 if (itemType == OtherListItemType.Volume) {
                                     OtherVolumeDetailPaneContent(
