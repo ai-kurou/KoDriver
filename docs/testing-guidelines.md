@@ -38,6 +38,7 @@
 - 対象の `@Preview` には `includePrivatePreviews = true` を設定した上で、`widthDp` / `heightDp` に上記の画面サイズ規約の値を明示すること（Android Studio 上のプレビュー表示サイズにもそのまま反映される）。
 - ComposablePreviewScanner は JVM 17 のメタデータで公開されているため、対象モジュールの `jvm()` ターゲットの test コンパイル・依存解決のみ `JvmTarget.JVM_17` に引き上げる必要がある（`feature-kmp.gradle.kts` の全体設定は変更しない）。
 - 既存の `@Preview` と1:1対応する手書きの `ScreenshotTest.kt`（`src/jvmTest`）は自動生成側に統合し削除する。Preview化されていないテストケースがある場合は、削除前に対応する `@Preview` を追加してカバレッジを維持すること。
+- 自動生成されるゴールデン画像のファイル名は `@Preview` 関数名から機械的に決まるため、`XxxDefaultPreview` / `XxxInvalidPreview` のような画面遷移の都合による名前ではなく、`XxxValidInputPreview` / `XxxEmptyInputPreview` / `XxxInvalidAddressPreview` のように**何の状態を検証しているかがPreview関数名だけで分かる名前**にすること。ゴールデン画像やCIの差分をファイル名だけで判別できるようにするための規約。
 
 ## Koin モジュールグラフの検証
 

@@ -300,7 +300,7 @@ private const val DETAIL_PANE_PREVIEW_HEIGHT_DP = 1080
 
 @Preview(showBackground = true, widthDp = DETAIL_PANE_PREVIEW_WIDTH_DP, heightDp = DETAIL_PANE_PREVIEW_HEIGHT_DP)
 @Composable
-private fun OtherConsoleIpDetailPaneDefaultPreview() {
+private fun OtherConsoleIpDetailPaneValidInputPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
     )
@@ -308,7 +308,7 @@ private fun OtherConsoleIpDetailPaneDefaultPreview() {
 
 @Preview(showBackground = true, widthDp = DETAIL_PANE_PREVIEW_WIDTH_DP, heightDp = DETAIL_PANE_PREVIEW_HEIGHT_DP)
 @Composable
-private fun OtherConsoleIpDetailPaneEmptyPreview() {
+private fun OtherConsoleIpDetailPaneEmptyInputPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = ""),
     )
@@ -316,7 +316,7 @@ private fun OtherConsoleIpDetailPaneEmptyPreview() {
 
 @Preview(showBackground = true, widthDp = DETAIL_PANE_PREVIEW_WIDTH_DP, heightDp = DETAIL_PANE_PREVIEW_HEIGHT_DP)
 @Composable
-private fun OtherConsoleIpDetailPaneInvalidPreview() {
+private fun OtherConsoleIpDetailPaneInvalidAddressPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
     )
