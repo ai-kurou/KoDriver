@@ -29,6 +29,16 @@
 
 新規追加・移動したスクリーンショットテストのゴールデン画像は、手元で生成してコミットしてはならない。ゴールデン画像の追加・更新は CI（`on-pull-request.yml` の verify → 失敗時の自動再記録）で行われる。動作確認などで手元に `**/snapshots/*.png` が生成・更新された場合は、PR 作成や報告の前に必ず破棄すること。Android 向けスクリーンショットテストを追加する場合は、PR 説明に Desktop/JVM 版と見た目が異なる理由を書くこと。
 
+### `@Preview` からのスクリーンショットテスト自動生成（試験導入中）
+
+`feature:other-console-ip-detail` では、Roborazzi の `generateComposePreviewDesktopTests`（`io.github.takahirom.roborazzi:roborazzi-compose-desktop-preview-scanner-support` + `ComposablePreviewScanner`）を使い、`src/commonMain` の `@Preview` から `src/jvmTest` のスクリーンショットテストを自動生成する構成を試験導入している。他モジュールへの本格展開は未実施（詳細は [#1544](https://github.com/ai-kurou/KoDriver/issues/1544) を参照）。
+
+- 対象は Desktop/JVM（`src/jvmTest`）のみ。**Roborazzi Gradle プラグイン（`io.github.takahirom.roborazzi`）を `com.android.kotlin.multiplatform.library` モジュールに適用すると、`generateComposePreviewDesktopTests` しか使っていなくても既存の `src/androidHostTest` の手書き Compose スクリーンショットテストがコンパイルエラーになる（Compose の import が解決できなくなる）ことを確認した。** 原因はプラグイン側の AGP KMP Android ライブラリ向け自動設定（`AndroidRoborazziConfigurator.configureKmpAndroidLibrary`）の副作用と見られ、回避策は見つからなかった。そのため試験導入では `feature:other-console-ip-detail` の `src/androidHostTest` にあった手書きスクリーンショットテストを削除している（Android 版の見た目確認テストが一時的に失われるトレードオフ）。他モジュールへ展開する際、Android 版の見た目差分確認が必要な場合はこの制約を考慮すること。
+- Roborazzi Gradle プラグインは AGP の `com.android.kotlin.multiplatform.library` 向けに `recordRoborazziAndroidHostTest` 等、`gradle/roborazzi.gradle.kts` が手書きで登録しているタスクと同名のタスクを `afterEvaluate` で自動登録する。二重登録によるビルド失敗を避けるため、`gradle/roborazzi.gradle.kts` 側は該当タスクの登録を `afterEvaluate` に包み、その時点で未登録の場合のみ登録するようにしてある。今後このプラグインを適用するモジュールを追加する際は、このガードが引き続き機能するか確認すること。
+- 対象の `@Preview` には `includePrivatePreviews = true` を設定した上で、`widthDp` / `heightDp` に上記の画面サイズ規約の値を明示すること（Android Studio 上のプレビュー表示サイズにもそのまま反映される）。
+- ComposablePreviewScanner は JVM 17 のメタデータで公開されているため、対象モジュールの `jvm()` ターゲットの test コンパイル・依存解決のみ `JvmTarget.JVM_17` に引き上げる必要がある（`feature-kmp.gradle.kts` の全体設定は変更しない）。
+- 既存の `@Preview` と1:1対応する手書きの `ScreenshotTest.kt`（`src/jvmTest`）は自動生成側に統合し削除する。Preview化されていないテストケースがある場合は、削除前に対応する `@Preview` を追加してカバレッジを維持すること。
+
 ## Koin モジュールグラフの検証
 
 `app:desktopApp`（`DesktopKoinModuleGraphTest`）・`app:androidApp`（`AndroidKoinModuleGraphTest`）には、

@@ -33,6 +33,7 @@ kover = "0.9.9"
 datastore = "1.2.1"
 kotlinx-serialization = "1.11.0"
 roborazzi = "1.72.0"
+composablePreviewScanner = "0.9.3"
 robolectric = "4.16.1"
 modulesGraphAssert = "2.9.1"
 # 1.6.x はJava 21ビルド前提の破壊的変更(非推奨API削除等)を含むメジャーアップデートのため、互換性未確認により更新を見送っている
@@ -116,6 +117,8 @@ detekt-composeRules = { group = "io.nlopez.compose.rules", name = "detekt", vers
 roborazzi-composeDesktop = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop", version.ref = "roborazzi" }
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-composeDesktopPreviewScannerSupport = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop-preview-scanner-support", version.ref = "roborazzi" }
+composablePreviewScanner = { module = "io.github.sergio-sastre.ComposablePreviewScanner:android", version.ref = "composablePreviewScanner" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons-extended" }
@@ -143,3 +146,4 @@ aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "abo
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }

@@ -21,6 +21,7 @@ plugins {
     alias(libs.plugins.modulesGraphAssert)
     alias(libs.plugins.kotlinxSerialization) apply false
     alias(libs.plugins.androidxBaselineProfile) apply false
+    alias(libs.plugins.roborazzi) apply false
 }
 
 plugins.withType<YarnPlugin> {

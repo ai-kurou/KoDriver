@@ -295,7 +295,10 @@ fun OtherConsoleIpDetailPaneContent(
     }
 }
 
-@Preview(showBackground = true)
+private const val DETAIL_PANE_PREVIEW_WIDTH_DP = 1560
+private const val DETAIL_PANE_PREVIEW_HEIGHT_DP = 1080
+
+@Preview(showBackground = true, widthDp = DETAIL_PANE_PREVIEW_WIDTH_DP, heightDp = DETAIL_PANE_PREVIEW_HEIGHT_DP)
 @Composable
 private fun OtherConsoleIpDetailPaneDefaultPreview() {
     OtherConsoleIpDetailPaneContent(
@@ -303,7 +306,15 @@ private fun OtherConsoleIpDetailPaneDefaultPreview() {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = DETAIL_PANE_PREVIEW_WIDTH_DP, heightDp = DETAIL_PANE_PREVIEW_HEIGHT_DP)
+@Composable
+private fun OtherConsoleIpDetailPaneEmptyPreview() {
+    OtherConsoleIpDetailPaneContent(
+        uiState = OtherConsoleIpDetailUiState(inputAddress = ""),
+    )
+}
+
+@Preview(showBackground = true, widthDp = DETAIL_PANE_PREVIEW_WIDTH_DP, heightDp = DETAIL_PANE_PREVIEW_HEIGHT_DP)
 @Composable
 private fun OtherConsoleIpDetailPaneInvalidPreview() {
     OtherConsoleIpDetailPaneContent(
@@ -311,7 +322,7 @@ private fun OtherConsoleIpDetailPaneInvalidPreview() {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = DETAIL_PANE_PREVIEW_WIDTH_DP, heightDp = DETAIL_PANE_PREVIEW_HEIGHT_DP)
 @Composable
 private fun OtherConsoleIpDetailPaneSaveFailedPreview() {
     OtherConsoleIpDetailPaneContent(
