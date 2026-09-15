@@ -1,5 +1,5 @@
 plugins {
-    id("feature-compose")
+    id("feature-compose-screenshot")
 }
 
 kotlin {
