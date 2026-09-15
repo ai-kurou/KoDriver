@@ -63,6 +63,7 @@ kotlin {
             implementation(projects.feature.gt7Ps5Narrator)
             implementation(projects.feature.aceWindowsNarrator)
             implementation(projects.feature.debugStateDetail)
+            implementation(projects.feature.narratorOverlay)
             implementation(projects.feature.otherLicenseDetail)
             implementation(projects.feature.otherList)
             implementation(projects.feature.otherFeedbackDetail)
