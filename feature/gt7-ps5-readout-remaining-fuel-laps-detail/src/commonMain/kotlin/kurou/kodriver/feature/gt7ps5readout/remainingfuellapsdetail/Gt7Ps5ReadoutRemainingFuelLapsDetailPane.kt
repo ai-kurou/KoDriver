@@ -11,11 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
@@ -75,7 +75,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.remaining_fuel_laps_enabled),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
@@ -84,7 +84,13 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
                         chipEnabled = true,
                         onChipClick = { onPreviewClicked() },
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.small,
+                            ),
+                    )
                     ThresholdSlider(
                         value = uiState.remainingFuelLaps.toFloat(),
                         valueRange = MINIMUM_REMAINING_FUEL_LAPS..MAXIMUM_REMAINING_FUEL_LAPS,

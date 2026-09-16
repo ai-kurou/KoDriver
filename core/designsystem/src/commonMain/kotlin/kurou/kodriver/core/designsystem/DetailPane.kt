@@ -39,7 +39,7 @@ fun DetailPaneBodyText(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.padding(vertical = 4.dp),
+        modifier = modifier.padding(vertical = KoDriverSpacing.extraSmall),
     )
 }
 
@@ -53,7 +53,7 @@ fun DetailPaneDescription(
 ) {
     DetailPaneBodyText(
         text = text,
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        modifier = modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.extraSmall),
     )
 }
 
@@ -68,7 +68,7 @@ fun DetailPaneSubtitle(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.height(64.dp).padding(vertical = 8.dp),
+        modifier = modifier.height(64.dp).padding(vertical = KoDriverSpacing.small),
     ) {
         Box(
             modifier =
@@ -81,7 +81,7 @@ fun DetailPaneSubtitle(
             text = text,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.padding(start = 8.dp),
+            modifier = Modifier.padding(start = KoDriverSpacing.small),
         )
         if (trailingContent != null) {
             trailingContent()

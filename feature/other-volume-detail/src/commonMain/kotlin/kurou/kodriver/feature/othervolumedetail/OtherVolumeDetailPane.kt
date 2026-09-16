@@ -12,13 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.feature.othervolumedetail.generated.resources.Res
@@ -92,9 +92,9 @@ fun OtherVolumeDetailPaneContent(
             )
             DetailPaneSubtitle(
                 text = stringResource(Res.string.volume_subtitle),
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             )
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Column(modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.small)) {
                 DetailPaneBodyText(text = stringResource(Res.string.volume_formula))
                 DetailPaneBodyText(text = stringResource(Res.string.volume_low_warning))
             }
@@ -103,13 +103,13 @@ fun OtherVolumeDetailPaneContent(
                 valueRange = 0f..100f,
                 labelFormatter = { volumeLabel.formatSliderLabel(it.roundToInt()) },
                 onValueChangeFinished = { onVolumeChanged(it.roundToInt()) },
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
                 steps = 99,
             )
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
             ) {
                 DetailPaneCardChips(
                     chipLabels = listOf(previewChipLabel),
@@ -120,9 +120,9 @@ fun OtherVolumeDetailPaneContent(
             }
             DetailPaneSubtitle(
                 text = stringResource(Res.string.device_volume_subtitle),
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             )
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Column(modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.small)) {
                 DetailPaneBodyText(text = stringResource(Res.string.device_volume_description))
             }
             ThresholdSlider(
@@ -130,7 +130,7 @@ fun OtherVolumeDetailPaneContent(
                 valueRange = 0f..100f,
                 labelFormatter = { volumeLabel.formatSliderLabel(it.roundToInt()) },
                 onValueChangeFinished = { onDeviceVolumeChanged(it.roundToInt()) },
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
                 steps = 99,
             )
         }

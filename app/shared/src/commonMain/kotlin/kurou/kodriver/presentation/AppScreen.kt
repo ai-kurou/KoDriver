@@ -555,7 +555,7 @@ private fun AppScreenScaffold(
                 .safeDrawingPadding(),
     ) {
         NavigationSuiteScaffold(
-            modifier = Modifier.padding(top = 4.dp),
+            modifier = Modifier.padding(top = AppSpacing.extraSmall),
             layoutType = resolvedLayoutType,
             navigationSuiteItems = {
                 appScreenPrimarySimulatorNavItem(
@@ -651,13 +651,13 @@ private fun AppScreenScaffold(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .padding(
-                        start = 16.dp,
-                        end = 16.dp,
+                        start = AppSpacing.large,
+                        end = AppSpacing.large,
                         bottom =
                             if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
                                 96.dp
                             } else {
-                                16.dp
+                                AppSpacing.large
                             },
                     ),
         )

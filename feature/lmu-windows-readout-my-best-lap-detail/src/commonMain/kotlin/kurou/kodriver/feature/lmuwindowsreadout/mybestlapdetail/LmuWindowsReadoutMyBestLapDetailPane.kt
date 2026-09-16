@@ -9,11 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_description
@@ -57,7 +57,7 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.my_best_lap_enabled),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = voiceTypeLabels.map { (_, label) -> label },

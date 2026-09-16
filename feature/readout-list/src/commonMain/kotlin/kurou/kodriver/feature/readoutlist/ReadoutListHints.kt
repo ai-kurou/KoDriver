@@ -5,7 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
 import kurou.kodriver.feature.readoutlist.generated.resources.ace_readout_timing_hint_description
@@ -26,7 +26,7 @@ internal fun AceReadoutTimingHintRow(modifier: Modifier = Modifier) {
         text = stringResource(Res.string.ace_readout_timing_hint_description),
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.error,
-        modifier = modifier.padding(bottom = 12.dp),
+        modifier = modifier.padding(bottom = KoDriverSpacing.medium),
     )
 }
 
@@ -36,6 +36,6 @@ internal fun Gt7Ps5DesktopReadoutHintRow(modifier: Modifier = Modifier) {
         text = stringResource(Res.string.gt7_ps5_desktop_readout_hint_description),
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.error,
-        modifier = modifier.padding(bottom = 12.dp),
+        modifier = modifier.padding(bottom = KoDriverSpacing.medium),
     )
 }

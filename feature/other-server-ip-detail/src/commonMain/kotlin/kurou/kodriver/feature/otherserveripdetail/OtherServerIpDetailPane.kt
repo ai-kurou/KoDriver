@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.navigate_back
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_connectivity_warning
@@ -157,10 +158,10 @@ fun OtherServerIpDetailPaneContent(
                 Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    .padding(KoDriverSpacing.large),
         ) {
             Text(stringResource(Res.string.server_ip_description))
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
                 value = uiState.inputIp,
                 onValueChange = onIpChanged,
@@ -180,7 +181,7 @@ fun OtherServerIpDetailPaneContent(
             )
             AnimatedVisibility(visible = uiState.connectivityWarning) {
                 Column {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(KoDriverSpacing.small))
                     Text(
                         text = stringResource(Res.string.server_ip_connectivity_warning),
                         color = MaterialTheme.colorScheme.error,
@@ -188,7 +189,7 @@ fun OtherServerIpDetailPaneContent(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.small))
             OutlinedButton(
                 onClick = onShowDiscoveredServers,
                 enabled = uiState.discoveredServers.isNotEmpty(),
@@ -208,7 +209,7 @@ fun OtherServerIpDetailPaneContent(
                                     modifier = Modifier.size(16.dp),
                                     strokeWidth = 2.dp,
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(KoDriverSpacing.small))
                                 Text(stringResource(Res.string.server_ip_discovering))
                             } else {
                                 Text(stringResource(Res.string.server_ip_discovery_show_button))
@@ -217,7 +218,7 @@ fun OtherServerIpDetailPaneContent(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             AnimatedContent(
                 targetState = uiState.connectivityWarning,
                 transitionSpec = { fadeIn() togetherWith fadeOut() },
@@ -243,7 +244,7 @@ fun OtherServerIpDetailPaneContent(
                                         modifier = Modifier.size(16.dp),
                                         strokeWidth = 2.dp,
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(KoDriverSpacing.small))
                                 }
                                 Text(stringResource(Res.string.server_ip_save))
                             }
@@ -251,13 +252,13 @@ fun OtherServerIpDetailPaneContent(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
             Text(
                 text = stringResource(Res.string.server_ip_guide_description),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable(onClick = onOpenGuideWithHaptic),
@@ -267,7 +268,7 @@ fun OtherServerIpDetailPaneContent(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
-                Spacer(modifier = Modifier.size(4.dp))
+                Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                     contentDescription = null,
