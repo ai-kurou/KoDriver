@@ -1,6 +1,10 @@
 package kurou.kodriver
 
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -30,6 +34,7 @@ import java.awt.Dimension
 private const val SENTRY_DSN =
     "https://93dc09daf8552c39b0eea61b4f1319ee@o4511575800676352.ingest.us.sentry.io/4511575816667136"
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
+private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
 
 /**
  * アプリケーションを起動するエントリーポイント。
@@ -48,6 +53,7 @@ fun main() {
     try {
         application {
             val windowState = rememberWindowState(size = DpSize(1000.dp, 600.dp))
+            var koinReady by remember { mutableStateOf(false) }
             Window(
                 onCloseRequest = { exitApplication() },
                 title = "KoDriver",
@@ -76,6 +82,7 @@ fun main() {
                                             listOf(module { single(named("appVersion")) { APP_VERSION } }),
                                     )
                                 }.koin
+                            koinReady = true
                         }
                     },
                     startServer = {
@@ -92,6 +99,11 @@ fun main() {
                 ) {
                     AppScreen()
                 }
+            }
+            // Narrator Overlay はWindows版デスクトップアプリのみの機能。メインウィンドウと同じ
+            // application スコープ内で開くため、exitApplication() 時にこのウィンドウも一緒に閉じる。
+            if (isWindows && koinReady) {
+                NarratorOverlayWindow()
             }
         }
     } finally {
