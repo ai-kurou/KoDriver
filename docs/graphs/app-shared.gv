@@ -31,6 +31,7 @@ digraph G {
   ":feature:lmu-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-vehicle-damage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-console-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-feedback-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-license-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -55,6 +56,7 @@ digraph G {
   ":app:shared" -> ":feature:gt7-ps5-narrator"
   ":app:shared" -> ":feature:ace-windows-narrator"
   ":app:shared" -> ":feature:debug-state-detail"
+  ":app:shared" -> ":feature:narrator-overlay"
   ":app:shared" -> ":feature:other-license-detail"
   ":app:shared" -> ":feature:other-list"
   ":app:shared" -> ":feature:other-feedback-detail"
