@@ -2009,7 +2009,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `しきい値未満のバーチャルエナジー残量増加は補充とみなさず消費量の推定に含めない`() {
+    fun `閾値未満のバーチャルエナジー残量増加は補充とみなさず消費量の推定に含めない`() {
         val firstDecision =
             useCase.determinePitTimingVirtualEnergy(
                 state = LmuWindowsNarratorState(),
@@ -2019,7 +2019,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 0L,
             )
 
-        // ジッタによる 0.4% の上振れ（しきい値 0.5% 未満）
+        // ジッタによる 0.4% の上振れ（閾値 0.5% 未満）
         val jitterDecision =
             useCase.determinePitTimingVirtualEnergy(
                 state = firstDecision.state,
