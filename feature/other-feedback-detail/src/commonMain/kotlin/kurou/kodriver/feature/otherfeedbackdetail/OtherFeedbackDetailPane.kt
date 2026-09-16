@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -144,7 +145,7 @@ fun OtherFeedbackDetailPaneContent(
                 Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    .padding(KoDriverSpacing.large),
         ) {
             Text(
                 text =
@@ -189,12 +190,12 @@ fun OtherFeedbackDetailPaneContent(
                             },
                     ),
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             Text(
                 text = stringResource(Res.string.feedback_type_label),
                 style = MaterialTheme.typography.bodyMedium,
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
             FeedbackTypeOption(
                 type = FeedbackType.BugReport,
                 selectedType = uiState.type,
@@ -219,7 +220,7 @@ fun OtherFeedbackDetailPaneContent(
                 label = stringResource(Res.string.feedback_type_other),
                 onTypeSelected = onTypeSelected,
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
                 value = uiState.message,
                 onValueChange = onMessageChanged,
@@ -235,7 +236,7 @@ fun OtherFeedbackDetailPaneContent(
                 minLines = 4,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
                 value = uiState.name,
                 onValueChange = onNameChanged,
@@ -250,7 +251,7 @@ fun OtherFeedbackDetailPaneContent(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
                 value = uiState.email,
                 onValueChange = onEmailChanged,
@@ -271,20 +272,20 @@ fun OtherFeedbackDetailPaneContent(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.small))
             Text(
                 text = stringResource(Res.string.feedback_diagnostics_description),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             if (uiState.attachedTelemetryLog != null) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(KoDriverSpacing.small))
                 AttachedTelemetryLogChip(
                     telemetryLog = uiState.attachedTelemetryLog,
                     onDetach = onDetachTelemetryLog,
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             FeedbackStatus(uiState)
             Button(
                 onClick = onSend,
@@ -363,7 +364,7 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodySmall,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.small))
         }
 
         FeedbackSendStatus.Failed -> {
@@ -372,7 +373,7 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.small))
         }
 
         FeedbackSendStatus.Sending -> {
@@ -381,7 +382,7 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.small))
         }
 
         FeedbackSendStatus.Idle -> {}

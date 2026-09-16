@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
@@ -61,6 +60,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.util.MILLISECONDS_PER_DAY
@@ -149,7 +149,7 @@ internal fun TelemetryLogListPane(
                     Modifier
                         .testTag(TELEMETRY_LOG_LIST_TEST_TAG)
                         .fillMaxSize()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = KoDriverSpacing.small),
             ) {
                 item(key = RESET_ITEM_KEY) {
                     TelemetryLogResetListItem(
@@ -190,7 +190,7 @@ internal fun TelemetryLogListPane(
                 modifier =
                     Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 16.dp),
+                        .padding(top = KoDriverSpacing.large),
             ) {
                 NewTelemetryLogsButton(
                     onClick = {
@@ -245,7 +245,7 @@ private fun TelemetryLogResetListItem(
 ) {
     val haptic = LocalHapticFeedback.current
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
         modifier =
             modifier
@@ -253,7 +253,7 @@ private fun TelemetryLogResetListItem(
                 .clickable(enabled = !isResetting) {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     onClick()
-                }.padding(vertical = 12.dp),
+                }.padding(vertical = KoDriverSpacing.medium),
     ) {
         if (isResetting) {
             CircularProgressIndicator(
@@ -278,12 +278,12 @@ private fun TelemetryLogResetListItem(
 @Composable
 private fun TelemetryLogEmptyState(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.padding(24.dp),
+        modifier = modifier.padding(KoDriverSpacing.extraLarge),
         contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             Text(
                 text = stringResource(Res.string.telemetry_log_empty_title),
@@ -377,7 +377,7 @@ private fun TelemetryLogListItem(
                     modifier =
                         Modifier
                             .size(40.dp)
-                            .clip(RoundedCornerShape(6.dp)),
+                            .clip(MaterialTheme.shapes.small),
                 )
             }
         },

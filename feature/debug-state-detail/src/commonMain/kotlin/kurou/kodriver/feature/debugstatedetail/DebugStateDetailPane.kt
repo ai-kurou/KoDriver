@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_best_lap_title
@@ -109,7 +110,7 @@ fun DebugStateDetailPaneContent(
                             cardKey = cardKey,
                             uiState = uiState,
                             enabled = cardKey in uiState.enabledCardKeys,
-                            modifier = Modifier.padding(8.dp).longPressDraggableHandle(),
+                            modifier = Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(),
                         )
                     }
                 }

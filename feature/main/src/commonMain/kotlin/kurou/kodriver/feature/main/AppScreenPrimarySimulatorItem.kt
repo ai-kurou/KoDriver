@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -35,6 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.core.designsystem.simulatorLargeImage
@@ -56,7 +56,7 @@ fun AppScreenPrimarySimulatorIcon(
     Image(
         painter = simulatorIcon(simulatorId),
         contentDescription = stringResource(Res.string.select_simulator_hint),
-        modifier = modifier.clip(RoundedCornerShape(4.dp)),
+        modifier = modifier.clip(MaterialTheme.shapes.extraSmall),
     )
 }
 
@@ -69,7 +69,7 @@ fun appScreenPrimarySimulatorLabel(simulatorId: String): String = simulatorShort
 
 private val SimulatorCardWidth = 320.dp
 private val SimulatorCardHeight = 180.dp
-private val SimulatorCardSpacing = 16.dp
+private val SimulatorCardSpacing = KoDriverSpacing.large
 private val SimulatorPopupMaxHeight = 480.dp
 private val SimulatorCardImageBlur = 2.dp
 private val SimulatorCardSelectedBorderWidth = 2.dp
@@ -162,7 +162,7 @@ private fun SimulatorCard(
                     Modifier
                         .fillMaxSize()
                         .background(Color.Black.copy(alpha = 0.4f))
-                        .padding(12.dp),
+                        .padding(KoDriverSpacing.medium),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -177,7 +177,7 @@ private fun SimulatorCard(
                     modifier =
                         Modifier
                             .align(Alignment.TopEnd)
-                            .padding(top = 24.dp, end = 24.dp)
+                            .padding(top = KoDriverSpacing.extraLarge, end = KoDriverSpacing.extraLarge)
                             .size(SimulatorCardCheckBadgeSize)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primary),

@@ -33,19 +33,19 @@ internal fun VersionMismatchBottomSheetContent(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = AppSpacing.extraLarge)
                 .padding(bottom = 32.dp),
     ) {
         Text(
             text = stringResource(Res.string.version_mismatch_title),
             style = MaterialTheme.typography.titleLarge,
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(AppSpacing.large))
         Text(
             text = stringResource(Res.string.version_mismatch_body),
             style = MaterialTheme.typography.bodyMedium,
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(AppSpacing.medium))
         Text(
             text = stringResource(Res.string.version_mismatch_windows_version, windowsKoDriverVersion),
             style = MaterialTheme.typography.bodyMedium,
@@ -54,7 +54,7 @@ internal fun VersionMismatchBottomSheetContent(
             text = stringResource(Res.string.version_mismatch_app_version, appVersion),
             style = MaterialTheme.typography.bodyMedium,
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(AppSpacing.medium))
         Text(
             text =
                 if (windowsIsNewer) {
@@ -64,7 +64,7 @@ internal fun VersionMismatchBottomSheetContent(
                 },
             style = MaterialTheme.typography.bodyMedium,
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(AppSpacing.extraLarge))
         Button(
             onClick = onDismiss,
             modifier = Modifier.fillMaxWidth(),

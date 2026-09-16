@@ -151,7 +151,7 @@ fun ConnectionBannerContent(
                     } else {
                         Modifier
                     },
-                ).padding(horizontal = 16.dp, vertical = 8.dp),
+                ).padding(horizontal = AppSpacing.large, vertical = AppSpacing.small),
         contentAlignment = Alignment.Center,
     ) {
         Row(
@@ -167,7 +167,7 @@ fun ConnectionBannerContent(
                         .size(18.dp)
                         .pulseWhile(enabled = uiState.status == ConnectionBannerStatus.DISCONNECTED),
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(AppSpacing.small))
             Text(
                 text = uiState.message,
                 style = MaterialTheme.typography.labelMedium,

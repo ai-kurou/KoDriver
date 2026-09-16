@@ -12,12 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
@@ -71,7 +71,7 @@ internal fun AceWindowsReadoutTyreTemperatureDetailPaneContent(
     ) {
         DetailPaneSubtitle(
             text = stringResource(Res.string.tyre_temperature_title),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
         )
         DetailPaneDescription(
             text = stringResource(Res.string.tyre_temperature_description),
@@ -80,12 +80,12 @@ internal fun AceWindowsReadoutTyreTemperatureDetailPaneContent(
             title = stringResource(Res.string.tyre_temperature_overheat_warning_card_title),
             checked = uiState.overheatWarningEnabled,
             onCheckedChange = onOverheatWarningEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         DetailPaneCardChips(

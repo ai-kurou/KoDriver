@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.Res
@@ -155,7 +156,7 @@ fun OtherConsoleIpDetailPaneContent(
                 Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    .padding(KoDriverSpacing.large),
         ) {
             Text(
                 text =
@@ -201,7 +202,7 @@ fun OtherConsoleIpDetailPaneContent(
                             },
                     ),
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
                 value = uiState.inputAddress,
                 onValueChange = onAddressChanged,
@@ -219,12 +220,12 @@ fun OtherConsoleIpDetailPaneContent(
                 keyboardActions = KeyboardActions(onDone = { onSaveConfirmedByKeyboard() }),
                 modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             Text(
                 text = stringResource(Res.string.console_ip_port_label),
                 style = MaterialTheme.typography.bodyMedium,
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
@@ -252,14 +253,14 @@ fun OtherConsoleIpDetailPaneContent(
                 )
             }
             if (uiState.saveFailed) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(KoDriverSpacing.small))
                 Text(
                     text = stringResource(Res.string.console_ip_save_failed),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.large))
             Button(
                 onClick = onSave,
                 enabled = uiState.isInputValid && uiState.inputAddress.isNotEmpty(),
@@ -267,13 +268,13 @@ fun OtherConsoleIpDetailPaneContent(
             ) {
                 Text(stringResource(Res.string.console_ip_save))
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
             Text(
                 text = stringResource(Res.string.console_ip_guide_description),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable(onClick = onOpenGuideWithHaptic),
@@ -283,7 +284,7 @@ fun OtherConsoleIpDetailPaneContent(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
-                Spacer(modifier = Modifier.size(4.dp))
+                Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                     contentDescription = null,
