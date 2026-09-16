@@ -329,7 +329,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `onVehicleClassHighThresholdResetを呼ぶとそのクラスのしきい値がデフォルト値に戻る`() =
+    fun `onVehicleClassHighThresholdResetを呼ぶとそのクラスの閾値がデフォルト値に戻る`() =
         runTest {
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())

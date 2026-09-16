@@ -1290,7 +1290,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `走行中の車両クラスに対応するしきい値未満では TyreOverheat を読み上げない`() =
+    fun `走行中の車両クラスに対応する閾値未満では TyreOverheat を読み上げない`() =
         runTest(testDispatcher) {
             val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
             val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
