@@ -11,9 +11,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -148,9 +151,19 @@ fun ConnectionBannerContent(
         contentAlignment = Alignment.Center,
     ) {
         Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // 状態を色だけでなく形状でも区別できるよう、コンテンツ色と同系色の左端アクセントバーを添える。
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .width(AppSpacing.extraSmall)
+                        .background(color = contentColor, shape = MaterialTheme.shapes.extraSmall),
+            )
+            Spacer(modifier = Modifier.width(AppSpacing.small))
             Icon(
                 imageVector = icon,
                 contentDescription = null,
