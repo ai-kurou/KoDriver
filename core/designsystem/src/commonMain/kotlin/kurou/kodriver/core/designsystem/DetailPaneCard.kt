@@ -127,7 +127,7 @@ private fun DetailPaneCardLayout(
                     Modifier
                         .fillMaxWidth()
                         .alpha(bottomContentAlpha)
-                        .padding(horizontal = KoDriverSpacing.medium, vertical = KoDriverSpacing.medium),
+                        .padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
             ) {
                 bottomContent()
             }
