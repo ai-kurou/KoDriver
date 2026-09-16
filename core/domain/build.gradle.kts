@@ -56,7 +56,7 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-        val jvmTest by getting {
+        getByName("jvmTest") {
             dependencies {
                 implementation(libs.kotlin.testJunit)
                 implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
