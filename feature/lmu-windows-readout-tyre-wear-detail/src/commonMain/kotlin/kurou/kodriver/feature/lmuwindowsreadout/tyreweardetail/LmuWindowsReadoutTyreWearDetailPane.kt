@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -81,13 +80,6 @@ internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
                         selectedChipLabels = setOf(warningChipLabel),
                         chipEnabled = true,
                         onChipClick = { onWarningChipClicked() },
-                    )
-                    HorizontalDivider(
-                        modifier =
-                            Modifier.padding(
-                                horizontal = KoDriverSpacing.small,
-                                vertical = KoDriverSpacing.small,
-                            ),
                     )
                     DetailPaneSubtitle(text = stringResource(Res.string.tyre_wear_threshold_subtitle))
                     DetailPaneBodyText(

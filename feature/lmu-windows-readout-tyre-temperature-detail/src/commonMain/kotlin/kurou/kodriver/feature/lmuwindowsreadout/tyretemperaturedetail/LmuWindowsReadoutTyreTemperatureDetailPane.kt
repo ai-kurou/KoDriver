@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -135,13 +134,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             onChipClick = { onPreviewClicked() },
                         )
                     }
-                    HorizontalDivider(
-                        modifier =
-                            Modifier.padding(
-                                horizontal = KoDriverSpacing.small,
-                                vertical = KoDriverSpacing.small,
-                            ),
-                    )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_vehicle_class_target_subtitle),
                     )
@@ -175,13 +167,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             },
                         )
                     }
-                    HorizontalDivider(
-                        modifier =
-                            Modifier.padding(
-                                horizontal = KoDriverSpacing.small,
-                                vertical = KoDriverSpacing.small,
-                            ),
-                    )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle),
                         trailingContent = {
@@ -236,13 +221,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             onChipClick = { onLowWarningPreviewClicked() },
                         )
                     }
-                    HorizontalDivider(
-                        modifier =
-                            Modifier.padding(
-                                horizontal = KoDriverSpacing.small,
-                                vertical = KoDriverSpacing.small,
-                            ),
-                    )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_low_warning_phases_subtitle),
                         trailingContent = {

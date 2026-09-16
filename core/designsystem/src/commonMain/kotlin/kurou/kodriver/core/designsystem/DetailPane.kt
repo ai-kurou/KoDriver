@@ -1,12 +1,8 @@
 package kurou.kodriver.core.designsystem
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,18 +66,10 @@ fun DetailPaneSubtitle(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.height(64.dp).padding(vertical = KoDriverSpacing.small),
     ) {
-        Box(
-            modifier =
-                Modifier
-                    .width(2.dp)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.secondary),
-        )
         Text(
             text = text,
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.padding(start = KoDriverSpacing.small),
+            color = MaterialTheme.colorScheme.onSurface,
         )
         if (trailingContent != null) {
             trailingContent()

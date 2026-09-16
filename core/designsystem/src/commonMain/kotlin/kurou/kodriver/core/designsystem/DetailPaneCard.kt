@@ -10,10 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -46,7 +45,6 @@ fun DetailPaneCard(
         title = title,
         modifier = modifier,
         titleAlpha = contentAlpha,
-        dividerAlpha = contentAlpha,
         bottomContentAlpha = contentAlpha,
         headerContent = {
             Switch(
@@ -75,7 +73,6 @@ fun DetailPaneCard(
         title = title,
         modifier = modifier,
         titleAlpha = 1f,
-        dividerAlpha = 1f,
         bottomContentAlpha = 1f,
         headerContent = {},
         onHeaderClick = null,
@@ -87,16 +84,15 @@ fun DetailPaneCard(
 private fun DetailPaneCardLayout(
     title: String,
     titleAlpha: Float,
-    dividerAlpha: Float,
     bottomContentAlpha: Float,
     headerContent: @Composable () -> Unit,
     onHeaderClick: (() -> Unit)?,
     bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ElevatedCard(
+    Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
         Column {
             Row(
@@ -105,7 +101,12 @@ private fun DetailPaneCardLayout(
                     Modifier
                         .fillMaxWidth()
                         .then(if (onHeaderClick != null) Modifier.clickable { onHeaderClick() } else Modifier)
-                        .padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
+                        .padding(
+                            start = KoDriverSpacing.large,
+                            end = KoDriverSpacing.large,
+                            top = KoDriverSpacing.medium,
+                            bottom = KoDriverSpacing.extraSmall,
+                        ),
             ) {
                 Text(
                     text = title,
@@ -117,9 +118,6 @@ private fun DetailPaneCardLayout(
                 )
                 headerContent()
             }
-            HorizontalDivider(
-                modifier = Modifier.alpha(dividerAlpha),
-            )
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
