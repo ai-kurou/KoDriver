@@ -2,6 +2,8 @@
 
 Le Mans Ultimate（LMU）は Studio 397 純正の共有メモリインターフェースを内蔵しており、共有メモリ名 **`LMU_Data`** で全データを単一セグメントとして公開する。構造体定義の正典はゲームインストールフォルダの `Support\SharedMemoryInterface` にあるヘッダファイル（`SharedMemoryInterface.hpp` / `InternalsPlugin.hpp`）であり、本ドキュメントはその Python 移植である [TinyPedal/pyLMUSharedMemory](https://github.com/TinyPedal/pyLMUSharedMemory) の `lmu_data.py` を基に、ctypes（`_pack_=4`）で算出した実オフセットを記載する。
 
+`LMU_Data` に含まれない情報（天候予報、Virtual Energy 消費履歴、ピットメニューの状態等）については、LMU が内蔵するローカル REST API を調査した [`docs/lmu-windows-rest-api.md`](lmu-windows-rest-api.md) を参照。
+
 ## rF2SharedMemoryMapPlugin との関係
 
 rFactor 2 で使われる [TheIronWolfModding/rF2SharedMemoryMapPlugin](https://github.com/TheIronWolfModding/rF2SharedMemoryMapPlugin) は `$rFactor2SMMP_Telemetry$` / `$rFactor2SMMP_Scoring$` など機能別の複数セグメントを公開する**サードパーティプラグイン**であり、LMU 内蔵の `LMU_Data` とは別物である。ただし、内部の車両テレメトリ（`TelemInfoV01`）・スコアリング（`ScoringInfoV01` / `VehicleScoringInfoV01`）構造体はどちらも rFactor 2 エンジンの `InternalsPlugin.hpp` に由来するため、多くのフィールド名・意味は共通している。一方で LMU 版は末尾に LMU 固有フィールド（バーチャルエナジー、TC/ABS 車載設定、ギャップ情報など）が追加されており、配列サイズやオフセットも rF2 プラグイン版とは一致しない。

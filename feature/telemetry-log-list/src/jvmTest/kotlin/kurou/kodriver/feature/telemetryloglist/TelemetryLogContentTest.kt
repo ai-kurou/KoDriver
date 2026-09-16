@@ -4,13 +4,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.HingeInfo
+import androidx.compose.material3.adaptive.Posture
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
@@ -73,7 +77,8 @@ class TelemetryLogContentTest {
                                     id = 1,
                                     createdAt = 1_800_000,
                                     simulator = Simulator.AceWindows,
-                                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                                    readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root,
+                                    narratedText = "イエローフラッグ",
                                     telemetryJson = """{"flag":"green"}""",
                                 ),
                             ),
@@ -150,6 +155,80 @@ class TelemetryLogContentTest {
     }
 
     @Test
+    fun `detailPane表示中にテーブルトップ姿勢になると選択解除コールバックを呼ぶ`() {
+        var windowPosture by mutableStateOf(Posture())
+        var clearSelectedLogCallCount = 0
+
+        rule.setContent {
+            var selectedLogId by remember { mutableStateOf<Long?>(null) }
+            LaunchedEffect(Unit) { selectedLogId = 2L }
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(selectedLogId = selectedLogId),
+                onLogSelected = { selectedLogId = it },
+                onClearSelectedLog = {
+                    clearSelectedLogCallCount++
+                    selectedLogId = null
+                },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                windowPosture = windowPosture,
+                detailContent = { id -> Text("selected: $id") },
+            )
+        }
+
+        rule.onNodeWithText("selected: 2").assertExists()
+
+        rule.runOnIdle { windowPosture = Posture(isTabletop = true) }
+
+        rule.waitUntil { clearSelectedLogCallCount == 1 }
+        rule.onNodeWithText("フラッグ").assertExists()
+    }
+
+    @Test
+    fun `detailPane表示中に平らでない縦ヒンジの姿勢になると選択解除コールバックを呼ぶ`() {
+        var windowPosture by mutableStateOf(Posture())
+        var clearSelectedLogCallCount = 0
+
+        rule.setContent {
+            var selectedLogId by remember { mutableStateOf<Long?>(null) }
+            LaunchedEffect(Unit) { selectedLogId = 2L }
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(selectedLogId = selectedLogId),
+                onLogSelected = { selectedLogId = it },
+                onClearSelectedLog = {
+                    clearSelectedLogCallCount++
+                    selectedLogId = null
+                },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                windowPosture = windowPosture,
+                detailContent = { id -> Text("selected: $id") },
+            )
+        }
+
+        rule.onNodeWithText("selected: 2").assertExists()
+
+        rule.runOnIdle {
+            windowPosture =
+                Posture(
+                    hingeList =
+                        listOf(
+                            HingeInfo(
+                                bounds = Rect(left = 400f, top = 0f, right = 420f, bottom = 800f),
+                                isFlat = false,
+                                isVertical = true,
+                                isSeparating = true,
+                                isOccluding = false,
+                            ),
+                        ),
+                )
+        }
+
+        rule.waitUntil { clearSelectedLogCallCount == 1 }
+        rule.onNodeWithText("フラッグ").assertExists()
+    }
+
+    @Test
     fun `readoutItemDisplayNameは既知の読み上げ項目IDを日本語名に変換する`() {
         val expectedDisplayNames =
             listOf(
@@ -169,7 +248,13 @@ class TelemetryLogContentTest {
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to "燃料残り周回数",
                 ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to "燃料残量",
+                ReadoutItemKey.AceWindows.VehicleApproach.Root to "車両接近",
+                ReadoutItemKey.AceWindows.Flag.Root to "フラッグ",
+                ReadoutItemKey.AceWindows.Flag.BlueFlag to "ブルーフラッグ",
+                ReadoutItemKey.AceWindows.Flag.RedFlag to "レッドフラッグ",
                 ReadoutItemKey.AceWindows.RemainingFuel.Root to "燃料残量",
+                ReadoutItemKey.AceWindows.MyBestLap.Root to "自己ベストラップ",
+                ReadoutItemKey.AceWindows.TyreTemperature.Root to "タイヤ温度",
             )
 
         rule.setContent {
@@ -327,10 +412,12 @@ private fun createTelemetryLogs(): List<TelemetryLog> =
     (30 downTo 1).map { id ->
         createTelemetryLog(
             id = id.toLong(),
+            simulator = if (id == 10) Simulator.AceWindows else Simulator.LmuWindows,
             readoutItemKey =
                 when (id) {
                     30 -> ReadoutItemKey.LmuWindows.TyreWear.Root
                     20 -> ReadoutItemKey.LmuWindows.VehicleDamage.Overheat
+                    10 -> ReadoutItemKey.AceWindows.RemainingFuel.Root
                     else -> ReadoutItemKey.LmuWindows.Flag.Root
                 },
         )
@@ -339,10 +426,13 @@ private fun createTelemetryLogs(): List<TelemetryLog> =
 internal fun createTelemetryLog(
     id: Long,
     readoutItemKey: ReadoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+    simulator: Simulator = Simulator.LmuWindows,
+    narratedText: String = "イエローフラッグ",
 ) = TelemetryLog(
     id = id,
     createdAt = id,
-    simulator = Simulator.LmuWindows,
+    simulator = simulator,
     readoutItemKey = readoutItemKey,
+    narratedText = narratedText,
     telemetryJson = """{"id":$id}""",
 )

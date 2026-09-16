@@ -11,13 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -74,7 +74,7 @@ internal fun AceWindowsReadoutRemainingFuelDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.remaining_fuel_title),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
@@ -83,7 +83,13 @@ internal fun AceWindowsReadoutRemainingFuelDetailPaneContent(
                         chipEnabled = true,
                         onChipClick = { onPreviewClicked() },
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.small,
+                            ),
+                    )
                     DetailPaneSubtitle(text = stringResource(Res.string.remaining_fuel_threshold_subtitle))
                     DetailPaneBodyText(
                         text =

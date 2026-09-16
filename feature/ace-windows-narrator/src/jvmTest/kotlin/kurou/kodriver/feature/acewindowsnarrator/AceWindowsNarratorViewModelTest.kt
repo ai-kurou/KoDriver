@@ -347,6 +347,7 @@ class AceWindowsNarratorViewModelTest {
                     any(),
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    "残り燃料警告",
                     any(),
                 )
             } just Runs
@@ -414,6 +415,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    "残り燃料警告",
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -501,6 +503,7 @@ class AceWindowsNarratorViewModelTest {
                 any(),
                 Simulator.AceWindows,
                 ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                "残り燃料警告",
                 any(),
             )
         } just Runs
@@ -643,6 +646,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root,
+                    "タイヤ過熱警告",
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -818,6 +822,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    "車両接近",
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -935,6 +940,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.MyBestLap.Root,
+                    "自己ベストラップ更新",
                     capture(telemetryJsons),
                 )
             } just Runs

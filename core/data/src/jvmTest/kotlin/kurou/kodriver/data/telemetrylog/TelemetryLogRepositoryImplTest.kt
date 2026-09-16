@@ -25,6 +25,7 @@ class TelemetryLogRepositoryImplTest {
                 createdAt = 1000L,
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                narratedText = "燃料は残り約1周",
                 telemetryJson = """{"lapCount":1}""",
             )
 
@@ -34,7 +35,36 @@ class TelemetryLogRepositoryImplTest {
                         createdAt = 1000L,
                         simulatorId = Simulator.Gt7Ps5.id,
                         readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                        narratedText = "燃料は残り約1周",
                         telemetryJson = """{"lapCount":1}""",
+                    ),
+                ),
+                dao.logs.first(),
+            )
+        }
+
+    @Test
+    fun `saveTelemetryLogはace_windowsのEntityへ変換して保存する`() =
+        runTest {
+            val dao = FakeTelemetryLogDao()
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            repository.saveTelemetryLog(
+                createdAt = 1000L,
+                simulator = Simulator.AceWindows,
+                readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                narratedText = "残り燃料警告",
+                telemetryJson = """{"remainingFuelLiters":8.2}""",
+            )
+
+            assertEquals(
+                listOf(
+                    TelemetryLogEntity(
+                        createdAt = 1000L,
+                        simulatorId = Simulator.AceWindows.id,
+                        readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
+                        narratedText = "残り燃料警告",
+                        telemetryJson = """{"remainingFuelLiters":8.2}""",
                     ),
                 ),
                 dao.logs.first(),
@@ -85,6 +115,7 @@ class TelemetryLogRepositoryImplTest {
                                 createdAt = 2000L,
                                 simulatorId = Simulator.LmuWindows.id,
                                 readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
+                                narratedText = "イエローフラッグ",
                                 telemetryJson = """{"currentLap":2}""",
                             ),
                         ),
@@ -98,11 +129,68 @@ class TelemetryLogRepositoryImplTest {
                         createdAt = 2000L,
                         simulator = Simulator.LmuWindows,
                         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                        narratedText = "イエローフラッグ",
                         telemetryJson = """{"currentLap":2}""",
                     ),
                 ),
                 repository.observeTelemetryLogs().first(),
             )
+        }
+
+    @Test
+    fun `observeTelemetryLogsはace_windowsのログもDomainへ変換して観測する`() =
+        runTest {
+            val dao =
+                FakeTelemetryLogDao(
+                    initialLogs =
+                        listOf(
+                            TelemetryLogEntity(
+                                id = 1L,
+                                createdAt = 2000L,
+                                simulatorId = Simulator.AceWindows.id,
+                                readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
+                                narratedText = "残り燃料警告",
+                                telemetryJson = """{"remainingFuelLiters":8.2}""",
+                            ),
+                        ),
+                )
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(
+                listOf(
+                    TelemetryLog(
+                        id = 1L,
+                        createdAt = 2000L,
+                        simulator = Simulator.AceWindows,
+                        readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                        narratedText = "残り燃料警告",
+                        telemetryJson = """{"remainingFuelLiters":8.2}""",
+                    ),
+                ),
+                repository.observeTelemetryLogs().first(),
+            )
+        }
+
+    @Test
+    fun `observeLatestTelemetryLogは最新のログをDomainへ変換して観測する`() =
+        runTest {
+            val latest = telemetryLogEntity(id = 2L, createdAt = 2000L)
+            val dao =
+                FakeTelemetryLogDao(
+                    initialLogs = listOf(telemetryLogEntity(id = 1L, createdAt = 1000L), latest),
+                )
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(latest.toDomainLog(), repository.observeLatestTelemetryLog().first())
+        }
+
+    @Test
+    fun `observeLatestTelemetryLogはログが存在しない場合nullを返す`() =
+        runTest {
+            val dao = FakeTelemetryLogDao()
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertNull(repository.observeLatestTelemetryLog().first())
         }
 
     @Test
@@ -171,6 +259,26 @@ class TelemetryLogRepositoryImplTest {
         }
 
     @Test
+    fun `observeTelemetryLogDetailはace_windowsの指定idのログとその一つ前のログをDomainへ変換して観測する`() =
+        runTest {
+            val current = telemetryLogEntity(id = 3L, createdAt = 2000L, simulator = Simulator.AceWindows)
+            val previous = telemetryLogEntity(id = 2L, createdAt = 1000L, simulator = Simulator.AceWindows)
+            val dao =
+                FakeTelemetryLogDao(
+                    initialLogs = listOf(previous, current),
+                )
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(
+                TelemetryLogDetail(
+                    current = current.toDomainLog(),
+                    previous = previous.toDomainLog(),
+                ),
+                repository.observeTelemetryLogDetail(3L).first(),
+            )
+        }
+
+    @Test
     fun `observeTelemetryLogDetailは指定idのログがない場合nullを返す`() =
         runTest {
             val dao =
@@ -196,6 +304,11 @@ private class FakeTelemetryLogDao(
                 it.id ==
                     id
             }
+        }
+
+    override fun observeLatestTelemetryLog(): Flow<TelemetryLogEntity?> =
+        logs.map { logs ->
+            logs.maxWithOrNull(compareBy<TelemetryLogEntity> { it.createdAt }.thenBy { it.id })
         }
 
     override fun observePreviousTelemetryLog(
@@ -224,11 +337,18 @@ private class FakeTelemetryLogDao(
 private fun telemetryLogEntity(
     id: Long,
     createdAt: Long,
+    simulator: Simulator = Simulator.LmuWindows,
 ) = TelemetryLogEntity(
     id = id,
     createdAt = createdAt,
-    simulatorId = Simulator.LmuWindows.id,
-    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
+    simulatorId = simulator.id,
+    readoutItemKey =
+        if (simulator == Simulator.AceWindows) {
+            ReadoutItemKey.AceWindows.Flag.Root.value
+        } else {
+            ReadoutItemKey.LmuWindows.Flag.Root.value
+        },
+    narratedText = "イエローフラッグ",
     telemetryJson = """{"id":$id}""",
 )
 
@@ -238,5 +358,6 @@ private fun TelemetryLogEntity.toDomainLog() =
         createdAt = createdAt,
         simulator = Simulator.fromId(simulatorId) ?: error("Unknown simulatorId: $simulatorId"),
         readoutItemKey = ReadoutItemKey.fromValue(readoutItemKey) ?: error("Unknown readoutItemKey: $readoutItemKey"),
+        narratedText = narratedText,
         telemetryJson = telemetryJson,
     )

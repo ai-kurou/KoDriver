@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.SportsEsports
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Badge
@@ -52,7 +53,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
@@ -60,6 +61,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_debug_state
 import kurou.kodriver.feature.otherlist.generated.resources.item_dynamic_color
 import kurou.kodriver.feature.otherlist.generated.resources.item_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_github_repository
+import kurou.kodriver.feature.otherlist.generated.resources.item_github_repository_star_request
 import kurou.kodriver.feature.otherlist.generated.resources.item_haptic_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kurou.kodriver.feature.otherlist.generated.resources.item_license
@@ -212,7 +214,7 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
         OtherListItemType.Startup,
         -> otherAppSettingsItemLeadingIconVector(itemType)
 
-        OtherListItemType.GitHubRepository -> Icons.Outlined.Code
+        OtherListItemType.GitHubRepository -> Icons.Outlined.Star
 
         OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
 
@@ -310,7 +312,7 @@ fun OtherListPane(
         modifier =
             modifier
                 .fillMaxSize()
-                .padding(vertical = 8.dp),
+                .padding(vertical = KoDriverSpacing.small),
     ) {
         otherListSections.forEach { section ->
             val sectionItems = groupedItems[section].orEmpty()
@@ -368,7 +370,12 @@ private fun OtherListSectionHeader(section: OtherListSection) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
+                .padding(
+                    start = KoDriverSpacing.large,
+                    top = KoDriverSpacing.large,
+                    end = KoDriverSpacing.large,
+                    bottom = KoDriverSpacing.extraSmall,
+                ),
     )
 }
 
@@ -434,6 +441,12 @@ private fun OtherListItem(
 
     ListItem(
         headlineContent = { Text(otherItemDisplayName(item)) },
+        supportingContent =
+            if (item == OtherListItemType.GitHubRepository) {
+                { Text(stringResource(Res.string.item_github_repository_star_request)) }
+            } else {
+                null
+            },
         leadingContent = {
             OtherListItemLeadingIcon(item, uiState.hasAppUpdate, uiState.accessLocalNetworkPermissionGranted)
         },

@@ -5,5 +5,6 @@ data class TelemetryLog(
     val createdAt: Long,
     val simulator: Simulator,
     val readoutItemKey: ReadoutItemKey,
+    val narratedText: String,
     val telemetryJson: String,
 )

@@ -91,6 +91,9 @@ ktor-clientWebsockets = { module = "io.ktor:ktor-client-websockets-jvm" }
 ktor-clientCore = { module = "io.ktor:ktor-client-core" }
 ktor-clientOkhttp = { module = "io.ktor:ktor-client-okhttp" }
 ktor-clientWebsocketsMultiplatform = { module = "io.ktor:ktor-client-websockets" }
+ktor-clientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation" }
+ktor-serializationKotlinxJson = { module = "io.ktor:ktor-serialization-kotlinx-json" }
+ktor-clientMock = { module = "io.ktor:ktor-client-mock" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp = { module = "com.squareup.okhttp3:okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver" }

@@ -19,13 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
@@ -83,7 +83,7 @@ internal fun AceWindowsReadoutVehicleApproachDetailPaneContent(
         )
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             trailingContent = {
                 HelpIconButton(
                     contentDescription = stringResource(Res.string.vehicle_approach_help_icon_content_description),
@@ -97,7 +97,7 @@ internal fun AceWindowsReadoutVehicleApproachDetailPaneContent(
             valueRange = 2f..10f,
             labelFormatter = { thresholdLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onThresholdChanged(it.toDouble()) },
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             defaultValue = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT.toFloat(),
             onResetToDefault = onResetThreshold,
             resetContentDescription = resetToDefaultLabel,
@@ -107,7 +107,7 @@ internal fun AceWindowsReadoutVehicleApproachDetailPaneContent(
             title = stringResource(Res.string.vehicle_approach_start_readout_switch_label),
             checked = uiState.startReadoutEnabled,
             onCheckedChange = onStartReadoutEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = listOf(chipLabel),
@@ -124,7 +124,7 @@ internal fun AceWindowsReadoutVehicleApproachDetailPaneContent(
 internal fun VehicleApproachHelpSheetContent(modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
     ) {
         Text(
             text = stringResource(Res.string.vehicle_approach_help_description),
@@ -136,10 +136,10 @@ internal fun VehicleApproachHelpSheetContent(modifier: Modifier = Modifier) {
             painter = painterResource(Res.drawable.vehicle_approach),
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth(0.3f).padding(start = 16.dp),
+            modifier = Modifier.fillMaxWidth(0.3f).padding(start = KoDriverSpacing.large),
         )
     }
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
 }
 
 @Preview(showBackground = true)

@@ -1,6 +1,12 @@
 package kurou.kodriver.feature.otherserveripdetail
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.navigate_back
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_connectivity_warning
@@ -56,6 +63,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val WINDOWS_INSTALL_GUIDE_URL =
     "https://github.com/ai-kurou/KoDriver/blob/main/docs/windows-install.md"
+
+private val BUTTON_CONTENT_HEIGHT = 20.dp
 
 /**
  * OtherServerIpDetail の画面を表示する Composable。
@@ -149,10 +158,10 @@ fun OtherServerIpDetailPaneContent(
                 Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    .padding(KoDriverSpacing.large),
         ) {
             Text(stringResource(Res.string.server_ip_description))
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             TextField(
                 value = uiState.inputIp,
                 onValueChange = onIpChanged,
@@ -170,63 +179,86 @@ fun OtherServerIpDetailPaneContent(
                 keyboardActions = KeyboardActions(onDone = { onSaveConfirmedByKeyboard() }),
                 modifier = Modifier.fillMaxWidth(),
             )
-            if (uiState.connectivityWarning) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(Res.string.server_ip_connectivity_warning),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                )
+            AnimatedVisibility(visible = uiState.connectivityWarning) {
+                Column {
+                    Spacer(modifier = Modifier.height(KoDriverSpacing.small))
+                    Text(
+                        text = stringResource(Res.string.server_ip_connectivity_warning),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.small))
             OutlinedButton(
                 onClick = onShowDiscoveredServers,
                 enabled = uiState.discoveredServers.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (uiState.discoveredServers.isEmpty()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp,
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(Res.string.server_ip_discovering))
-                    } else {
-                        Text(stringResource(Res.string.server_ip_discovery_show_button))
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            if (uiState.connectivityWarning) {
-                Button(onClick = onSaveAnyway, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(Res.string.server_ip_save_anyway))
-                }
-            } else {
-                Button(
-                    onClick = onSave,
-                    enabled = uiState.isInputValid && uiState.inputIp.isNotEmpty() && !uiState.isCheckingConnectivity,
-                    modifier = Modifier.fillMaxWidth(),
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.height(BUTTON_CONTENT_HEIGHT),
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (uiState.isCheckingConnectivity) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(16.dp),
-                                strokeWidth = 2.dp,
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
+                    AnimatedContent(
+                        targetState = uiState.discoveredServers.isEmpty(),
+                        transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    ) { isDiscovering ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (isDiscovering) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp),
+                                    strokeWidth = 2.dp,
+                                )
+                                Spacer(modifier = Modifier.width(KoDriverSpacing.small))
+                                Text(stringResource(Res.string.server_ip_discovering))
+                            } else {
+                                Text(stringResource(Res.string.server_ip_discovery_show_button))
+                            }
                         }
-                        Text(stringResource(Res.string.server_ip_save))
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.large))
+            AnimatedContent(
+                targetState = uiState.connectivityWarning,
+                transitionSpec = { fadeIn() togetherWith fadeOut() },
+            ) { connectivityWarning ->
+                if (connectivityWarning) {
+                    Button(onClick = onSaveAnyway, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(Res.string.server_ip_save_anyway))
+                    }
+                } else {
+                    Button(
+                        onClick = onSave,
+                        enabled =
+                            uiState.isInputValid && uiState.inputIp.isNotEmpty() && !uiState.isCheckingConnectivity,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.height(BUTTON_CONTENT_HEIGHT),
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (uiState.isCheckingConnectivity) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(16.dp),
+                                        strokeWidth = 2.dp,
+                                    )
+                                    Spacer(modifier = Modifier.width(KoDriverSpacing.small))
+                                }
+                                Text(stringResource(Res.string.server_ip_save))
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
             Text(
                 text = stringResource(Res.string.server_ip_guide_description),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable(onClick = onOpenGuideWithHaptic),
@@ -236,7 +268,7 @@ fun OtherServerIpDetailPaneContent(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
-                Spacer(modifier = Modifier.size(4.dp))
+                Spacer(modifier = Modifier.size(KoDriverSpacing.extraSmall))
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                     contentDescription = null,

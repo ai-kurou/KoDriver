@@ -9,11 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
@@ -68,7 +68,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 title = stringResource(item.labelRes),
                 checked = checked,
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
                 bottomContent = {
                     DetailPaneCardChips(
                         chipLabels = listOf(chipLabel),
@@ -91,7 +91,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
             title = redFlagLabel,
             checked = redFlagChecked,
             onCheckedChange = onRedFlagEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = listOf(redFlagLabel, sessionStopLabel),

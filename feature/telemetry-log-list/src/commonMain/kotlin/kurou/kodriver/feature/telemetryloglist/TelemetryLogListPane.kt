@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
@@ -61,8 +60,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.util.MILLISECONDS_PER_DAY
+import kurou.kodriver.domain.util.MILLISECONDS_PER_HOUR
+import kurou.kodriver.domain.util.decomposeDurationMs
+import kurou.kodriver.domain.util.padStartZero
 import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
 import kurou.kodriver.feature.telemetryloglist.generated.resources.new_telemetry_logs
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_menu_item
@@ -127,6 +131,8 @@ internal fun TelemetryLogListPane(
         }
     }
 
+    // visible は常に true。表示/非表示の切り替えではなく、初回コンポジション時の
+    // スライドイン＋フェードイン演出のみを目的とした AnimatedVisibility。
     AnimatedVisibility(
         visible = true,
         enter =
@@ -143,7 +149,7 @@ internal fun TelemetryLogListPane(
                     Modifier
                         .testTag(TELEMETRY_LOG_LIST_TEST_TAG)
                         .fillMaxSize()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = KoDriverSpacing.small),
             ) {
                 item(key = RESET_ITEM_KEY) {
                     TelemetryLogResetListItem(
@@ -184,7 +190,7 @@ internal fun TelemetryLogListPane(
                 modifier =
                     Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 16.dp),
+                        .padding(top = KoDriverSpacing.large),
             ) {
                 NewTelemetryLogsButton(
                     onClick = {
@@ -239,7 +245,7 @@ private fun TelemetryLogResetListItem(
 ) {
     val haptic = LocalHapticFeedback.current
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
         modifier =
             modifier
@@ -247,7 +253,7 @@ private fun TelemetryLogResetListItem(
                 .clickable(enabled = !isResetting) {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     onClick()
-                }.padding(vertical = 12.dp),
+                }.padding(vertical = KoDriverSpacing.medium),
     ) {
         if (isResetting) {
             CircularProgressIndicator(
@@ -272,12 +278,12 @@ private fun TelemetryLogResetListItem(
 @Composable
 private fun TelemetryLogEmptyState(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.padding(24.dp),
+        modifier = modifier.padding(KoDriverSpacing.extraLarge),
         contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             Text(
                 text = stringResource(Res.string.telemetry_log_empty_title),
@@ -371,7 +377,7 @@ private fun TelemetryLogListItem(
                     modifier =
                         Modifier
                             .size(40.dp)
-                            .clip(RoundedCornerShape(6.dp)),
+                            .clip(MaterialTheme.shapes.small),
                 )
             }
         },
@@ -442,25 +448,16 @@ private fun formatTimeOfDay(milliseconds: Long): String {
 }
 
 private fun formatDuration(milliseconds: Long): String {
-    val hours = milliseconds / MILLISECONDS_PER_HOUR
-    val minutes = milliseconds % MILLISECONDS_PER_HOUR / MILLISECONDS_PER_MINUTE
-    val seconds = milliseconds % MILLISECONDS_PER_MINUTE / MILLISECONDS_PER_SECOND
-    val millis = milliseconds % MILLISECONDS_PER_SECOND
-
-    return "${hours.pad(2)}:${minutes.pad(2)}:${seconds.pad(2)}.${millis.pad(3)}"
+    val components = decomposeDurationMs(milliseconds)
+    return "${components.hours.padStartZero(2)}:${components.minutes.padStartZero(2)}:" +
+        "${components.seconds.padStartZero(2)}.${components.millis.padStartZero(3)}"
 }
 
 private fun Long.floorMod(other: Long): Long = ((this % other) + other) % other
 
-private fun Long.pad(length: Int): String = toString().padStart(length, '0')
-
 private const val FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL = 1
 private const val RESET_ITEM_KEY = "telemetry_log_reset_item"
 internal const val TELEMETRY_LOG_LIST_TEST_TAG = "telemetryLogList"
-private const val MILLISECONDS_PER_SECOND = 1_000L
-private const val MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND
-private const val MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE
-private const val MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR
 private const val JST_OFFSET_MILLIS = 9 * MILLISECONDS_PER_HOUR
 
 @Preview(showBackground = true)

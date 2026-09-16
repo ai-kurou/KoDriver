@@ -9,11 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_description
@@ -85,7 +85,7 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
             title = stringResource(Res.string.vehicle_damage_overheat_switch_label),
             checked = uiState.overheatEnabled,
             onCheckedChange = onOverheatEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = overheatChipLabels.keys.toList(),
@@ -104,7 +104,7 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
             title = stringResource(Res.string.vehicle_damage_part_detached_switch_label),
             checked = uiState.partDetachedEnabled,
             onCheckedChange = onPartDetachedEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = listOf(partDetachedChipLabel),
@@ -119,7 +119,7 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
             title = stringResource(Res.string.vehicle_damage_tyre_detached_switch_label),
             checked = uiState.tyreDetachedEnabled,
             onCheckedChange = onTyreDetachedEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = listOf(tyreDetachedChipLabel),

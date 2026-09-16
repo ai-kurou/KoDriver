@@ -24,13 +24,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
@@ -113,7 +113,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         )
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             trailingContent = {
                 HelpIconButton(
                     contentDescription = stringResource(Res.string.vehicle_approach_help_icon_content_description),
@@ -132,7 +132,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             valueRange = 0.1f..10f,
             labelFormatter = { longitudinalLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             defaultValue = defaultLongitudinal,
             onResetToDefault = onResetLongitudinalThreshold,
             resetContentDescription = resetToDefaultLabel,
@@ -142,18 +142,22 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             valueRange = 2f..8f,
             labelFormatter = { lateralLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             defaultValue = defaultLateral,
             onResetToDefault = onResetLateralThreshold,
             resetContentDescription = resetToDefaultLabel,
         )
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_first_lap_subtitle),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier =
+                Modifier.fillMaxWidth().padding(
+                    horizontal = KoDriverSpacing.large,
+                    vertical = KoDriverSpacing.extraSmall,
+                ),
         ) {
             Text(
                 text = stringResource(Res.string.vehicle_approach_skip_first_lap_subtitle),
@@ -161,7 +165,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f),
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(KoDriverSpacing.large))
             val skipFirstLapSwitchDescription =
                 stringResource(Res.string.vehicle_approach_skip_first_lap_switch_content_description)
             Switch(
@@ -181,7 +185,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             title = stringResource(Res.string.vehicle_approach_start_readout_switch_label),
             checked = uiState.startReadoutEnabled,
             onCheckedChange = onStartReadoutEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = startReadoutTypeLabels.values.toList(),
@@ -207,7 +211,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             title = stringResource(Res.string.vehicle_approach_sustained_readout_switch_label),
             checked = uiState.sustainedReadoutEnabled,
             onCheckedChange = onSustainedReadoutEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
@@ -221,7 +225,13 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                                 ?.let { onSustainedReadoutTypeChanged(it.key) }
                         },
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.small,
+                            ),
+                    )
                     ThresholdSlider(
                         value = uiState.sustainedApproachDurationSeconds.toFloat(),
                         valueRange = 4f..10f,
@@ -242,7 +252,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
 internal fun VehicleApproachHelpSheetContent(modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
     ) {
         Text(
             text = stringResource(Res.string.vehicle_approach_help_description),
@@ -254,10 +264,10 @@ internal fun VehicleApproachHelpSheetContent(modifier: Modifier = Modifier) {
             painter = painterResource(Res.drawable.vehicle_approach),
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth(0.3f).padding(start = 16.dp),
+            modifier = Modifier.fillMaxWidth(0.3f).padding(start = KoDriverSpacing.large),
         )
     }
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
 }
 
 @Preview(showBackground = true)

@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.desktopsplash.generated.resources.Res
 import kurou.kodriver.feature.desktopsplash.generated.resources.app_icon
@@ -49,12 +50,12 @@ fun DesktopSplashScreen(
                 contentDescription = "KoDriver",
                 modifier = Modifier.size(APP_ICON_SIZE_DP.dp),
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
             LinearProgressIndicator(
                 progress = { uiState.progress },
                 modifier = Modifier.width(PROGRESS_INDICATOR_WIDTH_DP.dp),
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(KoDriverSpacing.medium))
             Text(
                 text = uiState.step.displayName,
                 style = MaterialTheme.typography.bodyMedium,

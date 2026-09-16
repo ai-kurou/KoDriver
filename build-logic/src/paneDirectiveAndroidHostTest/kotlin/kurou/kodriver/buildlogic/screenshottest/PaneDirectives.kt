@@ -67,3 +67,80 @@ fun rememberFoldedVerticalHingeDirective(
         )
     }
 }
+
+/**
+ * 平らに開いていない縦ヒンジ（折りたたみ端末を本のように途中まで開いた姿勢）をシミュレートした
+ * [Posture] を返す。detailPane を表示する幅が確保できず、代わりに一覧のみを表示することを
+ * 確認するスクリーンショットテストで使用する。
+ */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+fun rememberNonFlatVerticalHingePosture(
+    windowWidthDp: Float = 840f,
+    windowHeightDp: Float = 640f,
+    hingeWidthDp: Float = 20f,
+): Posture {
+    val density = LocalDensity.current
+    return remember(density, windowWidthDp, windowHeightDp, hingeWidthDp) {
+        val hingeCenterDp = windowWidthDp / 2f
+        Posture(
+            hingeList =
+                listOf(
+                    HingeInfo(
+                        bounds =
+                            with(density) {
+                                Rect(
+                                    left = (hingeCenterDp - hingeWidthDp / 2f).dp.toPx(),
+                                    top = 0f,
+                                    right = (hingeCenterDp + hingeWidthDp / 2f).dp.toPx(),
+                                    bottom = windowHeightDp.dp.toPx(),
+                                )
+                            },
+                        isFlat = false,
+                        isVertical = true,
+                        isSeparating = true,
+                        isOccluding = false,
+                    ),
+                ),
+        )
+    }
+}
+
+/**
+ * テーブルトップ姿勢（水平ヒンジで半開き）をシミュレートした [Posture] を返す。
+ * list/detail 2ペイン構成の画面が、ヒンジより下側にコンテンツをはみ出させずに
+ * 上側の領域に収めることを確認するスクリーンショットテストで使用する。
+ */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+fun rememberTabletopPosture(
+    windowWidthDp: Float = 840f,
+    windowHeightDp: Float = 640f,
+    hingeHeightDp: Float = 20f,
+): Posture {
+    val density = LocalDensity.current
+    return remember(density, windowWidthDp, windowHeightDp, hingeHeightDp) {
+        val hingeTopDp = windowHeightDp / 2f - hingeHeightDp / 2f
+        Posture(
+            isTabletop = true,
+            hingeList =
+                listOf(
+                    HingeInfo(
+                        bounds =
+                            with(density) {
+                                Rect(
+                                    left = 0f,
+                                    top = hingeTopDp.dp.toPx(),
+                                    right = windowWidthDp.dp.toPx(),
+                                    bottom = (hingeTopDp + hingeHeightDp).dp.toPx(),
+                                )
+                            },
+                        isFlat = true,
+                        isVertical = false,
+                        isSeparating = true,
+                        isOccluding = false,
+                    ),
+                ),
+        )
+    }
+}

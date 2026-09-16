@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -84,6 +83,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
@@ -158,8 +158,8 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.padding(bottom = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+        modifier = modifier.padding(bottom = KoDriverSpacing.medium),
     ) {
         Text(
             text = stringResource(Res.string.priority_hint_label),
@@ -186,19 +186,22 @@ internal fun PriorityHintSheetContent(modifier: Modifier = Modifier) {
         text = stringResource(Res.string.priority_hint_description),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier = modifier.padding(horizontal = KoDriverSpacing.large),
     )
     Text(
         text = stringResource(Res.string.queue_hint_description),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
+        modifier = Modifier.padding(horizontal = KoDriverSpacing.large).padding(top = KoDriverSpacing.small),
     )
     Text(
         text = stringResource(Res.string.start_sound_hint_description),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 24.dp),
+        modifier =
+            Modifier
+                .padding(horizontal = KoDriverSpacing.large)
+                .padding(top = KoDriverSpacing.small, bottom = KoDriverSpacing.extraLarge),
     )
 }
 
@@ -241,24 +244,28 @@ internal fun ReadoutListPane(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(vertical = 16.dp),
+                    .padding(vertical = KoDriverSpacing.large),
         ) {
             if (isAceSelected) {
                 item(key = "aceReadoutTimingHint") {
-                    AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+                    AceReadoutTimingHintRow(
+                        modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+                    )
                 }
             }
             if (isGt7Ps5DesktopHintShown) {
                 item(key = "gt7Ps5DesktopReadoutHint") {
-                    Gt7Ps5DesktopReadoutHintRow(modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+                    Gt7Ps5DesktopReadoutHintRow(
+                        modifier = Modifier.padding(start = KoDriverSpacing.small, end = KoDriverSpacing.small),
+                    )
                 }
             }
             item(key = "priorityHint") {
                 PriorityHintRow(
                     modifier =
                         Modifier.padding(
-                            start = 8.dp,
-                            end = 8.dp,
+                            start = KoDriverSpacing.small,
+                            end = KoDriverSpacing.small,
                         ),
                 )
             }
@@ -311,7 +318,7 @@ internal fun ReadoutListPane(
             modifier =
                 Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 16.dp),
+                    .padding(top = KoDriverSpacing.large),
         ) {
             ScrollToTopButton(
                 onClick = {
@@ -345,7 +352,7 @@ private fun ReadoutListItemCard(
     ElevatedCard(
         modifier =
             modifier
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
                 .fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
     ) {
@@ -354,13 +361,18 @@ private fun ReadoutListItemCard(
                 Modifier
                     .fillMaxWidth()
                     .indication(itemInteractionSource, ripple())
-                    .padding(start = 8.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
+                    .padding(
+                        start = KoDriverSpacing.small,
+                        end = KoDriverSpacing.large,
+                        top = KoDriverSpacing.medium,
+                        bottom = KoDriverSpacing.medium,
+                    ),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
             ) {
                 Icon(
                     imageVector = Icons.Filled.DragIndicator,
@@ -376,7 +388,7 @@ private fun ReadoutListItemCard(
             }
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
             ) {
                 Row(
                     modifier =
@@ -399,9 +411,11 @@ private fun ReadoutListItemCard(
                     )
                     Text(
                         text = itemName,
-                        modifier = Modifier.padding(start = 12.dp).weight(1f),
+                        modifier = Modifier.padding(start = KoDriverSpacing.medium).weight(1f),
                     )
-                    VerticalDivider(modifier = Modifier.padding(horizontal = 8.dp).heightIn(max = 24.dp))
+                    VerticalDivider(
+                        modifier = Modifier.padding(horizontal = KoDriverSpacing.small).heightIn(max = 24.dp),
+                    )
                     ReadoutListReadoutSwitch(
                         item = item,
                         checked = readoutEnabled,
@@ -411,7 +425,7 @@ private fun ReadoutListItemCard(
                 if (item is ReadoutItemKey.TopLevel) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                     ) {
                         ReadoutListStartSoundToggle(
                             item = item,
@@ -480,12 +494,12 @@ private fun ReadoutListBottomChip(
         modifier =
             modifier
                 .heightIn(min = 40.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(MaterialTheme.shapes.medium)
                 .background(containerColor)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.outlineVariant,
-                    shape = RoundedCornerShape(10.dp),
+                    shape = MaterialTheme.shapes.medium,
                 ).testTag(testTag)
                 .clickable(
                     enabled = enabled,
@@ -493,7 +507,7 @@ private fun ReadoutListBottomChip(
                 ) {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     onCheckedChange(!checked)
-                }.padding(horizontal = 8.dp),
+                }.padding(horizontal = KoDriverSpacing.small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp, alignment = Alignment.CenterHorizontally),
     ) {

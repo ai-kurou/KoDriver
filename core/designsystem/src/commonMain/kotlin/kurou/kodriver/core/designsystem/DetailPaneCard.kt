@@ -10,7 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -25,7 +26,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 private const val DISABLED_CONTENT_ALPHA = 0.38f
 
@@ -94,7 +94,10 @@ private fun DetailPaneCardLayout(
     bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(modifier = modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -102,7 +105,7 @@ private fun DetailPaneCardLayout(
                     Modifier
                         .fillMaxWidth()
                         .then(if (onHeaderClick != null) Modifier.clickable { onHeaderClick() } else Modifier)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                        .padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
             ) {
                 Text(
                     text = title,
@@ -118,13 +121,13 @@ private fun DetailPaneCardLayout(
                 modifier = Modifier.alpha(dividerAlpha),
             )
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .alpha(bottomContentAlpha)
-                        .padding(horizontal = 12.dp, vertical = 12.dp),
+                        .padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
             ) {
                 bottomContent()
             }
@@ -181,7 +184,7 @@ private fun DetailPaneCardPreview() {
                 title = "車両接近",
                 checked = true,
                 onCheckedChange = {},
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(KoDriverSpacing.large),
                 bottomContent = {
                     DetailPaneCardChips(
                         chipLabels = listOf("カーレフト", "カーライト"),
@@ -195,7 +198,7 @@ private fun DetailPaneCardPreview() {
                 title = "車両接近",
                 checked = false,
                 onCheckedChange = {},
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(KoDriverSpacing.large),
                 bottomContent = {
                     DetailPaneCardChips(
                         chipLabels = listOf("カーレフト", "カーライト"),
@@ -207,7 +210,7 @@ private fun DetailPaneCardPreview() {
             )
             DetailPaneCard(
                 title = "自己ベストラップ更新",
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(KoDriverSpacing.large),
                 bottomContent = {
                     DetailPaneCardChips(
                         chipLabels = listOf("自己ベストラップ更新"),

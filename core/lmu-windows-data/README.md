@@ -3,6 +3,8 @@
 Le Mans UltimateのWindows共有メモリを読み取り、ドメイン層のRepositoryを実装するJVM専用モジュールです。
 共有メモリI/Oの汎用部分は `core:windows-shared-memory` に切り出しており、本モジュールはLMU固有の構造体パースに専念します。
 
+共有メモリに含まれない情報（天候予報、Virtual Energy消費履歴、ピットメニューの状態等）をLMU内蔵のローカルREST APIから補えないかを調査した資料が [`docs/lmu-windows-rest-api.md`](../../docs/lmu-windows-rest-api.md) にあります（未統合の調査メモ）。
+
 ## 車両クラス（mVehicleClass）の取りうる値
 
 Scoring セグメントの `mVehicleClass` (char[32]、オフセット +200) は人間可読なクラス名を返す。

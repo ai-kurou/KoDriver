@@ -14,6 +14,7 @@ digraph G {
   ":core:domain" [label=":core:domain", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:gt7-ps5-data" [label=":core:gt7-ps5-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:lmu-windows-rest-api-data" [label=":core:lmu-windows-rest-api-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:narrator" [label=":core:narrator", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-startup-data" [label=":core:windows-startup-data", fillcolor="#BBDEFB", color="#1E88E5"]
@@ -32,6 +33,7 @@ digraph G {
   ":app:desktopApp" -> ":core:device-volume-data"
   ":app:desktopApp" -> ":core:gt7-ps5-data"
   ":app:desktopApp" -> ":core:lmu-windows-data"
+  ":app:desktopApp" -> ":core:lmu-windows-rest-api-data"
   ":app:desktopApp" -> ":core:windows-startup-data"
   ":app:desktopApp" -> ":server"
   ":app:shared" -> "feature"
@@ -43,6 +45,7 @@ digraph G {
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:windows-shared-memory"
+  ":core:lmu-windows-rest-api-data" -> ":core:domain"
   ":core:windows-startup-data" -> ":core:domain"
   ":server" -> ":core:domain"
   "feature" -> ":core:designsystem"

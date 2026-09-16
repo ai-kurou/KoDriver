@@ -2,14 +2,17 @@
 
 package kurou.kodriver.presentation
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -71,6 +74,27 @@ class AppThemeAndroidTest {
         val fallbackPrimary = captureAppThemePrimary(darkTheme = false, dynamicColor = true)
 
         assertTrue(Color(0xFF4C6600).value == fallbackPrimary)
+    }
+
+    @Test
+    @Config(sdk = [30])
+    fun `AppThemeはKoDriverThemeと同じ角丸をMaterialThemeへ渡す`() {
+        var shapes: Shapes? = null
+        composeRule.setContent {
+            AppTheme(darkTheme = false, dynamicColor = false) {
+                shapes = MaterialTheme.shapes
+            }
+        }
+        composeRule.waitForIdle()
+
+        assertEquals(
+            Shapes(
+                extraSmall = RoundedCornerShape(4.dp),
+                small = RoundedCornerShape(6.dp),
+                medium = RoundedCornerShape(10.dp),
+            ),
+            shapes,
+        )
     }
 
     private fun captureDynamicColorScheme(darkTheme: Boolean): ColorScheme? {
