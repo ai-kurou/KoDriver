@@ -2,6 +2,7 @@ package kurou.kodriver.core.designsystem
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -56,6 +57,19 @@ class KoDriverThemeTest {
     @Test
     fun `ダークテーマのsurface系ロールはM3ベースラインの既定値を使わない`() {
         assertSurfaceRolesOverridden(expected = captureColorScheme(darkTheme = true), baseline = darkColorScheme())
+    }
+
+    @Test
+    fun `KoDriverThemeはKoDriverShapesをMaterialThemeへ渡す`() {
+        var shapes: Shapes? = null
+        composeRule.setContent {
+            KoDriverTheme(darkTheme = false) {
+                shapes = MaterialTheme.shapes
+            }
+        }
+        composeRule.waitForIdle()
+
+        assertEquals(KoDriverShapes, shapes)
     }
 
     private fun captureColorScheme(darkTheme: Boolean): ColorScheme {

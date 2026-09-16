@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -480,12 +479,12 @@ private fun ReadoutListBottomChip(
         modifier =
             modifier
                 .heightIn(min = 40.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(MaterialTheme.shapes.medium)
                 .background(containerColor)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.outlineVariant,
-                    shape = RoundedCornerShape(10.dp),
+                    shape = MaterialTheme.shapes.medium,
                 ).testTag(testTag)
                 .clickable(
                     enabled = enabled,
