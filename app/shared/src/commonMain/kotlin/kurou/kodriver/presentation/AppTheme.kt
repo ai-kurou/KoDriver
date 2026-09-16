@@ -1,15 +1,18 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 // app:shared は moduleGraphAssert で core:.* への依存が禁止されているため、
-// core:designsystem の KoDriverTheme（Color.kt/Theme.kt）と同じ配色値をここに複製している。
-// 配色を変更する場合は両方を同期させること。
+// core:designsystem の KoDriverTheme（Color.kt/Theme.kt/Shapes.kt）と同じ配色値・角丸をここに複製している。
+// 配色・角丸を変更する場合は両方を同期させること。
 
 // Primary – Neon Yellow-Green（蛍光黄緑）。ブランド色として選択状態・スイッチ・強調にのみ使う。
 private val AppYellow10 = Color(0xFF121900)
@@ -144,6 +147,13 @@ private val AppDarkColorScheme =
         surfaceContainerHighest = AppNeutral22,
     )
 
+private val AppShapes =
+    Shapes(
+        extraSmall = RoundedCornerShape(4.dp),
+        small = RoundedCornerShape(6.dp),
+        medium = RoundedCornerShape(10.dp),
+    )
+
 @Composable
 internal expect fun dynamicAppColorScheme(darkTheme: Boolean): ColorScheme?
 
@@ -165,6 +175,7 @@ fun AppTheme(
         }
     MaterialTheme(
         colorScheme = colorScheme,
+        shapes = AppShapes,
         content = content,
     )
 }
