@@ -11,29 +11,31 @@ import androidx.compose.ui.graphics.Color
 // core:designsystem の KoDriverTheme（Color.kt/Theme.kt）と同じ配色値をここに複製している。
 // 配色を変更する場合は両方を同期させること。
 
+// Primary – Neon Yellow-Green（蛍光黄緑）。ブランド色として選択状態・スイッチ・強調にのみ使う。
 private val AppYellow10 = Color(0xFF121900)
 private val AppYellow20 = Color(0xFF253300)
 private val AppYellow30 = Color(0xFF384D00)
 private val AppYellow40 = Color(0xFF4C6600)
 private val AppYellow80 = Color(0xFFBFFF00)
 private val AppYellow90 = Color(0xFFE0FF8C)
-private val AppYellow95 = Color(0xFFEFFFBB)
-private val AppYellow99 = Color(0xFFF8FFED)
 
-private val AppLime10 = Color(0xFF0D1A00)
-private val AppLime20 = Color(0xFF1A3300)
-private val AppLime30 = Color(0xFF284D00)
-private val AppLime40 = Color(0xFF366600)
-private val AppLime80 = Color(0xFF80FF4D)
-private val AppLime90 = Color(0xFFB8FFAA)
+// Secondary – 低彩度のオリーブ。primary と同系色相のまま彩度を落として役割を分ける。
+private val AppSecondary10 = Color(0xFF161E0A)
+private val AppSecondary20 = Color(0xFF2B331E)
+private val AppSecondary30 = Color(0xFF414A33)
+private val AppSecondary40 = Color(0xFF586249)
+private val AppSecondary80 = Color(0xFFC0CAAD)
+private val AppSecondary90 = Color(0xFFDCE7C8)
 
-private val AppNeon10 = Color(0xFF0A1400)
-private val AppNeon20 = Color(0xFF152800)
-private val AppNeon30 = Color(0xFF213D00)
-private val AppNeon40 = Color(0xFF2D5200)
-private val AppNeon80 = Color(0xFFD4FF00)
-private val AppNeon90 = Color(0xFFEAFF80)
+// Tertiary – ティール。primary と色相を分けたアクセント。
+private val AppTertiary10 = Color(0xFF00201E)
+private val AppTertiary20 = Color(0xFF003734)
+private val AppTertiary30 = Color(0xFF1E4E4B)
+private val AppTertiary40 = Color(0xFF386663)
+private val AppTertiary80 = Color(0xFFA0CFCB)
+private val AppTertiary90 = Color(0xFFBCECE7)
 
+// Error
 private val AppError10 = Color(0xFF410002)
 private val AppError20 = Color(0xFF690005)
 private val AppError30 = Color(0xFF93000A)
@@ -41,47 +43,67 @@ private val AppError40 = Color(0xFFBA1A1A)
 private val AppError80 = Color(0xFFFFB4AB)
 private val AppError90 = Color(0xFFFFDAD6)
 
-private val AppNeutral10 = Color(0xFF1C1B1E)
-private val AppNeutral20 = Color(0xFF313033)
-private val AppNeutral90 = Color(0xFFE6E1E5)
-private val AppNeutral95 = Color(0xFFF4EFF4)
-private val AppNeutral99 = Color(0xFFFFFBFE)
+// Neutral – わずかに緑寄りの低彩度グレー（背景・surface 系）
+private val AppNeutral4 = Color(0xFF0C0E0B)
+private val AppNeutral6 = Color(0xFF111310)
+private val AppNeutral10 = Color(0xFF1A1C18)
+private val AppNeutral12 = Color(0xFF1D1F1B)
+private val AppNeutral17 = Color(0xFF272925)
+private val AppNeutral20 = Color(0xFF2F312D)
+private val AppNeutral22 = Color(0xFF333531)
+private val AppNeutral24 = Color(0xFF373935)
+private val AppNeutral87 = Color(0xFFD9DAD4)
+private val AppNeutral90 = Color(0xFFE2E3DD)
+private val AppNeutral92 = Color(0xFFE8E9E2)
+private val AppNeutral94 = Color(0xFFEDEEE8)
+private val AppNeutral95 = Color(0xFFF0F1EB)
+private val AppNeutral96 = Color(0xFFF3F4EE)
+private val AppNeutral98 = Color(0xFFF9FAF4)
+private val AppNeutral100 = Color(0xFFFFFFFF)
 
-private val AppNeutralVariant30 = Color(0xFF4A4458)
-private val AppNeutralVariant50 = Color(0xFF79747E)
-private val AppNeutralVariant60 = Color(0xFF938F99)
-private val AppNeutralVariant80 = Color(0xFFCAC4D0)
-private val AppNeutralVariant90 = Color(0xFFE7E0EC)
+// NeutralVariant – わずかに緑寄りの低彩度グレー（区切り線・補助テキスト系）
+private val AppNeutralVariant30 = Color(0xFF45483D)
+private val AppNeutralVariant50 = Color(0xFF75786C)
+private val AppNeutralVariant60 = Color(0xFF8F9285)
+private val AppNeutralVariant80 = Color(0xFFC5C8B9)
+private val AppNeutralVariant90 = Color(0xFFE1E4D5)
 
 private val AppLightColorScheme =
     lightColorScheme(
         primary = AppYellow40,
-        onPrimary = AppNeutral99,
+        onPrimary = AppNeutral100,
         primaryContainer = AppYellow90,
         onPrimaryContainer = AppYellow10,
-        secondary = AppLime40,
-        onSecondary = AppNeutral99,
-        secondaryContainer = AppLime90,
-        onSecondaryContainer = AppLime10,
-        tertiary = AppNeon40,
-        onTertiary = AppNeutral99,
-        tertiaryContainer = AppNeon80,
-        onTertiaryContainer = AppNeon10,
+        inversePrimary = AppYellow80,
+        secondary = AppSecondary40,
+        onSecondary = AppNeutral100,
+        secondaryContainer = AppSecondary90,
+        onSecondaryContainer = AppSecondary10,
+        tertiary = AppTertiary40,
+        onTertiary = AppNeutral100,
+        tertiaryContainer = AppTertiary90,
+        onTertiaryContainer = AppTertiary10,
         error = AppError40,
-        onError = AppNeutral99,
+        onError = AppNeutral100,
         errorContainer = AppError90,
         onErrorContainer = AppError10,
-        background = AppYellow99,
+        background = AppNeutral98,
         onBackground = AppNeutral10,
-        surface = AppYellow99,
+        surface = AppNeutral98,
         onSurface = AppNeutral10,
         surfaceVariant = AppNeutralVariant90,
         onSurfaceVariant = AppNeutralVariant30,
+        inverseSurface = AppNeutral20,
+        inverseOnSurface = AppNeutral95,
         outline = AppNeutralVariant50,
         outlineVariant = AppNeutralVariant80,
-        surfaceContainerLow = AppYellow95,
-        surfaceContainer = AppNeutral95,
-        surfaceContainerHigh = AppNeutralVariant90,
+        surfaceBright = AppNeutral98,
+        surfaceDim = AppNeutral87,
+        surfaceContainerLowest = AppNeutral100,
+        surfaceContainerLow = AppNeutral96,
+        surfaceContainer = AppNeutral94,
+        surfaceContainerHigh = AppNeutral92,
+        surfaceContainerHighest = AppNeutral90,
     )
 
 private val AppDarkColorScheme =
@@ -90,29 +112,36 @@ private val AppDarkColorScheme =
         onPrimary = AppYellow20,
         primaryContainer = AppYellow30,
         onPrimaryContainer = AppYellow90,
-        secondary = AppLime80,
-        onSecondary = AppLime20,
-        secondaryContainer = AppLime30,
-        onSecondaryContainer = AppLime90,
-        tertiary = AppNeon80,
-        onTertiary = AppNeon20,
-        tertiaryContainer = AppNeon30,
-        onTertiaryContainer = AppNeon90,
+        inversePrimary = AppYellow40,
+        secondary = AppSecondary80,
+        onSecondary = AppSecondary20,
+        secondaryContainer = AppSecondary30,
+        onSecondaryContainer = AppSecondary90,
+        tertiary = AppTertiary80,
+        onTertiary = AppTertiary20,
+        tertiaryContainer = AppTertiary30,
+        onTertiaryContainer = AppTertiary90,
         error = AppError80,
         onError = AppError20,
         errorContainer = AppError30,
         onErrorContainer = AppError90,
-        background = AppNeutral10,
+        background = AppNeutral6,
         onBackground = AppNeutral90,
-        surface = AppNeutral10,
+        surface = AppNeutral6,
         onSurface = AppNeutral90,
         surfaceVariant = AppNeutralVariant30,
         onSurfaceVariant = AppNeutralVariant80,
+        inverseSurface = AppNeutral90,
+        inverseOnSurface = AppNeutral20,
         outline = AppNeutralVariant60,
         outlineVariant = AppNeutralVariant30,
-        surfaceContainerLow = AppNeutral20,
-        surfaceContainer = AppNeutral20,
-        surfaceContainerHigh = AppNeutralVariant30,
+        surfaceBright = AppNeutral24,
+        surfaceDim = AppNeutral6,
+        surfaceContainerLowest = AppNeutral4,
+        surfaceContainerLow = AppNeutral10,
+        surfaceContainer = AppNeutral12,
+        surfaceContainerHigh = AppNeutral17,
+        surfaceContainerHighest = AppNeutral22,
     )
 
 @Composable
