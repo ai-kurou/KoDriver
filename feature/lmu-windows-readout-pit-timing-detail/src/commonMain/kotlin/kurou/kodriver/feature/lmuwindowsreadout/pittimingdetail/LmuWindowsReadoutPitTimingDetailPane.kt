@@ -16,13 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
@@ -89,7 +89,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.pit_timing_virtual_energy_title),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
@@ -98,7 +98,13 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         chipEnabled = true,
                         onChipClick = { onPreviewClicked() },
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.small,
+                            ),
+                    )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.pit_timing_virtual_energy_laps_subtitle),
                         trailingContent = {
@@ -153,9 +159,9 @@ internal fun PitTimingLapsHelpSheetContent(modifier: Modifier = Modifier) {
         text = stringResource(Res.string.pit_timing_laps_help_description),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
     )
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
 }
 
 @Preview(showBackground = true)

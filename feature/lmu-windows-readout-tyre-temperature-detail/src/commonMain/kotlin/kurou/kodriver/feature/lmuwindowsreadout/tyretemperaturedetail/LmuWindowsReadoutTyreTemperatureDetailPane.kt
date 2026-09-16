@@ -22,13 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
@@ -120,12 +120,12 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             title = stringResource(Res.string.tyre_temperature_carcass_card_title),
             checked = uiState.overheatWarningEnabled,
             onCheckedChange = onOverheatWarningEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         DetailPaneCardChips(
@@ -135,14 +135,24 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             onChipClick = { onPreviewClicked() },
                         )
                     }
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.small,
+                            ),
+                    )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_vehicle_class_target_subtitle),
                     )
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                        modifier =
+                            Modifier.fillMaxWidth().padding(
+                                horizontal = KoDriverSpacing.extraSmall,
+                                vertical = KoDriverSpacing.extraSmall,
+                            ),
                     ) {
                         val vehicleClassByChipLabel =
                             uiState.vehicleClassHighThresholdCelsius
@@ -165,7 +175,13 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             },
                         )
                     }
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.small,
+                            ),
+                    )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle),
                         trailingContent = {
@@ -205,12 +221,12 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             title = stringResource(Res.string.tyre_temperature_low_warning_card_title),
             checked = uiState.lowWarningEnabled,
             onCheckedChange = onLowWarningEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         DetailPaneCardChips(
@@ -220,7 +236,13 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             onChipClick = { onLowWarningPreviewClicked() },
                         )
                     }
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.small,
+                            ),
+                    )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_low_warning_phases_subtitle),
                         trailingContent = {
@@ -231,9 +253,13 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         },
                     )
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+                        modifier =
+                            Modifier.fillMaxWidth().padding(
+                                horizontal = KoDriverSpacing.extraSmall,
+                                vertical = KoDriverSpacing.extraSmall,
+                            ),
                     ) {
                         phaseLabels.forEach { (phase, label) ->
                             val selected = phase in uiState.lowWarningPhases
@@ -267,9 +293,9 @@ internal fun TyreTemperatureThresholdHelpSheetContent(modifier: Modifier = Modif
         text = stringResource(Res.string.tyre_temperature_threshold_help_description),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
     )
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
 }
 
 @Composable
@@ -278,9 +304,9 @@ internal fun TyreTemperatureLowWarningPhasesHelpSheetContent(modifier: Modifier 
         text = stringResource(Res.string.tyre_temperature_low_warning_phases_help_description),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
     )
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
 }
 
 @Preview(showBackground = true)

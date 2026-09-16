@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_cancel
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_confirm
@@ -44,7 +44,7 @@ internal fun OtherServerIpDiscoveryDialog(
         title = { Text(stringResource(Res.string.server_ip_discovery_dialog_title)) },
         text = {
             Column {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
                 discoveredServers.forEach { server ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

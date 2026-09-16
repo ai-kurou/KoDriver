@@ -17,8 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.Res
 import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_cancel
@@ -72,7 +72,7 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
         title = { Text(stringResource(Res.string.readout_start_sound_title)) },
         text = {
             Column {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
                 ReadoutStartSoundType.entries.forEach { type ->
                     val label =
                         when (type) {

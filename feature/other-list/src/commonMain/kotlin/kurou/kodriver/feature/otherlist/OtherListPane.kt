@@ -53,7 +53,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
@@ -312,7 +312,7 @@ fun OtherListPane(
         modifier =
             modifier
                 .fillMaxSize()
-                .padding(vertical = 8.dp),
+                .padding(vertical = KoDriverSpacing.small),
     ) {
         otherListSections.forEach { section ->
             val sectionItems = groupedItems[section].orEmpty()
@@ -370,7 +370,12 @@ private fun OtherListSectionHeader(section: OtherListSection) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
+                .padding(
+                    start = KoDriverSpacing.large,
+                    top = KoDriverSpacing.large,
+                    end = KoDriverSpacing.large,
+                    bottom = KoDriverSpacing.extraSmall,
+                ),
     )
 }
 

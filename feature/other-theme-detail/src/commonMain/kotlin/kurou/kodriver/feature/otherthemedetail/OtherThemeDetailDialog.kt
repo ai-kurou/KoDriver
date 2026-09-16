@@ -17,8 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.feature.otherthemedetail.generated.resources.Res
 import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_cancel
@@ -73,7 +73,7 @@ internal fun OtherThemeDetailDialogContent(
         title = { Text(stringResource(Res.string.theme_title)) },
         text = {
             Column {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
                 ThemeMode.entries.forEach { themeMode ->
                     val label =
                         when (themeMode) {
