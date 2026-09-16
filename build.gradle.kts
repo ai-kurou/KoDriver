@@ -31,6 +31,7 @@ plugins.withType<YarnPlugin> {
         resolution("serialize-javascript", "7.0.5")
         resolution("fast-uri", "3.1.8")
         resolution("js-yaml", "4.3.2")
+        resolution("qs", "6.16.0")
         resolution("shell-quote", "1.10.0")
         resolution("socket.io-parser", "4.2.7")
         resolution("uuid", "11.1.1")
