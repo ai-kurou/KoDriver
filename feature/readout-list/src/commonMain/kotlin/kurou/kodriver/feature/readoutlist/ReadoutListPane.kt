@@ -405,12 +405,23 @@ private fun ReadoutListItemCard(
                             },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    val itemContentColor by
+                        animateColorAsState(
+                            targetValue =
+                                if (readoutEnabled) {
+                                    MaterialTheme.colorScheme.onSurface
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                        )
                     Icon(
                         imageVector = itemIcon(item),
                         contentDescription = null,
+                        tint = itemContentColor,
                     )
                     Text(
                         text = itemName,
+                        color = itemContentColor,
                         modifier = Modifier.padding(start = KoDriverSpacing.medium).weight(1f),
                     )
                     VerticalDivider(
