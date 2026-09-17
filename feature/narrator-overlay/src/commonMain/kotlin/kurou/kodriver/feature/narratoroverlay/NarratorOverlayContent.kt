@@ -19,10 +19,11 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * オーバーレイHUDの背景色（薄い灰色）。ゲーム画面に重ねて表示する専用ウィンドウのための固定色で、
- * アプリ本体の[KoDriverTheme]のカラースキームとは独立して定義する。
+ * オーバーレイHUDの背景色（半透明の薄い灰色）。ゲーム画面に重ねて表示する専用ウィンドウのための固定色で、
+ * アプリ本体の[KoDriverTheme]のカラースキームとは独立して定義する。ゲーム画面を隠しすぎないよう、
+ * ウィンドウ側の`transparent = true`設定と合わせて半透明にしている。
  */
-private val NarratorOverlayBackgroundColor = Color(0xFFEDEDED)
+private val NarratorOverlayBackgroundColor = Color(0x80EDEDED)
 
 /**
  * オーバーレイHUDの文字色（黄色系）。ゲーム画面上での視認性を優先した固定色とする。

@@ -40,6 +40,11 @@ private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
  * - 位置・サイズの永続化、表示ON/OFFの切り替え、常時最前面の詳細な制御（フォーカス連動等）は別PRで対応する。
  * - このウィンドウ自体は最前面には出ないため、LMU 側をボーダーレスウィンドウモードで起動する前提となる
  *   （排他的フルスクリーンでは他の常駐オーバーレイツールと同様に表示されない）。
+ * - ゲーム画面をなるべく隠さないよう `transparent = true` でウィンドウ背景を透過させ、コンテンツ側
+ *   （[NarratorOverlayScreen]）の半透明な背景色と組み合わせている。`isTransparent`（`transparent`
+ *   パラメータの実体）はウィンドウが表示済みの状態で変更すると例外を送出するが、`SwingWindow` の
+ *   `update` ブロックは値に変化がない限り再設定を行わないため、固定値 `true` を渡す限りは
+ *   ウィンドウがまだ displayable になる前の初回 `update` 呼び出し時にのみ設定される。
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -54,6 +59,7 @@ fun ApplicationScope.NarratorOverlayWindow(modifier: Modifier = Modifier) {
         state = windowState,
         title = "KoDriver Narrator Overlay",
         decoration = WindowDecoration.Undecorated(),
+        transparent = true,
         resizable = true,
         alwaysOnTop = true,
         init = { composeWindow ->
