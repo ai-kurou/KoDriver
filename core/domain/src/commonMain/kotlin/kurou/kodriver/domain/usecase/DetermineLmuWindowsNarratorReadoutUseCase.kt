@@ -707,7 +707,7 @@ private fun trackPitTimingValue(
 
         else -> {
             // 共有メモリの値は微小な上振れ（ジッタ・torn read）を含みうるため、
-            // しきい値未満の増加は給油・タイヤ交換とみなさず消費量の推定から除外する。
+            // 閾値未満の増加は給油・タイヤ交換とみなさず消費量の推定から除外する。
             val delta = currentValue - state.currentValue
             val refilled = if (delta >= PIT_TIMING_REFILL_DETECTION_MIN_RATIO) delta else 0.0
             if (currentLap != state.currentLap) {

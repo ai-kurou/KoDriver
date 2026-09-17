@@ -10,19 +10,25 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -30,8 +36,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItem
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -109,6 +115,17 @@ private const val LMU_WINDOWS_SIMULATOR_ID = "lmu_windows"
  */
 private const val HALF_ROTATION_DEGREES = 180f
 
+/**
+ * NavigationRail ヘッダーに表示するシミュレータロゴのサイズ。
+ * ナビ項目内のアイコン（24dp）より大きくし、ヘッダーであることを視覚的に強調する。
+ */
+private val PrimarySimulatorRailHeaderIconSize = 40.dp
+
+/**
+ * NavigationRail ヘッダーとナビ項目を区切る [HorizontalDivider] の幅。
+ */
+private val PrimarySimulatorRailHeaderDividerWidth = 32.dp
+
 private fun withTabSwitch(
     action: (() -> Unit)?,
     switchToMore: () -> Unit,
@@ -175,54 +192,84 @@ private fun AppNavIcon(
 }
 
 /**
- * NavigationRail / NavigationBar の先頭に表示する、現在選択中のシミュレータの項目。
- * 他の [AppDestination] とは異なりタブ切り替えの対象ではないため、常に非選択（[selected] = false）とする。
+ * NavigationBar / NavigationRail の先頭に表示する、現在選択中のシミュレータの項目。
+ * 他の [AppDestination] とは異なりタブ切り替えの対象ではないため、常に非選択として扱う。
  * タップするとシミュレータ選択メニューを開く。ラベル横にドロップダウン矢印アイコンを添えて、
- * 単なるタブではなくメニューを開く操作対象であることを視覚的に示す。画面下部の NavigationBar では
- * メニューが上方向に展開されるため矢印を上向き（[Icons.Filled.ArrowDropUp]）にし、画面横の
- * NavigationRail ではメニューが右方向に展開されるため矢印を右向き
- * （[Icons.AutoMirrored.Filled.ArrowRight]）にする。
+ * 単なるタブではなくメニューを開く操作対象であることを視覚的に示す。NavigationBar ではメニューが
+ * 上方向に展開されるため矢印を上向き（[Icons.Filled.ArrowDropUp]）にし、NavigationRail では
+ * 右方向に展開されるため矢印を右向き（[Icons.AutoMirrored.Filled.ArrowRight]）にする。
  * ポップアップメニューの開閉状態（[expanded]）に応じて矢印アイコンを180度回転させ、
  * 開いているときは向きが反対になり、閉じると元の向きに戻ることでメニューの開閉状態を視覚的に示す。
+ *
+ * NavigationRail では、通常のナビ項目より大きくロゴを表示したうえで [HorizontalDivider] を添え、
+ * シミュレーター選択（ヘッダ）とタブ切り替え（ナビ項目）が別の操作であることを視覚的に示すヘッダーとして表示する。
  */
-private fun NavigationSuiteScope.appScreenPrimarySimulatorNavItem(
+@Composable
+private fun AppScreenPrimarySimulatorNavItem(
     resolvedLayoutType: NavigationSuiteType,
     selectedSimulatorId: String,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onSimulatorSelected: (String) -> Unit,
 ) {
-    val dropdownArrowIcon =
-        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-            Icons.Filled.ArrowDropUp
-        } else {
-            Icons.AutoMirrored.Filled.ArrowRight
-        }
-    item(
-        icon = {
+    if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+        NavigationSuiteItem(
+            icon = {
+                AppScreenPrimarySimulatorIndicator(
+                    simulatorId = selectedSimulatorId,
+                    expanded = expanded,
+                    onExpandedChange = onExpandedChange,
+                    onSimulatorSelected = onSimulatorSelected,
+                    modifier = Modifier.size(24.dp),
+                )
+            },
+            label = {
+                val dropdownArrowRotation by
+                    animateFloatAsState(targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropUp,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp).rotate(dropdownArrowRotation),
+                    )
+                }
+            },
+            selected = false,
+            onClick = { onExpandedChange(true) },
+            navigationSuiteType = resolvedLayoutType,
+            modifier = Modifier.testTag("primarySimulatorNavItem"),
+        )
+    } else {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier =
+                Modifier
+                    .padding(vertical = AppSpacing.medium)
+                    .clickable(onClick = { onExpandedChange(true) })
+                    .testTag("primarySimulatorNavItem"),
+        ) {
             AppScreenPrimarySimulatorIndicator(
                 simulatorId = selectedSimulatorId,
                 expanded = expanded,
                 onExpandedChange = onExpandedChange,
                 onSimulatorSelected = onSimulatorSelected,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(PrimarySimulatorRailHeaderIconSize),
             )
-        },
-        label = {
+            Spacer(modifier = Modifier.height(AppSpacing.extraSmall))
             val dropdownArrowRotation by animateFloatAsState(targetValue = if (expanded) HALF_ROTATION_DEGREES else 0f)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(appScreenPrimarySimulatorLabel(selectedSimulatorId))
+                Text(appScreenPrimarySimulatorLabel(selectedSimulatorId), style = MaterialTheme.typography.labelMedium)
                 Icon(
-                    imageVector = dropdownArrowIcon,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowRight,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp).rotate(dropdownArrowRotation),
                 )
             }
-        },
-        selected = false,
-        onClick = { onExpandedChange(true) },
-        modifier = Modifier.testTag("primarySimulatorNavItem"),
-    )
+            Spacer(modifier = Modifier.height(AppSpacing.medium))
+            HorizontalDivider(modifier = Modifier.width(PrimarySimulatorRailHeaderDividerWidth))
+        }
+    }
 }
 
 @Composable
@@ -556,9 +603,10 @@ private fun AppScreenScaffold(
     ) {
         NavigationSuiteScaffold(
             modifier = Modifier.padding(top = AppSpacing.extraSmall),
-            layoutType = resolvedLayoutType,
-            navigationSuiteItems = {
-                appScreenPrimarySimulatorNavItem(
+            navigationSuiteType = resolvedLayoutType,
+            navigationItemVerticalArrangement = Arrangement.Center,
+            navigationItems = {
+                AppScreenPrimarySimulatorNavItem(
                     resolvedLayoutType = resolvedLayoutType,
                     selectedSimulatorId = selectedSimulatorId,
                     expanded = simulatorMenuExpanded,
@@ -569,7 +617,7 @@ private fun AppScreenScaffold(
                     val showBadge =
                         dest == AppDestination.More &&
                             (hasAppUpdate || !accessLocalNetworkPermissionGranted)
-                    item(
+                    NavigationSuiteItem(
                         icon = { AppNavIcon(dest = dest, showBadge = showBadge) },
                         label = { Text(dest.label()) },
                         selected = navigationState.current == dest,
@@ -582,6 +630,7 @@ private fun AppScreenScaffold(
                                 }
                             }
                         },
+                        navigationSuiteType = resolvedLayoutType,
                     )
                 }
             },

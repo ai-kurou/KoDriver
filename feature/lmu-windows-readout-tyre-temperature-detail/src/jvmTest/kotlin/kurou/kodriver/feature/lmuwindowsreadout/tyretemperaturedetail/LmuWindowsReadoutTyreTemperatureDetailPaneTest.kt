@@ -84,7 +84,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `スライダーは選択中クラスのしきい値を表示する`() {
+    fun `スライダーは選択中クラスの閾値を表示する`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
@@ -172,7 +172,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `対象クラスのサブタイトルとクラス別しきい値のチップが表示される`() {
+    fun `対象クラスのサブタイトルとクラス別閾値のチップが表示される`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(

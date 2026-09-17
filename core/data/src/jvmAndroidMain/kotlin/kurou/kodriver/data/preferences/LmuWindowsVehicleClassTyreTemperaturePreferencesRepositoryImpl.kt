@@ -43,8 +43,8 @@ internal class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImpl(
         dataStore.saveProperty(keyOf(vehicleClass)) { prefs, value -> prefs.copy(selectedVehicleClassKey = value) }
     }
 
-    // Unknown は raw 値によらず1つのしきい値を共有する（未知クラス全体の安全網としての性質上、
-    // raw文字列ごとに個別のしきい値を持たせる必要はないため）。
+    // Unknown は raw 値によらず1つの閾値を共有する（未知クラス全体の安全網としての性質上、
+    // raw文字列ごとに個別の閾値を持たせる必要はないため）。
     private fun keyOf(vehicleClass: LmuWindowsVehicleClassData): String =
         if (vehicleClass is LmuWindowsVehicleClassData.Unknown) {
             LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY

@@ -97,6 +97,33 @@ class AppThemeAndroidTest {
         )
     }
 
+    @Test
+    @Config(sdk = [30])
+    fun `AppThemeはライトテーマでAppLightExtendedColorSchemeを提供する`() {
+        val extendedColorScheme = captureAppExtendedColorScheme(darkTheme = false)
+
+        assertEquals(AppLightExtendedColorScheme, extendedColorScheme)
+    }
+
+    @Test
+    @Config(sdk = [30])
+    fun `AppThemeはダークテーマでAppDarkExtendedColorSchemeを提供する`() {
+        val extendedColorScheme = captureAppExtendedColorScheme(darkTheme = true)
+
+        assertEquals(AppDarkExtendedColorScheme, extendedColorScheme)
+    }
+
+    private fun captureAppExtendedColorScheme(darkTheme: Boolean): AppExtendedColorScheme {
+        var extendedColorScheme: AppExtendedColorScheme? = null
+        composeRule.setContent {
+            AppTheme(darkTheme = darkTheme, dynamicColor = false) {
+                extendedColorScheme = AppExtendedColors.current
+            }
+        }
+        composeRule.waitForIdle()
+        return extendedColorScheme ?: error("Extended color scheme was not captured.")
+    }
+
     private fun captureDynamicColorScheme(darkTheme: Boolean): ColorScheme? {
         var colorScheme: ColorScheme? = null
         composeRule.setContent {

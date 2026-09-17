@@ -11,6 +11,9 @@ Compose:
     active: true
   CompositionLocalAllowlist:
     active: true
+    allowedCompositionLocals:
+      - LocalExtendedColorScheme
+      - LocalAppExtendedColorScheme
   CompositionLocalNaming:
     active: true
   ContentEmitterReturningValues:
