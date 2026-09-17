@@ -74,6 +74,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
+import kurou.kodriver.feature.otherlist.generated.resources.section_overlay_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_readout_settings
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
@@ -83,6 +84,7 @@ import kotlin.time.TimeSource
 private enum class OtherListSection {
     ConnectionSettings,
     ReadoutSettings,
+    OverlaySettings,
     AppSettings,
     Information,
 }
@@ -91,6 +93,7 @@ private val otherListSections =
     listOf(
         OtherListSection.ConnectionSettings,
         OtherListSection.ReadoutSettings,
+        OtherListSection.OverlaySettings,
         OtherListSection.AppSettings,
         OtherListSection.Information,
     )
@@ -191,6 +194,7 @@ private fun otherListSectionTitle(section: OtherListSection): String =
     when (section) {
         OtherListSection.ConnectionSettings -> stringResource(Res.string.section_connection_settings)
         OtherListSection.ReadoutSettings -> stringResource(Res.string.section_readout_settings)
+        OtherListSection.OverlaySettings -> stringResource(Res.string.section_overlay_settings)
         OtherListSection.AppSettings -> stringResource(Res.string.section_app_settings)
         OtherListSection.Information -> stringResource(Res.string.section_information)
     }
