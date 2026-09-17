@@ -17,9 +17,9 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberWindowState
 import kurou.kodriver.presentation.NarratorOverlayScreen
 import java.awt.Dimension
+import java.awt.MouseInfo
 import java.awt.Point
 import java.awt.Window
-import kotlin.math.roundToInt
 
 private val NARRATOR_OVERLAY_INITIAL_SIZE = DpSize(480.dp, 120.dp)
 private val NARRATOR_OVERLAY_MIN_SIZE = DpSize(200.dp, 80.dp)
@@ -31,6 +31,11 @@ private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
  * - `WindowDecoration.Undecorated()` かつ `resizable = true` の組み合わせで、Compose Multiplatform 独自の
  *   リサイズハンドル（[androidx.compose.ui.window.UndecoratedWindowResizer]）が有効になる。
  * - パネル全体のドラッグで移動できるよう、[detectDragGestures] でウィンドウ位置を直接更新する。
+ *   [androidx.compose.foundation.gestures.PointerInputChange] の`dragAmount`はウィンドウ内のローカル座標
+ *   系での差分であり、これを毎フレーム加算してウィンドウを動かすと、ウィンドウの移動そのものが次フレームの
+ *   ローカル座標の基準をずらしてしまい、位置計算がフィードバックループを起こしてガタつく（実機で確認済み）。
+ *   そのため、ドラッグ開始時のウィンドウ位置とポインタのスクリーン座標（[MouseInfo.getPointerInfo]）を基準に
+ *   保持し、以降は「現在のポインタのスクリーン座標との差分」から絶対位置としてウィンドウ位置を計算する。
  * - タスクバーに表示させないため `Window.Type.UTILITY` を設定する。`java.awt.Window#setType` は
  *   ウィンドウが displayable になった後に呼ぶと `IllegalComponentStateException` を送出するため、
  *   通常の `Window`composable の content 内 `LaunchedEffect` から設定すると、環境によっては
@@ -75,13 +80,23 @@ fun ApplicationScope.NarratorOverlayWindow(modifier: Modifier = Modifier) {
                 modifier
                     .fillMaxSize()
                     .pointerInput(Unit) {
-                        detectDragGestures { change, dragAmount ->
+                        var dragStartWindowLocation: Point? = null
+                        var dragStartPointerScreenLocation: Point? = null
+                        detectDragGestures(
+                            onDragStart = {
+                                dragStartWindowLocation = window.location
+                                dragStartPointerScreenLocation = MouseInfo.getPointerInfo()?.location
+                            },
+                        ) { change, _ ->
                             change.consume()
-                            val location = window.location
+                            val startWindowLocation = dragStartWindowLocation ?: return@detectDragGestures
+                            val startPointerLocation = dragStartPointerScreenLocation ?: return@detectDragGestures
+                            val currentPointerLocation =
+                                MouseInfo.getPointerInfo()?.location ?: return@detectDragGestures
                             window.location =
                                 Point(
-                                    location.x + dragAmount.x.roundToInt(),
-                                    location.y + dragAmount.y.roundToInt(),
+                                    startWindowLocation.x + (currentPointerLocation.x - startPointerLocation.x),
+                                    startWindowLocation.y + (currentPointerLocation.y - startPointerLocation.y),
                                 )
                         }
                     },
