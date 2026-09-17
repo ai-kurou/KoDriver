@@ -99,6 +99,7 @@ class OtherContentTest {
         var releasePageOpened = false
         var readoutStartSoundDialogOpened = false
         var themeDialogOpened = false
+        var overlayTextSizeDialogOpened = false
         var keepScreenOn = false
         var dynamicColorEnabled = false
         var hapticFeedbackEnabled = false
@@ -123,6 +124,7 @@ class OtherContentTest {
                 onOpenReleasePage = { state.releasePageOpened = true },
                 onOpenReadoutStartSoundDialog = { state.readoutStartSoundDialogOpened = true },
                 onOpenThemeDialog = { state.themeDialogOpened = true },
+                onOpenOverlayTextSizeDialog = { state.overlayTextSizeDialogOpened = true },
                 onKeepScreenOnChange = { state.keepScreenOn = it },
                 onDynamicColorEnabledChange = { state.dynamicColorEnabled = it },
                 onHapticFeedbackEnabledChange = { state.hapticFeedbackEnabled = it },
@@ -179,6 +181,14 @@ class OtherContentTest {
         waitForIdle()
 
         assertTrue(state.themeDialogOpened)
+        assertFalse(state.backEnabled)
+
+        // OverlayTextSize（ダイアログを開く）
+        onNode(hasScrollAction()).performScrollToNode(hasText("文字サイズ"))
+        onNode(hasText("文字サイズ")).performClick()
+        waitForIdle()
+
+        assertTrue(state.overlayTextSizeDialogOpened)
         assertFalse(state.backEnabled)
 
         // DynamicColor（Switchで直接切り替える）

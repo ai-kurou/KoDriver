@@ -30,6 +30,7 @@ import kurou.kodriver.feature.narratoroverlay.narratorOverlayModule
 import kurou.kodriver.feature.otherconsoleipdetail.otherConsoleIpDetailModule
 import kurou.kodriver.feature.otherfeedbackdetail.otherFeedbackDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
+import kurou.kodriver.feature.otheroverlaytextsizedetail.otherOverlayTextSizeDetailModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.otherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
 import kurou.kodriver.feature.otherthemedetail.otherThemeDetailModule
@@ -63,6 +64,7 @@ val featureModules: List<Module> =
         otherFeedbackDetailModule,
         otherReadoutStartSoundDetailModule,
         otherThemeDetailModule,
+        otherOverlayTextSizeDetailModule,
         otherServerIpDetailModule,
         otherConsoleIpDetailModule,
         otherVolumeDetailModule,

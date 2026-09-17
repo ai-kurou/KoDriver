@@ -12,10 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.OverlayTextSize
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -59,11 +61,19 @@ internal fun NarratorOverlayContent(
             Text(
                 text = uiState.latestTelemetryLog?.narratedText.orEmpty(),
                 color = NarratorOverlayTextColor,
-                style = MaterialTheme.typography.headlineSmall,
+                style = narratorOverlayTextStyle(uiState.overlayTextSize),
             )
         }
     }
 }
+
+@Composable
+private fun narratorOverlayTextStyle(overlayTextSize: OverlayTextSize): TextStyle =
+    when (overlayTextSize) {
+        OverlayTextSize.SMALL -> MaterialTheme.typography.titleMedium
+        OverlayTextSize.MEDIUM -> MaterialTheme.typography.headlineSmall
+        OverlayTextSize.LARGE -> MaterialTheme.typography.headlineLarge
+    }
 
 @Preview(showBackground = true)
 @Composable

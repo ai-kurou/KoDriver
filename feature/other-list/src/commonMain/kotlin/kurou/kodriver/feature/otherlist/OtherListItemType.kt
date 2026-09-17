@@ -13,6 +13,7 @@ enum class OtherListItemType(
     KeepScreenOn("keep_screen_on"),
     ReadoutStartSound("readout_start_sound"),
     Theme("theme"),
+    OverlayTextSize("overlay_text_size"),
     DynamicColor("dynamic_color"),
     HapticFeedback("haptic_feedback"),
     Startup("startup"),

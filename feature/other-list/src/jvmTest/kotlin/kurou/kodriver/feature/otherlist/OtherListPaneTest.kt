@@ -16,6 +16,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ private class FakeHapticFeedback : HapticFeedback {
     }
 }
 
+@Suppress("TooManyFunctions")
 class OtherListPaneTest {
     @get:Rule
     val rule = createComposeRule()
@@ -482,6 +484,48 @@ class OtherListPaneTest {
 
         rule.onAllNodesWithText("アプリ設定").assertCountEquals(1)
         rule.onAllNodesWithText("テーマ").assertCountEquals(1)
+    }
+
+    @Test
+    fun `文字サイズ項目をオーバーレイ設定セクションに表示する`() {
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayTextSize),
+                    ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onAllNodesWithText("オーバーレイ設定").assertCountEquals(1)
+        rule.onAllNodesWithText("文字サイズ").assertCountEquals(1)
+    }
+
+    @Test
+    fun `文字サイズ項目をクリックするとonItemClickが呼ばれる`() {
+        var clickedItem: OtherListItemType? = null
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayTextSize),
+                    ),
+                onItemClick = { clickedItem = it },
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNodeWithText("文字サイズ").performClick()
+
+        assertEquals(OtherListItemType.OverlayTextSize, clickedItem)
     }
 
     @Test

@@ -14,11 +14,14 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveLatestTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -30,12 +33,18 @@ class NarratorOverlayViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
-    private lateinit var repository: TelemetryLogRepository
+    private lateinit var telemetryLogRepository: TelemetryLogRepository
+
+    @MockK
+    private lateinit var overlayTextSizeRepository: OverlayTextSizePreferencesRepository
+
+    private val overlayTextSizeFlow = MutableStateFlow(OverlayTextSize.MEDIUM)
 
     @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
+        every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
     }
 
     @AfterTest
@@ -45,20 +54,23 @@ class NarratorOverlayViewModelTest {
 
     private fun createViewModel() =
         NarratorOverlayViewModel(
-            observeLatestTelemetryLog = ObserveLatestTelemetryLogUseCase(repository),
+            observeLatestTelemetryLog = ObserveLatestTelemetryLogUseCase(telemetryLogRepository),
+            observeOverlayTextSize = ObserveOverlayTextSizeUseCase(overlayTextSizeRepository),
         )
 
     @Test
-    fun `初期状態は latestTelemetryLog が null の UiState を返す`() =
+    fun `初期状態は latestTelemetryLog が null で overlayTextSize が MEDIUM の UiState を返す`() =
         runTest {
-            every { repository.observeLatestTelemetryLog() } returns MutableStateFlow(null)
+            every { telemetryLogRepository.observeLatestTelemetryLog() } returns MutableStateFlow(null)
             val viewModel = createViewModel()
 
             val state = viewModel.uiState.first()
 
             assertNull(state.latestTelemetryLog)
-            verify(exactly = 1) { repository.observeLatestTelemetryLog() }
-            confirmVerified(repository)
+            assertEquals(OverlayTextSize.MEDIUM, state.overlayTextSize)
+            verify(exactly = 1) { telemetryLogRepository.observeLatestTelemetryLog() }
+            verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
+            confirmVerified(telemetryLogRepository, overlayTextSizeRepository)
         }
 
     @Test
@@ -74,13 +86,28 @@ class NarratorOverlayViewModelTest {
                     telemetryJson = "{}",
                 )
             val telemetryLogFlow = MutableStateFlow<TelemetryLog?>(null)
-            every { repository.observeLatestTelemetryLog() } returns telemetryLogFlow
+            every { telemetryLogRepository.observeLatestTelemetryLog() } returns telemetryLogFlow
             val viewModel = createViewModel()
 
             telemetryLogFlow.update { telemetryLog }
 
             assertEquals(telemetryLog, viewModel.uiState.first().latestTelemetryLog)
-            verify(exactly = 1) { repository.observeLatestTelemetryLog() }
-            confirmVerified(repository)
+            verify(exactly = 1) { telemetryLogRepository.observeLatestTelemetryLog() }
+            verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
+            confirmVerified(telemetryLogRepository, overlayTextSizeRepository)
+        }
+
+    @Test
+    fun `OverlayTextSizePreferencesRepository の Flow が更新されると UiState の overlayTextSize も更新される`() =
+        runTest {
+            every { telemetryLogRepository.observeLatestTelemetryLog() } returns MutableStateFlow(null)
+            val viewModel = createViewModel()
+
+            overlayTextSizeFlow.update { OverlayTextSize.LARGE }
+
+            assertEquals(OverlayTextSize.LARGE, viewModel.uiState.first().overlayTextSize)
+            verify(exactly = 1) { telemetryLogRepository.observeLatestTelemetryLog() }
+            verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
+            confirmVerified(telemetryLogRepository, overlayTextSizeRepository)
         }
 }
