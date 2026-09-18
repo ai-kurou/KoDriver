@@ -88,12 +88,18 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
 
+        // 一覧は項目数が表示領域を超えるため、クリック前に必ず対象までスクロールする。
+        fun clickListItem(itemText: String) {
+            rule.onNode(hasScrollAction()).performScrollToNode(hasText(itemText))
+            rule.onNode(hasText(itemText)).performClick()
+            rule.waitForIdle()
+        }
+
         fun navigateToDetailAndBack(
             itemText: String,
             expectedDetailText: String,
         ) {
-            rule.onNode(hasText(itemText)).performClick()
-            rule.waitForIdle()
+            clickListItem(itemText)
 
             rule.onNodeWithText(expectedDetailText).assertExists()
             assertTrue(backEnabled)
@@ -112,50 +118,42 @@ class OtherContentTest {
         navigateToDetailAndBack("背景の透明度", "Detail: overlay_background_opacity")
 
         // ReadoutStartSound（ダイアログを開く）
-        rule.onNode(hasText("読み上げ開始音")).performClick()
-        rule.waitForIdle()
+        clickListItem("読み上げ開始音")
 
         assertFalse(backEnabled)
 
         // DynamicColor（Switchで直接切り替える）
-        rule.onNode(hasText("ダイナミックカラー")).performClick()
-        rule.waitForIdle()
+        clickListItem("ダイナミックカラー")
 
         assertTrue(dynamicColorEnabled)
         assertFalse(backEnabled)
 
         // Theme（ダイアログを開く）
-        rule.onNode(hasText("テーマ")).performClick()
-        rule.waitForIdle()
+        clickListItem("テーマ")
 
         assertTrue(themeDialogOpened)
         assertFalse(backEnabled)
 
         // OverlayTextSize（ダイアログを開く）
-        rule.onNode(hasText("文字サイズ")).performClick()
-        rule.waitForIdle()
+        clickListItem("文字サイズ")
 
         assertTrue(overlayTextSizeDialogOpened)
         assertFalse(backEnabled)
 
         // GitHubRepository
-        rule.onNode(hasText("GitHubレポジトリ")).performClick()
-        rule.waitForIdle()
+        clickListItem("GitHubレポジトリ")
 
         assertTrue(githubRepositoryOpened)
         assertFalse(backEnabled)
 
         // ReleasePage
-        rule.onNode(hasText("リリースページ")).performClick()
-        rule.waitForIdle()
+        clickListItem("リリースページ")
 
         assertTrue(releasePageOpened)
         assertFalse(backEnabled)
 
         // License（詳細あり）
-        rule.onNode(hasScrollAction()).performScrollToNode(hasText("ライセンス"))
-        rule.onNode(hasText("ライセンス")).performClick()
-        rule.waitForIdle()
+        clickListItem("ライセンス")
 
         assertTrue(backEnabled)
 
