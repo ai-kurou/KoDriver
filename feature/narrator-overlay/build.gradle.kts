@@ -11,6 +11,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
+            implementation(libs.koin.compose)
         }
         jvmTest.dependencies {
             implementation(libs.mockk)

@@ -101,8 +101,9 @@ fun main() {
             }
             // Narrator Overlay はデスクトップアプリのみの機能（Android版には存在しない）。メインウィンドウと同じ
             // application スコープ内で開くため、exitApplication() 時にこのウィンドウも一緒に閉じる。
+            // 表示ON/OFFはその他タブの「オーバーレイ設定」で切り替えられる。
             if (koinReady) {
-                NarratorOverlayWindow()
+                NarratorOverlayWindowHost()
             }
         }
     } finally {

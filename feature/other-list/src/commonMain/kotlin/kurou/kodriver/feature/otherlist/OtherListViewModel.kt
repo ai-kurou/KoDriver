@@ -15,9 +15,11 @@ import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 
 /**
@@ -34,6 +36,8 @@ data class OtherListAppVersionInfo(
 @Suppress("LongParameterList")
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
+    observeOverlayVisible: ObserveOverlayVisibleUseCase,
+    private val saveOverlayVisible: SaveOverlayVisibleUseCase,
     observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
     private val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
     observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
@@ -62,11 +66,13 @@ class OtherListViewModel(
     val uiState: StateFlow<OtherListUiState> =
         combine(
             _uiState,
+            observeOverlayVisible(),
             observeKeepScreenOn(),
             observeDynamicColorEnabled(),
             observeHapticFeedbackEnabled(),
-        ) { state, keepScreenOn, dynamicColorEnabled, hapticFeedbackEnabled ->
+        ) { state, overlayVisible, keepScreenOn, dynamicColorEnabled, hapticFeedbackEnabled ->
             state.copy(
+                overlayVisible = overlayVisible,
                 keepScreenOn = keepScreenOn,
                 dynamicColorEnabled = dynamicColorEnabled,
                 hapticFeedbackEnabled = hapticFeedbackEnabled,
@@ -132,6 +138,10 @@ class OtherListViewModel(
 
     fun clearSelectedItem() {
         _uiState.update { it.copy(selectedItem = null, selectedFeedbackTelemetryLogId = null) }
+    }
+
+    fun onOverlayVisibleChange(visible: Boolean) {
+        viewModelScope.launch { saveOverlayVisible(visible) }
     }
 
     fun onKeepScreenOnChange(enabled: Boolean) {

@@ -16,6 +16,7 @@ import androidx.compose.ui.window.WindowDecoration
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberWindowState
 import kurou.kodriver.presentation.NarratorOverlayScreen
+import kurou.kodriver.presentation.rememberNarratorOverlayVisible
 import java.awt.Dimension
 import java.awt.MouseInfo
 import java.awt.Point
@@ -42,7 +43,8 @@ private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
  *   既に displayable になっていて例外が発生しうる（実機で確認済み）。[SwingWindow] の `init` は
  *   `ComposeWindow` 生成直後・displayable になる前に一度だけ呼ばれることが保証されているため、
  *   最小/最大サイズの設定とあわせてここで行う。
- * - 位置・サイズの永続化、表示ON/OFFの切り替え、常時最前面の詳細な制御（フォーカス連動等）は別PRで対応する。
+ * - 表示ON/OFFはその他タブの「オーバーレイ設定」で切り替える（[NarratorOverlayWindowHost] を参照）。
+ * - 位置・サイズの永続化、常時最前面の詳細な制御（フォーカス連動等）は別PRで対応する。
  * - このウィンドウ自体は最前面には出ないため、LMU 側をボーダーレスウィンドウモードで起動する前提となる
  *   （排他的フルスクリーンでは他の常駐オーバーレイツールと同様に表示されない）。
  * - ゲーム画面をなるべく隠さないよう `transparent = true` でウィンドウ背景を透過させ、コンテンツ側
@@ -103,5 +105,16 @@ fun ApplicationScope.NarratorOverlayWindow(modifier: Modifier = Modifier) {
         ) {
             NarratorOverlayScreen()
         }
+    }
+}
+
+/**
+ * オーバーレイ用ウィンドウを、ユーザー設定（その他タブの「オーバーレイ設定」→「オーバーレイを表示」）に
+ * 応じて開閉する。設定をOFFにするとウィンドウ自体を閉じるため、ゲーム画面の操作を妨げなくなる。
+ */
+@Composable
+fun ApplicationScope.NarratorOverlayWindowHost(modifier: Modifier = Modifier) {
+    if (rememberNarratorOverlayVisible()) {
+        NarratorOverlayWindow(modifier = modifier)
     }
 }

@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 @Config(sdk = [36])
 class OtherListItemsTest {
     @Test
-    fun `Android16以上ではOverlayTextSizeとOverlayBackgroundOpacityとStartupとDebugStateを除いた全項目を定義順で返す`() {
+    fun `Android16以上ではオーバーレイ設定項目とStartupとDebugStateを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()
 
         assertEquals(

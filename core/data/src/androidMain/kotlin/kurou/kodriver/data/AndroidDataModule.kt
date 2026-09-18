@@ -37,6 +37,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperatu
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
@@ -110,6 +111,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
+import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
@@ -289,6 +291,10 @@ private fun androidDataModuleAppSettings(context: Context) =
         // オーバーレイの背景透明度設定
         single<OverlayBackgroundOpacityPreferencesRepository> {
             createOverlayBackgroundOpacityPreferencesRepository(context.filesDir.absolutePath)
+        }
+        // オーバーレイの表示ON/OFF設定
+        single<OverlayVisiblePreferencesRepository> {
+            createOverlayVisiblePreferencesRepository(context.filesDir.absolutePath)
         }
     }
 

@@ -11,6 +11,7 @@ actual fun buildOtherListItems(): List<OtherListItemType> {
             OtherListItemType.entries.filter {
                 it != OtherListItemType.DebugState &&
                     it != OtherListItemType.Startup &&
+                    it != OtherListItemType.OverlayVisible &&
                     it != OtherListItemType.OverlayTextSize &&
                     it != OtherListItemType.OverlayBackgroundOpacity
             }
@@ -19,6 +20,7 @@ actual fun buildOtherListItems(): List<OtherListItemType> {
                 it != OtherListItemType.DynamicColor &&
                     it != OtherListItemType.DebugState &&
                     it != OtherListItemType.Startup &&
+                    it != OtherListItemType.OverlayVisible &&
                     it != OtherListItemType.OverlayTextSize &&
                     it != OtherListItemType.OverlayBackgroundOpacity
             }
