@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 @Config(sdk = [36])
 class OtherListItemsTest {
     @Test
-    fun `Android16以上では全項目を定義順で返す`() {
+    fun `Android16以上ではOverlayTextSizeとStartupとDebugStateを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()
 
         assertEquals(
@@ -24,7 +24,6 @@ class OtherListItemsTest {
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
-                OtherListItemType.OverlayTextSize,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.GitHubRepository,
@@ -41,7 +40,7 @@ class OtherListItemsTest {
 @Config(sdk = [35])
 class OtherListItemsAndroid15Test {
     @Test
-    fun `Android16未満ではAccessLocalNetworkPermissionを除いた全項目を定義順で返す`() {
+    fun `Android16未満ではAccessLocalNetworkPermissionとOverlayTextSizeとStartupとDebugStateを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()
 
         assertEquals(
@@ -52,7 +51,6 @@ class OtherListItemsAndroid15Test {
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
-                OtherListItemType.OverlayTextSize,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.GitHubRepository,
@@ -69,7 +67,7 @@ class OtherListItemsAndroid15Test {
 @Config(sdk = [30])
 class OtherListItemsAndroid11Test {
     @Test
-    fun `Android12未満ではDynamicColorとAccessLocalNetworkPermissionを除いた全項目を定義順で返す`() {
+    fun `Android12未満ではDynamicColorとAccessLocalNetworkPermissionとOverlayTextSizeとStartupとDebugStateを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()
 
         assertEquals(
@@ -80,7 +78,6 @@ class OtherListItemsAndroid11Test {
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
-                OtherListItemType.OverlayTextSize,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,

@@ -26,7 +26,7 @@ private val NARRATOR_OVERLAY_MIN_SIZE = DpSize(200.dp, 80.dp)
 private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
 
 /**
- * ゲーム画面に重ねて表示するオーバーレイ専用ウィンドウ（Windows版デスクトップアプリのみ、常時表示）。
+ * ゲーム画面に重ねて表示するオーバーレイ専用ウィンドウ（デスクトップアプリのみ、常時表示）。
  *
  * - `WindowDecoration.Undecorated()` かつ `resizable = true` の組み合わせで、Compose Multiplatform 独自の
  *   リサイズハンドル（[androidx.compose.ui.window.UndecoratedWindowResizer]）が有効になる。

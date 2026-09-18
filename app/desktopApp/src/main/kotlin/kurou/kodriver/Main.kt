@@ -34,7 +34,6 @@ import java.awt.Dimension
 private const val SENTRY_DSN =
     "https://93dc09daf8552c39b0eea61b4f1319ee@o4511575800676352.ingest.us.sentry.io/4511575816667136"
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
-private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
 
 /**
  * アプリケーションを起動するエントリーポイント。
@@ -100,9 +99,9 @@ fun main() {
                     AppScreen()
                 }
             }
-            // Narrator Overlay はWindows版デスクトップアプリのみの機能。メインウィンドウと同じ
+            // Narrator Overlay はデスクトップアプリのみの機能（Android版には存在しない）。メインウィンドウと同じ
             // application スコープ内で開くため、exitApplication() 時にこのウィンドウも一緒に閉じる。
-            if (isWindows && koinReady) {
+            if (koinReady) {
                 NarratorOverlayWindow()
             }
         }
