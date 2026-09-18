@@ -123,6 +123,7 @@ class OtherContentTest {
                 onOpenReleasePage = { state.releasePageOpened = true },
                 onOpenReadoutStartSoundDialog = { state.readoutStartSoundDialogOpened = true },
                 onOpenThemeDialog = { state.themeDialogOpened = true },
+                onOpenOverlayTextSizeDialog = {},
                 onKeepScreenOnChange = { state.keepScreenOn = it },
                 onDynamicColorEnabledChange = { state.dynamicColorEnabled = it },
                 onHapticFeedbackEnabledChange = { state.hapticFeedbackEnabled = it },

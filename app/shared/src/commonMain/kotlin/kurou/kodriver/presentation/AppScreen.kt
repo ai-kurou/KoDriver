@@ -91,6 +91,7 @@ import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListViewModel
+import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
@@ -279,17 +280,22 @@ private fun DefaultOtherContent(
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
+    var showOverlayTextSizeDialog by rememberSaveable { mutableStateOf(false) }
     if (showReadoutStartSoundDialog) {
         OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
     }
     if (showThemeDialog) {
         OtherThemeDetailDialog(onDismiss = { showThemeDialog = false })
     }
+    if (showOverlayTextSizeDialog) {
+        OtherOverlayTextSizeDetailDialog(onDismiss = { showOverlayTextSizeDialog = false })
+    }
     OtherContent(
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         onOpenThemeDialog = { showThemeDialog = true },
+        onOpenOverlayTextSizeDialog = { showOverlayTextSizeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId, feedbackAttachRequestId ->
             when (itemType) {
                 OtherListItemType.ServerIp -> {
@@ -324,6 +330,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
+                OtherListItemType.OverlayTextSize,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.Startup,

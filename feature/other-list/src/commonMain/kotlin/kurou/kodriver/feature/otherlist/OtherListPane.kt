@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Feedback
+import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
@@ -65,6 +66,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_github_reposito
 import kurou.kodriver.feature.otherlist.generated.resources.item_haptic_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kurou.kodriver.feature.otherlist.generated.resources.item_license
+import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_size
 import kurou.kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kurou.kodriver.feature.otherlist.generated.resources.item_release_page
 import kurou.kodriver.feature.otherlist.generated.resources.item_server_ip
@@ -109,6 +111,9 @@ private fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.ReadoutStartSound,
         -> OtherListSection.ReadoutSettings
 
+        OtherListItemType.OverlayTextSize,
+        -> OtherListSection.OverlaySettings
+
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
         OtherListItemType.DynamicColor,
@@ -146,6 +151,10 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
 
         OtherListItemType.ReadoutStartSound -> {
             stringResource(Res.string.item_readout_start_sound)
+        }
+
+        OtherListItemType.OverlayTextSize -> {
+            stringResource(Res.string.item_overlay_text_size)
         }
 
         OtherListItemType.GitHubRepository -> {
@@ -211,6 +220,8 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
 
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
 
+        OtherListItemType.OverlayTextSize -> Icons.Outlined.FormatSize
+
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
         OtherListItemType.DynamicColor,
@@ -274,6 +285,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
 
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
+        OtherListItemType.OverlayTextSize,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
 
         OtherListItemType.KeepScreenOn,
@@ -490,6 +502,7 @@ private fun OtherListItem(
                 OtherListItemType.Volume,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
+                OtherListItemType.OverlayTextSize,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
@@ -564,6 +577,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.Volume,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
+        OtherListItemType.OverlayTextSize,
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         OtherListItemType.Feedback,

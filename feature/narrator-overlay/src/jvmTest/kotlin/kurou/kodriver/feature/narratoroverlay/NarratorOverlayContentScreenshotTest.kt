@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -38,6 +39,30 @@ class NarratorOverlayContentScreenshotTest {
                             telemetryLog(
                                 narratedText = "コーナー進入注意。左後方から車両が接近しています。ブレーキングポイントに注意してください。",
                             ),
+                    ),
+            )
+        }
+
+    @Test
+    fun `文字サイズが小の場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        overlayTextSize = OverlayTextSize.SMALL,
+                    ),
+            )
+        }
+
+    @Test
+    fun `文字サイズが大の場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        overlayTextSize = OverlayTextSize.LARGE,
                     ),
             )
         }

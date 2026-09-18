@@ -48,6 +48,7 @@ class OtherContentTest {
         var githubRepositoryOpened = false
         var releasePageOpened = false
         var themeDialogOpened = false
+        var overlayTextSizeDialogOpened = false
         var keepScreenOn = true
         var dynamicColorEnabled = false
         var capturedOnBack: (() -> Unit)? = null
@@ -68,6 +69,7 @@ class OtherContentTest {
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
                 onOpenThemeDialog = { themeDialogOpened = true },
+                onOpenOverlayTextSizeDialog = { overlayTextSizeDialogOpened = true },
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
                 onAppVersionTapped = { selectedItem = OtherListItemType.DebugState },
@@ -126,6 +128,13 @@ class OtherContentTest {
         assertTrue(themeDialogOpened)
         assertFalse(backEnabled)
 
+        // OverlayTextSize（ダイアログを開く）
+        rule.onNode(hasText("文字サイズ")).performClick()
+        rule.waitForIdle()
+
+        assertTrue(overlayTextSizeDialogOpened)
+        assertFalse(backEnabled)
+
         // GitHubRepository
         rule.onNode(hasText("GitHubレポジトリ")).performClick()
         rule.waitForIdle()
@@ -141,6 +150,7 @@ class OtherContentTest {
         assertFalse(backEnabled)
 
         // License（詳細あり）
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("ライセンス"))
         rule.onNode(hasText("ライセンス")).performClick()
         rule.waitForIdle()
 
