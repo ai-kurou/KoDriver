@@ -22,6 +22,7 @@ class OtherListPaneAccessLocalNetworkPermissionTest {
                         items = listOf(OtherListItemType.AccessLocalNetworkPermission),
                     ),
                 onItemClick = { clickedItem = it },
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},

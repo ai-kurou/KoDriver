@@ -76,6 +76,7 @@ fun OtherContent(
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onOpenThemeDialog = onOpenThemeDialog,
         onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
+        onOverlayVisibleChange = viewModel::onOverlayVisibleChange,
         onKeepScreenOnChange = viewModel::onKeepScreenOnChange,
         onDynamicColorEnabledChange = viewModel::onDynamicColorEnabledChange,
         onHapticFeedbackEnabledChange = viewModel::onHapticFeedbackEnabledChange,
@@ -116,6 +117,7 @@ private fun handleOtherItemClick(
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
         OtherListItemType.OverlayBackgroundOpacity,
+        OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
         OtherListItemType.HapticFeedback,
@@ -137,6 +139,7 @@ internal fun OtherContent(
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
     onOpenOverlayTextSizeDialog: () -> Unit = {},
+    onOverlayVisibleChange: (Boolean) -> Unit = {},
     onKeepScreenOnChange: (Boolean) -> Unit = {},
     onDynamicColorEnabledChange: (Boolean) -> Unit = {},
     onHapticFeedbackEnabledChange: (Boolean) -> Unit = {},
@@ -235,6 +238,7 @@ internal fun OtherContent(
         listPane = {
             OtherListPane(
                 uiState = uiState,
+                onOverlayVisibleChange = onOverlayVisibleChange,
                 onKeepScreenOnChange = onKeepScreenOnChange,
                 onDynamicColorEnabledChange = onDynamicColorEnabledChange,
                 onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,

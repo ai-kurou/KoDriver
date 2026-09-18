@@ -31,6 +31,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperatu
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
@@ -72,6 +73,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePre
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
+import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
@@ -145,6 +147,9 @@ val desktopDataModule =
         }
         single<OverlayBackgroundOpacityPreferencesRepository> {
             createOverlayBackgroundOpacityPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<OverlayVisiblePreferencesRepository> {
+            createOverlayVisiblePreferencesRepository(directory = kodriverDirectory)
         }
         single<Gt7Ps5MyBestLapPreferencesRepository> {
             createGt7Ps5MyBestLapPreferencesRepository(directory = kodriverDirectory)

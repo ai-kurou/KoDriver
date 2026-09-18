@@ -3,6 +3,7 @@ package kurou.kodriver.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kurou.kodriver.feature.narratoroverlay.NarratorOverlayContent
+import kurou.kodriver.feature.narratoroverlay.rememberNarratorOverlayVisible as rememberFeatureNarratorOverlayVisible
 
 /**
  * NarratorOverlayScreen を提供する公開関数。
@@ -14,3 +15,12 @@ import kurou.kodriver.feature.narratoroverlay.NarratorOverlayContent
 fun NarratorOverlayScreen(modifier: Modifier = Modifier) {
     NarratorOverlayContent(modifier = modifier)
 }
+
+/**
+ * オーバーレイを表示するかどうかのユーザー設定（その他タブの「オーバーレイ設定」）を購読する。
+ * 設定の読み込みが完了するまでは `null` を返す。
+ *
+ * オーバーレイ用ウィンドウをホストする側（`app:desktopApp`）が、ウィンドウを開くかどうかの判断に使う。
+ */
+@Composable
+fun rememberNarratorOverlayVisible(): Boolean? = rememberFeatureNarratorOverlayVisible()
