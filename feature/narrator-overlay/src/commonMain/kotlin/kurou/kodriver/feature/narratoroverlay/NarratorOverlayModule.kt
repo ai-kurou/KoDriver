@@ -4,6 +4,8 @@ import kurou.kodriver.domain.usecase.ObserveLatestTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.usecase.ObserveOverlayWindowBoundsUseCase
+import kurou.kodriver.domain.usecase.SaveOverlayWindowBoundsUseCase
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -12,7 +14,8 @@ import org.koin.dsl.module
  *
  * 提供: NarratorOverlayViewModel と、それが使う ObserveLatestTelemetryLogUseCase・
  * ObserveOverlayTextSizeUseCase・ObserveOverlayBackgroundOpacityUseCase。加えて、
- * rememberNarratorOverlayVisible が使う ObserveOverlayVisibleUseCase。
+ * rememberNarratorOverlayVisible が使う ObserveOverlayVisibleUseCase、rememberNarratorOverlayBounds /
+ * rememberNarratorOverlayBoundsSaver が使う ObserveOverlayWindowBoundsUseCase・SaveOverlayWindowBoundsUseCase。
  */
 val narratorOverlayModule =
     module {
@@ -22,4 +25,6 @@ val narratorOverlayModule =
         factory { ObserveOverlayTextSizeUseCase(get()) }
         factory { ObserveOverlayBackgroundOpacityUseCase(get()) }
         factory { ObserveOverlayVisibleUseCase(get()) }
+        factory { ObserveOverlayWindowBoundsUseCase(get()) }
+        factory { SaveOverlayWindowBoundsUseCase(get()) }
     }

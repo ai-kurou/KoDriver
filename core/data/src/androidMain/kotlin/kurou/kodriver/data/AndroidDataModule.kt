@@ -38,6 +38,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesR
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
@@ -112,6 +113,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
+import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
@@ -295,6 +297,10 @@ private fun androidDataModuleAppSettings(context: Context) =
         // オーバーレイの表示ON/OFF設定
         single<OverlayVisiblePreferencesRepository> {
             createOverlayVisiblePreferencesRepository(context.filesDir.absolutePath)
+        }
+        // オーバーレイウィンドウの位置・サイズ（デスクトップ版のみ使用するが、Koin の定義は両プラットフォームで揃える）
+        single<OverlayWindowBoundsPreferencesRepository> {
+            createOverlayWindowBoundsPreferencesRepository(context.filesDir.absolutePath)
         }
     }
 
