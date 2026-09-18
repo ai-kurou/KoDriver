@@ -91,6 +91,7 @@ import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListViewModel
+import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPane
 import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
@@ -308,6 +309,10 @@ private fun DefaultOtherContent(
 
                 OtherListItemType.Volume -> {
                     OtherVolumeDetailPane(canNavigateBack, onBack)
+                }
+
+                OtherListItemType.OverlayBackgroundOpacity -> {
+                    OtherOverlayBackgroundOpacityDetailPane(canNavigateBack, onBack)
                 }
 
                 OtherListItemType.License -> {

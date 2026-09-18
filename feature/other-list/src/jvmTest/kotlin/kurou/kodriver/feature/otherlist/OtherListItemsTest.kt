@@ -15,6 +15,7 @@ class OtherListItemsTest {
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayTextSize,
+                OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,

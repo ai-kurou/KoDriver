@@ -56,6 +56,30 @@ class NarratorOverlayContentScreenshotTest {
         }
 
     @Test
+    fun `背景の透明度が低い場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        backgroundOpacity = 10,
+                    ),
+            )
+        }
+
+    @Test
+    fun `背景の透明度が高い場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        backgroundOpacity = 100,
+                    ),
+            )
+        }
+
+    @Test
     fun `文字サイズが大の場合`() =
         composeScreenshotTest {
             captureNarratorOverlayContent(

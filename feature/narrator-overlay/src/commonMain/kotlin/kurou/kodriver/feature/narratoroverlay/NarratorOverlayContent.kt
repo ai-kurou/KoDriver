@@ -23,11 +23,11 @@ import kurou.kodriver.domain.model.OverlayTextSize
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * オーバーレイHUDの背景色（半透明の薄い灰色）。ゲーム画面に重ねて表示する専用ウィンドウのための固定色で、
- * アプリ本体の[KoDriverTheme]のカラースキームとは独立して定義する。ゲーム画面を隠しすぎないよう、
- * ウィンドウ側の`transparent = true`設定と合わせて半透明にしている。
+ * オーバーレイHUDの背景色（薄い灰色）。ゲーム画面に重ねて表示する専用ウィンドウのための固定色で、
+ * アプリ本体の[KoDriverTheme]のカラースキームとは独立して定義する。実際に描画する際は、
+ * ユーザーが設定した[NarratorOverlayUiState.backgroundOpacity]に応じたアルファ値をこの色へ適用する。
  */
-private val NarratorOverlayBackgroundColor = Color(0x80EDEDED)
+private val NarratorOverlayBackgroundColor = Color(0xFFEDEDED)
 
 /**
  * オーバーレイHUDの文字色（黄色系）。ゲーム画面上での視認性を優先した固定色とする。
@@ -56,7 +56,7 @@ internal fun NarratorOverlayContent(
             modifier =
                 modifier
                     .fillMaxSize()
-                    .background(NarratorOverlayBackgroundColor)
+                    .background(NarratorOverlayBackgroundColor.copy(alpha = uiState.backgroundOpacity / 100f))
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
             contentAlignment = Alignment.Center,

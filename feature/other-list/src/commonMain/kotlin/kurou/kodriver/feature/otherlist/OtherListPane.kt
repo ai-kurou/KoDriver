@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
+import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.SportsEsports
@@ -66,6 +67,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_github_reposito
 import kurou.kodriver.feature.otherlist.generated.resources.item_haptic_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kurou.kodriver.feature.otherlist.generated.resources.item_license
+import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_size
 import kurou.kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kurou.kodriver.feature.otherlist.generated.resources.item_release_page
@@ -112,6 +114,7 @@ private fun OtherListItemType.section(): OtherListSection =
         -> OtherListSection.ReadoutSettings
 
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayBackgroundOpacity,
         -> OtherListSection.OverlaySettings
 
         OtherListItemType.KeepScreenOn,
@@ -155,6 +158,10 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
 
         OtherListItemType.OverlayTextSize -> {
             stringResource(Res.string.item_overlay_text_size)
+        }
+
+        OtherListItemType.OverlayBackgroundOpacity -> {
+            stringResource(Res.string.item_overlay_background_opacity)
         }
 
         OtherListItemType.GitHubRepository -> {
@@ -222,6 +229,8 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
 
         OtherListItemType.OverlayTextSize -> Icons.Outlined.FormatSize
 
+        OtherListItemType.OverlayBackgroundOpacity -> Icons.Outlined.Opacity
+
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
         OtherListItemType.DynamicColor,
@@ -278,6 +287,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.Feedback,
         OtherListItemType.License,
         OtherListItemType.DebugState,
@@ -503,6 +513,7 @@ private fun OtherListItem(
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayTextSize,
+                OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
@@ -578,6 +589,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         OtherListItemType.Feedback,
