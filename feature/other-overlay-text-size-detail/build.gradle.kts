@@ -6,9 +6,6 @@ plugins {
 kotlin {
     android {
         namespace = "kurou.kodriver.feature.otheroverlaytextsizedetail"
-        withHostTest {
-            isIncludeAndroidResources = true
-        }
     }
 
     sourceSets {
@@ -19,20 +16,6 @@ kotlin {
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.mockk)
-        }
-        named("androidHostTest") {
-            kotlin.srcDir(
-                rootProject.layout.projectDirectory.dir(
-                    "build-logic/src/featureComposeScreenshotAndroidHostTest/kotlin",
-                ),
-            )
-            dependencies {
-                implementation(libs.kotlin.testJunit)
-                implementation(libs.junit)
-                implementation(libs.roborazzi.compose)
-                implementation(libs.robolectric)
-                implementation(libs.roborazzi.core)
-            }
         }
     }
 }
