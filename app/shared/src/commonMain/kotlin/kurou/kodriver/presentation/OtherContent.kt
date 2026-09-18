@@ -115,6 +115,7 @@ private fun handleOtherItemClick(
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
         OtherListItemType.HapticFeedback,

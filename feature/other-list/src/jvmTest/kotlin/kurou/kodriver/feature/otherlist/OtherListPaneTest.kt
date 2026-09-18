@@ -529,6 +529,48 @@ class OtherListPaneTest {
     }
 
     @Test
+    fun `背景の透明度項目をオーバーレイ設定セクションに表示する`() {
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayBackgroundOpacity),
+                    ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onAllNodesWithText("オーバーレイ設定").assertCountEquals(1)
+        rule.onAllNodesWithText("背景の透明度").assertCountEquals(1)
+    }
+
+    @Test
+    fun `背景の透明度項目をクリックするとonItemClickが呼ばれる`() {
+        var clickedItem: OtherListItemType? = null
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayBackgroundOpacity),
+                    ),
+                onItemClick = { clickedItem = it },
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNodeWithText("背景の透明度").performClick()
+
+        assertEquals(OtherListItemType.OverlayBackgroundOpacity, clickedItem)
+    }
+
+    @Test
     fun `scrollToTopRequestが増えるとリストを先頭へ戻す`() {
         var scrollToTopRequest by mutableIntStateOf(0)
 

@@ -88,25 +88,28 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
 
+        fun navigateToDetailAndBack(
+            itemText: String,
+            expectedDetailText: String,
+        ) {
+            rule.onNode(hasText(itemText)).performClick()
+            rule.waitForIdle()
+
+            rule.onNodeWithText(expectedDetailText).assertExists()
+            assertTrue(backEnabled)
+
+            rule.runOnIdle { capturedOnBack?.invoke() }
+            rule.waitUntil { !backEnabled }
+        }
+
         // ConsoleIp（Desktop では ServerIp・KeepScreenOn が除外されるため最初のアイテム）
-        rule.onNode(hasText("ゲーム機・SimHubへ接続するIPアドレス")).performClick()
-        rule.waitForIdle()
-
-        rule.onNodeWithText("Detail: console_ip").assertExists()
-        assertTrue(backEnabled)
-
-        rule.runOnIdle { capturedOnBack?.invoke() }
-        rule.waitUntil { !backEnabled }
+        navigateToDetailAndBack("ゲーム機・SimHubへ接続するIPアドレス", "Detail: console_ip")
 
         // Volume
-        rule.onNode(hasText("音量")).performClick()
-        rule.waitForIdle()
+        navigateToDetailAndBack("音量", "Detail: volume")
 
-        rule.onNodeWithText("Detail: volume").assertExists()
-        assertTrue(backEnabled)
-
-        rule.runOnIdle { capturedOnBack?.invoke() }
-        rule.waitUntil { !backEnabled }
+        // OverlayBackgroundOpacity
+        navigateToDetailAndBack("背景の透明度", "Detail: overlay_background_opacity")
 
         // ReadoutStartSound（ダイアログを開く）
         rule.onNode(hasText("読み上げ開始音")).performClick()

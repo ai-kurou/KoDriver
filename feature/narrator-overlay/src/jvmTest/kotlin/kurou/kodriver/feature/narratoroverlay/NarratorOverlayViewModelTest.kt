@@ -18,9 +18,11 @@ import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveLatestTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -38,13 +40,20 @@ class NarratorOverlayViewModelTest {
     @MockK
     private lateinit var overlayTextSizeRepository: OverlayTextSizePreferencesRepository
 
+    @MockK
+    private lateinit var overlayBackgroundOpacityRepository: OverlayBackgroundOpacityPreferencesRepository
+
     private val overlayTextSizeFlow = MutableStateFlow(OverlayTextSize.MEDIUM)
+    private val overlayBackgroundOpacityFlow = MutableStateFlow(50)
 
     @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
         every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+        every {
+            overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+        } returns overlayBackgroundOpacityFlow
     }
 
     @AfterTest
@@ -56,10 +65,12 @@ class NarratorOverlayViewModelTest {
         NarratorOverlayViewModel(
             observeLatestTelemetryLog = ObserveLatestTelemetryLogUseCase(telemetryLogRepository),
             observeOverlayTextSize = ObserveOverlayTextSizeUseCase(overlayTextSizeRepository),
+            observeOverlayBackgroundOpacity =
+                ObserveOverlayBackgroundOpacityUseCase(overlayBackgroundOpacityRepository),
         )
 
     @Test
-    fun `初期状態は latestTelemetryLog が null で overlayTextSize が MEDIUM の UiState を返す`() =
+    fun `初期状態は latestTelemetryLog が null で overlayTextSize が MEDIUM で backgroundOpacity が50の UiState を返す`() =
         runTest {
             every { telemetryLogRepository.observeLatestTelemetryLog() } returns MutableStateFlow(null)
             val viewModel = createViewModel()
@@ -68,9 +79,11 @@ class NarratorOverlayViewModelTest {
 
             assertNull(state.latestTelemetryLog)
             assertEquals(OverlayTextSize.MEDIUM, state.overlayTextSize)
+            assertEquals(50, state.backgroundOpacity)
             verify(exactly = 1) { telemetryLogRepository.observeLatestTelemetryLog() }
             verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
-            confirmVerified(telemetryLogRepository, overlayTextSizeRepository)
+            verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
+            confirmVerified(telemetryLogRepository, overlayTextSizeRepository, overlayBackgroundOpacityRepository)
         }
 
     @Test
@@ -94,7 +107,8 @@ class NarratorOverlayViewModelTest {
             assertEquals(telemetryLog, viewModel.uiState.first().latestTelemetryLog)
             verify(exactly = 1) { telemetryLogRepository.observeLatestTelemetryLog() }
             verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
-            confirmVerified(telemetryLogRepository, overlayTextSizeRepository)
+            verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
+            confirmVerified(telemetryLogRepository, overlayTextSizeRepository, overlayBackgroundOpacityRepository)
         }
 
     @Test
@@ -108,6 +122,22 @@ class NarratorOverlayViewModelTest {
             assertEquals(OverlayTextSize.LARGE, viewModel.uiState.first().overlayTextSize)
             verify(exactly = 1) { telemetryLogRepository.observeLatestTelemetryLog() }
             verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
-            confirmVerified(telemetryLogRepository, overlayTextSizeRepository)
+            verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
+            confirmVerified(telemetryLogRepository, overlayTextSizeRepository, overlayBackgroundOpacityRepository)
+        }
+
+    @Test
+    fun `OverlayBackgroundOpacityPreferencesRepository の Flow が更新されると UiState の backgroundOpacity も更新される`() =
+        runTest {
+            every { telemetryLogRepository.observeLatestTelemetryLog() } returns MutableStateFlow(null)
+            val viewModel = createViewModel()
+
+            overlayBackgroundOpacityFlow.update { 80 }
+
+            assertEquals(80, viewModel.uiState.first().backgroundOpacity)
+            verify(exactly = 1) { telemetryLogRepository.observeLatestTelemetryLog() }
+            verify(exactly = 1) { overlayTextSizeRepository.observeOverlayTextSize() }
+            verify(exactly = 1) { overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity() }
+            confirmVerified(telemetryLogRepository, overlayTextSizeRepository, overlayBackgroundOpacityRepository)
         }
 }

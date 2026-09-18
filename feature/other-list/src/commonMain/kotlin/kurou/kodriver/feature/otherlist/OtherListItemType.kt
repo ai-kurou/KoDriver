@@ -14,6 +14,7 @@ enum class OtherListItemType(
     ReadoutStartSound("readout_start_sound"),
     Theme("theme"),
     OverlayTextSize("overlay_text_size"),
+    OverlayBackgroundOpacity("overlay_background_opacity"),
     DynamicColor("dynamic_color"),
     HapticFeedback("haptic_feedback"),
     Startup("startup"),
