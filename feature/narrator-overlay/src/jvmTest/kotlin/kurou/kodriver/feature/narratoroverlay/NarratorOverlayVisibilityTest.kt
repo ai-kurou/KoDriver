@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.runComposeUiTest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import org.koin.core.context.startKoin
@@ -29,35 +30,62 @@ class NarratorOverlayVisibilityTest {
         }
     }
 
+    /**
+     * DataStore の初回読み出しのように、最初の値を emit しないまま待機し続ける Repository。
+     */
+    private class NeverEmittingOverlayVisiblePreferencesRepository : OverlayVisiblePreferencesRepository {
+        override fun observeOverlayVisible(): Flow<Boolean> = flow { }
+
+        override suspend fun saveOverlayVisible(visible: Boolean) = Unit
+    }
+
     @AfterTest
     fun tearDown() {
         stopKoin()
     }
 
     @Test
-    fun `設定がONのときはオーバーレイを表示する`() = assertOverlayVisible(visible = true, expectedText = "表示する")
+    fun `設定がONのときはオーバーレイを表示する`() =
+        assertOverlayVisibleLabel(
+            repository = FakeOverlayVisiblePreferencesRepository(visible = true),
+            expectedLabel = "表示する",
+        )
 
     @Test
-    fun `設定がOFFのときはオーバーレイを表示しない`() = assertOverlayVisible(visible = false, expectedText = "表示しない")
+    fun `設定がOFFのときはオーバーレイを表示しない`() =
+        assertOverlayVisibleLabel(
+            repository = FakeOverlayVisiblePreferencesRepository(visible = false),
+            expectedLabel = "表示しない",
+        )
 
-    private fun assertOverlayVisible(
-        visible: Boolean,
-        expectedText: String,
+    @Test
+    fun `設定の読み込みが完了するまではnullを返す`() =
+        assertOverlayVisibleLabel(
+            repository = NeverEmittingOverlayVisiblePreferencesRepository(),
+            expectedLabel = "読み込み中",
+        )
+
+    private fun assertOverlayVisibleLabel(
+        repository: OverlayVisiblePreferencesRepository,
+        expectedLabel: String,
     ) {
         startKoin {
-            modules(
-                module {
-                    factory { ObserveOverlayVisibleUseCase(FakeOverlayVisiblePreferencesRepository(visible)) }
-                },
-            )
+            modules(module { factory { ObserveOverlayVisibleUseCase(repository) } })
         }
 
         runComposeUiTest {
             setContent {
-                Text(if (rememberNarratorOverlayVisible()) "表示する" else "表示しない")
+                val visible = rememberNarratorOverlayVisible()
+                Text(
+                    when (visible) {
+                        true -> "表示する"
+                        false -> "表示しない"
+                        null -> "読み込み中"
+                    },
+                )
             }
 
-            onNodeWithText(expectedText).assertIsDisplayed()
+            onNodeWithText(expectedLabel).assertIsDisplayed()
         }
     }
 }

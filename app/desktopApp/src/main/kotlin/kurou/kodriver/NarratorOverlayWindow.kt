@@ -111,10 +111,14 @@ fun ApplicationScope.NarratorOverlayWindow(modifier: Modifier = Modifier) {
 /**
  * オーバーレイ用ウィンドウを、ユーザー設定（その他タブの「オーバーレイ設定」→「オーバーレイを表示」）に
  * 応じて開閉する。設定をOFFにするとウィンドウ自体を閉じるため、ゲーム画面の操作を妨げなくなる。
+ *
+ * [rememberNarratorOverlayVisible] は設定の読み込みが完了するまで `null` を返す。読み込み前に
+ * ウィンドウを生成すると、設定がOFFのユーザーで起動直後に一瞬ウィンドウが開いて閉じるため、
+ * `true` のときだけ生成する。
  */
 @Composable
 fun ApplicationScope.NarratorOverlayWindowHost(modifier: Modifier = Modifier) {
-    if (rememberNarratorOverlayVisible()) {
+    if (rememberNarratorOverlayVisible() == true) {
         NarratorOverlayWindow(modifier = modifier)
     }
 }

@@ -18,8 +18,9 @@ fun NarratorOverlayScreen(modifier: Modifier = Modifier) {
 
 /**
  * オーバーレイを表示するかどうかのユーザー設定（その他タブの「オーバーレイ設定」）を購読する。
+ * 設定の読み込みが完了するまでは `null` を返す。
  *
  * オーバーレイ用ウィンドウをホストする側（`app:desktopApp`）が、ウィンドウを開くかどうかの判断に使う。
  */
 @Composable
-fun rememberNarratorOverlayVisible(): Boolean = rememberFeatureNarratorOverlayVisible()
+fun rememberNarratorOverlayVisible(): Boolean? = rememberFeatureNarratorOverlayVisible()
