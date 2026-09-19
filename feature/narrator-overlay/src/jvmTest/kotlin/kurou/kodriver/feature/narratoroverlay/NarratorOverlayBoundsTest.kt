@@ -19,6 +19,9 @@ import org.koin.dsl.module
 import kotlin.test.AfterTest
 import kotlin.test.Test
 
+private const val LOADING_LABEL = "読み込み中"
+private const val POSITION_UNSPECIFIED_LABEL = "未設定"
+
 @OptIn(ExperimentalTestApi::class)
 class NarratorOverlayBoundsTest {
     private class FakeOverlayWindowBoundsPreferencesRepository(
@@ -69,7 +72,7 @@ class NarratorOverlayBoundsTest {
         runComposeUiTest {
             setContent { Text(rememberBoundsLabel()) }
 
-            onNodeWithText("null,null,480,120").assertIsDisplayed()
+            onNodeWithText("未設定,未設定,480,120").assertIsDisplayed()
         }
     }
 
@@ -80,7 +83,7 @@ class NarratorOverlayBoundsTest {
         runComposeUiTest {
             setContent { Text(rememberBoundsLabel()) }
 
-            onNodeWithText("読み込み中").assertIsDisplayed()
+            onNodeWithText(LOADING_LABEL).assertIsDisplayed()
         }
     }
 
@@ -93,7 +96,7 @@ class NarratorOverlayBoundsTest {
                 val save = rememberNarratorOverlayBoundsSaver()
                 val label = rememberBoundsLabel()
                 Text(label)
-                if (label != "読み込み中" && label != "1,2,400,150") {
+                if (label != LOADING_LABEL && label != "1,2,400,150") {
                     save(1, 2, 400, 150)
                 }
             }
@@ -105,10 +108,17 @@ class NarratorOverlayBoundsTest {
 
     /**
      * 位置が未保存の場合は `x` / `y` が null で渡されることもあわせて確認するためのラベル。
+     *
+     * 未保存を表す null は、文字列補間がそのまま `"null"` を埋め込むのを避けるため
+     * [POSITION_UNSPECIFIED_LABEL] に置き換えて表示する。
      */
     @Composable
     private fun rememberBoundsLabel(): String =
-        rememberNarratorOverlayBounds { x, y, width, height -> "$x,$y,$width,$height" } ?: "読み込み中"
+        rememberNarratorOverlayBounds { x, y, width, height ->
+            "${x.toPositionLabel()},${y.toPositionLabel()},$width,$height"
+        } ?: LOADING_LABEL
+
+    private fun Int?.toPositionLabel(): String = this?.toString() ?: POSITION_UNSPECIFIED_LABEL
 
     private fun startKoinWith(repository: OverlayWindowBoundsPreferencesRepository) {
         startKoin {
