@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.lmuwindowsnarrator
 
-import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -124,93 +123,69 @@ import kotlin.test.assertEquals
 class LmuWindowsNarratorViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var vehicleApproachRepository: LmuWindowsVehicleApproachRepository
+    private val vehicleApproachRepository: LmuWindowsVehicleApproachRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var lmuWindowsRepository: LmuWindowsRepository
+    private val lmuWindowsRepository: LmuWindowsRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleApproachPreferencesRepository: LmuWindowsVehicleApproachPreferencesRepository
+    private val vehicleApproachPreferencesRepository: LmuWindowsVehicleApproachPreferencesRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleApproachThresholdsPreferencesRepository:
-        LmuWindowsVehicleApproachThresholdsPreferencesRepository
+    private val vehicleApproachThresholdsPreferencesRepository:
+        LmuWindowsVehicleApproachThresholdsPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleDamageRepository: LmuWindowsVehicleDamageRepository
+    private val vehicleDamageRepository: LmuWindowsVehicleDamageRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleDamagePreferencesRepository: LmuWindowsVehicleDamagePreferencesRepository
+    private val vehicleDamagePreferencesRepository: LmuWindowsVehicleDamagePreferencesRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreDetachedRepository: LmuWindowsTyreDetachedRepository
+    private val tyreDetachedRepository: LmuWindowsTyreDetachedRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
+    private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var readoutPreferencesRepository: ReadoutPreferencesRepository
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var flagRepository: LmuWindowsFlagRepository
+    private val flagRepository: LmuWindowsFlagRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var flagPreferencesRepository: LmuWindowsFlagPreferencesRepository
+    private val flagPreferencesRepository: LmuWindowsFlagPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreCarcassTemperatureRepository: LmuWindowsTyreCarcassTemperatureRepository
+    private val tyreCarcassTemperatureRepository: LmuWindowsTyreCarcassTemperatureRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreTemperaturePreferencesRepository: LmuWindowsTyreTemperaturePreferencesRepository
+    private val tyreTemperaturePreferencesRepository: LmuWindowsTyreTemperaturePreferencesRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleClassTyreTemperaturePreferencesRepository:
-        LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
+    private val vehicleClassTyreTemperaturePreferencesRepository:
+        LmuWindowsVehicleClassTyreTemperaturePreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleClassRepository: LmuWindowsVehicleClassRepository
+    private val vehicleClassRepository: LmuWindowsVehicleClassRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreWearRepository: LmuWindowsTyreWearRepository
+    private val tyreWearRepository: LmuWindowsTyreWearRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreWearPreferencesRepository: LmuWindowsTyreWearPreferencesRepository
+    private val tyreWearPreferencesRepository: LmuWindowsTyreWearPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var virtualEnergyRepository: LmuWindowsVirtualEnergyRepository
+    private val virtualEnergyRepository: LmuWindowsVirtualEnergyRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var remainingVirtualEnergyPreferencesRepository:
-        LmuWindowsRemainingVirtualEnergyPreferencesRepository
+    private val remainingVirtualEnergyPreferencesRepository: LmuWindowsRemainingVirtualEnergyPreferencesRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var pitTimingPreferencesRepository: LmuWindowsPitTimingPreferencesRepository
+    private val pitTimingPreferencesRepository: LmuWindowsPitTimingPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository
+    private val myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var redFlagPreferencesRepository: LmuWindowsRedFlagPreferencesRepository
+    private val redFlagPreferencesRepository: LmuWindowsRedFlagPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var overheatPreferencesRepository: LmuWindowsOverheatPreferencesRepository
+    private val overheatPreferencesRepository: LmuWindowsOverheatPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var telemetryLogRepository: TelemetryLogRepository
+    private val telemetryLogRepository: TelemetryLogRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var queuePreferencesRepository: QueuePreferencesRepository
+    private val queuePreferencesRepository: QueuePreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var ttsEngine: TextToSpeechEngine
+    private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var priorityAwareTts: PriorityAwareTts
+    private val priorityAwareTts: PriorityAwareTts = mockk(relaxUnitFun = true)
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
         Dispatchers.setMain(testDispatcher)
     }
 

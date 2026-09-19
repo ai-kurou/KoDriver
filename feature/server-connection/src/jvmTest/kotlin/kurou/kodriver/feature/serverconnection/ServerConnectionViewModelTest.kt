@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.serverconnection
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -40,18 +39,14 @@ import kotlin.test.assertTrue
 class ServerConnectionViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @MockK
-    private lateinit var serverIpRepository: ServerIpPreferencesRepository
+    private val serverIpRepository: ServerIpPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var versionRepository: ServerVersionRepository
+    private val versionRepository: ServerVersionRepository = mockk()
 
-    @MockK
-    private lateinit var simulatorRepository: SimulatorPreferencesRepository
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
     }
 

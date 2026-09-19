@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.acewindowsconnection
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -39,17 +38,14 @@ import kotlin.test.assertNull
 class AceWindowsConnectionViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @MockK
-    private lateinit var connectionRepository: AceWindowsFuelRepository
+    private val connectionRepository: AceWindowsFuelRepository = mockk()
 
-    @MockK
-    private lateinit var simulatorRepository: SimulatorPreferencesRepository
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
     private val defaultFuel = AceWindowsFuelData(remainingPercent = FuelPercent(0.0))
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
     }
 

@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,17 +37,14 @@ import kotlin.test.assertEquals
 class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var repository: Gt7Ps5TyreTemperaturePreferencesRepository
+    private val repository: Gt7Ps5TyreTemperaturePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var ttsEngine: TextToSpeechEngine
+    private val ttsEngine: TextToSpeechEngine = mockk()
 
     private val highThresholdFlow = MutableStateFlow(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

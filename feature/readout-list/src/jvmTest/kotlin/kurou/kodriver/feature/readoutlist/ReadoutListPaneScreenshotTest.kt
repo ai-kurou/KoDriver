@@ -10,10 +10,9 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -26,16 +25,9 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import org.junit.Test
-import kotlin.test.BeforeTest
 
 class ReadoutListPaneScreenshotTest {
-    @MockK
-    private lateinit var repository: ReadoutPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: ReadoutPreferencesRepository = mockk()
 
     @Test
     fun `デフォルト`() =

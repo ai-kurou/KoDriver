@@ -2,12 +2,11 @@
 
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -38,13 +36,7 @@ private fun createAceWindowsVehicleApproachPreferencesRepository(
 }
 
 class ObserveAceWindowsVehicleApproachEnabledStatesUseCaseTest {
-    @MockK
-    private lateinit var repository: AceWindowsVehicleApproachPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: AceWindowsVehicleApproachPreferencesRepository = mockk()
 
     @Test
     fun `初期値はStartReadoutのデフォルトtrueを返す`() =

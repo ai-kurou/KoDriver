@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.othervolumedetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,20 +40,16 @@ import kotlin.test.assertEquals
 class OtherVolumeDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var soundVolumeRepository: SoundVolumePreferencesRepository
+    private val soundVolumeRepository: SoundVolumePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var deviceVolumeRepository: DeviceVolumeRepository
+    private val deviceVolumeRepository: DeviceVolumeRepository = mockk()
 
-    @MockK
-    private lateinit var ttsEngine: TextToSpeechEngine
+    private val ttsEngine: TextToSpeechEngine = mockk()
 
     private val volumeFlow = MutableStateFlow(80)
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

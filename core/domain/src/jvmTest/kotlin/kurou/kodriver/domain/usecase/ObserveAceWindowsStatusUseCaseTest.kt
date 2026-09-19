@@ -2,10 +2,9 @@
 
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -13,19 +12,12 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ObserveAceWindowsStatusUseCaseTest {
-    @MockK
-    private lateinit var repo: AceWindowsStatusRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repo: AceWindowsStatusRepository = mockk()
 
     @Test
     fun `invoke はリポジトリの statusStream を返す`() =

@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.main
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -22,21 +21,13 @@ import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import org.junit.Test
-import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuServerBannerConnectionCheckerTest {
-    @MockK
-    private lateinit var ipRepository: ServerIpPreferencesRepository
+    private val ipRepository: ServerIpPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var versionRepository: ServerVersionRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val versionRepository: ServerVersionRepository = mockk()
 
     @Test
     fun `IPアドレスが未設定の場合はIP_NOT_CONFIGUREDを返す`() =

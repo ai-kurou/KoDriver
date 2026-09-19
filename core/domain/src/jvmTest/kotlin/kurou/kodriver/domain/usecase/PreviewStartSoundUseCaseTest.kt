@@ -1,22 +1,14 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class PreviewStartSoundUseCaseTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var ttsEngine: TextToSpeechEngine
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
 
     @Test
     fun `TextToSpeechEngineへプレビュー再生を委譲する`() {

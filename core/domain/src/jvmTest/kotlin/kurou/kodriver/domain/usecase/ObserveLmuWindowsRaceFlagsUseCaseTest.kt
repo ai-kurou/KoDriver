@@ -1,9 +1,8 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -12,19 +11,12 @@ import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ObserveLmuWindowsRaceFlagsUseCaseTest {
-    @MockK
-    private lateinit var repo: LmuWindowsFlagRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repo: LmuWindowsFlagRepository = mockk()
 
     @Test
     fun `invokeはリポジトリのflagStreamを返す`() =

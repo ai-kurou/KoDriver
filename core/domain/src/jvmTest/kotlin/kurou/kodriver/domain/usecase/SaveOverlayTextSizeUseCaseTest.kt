@@ -1,23 +1,15 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveOverlayTextSizeUseCaseTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var repository: OverlayTextSizePreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: OverlayTextSizePreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `オーバーレイ文字サイズを保存できる`() =

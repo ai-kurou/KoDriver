@@ -1,27 +1,19 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SendFeedbackUseCaseTest {
-    @MockK
-    private lateinit var repository: FeedbackSenderRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: FeedbackSenderRepository = mockk()
 
     @Test
     fun `入力値を正規化してRepositoryへ送信する`() =

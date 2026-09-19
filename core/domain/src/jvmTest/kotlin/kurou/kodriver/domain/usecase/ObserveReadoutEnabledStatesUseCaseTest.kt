@@ -1,11 +1,10 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -62,13 +60,7 @@ private fun createReadoutPreferencesRepository(repository: ReadoutPreferencesRep
 }
 
 class ObserveReadoutEnabledStatesUseCaseTest {
-    @MockK
-    private lateinit var repository: ReadoutPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: ReadoutPreferencesRepository = mockk()
 
     @Test
     fun `初期値はデフォルト定義のない未知のシミュレーターでは空Mapを返す`() =
