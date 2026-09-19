@@ -180,6 +180,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    any(),
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -217,6 +218,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    any(),
                     telemetryJsons.single(),
                 )
             }
@@ -390,6 +392,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
                     "残り燃料警告",
+                    any(),
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -408,6 +411,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
                     "残り燃料警告",
+                    any(),
                     telemetryJsons.single(),
                 )
             }
@@ -539,6 +543,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
                     "タイヤ過熱警告",
+                    any(),
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -577,6 +582,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
                     "タイヤ過熱警告",
+                    any(),
                     telemetryJsons.single(),
                 )
             }
@@ -745,6 +751,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    any(),
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -774,6 +781,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    any(),
                     telemetryJsons.single(),
                 )
             }
@@ -836,6 +844,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 myBestLapNarratedText,
+                any(),
                 capture(telemetryJsons),
             )
         } just Runs
@@ -844,6 +853,7 @@ class Gt7Ps5NarratorViewModelTest {
                 any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                any(),
                 any(),
                 capture(telemetryJsons),
             )
@@ -854,6 +864,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
                 "残り燃料警告",
+                any(),
                 capture(telemetryJsons),
             )
         } just Runs
@@ -863,6 +874,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
                 "タイヤ過熱警告",
+                any(),
                 capture(telemetryJsons),
             )
         } just Runs

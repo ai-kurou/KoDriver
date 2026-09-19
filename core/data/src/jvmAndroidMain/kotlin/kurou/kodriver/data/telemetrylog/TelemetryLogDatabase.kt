@@ -10,7 +10,7 @@ import androidx.sqlite.execSQL
 
 @Database(
     entities = [TelemetryLogEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 @ConstructedBy(TelemetryLogDatabaseConstructor::class)
@@ -31,5 +31,16 @@ internal val TELEMETRY_LOG_MIGRATION_1_2 =
     object : Migration(1, 2) {
         override fun migrate(connection: SQLiteConnection) {
             connection.execSQL("ALTER TABLE telemetry_logs ADD COLUMN narratedText TEXT NOT NULL DEFAULT ''")
+        }
+    }
+
+/**
+ * wasQueued 追加に伴うスキーマ変更。既存行は読み上げ時点のキュー状態を記録しておらず
+ * 復元できないため、false（キューオフ扱い）で埋める。
+ */
+internal val TELEMETRY_LOG_MIGRATION_2_3 =
+    object : Migration(2, 3) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE telemetry_logs ADD COLUMN wasQueued INTEGER NOT NULL DEFAULT 0")
         }
     }

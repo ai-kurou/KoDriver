@@ -39,6 +39,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
+                    false,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -62,6 +63,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
+                    false,
                     telemetryJsons.single(),
                 )
             }
@@ -82,6 +84,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
+                    false,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -124,6 +127,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
+                    false,
                     telemetryJsons.single(),
                 )
             }
@@ -143,6 +147,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
+                    false,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -165,6 +170,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
+                    false,
                     telemetryJsons.single(),
                 )
             }
@@ -186,6 +192,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     myBestLapKey,
                     "自己ベストラップ更新",
+                    false,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -210,6 +217,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     myBestLapKey,
                     "自己ベストラップ更新",
+                    false,
                     telemetryJsons.single(),
                 )
             }
@@ -251,6 +259,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                     "燃料は残り約2周",
+                    true,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -273,6 +282,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                     "燃料は残り約2周",
+                    true,
                     telemetryJsons.single(),
                 )
             }
@@ -294,6 +304,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    false,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -317,6 +328,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    false,
                     telemetryJsons.single(),
                 )
             }
@@ -337,6 +349,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新",
+                    wasQueued = false,
                     telemetryJson = capture(slot<String>()),
                 )
             } answers {
@@ -349,6 +362,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新",
+                    wasQueued = false,
                     telemetryJson = capture(slot<String>()),
                 )
             } answers { saveCount += 1 }
@@ -384,6 +398,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新",
+                    wasQueued = false,
                     telemetryJson = capture(slot<String>()),
                 )
             }
@@ -393,6 +408,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新",
+                    wasQueued = false,
                     telemetryJson = capture(slot<String>()),
                 )
             }

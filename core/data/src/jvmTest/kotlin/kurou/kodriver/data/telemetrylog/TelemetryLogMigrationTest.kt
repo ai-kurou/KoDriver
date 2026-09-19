@@ -41,4 +41,39 @@ class TelemetryLogMigrationTest {
             connection.close()
         }
     }
+
+    @Test
+    fun `バージョン2から3への移行で既存行にwasQueuedがfalseで追加される`() {
+        val path = Files.createTempFile("telemetry_log_migration_test", ".db").toString()
+        val connection = BundledSQLiteDriver().open(path)
+        try {
+            connection.execSQL(
+                "CREATE TABLE telemetry_logs (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "createdAt INTEGER NOT NULL, " +
+                    "simulatorId TEXT NOT NULL, " +
+                    "readoutItemKey TEXT NOT NULL, " +
+                    "narratedText TEXT NOT NULL, " +
+                    "telemetryJson TEXT NOT NULL)",
+            )
+            connection.execSQL(
+                "INSERT INTO telemetry_logs (createdAt, simulatorId, readoutItemKey, narratedText, telemetryJson) " +
+                    "VALUES (1000, 'lmu_windows', 'flag', 'イエローフラッグ', '{}')",
+            )
+
+            TELEMETRY_LOG_MIGRATION_2_3.migrate(connection)
+
+            val statement = connection.prepare("SELECT createdAt, telemetryJson, wasQueued FROM telemetry_logs")
+            try {
+                assertTrue(statement.step())
+                assertEquals(1000L, statement.getLong(0))
+                assertEquals("{}", statement.getText(1))
+                assertEquals(0L, statement.getLong(2))
+            } finally {
+                statement.close()
+            }
+        } finally {
+            connection.close()
+        }
+    }
 }

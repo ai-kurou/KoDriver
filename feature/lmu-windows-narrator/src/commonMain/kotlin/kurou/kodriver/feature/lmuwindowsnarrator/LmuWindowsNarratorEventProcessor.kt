@@ -70,11 +70,13 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousTelemetry
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            if (wasQueued != null) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
                     narratedText = event.narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
@@ -100,11 +102,13 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousVehicleApproach
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            if (wasQueued != null) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
                     narratedText = event.narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
@@ -130,11 +134,13 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousVehicleDamage
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            if (wasQueued != null) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
                     narratedText = event.narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
@@ -160,11 +166,13 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousTyreDetached
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            if (wasQueued != null) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
                     narratedText = event.narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
@@ -190,11 +198,13 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousRaceFlags
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            if (wasQueued != null) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
                     narratedText = event.narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
@@ -220,11 +230,13 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousTyreWear
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            if (wasQueued != null) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
                     narratedText = event.narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
@@ -250,11 +262,13 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousRemainingVirtualEnergy
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            if (wasQueued != null) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
                     narratedText = event.narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
@@ -279,11 +293,13 @@ internal class LmuWindowsNarratorEventProcessor(
         logContext: LmuWindowsTyreTemperatureLogContext,
     ) {
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            if (wasQueued != null) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
                     narratedText = event.narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
@@ -307,11 +323,13 @@ internal class LmuWindowsNarratorEventProcessor(
         logContext: LmuWindowsPitTimingLogContext,
     ) {
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            if (wasQueued != null) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
                     narratedText = event.narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson =
                         buildPitTimingTelemetryLogJson(
                             state = logContext.state,
@@ -327,29 +345,42 @@ internal class LmuWindowsNarratorEventProcessor(
         }
     }
 
+    /**
+     * 読み上げ（またはキュー追加）を実行した場合、その際に使われた queue 値（true=キュー再生 / false=割り込み再生）を返す。
+     * 読み上げを行わなかった場合は null を返す。この値はテレメトリログの wasQueued として保存される。
+     */
     private fun speakWithPriority(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    ): Boolean =
-        speakWithPriority(
-            eventKey = event.readoutItemKey,
-            currentKey = { ttsEngine.currentReadoutItemKey },
-            readoutOrder = readoutOrder,
-            queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-            speak = { queue -> ttsEngine.speak(event, queue) },
-            stop = { ttsEngine.stop() },
-        )
+    ): Boolean? {
+        var wasQueued: Boolean? = null
+        val spoken =
+            speakWithPriority(
+                eventKey = event.readoutItemKey,
+                currentKey = { ttsEngine.currentReadoutItemKey },
+                readoutOrder = readoutOrder,
+                queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
+                speak = { queue ->
+                    wasQueued = queue
+                    ttsEngine.speak(event, queue)
+                },
+                stop = { ttsEngine.stop() },
+            )
+        return if (spoken) wasQueued else null
+    }
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
+        wasQueued: Boolean,
         telemetryJson: String,
     ) {
         try {
             saveTelemetryLog(
                 createdAt = createdAt,
+                wasQueued = wasQueued,
                 simulator = Simulator.LmuWindows,
                 readoutItemKey = readoutItemKey,
                 narratedText = narratedText,

@@ -108,6 +108,7 @@ private val manyTelemetryLogs =
                 simulator = Simulator.AceWindows,
                 readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root,
                 narratedText = "イエローフラッグ",
+                wasQueued = false,
                 telemetryJson = """{"flag":"green"}""",
             )
         } else {
@@ -117,6 +118,7 @@ private val manyTelemetryLogs =
                 simulator = Simulator.LmuWindows,
                 readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                 narratedText = "イエローフラッグ",
+                wasQueued = false,
                 telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
             )
         }

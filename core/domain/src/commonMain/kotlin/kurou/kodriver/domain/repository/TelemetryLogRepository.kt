@@ -18,6 +18,7 @@ interface TelemetryLogRepository {
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
+        wasQueued: Boolean,
         telemetryJson: String,
     )
 

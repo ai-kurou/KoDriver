@@ -524,12 +524,14 @@ class LmuWindowsNarratorViewModelTest {
     ) {
         val telemetryJsonSlot = slot<String>()
         val narratedTextSlot = slot<String>()
+        val wasQueuedSlot = slot<Boolean>()
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = createdAt,
                 simulator = Simulator.LmuWindows,
                 readoutItemKey = readoutItemKey,
                 narratedText = capture(narratedTextSlot),
+                wasQueued = capture(wasQueuedSlot),
                 telemetryJson = capture(telemetryJsonSlot),
             )
         } answers {
@@ -540,6 +542,7 @@ class LmuWindowsNarratorViewModelTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = readoutItemKey,
                     narratedText = narratedTextSlot.captured,
+                    wasQueued = wasQueuedSlot.captured,
                     telemetryJson = telemetryJsonSlot.captured,
                 ),
             )
@@ -1193,6 +1196,7 @@ class LmuWindowsNarratorViewModelTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = any(),
+                    wasQueued = any(),
                     telemetryJson = capture(slot()),
                 )
             } throws IllegalStateException("Failed to save")

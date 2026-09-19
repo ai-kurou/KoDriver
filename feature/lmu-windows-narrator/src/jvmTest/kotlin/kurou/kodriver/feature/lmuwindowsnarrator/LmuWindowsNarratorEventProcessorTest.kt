@@ -76,6 +76,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -112,6 +113,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = false,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -130,6 +132,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
                     narratedText = "タイヤ摩耗警告",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -177,6 +180,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
                     narratedText = "タイヤ摩耗警告",
+                    wasQueued = false,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -195,6 +199,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
                     narratedText = "バーチャルエナジー残量警告",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -239,6 +244,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
                     narratedText = "バーチャルエナジー残量警告",
+                    wasQueued = false,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -257,6 +263,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = "ブルーフラッグ",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -292,6 +299,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = "ブルーフラッグ",
+                    wasQueued = false,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -310,6 +318,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = "ブルーフラッグ",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -332,6 +341,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = "ブルーフラッグ",
+                    wasQueued = false,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -350,6 +360,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
                     narratedText = "バーチャルエナジー残量警告",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -372,6 +383,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
                     narratedText = "バーチャルエナジー残量警告",
+                    wasQueued = false,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -390,6 +402,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     narratedText = "GP2 GP2… ahhh!!!",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -412,6 +425,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     narratedText = "GP2 GP2… ahhh!!!",
+                    wasQueued = false,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }
@@ -430,6 +444,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     narratedText = "GP2 GP2… ahhh!!!",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -465,6 +480,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     narratedText = "GP2 GP2… ahhh!!!",
+                    wasQueued = false,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -483,6 +499,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     narratedText = "タイヤ脱落",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -530,6 +547,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     narratedText = "タイヤ脱落",
+                    wasQueued = false,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -548,6 +566,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
                     narratedText = "残り約2周でピットイン",
+                    wasQueued = false,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
@@ -580,6 +599,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
                     narratedText = "残り約2周でピットイン",
+                    wasQueued = false,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -626,6 +646,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = true,
                     telemetryJson = capture(slot()),
                 )
             } just Runs
@@ -648,6 +669,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = true,
                     telemetryJson = capture(slot()),
                 )
             }
@@ -668,6 +690,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = false,
                     telemetryJson = capture(slot()),
                 )
             } just Runs
@@ -691,6 +714,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = false,
                     telemetryJson = capture(slot()),
                 )
             }
@@ -710,6 +734,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = false,
                     telemetryJson = capture(slot()),
                 )
             } answers {
@@ -722,6 +747,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = false,
                     telemetryJson = capture(slot()),
                 )
             } answers { saveCount += 1 }
@@ -754,6 +780,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = false,
                     telemetryJson = capture(slot()),
                 )
             }
@@ -763,6 +790,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     narratedText = "カーレフト",
+                    wasQueued = false,
                     telemetryJson = capture(slot()),
                 )
             }

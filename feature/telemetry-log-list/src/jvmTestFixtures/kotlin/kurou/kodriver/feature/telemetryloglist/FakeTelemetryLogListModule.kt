@@ -46,6 +46,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
+        wasQueued: Boolean,
         telemetryJson: String,
     ) {
         val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
@@ -57,6 +58,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
                     simulator = simulator,
                     readoutItemKey = readoutItemKey,
                     narratedText = narratedText,
+                    wasQueued = wasQueued,
                     telemetryJson = telemetryJson,
                 ),
         )

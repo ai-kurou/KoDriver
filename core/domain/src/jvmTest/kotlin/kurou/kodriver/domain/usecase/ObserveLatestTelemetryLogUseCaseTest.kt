@@ -28,6 +28,7 @@ class ObserveLatestTelemetryLogUseCaseTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = "イエローフラッグ",
+                    wasQueued = true,
                     telemetryJson = """{"currentLap":2}""",
                 )
             every { repository.observeLatestTelemetryLog() } returns MutableStateFlow(latest)

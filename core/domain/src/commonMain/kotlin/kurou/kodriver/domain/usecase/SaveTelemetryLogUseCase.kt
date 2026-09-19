@@ -12,6 +12,7 @@ class SaveTelemetryLogUseCase(
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
+        wasQueued: Boolean,
         telemetryJson: String,
     ) {
         repository.saveTelemetryLog(
@@ -19,6 +20,7 @@ class SaveTelemetryLogUseCase(
             simulator = simulator,
             readoutItemKey = readoutItemKey,
             narratedText = narratedText,
+            wasQueued = wasQueued,
             telemetryJson = telemetryJson,
         )
     }
