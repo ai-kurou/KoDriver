@@ -16,6 +16,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
@@ -70,24 +71,22 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousTelemetry
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = telemetry,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = telemetry,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousTelemetry = telemetry
     }
@@ -102,24 +101,22 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousVehicleApproach
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = vehicleApproach,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = vehicleApproach,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousVehicleApproach = vehicleApproach
     }
@@ -134,24 +131,22 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousVehicleDamage
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = vehicleDamage,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = vehicleDamage,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousVehicleDamage = vehicleDamage
     }
@@ -166,24 +161,22 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousTyreDetached
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = tyreDetached,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = tyreDetached,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousTyreDetached = tyreDetached
     }
@@ -198,24 +191,22 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousRaceFlags
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = raceFlags,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = raceFlags,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousRaceFlags = raceFlags
     }
@@ -230,24 +221,22 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousTyreWear
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = tyreWear,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = tyreWear,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousTyreWear = tyreWear
     }
@@ -262,24 +251,22 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousRemainingVirtualEnergy
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = remainingVirtualEnergy,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = remainingVirtualEnergy,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousRemainingVirtualEnergy = remainingVirtualEnergy
     }
@@ -293,24 +280,22 @@ internal class LmuWindowsNarratorEventProcessor(
         logContext: LmuWindowsTyreTemperatureLogContext,
     ) {
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            input = input,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            overheatState = logContext.overheatState,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        input = input,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        overheatState = logContext.overheatState,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
     }
 
@@ -323,37 +308,35 @@ internal class LmuWindowsNarratorEventProcessor(
         logContext: LmuWindowsPitTimingLogContext,
     ) {
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildPitTimingTelemetryLogJson(
-                            state = logContext.state,
-                            telemetry = snapshot.telemetry,
-                            virtualEnergy = snapshot.virtualEnergy,
-                            tyreWear = snapshot.tyreWear,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildPitTimingTelemetryLogJson(
+                        state = logContext.state,
+                        telemetry = snapshot.telemetry,
+                        virtualEnergy = snapshot.virtualEnergy,
+                        tyreWear = snapshot.tyreWear,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
     }
 
     /**
-     * 読み上げ（またはキュー追加）を実行した場合、その際に使われた queue 値（true=キュー再生 / false=割り込み再生）を返す。
-     * 読み上げを行わなかった場合は null を返す。この値はテレメトリログの wasQueued として保存される。
+     * 読み上げの処理結果を返す。キュー追加・割り込み再生・優先度負けによる読み上げなしの3種を区別し、
+     * テレメトリログの narrationOutcome として保存される。
      */
     private fun speakWithPriority(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    ): Boolean? {
+    ): NarrationOutcome {
         var wasQueued: Boolean? = null
         val spoken =
             speakWithPriority(
@@ -367,20 +350,24 @@ internal class LmuWindowsNarratorEventProcessor(
                 },
                 stop = { ttsEngine.stop() },
             )
-        return if (spoken) wasQueued else null
+        return when {
+            !spoken -> NarrationOutcome.SKIPPED
+            wasQueued == true -> NarrationOutcome.QUEUED
+            else -> NarrationOutcome.INTERRUPTED
+        }
     }
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
-        wasQueued: Boolean,
+        narrationOutcome: NarrationOutcome,
         telemetryJson: String,
     ) {
         try {
             saveTelemetryLog(
                 createdAt = createdAt,
-                wasQueued = wasQueued,
+                narrationOutcome = narrationOutcome,
                 simulator = Simulator.LmuWindows,
                 readoutItemKey = readoutItemKey,
                 narratedText = narratedText,

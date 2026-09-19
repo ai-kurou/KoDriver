@@ -65,6 +65,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.simulatorIcon
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.util.MILLISECONDS_PER_DAY
 import kurou.kodriver.domain.util.MILLISECONDS_PER_HOUR
@@ -393,14 +394,14 @@ private fun TelemetryLogListItem(
             ) {
                 Icon(
                     imageVector =
-                        if (log.wasQueued) {
+                        if (log.narrationOutcome == NarrationOutcome.QUEUED) {
                             Icons.AutoMirrored.Filled.PlaylistAdd
                         } else {
                             Icons.Filled.PlaylistRemove
                         },
                     contentDescription =
                         stringResource(
-                            if (log.wasQueued) {
+                            if (log.narrationOutcome == NarrationOutcome.QUEUED) {
                                 Res.string.telemetry_log_queue_on_description
                             } else {
                                 Res.string.telemetry_log_queue_off_description

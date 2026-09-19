@@ -7,6 +7,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -104,6 +105,6 @@ private fun telemetryLog(
             ReadoutItemKey.LmuWindows.Flag.Root
         },
     narratedText = "イエローフラッグ",
-    wasQueued = false,
+    narrationOutcome = NarrationOutcome.INTERRUPTED,
     telemetryJson = "{}",
 )

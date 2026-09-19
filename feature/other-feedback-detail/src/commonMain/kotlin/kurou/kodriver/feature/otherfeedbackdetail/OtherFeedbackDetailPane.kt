@@ -50,6 +50,7 @@ import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -412,7 +413,7 @@ private fun OtherFeedbackDetailPaneAttachedTelemetryLogPreview() {
                             simulator = Simulator.LmuWindows,
                             readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                             narratedText = "イエローフラッグ",
-                            wasQueued = false,
+                            narrationOutcome = NarrationOutcome.INTERRUPTED,
                             telemetryJson = "",
                         ),
                 ),

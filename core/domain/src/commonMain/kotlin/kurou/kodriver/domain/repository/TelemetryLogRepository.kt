@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -18,7 +19,7 @@ interface TelemetryLogRepository {
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
-        wasQueued: Boolean,
+        narrationOutcome: NarrationOutcome,
         telemetryJson: String,
     )
 
