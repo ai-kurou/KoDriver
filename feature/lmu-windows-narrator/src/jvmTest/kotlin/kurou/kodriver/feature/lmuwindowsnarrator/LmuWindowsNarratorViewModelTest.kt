@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
@@ -524,14 +525,14 @@ class LmuWindowsNarratorViewModelTest {
     ) {
         val telemetryJsonSlot = slot<String>()
         val narratedTextSlot = slot<String>()
-        val wasQueuedSlot = slot<Boolean>()
+        val narrationOutcomeSlot = slot<NarrationOutcome>()
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = createdAt,
                 simulator = Simulator.LmuWindows,
                 readoutItemKey = readoutItemKey,
                 narratedText = capture(narratedTextSlot),
-                wasQueued = capture(wasQueuedSlot),
+                narrationOutcome = capture(narrationOutcomeSlot),
                 telemetryJson = capture(telemetryJsonSlot),
             )
         } answers {
@@ -542,7 +543,7 @@ class LmuWindowsNarratorViewModelTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = readoutItemKey,
                     narratedText = narratedTextSlot.captured,
-                    wasQueued = wasQueuedSlot.captured,
+                    narrationOutcome = narrationOutcomeSlot.captured,
                     telemetryJson = telemetryJsonSlot.captured,
                 ),
             )
@@ -827,7 +828,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `優先度制御で読み上げなかったイベントは保存しない`() =
+    fun `優先度制御で読み上げなかったイベントはSKIPPEDとして保存する`() =
         runTest(testDispatcher) {
             var fakeTime = 0L
             val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
@@ -850,7 +851,8 @@ class LmuWindowsNarratorViewModelTest {
             fakeTime = 50L
             channel.send(leftVehicleApproach(vehicleId = 1))
 
-            assertEquals(emptyList<TelemetryLog>(), logs)
+            assertEquals(1, logs.size)
+            assertEquals(NarrationOutcome.SKIPPED, logs.single().narrationOutcome)
         }
 
     @Test
@@ -1196,7 +1198,7 @@ class LmuWindowsNarratorViewModelTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = any(),
-                    wasQueued = any(),
+                    narrationOutcome = any(),
                     telemetryJson = capture(slot()),
                 )
             } throws IllegalStateException("Failed to save")
