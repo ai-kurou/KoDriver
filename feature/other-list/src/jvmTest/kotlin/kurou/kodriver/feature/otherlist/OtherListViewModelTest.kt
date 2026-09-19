@@ -23,6 +23,7 @@ import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
@@ -30,9 +31,11 @@ import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -49,6 +52,9 @@ class OtherListViewModelTest {
 
     @MockK
     private lateinit var appUpdateRepository: AppUpdateRepository
+
+    @MockK
+    private lateinit var overlayVisibleRepository: OverlayVisiblePreferencesRepository
 
     @MockK
     private lateinit var keepScreenOnRepository: KeepScreenOnEnabledRepository
@@ -68,6 +74,7 @@ class OtherListViewModelTest {
     @MockK
     private lateinit var accessLocalNetworkPermissionRepository: AccessLocalNetworkPermissionRepository
 
+    private val overlayVisibleFlow = MutableStateFlow(true)
     private val keepScreenOnFlow = MutableStateFlow(true)
     private val dynamicColorFlow = MutableStateFlow(false)
     private val hapticFeedbackFlow = MutableStateFlow(true)
@@ -94,6 +101,8 @@ class OtherListViewModelTest {
         } returns accessLocalNetworkPermissionGranted
         return OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
+            observeOverlayVisible = ObserveOverlayVisibleUseCase(overlayVisibleRepository),
+            saveOverlayVisible = SaveOverlayVisibleUseCase(overlayVisibleRepository),
             observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
             saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
             observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorRepository),
@@ -118,6 +127,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
             assertEquals(buildOtherListItems(), viewModel.uiState.first().items)
@@ -127,9 +137,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -143,6 +155,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
             viewModel.onItemSelected(OtherListItemType.Volume)
@@ -151,9 +164,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -167,6 +182,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
             val initialState = viewModel.uiState.first()
 
@@ -178,9 +194,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -194,6 +212,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
             viewModel.onItemSelected(OtherListItemType.License)
@@ -204,9 +223,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -220,6 +241,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
             viewModel.selectItem(OtherListItemType.ConsoleIp)
@@ -230,9 +252,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -246,6 +270,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
             viewModel.selectFeedbackItem(42L)
@@ -259,9 +284,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -275,6 +302,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
             viewModel.selectFeedbackItem(42L)
@@ -284,9 +312,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -300,6 +330,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
             viewModel.onItemSelected(OtherListItemType.License)
@@ -309,9 +340,70 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+            )
+        }
+
+    @Test
+    fun `オーバーレイ表示の状態を監視できる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel()
+
+            overlayVisibleFlow.update { false }
+
+            assertFalse(viewModel.uiState.first().overlayVisible)
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                overlayVisibleRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+            )
+        }
+
+    @Test
+    fun `onOverlayVisibleChangeでオーバーレイ表示の状態を保存できる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            coEvery {
+                overlayVisibleRepository.saveOverlayVisible(false)
+            } answers { overlayVisibleFlow.update { false } }
+            val viewModel = createViewModel()
+
+            viewModel.onOverlayVisibleChange(false)
+
+            assertFalse(overlayVisibleFlow.first())
+            assertFalse(viewModel.uiState.first().overlayVisible)
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            coVerify(exactly = 1) { overlayVisibleRepository.saveOverlayVisible(false) }
+            confirmVerified(
+                appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -325,6 +417,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
             keepScreenOnFlow.update { false }
@@ -333,9 +426,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -350,6 +445,7 @@ class OtherListViewModelTest {
             coEvery { keepScreenOnRepository.saveKeepScreenOn(false) } answers { keepScreenOnFlow.update { false } }
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
             viewModel.onKeepScreenOnChange(false)
@@ -359,10 +455,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             coVerify(exactly = 1) { keepScreenOnRepository.saveKeepScreenOn(false) }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -376,6 +474,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { dynamicColorRepository.saveDynamicColorEnabled(true) } answers {
                 dynamicColorFlow.update { true }
             }
@@ -388,10 +487,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             coVerify(exactly = 1) { dynamicColorRepository.saveDynamicColorEnabled(true) }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -405,6 +506,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { hapticFeedbackEnabledRepository.saveHapticFeedbackEnabled(false) } answers {
                 hapticFeedbackFlow.update { false }
             }
@@ -417,10 +519,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             coVerify(exactly = 1) { hapticFeedbackEnabledRepository.saveHapticFeedbackEnabled(false) }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -434,6 +538,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(hapticFeedbackAvailable = false)
 
             assertFalse(
@@ -445,9 +550,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -461,6 +568,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v9.9.9")
             val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -471,9 +579,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -487,6 +597,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v1.0.0")
             val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -497,9 +608,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -513,15 +626,18 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(currentVersion = "1.0.0")
 
             assertFalse(viewModel.uiState.first().hasAppUpdate)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -535,6 +651,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(currentVersion = "")
 
             viewModel.checkUpdate()
@@ -543,9 +660,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -559,6 +678,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { appUpdateRepository.getLatestRelease() } returns null
             val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -569,9 +689,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -585,6 +707,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { startupRegistrationRepository.isEnabled() } returns true
             val viewModel = createViewModel()
 
@@ -595,9 +718,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -612,6 +737,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { startupRegistrationRepository.setEnabled(true) } returns Unit
             val viewModel = createViewModel()
 
@@ -622,9 +748,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -639,6 +767,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(accessLocalNetworkPermissionGranted = true)
 
             assertTrue(viewModel.uiState.first().accessLocalNetworkPermissionGranted)
@@ -646,9 +775,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -663,6 +794,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(accessLocalNetworkPermissionGranted = false)
 
             assertFalse(viewModel.uiState.first().accessLocalNetworkPermissionGranted)
@@ -670,9 +802,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
@@ -687,6 +821,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(accessLocalNetworkPermissionGranted = false)
             every { accessLocalNetworkPermissionRepository.isGranted() } returns true
 
@@ -697,9 +832,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
             verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
             confirmVerified(
                 appUpdateRepository,
+                overlayVisibleRepository,
                 keepScreenOnRepository,
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,

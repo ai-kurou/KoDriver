@@ -35,6 +35,10 @@ import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachPreference
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesRepository
@@ -106,6 +110,10 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePre
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
+import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
+import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
+import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
@@ -277,6 +285,22 @@ private fun androidDataModuleAppSettings(context: Context) =
         // ACCESS_LOCAL_NETWORK 権限（Android 16+）が許可されているか（設定画面でのバッジ表示に使用）
         single<AccessLocalNetworkPermissionRepository> {
             AndroidAccessLocalNetworkPermissionRepository(context)
+        }
+        // オーバーレイの文字サイズ設定
+        single<OverlayTextSizePreferencesRepository> {
+            createOverlayTextSizePreferencesRepository(context.filesDir.absolutePath)
+        }
+        // オーバーレイの背景透明度設定
+        single<OverlayBackgroundOpacityPreferencesRepository> {
+            createOverlayBackgroundOpacityPreferencesRepository(context.filesDir.absolutePath)
+        }
+        // オーバーレイの表示ON/OFF設定
+        single<OverlayVisiblePreferencesRepository> {
+            createOverlayVisiblePreferencesRepository(context.filesDir.absolutePath)
+        }
+        // オーバーレイウィンドウの位置・サイズ（デスクトップ版のみ使用するが、Koin の定義は両プラットフォームで揃える）
+        single<OverlayWindowBoundsPreferencesRepository> {
+            createOverlayWindowBoundsPreferencesRepository(context.filesDir.absolutePath)
         }
     }
 

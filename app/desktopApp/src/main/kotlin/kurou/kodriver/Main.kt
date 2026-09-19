@@ -1,6 +1,10 @@
 package kurou.kodriver
 
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -48,6 +52,7 @@ fun main() {
     try {
         application {
             val windowState = rememberWindowState(size = DpSize(1000.dp, 600.dp))
+            var koinReady by remember { mutableStateOf(false) }
             Window(
                 onCloseRequest = { exitApplication() },
                 title = "KoDriver",
@@ -76,6 +81,7 @@ fun main() {
                                             listOf(module { single(named("appVersion")) { APP_VERSION } }),
                                     )
                                 }.koin
+                            koinReady = true
                         }
                     },
                     startServer = {
@@ -92,6 +98,12 @@ fun main() {
                 ) {
                     AppScreen()
                 }
+            }
+            // Narrator Overlay はデスクトップアプリのみの機能（Android版には存在しない）。メインウィンドウと同じ
+            // application スコープ内で開くため、exitApplication() 時にこのウィンドウも一緒に閉じる。
+            // 表示ON/OFFはその他タブの「オーバーレイ設定」で切り替えられる。
+            if (koinReady) {
+                NarratorOverlayWindowHost()
             }
         }
     } finally {

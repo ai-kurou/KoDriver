@@ -34,6 +34,7 @@ import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import kurou.kodriver.presentation.AppScreen
+import kurou.kodriver.presentation.NarratorOverlayScreen
 import kurou.kodriver.presentation.featureModules
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -329,6 +330,28 @@ class AppTest {
 
         waitUntilNotDisplayed("選択したログ")
         waitUntilDisplayed("フラッグ")
+    }
+
+    @Test
+    fun `NarratorOverlayScreenに最新の読み上げ内容が表示される`() {
+        fakeTelemetryLogRepository.emit(
+            listOf(
+                telemetryLog(
+                    id = 1,
+                    createdAt = 100,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+                    telemetryJson = """{"flag":"yellow"}""",
+                ),
+            ),
+        )
+
+        rule.setContent {
+            Box(modifier = Modifier.requiredSize(400.dp, 120.dp)) {
+                NarratorOverlayScreen()
+            }
+        }
+
+        waitUntilDisplayed("イエローフラッグ")
     }
 
     private fun selectSimulator(simulatorName: String) {

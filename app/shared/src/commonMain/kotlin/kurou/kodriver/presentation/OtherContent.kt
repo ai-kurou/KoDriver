@@ -51,6 +51,7 @@ fun OtherContent(
     scrollToTopRequest: Int = 0,
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
+    onOpenOverlayTextSizeDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
 ) {
     val viewModel: OtherListViewModel = koinViewModel()
@@ -74,6 +75,8 @@ fun OtherContent(
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onOpenThemeDialog = onOpenThemeDialog,
+        onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
+        onOverlayVisibleChange = viewModel::onOverlayVisibleChange,
         onKeepScreenOnChange = viewModel::onKeepScreenOnChange,
         onDynamicColorEnabledChange = viewModel::onDynamicColorEnabledChange,
         onHapticFeedbackEnabledChange = viewModel::onHapticFeedbackEnabledChange,
@@ -96,11 +99,14 @@ private fun handleOtherItemClick(
     onOpenReleasePage: () -> Unit,
     onOpenReadoutStartSoundDialog: () -> Unit,
     onOpenThemeDialog: () -> Unit,
+    onOpenOverlayTextSizeDialog: () -> Unit,
 ) {
     when (itemType) {
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
 
         OtherListItemType.Theme -> onOpenThemeDialog()
+
+        OtherListItemType.OverlayTextSize -> onOpenOverlayTextSizeDialog()
 
         OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
 
@@ -110,6 +116,8 @@ private fun handleOtherItemClick(
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        OtherListItemType.OverlayBackgroundOpacity,
+        OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
         OtherListItemType.HapticFeedback,
@@ -130,6 +138,8 @@ internal fun OtherContent(
     onOpenReleasePage: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
+    onOpenOverlayTextSizeDialog: () -> Unit = {},
+    onOverlayVisibleChange: (Boolean) -> Unit = {},
     onKeepScreenOnChange: (Boolean) -> Unit = {},
     onDynamicColorEnabledChange: (Boolean) -> Unit = {},
     onHapticFeedbackEnabledChange: (Boolean) -> Unit = {},
@@ -228,6 +238,7 @@ internal fun OtherContent(
         listPane = {
             OtherListPane(
                 uiState = uiState,
+                onOverlayVisibleChange = onOverlayVisibleChange,
                 onKeepScreenOnChange = onKeepScreenOnChange,
                 onDynamicColorEnabledChange = onDynamicColorEnabledChange,
                 onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
@@ -241,6 +252,7 @@ internal fun OtherContent(
                         onOpenReleasePage = onOpenReleasePage,
                         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
                         onOpenThemeDialog = onOpenThemeDialog,
+                        onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
                     )
                 },
                 scrollToTopRequest = scrollToTopRequest,

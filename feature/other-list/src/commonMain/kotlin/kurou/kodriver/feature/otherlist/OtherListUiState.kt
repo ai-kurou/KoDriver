@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherlist
 import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
+import kurou.kodriver.domain.model.OVERLAY_VISIBLE_DEFAULT
 
 /**
  * OtherList 画面の表示状態。
@@ -16,6 +17,7 @@ data class OtherListUiState(
     val feedbackAttachRequestId: Long = 0,
     val hasAppUpdate: Boolean = false,
     val accessLocalNetworkPermissionGranted: Boolean = true,
+    val overlayVisible: Boolean = OVERLAY_VISIBLE_DEFAULT,
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
     val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,
     val hapticFeedbackEnabled: Boolean = HAPTIC_FEEDBACK_ENABLED_DEFAULT,

@@ -20,9 +20,12 @@ import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Feedback
+import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
+import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.SportsEsports
@@ -65,6 +68,9 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_github_reposito
 import kurou.kodriver.feature.otherlist.generated.resources.item_haptic_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kurou.kodriver.feature.otherlist.generated.resources.item_license
+import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity
+import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_size
+import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible
 import kurou.kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kurou.kodriver.feature.otherlist.generated.resources.item_release_page
 import kurou.kodriver.feature.otherlist.generated.resources.item_server_ip
@@ -74,6 +80,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
+import kurou.kodriver.feature.otherlist.generated.resources.section_overlay_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_readout_settings
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
@@ -83,6 +90,7 @@ import kotlin.time.TimeSource
 private enum class OtherListSection {
     ConnectionSettings,
     ReadoutSettings,
+    OverlaySettings,
     AppSettings,
     Information,
 }
@@ -91,6 +99,7 @@ private val otherListSections =
     listOf(
         OtherListSection.ConnectionSettings,
         OtherListSection.ReadoutSettings,
+        OtherListSection.OverlaySettings,
         OtherListSection.AppSettings,
         OtherListSection.Information,
     )
@@ -105,6 +114,11 @@ private fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.Volume,
         OtherListItemType.ReadoutStartSound,
         -> OtherListSection.ReadoutSettings
+
+        OtherListItemType.OverlayVisible,
+        OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayBackgroundOpacity,
+        -> OtherListSection.OverlaySettings
 
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
@@ -143,6 +157,13 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
 
         OtherListItemType.ReadoutStartSound -> {
             stringResource(Res.string.item_readout_start_sound)
+        }
+
+        OtherListItemType.OverlayVisible,
+        OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayBackgroundOpacity,
+        -> {
+            otherOverlaySettingsItemDisplayName(itemType)
         }
 
         OtherListItemType.GitHubRepository -> {
@@ -187,10 +208,20 @@ private fun otherAppSettingsItemDisplayName(itemType: OtherListItemType): String
     }
 
 @Composable
+private fun otherOverlaySettingsItemDisplayName(itemType: OtherListItemType): String =
+    when (itemType) {
+        OtherListItemType.OverlayVisible -> stringResource(Res.string.item_overlay_visible)
+        OtherListItemType.OverlayTextSize -> stringResource(Res.string.item_overlay_text_size)
+        OtherListItemType.OverlayBackgroundOpacity -> stringResource(Res.string.item_overlay_background_opacity)
+        else -> error("unexpected item type: $itemType")
+    }
+
+@Composable
 private fun otherListSectionTitle(section: OtherListSection): String =
     when (section) {
         OtherListSection.ConnectionSettings -> stringResource(Res.string.section_connection_settings)
         OtherListSection.ReadoutSettings -> stringResource(Res.string.section_readout_settings)
+        OtherListSection.OverlaySettings -> stringResource(Res.string.section_overlay_settings)
         OtherListSection.AppSettings -> stringResource(Res.string.section_app_settings)
         OtherListSection.Information -> stringResource(Res.string.section_information)
     }
@@ -206,6 +237,11 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
         OtherListItemType.Volume -> Icons.AutoMirrored.Outlined.VolumeUp
 
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
+
+        OtherListItemType.OverlayVisible,
+        OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayBackgroundOpacity,
+        -> otherOverlaySettingsItemLeadingIconVector(itemType)
 
         OtherListItemType.KeepScreenOn,
         OtherListItemType.Theme,
@@ -223,6 +259,14 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
         OtherListItemType.License -> Icons.Outlined.Description
 
         OtherListItemType.DebugState -> Icons.Outlined.Code
+    }
+
+private fun otherOverlaySettingsItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
+    when (itemType) {
+        OtherListItemType.OverlayVisible -> Icons.Outlined.Layers
+        OtherListItemType.OverlayTextSize -> Icons.Outlined.FormatSize
+        OtherListItemType.OverlayBackgroundOpacity -> Icons.Outlined.Opacity
+        else -> error("unexpected item type: $itemType")
     }
 
 private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
@@ -263,6 +307,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.Feedback,
         OtherListItemType.License,
         OtherListItemType.DebugState,
@@ -270,8 +315,10 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
 
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
+        OtherListItemType.OverlayTextSize,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
 
+        OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
         OtherListItemType.HapticFeedback,
@@ -292,6 +339,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
 fun OtherListPane(
     uiState: OtherListUiState,
     onItemClick: (OtherListItemType) -> Unit,
+    onOverlayVisibleChange: (Boolean) -> Unit,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
     onHapticFeedbackEnabledChange: (Boolean) -> Unit,
@@ -325,6 +373,7 @@ fun OtherListPane(
                     OtherListItem(
                         item = item,
                         uiState = uiState,
+                        onOverlayVisibleChange = onOverlayVisibleChange,
                         onKeepScreenOnChange = onKeepScreenOnChange,
                         onDynamicColorEnabledChange = onDynamicColorEnabledChange,
                         onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
@@ -383,6 +432,7 @@ private fun OtherListSectionHeader(section: OtherListSection) {
 private fun OtherListItem(
     item: OtherListItemType,
     uiState: OtherListUiState,
+    onOverlayVisibleChange: (Boolean) -> Unit,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
     onHapticFeedbackEnabledChange: (Boolean) -> Unit,
@@ -391,6 +441,10 @@ private fun OtherListItem(
 ) {
     val haptic = LocalHapticFeedback.current
     val openAccessLocalNetworkPermissionSettings = rememberOpenAccessLocalNetworkPermissionSettings()
+    val onOverlayVisibleChangeWithHaptic: (Boolean) -> Unit = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onOverlayVisibleChange(it)
+    }
     val onKeepScreenOnChangeWithHaptic: (Boolean) -> Unit = {
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onKeepScreenOnChange(it)
@@ -452,6 +506,13 @@ private fun OtherListItem(
         },
         trailingContent = {
             when (item) {
+                OtherListItemType.OverlayVisible -> {
+                    Switch(
+                        checked = uiState.overlayVisible,
+                        onCheckedChange = onOverlayVisibleChangeWithHaptic,
+                    )
+                }
+
                 OtherListItemType.KeepScreenOn -> {
                     Switch(
                         checked = uiState.keepScreenOn,
@@ -486,6 +547,8 @@ private fun OtherListItem(
                 OtherListItemType.Volume,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
+                OtherListItemType.OverlayTextSize,
+                OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.Feedback,
@@ -512,6 +575,7 @@ private fun OtherListItem(
                     handleOtherListItemClick(
                         item = item,
                         uiState = uiState,
+                        onOverlayVisibleChange = onOverlayVisibleChange,
                         onKeepScreenOnChange = onKeepScreenOnChange,
                         onDynamicColorEnabledChange = onDynamicColorEnabledChange,
                         onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
@@ -527,6 +591,7 @@ private fun OtherListItem(
 private fun handleOtherListItemClick(
     item: OtherListItemType,
     uiState: OtherListUiState,
+    onOverlayVisibleChange: (Boolean) -> Unit,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
     onHapticFeedbackEnabledChange: (Boolean) -> Unit,
@@ -535,6 +600,10 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
+        OtherListItemType.OverlayVisible -> {
+            onOverlayVisibleChange(!uiState.overlayVisible)
+        }
+
         OtherListItemType.KeepScreenOn -> {
             onKeepScreenOnChange(!uiState.keepScreenOn)
         }
@@ -560,6 +629,8 @@ private fun handleOtherListItemClick(
         OtherListItemType.Volume,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
+        OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         OtherListItemType.Feedback,
@@ -635,6 +706,7 @@ private fun OtherListPanePreview() {
     OtherListPane(
         uiState = OtherListUiState(),
         onItemClick = {},
+        onOverlayVisibleChange = {},
         onKeepScreenOnChange = {},
         onDynamicColorEnabledChange = {},
         onHapticFeedbackEnabledChange = {},

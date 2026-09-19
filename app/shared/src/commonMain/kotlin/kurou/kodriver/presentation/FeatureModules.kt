@@ -26,9 +26,12 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.lmuWindows
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.lmuWindowsReadoutVehicleDamageDetailModule
 import kurou.kodriver.feature.main.mainModule
 import kurou.kodriver.feature.main.mainPlatformModule
+import kurou.kodriver.feature.narratoroverlay.narratorOverlayModule
 import kurou.kodriver.feature.otherconsoleipdetail.otherConsoleIpDetailModule
 import kurou.kodriver.feature.otherfeedbackdetail.otherFeedbackDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
+import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.otherOverlayBackgroundOpacityDetailModule
+import kurou.kodriver.feature.otheroverlaytextsizedetail.otherOverlayTextSizeDetailModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.otherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
 import kurou.kodriver.feature.otherthemedetail.otherThemeDetailModule
@@ -62,6 +65,8 @@ val featureModules: List<Module> =
         otherFeedbackDetailModule,
         otherReadoutStartSoundDetailModule,
         otherThemeDetailModule,
+        otherOverlayTextSizeDetailModule,
+        otherOverlayBackgroundOpacityDetailModule,
         otherServerIpDetailModule,
         otherConsoleIpDetailModule,
         otherVolumeDetailModule,
@@ -86,4 +91,5 @@ val featureModules: List<Module> =
         aceWindowsReadoutVehicleApproachDetailModule,
         aceWindowsReadoutMyBestLapDetailModule,
         debugStateDetailModule,
+        narratorOverlayModule,
     )

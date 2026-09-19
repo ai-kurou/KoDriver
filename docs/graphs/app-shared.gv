@@ -31,10 +31,13 @@ digraph G {
   ":feature:lmu-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-vehicle-damage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-console-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-feedback-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-license-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-overlay-background-opacity-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-overlay-text-size-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-readout-start-sound-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-server-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-theme-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -55,6 +58,7 @@ digraph G {
   ":app:shared" -> ":feature:gt7-ps5-narrator"
   ":app:shared" -> ":feature:ace-windows-narrator"
   ":app:shared" -> ":feature:debug-state-detail"
+  ":app:shared" -> ":feature:narrator-overlay"
   ":app:shared" -> ":feature:other-license-detail"
   ":app:shared" -> ":feature:other-list"
   ":app:shared" -> ":feature:other-feedback-detail"
@@ -62,6 +66,8 @@ digraph G {
   ":app:shared" -> ":feature:other-console-ip-detail"
   ":app:shared" -> ":feature:other-readout-start-sound-detail"
   ":app:shared" -> ":feature:other-theme-detail"
+  ":app:shared" -> ":feature:other-overlay-text-size-detail"
+  ":app:shared" -> ":feature:other-overlay-background-opacity-detail"
   ":app:shared" -> ":feature:other-volume-detail"
   ":app:shared" -> ":feature:telemetry-log-list"
   ":app:shared" -> ":feature:telemetry-log-detail"

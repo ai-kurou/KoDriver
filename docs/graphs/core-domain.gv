@@ -35,10 +35,13 @@ digraph G {
   ":feature:lmu-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-vehicle-damage-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:main" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:narrator-overlay" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-console-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-feedback-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-license-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-overlay-background-opacity-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-overlay-text-size-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-readout-start-sound-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-server-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-theme-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -82,10 +85,13 @@ digraph G {
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:main" -> ":core:domain"
+  ":feature:narrator-overlay" -> ":core:domain"
   ":feature:other-console-ip-detail" -> ":core:domain"
   ":feature:other-feedback-detail" -> ":core:domain"
   ":feature:other-license-detail" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
+  ":feature:other-overlay-background-opacity-detail" -> ":core:domain"
+  ":feature:other-overlay-text-size-detail" -> ":core:domain"
   ":feature:other-readout-start-sound-detail" -> ":core:domain"
   ":feature:other-server-ip-detail" -> ":core:domain"
   ":feature:other-theme-detail" -> ":core:domain"

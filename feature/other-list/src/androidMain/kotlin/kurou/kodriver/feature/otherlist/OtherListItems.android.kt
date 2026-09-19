@@ -9,13 +9,20 @@ actual fun buildOtherListItems(): List<OtherListItemType> {
     val items =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             OtherListItemType.entries.filter {
-                it != OtherListItemType.DebugState && it != OtherListItemType.Startup
+                it != OtherListItemType.DebugState &&
+                    it != OtherListItemType.Startup &&
+                    it != OtherListItemType.OverlayVisible &&
+                    it != OtherListItemType.OverlayTextSize &&
+                    it != OtherListItemType.OverlayBackgroundOpacity
             }
         } else {
             OtherListItemType.entries.filter {
                 it != OtherListItemType.DynamicColor &&
                     it != OtherListItemType.DebugState &&
-                    it != OtherListItemType.Startup
+                    it != OtherListItemType.Startup &&
+                    it != OtherListItemType.OverlayVisible &&
+                    it != OtherListItemType.OverlayTextSize &&
+                    it != OtherListItemType.OverlayBackgroundOpacity
             }
         }
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
