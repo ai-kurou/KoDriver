@@ -307,7 +307,7 @@ internal val previewTelemetryLogListUiState =
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                     narratedText = "燃料は残り約3周",
-                    narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = """{"remainingFuelLaps":3.6,"fuelPercent":18.2}""",
                 ),
             ),
