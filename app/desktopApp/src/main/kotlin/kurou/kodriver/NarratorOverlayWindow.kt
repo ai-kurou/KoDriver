@@ -4,6 +4,8 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -14,15 +16,40 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.WindowDecoration
 import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.presentation.NarratorOverlayScreen
+import kurou.kodriver.presentation.NarratorOverlayWindowBounds
+import kurou.kodriver.presentation.rememberNarratorOverlayBounds
+import kurou.kodriver.presentation.rememberNarratorOverlayBoundsSaver
 import kurou.kodriver.presentation.rememberNarratorOverlayVisible
 import java.awt.Dimension
 import java.awt.MouseInfo
 import java.awt.Point
 import java.awt.Window
+import kotlin.math.roundToInt
 
-private val NARRATOR_OVERLAY_INITIAL_SIZE = DpSize(480.dp, 120.dp)
+/**
+ * 位置・サイズの変更を保存するまでの待ち時間。ドラッグ・リサイズ中は座標が連続で変化するため、
+ * 操作が落ち着いてから一度だけ DataStore へ書き込む。
+ */
+private const val BOUNDS_SAVE_DEBOUNCE_MILLIS = 500L
+
+/**
+ * [WindowState] から取り出した、オーバーレイウィンドウの現在の位置とサイズ（AWT のウィンドウ座標系）。
+ */
+private data class NarratorOverlayWindowGeometry(
+    val x: Int,
+    val y: Int,
+    val width: Int,
+    val height: Int,
+)
+
 private val NARRATOR_OVERLAY_MIN_SIZE = DpSize(200.dp, 80.dp)
 private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
 
@@ -44,7 +71,11 @@ private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
  *   `ComposeWindow` 生成直後・displayable になる前に一度だけ呼ばれることが保証されているため、
  *   最小/最大サイズの設定とあわせてここで行う。
  * - 表示ON/OFFはその他タブの「オーバーレイ設定」で切り替える（[NarratorOverlayWindowHost] を参照）。
- * - 位置・サイズの永続化、常時最前面の詳細な制御（フォーカス連動等）は別PRで対応する。
+ * - 位置・サイズは [initialBounds] で復元し、変更を [onBoundsChange] で通知する（永続化は
+ *   [NarratorOverlayWindowHost] が行う）。`window.location` を直接書き換えるドラッグ移動も、
+ *   [SwingWindow] が AWT の `componentMoved` / `componentResized` を [WindowState] へ反映するため、
+ *   [WindowState] を監視するだけで移動・リサイズの両方を拾える。
+ * - 常時最前面の詳細な制御（フォーカス連動等）は別PRで対応する。
  * - このウィンドウ自体は最前面には出ないため、LMU 側をボーダーレスウィンドウモードで起動する前提となる
  *   （排他的フルスクリーンでは他の常駐オーバーレイツールと同様に表示されない）。
  * - ゲーム画面をなるべく隠さないよう `transparent = true` でウィンドウ背景を透過させ、コンテンツ側
@@ -53,14 +84,39 @@ private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
  *   `update` ブロックは値に変化がない限り再設定を行わないため、固定値 `true` を渡す限りは
  *   ウィンドウがまだ displayable になる前の初回 `update` 呼び出し時にのみ設定される。
  */
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, FlowPreview::class)
 @Composable
-fun ApplicationScope.NarratorOverlayWindow(modifier: Modifier = Modifier) {
+fun ApplicationScope.NarratorOverlayWindow(
+    initialBounds: NarratorOverlayWindowBounds,
+    onBoundsChange: (x: Int, y: Int, width: Int, height: Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val windowState =
         rememberWindowState(
-            size = NARRATOR_OVERLAY_INITIAL_SIZE,
-            position = WindowPosition.Aligned(Alignment.TopCenter),
+            size = DpSize(initialBounds.width.dp, initialBounds.height.dp),
+            position =
+                initialBounds
+                    .restorablePosition(currentScreenBounds())
+                    ?.let { WindowPosition.Absolute(it.x.dp, it.y.dp) }
+                    // 位置が未保存、または保存時とモニタ構成が変わって画面外になる場合は既定位置に出す。
+                    ?: WindowPosition.Aligned(Alignment.TopCenter),
         )
+    LaunchedEffect(windowState, onBoundsChange) {
+        snapshotFlow { windowState.position to windowState.size }
+            .mapNotNull { (position, size) -> (position as? WindowPosition.Absolute)?.let { it to size } }
+            .map { (position, size) ->
+                NarratorOverlayWindowGeometry(
+                    x = position.x.value.roundToInt(),
+                    y = position.y.value.roundToInt(),
+                    width = size.width.value.roundToInt(),
+                    height = size.height.value.roundToInt(),
+                )
+            }.distinctUntilChanged()
+            .debounce(BOUNDS_SAVE_DEBOUNCE_MILLIS)
+            .collect { geometry ->
+                onBoundsChange(geometry.x, geometry.y, geometry.width, geometry.height)
+            }
+    }
     SwingWindow(
         onCloseRequest = {},
         state = windowState,
@@ -110,15 +166,23 @@ fun ApplicationScope.NarratorOverlayWindow(modifier: Modifier = Modifier) {
 
 /**
  * オーバーレイ用ウィンドウを、ユーザー設定（その他タブの「オーバーレイ設定」→「オーバーレイを表示」）に
- * 応じて開閉する。設定をOFFにするとウィンドウ自体を閉じるため、ゲーム画面の操作を妨げなくなる。
+ * 応じて開閉し、位置・サイズの保存値を復元・永続化する。設定をOFFにするとウィンドウ自体を閉じるため、
+ * ゲーム画面の操作を妨げなくなる。
  *
- * [rememberNarratorOverlayVisible] は設定の読み込みが完了するまで `null` を返す。読み込み前に
- * ウィンドウを生成すると、設定がOFFのユーザーで起動直後に一瞬ウィンドウが開いて閉じるため、
- * `true` のときだけ生成する。
+ * [rememberNarratorOverlayVisible] と [rememberNarratorOverlayBounds] は、設定の読み込みが完了するまで
+ * `null` を返す。読み込み前にウィンドウを生成すると、設定がOFFのユーザーで起動直後に一瞬ウィンドウが
+ * 開いて閉じたり、既定位置で開いてから保存位置へ飛んだりするため、どちらも揃ってから生成する。
  */
 @Composable
 fun ApplicationScope.NarratorOverlayWindowHost(modifier: Modifier = Modifier) {
-    if (rememberNarratorOverlayVisible() == true) {
-        NarratorOverlayWindow(modifier = modifier)
+    val visible = rememberNarratorOverlayVisible()
+    val bounds = rememberNarratorOverlayBounds()
+    val saveBounds = rememberNarratorOverlayBoundsSaver()
+    if (visible == true && bounds != null) {
+        NarratorOverlayWindow(
+            initialBounds = bounds,
+            onBoundsChange = saveBounds,
+            modifier = modifier,
+        )
     }
 }

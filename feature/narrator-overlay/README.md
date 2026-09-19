@@ -10,7 +10,11 @@ TelemetryLog に記録された最新の読み上げ内容をライブ購読し�
 表示ON/OFFはその他タブの「オーバーレイ設定」→「オーバーレイを表示」で切り替える。設定は
 `OverlayVisiblePreferencesRepository`（`:core:data`）に永続化し、`rememberNarratorOverlayVisible`
 が購読して `NarratorOverlayWindowHost`（`app:desktopApp`）がウィンドウ自体の開閉に使う。
-位置・サイズの永続化は未実装（別PRで対応予定）。
+ウィンドウの位置・サイズも `OverlayWindowBoundsPreferencesRepository`（`:core:data`）へ永続化し、
+次回起動時に復元する。ドラッグ・リサイズの直後ではなく 500ms のデバウンスを挟んで保存し、保存時と
+モニタ構成が変わって画面外になる場合は既定位置（画面上部中央）にフォールバックする
+（`rememberNarratorOverlayBounds` / `rememberNarratorOverlayBoundsSaver` と、`app:desktopApp` の
+`NarratorOverlayWindowHost` / `OverlayWindowBoundsScreenCheck.kt` を参照）。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
