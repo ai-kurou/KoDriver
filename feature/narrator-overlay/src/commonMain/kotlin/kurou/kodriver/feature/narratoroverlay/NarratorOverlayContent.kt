@@ -74,9 +74,9 @@ internal fun NarratorOverlayContent(
 @Composable
 private fun narratorOverlayTextStyle(overlayTextSize: OverlayTextSize): TextStyle =
     when (overlayTextSize) {
-        OverlayTextSize.SMALL -> MaterialTheme.typography.titleMedium
-        OverlayTextSize.MEDIUM -> MaterialTheme.typography.headlineSmall
-        OverlayTextSize.LARGE -> MaterialTheme.typography.headlineLarge
+        OverlayTextSize.SMALL -> MaterialTheme.typography.titleSmall
+        OverlayTextSize.MEDIUM -> MaterialTheme.typography.titleLarge
+        OverlayTextSize.LARGE -> MaterialTheme.typography.headlineMedium
     }
 
 @Preview(showBackground = true)
