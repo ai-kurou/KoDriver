@@ -50,11 +50,13 @@ internal class AceWindowsNarratorEventProcessor(
         val previous = previousBestLapTime
         if (isOnTrack) {
             events.forEach { event ->
-                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+                if (wasQueued != null) {
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
                         narratedText = event.narratedText,
+                        wasQueued = wasQueued,
                         telemetryJson =
                             buildMyBestLapTelemetryLogJson(
                                 state = logContext.state,
@@ -83,11 +85,13 @@ internal class AceWindowsNarratorEventProcessor(
         val previous = previousFlag
         if (isOnTrack) {
             events.forEach { event ->
-                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+                if (wasQueued != null) {
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
                         narratedText = event.narratedText,
+                        wasQueued = wasQueued,
                         telemetryJson =
                             buildFlagTelemetryLogJson(
                                 state = logContext.state,
@@ -116,11 +120,13 @@ internal class AceWindowsNarratorEventProcessor(
         val previous = previousFuel
         if (isOnTrack) {
             events.forEach { event ->
-                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+                if (wasQueued != null) {
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
                         narratedText = event.narratedText,
+                        wasQueued = wasQueued,
                         telemetryJson =
                             buildTelemetryLogJson(
                                 state = logContext.state,
@@ -149,11 +155,13 @@ internal class AceWindowsNarratorEventProcessor(
         val previous = previousTyreCarcassTemperature
         if (isOnTrack) {
             events.forEach { event ->
-                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+                if (wasQueued != null) {
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
                         narratedText = event.narratedText,
+                        wasQueued = wasQueued,
                         telemetryJson =
                             buildTyreTemperatureTelemetryLogJson(
                                 state = logContext.state,
@@ -182,11 +190,13 @@ internal class AceWindowsNarratorEventProcessor(
         val previous = previousVehicleApproach
         if (isOnTrack) {
             events.forEach { event ->
-                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
+                if (wasQueued != null) {
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         readoutItemKey = event.readoutItemKey,
                         narratedText = event.narratedText,
+                        wasQueued = wasQueued,
                         telemetryJson =
                             buildVehicleApproachTelemetryLogJson(
                                 state = logContext.state,
@@ -203,29 +213,42 @@ internal class AceWindowsNarratorEventProcessor(
         previousVehicleApproach = vehicleApproach
     }
 
+    /**
+     * 読み上げ（またはキュー追加）を実行した場合、その際に使われた queue 値（true=キュー再生 / false=割り込み再生）を返す。
+     * 読み上げを行わなかった場合は null を返す。この値はテレメトリログの wasQueued として保存される。
+     */
     private fun speakWithPriority(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    ): Boolean =
-        speakWithPriority(
-            eventKey = event.readoutItemKey,
-            currentKey = { ttsEngine.currentReadoutItemKey },
-            readoutOrder = readoutOrder,
-            queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-            speak = { queue -> ttsEngine.speak(event, queue) },
-            stop = { ttsEngine.stop() },
-        )
+    ): Boolean? {
+        var wasQueued: Boolean? = null
+        val spoken =
+            speakWithPriority(
+                eventKey = event.readoutItemKey,
+                currentKey = { ttsEngine.currentReadoutItemKey },
+                readoutOrder = readoutOrder,
+                queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
+                speak = { queue ->
+                    wasQueued = queue
+                    ttsEngine.speak(event, queue)
+                },
+                stop = { ttsEngine.stop() },
+            )
+        return if (spoken) wasQueued else null
+    }
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
+        wasQueued: Boolean,
         telemetryJson: String,
     ) {
         try {
             saveTelemetryLog(
                 createdAt = createdAt,
+                wasQueued = wasQueued,
                 simulator = Simulator.AceWindows,
                 readoutItemKey = readoutItemKey,
                 narratedText = narratedText,

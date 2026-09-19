@@ -75,6 +75,7 @@ class OtherFeedbackDetailViewModelTest {
         simulator = Simulator.LmuWindows,
         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
         narratedText = "イエローフラッグ",
+        wasQueued = false,
         telemetryJson = telemetryJson,
     )
 

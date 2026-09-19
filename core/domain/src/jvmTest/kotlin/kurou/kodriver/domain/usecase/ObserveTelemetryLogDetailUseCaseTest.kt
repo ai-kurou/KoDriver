@@ -53,6 +53,7 @@ private fun createTelemetryLogRepository(
             simulator = Simulator.Gt7Ps5,
             readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
             narratedText = "燃料は残り約1周",
+            wasQueued = true,
             telemetryJson = """{"lapCount":1}""",
         ),
         TelemetryLog(
@@ -61,6 +62,7 @@ private fun createTelemetryLogRepository(
             simulator = Simulator.LmuWindows,
             readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
             narratedText = "イエローフラッグ",
+            wasQueued = true,
             telemetryJson = """{"currentLap":2}""",
         ),
     ).forEach { log ->
@@ -70,6 +72,7 @@ private fun createTelemetryLogRepository(
                 log.simulator,
                 log.readoutItemKey,
                 log.narratedText,
+                log.wasQueued,
                 log.telemetryJson,
             )
         } answers {
@@ -167,5 +170,6 @@ private fun telemetryLog(
     simulator = Simulator.LmuWindows,
     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
     narratedText = "イエローフラッグ",
+    wasQueued = true,
     telemetryJson = """{"id":$id}""",
 )

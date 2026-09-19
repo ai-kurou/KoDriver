@@ -28,6 +28,7 @@ class SaveTelemetryLogUseCaseTest {
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 narratedText = "燃料は残り約1周",
+                wasQueued = true,
                 telemetryJson = """{"lapCount":1}""",
             )
 
@@ -37,6 +38,7 @@ class SaveTelemetryLogUseCaseTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                     narratedText = "燃料は残り約1周",
+                    wasQueued = true,
                     telemetryJson = """{"lapCount":1}""",
                 )
             }
