@@ -84,6 +84,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
@@ -644,14 +645,16 @@ private fun ReadoutListPanePreview(
     @PreviewParameter(ReadoutListPanePreviewParameterProvider::class)
     uiState: ReadoutListUiState,
 ) {
-    ReadoutListPane(
-        uiState = uiState,
-        onMove = { _, _ -> },
-        onReadoutEnabledChanged = { _, _ -> },
-        onQueueEnabledChanged = { _, _ -> },
-        onStartSoundEnabledChanged = { _, _ -> },
-        onItemClick = { _ -> },
-    )
+    KoDriverTheme {
+        ReadoutListPane(
+            uiState = uiState,
+            onMove = { _, _ -> },
+            onReadoutEnabledChanged = { _, _ -> },
+            onQueueEnabledChanged = { _, _ -> },
+            onStartSoundEnabledChanged = { _, _ -> },
+            onItemClick = { _ -> },
+        )
+    }
 }
 
 private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider<ReadoutListUiState> {

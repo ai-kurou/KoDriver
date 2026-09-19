@@ -61,6 +61,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.util.MILLISECONDS_PER_DAY
@@ -463,13 +464,17 @@ private const val JST_OFFSET_MILLIS = 9 * MILLISECONDS_PER_HOUR
 @Preview(showBackground = true)
 @Composable
 private fun TelemetryLogListPanePreview() {
-    TelemetryLogListPane(
-        uiState = previewTelemetryLogListUiState,
-    )
+    KoDriverTheme {
+        TelemetryLogListPane(
+            uiState = previewTelemetryLogListUiState,
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun TelemetryLogListPaneEmptyPreview() {
-    TelemetryLogListPane()
+    KoDriverTheme {
+        TelemetryLogListPane()
+    }
 }

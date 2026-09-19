@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -74,21 +75,23 @@ private fun TelemetryLogDetailItem(
 @Preview(showBackground = true)
 @Composable
 private fun TelemetryLogDetailContentPreview() {
-    TelemetryLogDetailContent(
-        uiState =
-            TelemetryLogDetailUiState(
-                logId = 1L,
-                items =
-                    listOf(
-                        TelemetryLogDetailItemUiState(
-                            title = "選択したログ",
-                            telemetryJson = """{"speed":120,"gear":4}""",
+    KoDriverTheme {
+        TelemetryLogDetailContent(
+            uiState =
+                TelemetryLogDetailUiState(
+                    logId = 1L,
+                    items =
+                        listOf(
+                            TelemetryLogDetailItemUiState(
+                                title = "選択したログ",
+                                telemetryJson = """{"speed":120,"gear":4}""",
+                            ),
+                            TelemetryLogDetailItemUiState(
+                                title = "一つ前のログ",
+                                telemetryJson = """{"speed":118,"gear":4}""",
+                            ),
                         ),
-                        TelemetryLogDetailItemUiState(
-                            title = "一つ前のログ",
-                            telemetryJson = """{"speed":118,"gear":4}""",
-                        ),
-                    ),
-            ),
-    )
+                ),
+        )
+    }
 }

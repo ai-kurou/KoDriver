@@ -14,6 +14,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_description
@@ -81,9 +82,11 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun LmuWindowsReadoutMyBestLapDetailPanePreview() {
-    LmuWindowsReadoutMyBestLapDetailPaneContent(
-        uiState = LmuWindowsReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.FORMAL),
-    )
+    KoDriverTheme {
+        LmuWindowsReadoutMyBestLapDetailPaneContent(
+            uiState = LmuWindowsReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.FORMAL),
+        )
+    }
 }
 
 @Composable

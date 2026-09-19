@@ -7,6 +7,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_confirm_body
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_confirm_button
@@ -46,8 +47,10 @@ internal fun TelemetryLogDeleteConfirmDialog(
 @Preview(showBackground = true)
 @Composable
 private fun TelemetryLogDeleteConfirmDialogPreview() {
-    TelemetryLogDeleteConfirmDialog(
-        onConfirm = {},
-        onDismiss = {},
-    )
+    KoDriverTheme {
+        TelemetryLogDeleteConfirmDialog(
+            onConfirm = {},
+            onDismiss = {},
+        )
+    }
 }
