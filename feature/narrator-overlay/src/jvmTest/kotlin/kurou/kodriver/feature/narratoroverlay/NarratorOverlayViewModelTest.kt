@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -91,7 +92,7 @@ class NarratorOverlayViewModelTest {
                     simulator = Simulator.AceWindows,
                     readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
                     narratedText = "コーナー進入注意",
-                    wasQueued = false,
+                    narrationOutcome = NarrationOutcome.INTERRUPTED,
                     telemetryJson = "{}",
                 )
             val telemetryLogFlow = MutableStateFlow<TelemetryLog?>(null)

@@ -19,6 +19,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -426,6 +427,6 @@ private fun telemetryLog(
     simulator = Simulator.LmuWindows,
     readoutItemKey = readoutItemKey,
     narratedText = "イエローフラッグ",
-    wasQueued = false,
+    narrationOutcome = NarrationOutcome.INTERRUPTED,
     telemetryJson = telemetryJson,
 )

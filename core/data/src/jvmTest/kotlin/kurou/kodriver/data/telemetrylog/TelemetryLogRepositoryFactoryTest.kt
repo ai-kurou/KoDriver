@@ -4,6 +4,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -24,7 +25,7 @@ class TelemetryLogRepositoryFactoryTest {
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 narratedText = "自己ベストラップ更新",
-                wasQueued = true,
+                narrationOutcome = NarrationOutcome.QUEUED,
                 telemetryJson = """{"current":{}}""",
             )
 
@@ -36,7 +37,7 @@ class TelemetryLogRepositoryFactoryTest {
                         simulator = Simulator.Gt7Ps5,
                         readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                         narratedText = "自己ベストラップ更新",
-                        wasQueued = true,
+                        narrationOutcome = NarrationOutcome.QUEUED,
                         telemetryJson = """{"current":{}}""",
                     ),
                 ),
@@ -79,7 +80,7 @@ class TelemetryLogRepositoryFactoryTest {
                         simulator = Simulator.LmuWindows,
                         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                         narratedText = "",
-                        wasQueued = false,
+                        narrationOutcome = NarrationOutcome.INTERRUPTED,
                         telemetryJson = "{}",
                     ),
                 ),

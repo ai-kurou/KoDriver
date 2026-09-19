@@ -18,6 +18,7 @@ import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -47,7 +48,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -72,7 +73,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -93,7 +94,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -121,7 +122,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -129,11 +130,21 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `優先度の高い項目を再生中なら読み上げも保存もしない`() =
+    fun `優先度の高い項目を再生中なら読み上げずSKIPPEDとして保存する`() =
         runTest {
             val currentKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
             val otherKey = ReadoutItemKey.LmuWindows.Flag.Root
             every { ttsEngine.currentReadoutItemKey } returns currentKey
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    currentKey,
+                    "残り燃料警告",
+                    NarrationOutcome.SKIPPED,
+                    any(),
+                )
+            } just Runs
             val processor = createProcessor()
 
             processor.processRemainingFuel(
@@ -148,6 +159,16 @@ class AceWindowsNarratorEventProcessorTest {
 
             verify(exactly = 0) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    currentKey,
+                    "残り燃料警告",
+                    NarrationOutcome.SKIPPED,
+                    any(),
+                )
+            }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
@@ -164,7 +185,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    true,
+                    NarrationOutcome.QUEUED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -188,7 +209,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    true,
+                    NarrationOutcome.QUEUED,
                     telemetryJsons.single(),
                 )
             }
@@ -210,7 +231,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -235,7 +256,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -249,7 +270,14 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, "残り燃料警告", false, any())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    NarrationOutcome.INTERRUPTED,
+                    any(),
+                )
             } throws RuntimeException("db error")
 
             createProcessor().processRemainingFuel(
@@ -266,7 +294,16 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
             coVerify(
                 exactly = 1,
-            ) { telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, "残り燃料警告", false, any()) }
+            ) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    NarrationOutcome.INTERRUPTED,
+                    any(),
+                )
+            }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
@@ -283,7 +320,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -307,7 +344,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -327,7 +364,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -361,7 +398,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -381,7 +418,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "自己ベストラップ更新",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -406,7 +443,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "自己ベストラップ更新",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -427,7 +464,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "自己ベストラップ更新",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -462,7 +499,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "自己ベストラップ更新",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -482,7 +519,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "ブルーフラッグ",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -507,7 +544,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "ブルーフラッグ",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -528,7 +565,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "ブルーフラッグ",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -563,7 +600,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "ブルーフラッグ",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -583,7 +620,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "タイヤ過熱警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -611,7 +648,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "タイヤ過熱警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -632,7 +669,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "タイヤ過熱警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -673,7 +710,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "タイヤ過熱警告",
-                    false,
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }

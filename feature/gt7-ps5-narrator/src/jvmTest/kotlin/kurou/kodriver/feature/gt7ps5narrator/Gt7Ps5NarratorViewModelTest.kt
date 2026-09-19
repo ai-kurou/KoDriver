@@ -29,6 +29,7 @@ import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
@@ -616,7 +617,7 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     @Test
-    fun `優先度制御で読み上げなかったイベントは保存しない`() =
+    fun `優先度制御で読み上げなかったイベントはSKIPPEDとして保存する`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -628,11 +629,32 @@ class Gt7Ps5NarratorViewModelTest {
             stubReadoutDefaults(
                 orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
             )
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    any(),
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    "自己ベストラップ更新",
+                    NarrationOutcome.SKIPPED,
+                    any(),
+                )
+            } just Runs
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    any(),
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    "自己ベストラップ更新",
+                    NarrationOutcome.SKIPPED,
+                    any(),
+                )
+            }
             confirmVerified(telemetryLogRepository)
         }
 
