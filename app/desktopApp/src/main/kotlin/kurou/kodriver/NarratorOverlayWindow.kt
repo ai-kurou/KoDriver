@@ -76,8 +76,9 @@ private val NARRATOR_OVERLAY_MAX_SIZE = DpSize(1200.dp, 600.dp)
  *   [SwingWindow] が AWT の `componentMoved` / `componentResized` を [WindowState] へ反映するため、
  *   [WindowState] を監視するだけで移動・リサイズの両方を拾える。
  * - 常時最前面の詳細な制御（フォーカス連動等）は別PRで対応する。
- * - このウィンドウ自体は最前面には出ないため、LMU 側をボーダーレスウィンドウモードで起動する前提となる
- *   （排他的フルスクリーンでは他の常駐オーバーレイツールと同様に表示されない）。
+ * - `alwaysOnTop = true` により通常のウィンドウより手前には表示されるが、排他的フルスクリーンで
+ *   起動したゲームには他の常駐オーバーレイツールと同様に表示されないため、LMU 側をボーダーレス
+ *   ウィンドウモードで起動する前提となる。
  * - ゲーム画面をなるべく隠さないよう `transparent = true` でウィンドウ背景を透過させ、コンテンツ側
  *   （[NarratorOverlayScreen]）の半透明な背景色と組み合わせている。`isTransparent`（`transparent`
  *   パラメータの実体）はウィンドウが表示済みの状態で変更すると例外を送出するが、`SwingWindow` の
