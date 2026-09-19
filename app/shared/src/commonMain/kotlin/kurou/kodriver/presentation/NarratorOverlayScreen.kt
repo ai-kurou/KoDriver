@@ -10,7 +10,7 @@ import kurou.kodriver.feature.narratoroverlay.rememberNarratorOverlayVisible as 
 /**
  * NarratorOverlayScreen を提供する公開関数。
  *
- * ゲーム画面に重ねて表示する専用ウィンドウ（Windows版デスクトップアプリのみ）にホストする、
+ * ゲーム画面に重ねて表示する専用ウィンドウ（デスクトップアプリ、Windows / macOS / Linux 共通）にホストする、
  * 読み上げ内容オーバーレイの画面。
  */
 @Composable
