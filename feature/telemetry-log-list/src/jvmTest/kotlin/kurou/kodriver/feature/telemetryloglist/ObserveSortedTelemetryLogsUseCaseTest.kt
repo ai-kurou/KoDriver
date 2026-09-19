@@ -1,9 +1,8 @@
 package kurou.kodriver.feature.telemetryloglist
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -18,15 +17,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveSortedTelemetryLogsUseCaseTest {
-    @MockK
-    private lateinit var repository: TelemetryLogRepository
+    private val repository: TelemetryLogRepository = mockk()
 
     private val logs = MutableStateFlow(emptyList<TelemetryLog>())
     private lateinit var useCase: ObserveSortedTelemetryLogsUseCase
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         logs.value = emptyList()
         useCase = ObserveSortedTelemetryLogsUseCase(ObserveTelemetryLogsUseCase(repository))
     }

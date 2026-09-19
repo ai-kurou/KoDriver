@@ -1,25 +1,17 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.SOUND_VOLUME_MAX
 import kurou.kodriver.domain.model.SOUND_VOLUME_MIN
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
 class SaveSoundVolumeUseCaseTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var repository: SoundVolumePreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: SoundVolumePreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `0から100の値を保存できる`() =

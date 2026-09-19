@@ -1,10 +1,9 @@
 package kurou.kodriver.feature.debugstatedetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -108,65 +107,46 @@ import kotlin.test.assertTrue
 class DebugStateDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var flagRepository: LmuWindowsFlagRepository
+    private val flagRepository: LmuWindowsFlagRepository = mockk()
 
-    @MockK
-    private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
+    private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var virtualEnergyRepository: LmuWindowsVirtualEnergyRepository
+    private val virtualEnergyRepository: LmuWindowsVirtualEnergyRepository = mockk()
 
-    @MockK
-    private lateinit var lmuWindowsRepository: LmuWindowsRepository
+    private val lmuWindowsRepository: LmuWindowsRepository = mockk()
 
-    @MockK
-    private lateinit var gt7Ps5Repository: Gt7Ps5Repository
+    private val gt7Ps5Repository: Gt7Ps5Repository = mockk()
 
-    @MockK
-    private lateinit var aceWindowsFuelRepository: AceWindowsFuelRepository
+    private val aceWindowsFuelRepository: AceWindowsFuelRepository = mockk()
 
-    @MockK
-    private lateinit var aceWindowsFlagRepository: AceWindowsFlagRepository
+    private val aceWindowsFlagRepository: AceWindowsFlagRepository = mockk()
 
-    @MockK
-    private lateinit var vehicleApproachRepository: LmuWindowsVehicleApproachRepository
+    private val vehicleApproachRepository: LmuWindowsVehicleApproachRepository = mockk()
 
-    @MockK
-    private lateinit var tyreCarcassTemperatureRepository: LmuWindowsTyreCarcassTemperatureRepository
+    private val tyreCarcassTemperatureRepository: LmuWindowsTyreCarcassTemperatureRepository = mockk()
 
-    @MockK
-    private lateinit var vehicleClassRepository: LmuWindowsVehicleClassRepository
+    private val vehicleClassRepository: LmuWindowsVehicleClassRepository = mockk()
 
-    @MockK
-    private lateinit var aceWindowsStatusRepository: AceWindowsStatusRepository
+    private val aceWindowsStatusRepository: AceWindowsStatusRepository = mockk()
 
-    @MockK
-    private lateinit var aceWindowsTyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository
+    private val aceWindowsTyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository = mockk()
 
-    @MockK
-    private lateinit var aceWindowsVehicleApproachRepository: AceWindowsVehicleApproachRepository
+    private val aceWindowsVehicleApproachRepository: AceWindowsVehicleApproachRepository = mockk()
 
-    @MockK
-    private lateinit var aceWindowsBestLapTimeRepository: AceWindowsBestLapTimeRepository
+    private val aceWindowsBestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
 
-    @MockK
-    private lateinit var lmuWindowsPitStatusRepository: LmuWindowsPitStatusRepository
+    private val lmuWindowsPitStatusRepository: LmuWindowsPitStatusRepository = mockk()
 
-    @MockK
-    private lateinit var vehicleDamageRepository: LmuWindowsVehicleDamageRepository
+    private val vehicleDamageRepository: LmuWindowsVehicleDamageRepository = mockk()
 
-    @MockK
-    private lateinit var tyreDetachedRepository: LmuWindowsTyreDetachedRepository
+    private val tyreDetachedRepository: LmuWindowsTyreDetachedRepository = mockk()
 
     // saveCardOrder は戻り値 Unit の suspend 関数のため relaxUnitFun でスタブ不要にし、
     // coEvery を省略して coVerify のみで呼び出しを検証する
-    @MockK(relaxUnitFun = true)
-    private lateinit var cardOrderRepository: DebugStateCardOrderPreferencesRepository
+    private val cardOrderRepository: DebugStateCardOrderPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

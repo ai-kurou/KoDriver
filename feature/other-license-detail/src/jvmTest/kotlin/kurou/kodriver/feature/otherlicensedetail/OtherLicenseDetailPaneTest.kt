@@ -9,27 +9,19 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.entity.Scm
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 class OtherLicenseDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
 
-    @MockK
-    lateinit var uriHandler: UriHandler
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    val uriHandler: UriHandler = mockk()
 
     @Test
     fun `ライセンス一覧を表示して戻る操作を通知する`() {

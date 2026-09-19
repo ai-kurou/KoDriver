@@ -2,10 +2,9 @@
 
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -14,19 +13,12 @@ import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ObserveAceWindowsTyreCarcassTemperatureUseCaseTest {
-    @MockK
-    private lateinit var repo: AceWindowsTyreCarcassTemperatureRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repo: AceWindowsTyreCarcassTemperatureRepository = mockk()
 
     @Test
     fun `invoke はリポジトリの tyreCarcassTemperatureStream を返す`() =

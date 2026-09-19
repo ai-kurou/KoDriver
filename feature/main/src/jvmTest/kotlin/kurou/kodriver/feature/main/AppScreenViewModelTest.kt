@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.main
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,36 +63,26 @@ import kotlin.test.assertTrue
 class AppScreenViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var appUpdateRepository: AppUpdateRepository
+    private val appUpdateRepository: AppUpdateRepository = mockk()
 
-    @MockK
-    private lateinit var keepScreenOnRepository: KeepScreenOnEnabledRepository
+    private val keepScreenOnRepository: KeepScreenOnEnabledRepository = mockk()
 
-    @MockK
-    private lateinit var dynamicColorEnabledRepository: DynamicColorEnabledRepository
+    private val dynamicColorEnabledRepository: DynamicColorEnabledRepository = mockk()
 
-    @MockK
-    private lateinit var hapticFeedbackEnabledRepository: HapticFeedbackEnabledRepository
+    private val hapticFeedbackEnabledRepository: HapticFeedbackEnabledRepository = mockk()
 
-    @MockK
-    private lateinit var simulatorRepository: SimulatorPreferencesRepository
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var lmuWindowsRepository: LmuWindowsRepository
+    private val lmuWindowsRepository: LmuWindowsRepository = mockk()
 
-    @MockK
-    private lateinit var gt7Ps5Repository: Gt7Ps5Repository
+    private val gt7Ps5Repository: Gt7Ps5Repository = mockk()
 
-    @MockK
-    private lateinit var aceWindowsStatusRepository: AceWindowsStatusRepository
+    private val aceWindowsStatusRepository: AceWindowsStatusRepository = mockk()
 
-    @MockK
-    private lateinit var accessLocalNetworkPermissionRepository: AccessLocalNetworkPermissionRepository
+    private val accessLocalNetworkPermissionRepository: AccessLocalNetworkPermissionRepository = mockk()
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

@@ -1,9 +1,8 @@
 package kurou.kodriver.feature.telemetrylogdetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,14 +29,12 @@ import kotlin.test.assertEquals
 class TelemetryLogDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var repository: TelemetryLogRepository
+    private val repository: TelemetryLogRepository = mockk()
 
     private lateinit var viewModel: TelemetryLogDetailViewModel
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
         viewModel =
             TelemetryLogDetailViewModel(

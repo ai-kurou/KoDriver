@@ -1,23 +1,15 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveSelectedSimulatorUseCaseTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var repository: SimulatorPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: SimulatorPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `保存するとFlowに値が反映される`() =

@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.readoutlist
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,21 +30,16 @@ import kotlin.test.assertEquals
 class ReadoutListViewModelAceWindowsTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var simulatorRepository: SimulatorPreferencesRepository
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var readoutRepository: ReadoutPreferencesRepository
+    private val readoutRepository: ReadoutPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var queueRepository: QueuePreferencesRepository
+    private val queueRepository: QueuePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository
+    private val startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository = mockk()
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
