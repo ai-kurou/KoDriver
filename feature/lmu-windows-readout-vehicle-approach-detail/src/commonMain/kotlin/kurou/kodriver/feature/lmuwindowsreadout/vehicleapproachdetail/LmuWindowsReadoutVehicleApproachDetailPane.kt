@@ -31,6 +31,7 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
@@ -273,5 +274,7 @@ internal fun VehicleApproachHelpSheetContent(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 private fun LmuWindowsReadoutVehicleApproachDetailPanePreview() {
-    LmuWindowsReadoutVehicleApproachDetailPaneContent(uiState = LmuWindowsReadoutVehicleApproachDetailUiState())
+    KoDriverTheme {
+        LmuWindowsReadoutVehicleApproachDetailPaneContent(uiState = LmuWindowsReadoutVehicleApproachDetailUiState())
+    }
 }

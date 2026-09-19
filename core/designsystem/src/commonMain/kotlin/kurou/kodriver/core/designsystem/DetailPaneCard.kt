@@ -173,7 +173,7 @@ fun DetailPaneCardChips(
 @Preview(showBackground = true)
 @Composable
 private fun DetailPaneCardPreview() {
-    MaterialTheme {
+    KoDriverTheme {
         Column {
             DetailPaneCard(
                 title = "車両接近",

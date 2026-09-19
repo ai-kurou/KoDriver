@@ -14,6 +14,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_description
@@ -135,5 +136,7 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun LmuWindowsReadoutVehicleDamageDetailPanePreview() {
-    LmuWindowsReadoutVehicleDamageDetailPaneContent(uiState = LmuWindowsReadoutVehicleDamageDetailUiState())
+    KoDriverTheme {
+        LmuWindowsReadoutVehicleDamageDetailPaneContent(uiState = LmuWindowsReadoutVehicleDamageDetailUiState())
+    }
 }

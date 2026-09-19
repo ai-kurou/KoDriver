@@ -17,6 +17,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
@@ -113,5 +114,7 @@ internal fun Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun Gt7Ps5ReadoutTyreTemperatureDetailPanePreview() {
-    Gt7Ps5ReadoutTyreTemperatureDetailPaneContent()
+    KoDriverTheme {
+        Gt7Ps5ReadoutTyreTemperatureDetailPaneContent()
+    }
 }

@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.feature.otherthemedetail.generated.resources.Res
 import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_cancel
@@ -116,7 +117,9 @@ internal fun OtherThemeDetailDialogContent(
 @Preview(showBackground = true)
 @Composable
 private fun OtherThemeDetailDialogPreview() {
-    OtherThemeDetailDialogContent(
-        uiState = OtherThemeDetailUiState(),
-    )
+    KoDriverTheme {
+        OtherThemeDetailDialogContent(
+            uiState = OtherThemeDetailUiState(),
+        )
+    }
 }

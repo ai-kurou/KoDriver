@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
@@ -194,24 +195,26 @@ internal fun ReadoutContent(
 @Preview(showBackground = true)
 @Composable
 private fun ReadoutContentPreview() {
-    ReadoutContent(
-        uiState =
-            ReadoutListUiState(
-                selectedSimulator = Simulator.LmuWindows,
-                items =
-                    listOf(
-                        ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                        ReadoutItemKey.LmuWindows.Flag.Root,
-                        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                        ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ),
-            ),
-        onMove = { _, _ -> },
-        onReadoutEnabledChanged = { _, _ -> },
-        onQueueEnabledChanged = { _, _ -> },
-        onStartSoundEnabledChanged = { _, _ -> },
-        onItemSelected = {},
-        onClearSelectedItem = {},
-    )
+    KoDriverTheme {
+        ReadoutContent(
+            uiState =
+                ReadoutListUiState(
+                    selectedSimulator = Simulator.LmuWindows,
+                    items =
+                        listOf(
+                            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                            ReadoutItemKey.LmuWindows.Flag.Root,
+                            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                            ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                        ),
+                ),
+            onMove = { _, _ -> },
+            onReadoutEnabledChanged = { _, _ -> },
+            onQueueEnabledChanged = { _, _ -> },
+            onStartSoundEnabledChanged = { _, _ -> },
+            onItemSelected = {},
+            onClearSelectedItem = {},
+        )
+    }
 }

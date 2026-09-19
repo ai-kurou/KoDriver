@@ -14,6 +14,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
@@ -116,22 +117,24 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun LmuWindowsReadoutFlagDetailPanePreview() {
-    LmuWindowsReadoutFlagDetailPaneContent(
-        uiState =
-            LmuWindowsReadoutFlagDetailUiState(
-                enabledStates =
-                    mapOf(
-                        ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                        ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
-                    ),
-                redFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
-            ),
-        onFlagEnabledChanged = { _, _ -> },
-        onPreviewClicked = {},
-        onRedFlagEnabledChanged = {},
-        onRedFlagVoiceTypeChanged = {},
-        onRedFlagPreviewClicked = {},
-    )
+    KoDriverTheme {
+        LmuWindowsReadoutFlagDetailPaneContent(
+            uiState =
+                LmuWindowsReadoutFlagDetailUiState(
+                    enabledStates =
+                        mapOf(
+                            ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                            ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
+                            ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
+                            ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                        ),
+                    redFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
+                ),
+            onFlagEnabledChanged = { _, _ -> },
+            onPreviewClicked = {},
+            onRedFlagEnabledChanged = {},
+            onRedFlagVoiceTypeChanged = {},
+            onRedFlagPreviewClicked = {},
+        )
+    }
 }
