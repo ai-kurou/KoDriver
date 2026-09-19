@@ -107,6 +107,7 @@ class NarratorOverlayContentScreenshotTest {
             simulator = Simulator.AceWindows,
             readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
             narratedText = narratedText,
+            wasQueued = false,
             telemetryJson = "{}",
         )
 }

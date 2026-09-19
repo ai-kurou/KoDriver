@@ -14,6 +14,7 @@ internal data class TelemetryLogEntity(
     val simulatorId: String,
     val readoutItemKey: String,
     val narratedText: String,
+    val wasQueued: Boolean,
     val telemetryJson: String,
 )
 
@@ -26,6 +27,7 @@ internal fun TelemetryLogEntity.toDomain(): TelemetryLog? {
         simulator = simulator,
         readoutItemKey = readoutItemKey,
         narratedText = narratedText,
+        wasQueued = wasQueued,
         telemetryJson = telemetryJson,
     )
 }

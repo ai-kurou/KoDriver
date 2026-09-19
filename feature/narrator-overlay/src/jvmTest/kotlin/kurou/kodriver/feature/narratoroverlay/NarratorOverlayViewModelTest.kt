@@ -96,6 +96,7 @@ class NarratorOverlayViewModelTest {
                     simulator = Simulator.AceWindows,
                     readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
                     narratedText = "コーナー進入注意",
+                    wasQueued = false,
                     telemetryJson = "{}",
                 )
             val telemetryLogFlow = MutableStateFlow<TelemetryLog?>(null)

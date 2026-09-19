@@ -17,4 +17,6 @@
     <string name="telemetry_log_delete_confirm_button">削除する</string>
     <string name="telemetry_log_delete_success">ログを削除しました</string>
     <string name="telemetry_log_delete_failure">ログの削除に失敗しました</string>
+    <string name="telemetry_log_queue_on_description">キューオン</string>
+    <string name="telemetry_log_queue_off_description">キューオフ</string>
 </resources>

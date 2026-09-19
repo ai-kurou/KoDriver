@@ -24,6 +24,7 @@ class TelemetryLogRepositoryFactoryTest {
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 narratedText = "自己ベストラップ更新",
+                wasQueued = true,
                 telemetryJson = """{"current":{}}""",
             )
 
@@ -35,6 +36,7 @@ class TelemetryLogRepositoryFactoryTest {
                         simulator = Simulator.Gt7Ps5,
                         readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                         narratedText = "自己ベストラップ更新",
+                        wasQueued = true,
                         telemetryJson = """{"current":{}}""",
                     ),
                 ),
@@ -77,6 +79,7 @@ class TelemetryLogRepositoryFactoryTest {
                         simulator = Simulator.LmuWindows,
                         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                         narratedText = "",
+                        wasQueued = false,
                         telemetryJson = "{}",
                     ),
                 ),

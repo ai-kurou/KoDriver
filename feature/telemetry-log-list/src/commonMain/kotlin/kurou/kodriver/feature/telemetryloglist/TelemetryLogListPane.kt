@@ -23,10 +23,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -74,6 +76,8 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_feedback_menu_item
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_more_button
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_queue_off_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_queue_on_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import org.jetbrains.compose.resources.stringResource
 
@@ -382,44 +386,66 @@ private fun TelemetryLogListItem(
             }
         },
         trailingContent = {
-            Box {
-                IconButton(onClick = { menuExpanded = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = stringResource(Res.string.telemetry_log_more_button),
-                    )
-                }
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false },
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(Res.string.telemetry_log_feedback_menu_item)) },
-                        leadingIcon = { Icon(imageVector = Icons.Default.Feedback, contentDescription = null) },
-                        onClick = {
-                            menuExpanded = false
-                            onFeedbackClick()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+            ) {
+                Icon(
+                    imageVector =
+                        if (log.wasQueued) {
+                            Icons.AutoMirrored.Filled.PlaylistAdd
+                        } else {
+                            Icons.Filled.PlaylistRemove
                         },
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(Res.string.telemetry_log_delete_menu_item),
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error,
-                            )
-                        },
-                        onClick = {
-                            menuExpanded = false
-                            onDeleteClick()
-                        },
-                    )
+                    contentDescription =
+                        stringResource(
+                            if (log.wasQueued) {
+                                Res.string.telemetry_log_queue_on_description
+                            } else {
+                                Res.string.telemetry_log_queue_off_description
+                            },
+                        ),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Box {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = stringResource(Res.string.telemetry_log_more_button),
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.telemetry_log_feedback_menu_item)) },
+                            leadingIcon = { Icon(imageVector = Icons.Default.Feedback, contentDescription = null) },
+                            onClick = {
+                                menuExpanded = false
+                                onFeedbackClick()
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(Res.string.telemetry_log_delete_menu_item),
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onDeleteClick()
+                            },
+                        )
+                    }
                 }
             }
         },

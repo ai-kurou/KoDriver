@@ -46,6 +46,7 @@ internal class TelemetryLogRepositoryImpl(
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
+        wasQueued: Boolean,
         telemetryJson: String,
     ) {
         dao.insert(
@@ -54,6 +55,7 @@ internal class TelemetryLogRepositoryImpl(
                 simulatorId = simulator.id,
                 readoutItemKey = readoutItemKey.value,
                 narratedText = narratedText,
+                wasQueued = wasQueued,
                 telemetryJson = telemetryJson,
             ),
         )
