@@ -11,7 +11,6 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
@@ -19,6 +18,7 @@ import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -270,7 +270,14 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, "残り燃料警告", NarrationOutcome.INTERRUPTED, any())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    NarrationOutcome.INTERRUPTED,
+                    any(),
+                )
             } throws RuntimeException("db error")
 
             createProcessor().processRemainingFuel(
@@ -287,7 +294,16 @@ class AceWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
             coVerify(
                 exactly = 1,
-            ) { telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, "残り燃料警告", NarrationOutcome.INTERRUPTED, any()) }
+            ) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    NarrationOutcome.INTERRUPTED,
+                    any(),
+                )
+            }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 

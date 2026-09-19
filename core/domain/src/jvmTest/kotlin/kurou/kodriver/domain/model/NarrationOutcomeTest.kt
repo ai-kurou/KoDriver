@@ -19,6 +19,12 @@ class NarrationOutcomeTest {
 
     @Test
     fun `idは全て一意である`() {
-        assertEquals(NarrationOutcome.entries.size, NarrationOutcome.entries.map { it.id }.toSet().size)
+        assertEquals(
+            NarrationOutcome.entries.size,
+            NarrationOutcome.entries
+                .map { it.id }
+                .toSet()
+                .size,
+        )
     }
 }
