@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.generated.resources.Res
@@ -88,5 +89,7 @@ fun OtherOverlayBackgroundOpacityDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun OtherOverlayBackgroundOpacityDetailPanePreview() {
-    OtherOverlayBackgroundOpacityDetailPaneContent(uiState = OtherOverlayBackgroundOpacityDetailUiState())
+    KoDriverTheme {
+        OtherOverlayBackgroundOpacityDetailPaneContent(uiState = OtherOverlayBackgroundOpacityDetailUiState())
+    }
 }

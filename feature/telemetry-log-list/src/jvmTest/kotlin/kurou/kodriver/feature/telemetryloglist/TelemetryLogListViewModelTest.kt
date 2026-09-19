@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.telemetryloglist
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,14 +33,12 @@ import kotlin.test.assertNull
 class TelemetryLogListViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @MockK
-    private lateinit var repository: TelemetryLogRepository
+    private val repository: TelemetryLogRepository = mockk()
 
     private val logsFlow = MutableStateFlow(emptyList<TelemetryLog>())
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
     }
 

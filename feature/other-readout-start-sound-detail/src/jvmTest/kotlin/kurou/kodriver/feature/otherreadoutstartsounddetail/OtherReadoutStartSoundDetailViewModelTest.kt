@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.otherreadoutstartsounddetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,17 +30,14 @@ import kotlin.test.assertEquals
 class OtherReadoutStartSoundDetailViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var repository: ReadoutStartSoundPreferencesRepository
+    private val repository: ReadoutStartSoundPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var ttsEngine: TextToSpeechEngine
+    private val ttsEngine: TextToSpeechEngine = mockk()
 
     private val typeFlow = MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
     }
 

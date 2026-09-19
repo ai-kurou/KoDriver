@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.Res
 import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_cancel
@@ -119,7 +120,9 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
 @Preview(showBackground = true)
 @Composable
 private fun OtherReadoutStartSoundDetailDialogPreview() {
-    OtherReadoutStartSoundDetailDialogContent(
-        uiState = OtherReadoutStartSoundDetailUiState(),
-    )
+    KoDriverTheme {
+        OtherReadoutStartSoundDetailDialogContent(
+            uiState = OtherReadoutStartSoundDetailUiState(),
+        )
+    }
 }

@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.Res
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_cancel
@@ -116,7 +117,9 @@ internal fun OtherOverlayTextSizeDetailDialogContent(
 @Preview(showBackground = true)
 @Composable
 private fun OtherOverlayTextSizeDetailDialogPreview() {
-    OtherOverlayTextSizeDetailDialogContent(
-        uiState = OtherOverlayTextSizeDetailUiState(),
-    )
+    KoDriverTheme {
+        OtherOverlayTextSizeDetailDialogContent(
+            uiState = OtherOverlayTextSizeDetailUiState(),
+        )
+    }
 }

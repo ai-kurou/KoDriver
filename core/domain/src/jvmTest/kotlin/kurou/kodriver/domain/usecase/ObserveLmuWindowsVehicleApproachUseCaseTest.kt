@@ -1,9 +1,8 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -11,7 +10,6 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -29,13 +27,7 @@ private fun fakeVehicleApproachData(
 )
 
 class ObserveLmuWindowsVehicleApproachUseCaseTest {
-    @MockK
-    private lateinit var repo: LmuWindowsVehicleApproachRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repo: LmuWindowsVehicleApproachRepository = mockk()
 
     @Test
     fun `invokeはリポジトリのvehicleApproachStreamを返す`() =

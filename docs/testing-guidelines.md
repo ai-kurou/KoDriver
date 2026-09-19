@@ -48,12 +48,12 @@ Windows 共有メモリ（JNA/kernel32）のように非 Windows 環境でイン
 - テスト名は日本語のバッククォート記法（`` `初期状態は Connecting を返す`() ``）
 - ViewModel の `uiState` から流れてきた内容を検証するときは `first()` を使う
 - テストケース数は最小限に絞ること。正常系・異常系・境界値の 3 軸を意識し、冗長なケースは省く
-- モックはテストクラスのプロパティとして `@MockK lateinit var` で宣言し、`setUp()`（`@BeforeTest` 関数）の `MockKAnnotations.init(this)` で初期化する。テストケース内やプロパティ初期化時に `mockk()` で生成しない。
+- モックはテストクラスのプロパティとして `private val xxx: Xxx = mockk()` で宣言する。`relaxUnitFun = true` / `relaxed = true` が必要な場合は `mockk(relaxUnitFun = true)` のように引数で指定する。`@MockK` アノテーション + `lateinit var` + `MockKAnnotations.init(this)` は使わない（DeepSource の `KT-W1047` 誤検出を避けるため。#1613）。テストケース内でモックを生成しない点は変わらない。
 - `every`/`coEvery` によるスタブ設定は **各テストケース内で行うこと**。`setUp()` でスタブまで済ませると、そのテストケースが何を前提にしているかがテスト本体だけを読んでも分からなくなり、他のテストケースの前提を変更した際に気づかず壊す原因になる。
 - `verify`/`coVerify` では `exactly = N` を必ず指定し、期待する呼び出し回数を明示する。
 - `verify`/`coVerify` を使用した各テストケースの最後で、検証対象のモックに対して `confirmVerified(...)` を呼び、検証していない呼び出しが残っていないことを確認する。
 - MockK API は import して短い名前で呼び出し、テストコード内に `io.mockk.` の完全修飾名を書かない。
-- 通常の `@MockK` / `@RelaxedMockK` は各テストの `MockKAnnotations.init(this)` で再初期化するため、`unmockkAll()` や `clearAllMocks()` を追加しない。
+- プロパティとして宣言した `mockk()` はテストクラスのインスタンスごとに新規生成される（JUnit/kotlin.test はテストメソッドごとに新しいインスタンスを作る）ため、`unmockkAll()` や `clearAllMocks()` を追加しない。
 - `mockkObject` / `mockkStatic` / `mockkConstructor` でグローバルな差し替えを行う場合に限り、`finally` または `@AfterTest` で対応する `unmockkObject` / `unmockkStatic` / `unmockkConstructor` を必ず呼ぶ。対象を限定せず全グローバルモックを解除する `unmockkAll()` は原則として使わない。
 
 ### mockk テストでの any() 使用

@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.otherfeedbackdetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
@@ -43,15 +42,12 @@ import kotlin.test.assertTrue
 class OtherFeedbackDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var repository: FeedbackSenderRepository
+    private val repository: FeedbackSenderRepository = mockk()
 
-    @MockK
-    private lateinit var telemetryLogRepository: TelemetryLogRepository
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

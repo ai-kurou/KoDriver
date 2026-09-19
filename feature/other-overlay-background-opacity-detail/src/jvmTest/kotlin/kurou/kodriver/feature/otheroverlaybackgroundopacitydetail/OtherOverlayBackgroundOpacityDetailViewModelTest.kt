@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.otheroverlaybackgroundopacitydetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,14 +29,12 @@ import kotlin.test.assertEquals
 class OtherOverlayBackgroundOpacityDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var repository: OverlayBackgroundOpacityPreferencesRepository
+    private val repository: OverlayBackgroundOpacityPreferencesRepository = mockk()
 
     private val opacityFlow = MutableStateFlow(50)
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

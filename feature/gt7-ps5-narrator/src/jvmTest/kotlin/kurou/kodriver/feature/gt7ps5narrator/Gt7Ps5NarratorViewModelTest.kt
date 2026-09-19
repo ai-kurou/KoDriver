@@ -2,14 +2,13 @@
 
 package kurou.kodriver.feature.gt7ps5narrator
 
-import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -61,42 +60,30 @@ import kotlin.test.assertEquals
 class Gt7Ps5NarratorViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var telemetryRepository: Gt7Ps5Repository
+    private val telemetryRepository: Gt7Ps5Repository = mockk()
 
-    @MockK
-    private lateinit var myBestLapPreferencesRepository: Gt7Ps5MyBestLapPreferencesRepository
+    private val myBestLapPreferencesRepository: Gt7Ps5MyBestLapPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var remainingFuelLapsPreferencesRepository: Gt7Ps5RemainingFuelLapsPreferencesRepository
+    private val remainingFuelLapsPreferencesRepository: Gt7Ps5RemainingFuelLapsPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var remainingFuelPreferencesRepository: Gt7Ps5RemainingFuelPreferencesRepository
+    private val remainingFuelPreferencesRepository: Gt7Ps5RemainingFuelPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var tyreTemperaturePreferencesRepository: Gt7Ps5TyreTemperaturePreferencesRepository
+    private val tyreTemperaturePreferencesRepository: Gt7Ps5TyreTemperaturePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
+    private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var readoutPreferencesRepository: ReadoutPreferencesRepository
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var telemetryLogRepository: TelemetryLogRepository
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
-    @MockK
-    private lateinit var queuePreferencesRepository: QueuePreferencesRepository
+    private val queuePreferencesRepository: QueuePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var ttsEngine: TextToSpeechEngine
+    private val ttsEngine: TextToSpeechEngine = mockk()
 
-    @MockK
-    private lateinit var priorityAwareTts: PriorityAwareTts
+    private val priorityAwareTts: PriorityAwareTts = mockk()
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

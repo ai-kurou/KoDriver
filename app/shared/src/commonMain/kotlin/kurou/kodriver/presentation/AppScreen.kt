@@ -809,5 +809,7 @@ private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.Ace
 @Preview(showBackground = true)
 @Composable
 private fun AppScreenContentPreview() {
-    AppScreenContent()
+    AppTheme {
+        AppScreenContent()
+    }
 }

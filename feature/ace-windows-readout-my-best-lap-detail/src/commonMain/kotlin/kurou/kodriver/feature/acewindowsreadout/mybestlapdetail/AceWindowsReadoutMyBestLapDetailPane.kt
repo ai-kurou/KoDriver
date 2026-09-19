@@ -14,6 +14,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.generated.resources.my_best_lap_description
@@ -81,9 +82,11 @@ internal fun AceWindowsReadoutMyBestLapDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun AceWindowsReadoutMyBestLapDetailPanePreview() {
-    AceWindowsReadoutMyBestLapDetailPaneContent(
-        uiState = AceWindowsReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.FORMAL),
-    )
+    KoDriverTheme {
+        AceWindowsReadoutMyBestLapDetailPaneContent(
+            uiState = AceWindowsReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.FORMAL),
+        )
+    }
 }
 
 @Composable

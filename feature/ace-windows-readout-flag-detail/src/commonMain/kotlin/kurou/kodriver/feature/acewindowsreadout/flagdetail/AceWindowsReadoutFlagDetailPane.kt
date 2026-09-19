@@ -14,6 +14,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_description
 import org.jetbrains.compose.resources.stringResource
@@ -74,10 +75,12 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun AceWindowsReadoutFlagDetailPanePreview() {
-    AceWindowsReadoutFlagDetailPaneContent(
-        uiState =
-            AceWindowsReadoutFlagDetailUiState(
-                enabledStates = FlagReadoutItem.entries.associate { it.key to true },
-            ),
-    )
+    KoDriverTheme {
+        AceWindowsReadoutFlagDetailPaneContent(
+            uiState =
+                AceWindowsReadoutFlagDetailUiState(
+                    enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+                ),
+        )
+    }
 }

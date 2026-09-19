@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.otherlist
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,29 +49,21 @@ import kotlin.test.assertTrue
 class OtherListViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var appUpdateRepository: AppUpdateRepository
+    private val appUpdateRepository: AppUpdateRepository = mockk()
 
-    @MockK
-    private lateinit var overlayVisibleRepository: OverlayVisiblePreferencesRepository
+    private val overlayVisibleRepository: OverlayVisiblePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var keepScreenOnRepository: KeepScreenOnEnabledRepository
+    private val keepScreenOnRepository: KeepScreenOnEnabledRepository = mockk()
 
-    @MockK
-    private lateinit var dynamicColorRepository: DynamicColorEnabledRepository
+    private val dynamicColorRepository: DynamicColorEnabledRepository = mockk()
 
-    @MockK
-    private lateinit var hapticFeedbackEnabledRepository: HapticFeedbackEnabledRepository
+    private val hapticFeedbackEnabledRepository: HapticFeedbackEnabledRepository = mockk()
 
-    @MockK
-    private lateinit var hapticFeedbackAvailabilityRepository: HapticFeedbackAvailabilityRepository
+    private val hapticFeedbackAvailabilityRepository: HapticFeedbackAvailabilityRepository = mockk()
 
-    @MockK
-    private lateinit var startupRegistrationRepository: StartupEnabledRepository
+    private val startupRegistrationRepository: StartupEnabledRepository = mockk()
 
-    @MockK
-    private lateinit var accessLocalNetworkPermissionRepository: AccessLocalNetworkPermissionRepository
+    private val accessLocalNetworkPermissionRepository: AccessLocalNetworkPermissionRepository = mockk()
 
     private val overlayVisibleFlow = MutableStateFlow(true)
     private val keepScreenOnFlow = MutableStateFlow(true)
@@ -81,7 +72,6 @@ class OtherListViewModelTest {
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
     }
 

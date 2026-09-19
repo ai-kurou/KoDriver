@@ -1,25 +1,17 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CheckGt7Ps5ConnectionUseCaseTest {
-    @MockK
-    private lateinit var repository: Gt7Ps5Repository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: Gt7Ps5Repository = mockk()
 
     @Test
     fun `Repositoryが接続済みならtrueを返す`() =

@@ -2,24 +2,16 @@
 
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleDamageEnabledStateUseCaseTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var repository: LmuWindowsVehicleDamagePreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: LmuWindowsVehicleDamagePreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `保存するとFlowに値が反映され・上書きで更新される`() =

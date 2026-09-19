@@ -1,9 +1,8 @@
 package kurou.kodriver.feature.narratoroverlay
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,21 +33,17 @@ import kotlin.test.assertNull
 class NarratorOverlayViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var telemetryLogRepository: TelemetryLogRepository
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
-    @MockK
-    private lateinit var overlayTextSizeRepository: OverlayTextSizePreferencesRepository
+    private val overlayTextSizeRepository: OverlayTextSizePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var overlayBackgroundOpacityRepository: OverlayBackgroundOpacityPreferencesRepository
+    private val overlayBackgroundOpacityRepository: OverlayBackgroundOpacityPreferencesRepository = mockk()
 
     private val overlayTextSizeFlow = MutableStateFlow(OverlayTextSize.MEDIUM)
     private val overlayBackgroundOpacityFlow = MutableStateFlow(50)
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
         every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
         every {

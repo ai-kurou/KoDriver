@@ -277,9 +277,11 @@ internal fun OtherContent(
 @Preview(showBackground = true)
 @Composable
 private fun OtherContentPreview() {
-    OtherContent(
-        uiState = OtherListUiState(),
-        onItemSelected = {},
-        onClearSelectedItem = {},
-    )
+    AppTheme {
+        OtherContent(
+            uiState = OtherListUiState(),
+            onItemSelected = {},
+            onClearSelectedItem = {},
+        )
+    }
 }

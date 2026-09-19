@@ -3,24 +3,16 @@
 package kurou.kodriver.core.devicevolumedata.repository
 
 import android.media.AudioManager
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AndroidDeviceVolumeRepositoryTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var audioManager: AudioManager
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val audioManager: AudioManager = mockk(relaxUnitFun = true)
 
     @Test
     fun `getVolumeは現在値と最大値の比率を0から100のパーセンテージへ変換する`() =

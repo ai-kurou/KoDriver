@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -392,25 +393,29 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
 @Preview(showBackground = true)
 @Composable
 private fun OtherFeedbackDetailPanePreview() {
-    OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState())
+    KoDriverTheme {
+        OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState())
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherFeedbackDetailPaneAttachedTelemetryLogPreview() {
-    OtherFeedbackDetailPaneContent(
-        uiState =
-            OtherFeedbackDetailUiState(
-                attachedTelemetryLog =
-                    TelemetryLog(
-                        id = 1L,
-                        createdAt = 0L,
-                        simulator = Simulator.LmuWindows,
-                        readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
-                        narratedText = "イエローフラッグ",
-                        wasQueued = false,
-                        telemetryJson = "",
-                    ),
-            ),
-    )
+    KoDriverTheme {
+        OtherFeedbackDetailPaneContent(
+            uiState =
+                OtherFeedbackDetailUiState(
+                    attachedTelemetryLog =
+                        TelemetryLog(
+                            id = 1L,
+                            createdAt = 0L,
+                            simulator = Simulator.LmuWindows,
+                            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                            narratedText = "イエローフラッグ",
+                            wasQueued = false,
+                            telemetryJson = "",
+                        ),
+                ),
+        )
+    }
 }

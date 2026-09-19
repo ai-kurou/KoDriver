@@ -1,25 +1,17 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
 class SaveGt7Ps5UdpPortUseCaseTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var repository: Gt7Ps5UdpPortPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: Gt7Ps5UdpPortPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `33740を保存できる`() =

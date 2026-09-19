@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.acewindowsnarrator
 
-import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -79,57 +78,40 @@ import kotlin.test.assertEquals
 class AceWindowsNarratorViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var bestLapTimeRepository: AceWindowsBestLapTimeRepository
+    private val bestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
 
-    @MockK
-    private lateinit var myBestLapPreferencesRepository: AceWindowsMyBestLapPreferencesRepository
+    private val myBestLapPreferencesRepository: AceWindowsMyBestLapPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var fuelRepository: AceWindowsFuelRepository
+    private val fuelRepository: AceWindowsFuelRepository = mockk()
 
-    @MockK
-    private lateinit var remainingFuelPreferencesRepository: AceWindowsRemainingFuelPreferencesRepository
+    private val remainingFuelPreferencesRepository: AceWindowsRemainingFuelPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
+    private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var readoutPreferencesRepository: ReadoutPreferencesRepository
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var telemetryLogRepository: TelemetryLogRepository
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
-    @MockK
-    private lateinit var queuePreferencesRepository: QueuePreferencesRepository
+    private val queuePreferencesRepository: QueuePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var flagRepository: AceWindowsFlagRepository
+    private val flagRepository: AceWindowsFlagRepository = mockk()
 
-    @MockK
-    private lateinit var flagPreferencesRepository: AceWindowsFlagPreferencesRepository
+    private val flagPreferencesRepository: AceWindowsFlagPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var statusRepository: AceWindowsStatusRepository
+    private val statusRepository: AceWindowsStatusRepository = mockk()
 
-    @MockK
-    private lateinit var tyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository
+    private val tyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository = mockk()
 
-    @MockK
-    private lateinit var tyreTemperaturePreferencesRepository: AceWindowsTyreTemperaturePreferencesRepository
+    private val tyreTemperaturePreferencesRepository: AceWindowsTyreTemperaturePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var vehicleApproachRepository: AceWindowsVehicleApproachRepository
+    private val vehicleApproachRepository: AceWindowsVehicleApproachRepository = mockk()
 
-    @MockK
-    private lateinit var vehicleApproachPreferencesRepository: AceWindowsVehicleApproachPreferencesRepository
+    private val vehicleApproachPreferencesRepository: AceWindowsVehicleApproachPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var ttsEngine: TextToSpeechEngine
+    private val ttsEngine: TextToSpeechEngine = mockk()
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

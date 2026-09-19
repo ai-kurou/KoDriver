@@ -219,5 +219,7 @@ private class ConnectionBannerContentPreviewParameterProvider : PreviewParameter
 private fun ConnectionBannerContentPreview(
     @PreviewParameter(ConnectionBannerContentPreviewParameterProvider::class) uiState: ConnectionBannerUiState,
 ) {
-    ConnectionBannerContent(uiState = uiState, onClick = {})
+    AppTheme {
+        ConnectionBannerContent(uiState = uiState, onClick = {})
+    }
 }

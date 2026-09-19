@@ -1,26 +1,18 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class ObserveDynamicColorEnabledUseCaseTest {
-    @MockK
-    private lateinit var repository: DynamicColorEnabledRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: DynamicColorEnabledRepository = mockk()
 
     @Test
     fun `Repositoryの値を返す`() =

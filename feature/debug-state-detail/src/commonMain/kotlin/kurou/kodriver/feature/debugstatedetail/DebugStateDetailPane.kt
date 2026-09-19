@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_best_lap_title
@@ -234,9 +235,11 @@ private fun DebugStateCard(
 @Preview(showBackground = true)
 @Composable
 private fun DebugStateDetailPanePreview() {
-    DebugStateDetailPaneContent(
-        uiState = DebugStateDetailUiState(),
-        canNavigateBack = true,
-        onBack = {},
-    )
+    KoDriverTheme {
+        DebugStateDetailPaneContent(
+            uiState = DebugStateDetailUiState(),
+            canNavigateBack = true,
+            onBack = {},
+        )
+    }
 }

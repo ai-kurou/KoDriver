@@ -2,11 +2,9 @@
 
 package kurou.kodriver.feature.otherserveripdetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,7 +17,6 @@ import javax.jmdns.JmDNS
 import javax.jmdns.ServiceEvent
 import javax.jmdns.ServiceInfo
 import javax.jmdns.ServiceListener
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -32,25 +29,15 @@ class JmdnsWindowsServerDiscoveryTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @RelaxedMockK
-    private lateinit var jmdns: JmDNS
+    private val jmdns: JmDNS = mockk(relaxed = true)
 
-    @MockK
-    private lateinit var info: ServiceInfo
+    private val info: ServiceInfo = mockk()
 
-    @MockK
-    private lateinit var event: ServiceEvent
+    private val event: ServiceEvent = mockk()
 
-    @MockK
-    private lateinit var resolvedEvent: ServiceEvent
+    private val resolvedEvent: ServiceEvent = mockk()
 
-    @MockK
-    private lateinit var removedEvent: ServiceEvent
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val removedEvent: ServiceEvent = mockk()
 
     @Test
     fun `サービスが解決されるとホスト名とIPアドレスを含むリストを送信する`() =

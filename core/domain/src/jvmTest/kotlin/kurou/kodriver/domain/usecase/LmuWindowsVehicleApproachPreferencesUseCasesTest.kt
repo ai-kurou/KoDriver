@@ -1,11 +1,10 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -14,7 +13,6 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -42,13 +40,7 @@ private fun createLmuWindowsVehicleApproachPreferencesRepository(
 }
 
 class LmuWindowsVehicleApproachPreferencesUseCasesTest {
-    @MockK
-    private lateinit var repository: LmuWindowsVehicleApproachPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: LmuWindowsVehicleApproachPreferencesRepository = mockk()
 
     @Test
     fun `observeSkipFirstLap はリポジトリの設定を返す`() =

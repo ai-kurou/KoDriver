@@ -2,12 +2,11 @@
 
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -15,18 +14,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveReadoutStartSoundEnabledStatesUseCaseTest {
-    @MockK
-    private lateinit var repository: ReadoutStartSoundEnabledPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: ReadoutStartSoundEnabledPreferencesRepository = mockk()
 
     @Test
     fun `初期値はLMUとACEの車両接近のみfalseそれ以外はtrueのデフォルト値を返す`() =

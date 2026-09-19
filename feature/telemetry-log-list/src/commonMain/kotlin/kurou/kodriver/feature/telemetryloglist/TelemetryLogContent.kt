@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
@@ -270,9 +271,11 @@ private fun TelemetryLogResultSnackbarEffect(
 @Preview(showBackground = true)
 @Composable
 private fun TelemetryLogContentPreview() {
-    TelemetryLogContentScaffold(
-        uiState = previewTelemetryLogListUiState,
-    )
+    KoDriverTheme {
+        TelemetryLogContentScaffold(
+            uiState = previewTelemetryLogListUiState,
+        )
+    }
 }
 
 internal val previewTelemetryLogListUiState =
