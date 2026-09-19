@@ -8,7 +8,7 @@ import kotlinx.serialization.encoding.Encoder
 
 /**
  * LMU 共有メモリの `rF2VehicleScoring.mVehicleClass` が返す人間可読なクラス名（2026年8月時点の実測値:
- * "GT3", "GTE", "LMP3", "LMP2", "LMP2_ELMS", "Hyper"）を表すクラス別しきい値設定などに使う。
+ * "GT3", "GTE", "LMP3", "LMP2", "LMP2_ELMS", "Hyper"）を表すクラス別閾値設定などに使う。
  * WebSocket 経由の JSON では従来と同じ `{"name": "..."}` の形で送受信される（[LmuWindowsVehicleClassDataSerializer]）。
  */
 @Serializable(with = LmuWindowsVehicleClassDataSerializer::class)

@@ -15,7 +15,7 @@ val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKNOWN_DE
 const val LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY = "Unknown"
 
 /**
- * 車両クラスごとの高温警告しきい値のデフォルト値（摂氏）。Hypercar と GTE は 100℃、
+ * 車両クラスごとの高温警告閾値のデフォルト値（摂氏）。Hypercar と GTE は 100℃、
  * それ以外のクラスは 90℃ を既定値とする。
  */
 fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
@@ -52,7 +52,7 @@ fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
     }
 
 /**
- * 現在走行中の車両クラスに対応する高温警告しきい値を、クラス別しきい値マップから解決する。
+ * 現在走行中の車両クラスに対応する高温警告閾値を、クラス別閾値マップから解決する。
  * [LmuWindowsVehicleClassData.Unknown] は raw 値によらず代表キーの1件を共有するため、
  * マップの直接参照ではなく代表キーへ正規化してから参照する。
  */
@@ -77,7 +77,7 @@ val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT: LmuWindowsVehic
     LmuWindowsVehicleClassData.Hypercar
 
 /**
- * 高温警告しきい値をクラスごとに保存・列挙する際に対象とする全車両クラス
+ * 高温警告閾値をクラスごとに保存・列挙する際に対象とする全車両クラス
  * （Unknown は代表インスタンスを1件のみ含む）。
  */
 val lmuWindowsAllVehicleClasses: List<LmuWindowsVehicleClassData> =

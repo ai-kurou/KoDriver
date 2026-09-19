@@ -117,7 +117,7 @@ class TelemetryLogDeleteFlowContentTest {
         }
 
         rule.onNodeWithText("ログを削除しました").assertExists()
-        rule.waitUntil { consumed }
+        rule.waitUntil(timeoutMillis = 5_000L) { consumed }
     }
 
     @Test

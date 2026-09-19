@@ -38,7 +38,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値は全クラス分のデフォルトしきい値`() =
+    fun `初期値は全クラス分のデフォルト閾値`() =
         testScope.runTest {
             val expected =
                 lmuWindowsAllVehicleClasses.associateWith {
@@ -75,7 +75,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `Unknownクラスは raw 値によらず1つのしきい値を共有する`() =
+    fun `Unknownクラスは raw 値によらず1つの閾値を共有する`() =
         testScope.runTest {
             repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Unknown("Formula2026"), Celsius(105))
 
@@ -86,7 +86,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `GTEのデフォルト値定数を用いてデフォルトしきい値を検証できる`() =
+    fun `GTEのデフォルト値定数を用いてデフォルト閾値を検証できる`() =
         testScope.runTest {
             assertEquals(
                 LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT,

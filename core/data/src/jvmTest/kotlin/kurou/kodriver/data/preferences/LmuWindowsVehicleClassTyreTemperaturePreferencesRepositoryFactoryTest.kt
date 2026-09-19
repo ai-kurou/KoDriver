@@ -23,7 +23,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値はGTEのデフォルトしきい値`() =
+    fun `デフォルト値はGTEのデフォルト閾値`() =
         runTest {
             val repository = createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository(tempDir.absolutePath)
 

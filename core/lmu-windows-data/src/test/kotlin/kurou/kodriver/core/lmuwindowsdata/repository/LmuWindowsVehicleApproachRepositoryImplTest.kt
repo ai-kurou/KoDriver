@@ -198,11 +198,11 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
         }
 
     // -------------------------------------------------------------------------
-    // 並走判定: 前後方向のしきい値 (relY = -opp.posZ)
+    // 並走判定: 前後方向の閾値 (relY = -opp.posZ)
     // -------------------------------------------------------------------------
 
     @Test
-    fun `前後方向の距離がしきい値を超える車両は並走判定しない`() =
+    fun `前後方向の距離が閾値を超える車両は並走判定しない`() =
         runBlocking {
             // relY = -(-10.0) = 10.0 > 4.5*1.2=5.4 → スキップ
             val buffer =
@@ -227,7 +227,7 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
         }
 
     @Test
-    fun `前後方向の距離がしきい値ちょうどの車両は並走判定しない`() =
+    fun `前後方向の距離が閾値ちょうどの車両は並走判定しない`() =
         runBlocking {
             val vehicleLength = 4.5
             // relY = 5.4 >= threshold=5.4 → スキップ (>= で判定)

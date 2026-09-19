@@ -1,6 +1,6 @@
 package kurou.kodriver.core.designsystem
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,12 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
-
-private const val DISABLED_CONTENT_ALPHA = 0.38f
 
 /**
  * DetailPaneCard を提供する公開関数。
@@ -41,13 +39,19 @@ fun DetailPaneCard(
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
-    val contentAlpha by animateFloatAsState(targetValue = if (checked) 1f else DISABLED_CONTENT_ALPHA)
+    val titleColor by
+        animateColorAsState(
+            targetValue =
+                if (checked) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+        )
     DetailPaneCardLayout(
         title = title,
         modifier = modifier,
-        titleAlpha = contentAlpha,
-        dividerAlpha = contentAlpha,
-        bottomContentAlpha = contentAlpha,
+        titleColor = titleColor,
         headerContent = {
             Switch(
                 checked = checked,
@@ -74,9 +78,7 @@ fun DetailPaneCard(
     DetailPaneCardLayout(
         title = title,
         modifier = modifier,
-        titleAlpha = 1f,
-        dividerAlpha = 1f,
-        bottomContentAlpha = 1f,
+        titleColor = MaterialTheme.colorScheme.onSurface,
         headerContent = {},
         onHeaderClick = null,
         bottomContent = bottomContent,
@@ -86,9 +88,7 @@ fun DetailPaneCard(
 @Composable
 private fun DetailPaneCardLayout(
     title: String,
-    titleAlpha: Float,
-    dividerAlpha: Float,
-    bottomContentAlpha: Float,
+    titleColor: Color,
     headerContent: @Composable () -> Unit,
     onHeaderClick: (() -> Unit)?,
     bottomContent: @Composable () -> Unit,
@@ -110,23 +110,18 @@ private fun DetailPaneCardLayout(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .alpha(titleAlpha),
+                    color = titleColor,
+                    modifier = Modifier.weight(1f),
                 )
                 headerContent()
             }
-            HorizontalDivider(
-                modifier = Modifier.alpha(dividerAlpha),
-            )
+            HorizontalDivider()
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                 verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .alpha(bottomContentAlpha)
                         .padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.medium),
             ) {
                 bottomContent()

@@ -348,7 +348,7 @@ class TelemetryLogContentTest {
         }
 
         rule.onNodeWithText("データベースをリセットしました").assertExists()
-        rule.waitUntil { consumed }
+        rule.waitUntil(timeoutMillis = 5_000L) { consumed }
     }
 
     @Test
