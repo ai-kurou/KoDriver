@@ -80,7 +80,7 @@ class TelemetryLogRepositoryFactoryTest {
                         simulator = Simulator.LmuWindows,
                         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                         narratedText = "",
-                        narrationOutcome = NarrationOutcome.INTERRUPTED,
+                        narrationOutcome = NarrationOutcome.SPOKEN,
                         telemetryJson = "{}",
                     ),
                 ),

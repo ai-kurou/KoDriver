@@ -19,8 +19,11 @@
 | `NarrationOutcome` | アイコン | contentDescription | 前景色 |
 | --- | --- | --- | --- |
 | `QUEUED` | `Icons.AutoMirrored.Filled.PlaylistAdd` | キューに追加 | 通常 |
+| `SPOKEN` | `Icons.AutoMirrored.Filled.VolumeUp` | 通常再生 | 通常 |
 | `INTERRUPTED` | `Icons.Filled.PlaylistRemove` | 割り込み再生 | 通常 |
 | `SKIPPED` | `Icons.Filled.VolumeOff` | 読み上げなし | `SKIPPED_CONTENT_ALPHA`（0.38）で減光 |
+
+4つの値は `:core:narrator` の `speakWithPriority` が分岐する4経路と1対1に対応する。`SPOKEN` は「キュー再生が無効で、再生中の読み上げがなかったためそのまま読み上げた」ケースで、キュー再生を無効にしている場合はこれが最も多い。`INTERRUPTED` は再生中の読み上げを実際に止めた場合のみを指す。
 
 `SKIPPED` は「読み上げ条件は整ったが、キュー再生が無効で優先度に負けたため読み上げされなかった」ことを表す。実際には音が鳴っていないため、`feature:readout-list` の OFF 項目と同じ減光表現（アルファ 0.38）を使い、読み上げ済みの行と区別する。
 

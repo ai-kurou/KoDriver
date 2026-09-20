@@ -40,7 +40,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
-                    NarrationOutcome.INTERRUPTED,
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -64,7 +64,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
-                    NarrationOutcome.INTERRUPTED,
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -85,7 +85,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
-                    NarrationOutcome.INTERRUPTED,
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -128,7 +128,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
-                    NarrationOutcome.INTERRUPTED,
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -148,7 +148,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
-                    NarrationOutcome.INTERRUPTED,
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -171,7 +171,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     sourceKey,
                     "自己ベストラップ更新",
-                    NarrationOutcome.INTERRUPTED,
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -193,7 +193,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     myBestLapKey,
                     "自己ベストラップ更新",
-                    NarrationOutcome.INTERRUPTED,
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -218,7 +218,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     Simulator.Gt7Ps5,
                     myBestLapKey,
                     "自己ベストラップ更新",
-                    NarrationOutcome.INTERRUPTED,
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -370,7 +370,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新",
-                    narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot<String>()),
                 )
             } answers {
@@ -383,7 +383,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新",
-                    narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot<String>()),
                 )
             } answers { saveCount += 1 }
@@ -419,7 +419,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新",
-                    narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot<String>()),
                 )
             }
@@ -429,7 +429,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
                     narratedText = "自己ベストラップ更新",
-                    narrationOutcome = NarrationOutcome.INTERRUPTED,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot<String>()),
                 )
             }

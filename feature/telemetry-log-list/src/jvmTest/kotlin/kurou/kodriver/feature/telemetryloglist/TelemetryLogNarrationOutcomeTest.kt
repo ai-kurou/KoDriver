@@ -14,30 +14,23 @@ class TelemetryLogNarrationOutcomeTest {
     val rule = createComposeRule()
 
     @Test
-    fun `キューに追加されたログはキュー追加アイコンを表示する`() {
-        setContentWith(NarrationOutcome.QUEUED)
-
-        rule.onNodeWithContentDescription("キューに追加").assertExists()
-        rule.onNodeWithContentDescription("割り込み再生").assertDoesNotExist()
-        rule.onNodeWithContentDescription("読み上げなし").assertDoesNotExist()
+    fun `キューに追加されたログはキュー追加アイコンだけを表示する`() {
+        assertOnlyIconShown(NarrationOutcome.QUEUED, "キューに追加")
     }
 
     @Test
-    fun `割り込み再生されたログは割り込み再生アイコンを表示する`() {
-        setContentWith(NarrationOutcome.INTERRUPTED)
-
-        rule.onNodeWithContentDescription("割り込み再生").assertExists()
-        rule.onNodeWithContentDescription("キューに追加").assertDoesNotExist()
-        rule.onNodeWithContentDescription("読み上げなし").assertDoesNotExist()
+    fun `通常再生されたログは通常再生アイコンだけを表示する`() {
+        assertOnlyIconShown(NarrationOutcome.SPOKEN, "通常再生")
     }
 
     @Test
-    fun `読み上げされなかったログは読み上げなしアイコンを表示する`() {
-        setContentWith(NarrationOutcome.SKIPPED)
+    fun `割り込み再生されたログは割り込み再生アイコンだけを表示する`() {
+        assertOnlyIconShown(NarrationOutcome.INTERRUPTED, "割り込み再生")
+    }
 
-        rule.onNodeWithContentDescription("読み上げなし").assertExists()
-        rule.onNodeWithContentDescription("キューに追加").assertDoesNotExist()
-        rule.onNodeWithContentDescription("割り込み再生").assertDoesNotExist()
+    @Test
+    fun `読み上げされなかったログは読み上げなしアイコンだけを表示する`() {
+        assertOnlyIconShown(NarrationOutcome.SKIPPED, "読み上げなし")
     }
 
     @Test
@@ -58,7 +51,16 @@ class TelemetryLogNarrationOutcomeTest {
         assertEquals(Color.Red, Color.Red.applySkippedAlpha(NarrationOutcome.INTERRUPTED))
     }
 
-    private fun setContentWith(narrationOutcome: NarrationOutcome) {
+    @Test
+    fun `applySkippedAlphaはSPOKENのときに前景色を変えない`() {
+        assertEquals(Color.Red, Color.Red.applySkippedAlpha(NarrationOutcome.SPOKEN))
+    }
+
+    /** [narrationOutcome] の行に [expectedDescription] のアイコンだけが表示されることを検証する。 */
+    private fun assertOnlyIconShown(
+        narrationOutcome: NarrationOutcome,
+        expectedDescription: String,
+    ) {
         rule.setContent {
             TelemetryLogListPane(
                 uiState =
@@ -67,5 +69,14 @@ class TelemetryLogNarrationOutcomeTest {
                     ),
             )
         }
+
+        rule.onNodeWithContentDescription(expectedDescription).assertExists()
+        allDescriptions
+            .filterNot { it == expectedDescription }
+            .forEach { rule.onNodeWithContentDescription(it).assertDoesNotExist() }
+    }
+
+    private companion object {
+        val allDescriptions = listOf("キューに追加", "通常再生", "割り込み再生", "読み上げなし")
     }
 }

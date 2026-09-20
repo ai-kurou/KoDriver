@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Feedback
@@ -83,6 +84,7 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_interrupted_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_queued_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_skipped_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import org.jetbrains.compose.resources.stringResource
 
@@ -399,6 +401,7 @@ private fun TelemetryLogListItem(
                     imageVector =
                         when (log.narrationOutcome) {
                             NarrationOutcome.QUEUED -> Icons.AutoMirrored.Filled.PlaylistAdd
+                            NarrationOutcome.SPOKEN -> Icons.AutoMirrored.Filled.VolumeUp
                             NarrationOutcome.INTERRUPTED -> Icons.Filled.PlaylistRemove
                             NarrationOutcome.SKIPPED -> Icons.Filled.VolumeOff
                         },
@@ -407,6 +410,10 @@ private fun TelemetryLogListItem(
                             when (log.narrationOutcome) {
                                 NarrationOutcome.QUEUED -> {
                                     Res.string.telemetry_log_narration_queued_description
+                                }
+
+                                NarrationOutcome.SPOKEN -> {
+                                    Res.string.telemetry_log_narration_spoken_description
                                 }
 
                                 NarrationOutcome.INTERRUPTED -> {

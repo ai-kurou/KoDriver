@@ -8,6 +8,7 @@ class NarrationOutcomeTest {
     @Test
     fun `fromIdは対応するenumを返す`() {
         assertEquals(NarrationOutcome.QUEUED, NarrationOutcome.fromId("queued"))
+        assertEquals(NarrationOutcome.SPOKEN, NarrationOutcome.fromId("spoken"))
         assertEquals(NarrationOutcome.INTERRUPTED, NarrationOutcome.fromId("interrupted"))
         assertEquals(NarrationOutcome.SKIPPED, NarrationOutcome.fromId("skipped"))
     }

@@ -49,7 +49,9 @@ internal val TELEMETRY_LOG_MIGRATION_2_3 =
  * wasQueued（Boolean）を narrationOutcome（[kurou.kodriver.domain.model.NarrationOutcome] の id）へ
  * 置き換えるスキーマ変更。読み上げされなかった項目も記録するようになり、2値では表現できなくなったため。
  *
- * 既存行はすべて読み上げ済みのものしか記録していないため、wasQueued=1 を queued、0 を interrupted に移す。
+ * 既存行はすべて読み上げ済みのものしか記録していないため、wasQueued=1 を queued へ移す。0 の行は
+ * 割り込み再生だったのか、単に何も再生していない状態で読み上げただけなのかを復元できないため、
+ * どちらとも言い切らない spoken（通常再生）に寄せる。
  * SQLite はカラムの型変更を直接行えないので、新テーブルを作って入れ替える定石の手順を踏む。
  */
 internal val TELEMETRY_LOG_MIGRATION_3_4 =
@@ -75,7 +77,7 @@ internal val TELEMETRY_LOG_MIGRATION_3_4 =
                 )
                 SELECT
                     id, createdAt, simulatorId, readoutItemKey, narratedText,
-                    CASE WHEN wasQueued = 1 THEN 'queued' ELSE 'interrupted' END,
+                    CASE WHEN wasQueued = 1 THEN 'queued' ELSE 'spoken' END,
                     telemetryJson
                 FROM telemetry_logs
                 """.trimIndent(),
