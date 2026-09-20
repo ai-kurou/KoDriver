@@ -12,7 +12,8 @@ interface TelemetryLogRepository {
 
     fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?>
 
-    fun observeLatestTelemetryLog(): Flow<TelemetryLog?>
+    /** 実際に読み上げられた最新のログを観測する。読み上げされなかったログは含まない。 */
+    fun observeLatestNarratedTelemetryLog(): Flow<TelemetryLog?>
 
     suspend fun saveTelemetryLog(
         createdAt: Long,

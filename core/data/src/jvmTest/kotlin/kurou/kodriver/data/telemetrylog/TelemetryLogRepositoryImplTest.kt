@@ -181,7 +181,7 @@ class TelemetryLogRepositoryImplTest {
         }
 
     @Test
-    fun `observeLatestTelemetryLogは最新のログをDomainへ変換して観測する`() =
+    fun `observeLatestNarratedTelemetryLogは最新のログをDomainへ変換して観測する`() =
         runTest {
             val latest = telemetryLogEntity(id = 2L, createdAt = 2000L)
             val dao =
@@ -190,16 +190,41 @@ class TelemetryLogRepositoryImplTest {
                 )
             val repository = TelemetryLogRepositoryImpl(dao)
 
-            assertEquals(latest.toDomainLog(), repository.observeLatestTelemetryLog().first())
+            assertEquals(latest.toDomainLog(), repository.observeLatestNarratedTelemetryLog().first())
         }
 
     @Test
-    fun `observeLatestTelemetryLogはログが存在しない場合nullを返す`() =
+    fun `observeLatestNarratedTelemetryLogは読み上げされなかったログを除外する`() =
+        runTest {
+            val narrated = telemetryLogEntity(id = 1L, createdAt = 1000L)
+            val skipped =
+                telemetryLogEntity(id = 2L, createdAt = 2000L)
+                    .copy(narrationOutcome = NarrationOutcome.SKIPPED.id)
+            val dao = FakeTelemetryLogDao(initialLogs = listOf(narrated, skipped))
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(narrated.toDomainLog(), repository.observeLatestNarratedTelemetryLog().first())
+        }
+
+    @Test
+    fun `observeLatestNarratedTelemetryLogは読み上げされたログがなければnullを返す`() =
+        runTest {
+            val skipped =
+                telemetryLogEntity(id = 1L, createdAt = 1000L)
+                    .copy(narrationOutcome = NarrationOutcome.SKIPPED.id)
+            val dao = FakeTelemetryLogDao(initialLogs = listOf(skipped))
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertNull(repository.observeLatestNarratedTelemetryLog().first())
+        }
+
+    @Test
+    fun `observeLatestNarratedTelemetryLogはログが存在しない場合nullを返す`() =
         runTest {
             val dao = FakeTelemetryLogDao()
             val repository = TelemetryLogRepositoryImpl(dao)
 
-            assertNull(repository.observeLatestTelemetryLog().first())
+            assertNull(repository.observeLatestNarratedTelemetryLog().first())
         }
 
     @Test
@@ -315,9 +340,11 @@ private class FakeTelemetryLogDao(
             }
         }
 
-    override fun observeLatestTelemetryLog(): Flow<TelemetryLogEntity?> =
+    override fun observeLatestNarratedTelemetryLog(excludedNarrationOutcome: String): Flow<TelemetryLogEntity?> =
         logs.map { logs ->
-            logs.maxWithOrNull(compareBy<TelemetryLogEntity> { it.createdAt }.thenBy { it.id })
+            logs
+                .filterNot { it.narrationOutcome == excludedNarrationOutcome }
+                .maxWithOrNull(compareBy<TelemetryLogEntity> { it.createdAt }.thenBy { it.id })
         }
 
     override fun observePreviousTelemetryLog(

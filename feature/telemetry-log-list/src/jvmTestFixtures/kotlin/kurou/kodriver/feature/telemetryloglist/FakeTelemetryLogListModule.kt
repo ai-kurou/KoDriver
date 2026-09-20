@@ -27,8 +27,12 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
 
     override fun observeTelemetryLogs() = logs
 
-    override fun observeLatestTelemetryLog() =
-        logs.map { logs -> logs.maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id }) }
+    override fun observeLatestNarratedTelemetryLog() =
+        logs.map { logs ->
+            logs
+                .filterNot { it.narrationOutcome == NarrationOutcome.SKIPPED }
+                .maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id })
+        }
 
     override fun observeTelemetryLogDetail(id: Long) =
         logs.map { logs ->
