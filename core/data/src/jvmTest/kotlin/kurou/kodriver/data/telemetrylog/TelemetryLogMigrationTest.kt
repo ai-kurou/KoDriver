@@ -125,7 +125,7 @@ class TelemetryLogMigrationTest {
                 assertTrue(statement.step())
                 assertEquals(2L, statement.getLong(0))
                 assertEquals(2000L, statement.getLong(1))
-                assertEquals(NarrationOutcome.INTERRUPTED.id, statement.getText(5))
+                assertEquals(NarrationOutcome.SPOKEN.id, statement.getText(5))
                 assertEquals("{\"b\":2}", statement.getText(6))
 
                 assertFalse(statement.step())

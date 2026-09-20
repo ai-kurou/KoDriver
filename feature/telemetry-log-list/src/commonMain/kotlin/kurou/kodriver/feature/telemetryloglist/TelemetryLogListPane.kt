@@ -24,11 +24,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlaylistRemove
+import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -54,6 +56,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -78,8 +81,10 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_feedback_menu_item
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_more_button
-import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_queue_off_description
-import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_queue_on_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_interrupted_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_queued_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_skipped_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_spoken_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import org.jetbrains.compose.resources.stringResource
 
@@ -336,7 +341,7 @@ private fun TelemetryLogListItem(
                 MaterialTheme.colorScheme.onSecondaryContainer
             } else {
                 MaterialTheme.colorScheme.onSurface
-            },
+            }.applySkippedAlpha(log.narrationOutcome),
         animationSpec = tween(durationMillis = 500),
         label = "telemetryLogListItemHeadlineColor",
     )
@@ -346,7 +351,7 @@ private fun TelemetryLogListItem(
                 MaterialTheme.colorScheme.onSecondaryContainer
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
-            },
+            }.applySkippedAlpha(log.narrationOutcome),
         animationSpec = tween(durationMillis = 500),
         label = "telemetryLogListItemSupportingColor",
     )
@@ -394,20 +399,33 @@ private fun TelemetryLogListItem(
             ) {
                 Icon(
                     imageVector =
-                        if (log.narrationOutcome == NarrationOutcome.QUEUED) {
-                            Icons.AutoMirrored.Filled.PlaylistAdd
-                        } else {
-                            Icons.Filled.PlaylistRemove
+                        when (log.narrationOutcome) {
+                            NarrationOutcome.QUEUED -> Icons.AutoMirrored.Filled.PlaylistAdd
+                            NarrationOutcome.SPOKEN -> Icons.AutoMirrored.Filled.VolumeUp
+                            NarrationOutcome.INTERRUPTED -> Icons.Filled.PlaylistRemove
+                            NarrationOutcome.SKIPPED -> Icons.Filled.VolumeOff
                         },
                     contentDescription =
                         stringResource(
-                            if (log.narrationOutcome == NarrationOutcome.QUEUED) {
-                                Res.string.telemetry_log_queue_on_description
-                            } else {
-                                Res.string.telemetry_log_queue_off_description
+                            when (log.narrationOutcome) {
+                                NarrationOutcome.QUEUED -> {
+                                    Res.string.telemetry_log_narration_queued_description
+                                }
+
+                                NarrationOutcome.SPOKEN -> {
+                                    Res.string.telemetry_log_narration_spoken_description
+                                }
+
+                                NarrationOutcome.INTERRUPTED -> {
+                                    Res.string.telemetry_log_narration_interrupted_description
+                                }
+
+                                NarrationOutcome.SKIPPED -> {
+                                    Res.string.telemetry_log_narration_skipped_description
+                                }
                             },
                         ),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.applySkippedAlpha(log.narrationOutcome),
                 )
                 Box {
                     IconButton(onClick = { menuExpanded = true }) {
@@ -482,6 +500,16 @@ private fun formatDuration(milliseconds: Long): String {
 }
 
 private fun Long.floorMod(other: Long): Long = ((this % other) + other) % other
+
+/**
+ * 読み上げされなかった（[NarrationOutcome.SKIPPED]）項目の前景色を減光する。
+ *
+ * `ReadoutListPane` の OFF 項目と同じ扱いにし、読み上げ済みの項目と一目で区別できるようにする。
+ */
+internal fun Color.applySkippedAlpha(narrationOutcome: NarrationOutcome): Color =
+    if (narrationOutcome == NarrationOutcome.SKIPPED) copy(alpha = SKIPPED_CONTENT_ALPHA) else this
+
+internal const val SKIPPED_CONTENT_ALPHA = 0.38f
 
 private const val FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL = 1
 private const val RESET_ITEM_KEY = "telemetry_log_reset_item"

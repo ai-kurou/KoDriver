@@ -329,8 +329,10 @@ internal class LmuWindowsNarratorEventProcessor(
     }
 
     /**
-     * 読み上げの処理結果を返す。キュー追加・割り込み再生・優先度負けによる読み上げなしの3種を区別し、
-     * テレメトリログの narrationOutcome として保存される。
+     * 読み上げの処理結果を返す。キュー追加・通常再生・割り込み再生・優先度負けによる読み上げなしの4種を
+     * 区別し、テレメトリログの narrationOutcome として保存される。
+     *
+     * 割り込み再生かどうかは共有関数の戻り値からは分からないため、[stop] が呼ばれたかどうかで判定する。
      */
     private fun speakWithPriority(
         event: SpeechEvent,
@@ -338,6 +340,7 @@ internal class LmuWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
     ): NarrationOutcome {
         var wasQueued: Boolean? = null
+        var didStop = false
         val spoken =
             speakWithPriority(
                 eventKey = event.readoutItemKey,
@@ -348,12 +351,16 @@ internal class LmuWindowsNarratorEventProcessor(
                     wasQueued = queue
                     ttsEngine.speak(event, queue)
                 },
-                stop = { ttsEngine.stop() },
+                stop = {
+                    didStop = true
+                    ttsEngine.stop()
+                },
             )
         return when {
             !spoken -> NarrationOutcome.SKIPPED
             wasQueued == true -> NarrationOutcome.QUEUED
-            else -> NarrationOutcome.INTERRUPTED
+            didStop -> NarrationOutcome.INTERRUPTED
+            else -> NarrationOutcome.SPOKEN
         }
     }
 
