@@ -67,6 +67,26 @@ class NarratorPriorityTest {
     }
 
     @Test
+    fun `再生中と同じキーのイベントは優先度が等しいため読み上げない`() {
+        var spoken = false
+        var stopped = false
+
+        val result =
+            speakWithPriority(
+                eventKey = "same",
+                currentKey = { "same" },
+                readoutOrder = listOf("same", "other"),
+                queueEnabled = false,
+                speak = { spoken = true },
+                stop = { stopped = true },
+            )
+
+        assertFalse(result)
+        assertFalse(spoken)
+        assertFalse(stopped)
+    }
+
+    @Test
     fun `再生中より優先度の高いイベントは停止してから読み上げる`() {
         var spokenQueue: Boolean? = null
         var stopped = false
