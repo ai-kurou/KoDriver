@@ -18,8 +18,8 @@ internal class TelemetryLogRepositoryImpl(
     override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> =
         dao.observeTelemetryLogs().map { logs -> logs.mapNotNull { it.toDomain() } }
 
-    override fun observeLatestTelemetryLog(): Flow<TelemetryLog?> =
-        dao.observeLatestTelemetryLog().map { it?.toDomain() }
+    override fun observeLatestNarratedTelemetryLog(): Flow<TelemetryLog?> =
+        dao.observeLatestNarratedTelemetryLog(NarrationOutcome.SKIPPED.id).map { it?.toDomain() }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?> =

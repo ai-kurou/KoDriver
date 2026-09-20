@@ -16,7 +16,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class ObserveLatestTelemetryLogUseCaseTest {
+class ObserveLatestNarratedTelemetryLogUseCaseTest {
     private val repository: TelemetryLogRepository = mockk()
 
     @Test
@@ -32,22 +32,22 @@ class ObserveLatestTelemetryLogUseCaseTest {
                     narrationOutcome = NarrationOutcome.QUEUED,
                     telemetryJson = """{"currentLap":2}""",
                 )
-            every { repository.observeLatestTelemetryLog() } returns MutableStateFlow(latest)
-            val useCase = ObserveLatestTelemetryLogUseCase(repository)
+            every { repository.observeLatestNarratedTelemetryLog() } returns MutableStateFlow(latest)
+            val useCase = ObserveLatestNarratedTelemetryLogUseCase(repository)
 
             assertEquals(latest, useCase().first())
-            verify(exactly = 1) { repository.observeLatestTelemetryLog() }
+            verify(exactly = 1) { repository.observeLatestNarratedTelemetryLog() }
             confirmVerified(repository)
         }
 
     @Test
     fun `ログが存在しない場合はnullを返す`() =
         runTest {
-            every { repository.observeLatestTelemetryLog() } returns MutableStateFlow(null)
-            val useCase = ObserveLatestTelemetryLogUseCase(repository)
+            every { repository.observeLatestNarratedTelemetryLog() } returns MutableStateFlow(null)
+            val useCase = ObserveLatestNarratedTelemetryLogUseCase(repository)
 
             assertNull(useCase().first())
-            verify(exactly = 1) { repository.observeLatestTelemetryLog() }
+            verify(exactly = 1) { repository.observeLatestNarratedTelemetryLog() }
             confirmVerified(repository)
         }
 }

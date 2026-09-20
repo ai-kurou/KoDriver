@@ -6,18 +6,18 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.usecase.ObserveLatestTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.ObserveLatestNarratedTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 
 internal class NarratorOverlayViewModel(
-    observeLatestTelemetryLog: ObserveLatestTelemetryLogUseCase,
+    observeLatestNarratedTelemetryLog: ObserveLatestNarratedTelemetryLogUseCase,
     observeOverlayTextSize: ObserveOverlayTextSizeUseCase,
     observeOverlayBackgroundOpacity: ObserveOverlayBackgroundOpacityUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<NarratorOverlayUiState> =
         combine(
-            observeLatestTelemetryLog(),
+            observeLatestNarratedTelemetryLog(),
             observeOverlayTextSize(),
             observeOverlayBackgroundOpacity(),
         ) { latestTelemetryLog, overlayTextSize, backgroundOpacity ->
