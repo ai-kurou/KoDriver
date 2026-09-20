@@ -3,6 +3,7 @@ package kurou.kodriver.feature.telemetryloglist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -26,8 +27,12 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
 
     override fun observeTelemetryLogs() = logs
 
-    override fun observeLatestTelemetryLog() =
-        logs.map { logs -> logs.maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id }) }
+    override fun observeLatestNarratedTelemetryLog() =
+        logs.map { logs ->
+            logs
+                .filterNot { it.narrationOutcome == NarrationOutcome.SKIPPED }
+                .maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id })
+        }
 
     override fun observeTelemetryLogDetail(id: Long) =
         logs.map { logs ->
@@ -46,7 +51,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
-        wasQueued: Boolean,
+        narrationOutcome: NarrationOutcome,
         telemetryJson: String,
     ) {
         val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
@@ -58,7 +63,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
                     simulator = simulator,
                     readoutItemKey = readoutItemKey,
                     narratedText = narratedText,
-                    wasQueued = wasQueued,
+                    narrationOutcome = narrationOutcome,
                     telemetryJson = telemetryJson,
                 ),
         )

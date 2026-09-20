@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -26,7 +27,7 @@ class TelemetryLogRepositoryImplTest {
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 narratedText = "燃料は残り約1周",
-                wasQueued = true,
+                narrationOutcome = NarrationOutcome.QUEUED,
                 telemetryJson = """{"lapCount":1}""",
             )
 
@@ -37,7 +38,7 @@ class TelemetryLogRepositoryImplTest {
                         simulatorId = Simulator.Gt7Ps5.id,
                         readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
                         narratedText = "燃料は残り約1周",
-                        wasQueued = true,
+                        narrationOutcome = NarrationOutcome.QUEUED.id,
                         telemetryJson = """{"lapCount":1}""",
                     ),
                 ),
@@ -56,7 +57,7 @@ class TelemetryLogRepositoryImplTest {
                 simulator = Simulator.AceWindows,
                 readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
                 narratedText = "残り燃料警告",
-                wasQueued = true,
+                narrationOutcome = NarrationOutcome.QUEUED,
                 telemetryJson = """{"remainingFuelLiters":8.2}""",
             )
 
@@ -67,7 +68,7 @@ class TelemetryLogRepositoryImplTest {
                         simulatorId = Simulator.AceWindows.id,
                         readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
                         narratedText = "残り燃料警告",
-                        wasQueued = true,
+                        narrationOutcome = NarrationOutcome.QUEUED.id,
                         telemetryJson = """{"remainingFuelLiters":8.2}""",
                     ),
                 ),
@@ -120,7 +121,7 @@ class TelemetryLogRepositoryImplTest {
                                 simulatorId = Simulator.LmuWindows.id,
                                 readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
                                 narratedText = "イエローフラッグ",
-                                wasQueued = true,
+                                narrationOutcome = NarrationOutcome.QUEUED.id,
                                 telemetryJson = """{"currentLap":2}""",
                             ),
                         ),
@@ -135,7 +136,7 @@ class TelemetryLogRepositoryImplTest {
                         simulator = Simulator.LmuWindows,
                         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                         narratedText = "イエローフラッグ",
-                        wasQueued = true,
+                        narrationOutcome = NarrationOutcome.QUEUED,
                         telemetryJson = """{"currentLap":2}""",
                     ),
                 ),
@@ -156,7 +157,7 @@ class TelemetryLogRepositoryImplTest {
                                 simulatorId = Simulator.AceWindows.id,
                                 readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
                                 narratedText = "残り燃料警告",
-                                wasQueued = true,
+                                narrationOutcome = NarrationOutcome.QUEUED.id,
                                 telemetryJson = """{"remainingFuelLiters":8.2}""",
                             ),
                         ),
@@ -171,7 +172,7 @@ class TelemetryLogRepositoryImplTest {
                         simulator = Simulator.AceWindows,
                         readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
                         narratedText = "残り燃料警告",
-                        wasQueued = true,
+                        narrationOutcome = NarrationOutcome.QUEUED,
                         telemetryJson = """{"remainingFuelLiters":8.2}""",
                     ),
                 ),
@@ -180,7 +181,7 @@ class TelemetryLogRepositoryImplTest {
         }
 
     @Test
-    fun `observeLatestTelemetryLogは最新のログをDomainへ変換して観測する`() =
+    fun `observeLatestNarratedTelemetryLogは最新のログをDomainへ変換して観測する`() =
         runTest {
             val latest = telemetryLogEntity(id = 2L, createdAt = 2000L)
             val dao =
@@ -189,16 +190,41 @@ class TelemetryLogRepositoryImplTest {
                 )
             val repository = TelemetryLogRepositoryImpl(dao)
 
-            assertEquals(latest.toDomainLog(), repository.observeLatestTelemetryLog().first())
+            assertEquals(latest.toDomainLog(), repository.observeLatestNarratedTelemetryLog().first())
         }
 
     @Test
-    fun `observeLatestTelemetryLogはログが存在しない場合nullを返す`() =
+    fun `observeLatestNarratedTelemetryLogは読み上げされなかったログを除外する`() =
+        runTest {
+            val narrated = telemetryLogEntity(id = 1L, createdAt = 1000L)
+            val skipped =
+                telemetryLogEntity(id = 2L, createdAt = 2000L)
+                    .copy(narrationOutcome = NarrationOutcome.SKIPPED.id)
+            val dao = FakeTelemetryLogDao(initialLogs = listOf(narrated, skipped))
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertEquals(narrated.toDomainLog(), repository.observeLatestNarratedTelemetryLog().first())
+        }
+
+    @Test
+    fun `observeLatestNarratedTelemetryLogは読み上げされたログがなければnullを返す`() =
+        runTest {
+            val skipped =
+                telemetryLogEntity(id = 1L, createdAt = 1000L)
+                    .copy(narrationOutcome = NarrationOutcome.SKIPPED.id)
+            val dao = FakeTelemetryLogDao(initialLogs = listOf(skipped))
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            assertNull(repository.observeLatestNarratedTelemetryLog().first())
+        }
+
+    @Test
+    fun `observeLatestNarratedTelemetryLogはログが存在しない場合nullを返す`() =
         runTest {
             val dao = FakeTelemetryLogDao()
             val repository = TelemetryLogRepositoryImpl(dao)
 
-            assertNull(repository.observeLatestTelemetryLog().first())
+            assertNull(repository.observeLatestNarratedTelemetryLog().first())
         }
 
     @Test
@@ -314,9 +340,11 @@ private class FakeTelemetryLogDao(
             }
         }
 
-    override fun observeLatestTelemetryLog(): Flow<TelemetryLogEntity?> =
+    override fun observeLatestNarratedTelemetryLog(excludedNarrationOutcome: String): Flow<TelemetryLogEntity?> =
         logs.map { logs ->
-            logs.maxWithOrNull(compareBy<TelemetryLogEntity> { it.createdAt }.thenBy { it.id })
+            logs
+                .filterNot { it.narrationOutcome == excludedNarrationOutcome }
+                .maxWithOrNull(compareBy<TelemetryLogEntity> { it.createdAt }.thenBy { it.id })
         }
 
     override fun observePreviousTelemetryLog(
@@ -357,7 +385,7 @@ private fun telemetryLogEntity(
             ReadoutItemKey.LmuWindows.Flag.Root.value
         },
     narratedText = "イエローフラッグ",
-    wasQueued = true,
+    narrationOutcome = NarrationOutcome.QUEUED.id,
     telemetryJson = """{"id":$id}""",
 )
 
@@ -368,6 +396,6 @@ private fun TelemetryLogEntity.toDomainLog() =
         simulator = Simulator.fromId(simulatorId) ?: error("Unknown simulatorId: $simulatorId"),
         readoutItemKey = ReadoutItemKey.fromValue(readoutItemKey) ?: error("Unknown readoutItemKey: $readoutItemKey"),
         narratedText = narratedText,
-        wasQueued = true,
+        narrationOutcome = NarrationOutcome.QUEUED,
         telemetryJson = telemetryJson,
     )

@@ -20,12 +20,12 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -80,7 +80,7 @@ class TelemetryLogContentTest {
                                     simulator = Simulator.AceWindows,
                                     readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root,
                                     narratedText = "イエローフラッグ",
-                                    wasQueued = false,
+                                    narrationOutcome = NarrationOutcome.INTERRUPTED,
                                     telemetryJson = """{"flag":"green"}""",
                                 ),
                             ),
@@ -89,42 +89,6 @@ class TelemetryLogContentTest {
         }
 
         rule.onNodeWithText("フラッグ").assertExists()
-    }
-
-    @Test
-    fun `読み上げ時にキューオンだったログはキューオンアイコンを表示する`() {
-        rule.setContent {
-            TelemetryLogContentScaffold(
-                uiState =
-                    TelemetryLogListUiState(
-                        logs =
-                            listOf(
-                                createTelemetryLog(id = 1, wasQueued = true),
-                            ),
-                    ),
-            )
-        }
-
-        rule.onNodeWithContentDescription("キューオン").assertExists()
-        rule.onNodeWithContentDescription("キューオフ").assertDoesNotExist()
-    }
-
-    @Test
-    fun `読み上げ時にキューオフだったログはキューオフアイコンを表示する`() {
-        rule.setContent {
-            TelemetryLogContentScaffold(
-                uiState =
-                    TelemetryLogListUiState(
-                        logs =
-                            listOf(
-                                createTelemetryLog(id = 1, wasQueued = false),
-                            ),
-                    ),
-            )
-        }
-
-        rule.onNodeWithContentDescription("キューオフ").assertExists()
-        rule.onNodeWithContentDescription("キューオン").assertDoesNotExist()
     }
 
     @Test
@@ -466,13 +430,13 @@ internal fun createTelemetryLog(
     readoutItemKey: ReadoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
     simulator: Simulator = Simulator.LmuWindows,
     narratedText: String = "イエローフラッグ",
-    wasQueued: Boolean = false,
+    narrationOutcome: NarrationOutcome = NarrationOutcome.INTERRUPTED,
 ) = TelemetryLog(
     id = id,
     createdAt = id,
     simulator = simulator,
     readoutItemKey = readoutItemKey,
     narratedText = narratedText,
-    wasQueued = wasQueued,
+    narrationOutcome = narrationOutcome,
     telemetryJson = """{"id":$id}""",
 )

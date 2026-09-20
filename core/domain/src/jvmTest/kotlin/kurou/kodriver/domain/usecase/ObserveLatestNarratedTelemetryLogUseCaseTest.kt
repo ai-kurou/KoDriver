@@ -7,6 +7,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -15,7 +16,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class ObserveLatestTelemetryLogUseCaseTest {
+class ObserveLatestNarratedTelemetryLogUseCaseTest {
     private val repository: TelemetryLogRepository = mockk()
 
     @Test
@@ -28,25 +29,25 @@ class ObserveLatestTelemetryLogUseCaseTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = "イエローフラッグ",
-                    wasQueued = true,
+                    narrationOutcome = NarrationOutcome.QUEUED,
                     telemetryJson = """{"currentLap":2}""",
                 )
-            every { repository.observeLatestTelemetryLog() } returns MutableStateFlow(latest)
-            val useCase = ObserveLatestTelemetryLogUseCase(repository)
+            every { repository.observeLatestNarratedTelemetryLog() } returns MutableStateFlow(latest)
+            val useCase = ObserveLatestNarratedTelemetryLogUseCase(repository)
 
             assertEquals(latest, useCase().first())
-            verify(exactly = 1) { repository.observeLatestTelemetryLog() }
+            verify(exactly = 1) { repository.observeLatestNarratedTelemetryLog() }
             confirmVerified(repository)
         }
 
     @Test
     fun `ログが存在しない場合はnullを返す`() =
         runTest {
-            every { repository.observeLatestTelemetryLog() } returns MutableStateFlow(null)
-            val useCase = ObserveLatestTelemetryLogUseCase(repository)
+            every { repository.observeLatestNarratedTelemetryLog() } returns MutableStateFlow(null)
+            val useCase = ObserveLatestNarratedTelemetryLogUseCase(repository)
 
             assertNull(useCase().first())
-            verify(exactly = 1) { repository.observeLatestTelemetryLog() }
+            verify(exactly = 1) { repository.observeLatestNarratedTelemetryLog() }
             confirmVerified(repository)
         }
 }

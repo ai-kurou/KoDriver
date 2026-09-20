@@ -10,7 +10,7 @@ import androidx.sqlite.execSQL
 
 @Database(
     entities = [TelemetryLogEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 @ConstructedBy(TelemetryLogDatabaseConstructor::class)
@@ -42,5 +42,47 @@ internal val TELEMETRY_LOG_MIGRATION_2_3 =
     object : Migration(2, 3) {
         override fun migrate(connection: SQLiteConnection) {
             connection.execSQL("ALTER TABLE telemetry_logs ADD COLUMN wasQueued INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
+/**
+ * wasQueued（Boolean）を narrationOutcome（[kurou.kodriver.domain.model.NarrationOutcome] の id）へ
+ * 置き換えるスキーマ変更。読み上げされなかった項目も記録するようになり、2値では表現できなくなったため。
+ *
+ * 既存行はすべて読み上げ済みのものしか記録していないため、wasQueued=1 を queued へ移す。0 の行は
+ * 割り込み再生だったのか、単に何も再生していない状態で読み上げただけなのかを復元できないため、
+ * どちらとも言い切らない spoken（通常再生）に寄せる。
+ * SQLite はカラムの型変更を直接行えないので、新テーブルを作って入れ替える定石の手順を踏む。
+ */
+internal val TELEMETRY_LOG_MIGRATION_3_4 =
+    object : Migration(3, 4) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                """
+                CREATE TABLE telemetry_logs_new (
+                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    createdAt INTEGER NOT NULL,
+                    simulatorId TEXT NOT NULL,
+                    readoutItemKey TEXT NOT NULL,
+                    narratedText TEXT NOT NULL,
+                    narrationOutcome TEXT NOT NULL,
+                    telemetryJson TEXT NOT NULL
+                )
+                """.trimIndent(),
+            )
+            connection.execSQL(
+                """
+                INSERT INTO telemetry_logs_new (
+                    id, createdAt, simulatorId, readoutItemKey, narratedText, narrationOutcome, telemetryJson
+                )
+                SELECT
+                    id, createdAt, simulatorId, readoutItemKey, narratedText,
+                    CASE WHEN wasQueued = 1 THEN 'queued' ELSE 'spoken' END,
+                    telemetryJson
+                FROM telemetry_logs
+                """.trimIndent(),
+            )
+            connection.execSQL("DROP TABLE telemetry_logs")
+            connection.execSQL("ALTER TABLE telemetry_logs_new RENAME TO telemetry_logs")
         }
     }

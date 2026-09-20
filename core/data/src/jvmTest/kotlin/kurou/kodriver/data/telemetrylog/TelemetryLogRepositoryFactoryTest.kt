@@ -4,6 +4,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -13,6 +14,35 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TelemetryLogRepositoryFactoryTest {
+    @Test
+    fun `observeLatestNarratedTelemetryLogは読み上げされなかったログを除外して最新を返す`() =
+        runTest {
+            val directory = Files.createTempDirectory("kodriver_telemetry_log_test").toFile()
+            val repository = createTelemetryLogRepository(directory.absolutePath)
+
+            repository.saveTelemetryLog(
+                createdAt = 100L,
+                simulator = Simulator.Gt7Ps5,
+                readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                narratedText = "自己ベストラップ更新",
+                narrationOutcome = NarrationOutcome.INTERRUPTED,
+                telemetryJson = "{}",
+            )
+            repository.saveTelemetryLog(
+                createdAt = 200L,
+                simulator = Simulator.Gt7Ps5,
+                readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                narratedText = "燃料は残り約1周",
+                narrationOutcome = NarrationOutcome.SKIPPED,
+                telemetryJson = "{}",
+            )
+
+            val latest = repository.observeLatestNarratedTelemetryLog().first()
+
+            assertEquals("自己ベストラップ更新", latest?.narratedText)
+            assertEquals(NarrationOutcome.INTERRUPTED, latest?.narrationOutcome)
+        }
+
     @Test
     fun `Roomに保存したテレメトリログを観測できる`() =
         runTest {
@@ -24,7 +54,7 @@ class TelemetryLogRepositoryFactoryTest {
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 narratedText = "自己ベストラップ更新",
-                wasQueued = true,
+                narrationOutcome = NarrationOutcome.QUEUED,
                 telemetryJson = """{"current":{}}""",
             )
 
@@ -36,7 +66,7 @@ class TelemetryLogRepositoryFactoryTest {
                         simulator = Simulator.Gt7Ps5,
                         readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                         narratedText = "自己ベストラップ更新",
-                        wasQueued = true,
+                        narrationOutcome = NarrationOutcome.QUEUED,
                         telemetryJson = """{"current":{}}""",
                     ),
                 ),
@@ -79,7 +109,7 @@ class TelemetryLogRepositoryFactoryTest {
                         simulator = Simulator.LmuWindows,
                         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                         narratedText = "",
-                        wasQueued = false,
+                        narrationOutcome = NarrationOutcome.SPOKEN,
                         telemetryJson = "{}",
                     ),
                 ),

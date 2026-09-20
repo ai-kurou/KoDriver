@@ -14,6 +14,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
@@ -55,38 +56,39 @@ internal class Gt7Ps5NarratorEventProcessor(
     ) {
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
-            val wasQueued = speakWithPriority(event, readoutOrder, queueEnabledStates)
-            if (wasQueued != null) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    wasQueued = wasQueued,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = telemetry,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = telemetry,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousTelemetry[sourceKey] = telemetry
     }
 
     /**
-     * 読み上げ（またはキュー追加）を実行した場合、その際に使われた queue 値（true=キュー再生 / false=割り込み再生）を返す。
-     * 読み上げを行わなかった場合は null を返す。この値はテレメトリログの wasQueued として保存される。
+     * 読み上げの処理結果を返す。キュー追加・通常再生・割り込み再生・優先度負けによる読み上げなしの4種を
+     * 区別し、テレメトリログの narrationOutcome として保存される。
+     *
+     * 割り込み再生かどうかは共有関数の戻り値からは分からないため、[stop] が呼ばれたかどうかで判定する。
      */
     private fun speakWithPriority(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    ): Boolean? {
+    ): NarrationOutcome {
         var wasQueued: Boolean? = null
+        var didStop = false
         val spoken =
             speakWithPriority(
                 eventKey = event.readoutItemKey,
@@ -97,22 +99,30 @@ internal class Gt7Ps5NarratorEventProcessor(
                     wasQueued = queue
                     ttsEngine.speak(event, queue)
                 },
-                stop = { ttsEngine.stop() },
+                stop = {
+                    didStop = true
+                    ttsEngine.stop()
+                },
             )
-        return if (spoken) wasQueued else null
+        return when {
+            !spoken -> NarrationOutcome.SKIPPED
+            wasQueued == true -> NarrationOutcome.QUEUED
+            didStop -> NarrationOutcome.INTERRUPTED
+            else -> NarrationOutcome.SPOKEN
+        }
     }
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
-        wasQueued: Boolean,
+        narrationOutcome: NarrationOutcome,
         telemetryJson: String,
     ) {
         try {
             saveTelemetryLog(
                 createdAt = createdAt,
-                wasQueued = wasQueued,
+                narrationOutcome = narrationOutcome,
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = readoutItemKey,
                 narratedText = narratedText,

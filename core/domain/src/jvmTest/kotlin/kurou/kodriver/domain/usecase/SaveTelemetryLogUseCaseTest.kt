@@ -4,6 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -20,7 +21,7 @@ class SaveTelemetryLogUseCaseTest {
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 narratedText = "燃料は残り約1周",
-                wasQueued = true,
+                narrationOutcome = NarrationOutcome.QUEUED,
                 telemetryJson = """{"lapCount":1}""",
             )
 
@@ -30,7 +31,7 @@ class SaveTelemetryLogUseCaseTest {
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                     narratedText = "燃料は残り約1周",
-                    wasQueued = true,
+                    narrationOutcome = NarrationOutcome.QUEUED,
                     telemetryJson = """{"lapCount":1}""",
                 )
             }

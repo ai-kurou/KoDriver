@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -11,14 +12,15 @@ interface TelemetryLogRepository {
 
     fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?>
 
-    fun observeLatestTelemetryLog(): Flow<TelemetryLog?>
+    /** 実際に読み上げられた最新のログを観測する。読み上げされなかったログは含まない。 */
+    fun observeLatestNarratedTelemetryLog(): Flow<TelemetryLog?>
 
     suspend fun saveTelemetryLog(
         createdAt: Long,
         simulator: Simulator,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
-        wasQueued: Boolean,
+        narrationOutcome: NarrationOutcome,
         telemetryJson: String,
     )
 
