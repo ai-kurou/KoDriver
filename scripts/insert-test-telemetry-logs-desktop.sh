@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# デスクトップアプリの手動UI確認用に、テレメトリログを3件（LMU/GT7/ACE 各1件）
+# デスクトップアプリの手動UI確認用に、テレメトリログを4件（読み上げ結果の4状態を各1件）
 # ~/.kodriver/telemetry_logs.db に直接INSERTするスクリプト。
 #
 # 使い方: アプリを終了した状態で ./insert-test-telemetry-logs-desktop.sh を実行し、
@@ -22,11 +22,12 @@ fi
 now_ms=$(($(date +%s) * 1000))
 
 sqlite3 "${DB_PATH}" <<SQL
-INSERT INTO telemetry_logs (createdAt, simulatorId, readoutItemKey, telemetryJson)
+INSERT INTO telemetry_logs (createdAt, simulatorId, readoutItemKey, narratedText, narrationOutcome, telemetryJson)
 VALUES
-    (${now_ms}, 'lmu_windows', 'lmu_windows_vehicle_approach', '{"testData":true,"simulator":"lmu_windows","distanceMeters":12.5}'),
-    (${now_ms} + 1, 'gt7_ps5', 'gt7_ps5_remaining_fuel', '{"testData":true,"simulator":"gt7_ps5","remainingFuelPercent":15.0}'),
-    (${now_ms} + 2, 'ace_windows', 'ace_windows_remaining_fuel', '{"testData":true,"simulator":"ace_windows","remainingFuelLiters":8.2}');
+    (${now_ms}, 'lmu_windows', 'lmu_windows_vehicle_approach', '後方から車両接近', 'queued', '{"testData":true,"simulator":"lmu_windows","distanceMeters":12.5}'),
+    (${now_ms} + 1, 'gt7_ps5', 'gt7_ps5_remaining_fuel', '燃料残り15パーセント', 'spoken', '{"testData":true,"simulator":"gt7_ps5","remainingFuelPercent":15.0}'),
+    (${now_ms} + 2, 'ace_windows', 'ace_windows_remaining_fuel', '燃料残り8.2リットル', 'interrupted', '{"testData":true,"simulator":"ace_windows","remainingFuelLiters":8.2}'),
+    (${now_ms} + 3, 'lmu_windows', 'lmu_windows_vehicle_approach_sustained', '後方から車両接近', 'skipped', '{"testData":true,"simulator":"lmu_windows","distanceMeters":8.0}');
 SQL
 
-echo "テスト用のテレメトリログを3件挿入しました: ${DB_PATH}"
+echo "テスト用のテレメトリログを4件挿入しました: ${DB_PATH}"
