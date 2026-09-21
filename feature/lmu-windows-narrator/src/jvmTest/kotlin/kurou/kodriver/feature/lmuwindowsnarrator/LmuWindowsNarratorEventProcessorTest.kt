@@ -124,25 +124,29 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `テレメトリログの保存に失敗しても例外を投げない`() =
         runTest {
+            val observedAtMs = 0L
+            val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+            val narratedText = "カーレフト"
+            val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             every { ttsEngine.speak(SpeechEvent.CarLeft, queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 0L,
+                    createdAt = observedAtMs,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    narratedText = "カーレフト",
+                    readoutItemKey = readoutItemKey,
+                    narratedText = narratedText,
                     narrationOutcome = NarrationOutcome.SPOKEN,
-                    telemetryJson = any(),
+                    telemetryJson = capture(telemetryJsonSlot),
                 )
             } throws RuntimeException("db error")
 
             createProcessor().processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(SpeechEvent.CarLeft),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(readoutItemKey),
                 queueEnabledStates = emptyMap(),
-                observedAtMs = 0L,
+                observedAtMs = observedAtMs,
                 logContext = logContext(),
             )
 
@@ -150,12 +154,12 @@ class LmuWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeft, false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
-                    createdAt = 0L,
+                    createdAt = observedAtMs,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    narratedText = "カーレフト",
+                    readoutItemKey = readoutItemKey,
+                    narratedText = narratedText,
                     narrationOutcome = NarrationOutcome.SPOKEN,
-                    telemetryJson = any(),
+                    telemetryJson = telemetryJsonSlot.captured,
                 )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
