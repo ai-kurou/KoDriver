@@ -7,6 +7,7 @@ import kurou.kodriver.core.narrator.TelemetryLogJson
 import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
 import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
 import kurou.kodriver.core.narrator.buildTelemetryLogJson
+import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -258,8 +259,9 @@ internal class AceWindowsNarratorEventProcessor(
             )
         } catch (e: CancellationException) {
             throw e
-        } catch (_: Exception) {
-            // ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない。
+        } catch (e: Exception) {
+            // ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない。記録のみ行う。
+            captureNarratorError(e)
         }
     }
 }

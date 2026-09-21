@@ -122,6 +122,50 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `テレメトリログの保存に失敗しても例外を投げない`() =
+        runTest {
+            val observedAtMs = 0L
+            val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+            val narratedText = "カーレフト"
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.CarLeft, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = observedAtMs,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = readoutItemKey,
+                    narratedText = narratedText,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } throws RuntimeException("db error")
+
+            createProcessor().processVehicleApproach(
+                vehicleApproach = leftVehicleApproach(distance = 3.0),
+                events = listOf(SpeechEvent.CarLeft),
+                readoutOrder = listOf(readoutItemKey),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = observedAtMs,
+                logContext = logContext(),
+            )
+
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeft, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = observedAtMs,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = readoutItemKey,
+                    narratedText = narratedText,
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `読み上げたタイヤ摩耗イベントを直前と現在のタイヤ摩耗データとともに保存する`() =
         runTest {
             val telemetryJsonSlot = slot<String>()
