@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
@@ -15,7 +16,7 @@ internal class AndroidDynamicColorEnabledRepository(
     private val dynamicColorEnabledKey = booleanPreferencesKey("dynamic_color_enabled")
 
     override fun dynamicColorEnabled(): Flow<Boolean> =
-        dataStore.data.map {
+        dataStore.data.fallbackOnReadError(emptyPreferences()).map {
             it[dynamicColorEnabledKey]
                 ?: DYNAMIC_COLOR_ENABLED_DEFAULT
         }
