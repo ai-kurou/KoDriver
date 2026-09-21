@@ -16,8 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.OverlayTextSize
 import org.koin.compose.viewmodel.koinViewModel
@@ -58,7 +58,7 @@ internal fun NarratorOverlayContent(
                     .fillMaxSize()
                     .background(NarratorOverlayBackgroundColor.copy(alpha = uiState.backgroundOpacity / 100f))
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    .padding(KoDriverSpacing.large),
             contentAlignment = Alignment.Center,
         ) {
             Text(
