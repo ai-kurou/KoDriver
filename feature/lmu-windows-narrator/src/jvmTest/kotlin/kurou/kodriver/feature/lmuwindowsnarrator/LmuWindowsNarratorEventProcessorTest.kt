@@ -122,6 +122,46 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `テレメトリログの保存に失敗しても例外を投げない`() =
+        runTest {
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.CarLeft, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "カーレフト",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = any(),
+                )
+            } throws RuntimeException("db error")
+
+            createProcessor().processVehicleApproach(
+                vehicleApproach = leftVehicleApproach(distance = 3.0),
+                events = listOf(SpeechEvent.CarLeft),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeft, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "カーレフト",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = any(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `読み上げたタイヤ摩耗イベントを直前と現在のタイヤ摩耗データとともに保存する`() =
         runTest {
             val telemetryJsonSlot = slot<String>()

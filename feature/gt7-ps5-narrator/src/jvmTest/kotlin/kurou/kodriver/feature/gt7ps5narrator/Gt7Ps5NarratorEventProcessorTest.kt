@@ -136,6 +136,47 @@ class Gt7Ps5NarratorEventProcessorTest {
         }
 
     @Test
+    fun `テレメトリログの保存に失敗しても例外を投げない`() =
+        runTest {
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    sourceKey,
+                    "自己ベストラップ更新",
+                    NarrationOutcome.SPOKEN,
+                    any(),
+                )
+            } throws RuntimeException("db error")
+
+            createProcessor().process(
+                sourceKey = sourceKey,
+                telemetry = telemetry(),
+                events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                readoutOrder = listOf(sourceKey),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+            )
+
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    sourceKey,
+                    "自己ベストラップ更新",
+                    NarrationOutcome.SPOKEN,
+                    any(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `テレメトリがNaNでも保存に失敗しない`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
