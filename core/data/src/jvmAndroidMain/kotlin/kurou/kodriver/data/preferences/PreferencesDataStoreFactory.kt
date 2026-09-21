@@ -13,7 +13,11 @@ internal fun <T> preferencesDataStore(
     fileName: String,
     serializer: Serializer<T>,
 ): DataStore<T> =
-    DataStoreFactory.create(
-        serializer = serializer,
-        produceFile = { File("$directory/$fileName") },
+    FallbackOnReadErrorDataStore(
+        delegate =
+            DataStoreFactory.create(
+                serializer = serializer,
+                produceFile = { File("$directory/$fileName") },
+            ),
+        defaultValue = serializer.defaultValue,
     )

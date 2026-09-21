@@ -60,4 +60,12 @@ class AndroidDynamicColorEnabledRepositoryTest {
 
             assertFalse(repository.dynamicColorEnabled().first())
         }
+
+    @Test
+    fun `読み取り失敗時はデフォルト値のfalseを返す`() =
+        runTest(testDispatcher) {
+            val failingRepository = AndroidDynamicColorEnabledRepository(FailingPreferencesDataStore())
+
+            assertFalse(failingRepository.dynamicColorEnabled().first())
+        }
 }

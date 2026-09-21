@@ -94,4 +94,13 @@ class AndroidReadoutPreferencesRepositoryTest {
             assertEquals(emptyMap(), repository.observeReadoutEnabledStates("other").first())
             assertEquals(emptyList(), repository.observeReadoutOrder("other").first())
         }
+
+    @Test
+    fun `読み取り失敗時はenabledStatesが空マップ・orderが空リストを返す`() =
+        runTest(testDispatcher) {
+            val failingRepository = AndroidReadoutPreferencesRepository(FailingPreferencesDataStore())
+
+            assertEquals(emptyMap(), failingRepository.observeReadoutEnabledStates("lmu_windows").first())
+            assertEquals(emptyList(), failingRepository.observeReadoutOrder("lmu_windows").first())
+        }
 }

@@ -60,4 +60,12 @@ class AndroidKeepScreenOnEnabledRepositoryTest {
 
             assertTrue(repository.keepScreenOn().first())
         }
+
+    @Test
+    fun `読み取り失敗時はデフォルト値のtrueを返す`() =
+        runTest(testDispatcher) {
+            val failingRepository = AndroidKeepScreenOnEnabledRepository(FailingPreferencesDataStore())
+
+            assertTrue(failingRepository.keepScreenOn().first())
+        }
 }
