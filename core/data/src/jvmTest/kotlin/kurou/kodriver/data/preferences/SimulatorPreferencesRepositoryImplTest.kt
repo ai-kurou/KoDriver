@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Simulator
@@ -15,11 +15,11 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class SimulatorPreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_simulator_prefs_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = SimulatorPreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = SimulatorPreferencesRepositoryImpl(dataStore)
@@ -31,7 +31,7 @@ class SimulatorPreferencesRepositoryImplTest {
 
     @Test
     fun `初期値はLmuWindows・保存した値を返す・上書きで更新される`() =
-        testScope.runTest {
+        runTest {
             assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
 
             repository.saveSelectedSimulator(Simulator.LmuWindows)

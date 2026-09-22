@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -17,11 +17,11 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_lmu_windows_vehicle_approach_preferences_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = LmuWindowsVehicleApproachPreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = LmuWindowsVehicleApproachPreferencesRepositoryImpl(dataStore)
@@ -33,20 +33,20 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `skipFirstLap の初期値は true`() =
-        testScope.runTest {
+        runTest {
             assertEquals(true, repository.observeSkipFirstLap().first())
         }
 
     @Test
     fun `saveSkipFirstLap で保存した値を observeSkipFirstLap で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveSkipFirstLap(true)
             assertEquals(true, repository.observeSkipFirstLap().first())
         }
 
     @Test
     fun `saveSkipFirstLap を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveSkipFirstLap(true)
             repository.saveSkipFirstLap(false)
             assertEquals(false, repository.observeSkipFirstLap().first())
@@ -54,13 +54,13 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `startReadoutType の初期値は CAR_LEFT_RIGHT`() =
-        testScope.runTest {
+        runTest {
             assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
         }
 
     @Test
     fun `saveStartReadoutType で保存した値を observeStartReadoutType で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
             assertEquals(
                 VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
@@ -70,7 +70,7 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `saveStartReadoutType を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
             repository.saveStartReadoutType(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
             assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
@@ -78,7 +78,7 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `startReadoutType が未知の ID のとき CAR_LEFT_RIGHT を返す`() =
-        testScope.runTest {
+        runTest {
             dataStore.updateData { it.copy(startReadoutType = "unknown") }
 
             assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
@@ -86,7 +86,7 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `sustainedReadoutType の初期値は KEEP_LEFT_RIGHT`() =
-        testScope.runTest {
+        runTest {
             assertEquals(
                 VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
                 repository.observeSustainedReadoutType().first(),
@@ -95,7 +95,7 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `saveSustainedReadoutType で保存した値を observeSustainedReadoutType で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
             assertEquals(
                 VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
@@ -105,7 +105,7 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `saveSustainedReadoutType を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
             repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
             assertEquals(
@@ -116,7 +116,7 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `sustainedReadoutType が未知の ID のとき KEEP_LEFT_RIGHT を返す`() =
-        testScope.runTest {
+        runTest {
             dataStore.updateData { it.copy(sustainedReadoutType = "unknown") }
 
             assertEquals(
@@ -127,13 +127,13 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `enabledStates の初期値は空Map`() =
-        testScope.runTest {
+        runTest {
             assertEquals(emptyMap(), repository.observeEnabledStates().first())
         }
 
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
 
             assertEquals(
@@ -144,7 +144,7 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, true)
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
 
@@ -156,7 +156,7 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState で異なるキーを保存しても互いに独立して保持される`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout, false)
 

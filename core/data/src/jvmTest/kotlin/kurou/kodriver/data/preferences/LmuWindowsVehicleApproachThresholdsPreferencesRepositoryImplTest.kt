@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
@@ -20,11 +20,11 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
         Files
             .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_test")
             .toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = LmuWindowsVehicleApproachThresholdsPreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(dataStore)
@@ -36,7 +36,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
     @Test
     fun `縦方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() =
-        testScope.runTest {
+        runTest {
             assertEquals(
                 LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
                 repository.observeLongitudinalThresholdMeters().first(),
@@ -51,7 +51,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
     @Test
     fun `横方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() =
-        testScope.runTest {
+        runTest {
             assertEquals(
                 LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
                 repository.observeLateralThresholdMeters().first(),
@@ -66,7 +66,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
     @Test
     fun `縦横の閾値は独立して保持される`() =
-        testScope.runTest {
+        runTest {
             repository.saveLongitudinalThresholdMeters(40.0)
             repository.saveLateralThresholdMeters(5.0)
 
@@ -76,7 +76,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
     @Test
     fun `継続時間閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() =
-        testScope.runTest {
+        runTest {
             assertEquals(
                 LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
                 repository.observeSustainedApproachDurationSeconds().first(),

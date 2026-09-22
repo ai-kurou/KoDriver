@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
@@ -17,11 +17,11 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_gt7_tyre_temperature_preferences_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = Gt7Ps5TyreTemperaturePreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("tyre_temperature.pb") },
         )
     private val repository = Gt7Ps5TyreTemperaturePreferencesRepositoryImpl(dataStore)
@@ -33,7 +33,7 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `初期値は95度`() =
-        testScope.runTest {
+        runTest {
             assertEquals(
                 GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
                 repository.observeHighThresholdCelsius().first(),
@@ -42,7 +42,7 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `保存した高温閾値を取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveHighThresholdCelsius(Celsius(100))
 
             assertEquals(Celsius(100), repository.observeHighThresholdCelsius().first())
@@ -50,7 +50,7 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `高温閾値を上書き保存できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveHighThresholdCelsius(Celsius(100))
             repository.saveHighThresholdCelsius(Celsius(105))
 
@@ -59,13 +59,13 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `enabledStates の初期値は空Map`() =
-        testScope.runTest {
+        runTest {
             assertEquals(emptyMap(), repository.observeEnabledStates().first())
         }
 
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
 
             assertEquals(
@@ -76,7 +76,7 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, true)
             repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
 
@@ -88,7 +88,7 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `異なるキーで保存した値がすべて保持される`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, true)
             repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root, false)
 
@@ -103,7 +103,7 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState後にsaveHighThresholdCelsiusを呼んでもenabledStatesは保持される`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
             repository.saveHighThresholdCelsius(Celsius(100))
 

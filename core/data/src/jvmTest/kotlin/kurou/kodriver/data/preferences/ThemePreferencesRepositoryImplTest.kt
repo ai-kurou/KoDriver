@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ThemeMode
@@ -15,11 +15,11 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class ThemePreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_theme_preferences_repo_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = ThemePreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = ThemePreferencesRepositoryImpl(dataStore)
@@ -31,13 +31,13 @@ class ThemePreferencesRepositoryImplTest {
 
     @Test
     fun `themeModeの初期値はSYSTEM`() =
-        testScope.runTest {
+        runTest {
             assertEquals(ThemeMode.SYSTEM, repository.observeThemeMode().first())
         }
 
     @Test
     fun `saveThemeModeで保存した値をobserveThemeModeで取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveThemeMode(ThemeMode.LIGHT)
 
             assertEquals(ThemeMode.LIGHT, repository.observeThemeMode().first())
@@ -45,7 +45,7 @@ class ThemePreferencesRepositoryImplTest {
 
     @Test
     fun `saveThemeModeを複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveThemeMode(ThemeMode.LIGHT)
             repository.saveThemeMode(ThemeMode.DARK)
 
@@ -54,7 +54,7 @@ class ThemePreferencesRepositoryImplTest {
 
     @Test
     fun `themeModeが未知のIDのときSYSTEMを返す`() =
-        testScope.runTest {
+        runTest {
             dataStore.updateData { it.copy(mode = "unknown") }
 
             assertEquals(ThemeMode.SYSTEM, repository.observeThemeMode().first())
