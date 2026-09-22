@@ -1,29 +1,115 @@
 package kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.core.designsystem.KoDriverTheme
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class AceWindowsReadoutRemainingFuelLapsDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `タイトルと説明が表示される`() {
+    fun `デフォルト値3周のスライダーと説明を表示する`() {
         rule.setContent {
-            KoDriverTheme {
-                AceWindowsReadoutRemainingFuelLapsDetailPane()
+            MaterialTheme {
+                AceWindowsReadoutRemainingFuelLapsDetailPaneContent()
             }
         }
 
+        rule
+            .onNodeWithText("現在のベストラップの30秒前にあたるタイミングで判定し", substring = true)
+            .assertIsDisplayed()
+        rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
         rule.onNodeWithText("燃料残り周回数").assertIsDisplayed()
         rule
-            .onNodeWithText(
-                "各ラップごとに燃料と走行可能な残り周回数を計算します。現在のベストラップの30秒前にあたるタイミングで判定し、" +
-                    "設定した周回数以下になると音声でお知らせします。",
-            ).assertIsDisplayed()
+            .onNodeWithText("燃料は残り約3周・燃料がありません")
+            .assertIsDisplayed()
+            .assertIsSelected()
+    }
+
+    @Test
+    fun `スライダーに1周を表示できる`() {
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
+                    uiState = AceWindowsReadoutRemainingFuelLapsDetailUiState(remainingFuelLaps = 1),
+                    onRemainingFuelLapsChanged = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("残り約: 1 周").assertIsDisplayed()
+        rule
+            .onNodeWithText("燃料は残り約1周・燃料がありません")
+            .assertIsDisplayed()
+            .assertIsSelected()
+    }
+
+    @Test
+    fun `スライダーの値を確定するとonRemainingFuelLapsChangedが呼ばれる`() {
+        var changedRemainingFuelLaps: Int? = null
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
+                    uiState = AceWindowsReadoutRemainingFuelLapsDetailUiState(remainingFuelLaps = 3),
+                    onRemainingFuelLapsChanged = { changedRemainingFuelLaps = it },
+                )
+            }
+        }
+
+        rule
+            .onNode(
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
+            ).performSemanticsAction(SemanticsActions.SetProgress) {
+                it(5f)
+            }
+
+        assertEquals(5, changedRemainingFuelLaps)
+    }
+
+    @Test
+    fun `リセットボタンをタップするとonResetRemainingFuelLapsが呼ばれる`() {
+        var resetCalled = false
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
+                    uiState = AceWindowsReadoutRemainingFuelLapsDetailUiState(remainingFuelLaps = 5),
+                    onRemainingFuelLapsChanged = {},
+                    onResetRemainingFuelLaps = { resetCalled = true },
+                )
+            }
+        }
+
+        rule.onNode(hasContentDescription("デフォルトに戻す")).performClick()
+
+        assertTrue(resetCalled)
+    }
+
+    @Test
+    fun `チップをタップするとonPreviewClickedが呼ばれる`() {
+        var previewClicked = false
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
+                    onPreviewClicked = { previewClicked = true },
+                )
+            }
+        }
+
+        rule.onNodeWithText("燃料は残り約3周・燃料がありません").performClick()
+
+        assertTrue(previewClicked)
     }
 }

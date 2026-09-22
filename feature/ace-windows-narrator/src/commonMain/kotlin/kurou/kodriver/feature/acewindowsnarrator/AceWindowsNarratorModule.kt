@@ -108,23 +108,28 @@ val aceWindowsNarratorModule: Module =
     }
 
 private val aceWindowsEventToFile: Map<SpeechEvent, String> =
-    mapOf(
-        SpeechEvent.AceWindowsRemainingFuelWarning to "files/remaining_fuel_caution.wav",
-        SpeechEvent.AceWindowsWhiteFlag to "files/white_flag.wav",
-        SpeechEvent.AceWindowsGreenFlag to "files/green_flag.wav",
-        SpeechEvent.AceWindowsRedFlag to "files/red_flag.wav",
-        SpeechEvent.AceWindowsBlueFlag to "files/blue_flag.wav",
-        SpeechEvent.AceWindowsYellowFlag to "files/yellow_flag.wav",
-        SpeechEvent.AceWindowsBlackFlag to "files/black_flag.wav",
-        SpeechEvent.AceWindowsBlackWhiteFlag to "files/black_white_flag.wav",
-        SpeechEvent.AceWindowsCheckeredFlag to "files/checkered_flag.wav",
-        SpeechEvent.AceWindowsOrangeCircleFlag to "files/orange_circle_flag.wav",
-        SpeechEvent.AceWindowsRedYellowStripesFlag to "files/red_yellow_stripes_flag.wav",
-        SpeechEvent.AceWindowsTyreOverheat to "files/tyre_overheat.wav",
-        SpeechEvent.AceWindowsVehicleApproach to "files/vehicle_approach.wav",
-        SpeechEvent.AceWindowsMyBestLapFormal to "files/my_best_lap_formal.wav",
-        SpeechEvent.AceWindowsMyBestLapCasual to "files/my_best_lap_casual.wav",
-    )
+    buildMap {
+        put(SpeechEvent.AceWindowsRemainingFuelWarning, "files/remaining_fuel_caution.wav")
+        put(SpeechEvent.AceWindowsWhiteFlag, "files/white_flag.wav")
+        put(SpeechEvent.AceWindowsGreenFlag, "files/green_flag.wav")
+        put(SpeechEvent.AceWindowsRedFlag, "files/red_flag.wav")
+        put(SpeechEvent.AceWindowsBlueFlag, "files/blue_flag.wav")
+        put(SpeechEvent.AceWindowsYellowFlag, "files/yellow_flag.wav")
+        put(SpeechEvent.AceWindowsBlackFlag, "files/black_flag.wav")
+        put(SpeechEvent.AceWindowsBlackWhiteFlag, "files/black_white_flag.wav")
+        put(SpeechEvent.AceWindowsCheckeredFlag, "files/checkered_flag.wav")
+        put(SpeechEvent.AceWindowsOrangeCircleFlag, "files/orange_circle_flag.wav")
+        put(SpeechEvent.AceWindowsRedYellowStripesFlag, "files/red_yellow_stripes_flag.wav")
+        put(SpeechEvent.AceWindowsTyreOverheat, "files/tyre_overheat.wav")
+        put(SpeechEvent.AceWindowsVehicleApproach, "files/vehicle_approach.wav")
+        put(SpeechEvent.AceWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
+        put(SpeechEvent.AceWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
+        for (laps in 0..MAX_REMAINING_FUEL_LAPS) {
+            put(SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps), "files/remaining_fuel_laps_$laps.wav")
+        }
+    }
+
+private const val MAX_REMAINING_FUEL_LAPS = 5
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(
