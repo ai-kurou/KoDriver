@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -25,9 +26,10 @@ internal fun FuelConsumptionContent(
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
     gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
     aceWindowsFuel: AceWindowsFuelData?,
+    aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData?,
 ) {
     when (selectedSimulator) {
-        is Simulator.AceWindows -> AceWindowsFuelContent(aceWindowsFuel)
+        is Simulator.AceWindows -> AceWindowsFuelContent(aceWindowsFuel, aceWindowsRemainingFuelLaps)
         is Simulator.Gt7Ps5 -> Gt7Ps5FuelContent(gt7Ps5Telemetry)
         is Simulator.LmuWindows -> LmuWindowsFuelContent(virtualEnergy, lmuWindowsTelemetry)
     }
@@ -113,19 +115,36 @@ private fun Gt7Ps5FuelContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
 }
 
 @Composable
-private fun AceWindowsFuelContent(aceWindowsFuel: AceWindowsFuelData?) {
+private fun AceWindowsFuelContent(
+    aceWindowsFuel: AceWindowsFuelData?,
+    aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData?,
+) {
     if (aceWindowsFuel == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
     }
-    Text(
-        text =
-            stringResource(
-                Res.string.debug_state_fuel_consumption_remaining_percent,
-                formatOneDecimal(aceWindowsFuel.remainingPercent.value),
-            ),
-        style = koDriverNumericTextStyle(),
-    )
+    // ACE は消費実績がない間 remainingLaps が 0 のため、正の有限値のときだけ残り周数を表示する。
+    val remainingLaps = aceWindowsRemainingFuelLaps?.remainingLaps?.takeIf { it.isFinite() && it > 0f }
+    Column {
+        Text(
+            text =
+                stringResource(
+                    Res.string.debug_state_fuel_consumption_remaining_percent,
+                    formatOneDecimal(aceWindowsFuel.remainingPercent.value),
+                ),
+            style = koDriverNumericTextStyle(),
+        )
+        if (remainingLaps != null) {
+            Text(
+                text =
+                    stringResource(
+                        Res.string.debug_state_fuel_consumption_remaining_laps,
+                        formatOneDecimal(remainingLaps.toDouble()),
+                    ),
+                style = koDriverNumericTextStyle(),
+            )
+        }
+    }
 }
 
 private fun formatOneDecimal(value: Double): String {

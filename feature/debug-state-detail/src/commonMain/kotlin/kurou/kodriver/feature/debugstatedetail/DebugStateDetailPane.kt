@@ -202,6 +202,7 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
                 uiState.lmuWindowsTelemetry,
                 uiState.gt7Ps5Telemetry,
                 uiState.aceWindowsFuel,
+                uiState.aceWindowsRemainingFuelLaps,
             )
         },
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to { uiState ->
