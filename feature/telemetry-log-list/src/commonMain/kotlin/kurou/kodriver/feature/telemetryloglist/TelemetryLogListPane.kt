@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.material.icons.filled.VolumeOff
+import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -296,6 +297,12 @@ private fun TelemetryLogEmptyState(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
+            Icon(
+                imageVector = Icons.Outlined.Inbox,
+                contentDescription = null,
+                modifier = Modifier.size(TELEMETRY_LOG_EMPTY_STATE_ICON_SIZE),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Text(
                 text = stringResource(Res.string.telemetry_log_empty_title),
                 style = MaterialTheme.typography.titleMedium,
@@ -515,6 +522,7 @@ private const val FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL = 1
 private const val RESET_ITEM_KEY = "telemetry_log_reset_item"
 internal const val TELEMETRY_LOG_LIST_TEST_TAG = "telemetryLogList"
 private const val JST_OFFSET_MILLIS = 9 * MILLISECONDS_PER_HOUR
+private val TELEMETRY_LOG_EMPTY_STATE_ICON_SIZE = 48.dp
 
 @Preview(showBackground = true)
 @Composable
