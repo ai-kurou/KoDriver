@@ -36,9 +36,9 @@ class SharedMemoryPollingSource(
                             if (!reader.isOpen() && !reader.open()) {
                                 null
                             } else {
-                                // Copy to a heap buffer so downstream never holds a native-backed
-                                // reference, allowing withReaderLock callers to safely unmap/remap
-                                // the reader without risking an access violation on Windows.
+                                // ヒープ上のバッファへコピーする。下流がネイティブメモリを参照したままに
+                                // ならないため、withReaderLock の呼び出し側が Windows でアクセス違反を
+                                // 起こすことなく安全にリーダーをアンマップ・再マップできる。
                                 reader.readBuffer()?.let { native ->
                                     val copy = ByteBuffer.allocate(native.limit()).order(native.order())
                                     native.rewind()
