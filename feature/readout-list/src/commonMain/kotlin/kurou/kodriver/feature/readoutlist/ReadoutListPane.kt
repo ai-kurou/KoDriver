@@ -164,8 +164,8 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(Res.string.priority_hint_label),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
         )
         IconButton(
             onClick = { showHelpSheet = true },
@@ -174,7 +174,7 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.HelpOutline,
                 contentDescription = stringResource(Res.string.priority_hint_description),
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(20.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
