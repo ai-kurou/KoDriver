@@ -3,6 +3,7 @@ package kurou.kodriver.feature.debugstatedetail
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
@@ -34,7 +35,7 @@ import org.koin.dsl.module
  * LmuWindowsVirtualEnergyRepository・LmuWindowsRepository・Gt7Ps5Repository・AceWindowsFuelRepository・
  * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・LmuWindowsTyreCarcassTemperatureRepository・
  * LmuWindowsVehicleClassRepository・AceWindowsStatusRepository・AceWindowsTyreCarcassTemperatureRepository・
- * AceWindowsVehicleApproachRepository・AceWindowsBestLapTimeRepository・LmuWindowsPitStatusRepository・
+ * AceWindowsVehicleApproachRepository・AceWindowsBestLapTimeRepository・AceWindowsRemainingFuelLapsRepository・LmuWindowsPitStatusRepository・
  * LmuWindowsVehicleDamageRepository・LmuWindowsTyreDetachedRepository・DebugStateCardOrderPreferencesRepository
  * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
  */
@@ -45,7 +46,7 @@ val debugStateDetailModule =
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { LmuWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { Gt7Ps5DebugStateUseCases(get(), get()) }
-        factory { AceWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get()) }
+        factory { AceWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get()) }
         factory { DebugStateCardOrderUseCases(get(), get(), get()) }
 
         factory { ObserveSelectedSimulatorUseCase(get()) }
@@ -63,6 +64,7 @@ val debugStateDetailModule =
         factory { ObserveAceWindowsTyreCarcassTemperatureUseCase(get()) }
         factory { ObserveAceWindowsVehicleApproachUseCase(get()) }
         factory { ObserveAceWindowsBestLapTimeUseCase(get()) }
+        factory { ObserveAceWindowsRemainingFuelLapsUseCase(get()) }
         factory { ObserveLmuWindowsPitStatusUseCase(get()) }
         factory { ObserveLmuWindowsVehicleDamageUseCase(get()) }
         factory { ObserveLmuWindowsTyreDetachedUseCase(get()) }

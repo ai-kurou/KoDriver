@@ -3,6 +3,7 @@ package kurou.kodriver.feature.debugstatedetail
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
@@ -51,6 +52,7 @@ data class DebugStateDetailUiState(
     val aceWindowsFlag: AceWindowsFlagData? = null,
     val aceWindowsStatus: AceWindowsStatusData? = null,
     val aceWindowsBestLapTime: AceWindowsBestLapTimeData? = null,
+    val aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData? = null,
     val lmuWindowsPitStatus: LmuWindowsPitStatusData? = null,
     val vehicleApproach: LmuWindowsVehicleApproachData? = null,
     val aceWindowsVehicleApproach: AceWindowsVehicleApproachData? = null,
