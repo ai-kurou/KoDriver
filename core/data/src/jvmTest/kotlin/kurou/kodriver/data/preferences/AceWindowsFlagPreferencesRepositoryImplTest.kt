@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -16,11 +16,11 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsFlagPreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_ace_flag_prefs_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = AceWindowsFlagPreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = AceWindowsFlagPreferencesRepositoryImpl(dataStore)
@@ -32,7 +32,7 @@ class AceWindowsFlagPreferencesRepositoryImplTest {
 
     @Test
     fun `初期値は空Map・保存した値を返す・上書きで更新される`() =
-        testScope.runTest {
+        runTest {
             assertTrue(repository.observeFlagEnabledStates().first().isEmpty())
 
             repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, true)
@@ -50,7 +50,7 @@ class AceWindowsFlagPreferencesRepositoryImplTest {
 
     @Test
     fun `複数フラグを独立して保存・取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, true)
             repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.YellowFlag, false)
             repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.RedFlag, true)

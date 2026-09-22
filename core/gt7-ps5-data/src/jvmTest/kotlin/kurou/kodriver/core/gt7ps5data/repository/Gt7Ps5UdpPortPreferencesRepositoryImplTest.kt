@@ -2,12 +2,12 @@ package kurou.kodriver.core.gt7ps5data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpPortPreferencesSerializer
@@ -24,11 +24,11 @@ import kotlin.test.assertFailsWith
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5UdpPortPreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_gt7_udp_port_repo_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = Gt7Ps5UdpPortPreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = Gt7Ps5UdpPortPreferencesRepositoryImpl(dataStore)
@@ -40,7 +40,7 @@ class Gt7Ps5UdpPortPreferencesRepositoryImplTest {
 
     @Test
     fun `初期値はデフォルトポート・保存した値を返す・上書きで更新される`() =
-        testScope.runTest {
+        runTest {
             assertEquals(GT7_PS5_UDP_PORT_DEFAULT, repository.port().first())
 
             repository.savePort(GT7_PS5_UDP_PORT_ALTERNATE)
@@ -52,7 +52,7 @@ class Gt7Ps5UdpPortPreferencesRepositoryImplTest {
 
     @Test
     fun `読み取り失敗時はデフォルトポートを1回emitして正常終了する`() =
-        testScope.runTest {
+        runTest {
             val failingRepository =
                 Gt7Ps5UdpPortPreferencesRepositoryImpl(
                     FakeGt7Ps5UdpPortPreferencesDataStore(flow { throw IOException("read failed") }),
@@ -63,7 +63,7 @@ class Gt7Ps5UdpPortPreferencesRepositoryImplTest {
 
     @Test
     fun `IOException以外の例外はそのまま伝播する`() =
-        testScope.runTest {
+        runTest {
             val failingRepository =
                 Gt7Ps5UdpPortPreferencesRepositoryImpl(
                     FakeGt7Ps5UdpPortPreferencesDataStore(flow { throw IllegalStateException("boom") }),

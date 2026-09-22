@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
@@ -16,11 +16,11 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_ace_vehicle_approach_preferences_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = AceWindowsVehicleApproachPreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("vehicle_approach.pb") },
         )
     private val repository = AceWindowsVehicleApproachPreferencesRepositoryImpl(dataStore)
@@ -32,7 +32,7 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `初期値は各Defaults定数と一致する`() =
-        testScope.runTest {
+        runTest {
             assertEquals(
                 ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
                 repository.observeThresholdMeters().first(),
@@ -41,7 +41,7 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `保存した閾値を取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveThresholdMeters(7.0)
 
             assertEquals(7.0, repository.observeThresholdMeters().first())
@@ -49,13 +49,13 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `enabledStates の初期値は空Map`() =
-        testScope.runTest {
+        runTest {
             assertEquals(emptyMap(), repository.observeEnabledStates().first())
         }
 
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
 
             assertEquals(
@@ -66,7 +66,7 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, true)
             repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
 
@@ -78,7 +78,7 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `異なるキーで保存した値がすべて保持される`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, true)
             repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.Root, false)
 
@@ -93,7 +93,7 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState後に閾値を保存してもenabledStatesは保持される`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
             repository.saveThresholdMeters(7.0)
 

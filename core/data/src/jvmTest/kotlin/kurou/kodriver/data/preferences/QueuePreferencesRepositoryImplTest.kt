@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -16,11 +16,11 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class QueuePreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_queue_prefs_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = QueuePreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = QueuePreferencesRepositoryImpl(dataStore)
@@ -32,7 +32,7 @@ class QueuePreferencesRepositoryImplTest {
 
     @Test
     fun `初期値は空Map・保存した値を返す・上書きで更新される`() =
-        testScope.runTest {
+        runTest {
             assertTrue(repository.observeQueueEnabledStates().first().isEmpty())
 
             repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
@@ -50,7 +50,7 @@ class QueuePreferencesRepositoryImplTest {
 
     @Test
     fun `複数項目を独立して保存・取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
             repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
             repository.saveQueueEnabledState(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, true)
