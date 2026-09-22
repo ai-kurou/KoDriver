@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
@@ -27,6 +28,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
@@ -48,6 +51,11 @@ internal data class MyBestLapUseCases(
 internal data class RemainingFuelUseCases(
     val observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
     val observeThresholdPercentage: ObserveAceWindowsRemainingFuelThresholdPercentageUseCase,
+)
+
+internal data class RemainingFuelLapsUseCases(
+    val observeAceWindowsRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsUseCase,
+    val observeThreshold: ObserveAceWindowsRemainingFuelLapsThresholdUseCase,
 )
 
 internal data class FlagUseCases(
@@ -79,6 +87,7 @@ internal data class ReadoutListUseCases(
 internal class AceWindowsNarratorViewModel(
     myBestLapUseCases: MyBestLapUseCases,
     remainingFuelUseCases: RemainingFuelUseCases,
+    remainingFuelLapsUseCases: RemainingFuelLapsUseCases,
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
     tyreTemperatureUseCases: TyreTemperatureUseCases,
@@ -133,6 +142,11 @@ internal class AceWindowsNarratorViewModel(
             .observeThresholdPercentage()
             .stateIn(viewModelScope, SharingStarted.Eagerly, ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
 
+    private val remainingFuelLapsThreshold =
+        remainingFuelLapsUseCases
+            .observeThreshold()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT)
+
     private val tyreTemperatureHighThreshold =
         tyreTemperatureUseCases
             .observeHighThreshold()
@@ -161,6 +175,7 @@ internal class AceWindowsNarratorViewModel(
                 tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThreshold.value,
                 vehicleApproachThresholdMeters = vehicleApproachThreshold.value,
                 myBestLapVoiceType = voiceType.value,
+                remainingFuelLapsThreshold = remainingFuelLapsThreshold.value,
             )
 
     private val bestLapTimeFlow =
@@ -173,6 +188,16 @@ internal class AceWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.AceWindows) emptyFlow() else remainingFuelUseCases.observeAceWindowsFuel()
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val remainingFuelLapsFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.AceWindows) {
+                    emptyFlow()
+                } else {
+                    remainingFuelLapsUseCases.observeAceWindowsRemainingFuelLaps()
+                }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val flagFlow =
@@ -246,6 +271,35 @@ internal class AceWindowsNarratorViewModel(
                 narratorState = decision.state
                 eventProcessor.processRemainingFuel(
                     fuel = fuel,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        AceWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val remainingFuelLapsJob =
+        remainingFuelLapsFlow
+            .onEach { remainingFuelLaps ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    determineAceWindowsNarratorReadout.determineRemainingFuelLaps(
+                        state = state,
+                        data = remainingFuelLaps,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processRemainingFuelLaps(
+                    remainingFuelLaps = remainingFuelLaps,
                     events = decision.events,
                     readoutOrder = readoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,

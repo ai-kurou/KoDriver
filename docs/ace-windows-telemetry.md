@@ -393,7 +393,7 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | 3864 / 3928 / 3932 / 3936 | `assists_state`(64 B) / `max_fuel` / `max_turbo_boost` / `use_single_compound` |
 | 3940 | `car_ids`（960 B、末尾。合計 4,900 B） |
 
-`:core:ace-windows-data` の `AceWindowsMapper` はこの実測値と一致するオフセット定数（`OFF_CAR_LOCATION = 1388`、`OFF_CAR_COORDINATES = 3124`、`OFF_CAR_IDS = 3940` 等）をハードコードしている。
+`:core:ace-windows-data` の `AceWindowsMapper` はこの実測値と一致するオフセット定数（`OFF_CAR_LOCATION = 1388`、`OFF_LAPS_POSSIBLE_WITH_FUEL = 1464`（宣言順からの算出値。実機未確認）、`OFF_CAR_COORDINATES = 3124`、`OFF_CAR_IDS = 3940` 等）をハードコードしている。
 
 ---
 

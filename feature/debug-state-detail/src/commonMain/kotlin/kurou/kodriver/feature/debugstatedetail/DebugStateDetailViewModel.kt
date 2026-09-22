@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
@@ -33,6 +34,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
@@ -73,6 +75,7 @@ private data class OptionalTelemetry(
     val aceWindowsTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData?,
     val aceWindowsVehicleApproach: AceWindowsVehicleApproachData?,
     val aceWindowsBestLapTime: AceWindowsBestLapTimeData?,
+    val aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData? = null,
 )
 
 private val lmuWindowsSupportedCardKeys =
@@ -146,6 +149,7 @@ internal data class AceWindowsDebugStateUseCases(
     val observeTyreCarcassTemperature: ObserveAceWindowsTyreCarcassTemperatureUseCase,
     val observeVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
     val observeBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
+    val observeRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsUseCase,
 )
 
 internal data class DebugStateCardOrderUseCases(
@@ -344,7 +348,14 @@ internal class DebugStateDetailViewModel(
                 markCardsReceived(Simulator.AceWindows, DebugStateCardKey.BEST_LAP)
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    private val _optionalTelemetry: StateFlow<OptionalTelemetry> =
+    private val _aceWindowsRemainingFuelLaps: StateFlow<AceWindowsRemainingFuelLapsData?> =
+        aceWindowsUseCases
+            .observeRemainingFuelLaps()
+            .onEach {
+                markCardsReceived(Simulator.AceWindows, DebugStateCardKey.FUEL_CONSUMPTION)
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val _optionalTelemetryWithoutRemainingFuelLaps: StateFlow<OptionalTelemetry> =
         combine(
             _optionalTelemetryBase,
             _aceWindowsStatus,
@@ -358,6 +369,18 @@ internal class DebugStateDetailViewModel(
                 aceWindowsVehicleApproach = vehicleApproach,
                 aceWindowsBestLapTime = bestLapTime,
             )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            OptionalTelemetry(null, null, null, null, null, null, null, null, null),
+        )
+
+    private val _optionalTelemetry: StateFlow<OptionalTelemetry> =
+        combine(
+            _optionalTelemetryWithoutRemainingFuelLaps,
+            _aceWindowsRemainingFuelLaps,
+        ) { base, remainingFuelLaps ->
+            base.copy(aceWindowsRemainingFuelLaps = remainingFuelLaps)
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -382,6 +405,7 @@ internal class DebugStateDetailViewModel(
                 aceWindowsFlag = optionalTelemetry.aceWindowsFlag,
                 aceWindowsStatus = optionalTelemetry.aceWindowsStatus,
                 aceWindowsBestLapTime = optionalTelemetry.aceWindowsBestLapTime,
+                aceWindowsRemainingFuelLaps = optionalTelemetry.aceWindowsRemainingFuelLaps,
                 lmuWindowsPitStatus = raceState.lmuWindowsPitStatus,
                 vehicleApproach = raceState.vehicleApproach,
                 aceWindowsVehicleApproach = optionalTelemetry.aceWindowsVehicleApproach,

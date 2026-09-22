@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
@@ -206,6 +207,72 @@ class DebugStateFuelConsumptionCardTest {
 
         rule.onNodeWithText("燃料消費").assertIsDisplayed()
         rule.onNodeWithText("残量 42.0%").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがAceWindowsの場合は残り燃料の割合と残り周数を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
+                            aceWindowsRemainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = 3.46f),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("残量 42.0%").assertIsDisplayed()
+        rule.onNodeWithText("残り 3.5周").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがAceWindowsで残り周数が0の場合は残り周数を表示しない`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
+                            aceWindowsRemainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = 0f),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("残量 42.0%").assertIsDisplayed()
+        rule.onNodeWithText("残り", substring = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun `selectedSimulatorがAceWindowsで残り周数が非有限値の場合は残り周数を表示しない`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
+                            aceWindowsRemainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = Float.NaN),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("残量 42.0%").assertIsDisplayed()
+        rule.onNodeWithText("残り", substring = true).assertDoesNotExist()
     }
 
     private fun sampleLmuTelemetry(currentLap: Int) =

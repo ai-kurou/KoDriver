@@ -68,6 +68,7 @@ import kurou.kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.AceWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.AceWindowsReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsReadoutRemainingFuelDetailPane
+import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.AceWindowsReadoutRemainingFuelLapsDetailPane
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.AceWindowsReadoutTyreTemperatureDetailPane
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.AceWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
@@ -794,6 +795,10 @@ private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.Ace
 
         ReadoutListItemType.AceWindows.RemainingFuel -> {
             AceWindowsReadoutRemainingFuelDetailPane()
+        }
+
+        ReadoutListItemType.AceWindows.RemainingFuelLaps -> {
+            AceWindowsReadoutRemainingFuelLapsDetailPane()
         }
 
         ReadoutListItemType.AceWindows.VehicleApproach -> {

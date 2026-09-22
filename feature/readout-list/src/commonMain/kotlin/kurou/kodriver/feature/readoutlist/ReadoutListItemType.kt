@@ -50,6 +50,8 @@ sealed class ReadoutListItemType(
 
         data object RemainingFuel : AceWindows(ReadoutItemKey.AceWindows.RemainingFuel.Root)
 
+        data object RemainingFuelLaps : AceWindows(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root)
+
         data object MyBestLap : AceWindows(ReadoutItemKey.AceWindows.MyBestLap.Root)
     }
 
@@ -99,6 +101,7 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.AceWindows.Flag.Root -> AceWindows.Flag
                 ReadoutItemKey.AceWindows.TyreTemperature.Root -> AceWindows.TyreTemperature
                 ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
+                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root -> AceWindows.RemainingFuelLaps
                 ReadoutItemKey.AceWindows.MyBestLap.Root -> AceWindows.MyBestLap
                 else -> null
             }
@@ -152,7 +155,8 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.AceWindows.VehicleApproach.Root -> 1
                 ReadoutItemKey.AceWindows.TyreTemperature.Root -> 2
                 ReadoutItemKey.AceWindows.RemainingFuel.Root -> 3
-                ReadoutItemKey.AceWindows.MyBestLap.Root -> 4
+                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root -> 4
+                ReadoutItemKey.AceWindows.MyBestLap.Root -> 5
             }
     }
 }

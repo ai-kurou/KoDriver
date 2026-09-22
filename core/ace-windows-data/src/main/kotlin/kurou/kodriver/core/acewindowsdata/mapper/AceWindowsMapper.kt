@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
@@ -58,6 +59,7 @@ import kotlin.math.sqrt
  *   [+1388] car_location (int32)
  *   [+1392] pit_info (SMEvoPitInfo, 64バイト)
  *   [+1456] fuel_liter_used 〜 gear_rpm_window (float x8)
+ *     fuel_liter_used[+1456], fuel_liter_per_lap[+1460], laps_possible_with_fuel[+1464] ← RemainingFuelLaps 取得対象
  *   [+1488] instrumentation, instrumentation_min_limit, instrumentation_max_limit,
  *           electronics, electronics_min_limit, electronics_max_limit,
  *           electronics_is_modifiable (各128バイト x7 = 896バイト)
@@ -100,6 +102,7 @@ internal object AceWindowsMapper {
     private const val TYRE_STATE_STRIDE = 256
     private const val OFF_TYRE_TEMPERATURE_C = 12
     private const val OFF_CAR_LOCATION = 1388
+    private const val OFF_LAPS_POSSIBLE_WITH_FUEL = 1464
     private const val OFF_BEST_LAPTIME_MS = 2400
     private const val OFF_FLAG = 2404
     private const val OFF_CAR_COORDINATES = 3124
@@ -117,6 +120,13 @@ internal object AceWindowsMapper {
         AceWindowsFuelData(
             remainingPercent =
                 FuelPercent(buffer.getFloat(OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT).toDouble() * PERCENT_MULTIPLIER),
+        )
+
+    // laps_possible_with_fuel は直近の平均消費率 (fuel_liter_per_lap) から ACE が算出する
+    // 走行可能周回数で、走行中の部分ラップを含む小数値。
+    fun mapRemainingFuelLaps(buffer: ByteBuffer): AceWindowsRemainingFuelLapsData =
+        AceWindowsRemainingFuelLapsData(
+            remainingLaps = buffer.getFloat(OFF_LAPS_POSSIBLE_WITH_FUEL),
         )
 
     fun mapTyreCarcassTemperature(buffer: ByteBuffer): AceWindowsTyreCarcassTemperatureData =

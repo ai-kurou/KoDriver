@@ -173,6 +173,14 @@ sealed interface SpeechEvent {
         override val narratedText = if (laps <= 0) "必ずピットイン" else "残り約${laps}周でピットイン"
     }
 
+    /** ACE の残燃料で走行可能な周回数を読み上げるイベント。文言・WAV は GT7 の [RemainingFuelLapsWarning] と共通。 */
+    data class AceWindowsRemainingFuelLapsWarning(
+        val laps: Int,
+    ) : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+        override val narratedText = if (laps <= 0) "燃料がありません" else "燃料は残り約${laps}周"
+    }
+
     data object AceWindowsRemainingFuelWarning : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
         override val narratedText = "残り燃料警告"

@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
@@ -59,6 +60,7 @@ import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
@@ -77,6 +79,7 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
@@ -135,6 +138,8 @@ class DebugStateDetailViewModelTest {
 
     private val aceWindowsBestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
 
+    private val aceWindowsRemainingFuelLapsRepository: AceWindowsRemainingFuelLapsRepository = mockk()
+
     private val lmuWindowsPitStatusRepository: LmuWindowsPitStatusRepository = mockk()
 
     private val vehicleDamageRepository: LmuWindowsVehicleDamageRepository = mockk()
@@ -186,6 +191,8 @@ class DebugStateDetailViewModelTest {
                     observeVehicleApproach =
                         ObserveAceWindowsVehicleApproachUseCase(aceWindowsVehicleApproachRepository),
                     observeBestLapTime = ObserveAceWindowsBestLapTimeUseCase(aceWindowsBestLapTimeRepository),
+                    observeRemainingFuelLaps =
+                        ObserveAceWindowsRemainingFuelLapsUseCase(aceWindowsRemainingFuelLapsRepository),
                 ),
             cardOrderUseCases =
                 DebugStateCardOrderUseCases(
@@ -218,6 +225,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -241,6 +250,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -260,6 +270,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -290,6 +301,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -314,6 +327,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -333,6 +347,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -363,6 +378,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -386,6 +403,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -405,6 +423,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -435,6 +454,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -458,6 +479,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -477,6 +499,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -507,6 +530,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -530,6 +555,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -549,6 +575,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -579,6 +606,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -602,6 +631,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -621,6 +651,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -652,6 +683,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -675,6 +708,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -694,6 +728,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -724,6 +759,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -747,6 +784,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -766,6 +804,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -800,6 +839,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -823,6 +864,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -842,6 +884,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -873,6 +916,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -896,6 +941,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -915,6 +961,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -946,6 +993,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -969,6 +1018,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -988,6 +1038,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1019,6 +1070,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -1042,6 +1095,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1061,6 +1115,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1095,6 +1150,8 @@ class DebugStateDetailViewModelTest {
                 )
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -1118,6 +1175,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1137,6 +1195,83 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
+                lmuWindowsPitStatusRepository,
+                vehicleDamageRepository,
+                tyreDetachedRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `ACE燃料残り周回数を購読すると uiState に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+                MutableStateFlow(sampleTyreCarcassTemperature())
+            every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
+            every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
+            every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+                MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps(remainingLaps = 3.5f))
+            every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
+            every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+
+            val state = viewModel.uiState.first()
+
+            assertEquals(3.5f, state.aceWindowsRemainingFuelLaps?.remainingLaps)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
+            verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
+            verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
+            verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
+            verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                tyreCarcassTemperatureRepository,
+                vehicleClassRepository,
+                aceWindowsStatusRepository,
+                aceWindowsTyreCarcassTemperatureRepository,
+                aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1167,6 +1302,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns
                 MutableStateFlow(samplePitStatus(pitState = LmuWindowsPitState.ENTERING))
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
@@ -1191,6 +1328,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1210,6 +1348,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1240,6 +1379,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns
                 MutableStateFlow(sampleVehicleDamage(overheating = true, partDetached = true))
@@ -1265,6 +1406,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1284,6 +1426,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1314,6 +1457,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns
@@ -1338,6 +1483,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1357,6 +1503,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1387,6 +1534,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -1430,6 +1579,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1449,6 +1599,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1479,6 +1630,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -1523,6 +1676,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1542,6 +1696,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1572,6 +1727,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -1615,6 +1772,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1635,6 +1793,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1665,6 +1824,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -1688,6 +1849,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1707,6 +1869,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1737,6 +1900,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -1769,6 +1934,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1788,6 +1954,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1818,6 +1985,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -1852,6 +2021,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
             verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
@@ -1871,6 +2041,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsTyreCarcassTemperatureRepository,
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1902,6 +2073,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
                 MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -1999,6 +2172,9 @@ private fun sampleAceWindowsVehicleApproach() = AceWindowsVehicleApproachData(ne
 
 private fun sampleAceWindowsBestLapTime(bestLapTimeMs: Int = 0) =
     AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)
+
+private fun sampleAceWindowsRemainingFuelLaps(remainingLaps: Float = 0f) =
+    AceWindowsRemainingFuelLapsData(remainingLaps = remainingLaps)
 
 private fun samplePitStatus(pitState: LmuWindowsPitState = LmuWindowsPitState.NONE) =
     LmuWindowsPitStatusData(inPits = false, pitState = pitState, inGarageStall = false)

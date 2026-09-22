@@ -23,6 +23,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
@@ -37,6 +38,8 @@ import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
@@ -52,6 +55,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
@@ -79,6 +84,10 @@ class AceWindowsNarratorViewModelTest {
     private val fuelRepository: AceWindowsFuelRepository = mockk()
 
     private val remainingFuelPreferencesRepository: AceWindowsRemainingFuelPreferencesRepository = mockk()
+
+    private val remainingFuelLapsRepository: AceWindowsRemainingFuelLapsRepository = mockk()
+
+    private val remainingFuelLapsPreferencesRepository: AceWindowsRemainingFuelLapsPreferencesRepository = mockk()
 
     private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk()
 
@@ -112,6 +121,7 @@ class AceWindowsNarratorViewModelTest {
         Dispatchers.resetMain()
     }
 
+    @Suppress("LongParameterList")
     private fun createViewModel(
         fuelChannel: Channel<AceWindowsFuelData>,
         ttsEngine: TextToSpeechEngine,
@@ -119,6 +129,7 @@ class AceWindowsNarratorViewModelTest {
         tyreCarcassTemperatureChannel: Channel<AceWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         vehicleApproachChannel: Channel<AceWindowsVehicleApproachData> = Channel(Channel.UNLIMITED),
         bestLapTimeChannel: Channel<AceWindowsBestLapTimeData> = Channel(Channel.UNLIMITED),
+        remainingFuelLapsChannel: Channel<AceWindowsRemainingFuelLapsData> = Channel(Channel.UNLIMITED),
         currentTimeMs: () -> Long = { 0L },
     ): AceWindowsNarratorViewModel {
         every { fuelRepository.fuelStream() } returns fuelChannel.receiveAsFlow()
@@ -130,6 +141,9 @@ class AceWindowsNarratorViewModelTest {
             vehicleApproachRepository.vehicleApproachStream()
         } returns vehicleApproachChannel.receiveAsFlow()
         every { bestLapTimeRepository.bestLapTimeStream() } returns bestLapTimeChannel.receiveAsFlow()
+        every {
+            remainingFuelLapsRepository.remainingFuelLapsStream()
+        } returns remainingFuelLapsChannel.receiveAsFlow()
         return AceWindowsNarratorViewModel(
             myBestLapUseCases =
                 MyBestLapUseCases(
@@ -144,6 +158,13 @@ class AceWindowsNarratorViewModelTest {
                     observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(fuelRepository),
                     observeThresholdPercentage =
                         ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
+                ),
+            remainingFuelLapsUseCases =
+                RemainingFuelLapsUseCases(
+                    observeAceWindowsRemainingFuelLaps =
+                        ObserveAceWindowsRemainingFuelLapsUseCase(remainingFuelLapsRepository),
+                    observeThreshold =
+                        ObserveAceWindowsRemainingFuelLapsThresholdUseCase(remainingFuelLapsPreferencesRepository),
                 ),
             readoutListUseCases =
                 ReadoutListUseCases(
@@ -268,6 +289,103 @@ class AceWindowsNarratorViewModelTest {
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
 
+    @Test
+    fun `燃料残り周回数が閾値以下になると読み上げる`() =
+        runTest(testDispatcher) {
+            val remainingFuelLapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30, remainingFuelLapsThreshold = 2)
+            stubRemainingFuelLapsTelemetryLog()
+            createViewModel(
+                fuelChannel = Channel(Channel.UNLIMITED),
+                ttsEngine = ttsEngine,
+                remainingFuelLapsChannel = remainingFuelLapsChannel,
+            )
+
+            remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 3.5f))
+            remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 2.5f))
+            remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 2.1f))
+            remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 1.9f))
+
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(2),
+                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(1),
+                ),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `燃料残り周回数の読み上げ時に現在と直前のデータを保存する`() =
+        runTest(testDispatcher) {
+            val remainingFuelLapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
+            val telemetryJsons = mutableListOf<String>()
+            val ttsEngine = mockTts(mutableListOf())
+            stubReadoutDefaults(thresholdPercentage = 30, remainingFuelLapsThreshold = 3)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+                    "燃料は残り約3周",
+                    any(),
+                    capture(telemetryJsons),
+                )
+            } just Runs
+            createViewModel(
+                fuelChannel = Channel(Channel.UNLIMITED),
+                ttsEngine = ttsEngine,
+                remainingFuelLapsChannel = remainingFuelLapsChannel,
+                currentTimeMs = { 123_456L },
+            )
+
+            remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 4.5f))
+            remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 3.5f))
+
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""previousRemainingFuelLaps":{"remainingLaps":4.5}"""),
+            )
+            assertEquals(true, telemetryJsons.single().contains(""""remainingFuelLaps":{"remainingLaps":3.5}"""))
+        }
+
+    @Test
+    fun `燃料残り周回数項目が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
+            val remainingFuelLapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to false),
+            )
+            createViewModel(
+                fuelChannel = Channel(Channel.UNLIMITED),
+                ttsEngine = ttsEngine,
+                remainingFuelLapsChannel = remainingFuelLapsChannel,
+            )
+
+            remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 1.5f))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    private fun stubRemainingFuelLapsTelemetryLog() {
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                any(),
+                Simulator.AceWindows,
+                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+                any(),
+                any(),
+                any(),
+            )
+        } just Runs
+    }
+
     /**
      * simulator/enabledStates/readoutOrder/thresholdの標準スタブをまとめて設定する。
      * ViewModelがコンストラクタ内で即座にFlowを購読・combineするため、必ず [createViewModel] の前に呼ぶこと。
@@ -287,6 +405,7 @@ class AceWindowsNarratorViewModelTest {
             ),
         vehicleApproachThresholdMeters: Double = 10.0,
         myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+        remainingFuelLapsThreshold: Int = 3,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(myBestLapVoiceType)
@@ -299,6 +418,9 @@ class AceWindowsNarratorViewModelTest {
         every {
             remainingFuelPreferencesRepository.observeThresholdPercentage()
         } returns MutableStateFlow(thresholdPercentage)
+        every {
+            remainingFuelLapsPreferencesRepository.observeThresholdLaps()
+        } returns MutableStateFlow(remainingFuelLapsThreshold)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
         every {

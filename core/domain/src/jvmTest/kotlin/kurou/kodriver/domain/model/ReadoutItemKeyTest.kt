@@ -112,6 +112,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.AceWindows.MyBestLap.Root,
             ReadoutItemKey.fromValue("ace_windows_my_best_lap"),
         )
+        assertEquals(
+            ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+            ReadoutItemKey.fromValue("ace_windows_remaining_fuel_laps"),
+        )
     }
 
     @Test
@@ -142,5 +146,6 @@ class ReadoutItemKeyTest {
         assertEquals(true, ReadoutItemKey.AceWindows.Flag.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.AceWindows.TyreTemperature.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.AceWindows.MyBestLap.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.AceWindows.RemainingFuelLaps.Root.supportsQueue)
     }
 }

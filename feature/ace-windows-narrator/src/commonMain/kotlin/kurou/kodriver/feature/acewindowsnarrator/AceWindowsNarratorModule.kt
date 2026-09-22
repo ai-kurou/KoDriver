@@ -15,6 +15,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
@@ -41,8 +43,8 @@ import org.koin.dsl.module
  * ACE (Assetto Corsa EVO) Windows版 アナウンス制御（ace-windows-narrator feature）の Koin モジュール。
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
- *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / ReadoutListUseCases / FlagUseCases /
- *   TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
+ *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
+ *   ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
@@ -52,11 +54,12 @@ import org.koin.dsl.module
 val aceWindowsNarratorModule: Module =
     module {
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { MyBestLapUseCases(get(), get()) }
         factory { RemainingFuelUseCases(get(), get()) }
+        factory { RemainingFuelLapsUseCases(get(), get()) }
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get()) }
@@ -70,6 +73,8 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveAceWindowsMyBestLapVoiceTypeUseCase(get()) }
         factory { ObserveAceWindowsFuelUseCase(get()) }
         factory { ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(get()) }
+        factory { ObserveAceWindowsRemainingFuelLapsUseCase(get()) }
+        factory { ObserveAceWindowsRemainingFuelLapsThresholdUseCase(get()) }
         factory { ObserveAceWindowsFlagUseCase(get()) }
         factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
         factory { ObserveAceWindowsTyreCarcassTemperatureUseCase(get()) }
@@ -108,23 +113,28 @@ val aceWindowsNarratorModule: Module =
     }
 
 private val aceWindowsEventToFile: Map<SpeechEvent, String> =
-    mapOf(
-        SpeechEvent.AceWindowsRemainingFuelWarning to "files/remaining_fuel_caution.wav",
-        SpeechEvent.AceWindowsWhiteFlag to "files/white_flag.wav",
-        SpeechEvent.AceWindowsGreenFlag to "files/green_flag.wav",
-        SpeechEvent.AceWindowsRedFlag to "files/red_flag.wav",
-        SpeechEvent.AceWindowsBlueFlag to "files/blue_flag.wav",
-        SpeechEvent.AceWindowsYellowFlag to "files/yellow_flag.wav",
-        SpeechEvent.AceWindowsBlackFlag to "files/black_flag.wav",
-        SpeechEvent.AceWindowsBlackWhiteFlag to "files/black_white_flag.wav",
-        SpeechEvent.AceWindowsCheckeredFlag to "files/checkered_flag.wav",
-        SpeechEvent.AceWindowsOrangeCircleFlag to "files/orange_circle_flag.wav",
-        SpeechEvent.AceWindowsRedYellowStripesFlag to "files/red_yellow_stripes_flag.wav",
-        SpeechEvent.AceWindowsTyreOverheat to "files/tyre_overheat.wav",
-        SpeechEvent.AceWindowsVehicleApproach to "files/vehicle_approach.wav",
-        SpeechEvent.AceWindowsMyBestLapFormal to "files/my_best_lap_formal.wav",
-        SpeechEvent.AceWindowsMyBestLapCasual to "files/my_best_lap_casual.wav",
-    )
+    buildMap {
+        put(SpeechEvent.AceWindowsRemainingFuelWarning, "files/remaining_fuel_caution.wav")
+        put(SpeechEvent.AceWindowsWhiteFlag, "files/white_flag.wav")
+        put(SpeechEvent.AceWindowsGreenFlag, "files/green_flag.wav")
+        put(SpeechEvent.AceWindowsRedFlag, "files/red_flag.wav")
+        put(SpeechEvent.AceWindowsBlueFlag, "files/blue_flag.wav")
+        put(SpeechEvent.AceWindowsYellowFlag, "files/yellow_flag.wav")
+        put(SpeechEvent.AceWindowsBlackFlag, "files/black_flag.wav")
+        put(SpeechEvent.AceWindowsBlackWhiteFlag, "files/black_white_flag.wav")
+        put(SpeechEvent.AceWindowsCheckeredFlag, "files/checkered_flag.wav")
+        put(SpeechEvent.AceWindowsOrangeCircleFlag, "files/orange_circle_flag.wav")
+        put(SpeechEvent.AceWindowsRedYellowStripesFlag, "files/red_yellow_stripes_flag.wav")
+        put(SpeechEvent.AceWindowsTyreOverheat, "files/tyre_overheat.wav")
+        put(SpeechEvent.AceWindowsVehicleApproach, "files/vehicle_approach.wav")
+        put(SpeechEvent.AceWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
+        put(SpeechEvent.AceWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
+        for (laps in 0..MAX_REMAINING_FUEL_LAPS) {
+            put(SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps), "files/remaining_fuel_laps_$laps.wav")
+        }
+    }
+
+private const val MAX_REMAINING_FUEL_LAPS = 5
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(
