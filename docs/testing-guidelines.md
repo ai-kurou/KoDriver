@@ -24,8 +24,10 @@
 - list/detail などアプリ全体・2ペイン構成: `720.dp x 640.dp` または `840.dp x 640.dp`
   - `840.dp x 640.dp`: `ReadoutContent`/`OtherContent`/`TelemetryLogContent` など、ナビゲーション用 chrome（NavigationRail 等）を含まない feature の `XxxContent` 単体をキャプチャする場合。2ペイン部分の表示確認に幅を丸ごと使う。
   - `720.dp x 640.dp`: `AppScreenContent` など、NavigationRail を含むアプリ全体の画面をキャプチャする場合。ボックス内に NavigationRail 自体の幅も含まれるため、2ペイン部分に使える幅は `840.dp` より狭くなる。
-- ダイアログ表示用のホスト: `480.dp x 320.dp`
-- デスクトップ Splash など独立したウィンドウ: 既存の専用サイズ
+- `AppScreenContent` の `NavigationSuiteType.NavigationBar`（スマホ縦画面・1ペイン）をキャプチャする場合: `360.dp x 640.dp`
+- ダイアログ・ボトムシート表示用のホスト: `480.dp x 320.dp`
+- デスクトップ Splash・オーバーレイなど独立したウィンドウ: 既存の専用サイズ
+- 上記いずれにも該当しない、Pane を構成する個々のコンポーネント（`DetailPaneCard`・`ThresholdSlider` 等）単体をキャプチャする場合: 幅は `360.dp` を基準に、高さはコンポーネントの内容に応じて過不足のないサイズにする
 
 新規追加・移動したスクリーンショットテストのゴールデン画像は、手元で生成してコミットしてはならない。ゴールデン画像の追加・更新は CI（`on-pull-request.yml` の verify → 失敗時の自動再記録）で行われる。動作確認などで手元に `**/snapshots/*.png` が生成・更新された場合は、PR 作成や報告の前に必ず破棄すること。Android 向けスクリーンショットテストを追加する場合は、PR 説明に Desktop/JVM 版と見た目が異なる理由を書くこと。
 
