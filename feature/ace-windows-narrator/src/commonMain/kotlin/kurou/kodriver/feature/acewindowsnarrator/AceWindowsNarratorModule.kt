@@ -15,6 +15,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
@@ -41,8 +43,8 @@ import org.koin.dsl.module
  * ACE (Assetto Corsa EVO) Windows版 アナウンス制御（ace-windows-narrator feature）の Koin モジュール。
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
- *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / ReadoutListUseCases / FlagUseCases /
- *   TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
+ *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
+ *   ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
@@ -52,11 +54,12 @@ import org.koin.dsl.module
 val aceWindowsNarratorModule: Module =
     module {
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { MyBestLapUseCases(get(), get()) }
         factory { RemainingFuelUseCases(get(), get()) }
+        factory { RemainingFuelLapsUseCases(get(), get()) }
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get()) }
@@ -70,6 +73,8 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveAceWindowsMyBestLapVoiceTypeUseCase(get()) }
         factory { ObserveAceWindowsFuelUseCase(get()) }
         factory { ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(get()) }
+        factory { ObserveAceWindowsRemainingFuelLapsUseCase(get()) }
+        factory { ObserveAceWindowsRemainingFuelLapsThresholdUseCase(get()) }
         factory { ObserveAceWindowsFlagUseCase(get()) }
         factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
         factory { ObserveAceWindowsTyreCarcassTemperatureUseCase(get()) }

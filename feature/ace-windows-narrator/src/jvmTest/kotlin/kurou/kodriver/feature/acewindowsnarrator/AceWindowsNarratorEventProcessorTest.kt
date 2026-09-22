@@ -15,6 +15,7 @@ import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
@@ -495,6 +496,107 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `直前の燃料残り周回数データがないイベントはnullとして保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "燃料は残り約2周",
+                    NarrationOutcome.SPOKEN,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+
+            createProcessor().processRemainingFuelLaps(
+                remainingFuelLaps = remainingFuelLaps(2.5f),
+                events = listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+
+            assertEquals(true, telemetryJsons.single().contains("\"previousRemainingFuelLaps\":null"))
+            assertEquals(true, telemetryJsons.single().contains(""""remainingFuelLaps":{"remainingLaps":2.5}"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "燃料は残り約2周",
+                    NarrationOutcome.SPOKEN,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `読み上げた燃料残り周回数イベントを直前と現在の燃料残り周回数データとともに保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val processor = createProcessor()
+            val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "燃料は残り約2周",
+                    NarrationOutcome.SPOKEN,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+
+            processor.processRemainingFuelLaps(
+                remainingFuelLaps(3.5f),
+                emptyList(),
+                emptyList(),
+                emptyMap(),
+                100L,
+                logContext(),
+            )
+            processor.processRemainingFuelLaps(
+                remainingFuelLaps(2.5f),
+                listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)),
+                listOf(key),
+                emptyMap(),
+                200L,
+                logContext(),
+            )
+
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""previousRemainingFuelLaps":{"remainingLaps":3.5}"""),
+            )
+            assertEquals(true, telemetryJsons.single().contains(""""remainingFuelLaps":{"remainingLaps":2.5}"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "燃料は残り約2周",
+                    NarrationOutcome.SPOKEN,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `直前のフラグデータがないイベントはnullとして保存する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
@@ -724,4 +826,6 @@ class AceWindowsNarratorEventProcessorTest {
                 ),
             finalState = AceWindowsNarratorState(),
         )
+
+    private fun remainingFuelLaps(remainingLaps: Float) = AceWindowsRemainingFuelLapsData(remainingLaps = remainingLaps)
 }

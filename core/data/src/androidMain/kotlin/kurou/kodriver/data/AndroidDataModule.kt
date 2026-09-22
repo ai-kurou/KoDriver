@@ -51,6 +51,7 @@ import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsBestLapTimeRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsFlagRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsFuelRepository
+import kurou.kodriver.data.websocket.WebSocketAceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsStatusRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsVehicleApproachRepository
@@ -72,6 +73,7 @@ import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
@@ -331,6 +333,9 @@ private fun androidDataModuleAceWindows() =
         }
         single<AceWindowsBestLapTimeRepository> {
             WebSocketAceWindowsBestLapTimeRepository(serverIpRepository = get(), client = get())
+        }
+        single<AceWindowsRemainingFuelLapsRepository> {
+            WebSocketAceWindowsRemainingFuelLapsRepository(serverIpRepository = get(), client = get())
         }
     }
 
