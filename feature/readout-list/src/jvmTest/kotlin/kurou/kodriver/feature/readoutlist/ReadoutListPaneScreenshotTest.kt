@@ -153,6 +153,7 @@ class ReadoutListPaneScreenshotTest {
                 lastItemText = itemDisplayName(items.last())
                 KoDriverTheme {
                     Surface {
+                        // 先頭へ戻るボタンの表示にはスクロールが必要なため、listPane標準サイズ(360x1080)より低くしている
                         Box(modifier = Modifier.requiredSize(360.dp, 400.dp)) {
                             ReadoutListPane(
                                 uiState =
@@ -185,7 +186,7 @@ class ReadoutListPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Column(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                        Column(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
                             PriorityHintSheetContent()
                         }
                     }
