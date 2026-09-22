@@ -68,6 +68,7 @@ import kurou.kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.AceWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.AceWindowsReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsReadoutRemainingFuelDetailPane
+import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.AceWindowsReadoutRemainingFuelLapsDetailPane
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.AceWindowsReadoutTyreTemperatureDetailPane
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.AceWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
@@ -796,8 +797,9 @@ private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.Ace
             AceWindowsReadoutRemainingFuelDetailPane()
         }
 
-        // detailPane は未実装（listPaneの項目追加のみ対応）。
-        ReadoutListItemType.AceWindows.RemainingFuelLaps -> {}
+        ReadoutListItemType.AceWindows.RemainingFuelLaps -> {
+            AceWindowsReadoutRemainingFuelLapsDetailPane()
+        }
 
         ReadoutListItemType.AceWindows.VehicleApproach -> {
             AceWindowsReadoutVehicleApproachDetailPane()

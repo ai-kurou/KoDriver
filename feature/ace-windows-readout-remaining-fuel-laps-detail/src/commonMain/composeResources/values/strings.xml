@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="remaining_fuel_laps_title">燃料残り周回数</string>
+    <string name="remaining_fuel_laps_description">各ラップごとに燃料と走行可能な残り周回数を計算します。現在のベストラップの30秒前にあたるタイミングで判定し、設定した周回数以下になると音声でお知らせします。</string>
+</resources>

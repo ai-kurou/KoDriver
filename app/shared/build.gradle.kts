@@ -94,6 +94,7 @@ kotlin {
             implementation(projects.feature.aceWindowsReadoutTyreTemperatureDetail)
             implementation(projects.feature.aceWindowsReadoutVehicleApproachDetail)
             implementation(projects.feature.aceWindowsReadoutMyBestLapDetail)
+            implementation(projects.feature.aceWindowsReadoutRemainingFuelLapsDetail)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.compose.runtime)
