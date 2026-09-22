@@ -1,6 +1,10 @@
 package kurou.kodriver.feature.readoutlist
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
@@ -12,6 +16,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -372,6 +378,69 @@ class ReadoutListPaneTest {
 
     private fun hasQueueToggleRole(): SemanticsMatcher =
         SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
+
+    @Test
+    fun `キュー非対応の項目でキューボタンの空白をタップするとonItemClickが呼ばれる`() {
+        val clicked = mutableListOf<ReadoutItemKey>()
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                            readoutEnabledStates =
+                                mapOf(
+                                    ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
+                                ),
+                        ),
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemClick = { clicked += it },
+                )
+            }
+        }
+
+        rule.onNodeWithTag("readoutListQueueBlankTouchTarget:lmu_windows_vehicle_approach").performClick()
+
+        assertEquals(listOf<ReadoutItemKey>(ReadoutItemKey.LmuWindows.VehicleApproach.Root), clicked)
+    }
+
+    @Test
+    fun `スマホ幅（411dp）で長い項目名が1行に収まる`() {
+        val names = listOf("ピットタイミング", "バーチャルエナジー残量", "自己ベストラップ")
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(411.dp, 3000.dp)) {
+                    ReadoutListPane(
+                        uiState =
+                            ReadoutListUiState(
+                                selectedSimulator = Simulator.LmuWindows,
+                                items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                            ),
+                        onMove = { _, _ -> },
+                        onReadoutEnabledChanged = { _, _ -> },
+                        onQueueEnabledChanged = { _, _ -> },
+                        onStartSoundEnabledChanged = { _, _ -> },
+                        onItemClick = {},
+                    )
+                }
+            }
+        }
+
+        names.forEach { name ->
+            val textLayoutResults = mutableListOf<TextLayoutResult>()
+            rule
+                .onNodeWithText(name, useUnmergedTree = true)
+                .fetchSemanticsNode()
+                .config[SemanticsActions.GetTextLayoutResult]
+                .action
+                ?.invoke(textLayoutResults)
+            assertEquals(1, textLayoutResults.single().lineCount, "$name は1行に収まる必要がある")
+        }
+    }
 }
 
 class ReadoutItemStartIndexTest {

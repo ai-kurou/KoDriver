@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -54,7 +53,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -78,6 +76,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -350,6 +349,10 @@ private fun ReadoutListItemCard(
 ) {
     val haptic = LocalHapticFeedback.current
     val itemInteractionSource = remember { MutableInteractionSource() }
+    val openDetail = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onItemClick(item)
+    }
     ElevatedCard(
         modifier =
             modifier
@@ -371,20 +374,19 @@ private fun ReadoutListItemCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+            Column(
+                modifier = Modifier.widthIn(min = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(
-                    imageVector = Icons.Filled.DragIndicator,
-                    contentDescription = stringResource(Res.string.drag_handle),
-                    modifier = dragHandleModifier,
-                )
                 Text(
                     text = "${index + 1}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.widthIn(min = 20.dp),
+                )
+                Icon(
+                    imageVector = Icons.Filled.DragIndicator,
+                    contentDescription = stringResource(Res.string.drag_handle),
+                    modifier = dragHandleModifier.size(20.dp),
                 )
             }
             Column(
@@ -401,8 +403,7 @@ private fun ReadoutListItemCard(
                                 indication = null,
                                 interactionSource = itemInteractionSource,
                             ) {
-                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                onItemClick(item)
+                                openDetail()
                             },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -423,10 +424,9 @@ private fun ReadoutListItemCard(
                     Text(
                         text = itemName,
                         color = itemContentColor,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(start = KoDriverSpacing.medium).weight(1f),
-                    )
-                    VerticalDivider(
-                        modifier = Modifier.padding(horizontal = KoDriverSpacing.small).heightIn(max = 24.dp),
                     )
                     ReadoutListReadoutSwitch(
                         item = item,
@@ -455,7 +455,19 @@ private fun ReadoutListItemCard(
                                 modifier = Modifier.weight(1f),
                             )
                         } else {
-                            Spacer(modifier = Modifier.weight(1f))
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .weight(1f)
+                                        .heightIn(min = 40.dp)
+                                        .testTag("readoutListQueueBlankTouchTarget:${item.value}")
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = itemInteractionSource,
+                                        ) {
+                                            openDetail()
+                                        },
+                            )
                         }
                     }
                 }
