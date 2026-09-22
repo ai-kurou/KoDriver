@@ -7,7 +7,7 @@ import kotlin.test.assertFailsWith
 class Salsa20Test {
     @Test
     fun `既知のテストベクタで正しく復号できる`() {
-        // Salsa20 spec: key=0x00..0x1F, iv=0x00..0x07, all-zero plaintext
+        // Salsa20 仕様のテストベクタ: key=0x00..0x1F、iv=0x00..0x07、平文はすべて 0。
         val key = ByteArray(32) { it.toByte() }
         val iv = ByteArray(8) { it.toByte() }
         val plaintext = ByteArray(64)

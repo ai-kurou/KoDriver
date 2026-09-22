@@ -53,7 +53,7 @@ internal object Salsa20 {
     }
 
     private fun doubleRound(x: IntArray) {
-        // column round
+        // 列ラウンド（column round）
         x[4] = x[4] xor rotl(x[0] + x[12], 7)
         x[8] = x[8] xor rotl(x[4] + x[0], 9)
         x[12] = x[12] xor rotl(x[8] + x[4], 13)
@@ -70,7 +70,7 @@ internal object Salsa20 {
         x[7] = x[7] xor rotl(x[3] + x[15], 9)
         x[11] = x[11] xor rotl(x[7] + x[3], 13)
         x[15] = x[15] xor rotl(x[11] + x[7], 18)
-        // row round
+        // 行ラウンド（row round）
         x[1] = x[1] xor rotl(x[0] + x[3], 7)
         x[2] = x[2] xor rotl(x[1] + x[0], 9)
         x[3] = x[3] xor rotl(x[2] + x[1], 13)

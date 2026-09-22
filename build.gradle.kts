@@ -4,8 +4,8 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 
 plugins {
-    // this is necessary to avoid the plugins to be loaded multiple times
-    // in each subproject's classloader
+    // 各サブプロジェクトのクラスローダーでプラグインが多重に読み込まれるのを避けるため、
+    // ルートでは apply false で宣言のみ行う。
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidTest) apply false
     alias(libs.plugins.androidMultiplatformLibrary) apply false
