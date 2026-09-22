@@ -5,6 +5,7 @@ import kurou.kodriver.feature.acewindowsnarrator.aceWindowsNarratorModule
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.aceWindowsReadoutFlagDetailModule
 import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.aceWindowsReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.aceWindowsReadoutRemainingFuelDetailModule
+import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.aceWindowsReadoutRemainingFuelLapsDetailModule
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.aceWindowsReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.aceWindowsReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.debugstatedetail.debugStateDetailModule
@@ -90,6 +91,7 @@ val featureModules: List<Module> =
         aceWindowsReadoutTyreTemperatureDetailModule,
         aceWindowsReadoutVehicleApproachDetailModule,
         aceWindowsReadoutMyBestLapDetailModule,
+        aceWindowsReadoutRemainingFuelLapsDetailModule,
         debugStateDetailModule,
         narratorOverlayModule,
     )
