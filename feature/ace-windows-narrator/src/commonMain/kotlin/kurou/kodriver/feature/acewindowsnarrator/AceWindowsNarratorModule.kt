@@ -16,7 +16,6 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
@@ -53,7 +52,7 @@ import org.koin.dsl.module
 val aceWindowsNarratorModule: Module =
     module {
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { MyBestLapUseCases(get(), get()) }
@@ -73,7 +72,6 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(get()) }
         factory { ObserveAceWindowsFlagUseCase(get()) }
         factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
-        factory { ObserveAceWindowsStatusUseCase(get()) }
         factory { ObserveAceWindowsTyreCarcassTemperatureUseCase(get()) }
         factory { ObserveAceWindowsTyreTemperatureHighThresholdUseCase(get()) }
         factory { ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(get()) }

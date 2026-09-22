@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
@@ -15,8 +14,6 @@ import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.AceWindowsCarLocation
-import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
@@ -31,7 +28,6 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
@@ -87,7 +83,6 @@ internal class AceWindowsNarratorViewModel(
     flagUseCases: FlagUseCases,
     tyreTemperatureUseCases: TyreTemperatureUseCases,
     vehicleApproachUseCases: VehicleApproachUseCases,
-    observeAceWindowsStatus: ObserveAceWindowsStatusUseCase,
     private val eventProcessor: AceWindowsNarratorEventProcessor,
     private val determineAceWindowsNarratorReadout: DetermineAceWindowsNarratorReadoutUseCase =
         DetermineAceWindowsNarratorReadoutUseCase(),
@@ -206,23 +201,6 @@ internal class AceWindowsNarratorViewModel(
                 }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
-    // レース中（LIVE）以外はメニュー・リプレイ・ポーズ中とみなし、読み上げそのものを行わない。
-    // ACE以外に切り替わった際はflowOf(null)で明示的にリセットする。emptyFlow()ではstateInが
-    // 直前の値を保持し続けてしまい、ACEへ戻した際に新しいstatusStream()の値が届くまで
-    // 古いLIVE状態が残ってしまう。
-    private val currentStatus =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator !is Simulator.AceWindows) flowOf(null) else observeAceWindowsStatus()
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    // レース走行中（LIVE）かつコース上（TRACK）走行中に限定する。
-    // ピットレーン・ピット進入・退出中、およびメニュー・リプレイ・ポーズ中は読み上げない。
-    private val isOnTrack: Boolean
-        get() =
-            currentStatus.value?.status == AceWindowsStatusType.LIVE &&
-                currentStatus.value?.carLocation == AceWindowsCarLocation.TRACK
-
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob =
         bestLapTimeFlow
@@ -249,7 +227,6 @@ internal class AceWindowsNarratorViewModel(
                             settings = settings,
                             finalState = decision.state,
                         ),
-                    isOnTrack = isOnTrack,
                 )
             }.launchIn(viewModelScope)
 
@@ -279,7 +256,6 @@ internal class AceWindowsNarratorViewModel(
                             settings = settings,
                             finalState = decision.state,
                         ),
-                    isOnTrack = isOnTrack,
                 )
             }.launchIn(viewModelScope)
 
@@ -309,7 +285,6 @@ internal class AceWindowsNarratorViewModel(
                             settings = settings,
                             finalState = decision.state,
                         ),
-                    isOnTrack = isOnTrack,
                 )
             }.launchIn(viewModelScope)
 
@@ -339,7 +314,6 @@ internal class AceWindowsNarratorViewModel(
                             settings = settings,
                             finalState = decision.state,
                         ),
-                    isOnTrack = isOnTrack,
                 )
             }.launchIn(viewModelScope)
 
@@ -369,7 +343,6 @@ internal class AceWindowsNarratorViewModel(
                             settings = settings,
                             finalState = decision.state,
                         ),
-                    isOnTrack = isOnTrack,
                 )
             }.launchIn(viewModelScope)
 }

@@ -60,7 +60,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
@@ -99,7 +98,7 @@ class AceWindowsNarratorEventProcessorTest {
                 )
             } just Runs
 
-            processor.processRemainingFuel(fuel(50.0), emptyList(), emptyList(), emptyMap(), 100L, logContext(), true)
+            processor.processRemainingFuel(fuel(50.0), emptyList(), emptyList(), emptyMap(), 100L, logContext())
             processor.processRemainingFuel(
                 fuel(20.0),
                 listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
@@ -107,7 +106,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 200L,
                 logContext(),
-                true,
             )
 
             assertEquals(1, telemetryJsons.size)
@@ -154,7 +152,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             verify(exactly = 0) { ttsEngine.stop() }
@@ -198,7 +195,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             verify(exactly = 0) { ttsEngine.stop() }
@@ -244,7 +240,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             verify(exactly = 1) { ttsEngine.stop() }
@@ -287,7 +282,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
@@ -332,7 +326,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":NaN}"""))
@@ -352,7 +345,7 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `isOnTrackがfalseのときは読み上げも保存もしないが直前の燃料データは更新する`() =
+    fun `イベントがないときは読み上げも保存もしないが直前の燃料データは更新する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
@@ -372,12 +365,11 @@ class AceWindowsNarratorEventProcessorTest {
 
             processor.processRemainingFuel(
                 fuel = fuel(20.0),
-                events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
+                events = emptyList(),
                 readoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
-                isOnTrack = false,
             )
             processor.processRemainingFuel(
                 fuel = fuel(80.0),
@@ -386,7 +378,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains(""""previousFuel":{"remainingPercent":20.0}"""))
@@ -430,7 +421,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains("\"previousBestLapTime\":null"))
@@ -476,7 +466,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 100L,
                 logContext(),
-                true,
             )
             processor.processMyBestLap(
                 bestLapTime(89_000),
@@ -485,7 +474,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 200L,
                 logContext(),
-                true,
             )
 
             assertEquals(1, telemetryJsons.size)
@@ -531,7 +519,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains("\"previousFlag\":null"))
@@ -577,7 +564,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 100L,
                 logContext(),
-                true,
             )
             processor.processFlag(
                 flag(AceWindowsFlagType.BLUE_FLAG),
@@ -586,7 +572,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 200L,
                 logContext(),
-                true,
             )
 
             assertEquals(1, telemetryJsons.size)
@@ -632,7 +617,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains("\"previousTyreCarcassTemperature\":null"))
@@ -681,7 +665,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 100L,
                 logContext(),
-                true,
             )
             processor.processTyreTemperature(
                 tyreCarcassTemperature(110.0f),
@@ -690,7 +673,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 200L,
                 logContext(),
-                true,
             )
 
             assertEquals(1, telemetryJsons.size)
