@@ -236,6 +236,13 @@ sealed interface ReadoutItemKey {
             }
         }
 
+        sealed interface RemainingFuelLaps : AceWindows {
+            data object Root : RemainingFuelLaps, TopLevel {
+                override val value = "ace_windows_remaining_fuel_laps"
+                override val supportsQueue = true
+            }
+        }
+
         sealed interface MyBestLap : AceWindows {
             data object Root : MyBestLap, TopLevel {
                 override val value = "ace_windows_my_best_lap"
@@ -297,6 +304,7 @@ sealed interface ReadoutItemKey {
                 AceWindows.Flag.OrangeCircleFlag,
                 AceWindows.Flag.RedYellowStripesFlag,
                 AceWindows.RemainingFuel.Root,
+                AceWindows.RemainingFuelLaps.Root,
                 AceWindows.TyreTemperature.Root,
                 AceWindows.TyreTemperature.OverheatWarning,
                 AceWindows.MyBestLap.Root,

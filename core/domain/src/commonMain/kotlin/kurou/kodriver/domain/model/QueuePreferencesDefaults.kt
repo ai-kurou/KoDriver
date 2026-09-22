@@ -17,6 +17,7 @@ val QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
         ReadoutItemKey.AceWindows.Flag.Root to false,
         ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+        ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true,
         ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
         ReadoutItemKey.AceWindows.MyBestLap.Root to false,
     )
