@@ -47,28 +47,25 @@ internal class AceWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
-        isOnTrack: Boolean,
     ) {
         val previous = previousBestLapTime
-        if (isOnTrack) {
-            events.forEach { event ->
-                val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    narrationOutcome = narrationOutcome,
-                    telemetryJson =
-                        buildMyBestLapTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = bestLapTime,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+        events.forEach { event ->
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildMyBestLapTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = bestLapTime,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousBestLapTime = bestLapTime
     }
@@ -80,28 +77,25 @@ internal class AceWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
-        isOnTrack: Boolean,
     ) {
         val previous = previousFlag
-        if (isOnTrack) {
-            events.forEach { event ->
-                val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    narrationOutcome = narrationOutcome,
-                    telemetryJson =
-                        buildFlagTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = flag,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+        events.forEach { event ->
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildFlagTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = flag,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousFlag = flag
     }
@@ -113,28 +107,25 @@ internal class AceWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
-        isOnTrack: Boolean,
     ) {
         val previous = previousFuel
-        if (isOnTrack) {
-            events.forEach { event ->
-                val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    narrationOutcome = narrationOutcome,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = fuel,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+        events.forEach { event ->
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = fuel,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousFuel = fuel
     }
@@ -146,28 +137,25 @@ internal class AceWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
-        isOnTrack: Boolean,
     ) {
         val previous = previousTyreCarcassTemperature
-        if (isOnTrack) {
-            events.forEach { event ->
-                val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    narrationOutcome = narrationOutcome,
-                    telemetryJson =
-                        buildTyreTemperatureTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = tyreCarcassTemperature,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+        events.forEach { event ->
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTyreTemperatureTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = tyreCarcassTemperature,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousTyreCarcassTemperature = tyreCarcassTemperature
     }
@@ -179,28 +167,25 @@ internal class AceWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
-        isOnTrack: Boolean,
     ) {
         val previous = previousVehicleApproach
-        if (isOnTrack) {
-            events.forEach { event ->
-                val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    narrationOutcome = narrationOutcome,
-                    telemetryJson =
-                        buildVehicleApproachTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = vehicleApproach,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+        events.forEach { event ->
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildVehicleApproachTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = vehicleApproach,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousVehicleApproach = vehicleApproach
     }
