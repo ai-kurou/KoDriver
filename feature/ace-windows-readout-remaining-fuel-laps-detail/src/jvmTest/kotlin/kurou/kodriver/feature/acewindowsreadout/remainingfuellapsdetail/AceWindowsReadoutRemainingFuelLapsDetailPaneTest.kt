@@ -29,7 +29,7 @@ class AceWindowsReadoutRemainingFuelLapsDetailPaneTest {
         }
 
         rule
-            .onNodeWithText("現在のベストラップの30秒前にあたるタイミングで判定し", substring = true)
+            .onNodeWithText("設定した周回数以下になると1周減るごとに", substring = true)
             .assertIsDisplayed()
         rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
         rule.onNodeWithText("燃料残り周回数").assertIsDisplayed()

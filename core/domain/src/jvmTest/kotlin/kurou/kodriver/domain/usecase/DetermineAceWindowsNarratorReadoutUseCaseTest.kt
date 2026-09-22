@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
@@ -300,6 +301,101 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(true, decision.state.remainingFuelWarned)
+    }
+
+    @Test
+    fun `燃料残り周回数が閾値以下になると整数部の周回数を読み上げる`() {
+        val above = remainingFuelLaps(state = AceWindowsNarratorState(), laps = 4.2f)
+        val decision = remainingFuelLaps(state = above.state, laps = 2.9f)
+
+        assertTrue(above.events.isEmpty())
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)), decision.events)
+        assertEquals(2, decision.state.lastRemainingFuelLaps)
+    }
+
+    @Test
+    fun `燃料残り周回数が閾値ちょうどなら読み上げる`() {
+        val decision = remainingFuelLaps(state = AceWindowsNarratorState(), laps = 3.0f)
+
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(3)), decision.events)
+    }
+
+    @Test
+    fun `同じ燃料残り周回数の間は再度読み上げない`() {
+        val first = remainingFuelLaps(state = AceWindowsNarratorState(), laps = 2.9f)
+        val decision = remainingFuelLaps(state = first.state, laps = 2.1f)
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(2, decision.state.lastRemainingFuelLaps)
+    }
+
+    @Test
+    fun `燃料残り周回数が1周減るごとに読み上げ1周未満では燃料切れを読み上げる`() {
+        val first = remainingFuelLaps(state = AceWindowsNarratorState(), laps = 2.5f)
+        val second = remainingFuelLaps(state = first.state, laps = 1.5f)
+        val third = remainingFuelLaps(state = second.state, laps = 0.5f)
+
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)), first.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(1)), second.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(0)), third.events)
+    }
+
+    @Test
+    fun `整数境界付近の揺れでは同じ周回数を再度読み上げない`() {
+        val first = remainingFuelLaps(state = AceWindowsNarratorState(), laps = 1.99f)
+        val bounced = remainingFuelLaps(state = first.state, laps = 2.01f)
+        val decision = remainingFuelLaps(state = bounced.state, laps = 1.98f)
+
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(1)), first.events)
+        assertTrue(bounced.events.isEmpty())
+        assertEquals(1, bounced.state.lastRemainingFuelLaps)
+        assertTrue(decision.events.isEmpty())
+    }
+
+    @Test
+    fun `閾値以下での給油後は増えた周回数を基準に再度1周減るごとに読み上げる`() {
+        val first = remainingFuelLaps(state = AceWindowsNarratorState(), laps = 1.5f)
+        val refueled = remainingFuelLaps(state = first.state, laps = 3.2f)
+        val decision = remainingFuelLaps(state = refueled.state, laps = 2.9f)
+
+        assertTrue(refueled.events.isEmpty())
+        assertEquals(3, refueled.state.lastRemainingFuelLaps)
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)), decision.events)
+    }
+
+    @Test
+    fun `閾値を上回ると基準をリセットし再度閾値以下で読み上げる`() {
+        val first = remainingFuelLaps(state = AceWindowsNarratorState(), laps = 2.5f)
+        val refueled = remainingFuelLaps(state = first.state, laps = 10.0f)
+        val decision = remainingFuelLaps(state = refueled.state, laps = 3.5f)
+
+        assertEquals(null, refueled.state.lastRemainingFuelLaps)
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(3)), decision.events)
+    }
+
+    @Test
+    fun `燃料残り周回数が0以下や非有限値なら判定しない`() {
+        val state = AceWindowsNarratorState(lastRemainingFuelLaps = 2)
+
+        listOf(0f, -1f, Float.NaN, Float.POSITIVE_INFINITY).forEach { laps ->
+            val decision = remainingFuelLaps(state = state, laps = laps)
+
+            assertTrue(decision.events.isEmpty())
+            assertEquals(state, decision.state)
+        }
+    }
+
+    @Test
+    fun `燃料残り周回数項目が無効なら読み上げないが基準は更新する`() {
+        val decision =
+            remainingFuelLaps(
+                state = AceWindowsNarratorState(),
+                laps = 2.5f,
+                enabledStates = mapOf(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to false),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(2, decision.state.lastRemainingFuelLaps)
     }
 
     @Test
@@ -748,4 +844,20 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 ) + enabledOverrides,
             remainingFuelThresholdPercentage = 0,
         )
+
+    private fun remainingFuelLaps(
+        state: AceWindowsNarratorState,
+        laps: Float,
+        enabledStates: Map<ReadoutItemKey, Boolean> =
+            mapOf(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true),
+    ) = useCase.determineRemainingFuelLaps(
+        state = state,
+        data = AceWindowsRemainingFuelLapsData(remainingLaps = laps),
+        settings =
+            AceWindowsNarratorReadoutSettings(
+                enabledStates = enabledStates,
+                remainingFuelThresholdPercentage = 0,
+                remainingFuelLapsThreshold = 3,
+            ),
+    )
 }

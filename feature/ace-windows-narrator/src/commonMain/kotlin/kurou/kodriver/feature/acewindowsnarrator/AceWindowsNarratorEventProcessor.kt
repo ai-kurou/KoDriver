@@ -15,6 +15,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.NarrationOutcome
@@ -35,6 +36,7 @@ internal class AceWindowsNarratorEventProcessor(
     private val saveTelemetryLog: SaveTelemetryLogUseCase,
 ) {
     private var previousFuel: AceWindowsFuelData? = null
+    private var previousRemainingFuelLaps: AceWindowsRemainingFuelLapsData? = null
     private var previousFlag: AceWindowsFlagData? = null
     private var previousTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null
     private var previousVehicleApproach: AceWindowsVehicleApproachData? = null
@@ -128,6 +130,36 @@ internal class AceWindowsNarratorEventProcessor(
             )
         }
         previousFuel = fuel
+    }
+
+    suspend fun processRemainingFuelLaps(
+        remainingFuelLaps: AceWindowsRemainingFuelLapsData,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: AceWindowsTelemetryLogContext,
+    ) {
+        val previous = previousRemainingFuelLaps
+        events.forEach { event ->
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildRemainingFuelLapsTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = remainingFuelLaps,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
+        }
+        previousRemainingFuelLaps = remainingFuelLaps
     }
 
     suspend fun processTyreTemperature(
@@ -273,6 +305,31 @@ private fun buildTelemetryLogJson(
                 json = previous?.let { telemetryLogJson.encodeToString(it) },
             ),
         current = TelemetryLogJsonCurrentField(name = "fuel", json = telemetryLogJson.encodeToString(current)),
+        settingsJson = settings.toJsonString(),
+        observedAtMs = observedAtMs,
+        finalStateJson = finalState.toJsonString(),
+    )
+
+private fun buildRemainingFuelLapsTelemetryLogJson(
+    state: AceWindowsNarratorState,
+    previous: AceWindowsRemainingFuelLapsData?,
+    current: AceWindowsRemainingFuelLapsData,
+    settings: AceWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: AceWindowsNarratorState,
+): String =
+    buildTelemetryLogJson(
+        stateJson = state.toJsonString(),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousRemainingFuelLaps",
+                json = previous?.let { telemetryLogJson.encodeToString(it) },
+            ),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "remainingFuelLaps",
+                json = telemetryLogJson.encodeToString(current),
+            ),
         settingsJson = settings.toJsonString(),
         observedAtMs = observedAtMs,
         finalStateJson = finalState.toJsonString(),
