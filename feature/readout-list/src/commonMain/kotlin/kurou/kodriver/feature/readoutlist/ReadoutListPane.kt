@@ -54,7 +54,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -371,20 +370,19 @@ private fun ReadoutListItemCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall),
+            Column(
+                modifier = Modifier.widthIn(min = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(
-                    imageVector = Icons.Filled.DragIndicator,
-                    contentDescription = stringResource(Res.string.drag_handle),
-                    modifier = dragHandleModifier,
-                )
                 Text(
                     text = "${index + 1}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.widthIn(min = 20.dp),
+                )
+                Icon(
+                    imageVector = Icons.Filled.DragIndicator,
+                    contentDescription = stringResource(Res.string.drag_handle),
+                    modifier = dragHandleModifier.size(20.dp),
                 )
             }
             Column(
@@ -424,9 +422,6 @@ private fun ReadoutListItemCard(
                         text = itemName,
                         color = itemContentColor,
                         modifier = Modifier.padding(start = KoDriverSpacing.medium).weight(1f),
-                    )
-                    VerticalDivider(
-                        modifier = Modifier.padding(horizontal = KoDriverSpacing.small).heightIn(max = 24.dp),
                     )
                     ReadoutListReadoutSwitch(
                         item = item,

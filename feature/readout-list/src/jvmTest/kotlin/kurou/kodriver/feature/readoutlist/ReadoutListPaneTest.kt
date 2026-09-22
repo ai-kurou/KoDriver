@@ -1,5 +1,10 @@
 package kurou.kodriver.feature.readoutlist
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -12,6 +17,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -372,6 +378,46 @@ class ReadoutListPaneTest {
 
     private fun hasQueueToggleRole(): SemanticsMatcher =
         SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
+
+    @Test
+    fun `スマホ幅（411dp）で長い項目名が1行に収まる`() {
+        val names = listOf("ピットタイミング", "バーチャルエナジー残量", "自己ベストラップ")
+        var maxLineHeightPx = 0f
+        rule.setContent {
+            KoDriverTheme {
+                val density = LocalDensity.current
+                maxLineHeightPx =
+                    with(density) {
+                        MaterialTheme.typography.bodyLarge.lineHeight
+                            .toPx()
+                    }
+                Box(modifier = Modifier.requiredSize(411.dp, 3000.dp)) {
+                    ReadoutListPane(
+                        uiState =
+                            ReadoutListUiState(
+                                selectedSimulator = Simulator.LmuWindows,
+                                items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                            ),
+                        onMove = { _, _ -> },
+                        onReadoutEnabledChanged = { _, _ -> },
+                        onQueueEnabledChanged = { _, _ -> },
+                        onStartSoundEnabledChanged = { _, _ -> },
+                        onItemClick = {},
+                    )
+                }
+            }
+        }
+
+        names.forEach { name ->
+            val info =
+                rule
+                    .onNodeWithText(name, useUnmergedTree = true)
+                    .fetchSemanticsNode()
+                    .layoutInfo
+            val height = info.height
+            assertTrue(height <= maxLineHeightPx, "$name は1行に収まる必要がある（height=$height, 1行=$maxLineHeightPx）")
+        }
+    }
 }
 
 class ReadoutItemStartIndexTest {
