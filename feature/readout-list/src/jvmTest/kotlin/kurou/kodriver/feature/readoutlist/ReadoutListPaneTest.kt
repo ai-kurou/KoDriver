@@ -380,6 +380,35 @@ class ReadoutListPaneTest {
         SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
 
     @Test
+    fun `キュー非対応の項目でキューボタンの空白をタップするとonItemClickが呼ばれる`() {
+        val clicked = mutableListOf<ReadoutItemKey>()
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                            readoutEnabledStates =
+                                mapOf(
+                                    ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
+                                ),
+                        ),
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemClick = { clicked += it },
+                )
+            }
+        }
+
+        rule.onNodeWithTag("readoutListQueueBlankTouchTarget:lmu_windows_vehicle_approach").performClick()
+
+        assertEquals(listOf<ReadoutItemKey>(ReadoutItemKey.LmuWindows.VehicleApproach.Root), clicked)
+    }
+
+    @Test
     fun `スマホ幅（411dp）で長い項目名が1行に収まる`() {
         val names = listOf("ピットタイミング", "バーチャルエナジー残量", "自己ベストラップ")
         var maxLineHeightPx = 0f

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -349,6 +348,10 @@ private fun ReadoutListItemCard(
 ) {
     val haptic = LocalHapticFeedback.current
     val itemInteractionSource = remember { MutableInteractionSource() }
+    val openDetail = {
+        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+        onItemClick(item)
+    }
     ElevatedCard(
         modifier =
             modifier
@@ -399,8 +402,7 @@ private fun ReadoutListItemCard(
                                 indication = null,
                                 interactionSource = itemInteractionSource,
                             ) {
-                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                onItemClick(item)
+                                openDetail()
                             },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -450,7 +452,19 @@ private fun ReadoutListItemCard(
                                 modifier = Modifier.weight(1f),
                             )
                         } else {
-                            Spacer(modifier = Modifier.weight(1f))
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .weight(1f)
+                                        .heightIn(min = 40.dp)
+                                        .testTag("readoutListQueueBlankTouchTarget:${item.value}")
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = itemInteractionSource,
+                                        ) {
+                                            openDetail()
+                                        },
+                            )
                         }
                     }
                 }
