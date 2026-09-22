@@ -6,9 +6,15 @@
    - 対象ブランチ、ベースブランチ、worktree の有無、作業範囲を確認する。
    - ユーザーが「コミットしない」「PR だけ作る」「ベースブランチは main 以外」などの条件を指定している場合は、その条件を優先する。
 2. 実装前
-   - 既存実装を読み、Repository / UseCase / ViewModel / UI の責務と命名が既存パターンに合うことを確認する。
+   - 既存実装を読み、Repository / UseCase / ViewModel / UI の責務と命名が既存パターンに合うことを確認する。UI、UseCase、Repository、DataSource、Test、ScreenshotTest などは、既存の命名・粒度・責務分割・テストスタイルに合わせる。
    - 実装対象のモジュール・依存方向が妥当であることを確認する。`:core:designsystem` と `:core:domain` の相互依存や不要な依存追加は避ける。
    - 追加・変更するテストの対象を先に洗い出す。正常系・異常系・境界値・全項目の確認が必要な箇所を確認する。
+   - `rg` などで最低限以下を確認する。類似コードが存在する場合は、その構成・依存関係・テスト方針を優先し、独自の実装スタイルを持ち込まない。既存パターンから外れる設計にする場合は、理由を説明してから実装すること。
+     - 同じ種類の画面・Pane・Content・ListItem
+     - 同じ種類の UseCase / Repository / DataSource
+     - 同じファイル内または同一モジュールのテスト
+     - 既存の MockK の `verify` / `coVerify` / `confirmVerified` の使い方
+     - ScreenshotTest / AndroidTest / DesktopTest の粒度
 3. 実装中
    - ユニットテストを書ける実装コードを変更・追加する場合は、実装と同時にテストを追加・更新する。
    - 画面項目・表示名・一覧項目を追加した場合は、listPane / detailPane のテスト、displayName 変換テスト、スクリーンショットテストの要否に加え、`MainActivityTest.kt`（Android）・`AppTest.kt`（Desktop）のE2Eタップ順テストへの追加要否も確認する。

@@ -42,17 +42,7 @@ Le Mans Ultimate（LMU）から Windows 共有メモリ経由で、Gran Turismo 
 
 ### 実装前の類似コード確認
 
-新規実装・修正の前に、必ず同一モジュールまたは近い責務の既存コードを確認すること。UI、UseCase、Repository、DataSource、Test、ScreenshotTest などは、既存の命名・粒度・責務分割・テストスタイルに合わせる。
-
-実装前に `rg` などで最低限以下を確認すること。
-
-- 同じ種類の画面・Pane・Content・ListItem
-- 同じ種類の UseCase / Repository / DataSource
-- 同じファイル内または同一モジュールのテスト
-- 既存の MockK の `verify` / `coVerify` / `confirmVerified` の使い方
-- ScreenshotTest / AndroidTest / DesktopTest の粒度
-
-類似コードが存在する場合は、その構成・依存関係・テスト方針を優先し、独自の実装スタイルを持ち込まないこと。既存パターンから外れる設計にする場合は、理由を説明してから実装すること。
+新規実装・修正の前に、必ず同一モジュールまたは近い責務の既存コードを確認すること。確認項目・進め方の詳細は [`docs/pr-workflow-checklist.md`](docs/pr-workflow-checklist.md) の「実装前」を参照。
 
 ### NarratorViewModel は共通化しない
 
@@ -140,16 +130,4 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 ## コーディング規約
 
-- Compose の状態管理は `StateFlow` + `ViewModel`（`ReadoutListViewModel` を参照）。
-- `LmuRepository` は `Flow<LmuTelemetryData>` を emit する cold flow として実装する。ポーリング間隔デフォルトは 16ms（≈60fps）。
-- 共有メモリのパースロジックは `internal object XxxMapper` に隔離し、ドメイン層には持ち込まない。
-- `core:data` は `kotlinMultiplatform` プラグイン（JVM + Android ターゲット）を使用する。JVM 実装は `src/jvmMain/kotlin`、Android 実装は `src/androidMain/kotlin` に置く。
-- LMU Windows共有メモリ固有の実装はJVM専用の `core:lmu-windows-data` に置き、`core:data` へ依存させない。
-- `@Preview` 関数は実体の `@Composable` と同一ファイルに記述する。`@Preview` のインポートは `androidx.compose.ui.tooling.preview.Preview` を使う（`org.jetbrains.compose.ui.tooling.preview.Preview` は commonMain で解決されないため使用不可）。
-- 文字スタイルは `MaterialTheme.typography.*` を参照し、`fontSize` / `FontWeight` を Composable 内で直接指定しない。アプリ全体のタイポグラフィは `:core:designsystem` の `KoDriverTypography` で一元管理する。
-- 角丸は `MaterialTheme.shapes.*` を参照し、`RoundedCornerShape` を Composable 内で直接指定しない。アプリ全体の角丸は `:core:designsystem` の `KoDriverShapes` で一元管理する。
-- 余白（padding・Spacer・`Arrangement.spacedBy`）のうち 4/8/12/16/24dp の値は、Composable 内で dp を直接指定せず `:core:designsystem` の `KoDriverSpacing`（`app:shared` では `AppSpacing`）を参照する。アイコンサイズ等「余白ではない」寸法は対象外。
-- `MaterialTheme.colorScheme` にロールがない拡張カラー（警告色等）は、色を直接 `Color(0x...)` で書かず `:core:designsystem` の `KoDriverExtendedColors.current`（`app:shared` では `AppExtendedColors.current`）を参照する。ライト/ダークの値は `ExtendedColors.kt`（`app:shared` では `AppExtendedColors.kt`）に定義し、`KoDriverTheme`/`AppTheme` が `CompositionLocalProvider` で配布する。ただし、ゲーム画面に重ねるオーバーレイ（`NarratorOverlayContent` 等）のようにアプリテーマ（ライト/ダーク）から独立させる必要のある固定色は、その理由を KDoc に書いたうえで `private val` として直接定義してよい。テーマのカラーパレット定義（`AppTheme.kt` 等）も対象外。
-- DataStore のキーには **ASCII の内部 ID を使うこと**。日本語などのマルチバイト文字をキーに使うと、表示名の変更でデータが孤立する。内部 ID（例: `"vehicle_approach"`）と表示名（例: `"車両接近"`）は `XxxViewModel` 内の `xxxDisplayNames: Map<String, String>` で分離する。
-
-Repository の命名規則・ViewModel の設計規則・`MutableStateFlow` の更新・Coroutines のエラーハンドリングの詳細は [`docs/coding-conventions.md`](docs/coding-conventions.md) を参照。テストパターン（mockkの`any()`禁止等含む）は [`docs/testing-guidelines.md`](docs/testing-guidelines.md) を参照。
+状態管理・共有メモリ・モジュール構成・デザインシステム（typography/shapes/spacing/color）・DataStore キー・Repository / ViewModel の設計規則・Coroutines のエラーハンドリングなどの詳細は [`docs/coding-conventions.md`](docs/coding-conventions.md) を参照。テストパターン（mockkの`any()`禁止等含む）は [`docs/testing-guidelines.md`](docs/testing-guidelines.md) を参照。

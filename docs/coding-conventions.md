@@ -8,6 +8,10 @@
 - `@Preview` 関数は実体の `@Composable` と同一ファイルに記述する。`@Preview` のインポートは `androidx.compose.ui.tooling.preview.Preview` を使う（`org.jetbrains.compose.ui.tooling.preview.Preview` は commonMain で解決されないため使用不可）。
 - `@Preview` 関数名は末尾を `Preview` で終える（例: `XxxScreenPreview`）こと。detekt の `UnusedPrivateMember`（`config/detekt/detekt.yml`）は `@Preview` にアノテーション除外設定が無いため、`allowedNames: '.*Preview'` という命名規則ベースの除外で対応している。この命名から外れると、IDEプレビュー/スクリーンショットテストからのみ呼び出される `@Preview` 関数が未使用コードとして detekt に検出される。
 - 文字スタイルは `MaterialTheme.typography.*` を参照し、`fontSize` / `FontWeight` を Composable 内で直接指定しない。アプリ全体のタイポグラフィは `:core:designsystem` の `KoDriverTypography` で一元管理する。
+- 角丸は `MaterialTheme.shapes.*` を参照し、`RoundedCornerShape` を Composable 内で直接指定しない。アプリ全体の角丸は `:core:designsystem` の `KoDriverShapes` で一元管理する。
+- 余白（padding・Spacer・`Arrangement.spacedBy`）のうち 4/8/12/16/24dp の値は、Composable 内で dp を直接指定せず `:core:designsystem` の `KoDriverSpacing`（`app:shared` では `AppSpacing`）を参照する。アイコンサイズ等「余白ではない」寸法は対象外。
+- `MaterialTheme.colorScheme` にロールがない拡張カラー（警告色等）は、色を直接 `Color(0x...)` で書かず `:core:designsystem` の `KoDriverExtendedColors.current`（`app:shared` では `AppExtendedColors.current`）を参照する。ライト/ダークの値は `ExtendedColors.kt`（`app:shared` では `AppExtendedColors.kt`）に定義し、`KoDriverTheme`/`AppTheme` が `CompositionLocalProvider` で配布する。ただし、ゲーム画面に重ねるオーバーレイ（`NarratorOverlayContent` 等）のようにアプリテーマ（ライト/ダーク）から独立させる必要のある固定色は、その理由を KDoc に書いたうえで `private val` として直接定義してよい。テーマのカラーパレット定義（`AppTheme.kt` 等）も対象外。
+
 ## 見出しのタイポグラフィ階層
 
 ListPane・DetailPane の見出しは、画面の階層（見出し → セクション → 項目）に応じて以下のスタイル・色を使い分けること。
