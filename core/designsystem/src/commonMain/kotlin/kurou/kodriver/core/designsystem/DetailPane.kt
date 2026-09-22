@@ -75,12 +75,12 @@ fun DetailPaneSubtitle(
                 Modifier
                     .width(2.dp)
                     .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.secondary),
+                    .background(MaterialTheme.colorScheme.primary),
         )
         Text(
             text = text,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.secondary,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(start = KoDriverSpacing.small),
         )
         if (trailingContent != null) {

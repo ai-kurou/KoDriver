@@ -109,7 +109,7 @@ private fun DetailPaneCardLayout(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = titleColor,
                     modifier = Modifier.weight(1f),
                 )
