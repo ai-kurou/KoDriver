@@ -796,6 +796,9 @@ private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.Ace
             AceWindowsReadoutRemainingFuelDetailPane()
         }
 
+        // detailPane は未実装（listPaneの項目追加のみ対応）。
+        ReadoutListItemType.AceWindows.RemainingFuelLaps -> {}
+
         ReadoutListItemType.AceWindows.VehicleApproach -> {
             AceWindowsReadoutVehicleApproachDetailPane()
         }

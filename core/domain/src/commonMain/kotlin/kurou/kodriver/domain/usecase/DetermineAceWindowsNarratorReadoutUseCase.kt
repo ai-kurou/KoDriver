@@ -54,6 +54,10 @@ data class AceWindowsNarratorReadoutDecision(
  * （[AceWindowsNarratorReadoutSettings.vehicleApproachThresholdMeters]）を下回る車両が1台でもいれば、
  * 左右を区別しない [SpeechEvent.AceWindowsVehicleApproach] を読み上げる。
  *
+ * 燃料残り周回数（[ReadoutItemKey.AceWindows.RemainingFuelLaps.Root]）は listPane への項目追加のみ対応済みで、
+ * 対応する [SpeechEvent] とWAVファイルが未整備のため、読み上げ判定はこのUseCaseにまだ配線していない
+ * （follow-up PRで対応予定）。
+ *
  * 自己ベストラップ（[ReadoutItemKey.AceWindows.MyBestLap.Root]）は [AceWindowsBestLapTimeData.bestLapTimeMs] の
  * 更新を [determineMyBestLap] で判定する。GT7（[DetermineGt7Ps5NarratorReadoutUseCase.determineMyBestLap]）と
  * 同じく、共有メモリのベストラップタイムは Int（milliseconds）でセッション内の値を都度返すため、

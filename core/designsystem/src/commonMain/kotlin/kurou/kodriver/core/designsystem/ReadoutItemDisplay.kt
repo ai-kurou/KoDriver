@@ -126,7 +126,7 @@ private fun bestLapAndFuelDisplayName(readoutItemKeyValue: String): String? =
             stringResource(Res.string.readout_item_my_best_lap)
         }
 
-        "gt7_ps5_remaining_fuel_laps" -> {
+        "gt7_ps5_remaining_fuel_laps", "ace_windows_remaining_fuel_laps" -> {
             stringResource(Res.string.readout_item_remaining_fuel_laps)
         }
 

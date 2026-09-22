@@ -51,6 +51,7 @@ class ReadoutItemDisplayTest {
             "ace_windows_remaining_fuel" to "燃料残量",
             "ace_windows_vehicle_approach" to "車両接近",
             "ace_windows_my_best_lap" to "自己ベストラップ",
+            "ace_windows_remaining_fuel_laps" to "燃料残り周回数",
         )
 
     @Test

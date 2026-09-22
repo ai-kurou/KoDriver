@@ -117,6 +117,7 @@ class MainActivityTest {
             "燃料残量",
             "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
         )
+        waitUntilDisplayed("燃料残り周回数")
         clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
 
