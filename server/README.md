@@ -4,7 +4,36 @@
 
 ## WebSocket エンドポイント
 
-WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。`/ws/<Simulator.id>/flags` は `ObserveLmuWindowsRaceFlagsUseCase` を通じて `LmuWindowsFlagRepository` を購読し、`LmuWindowsRaceFlagsData` を JSON として送信する。同一内容の連続値は送信しない。
+WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。パスは `KoDriverServerFeature.webSocketPath(simulator)` で組み立てられ、サーバー側の登録（`Application.kt` の `telemetryWebSocket(...)`）とクライアント側の `WebSocket*Repository` で共有される。各エンドポイントは UseCase 経由で Repository を購読し、送信型を JSON として送信する。
+
+### LMU（`/ws/lmu_windows/...`）
+
+| パス | データソース（UseCase） | 送信型 |
+| --- | --- | --- |
+| `/ws/lmu_windows/flags` | `ObserveLmuWindowsRaceFlagsUseCase`（`LmuWindowsFlagRepository`） | `LmuWindowsRaceFlagsData` |
+| `/ws/lmu_windows/vehicle_approach` | `ObserveLmuWindowsVehicleApproachUseCase`（`LmuWindowsVehicleApproachRepository`） | `LmuWindowsVehicleApproachData` |
+| `/ws/lmu_windows/damage` | `ObserveLmuWindowsVehicleDamageUseCase`（`LmuWindowsVehicleDamageRepository`） | `LmuWindowsVehicleDamageData` |
+| `/ws/lmu_windows/tyre_carcass_temperature` | `ObserveLmuWindowsTyreCarcassTemperatureUseCase`（`LmuWindowsTyreCarcassTemperatureRepository`） | `LmuWindowsTyreCarcassTemperatureData` |
+| `/ws/lmu_windows/vehicle_class` | `ObserveLmuWindowsVehicleClassUseCase`（`LmuWindowsVehicleClassRepository`） | `LmuWindowsVehicleClassData` |
+| `/ws/lmu_windows/tyre_wear` | `ObserveLmuWindowsTyreWearUseCase`（`LmuWindowsTyreWearRepository`） | `LmuWindowsTyreWearData` |
+| `/ws/lmu_windows/my_best_lap` | `ObserveLmuWindowsUseCase`（`LmuWindowsRepository`）の `timing` | `LmuWindowsTimingData` |
+| `/ws/lmu_windows/virtual_energy` | `ObserveLmuWindowsVirtualEnergyUseCase`（`LmuWindowsVirtualEnergyRepository`） | `LmuWindowsVirtualEnergyData` |
+| `/ws/lmu_windows/pit_status` | `ObserveLmuWindowsPitStatusUseCase`（`LmuWindowsPitStatusRepository`） | `LmuWindowsPitStatusData` |
+| `/ws/lmu_windows/tyre_detached` | `ObserveLmuWindowsTyreDetachedUseCase`（`LmuWindowsTyreDetachedRepository`） | `LmuWindowsTyreDetachedData` |
+
+### ACE（`/ws/ace_windows/...`）
+
+| パス | データソース（UseCase） | 送信型 |
+| --- | --- | --- |
+| `/ws/ace_windows/fuel` | `ObserveAceWindowsFuelUseCase`（`AceWindowsFuelRepository`） | `AceWindowsFuelData` |
+| `/ws/ace_windows/flags` | `ObserveAceWindowsFlagUseCase`（`AceWindowsFlagRepository`） | `AceWindowsFlagData` |
+| `/ws/ace_windows/status` | `ObserveAceWindowsStatusUseCase`（`AceWindowsStatusRepository`） | `AceWindowsStatusData` |
+| `/ws/ace_windows/tyre_carcass_temperature` | `ObserveAceWindowsTyreCarcassTemperatureUseCase`（`AceWindowsTyreCarcassTemperatureRepository`） | `AceWindowsTyreCarcassTemperatureData` |
+| `/ws/ace_windows/vehicle_approach` | `ObserveAceWindowsVehicleApproachUseCase`（`AceWindowsVehicleApproachRepository`） | `AceWindowsVehicleApproachData` |
+| `/ws/ace_windows/my_best_lap` | `ObserveAceWindowsBestLapTimeUseCase`（`AceWindowsBestLapTimeRepository`） | `AceWindowsBestLapTimeData` |
+| `/ws/ace_windows/remaining_fuel_laps` | `ObserveAceWindowsRemainingFuelLapsUseCase`（`AceWindowsRemainingFuelLapsRepository`） | `AceWindowsRemainingFuelLapsData` |
+
+全エンドポイント共通で、同一内容の連続値は送信しない。エンドポイントを追加・変更したときは、この表も同じ PR で更新すること。
 
 LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws/<Simulator.id>/flags` 等へ接続する。外部端末から接続するには Windows ファイアウォールで TCP 8080 番ポートの受信を許可する必要がある場合がある。現時点では認証・暗号化を実装していないため、信頼できる LAN 内でのみ使用すること。
 
