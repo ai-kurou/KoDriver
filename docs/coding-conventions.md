@@ -1,7 +1,7 @@
 # コーディング規約
 
 - Compose の状態管理は `StateFlow` + `ViewModel`（`ReadoutListViewModel` を参照）。
-- `LmuRepository` は `Flow<LmuTelemetryData>` を emit する cold flow として実装する。ポーリング間隔デフォルトは 16ms（≈60fps）。
+- `LmuWindowsRepository.telemetryStream()` は `Flow<LmuWindowsTelemetryData>` を emit する cold flow として実装する。ポーリング間隔デフォルトは 16ms（`LmuWindowsSharedMemorySource` の `pollingIntervalMs`、≈60fps）。
 - 共有メモリのパースロジックは `internal object XxxMapper` に隔離し、ドメイン層には持ち込まない。
 - `core:data` は `kotlinMultiplatform` プラグイン（JVM + Android ターゲット）を使用する。JVM 実装は `src/jvmMain/kotlin`、Android 実装は `src/androidMain/kotlin` に置く。
 - LMU Windows共有メモリ固有の実装はJVM専用の `core:lmu-windows-data` に置き、`core:data` へ依存させない。
