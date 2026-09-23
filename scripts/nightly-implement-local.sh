@@ -17,7 +17,7 @@ REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
 LOG_PREFIX="[nightly-implement-local]"
 
 # 1回の実行で処理するissue件数。
-MAX_ISSUES_PER_RUN=2
+MAX_ISSUES_PER_RUN=5
 
 # log outputs a timestamped message with the script's log prefix.
 log() {
