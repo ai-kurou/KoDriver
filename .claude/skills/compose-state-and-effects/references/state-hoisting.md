@@ -168,7 +168,7 @@ fun ProfileScreen(
 - state holder全体をツリーに渡すより、明示的なイベントコールバックを優先する。
 - ナビゲーションは、ユーザーのintentを記述するコールバックとして扱う。
 - 直接使うとビジネスルールがレンダリングに紛れ込む場合は、ドメインモデルをUIモデルへマッピングする。
-- layoutやdraw内で読むべきフレームレートの値には、[Compose performance](../../compose-performance/SKILL.md) に従いprovideラムダを渡す。
+- layoutやdraw内で読むべきフレームレートの値には、「Compose performance」（未取り込み: chrisbanes/skills の `compose-performance`）に従いprovideラムダを渡す。
 
 ナビゲーション・スナックバー・アナリティクス・イベント収集は、発信源と命令的な処理先が揃っているstate holderの近くで処理すること。エフェクト処理が肥大化する場合は、state holderをUI composableに渡すのではなく、小さな兄弟のエフェクトハンドラーを抽出する。エフェクトAPI・キー・クリーンアップ・古いキャプチャについては [Side effects](side-effects.md) を使う。
 
@@ -204,6 +204,6 @@ fun ProfileScreen(
 
 - [Local state](local-state.md) — 正しいローカルの `remember` と可変stateの記述。
 - [Side effects](side-effects.md) — エフェクトAPIとcomposition所有のコルーチン境界の選択。
-- [Compose focus navigation](../../compose-focus-navigation/SKILL.md) — フォーカスstate、requester、キーボード/D-padの挙動。
-- [Compose UI testing patterns](../../compose-ui-testing-patterns/SKILL.md) — アプリグラフ全体を構築せずに純粋なstate駆動のUIをテストする。
-- [Kotlin API design](../../kotlin-api-design/SKILL.md) — プラットフォームサービスを意味的な境界の裏に保ちつつ、共有UIを純粋に保つ。
+- 「Compose focus navigation」（未取り込み: chrisbanes/skills の `compose-focus-navigation`）— フォーカスstate、requester、キーボード/D-padの挙動。
+- 「Compose UI testing patterns」（未取り込み: chrisbanes/skills の `compose-ui-testing-patterns`）— アプリグラフ全体を構築せずに純粋なstate駆動のUIをテストする。
+- 「Kotlin API design」（未取り込み: chrisbanes/skills の `kotlin-api-design`）— プラットフォームサービスを意味的な境界の裏に保ちつつ、共有UIを純粋に保つ。

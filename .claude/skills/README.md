@@ -10,3 +10,7 @@ KoDriverリポジトリ内で利用するClaude Code向けSkillを配置する�
 - `kotlin-concurrency-and-flow/` — コルーチンの所有権・キャンセル・Flowの状態/イベントモデリングの指針。KoDriverのコルーチンエラーハンドリング規約（`runCatching` 禁止、`CancellationException` の再スロー）と親和性が高い。
 
 改善案としての調査・検討を経て導入した。
+
+## 未取り込みスキルへの言及
+
+上記Skillの本文が言及する未取り込みの chrisbanes/skills（例: `compose-performance`）は、リンク切れを避けるためリンクにせず「（未取り込み: chrisbanes/skills の `<name>`）」のようなプレーンテキストで言及する。
