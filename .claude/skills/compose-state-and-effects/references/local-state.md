@@ -3,8 +3,8 @@
 すべての `remember { … }` がここに該当するわけではない。このリファレンスは**ローカルUI state**（`remember { mutableStateOf(…) }`、`mutableStateListOf` / `mutableStateMapOf`）を扱う。その他のremember系APIは別のリファレンスで扱う。
 
 - **`rememberCoroutineScope` / `rememberUpdatedState`** → [Side effects](side-effects.md)
-- **フレームレート読み取りに使う `rememberLazyListState` / `rememberScrollState`** → [Compose performance](../../compose-performance/SKILL.md)
-- **フォーカスナビゲーション、フォーカスstate、`FocusRequester`の所有権・挙動** → [Compose focus navigation](../../compose-focus-navigation/SKILL.md)
+- **フレームレート読み取りに使う `rememberLazyListState` / `rememberScrollState`** → 「Compose performance」（未取り込み: chrisbanes/skills の `compose-performance`）
+- **フォーカスナビゲーション、フォーカスstate、`FocusRequester`の所有権・挙動** → 「Compose focus navigation」（未取り込み: chrisbanes/skills の `compose-focus-navigation`）
 
 ## 基本原則
 
@@ -76,7 +76,7 @@ val merged = remember(parent, overlay) {
 }
 ```
 
-現在の入力に対して結果が読み取り専用であれば `remember(keys) { … }` で十分。行をまたぐ計測やmeasureフェーズでの修正については [Compose performance](../../compose-performance/SKILL.md) を参照。
+現在の入力に対して結果が読み取り専用であれば `remember(keys) { … }` で十分。行をまたぐ計測やmeasureフェーズでの修正については「Compose performance」（未取り込み: chrisbanes/skills の `compose-performance`）を参照。
 
 ### このルールが適用されない場合
 
@@ -88,7 +88,7 @@ val merged = remember(parent, overlay) {
 
 composableに `LaunchedEffect`、`DisposableEffect`、`SideEffect`、`rememberCoroutineScope`、`rememberUpdatedState`、`snapshotFlow`、スナックバー/ナビゲーション処理、アナリティクス、Flow収集が必要な場合は [Side effects](side-effects.md) を使うこと。
 
-フォーカスは問いによって分かれる: **ナビゲーション、フォーカスstate、`FocusRequester`の所有権・挙動** → [Compose focus navigation](../../compose-focus-navigation/SKILL.md)、命令的な `requestFocus` を呼ぶ**タイミング**（エフェクトのタイミング、ライフサイクル、キー、API選択） → [Side effects](side-effects.md)。
+フォーカスは問いによって分かれる: **ナビゲーション、フォーカスstate、`FocusRequester`の所有権・挙動** → 「Compose focus navigation」（未取り込み: chrisbanes/skills の `compose-focus-navigation`）、命令的な `requestFocus` を呼ぶ**タイミング**（エフェクトのタイミング、ライフサイクル、キー、API選択） → [Side effects](side-effects.md)。
 
 このskillはCompose stateを正しく記述することが目的である。`rememberUpdatedState` はエフェクトのキャプチャstateであり、`remember { mutableStateOf(...) }` の一般的な代替ではない。副作用には別のライフサイクル・キー付け規則があり、それを1つの焦点を絞ったskillにまとめることで、情報源が2つに分かれることを避けている。
 

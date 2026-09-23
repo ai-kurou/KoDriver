@@ -16,7 +16,7 @@ description: Jetpack Composeの状態所有権、remember state、state hoisting
 3. アプリの配線（wiring）とビジネスstateは画面境界に留め、プレビュー可能なレンダリングには純粋なUI stateと明示的なコールバックのみを渡す。
 4. 実行される処理のライフサイクルに合ったエフェクトAPIを選び、そのエフェクトを再起動・破棄すべき意味的な入力でキー付けする。
 5. 下記の各関心事について、該当するリファレンスのみを読み込む。トピックが近いというだけでリファレンスを読まないこと。
-6. フレームレートの読み取り、フェーズをまたぐback-writing、`@ReadOnlyComposable`の契約は [Compose performance](../compose-performance/SKILL.md) に委ねる。
+6. フレームレートの読み取り、フェーズをまたぐback-writing、`@ReadOnlyComposable`の契約は「Compose performance」（未取り込み: chrisbanes/skills の `compose-performance`）に委ねる。
 7. すべてのstateが単一の所有者を持ち、すべてのエフェクトが妥当なライフサイクルとキーを持ち、UIがアプリ依存なしにプレビュー・テスト可能になった時点で完了とする。
 
 ## トピックルーター
@@ -26,8 +26,8 @@ description: Jetpack Composeの状態所有権、remember state、state hoisting
 | 素の `var`、`remember { mutableStateOf(...) }`、state list/map、stateのリセット | [Local state](references/local-state.md) |
 | 兄弟間で共有されるstate、UI state holder、ViewModel/コンポーネントの配線、プレビュー可能な画面境界 | [State hoisting](references/state-hoisting.md) |
 | `LaunchedEffect`、`DisposableEffect`、`SideEffect`、`snapshotFlow`、`rememberCoroutineScope`、`rememberUpdatedState`、`produceState`、命令的な `requestFocus`、コールバック、イベントFlowの収集、スナックバー、ナビゲーション、アナリティクス | [Side effects](references/side-effects.md) |
-| フォーカスの所有権とキーボード/TV/D-padの挙動 | [Compose focus navigation](../compose-focus-navigation/SKILL.md) |
-| 結果として得られるUI契約のテストやプレビュー | [Compose UI testing patterns](../compose-ui-testing-patterns/SKILL.md) |
+| フォーカスの所有権とキーボード/TV/D-padの挙動 | 「Compose focus navigation」（未取り込み: chrisbanes/skills の `compose-focus-navigation`）|
+| 結果として得られるUI契約のテストやプレビュー | 「Compose UI testing patterns」（未取り込み: chrisbanes/skills の `compose-ui-testing-patterns`）|
 
 ## RED/GREENエージェントシナリオ
 
