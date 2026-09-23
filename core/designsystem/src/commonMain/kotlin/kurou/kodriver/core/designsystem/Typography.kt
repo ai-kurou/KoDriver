@@ -1,10 +1,12 @@
 package kurou.kodriver.core.designsystem
 
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 
 /**
  * KoDriver アプリ全体のタイポグラフィ定義。
@@ -31,3 +33,15 @@ private const val TABULAR_FIGURES_FONT_FEATURE_SETTINGS = "tnum"
 @ReadOnlyComposable
 fun koDriverNumericTextStyle(): TextStyle =
     LocalTextStyle.current.merge(TextStyle(fontFeatureSettings = TABULAR_FIGURES_FONT_FEATURE_SETTINGS))
+
+/**
+ * JSON・コード等、桁揃えではなく等幅フォントそのものが必要な表示に適用するスタイル。
+ *
+ * [koDriverNumericTextStyle] が既存スタイルへ tabular figures だけをマージするのに対し、
+ * こちらはフォントファミリー自体を等幅に変更する。行が長くなりがちな用途を想定し、
+ * `bodySmall` をベースにする。
+ */
+@Composable
+@ReadOnlyComposable
+fun koDriverMonospaceTextStyle(): TextStyle =
+    MaterialTheme.typography.bodySmall.merge(TextStyle(fontFamily = FontFamily.Monospace))
