@@ -11,11 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.koDriverMonospaceTextStyle
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -64,7 +64,7 @@ private fun TelemetryLogDetailItem(
         supportingContent = {
             Text(
                 text = item.telemetryJson,
-                fontFamily = FontFamily.Monospace,
+                style = koDriverMonospaceTextStyle(),
                 overflow = TextOverflow.Visible,
             )
         },
