@@ -372,7 +372,34 @@ class LmuWindowsMapperTest {
     }
 
     @Test
-    fun `readCarcassTemperaturesKは4輪ぶんのカーカス温度をKelvinで返す`() {
+    fun `readWheelDoublesはBRAKE_TEMPERATUREで4輪ぶんのブレーキ温度をCelsiusのまま返す`() {
+        val vb = vehicleBase()
+        val buf = emptyBuffer()
+        WheelIndex.entries.forEachIndexed { i, _ ->
+            val wb = vb + OFF_WHEELS + i * WHEEL_STRIDE
+            buf.putDouble(wb + OFF_WHEEL_BRAKE_TEMP, 400.0 + i * 25.0)
+        }
+
+        val result = LmuWindowsMapper.readWheelDoubles(buf, vb, LmuWheelDoubleField.BRAKE_TEMPERATURE)
+
+        WheelIndex.entries.forEachIndexed { i, wheel ->
+            assertEquals(400.0 + i * 25.0, requireNotNull(result[wheel]), 1e-9)
+        }
+    }
+
+    @Test
+    fun `readWheelDoublesはplayerIdxに応じた車両スロットを読む`() {
+        val buf = emptyBuffer(playerIdx = 1)
+        val vb = vehicleBase(playerIdx = 1)
+        buf.putDouble(vb + OFF_WHEELS + OFF_WHEEL_BRAKE_TEMP, 555.0)
+
+        val result = LmuWindowsMapper.readWheelDoubles(buf, vb, LmuWheelDoubleField.BRAKE_TEMPERATURE)
+
+        assertEquals(555.0, requireNotNull(result[WheelIndex.FRONT_LEFT]), 1e-9)
+    }
+
+    @Test
+    fun `readWheelDoublesはCARCASS_TEMPERATUREで4輪ぶんのカーカス温度をKelvinで返す`() {
         val vb = vehicleBase()
         val buf = emptyBuffer()
         WheelIndex.entries.forEachIndexed { i, _ ->
@@ -380,7 +407,7 @@ class LmuWindowsMapperTest {
             buf.putDouble(wb + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE, 345.0 + i * 10.0)
         }
 
-        val result = LmuWindowsMapper.readCarcassTemperaturesK(buf, vb)
+        val result = LmuWindowsMapper.readWheelDoubles(buf, vb, LmuWheelDoubleField.CARCASS_TEMPERATURE)
 
         WheelIndex.entries.forEachIndexed { i, wheel ->
             assertEquals(345.0 + i * 10.0, requireNotNull(result[wheel]), 1e-9)

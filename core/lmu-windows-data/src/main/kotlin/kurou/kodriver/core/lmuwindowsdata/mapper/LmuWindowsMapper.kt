@@ -233,24 +233,20 @@ internal object LmuWindowsMapper {
     /** Scoring の mSession (プラクティス・予選・レースなどのセッション種別) を返す。 */
     internal fun readSession(buffer: ByteBuffer): Int = buffer.getInt(SCORING_BASE + OFF_SCORING_SESSION)
 
-    /** プレイヤー車両の4輪ぶんのカーカス温度 (Kelvin) を返す。 */
-    internal fun readCarcassTemperaturesK(
+    /**
+     * プレイヤー車両の4輪ぶんについて、LMUWheel 構造体内の [field] を double として読み取る。
+     *
+     * 値の単位・意味はフィールドごとに異なるため、Celsius 変換や比率型へのラップは呼び出し側で行う
+     * （[LmuWheelDoubleField] の各定数のコメントを参照）。
+     */
+    internal fun readWheelDoubles(
         buffer: ByteBuffer,
         vehicleBase: Int,
+        field: LmuWheelDoubleField,
     ): Map<WheelIndex, Double> =
         WheelIndex.entries.associateWith { wheel ->
             val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
-            buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE)
-        }
-
-    /** プレイヤー車両の4輪ぶんの残タイヤ溝割合 (0.0-1.0) を返す。 */
-    internal fun readWearFractions(
-        buffer: ByteBuffer,
-        vehicleBase: Int,
-    ): Map<WheelIndex, LmuWindowsTyreWearRatio> =
-        WheelIndex.entries.associateWith { wheel ->
-            val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
-            LmuWindowsTyreWearRatio(buffer.getDouble(offset + OFF_WHEEL_WEAR))
+            buffer.getDouble(offset + field.offset)
         }
 
     /** Scoring セグメントの mVehicleClass (char[32]) をトリムした文字列として返す。 */
@@ -338,4 +334,22 @@ internal object LmuWindowsMapper {
 
     private const val KELVIN_OFFSET = 273.15
     private const val MILLIS_PER_SECOND = 1_000
+}
+
+/**
+ * [LmuWindowsMapper.readWheelDoubles] で読み取る LMUWheel 構造体内の double フィールド。
+ *
+ * [offset] は LMUWheel 先頭からの相対オフセット（[LmuWindowsMapper] のクラスコメント参照）。
+ */
+internal enum class LmuWheelDoubleField(
+    val offset: Int,
+) {
+    /** mBrakeTemp。単位は Celsius（タイヤ温度系と異なり Kelvin ではない）。 */
+    BRAKE_TEMPERATURE(24),
+
+    /** mWear。残タイヤ溝割合（0.0-1.0）。 */
+    WEAR(152),
+
+    /** mTireCarcassTemperature。単位は Kelvin。 */
+    CARCASS_TEMPERATURE(204),
 }
