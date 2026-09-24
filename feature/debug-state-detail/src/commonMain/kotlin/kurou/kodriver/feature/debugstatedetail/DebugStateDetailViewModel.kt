@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.model.AceWindowsBrakeWearData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
@@ -32,6 +33,7 @@ import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBrakeWearUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
@@ -76,6 +78,7 @@ private data class OptionalTelemetry(
     val aceWindowsVehicleApproach: AceWindowsVehicleApproachData?,
     val aceWindowsBestLapTime: AceWindowsBestLapTimeData?,
     val aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData? = null,
+    val aceWindowsBrakeWear: AceWindowsBrakeWearData? = null,
 )
 
 private val lmuWindowsSupportedCardKeys =
@@ -116,6 +119,7 @@ private val aceWindowsSupportedCardKeys =
         DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
         DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
         DebugStateCardKey.BEST_LAP,
+        DebugStateCardKey.BRAKE_WEAR,
     )
 
 private fun supportedCardKeys(simulator: Simulator): Set<DebugStateCardKey> =
@@ -150,6 +154,7 @@ internal data class AceWindowsDebugStateUseCases(
     val observeVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
     val observeBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
     val observeRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsUseCase,
+    val observeBrakeWear: ObserveAceWindowsBrakeWearUseCase,
 )
 
 internal data class DebugStateCardOrderUseCases(
@@ -355,6 +360,13 @@ internal class DebugStateDetailViewModel(
                 markCardsReceived(Simulator.AceWindows, DebugStateCardKey.FUEL_CONSUMPTION)
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+    private val _aceWindowsBrakeWear: StateFlow<AceWindowsBrakeWearData?> =
+        aceWindowsUseCases
+            .observeBrakeWear()
+            .onEach {
+                markCardsReceived(Simulator.AceWindows, DebugStateCardKey.BRAKE_WEAR)
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
     private val _optionalTelemetryWithoutRemainingFuelLaps: StateFlow<OptionalTelemetry> =
         combine(
             _optionalTelemetryBase,
@@ -379,8 +391,9 @@ internal class DebugStateDetailViewModel(
         combine(
             _optionalTelemetryWithoutRemainingFuelLaps,
             _aceWindowsRemainingFuelLaps,
-        ) { base, remainingFuelLaps ->
-            base.copy(aceWindowsRemainingFuelLaps = remainingFuelLaps)
+            _aceWindowsBrakeWear,
+        ) { base, remainingFuelLaps, brakeWear ->
+            base.copy(aceWindowsRemainingFuelLaps = remainingFuelLaps, aceWindowsBrakeWear = brakeWear)
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -415,6 +428,7 @@ internal class DebugStateDetailViewModel(
                 gt7Ps5VehicleClass = optionalTelemetry.gt7Ps5VehicleClass,
                 vehicleDamage = raceState.vehicleDamage,
                 tyreDetached = raceState.tyreDetached,
+                aceWindowsBrakeWear = optionalTelemetry.aceWindowsBrakeWear,
                 enabledCardKeys =
                     receivedCardKeys[selectedSimulator].orEmpty() intersect supportedCardKeys(selectedSimulator),
                 cardOrder = cardOrder,

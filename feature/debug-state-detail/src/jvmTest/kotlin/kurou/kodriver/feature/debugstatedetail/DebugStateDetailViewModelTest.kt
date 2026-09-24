@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.model.AceWindowsBrakeWearData
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
@@ -58,6 +59,7 @@ import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.repository.AceWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
@@ -77,6 +79,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBrakeWearUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
@@ -140,6 +143,8 @@ class DebugStateDetailViewModelTest {
 
     private val aceWindowsRemainingFuelLapsRepository: AceWindowsRemainingFuelLapsRepository = mockk()
 
+    private val aceWindowsBrakeWearRepository: AceWindowsBrakeWearRepository = mockk()
+
     private val lmuWindowsPitStatusRepository: LmuWindowsPitStatusRepository = mockk()
 
     private val vehicleDamageRepository: LmuWindowsVehicleDamageRepository = mockk()
@@ -193,6 +198,7 @@ class DebugStateDetailViewModelTest {
                     observeBestLapTime = ObserveAceWindowsBestLapTimeUseCase(aceWindowsBestLapTimeRepository),
                     observeRemainingFuelLaps =
                         ObserveAceWindowsRemainingFuelLapsUseCase(aceWindowsRemainingFuelLapsRepository),
+                    observeBrakeWear = ObserveAceWindowsBrakeWearUseCase(aceWindowsBrakeWearRepository),
                 ),
             cardOrderUseCases =
                 DebugStateCardOrderUseCases(
@@ -221,6 +227,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -248,6 +256,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -271,6 +280,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -297,6 +307,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -325,6 +337,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -348,6 +361,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -374,6 +388,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -401,6 +417,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -424,6 +441,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -450,6 +468,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -477,6 +497,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -500,6 +521,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -526,6 +548,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -553,6 +577,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -576,6 +601,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -602,6 +628,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -629,6 +657,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -652,6 +681,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -679,6 +709,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -706,6 +738,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -729,6 +762,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -755,6 +789,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -782,6 +818,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -805,6 +842,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -835,6 +873,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -862,6 +902,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -885,6 +926,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -912,6 +954,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -939,6 +983,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -962,6 +1007,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -989,6 +1035,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1016,6 +1064,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1039,6 +1088,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1066,6 +1116,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsStatus(carLocation = AceWindowsCarLocation.PITLANE))
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1093,6 +1145,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1116,6 +1169,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1142,6 +1196,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(
                     AceWindowsVehicleApproachData(
@@ -1173,6 +1229,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1196,6 +1253,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1222,6 +1280,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1249,6 +1309,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1272,6 +1333,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1298,6 +1360,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1326,6 +1390,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1349,6 +1414,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1375,6 +1441,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1404,6 +1472,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1427,6 +1496,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1453,6 +1523,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1481,6 +1553,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1504,6 +1577,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1530,6 +1604,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1562,6 +1638,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.FUEL_CONSUMPTION,
                     DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                     DebugStateCardKey.VEHICLE_DAMAGE,
+                    DebugStateCardKey.BRAKE_WEAR,
                 ),
                 state.cardOrder,
             )
@@ -1577,6 +1654,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1600,6 +1678,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1626,6 +1705,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1659,6 +1740,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.TYRE_WEAR,
                     DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                     DebugStateCardKey.VEHICLE_DAMAGE,
+                    DebugStateCardKey.BRAKE_WEAR,
                 ),
                 state.cardOrder,
             )
@@ -1674,6 +1756,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1697,6 +1780,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1723,6 +1807,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1756,6 +1842,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.FUEL_CONSUMPTION,
                     DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                     DebugStateCardKey.VEHICLE_DAMAGE,
+                    DebugStateCardKey.BRAKE_WEAR,
                 )
             assertEquals(expectedCardOrder, state.cardOrder)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
@@ -1770,6 +1857,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1794,6 +1882,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1820,6 +1909,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1834,7 +1925,7 @@ class DebugStateDetailViewModelTest {
 
             val enabledCardKeys = viewModel.uiState.first().enabledCardKeys
 
-            assertEquals(defaultDebugStateCardOrder.toSet(), enabledCardKeys)
+            assertEquals(defaultDebugStateCardOrder.toSet() - DebugStateCardKey.BRAKE_WEAR, enabledCardKeys)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1847,6 +1938,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1870,6 +1962,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1896,6 +1989,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -1932,6 +2027,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -1955,6 +2051,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -1981,6 +2078,8 @@ class DebugStateDetailViewModelTest {
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
                 MutableStateFlow(sampleAceWindowsVehicleApproach())
             every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
@@ -2004,6 +2103,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
                     DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
                     DebugStateCardKey.BEST_LAP,
+                    DebugStateCardKey.BRAKE_WEAR,
                 ),
                 enabledCardKeys,
             )
@@ -2019,6 +2119,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsBrakeWearRepository.brakeWearStream() }
             verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
             verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
@@ -2042,6 +2143,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsVehicleApproachRepository,
                 aceWindowsBestLapTimeRepository,
                 aceWindowsRemainingFuelLapsRepository,
+                aceWindowsBrakeWearRepository,
                 lmuWindowsPitStatusRepository,
                 vehicleDamageRepository,
                 tyreDetachedRepository,
@@ -2075,6 +2177,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleAceWindowsBestLapTime())
             every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
                 MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
+            every { aceWindowsBrakeWearRepository.brakeWearStream() } returns
+                MutableStateFlow(sampleAceWindowsBrakeWear())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
@@ -2175,6 +2279,8 @@ private fun sampleAceWindowsBestLapTime(bestLapTimeMs: Int = 0) =
 
 private fun sampleAceWindowsRemainingFuelLaps(remainingLaps: Float = 0f) =
     AceWindowsRemainingFuelLapsData(remainingLaps = remainingLaps)
+
+private fun sampleAceWindowsBrakeWear() = AceWindowsBrakeWearData(padLife = emptyMap(), discLife = emptyMap())
 
 private fun samplePitStatus(pitState: LmuWindowsPitState = LmuWindowsPitState.NONE) =
     LmuWindowsPitStatusData(inPits = false, pitState = pitState, inGarageStall = false)

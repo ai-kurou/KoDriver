@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.debugstatedetail
 
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.model.AceWindowsBrakeWearData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
@@ -40,6 +41,7 @@ internal val defaultDebugStateCardOrder =
         DebugStateCardKey.FUEL_CONSUMPTION,
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
         DebugStateCardKey.VEHICLE_DAMAGE,
+        DebugStateCardKey.BRAKE_WEAR,
     )
 
 data class DebugStateDetailUiState(
@@ -62,6 +64,7 @@ data class DebugStateDetailUiState(
     val gt7Ps5VehicleClass: Gt7Ps5VehicleClassData? = null,
     val vehicleDamage: LmuWindowsVehicleDamageData? = null,
     val tyreDetached: LmuWindowsTyreDetachedData? = null,
+    val aceWindowsBrakeWear: AceWindowsBrakeWearData? = null,
     val enabledCardKeys: Set<DebugStateCardKey> = emptySet(),
     val cardOrder: List<DebugStateCardKey> = defaultDebugStateCardOrder,
 )
