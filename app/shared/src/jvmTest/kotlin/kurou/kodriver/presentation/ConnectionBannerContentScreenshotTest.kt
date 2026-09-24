@@ -20,7 +20,7 @@ class ConnectionBannerContentScreenshotTest {
                     uiState =
                         ConnectionBannerUiState(
                             status = ConnectionBannerStatus.CONNECTED,
-                            message = "シミュレータに接続中",
+                            message = "シミュレーターに接続中",
                             iconType = ConnectionBannerIconType.SIMULATOR,
                         ),
                     modifier = Modifier.requiredWidth(360.dp),
@@ -37,7 +37,7 @@ class ConnectionBannerContentScreenshotTest {
                     uiState =
                         ConnectionBannerUiState(
                             status = ConnectionBannerStatus.DISCONNECTED,
-                            message = "シミュレータ接続待機中",
+                            message = "シミュレーター接続待機中",
                             iconType = ConnectionBannerIconType.SIMULATOR,
                         ),
                     modifier = Modifier.requiredWidth(360.dp),
@@ -124,7 +124,7 @@ class ConnectionBannerContentScreenshotTest {
                     uiState =
                         ConnectionBannerUiState(
                             status = ConnectionBannerStatus.DISCONNECTED,
-                            message = "シミュレータ接続待機中",
+                            message = "シミュレーター接続待機中",
                             iconType = ConnectionBannerIconType.SIMULATOR,
                         ),
                     modifier = Modifier.requiredWidth(360.dp),
@@ -141,7 +141,7 @@ class ConnectionBannerContentScreenshotTest {
                     uiState =
                         ConnectionBannerUiState(
                             status = ConnectionBannerStatus.CONNECTED,
-                            message = "シミュレータに接続中",
+                            message = "シミュレーターに接続中",
                             iconType = ConnectionBannerIconType.SIMULATOR,
                         ),
                     modifier = Modifier.requiredWidth(360.dp),
