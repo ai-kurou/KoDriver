@@ -6,11 +6,11 @@ runs:
   steps:
     - uses: ./.github/actions/setup
 
-    - uses: github/codeql-action/init@c54b30b7df092240050e69945842bc67aee0f0f4 # v4.37.3
+    - uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
       with:
         languages: java-kotlin
 
     - run: ./gradlew --no-build-cache --rerun-tasks :app:androidApp:assembleDebug
       shell: bash
 
-    - uses: github/codeql-action/analyze@c54b30b7df092240050e69945842bc67aee0f0f4 # v4.37.3
+    - uses: github/codeql-action/analyze@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
