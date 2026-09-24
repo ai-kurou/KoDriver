@@ -56,6 +56,7 @@ import kurou.kodriver.data.websocket.WebSocketAceWindowsRemainingFuelLapsReposit
 import kurou.kodriver.data.websocket.WebSocketAceWindowsStatusRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsVehicleApproachRepository
+import kurou.kodriver.data.websocket.WebSocketLmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsFlagRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsPitStatusRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsRepository
@@ -94,6 +95,7 @@ import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesReposito
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -189,6 +191,9 @@ fun androidDataModule(context: Context) =
         single<LmuWindowsTyreCarcassTemperatureRepository> {
             WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
         }
+        single<LmuWindowsBrakeTemperatureRepository> {
+            WebSocketLmuWindowsBrakeTemperatureRepository(serverIpRepository = get(), client = get())
+        }
         single<LmuWindowsVehicleClassRepository> {
             WebSocketLmuWindowsVehicleClassRepository(serverIpRepository = get(), client = get())
         }
@@ -198,6 +203,18 @@ fun androidDataModule(context: Context) =
         single<LmuWindowsVirtualEnergyRepository> {
             WebSocketLmuWindowsVirtualEnergyRepository(serverIpRepository = get(), client = get())
         }
+        includes(androidDataModuleAceWindows())
+        includes(androidDataModuleThresholdPreferences(context))
+        includes(androidDataModuleLmuWindowsPitStatus())
+        includes(androidDataModuleAppSettings(context))
+        includes(androidDataModuleMisc(context))
+    }
+
+/**
+ * androidDataModule から分離した各種 DataStore バインドとネットワーク系バインド（LongMethod 対策）。
+ */
+private fun androidDataModuleMisc(context: Context) =
+    module {
         single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
             createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
         }
@@ -247,10 +264,6 @@ fun androidDataModule(context: Context) =
         single<ServerVersionRepository> { HttpServerVersionRepository() }
         single<AppUpdateRepository> { GitHubAppReleaseRepository() }
         single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
-        includes(androidDataModuleAceWindows())
-        includes(androidDataModuleThresholdPreferences(context))
-        includes(androidDataModuleLmuWindowsPitStatus())
-        includes(androidDataModuleAppSettings(context))
     }
 
 /**
