@@ -33,6 +33,7 @@ import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -66,6 +67,7 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -86,6 +88,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -127,6 +130,8 @@ class DebugStateDetailViewModelTest {
     private val vehicleApproachRepository: LmuWindowsVehicleApproachRepository = mockk()
 
     private val tyreCarcassTemperatureRepository: LmuWindowsTyreCarcassTemperatureRepository = mockk()
+
+    private val brakeTemperatureRepository: LmuWindowsBrakeTemperatureRepository = mockk()
 
     private val vehicleClassRepository: LmuWindowsVehicleClassRepository = mockk()
 
@@ -171,6 +176,7 @@ class DebugStateDetailViewModelTest {
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
                     observeTyreCarcassTemperature =
                         ObserveLmuWindowsTyreCarcassTemperatureUseCase(tyreCarcassTemperatureRepository),
+                    observeBrakeTemperature = ObserveLmuWindowsBrakeTemperatureUseCase(brakeTemperatureRepository),
                     observeVehicleClass = ObserveLmuWindowsVehicleClassUseCase(vehicleClassRepository),
                     observePitStatus = ObserveLmuWindowsPitStatusUseCase(lmuWindowsPitStatusRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(vehicleDamageRepository),
@@ -217,6 +223,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -245,6 +253,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -265,6 +274,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -293,6 +303,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -322,6 +334,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -342,6 +355,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -370,6 +384,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -398,6 +414,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -418,6 +435,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -446,6 +464,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -474,6 +494,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -494,6 +515,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -522,6 +544,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -550,6 +574,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -570,6 +595,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -598,6 +624,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -626,6 +654,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -646,6 +675,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -675,6 +705,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -703,6 +735,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -723,6 +756,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -751,6 +785,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(setOf(1)))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -779,6 +815,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -799,6 +836,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -831,6 +869,8 @@ class DebugStateDetailViewModelTest {
                         wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(92.5f)),
                     ),
                 )
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -859,6 +899,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -879,6 +920,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -907,6 +949,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.fromRawValue("LMP2"))
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
@@ -936,6 +980,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -956,6 +1001,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -985,6 +1031,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1013,6 +1061,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1033,6 +1082,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1061,6 +1111,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns
                 MutableStateFlow(sampleAceWindowsStatus(carLocation = AceWindowsCarLocation.PITLANE))
@@ -1090,6 +1142,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1110,6 +1163,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1138,6 +1192,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1170,6 +1226,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1190,6 +1247,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1218,6 +1276,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1246,6 +1306,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1266,6 +1327,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1294,6 +1356,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1323,6 +1387,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1343,6 +1408,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1371,6 +1437,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1401,6 +1469,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1421,6 +1490,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1449,6 +1519,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1478,6 +1550,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1498,6 +1571,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1526,6 +1600,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1558,6 +1634,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.BEST_LAP,
                     DebugStateCardKey.TYRE_TEMPERATURE,
                     DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+                    DebugStateCardKey.BRAKE_TEMPERATURE,
                     DebugStateCardKey.TYRE_WEAR,
                     DebugStateCardKey.FUEL_CONSUMPTION,
                     DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
@@ -1574,6 +1651,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1594,6 +1672,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1622,6 +1701,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1656,6 +1737,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.BEST_LAP,
                     DebugStateCardKey.TYRE_TEMPERATURE,
                     DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+                    DebugStateCardKey.BRAKE_TEMPERATURE,
                     DebugStateCardKey.TYRE_WEAR,
                     DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                     DebugStateCardKey.VEHICLE_DAMAGE,
@@ -1671,6 +1753,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1691,6 +1774,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1719,6 +1803,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1752,6 +1838,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.BEST_LAP,
                     DebugStateCardKey.TYRE_TEMPERATURE,
                     DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+                    DebugStateCardKey.BRAKE_TEMPERATURE,
                     DebugStateCardKey.TYRE_WEAR,
                     DebugStateCardKey.FUEL_CONSUMPTION,
                     DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
@@ -1767,6 +1854,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1788,6 +1876,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1816,6 +1905,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(setOf(1)))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1844,6 +1935,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1864,6 +1956,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1892,6 +1985,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -1929,6 +2024,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -1949,6 +2045,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -1977,6 +2074,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
@@ -2016,6 +2115,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
             verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
             verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
             verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
             verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
@@ -2036,6 +2136,7 @@ class DebugStateDetailViewModelTest {
                 aceWindowsFlagRepository,
                 vehicleApproachRepository,
                 tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
                 vehicleClassRepository,
                 aceWindowsStatusRepository,
                 aceWindowsTyreCarcassTemperatureRepository,
@@ -2065,6 +2166,8 @@ class DebugStateDetailViewModelTest {
                 MutableStateFlow(sampleVehicleApproach(emptySet()))
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             // ACE側のタイヤカーカス温度は一度も受信していない状態を再現するため、何も emit しない Flow を返す。
@@ -2144,6 +2247,8 @@ private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) =
     )
 
 private fun sampleTyreCarcassTemperature() = LmuWindowsTyreCarcassTemperatureData(wheels = emptyMap())
+
+private fun sampleBrakeTemperature() = LmuWindowsBrakeTemperatureData(wheels = emptyMap())
 
 private fun sampleVehicleClass() = LmuWindowsVehicleClassData.fromRawValue("Hypercar")
 

@@ -20,6 +20,7 @@ import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.KoDriverServerFeature
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -38,6 +39,7 @@ import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -55,6 +57,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -78,6 +81,7 @@ data class KoDriverServerUseCases(
     val observeLmuWindowsVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     val observeLmuWindowsVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
     val observeLmuWindowsTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
+    val observeLmuWindowsBrakeTemperature: ObserveLmuWindowsBrakeTemperatureUseCase,
     val observeLmuWindowsVehicleClass: ObserveLmuWindowsVehicleClassUseCase,
     val observeLmuWindowsTyreWear: ObserveLmuWindowsTyreWearUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
@@ -109,6 +113,10 @@ fun main() {
                 observeLmuWindowsTyreCarcassTemperature =
                     ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                observeLmuWindowsBrakeTemperature =
+                    ObserveLmuWindowsBrakeTemperatureUseCase(
+                        EmptyLmuWindowsBrakeTemperatureRepository,
                     ),
                 observeLmuWindowsVehicleClass =
                     ObserveLmuWindowsVehicleClassUseCase(
@@ -220,6 +228,10 @@ fun createKoDriverServer(koin: Koin): KoDriverServer =
                     ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         koin.get<LmuWindowsTyreCarcassTemperatureRepository>(),
                     ),
+                observeLmuWindowsBrakeTemperature =
+                    ObserveLmuWindowsBrakeTemperatureUseCase(
+                        koin.get<LmuWindowsBrakeTemperatureRepository>(),
+                    ),
                 observeLmuWindowsVehicleClass =
                     ObserveLmuWindowsVehicleClassUseCase(
                         koin.get<LmuWindowsVehicleClassRepository>(),
@@ -307,6 +319,9 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         telemetryWebSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE, Simulator.LmuWindows) {
             useCases.observeLmuWindowsTyreCarcassTemperature()
         }
+        telemetryWebSocket(KoDriverServerFeature.BRAKE_TEMPERATURE, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsBrakeTemperature()
+        }
         telemetryWebSocket(KoDriverServerFeature.VEHICLE_CLASS, Simulator.LmuWindows) {
             useCases.observeLmuWindowsVehicleClass()
         }
@@ -363,6 +378,10 @@ private object EmptyLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageR
 
 private object EmptyLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
+}
+
+private object EmptyLmuWindowsBrakeTemperatureRepository : LmuWindowsBrakeTemperatureRepository {
+    override fun brakeTemperatureStream(): Flow<LmuWindowsBrakeTemperatureData> = emptyFlow()
 }
 
 private object EmptyLmuWindowsVehicleClassRepository : LmuWindowsVehicleClassRepository {
