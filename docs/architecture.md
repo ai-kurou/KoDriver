@@ -18,6 +18,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |
 | `:core:ace-windows-data` | Assetto Corsa EVO Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-ace-windows-data.svg) |
 | `:core:device-volume-data` | 端末（OS）のマスター音量取得・設定のリポジトリ実装 | [図](graphs/core-device-volume-data.svg) |
+| `:core:text-to-speech-data` | OS標準の音声合成（Windows SAPI / Android TextToSpeech）のリポジトリ実装 | [図](graphs/core-text-to-speech-data.svg) |
 | `:core:windows-startup-data` | OS起動時のKoDriver自動起動設定（Windowsレジストリ）のリポジトリ実装 | [図](graphs/core-windows-startup-data.svg) |
 | `:core:windows-shared-memory` | Windows共有メモリI/Oの汎用基盤（`lmu-windows-data` / `ace-windows-data` が共通利用） | [図](graphs/core-windows-shared-memory.svg) |
 | `:core:designsystem` | アプリ全体で共有する Composable コンポーネント | [図](graphs/core-designsystem.svg) |
