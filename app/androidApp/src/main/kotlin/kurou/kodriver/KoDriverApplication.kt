@@ -7,6 +7,7 @@ import io.sentry.android.core.SentryAndroid
 import io.sentry.protocol.User
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
+import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.androidDataModule
 import kurou.kodriver.presentation.featureModules
@@ -41,6 +42,7 @@ class KoDriverApplication : Application() {
                     androidDataModule(this@KoDriverApplication),
                     gt7Ps5DataModule,
                     deviceVolumeDataModule,
+                    textToSpeechDataModule,
                     windowsStartupDataModule,
                 ) +
                     featureModules +

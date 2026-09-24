@@ -12,12 +12,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_supporting
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_unavailable
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_red
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_session_stop
@@ -38,6 +43,8 @@ fun LmuWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
         onRedFlagEnabledChanged = viewModel::onRedFlagEnabledChanged,
         onRedFlagVoiceTypeChanged = viewModel::onRedFlagVoiceTypeChanged,
         onRedFlagPreviewClicked = viewModel::onRedFlagPreviewClicked,
+        onSectorYellowFlagTextChanged = viewModel::onSectorYellowFlagTextChanged,
+        onSectorYellowFlagTextPreviewClicked = viewModel::onSectorYellowFlagTextPreviewClicked,
         modifier = modifier,
     )
 }
@@ -51,6 +58,8 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     onRedFlagEnabledChanged: (Boolean) -> Unit,
     onRedFlagVoiceTypeChanged: (RedFlagVoiceType) -> Unit,
     onRedFlagPreviewClicked: (RedFlagVoiceType) -> Unit,
+    onSectorYellowFlagTextChanged: (String) -> Unit,
+    onSectorYellowFlagTextPreviewClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -77,6 +86,23 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                         chipEnabled = true,
                         onChipClick = { onPreviewClicked(item) },
                     )
+                    if (item == FlagReadoutItem.SectorYellowFlag) {
+                        DetailPaneCardTextField(
+                            value = uiState.sectorYellowFlagText,
+                            placeholder = chipLabel,
+                            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                            onValueChangeFinished = onSectorYellowFlagTextChanged,
+                            onPreviewClick = onSectorYellowFlagTextPreviewClicked,
+                            enabled = uiState.isTextToSpeechAvailable,
+                            supportingText =
+                                if (uiState.isTextToSpeechAvailable) {
+                                    stringResource(Res.string.flag_custom_text_supporting)
+                                } else {
+                                    stringResource(Res.string.flag_custom_text_unavailable)
+                                },
+                            previewContentDescription = stringResource(Res.string.flag_custom_text_preview),
+                        )
+                    }
                 },
             )
         }
@@ -135,6 +161,8 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
             onRedFlagEnabledChanged = {},
             onRedFlagVoiceTypeChanged = {},
             onRedFlagPreviewClicked = {},
+            onSectorYellowFlagTextChanged = {},
+            onSectorYellowFlagTextPreviewClicked = {},
         )
     }
 }
