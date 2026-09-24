@@ -27,8 +27,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
+import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.CanSendFeedbackUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 import kurou.kodriver.domain.usecase.SendFeedbackUseCase
 import kotlin.test.AfterTest
@@ -45,11 +47,14 @@ class OtherFeedbackDetailViewModelTest {
 
     private val repository: FeedbackSenderRepository = mockk()
 
+    private val cooldownRepository: FeedbackCooldownPreferencesRepository = mockk(relaxUnitFun = true)
+
     private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
     }
 
     @AfterTest
@@ -59,7 +64,8 @@ class OtherFeedbackDetailViewModelTest {
 
     private fun createViewModel() =
         OtherFeedbackDetailViewModel(
-            SendFeedbackUseCase(repository),
+            SendFeedbackUseCase(repository, cooldownRepository),
+            CanSendFeedbackUseCase(cooldownRepository),
             ObserveTelemetryLogDetailUseCase(telemetryLogRepository),
         )
 
@@ -388,6 +394,26 @@ class OtherFeedbackDetailViewModelTest {
             coVerify(exactly = 1) { repository.send(feedback) }
             verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }
             confirmVerified(repository, telemetryLogRepository)
+            collectionJob.cancel()
+        }
+
+    @Test
+    fun `クールダウン中は送信できずisCoolingDownがtrueになる`() =
+        runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns
+                flowOf(System.currentTimeMillis())
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.onMessageChanged("本文")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("user@example.com")
+            viewModel.onSend()
+
+            assertTrue(viewModel.uiState.value.isCoolingDown)
+            assertFalse(viewModel.uiState.value.canSend)
+            coVerify(exactly = 0) { repository.send(any()) }
+            confirmVerified(repository)
             collectionJob.cancel()
         }
 }

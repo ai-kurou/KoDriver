@@ -24,4 +24,5 @@
     <string name="feedback_sending">送信中</string>
     <string name="feedback_sent">フィードバックを送信しました。</string>
     <string name="feedback_failed">送信に失敗しました。時間をおいてもう一度お試しください。</string>
+    <string name="feedback_cooldown">前回の送信から24時間以内は送信できません。しばらくしてからもう一度お試しください。</string>
 </resources>
