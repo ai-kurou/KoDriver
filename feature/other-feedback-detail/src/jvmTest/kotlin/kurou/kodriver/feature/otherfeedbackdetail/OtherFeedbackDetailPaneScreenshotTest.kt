@@ -39,6 +39,12 @@ class OtherFeedbackDetailPaneScreenshotTest {
         }
 
     @Test
+    fun `クールダウン中`() =
+        composeScreenshotTest {
+            capture(uiState = OtherFeedbackDetailUiState(isCoolingDown = true))
+        }
+
+    @Test
     fun `ログ添付済み`() =
         composeScreenshotTest {
             capture(
