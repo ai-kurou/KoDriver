@@ -187,7 +187,7 @@ class AppTest {
         setContent()
 
         selectSimulator("Le Mans Ultimate（Windows版）")
-        waitUntilDisplayed("シミュレータ接続待機中")
+        waitUntilDisplayed("シミュレーター接続待機中")
         // Desktop ではサーバーIP設定への導線がないため、バナー表示のみ確認する。
     }
 
@@ -196,7 +196,7 @@ class AppTest {
         setContent()
 
         selectSimulator("Assetto Corsa EVO（Windows版）")
-        waitUntilDisplayed("シミュレータ接続待機中")
+        waitUntilDisplayed("シミュレーター接続待機中")
         // Desktop ではサーバーIP設定への導線がないため、バナー表示のみ確認する。
     }
 
