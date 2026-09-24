@@ -56,6 +56,8 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 定数名は `XXX_DEFAULT` のように末尾に `DEFAULT` を付けて統一すること（例: `LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT`）。
 
+ただし `*Defaults.kt` には、デフォルト値と組で使う仕様値（範囲の上限・下限の `_MIN` / `_MAX`、番兵値 `_UNSPECIFIED` / `_UNKNOWN_KEY`、代替値 `_ALTERNATE` など）も置いてよい。`_DEFAULT` を付けるのはデフォルト値だけとし、これらの仕様値には付けない。
+
 ---
 
 ## テスト方針
