@@ -3,6 +3,8 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.data.device.AndroidAccessLocalNetworkPermissionRepository
 import kurou.kodriver.data.device.AndroidHapticFeedbackAvailabilityRepository
 import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
@@ -66,8 +68,10 @@ import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleClassRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleDamageRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsVirtualEnergyRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
+import kurou.kodriver.domain.model.AceWindowsBrakeWearData
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.repository.AceWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
@@ -337,7 +341,13 @@ private fun androidDataModuleAceWindows() =
         single<AceWindowsRemainingFuelLapsRepository> {
             WebSocketAceWindowsRemainingFuelLapsRepository(serverIpRepository = get(), client = get())
         }
+        // TODO: KoDriverサーバー経由のWebSocket配信が未実装のため、暫定的にNoOpとする(#1674)。
+        single<AceWindowsBrakeWearRepository> { NoOpAceWindowsBrakeWearRepository() }
     }
+
+private class NoOpAceWindowsBrakeWearRepository : AceWindowsBrakeWearRepository {
+    override fun brakeWearStream(): Flow<AceWindowsBrakeWearData> = emptyFlow()
+}
 
 /**
  * androidDataModule から分離した閾値系 DataStore バインドと TelemetryLog（LongMethod 対策）。

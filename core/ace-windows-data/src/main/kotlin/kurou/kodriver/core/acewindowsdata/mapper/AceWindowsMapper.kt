@@ -1,6 +1,7 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.model.AceWindowsBrakeWearData
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
@@ -70,6 +71,14 @@ import kotlin.math.sqrt
  *   [+2400] best_laptime_ms (int32)
  *   [+2404] flag (int32, ACEVO_FLAG_TYPE、自車提示) ← Flag 取得対象
  *
+ * `flag` より前、[+716] 以降の未文書化フィールド（実機での動作確認済み）:
+ *   [+740] pad_life (float[4]) ← BrakeWear の padLife 取得対象。1.0=新品から減少（AC1 SDK と同じ意味論）。
+ *     HUD のパッド残量表示は本値の ×1000 に一致（例: 0.029 → HUD "29.00"）。絶対スケールは未較正。
+ *   [+756] disc_life (float[4]) ← BrakeWear の discLife 取得対象。pad_life と同じ意味論。
+ *     フロントはリアの約2倍の速さで減る（通常のブレーキ配分時）。
+ *   pad_life/disc_life ともホイール順は FRONT_LEFT/FRONT_RIGHT/REAR_LEFT/REAR_RIGHT
+ *   （WheelIndex の ordinal 順）で、各4バイトの float が連続して並ぶ。
+ *
  * [+4] status (int32, ACEVO_STATUS) ← Status 取得対象
  * [+2400] best_laptime_ms (int32) ← BestLapTime 取得対象
  * [+1388] car_location (int32, ACEVO_CAR_LOCATION) ← CarLocation 取得対象
@@ -101,6 +110,9 @@ internal object AceWindowsMapper {
     private const val OFF_TYRE_LF = 220
     private const val TYRE_STATE_STRIDE = 256
     private const val OFF_TYRE_TEMPERATURE_C = 12
+    private const val OFF_PAD_LIFE = 740
+    private const val OFF_DISC_LIFE = 756
+    private const val WEAR_STRIDE = 4
     private const val OFF_CAR_LOCATION = 1388
     private const val OFF_LAPS_POSSIBLE_WITH_FUEL = 1464
     private const val OFF_BEST_LAPTIME_MS = 2400
@@ -135,6 +147,18 @@ internal object AceWindowsMapper {
                 WheelIndex.entries.associateWith { wheel ->
                     val tyreStateBase = OFF_TYRE_LF + wheel.ordinal * TYRE_STATE_STRIDE
                     CelsiusReading(buffer.getFloat(tyreStateBase + OFF_TYRE_TEMPERATURE_C))
+                },
+        )
+
+    fun mapBrakeWear(buffer: ByteBuffer): AceWindowsBrakeWearData =
+        AceWindowsBrakeWearData(
+            padLife =
+                WheelIndex.entries.associateWith { wheel ->
+                    buffer.getFloat(OFF_PAD_LIFE + wheel.ordinal * WEAR_STRIDE).toDouble()
+                },
+            discLife =
+                WheelIndex.entries.associateWith { wheel ->
+                    buffer.getFloat(OFF_DISC_LIFE + wheel.ordinal * WEAR_STRIDE).toDouble()
                 },
         )
 

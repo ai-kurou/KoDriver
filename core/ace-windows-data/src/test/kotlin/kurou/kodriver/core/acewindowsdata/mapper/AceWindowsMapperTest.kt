@@ -22,6 +22,9 @@ class AceWindowsMapperTest {
         const val OFF_TYRE_LF = 220
         const val TYRE_STATE_STRIDE = 256
         const val OFF_TYRE_TEMPERATURE_C = 12
+        const val OFF_PAD_LIFE = 740
+        const val OFF_DISC_LIFE = 756
+        const val WEAR_STRIDE = 4
         const val OFF_CAR_LOCATION = 1388
         const val OFF_LAPS_POSSIBLE_WITH_FUEL = 1464
         const val OFF_BEST_LAPTIME_MS = 2400
@@ -79,6 +82,19 @@ class AceWindowsMapperTest {
     private fun remainingFuelLapsBuffer(lapsPossibleWithFuel: Float): ByteBuffer =
         ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
             it.putFloat(OFF_LAPS_POSSIBLE_WITH_FUEL, lapsPossibleWithFuel)
+        }
+
+    private fun brakeWearBuffer(
+        padLife: Map<WheelIndex, Float>,
+        discLife: Map<WheelIndex, Float>,
+    ): ByteBuffer =
+        ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also { buffer ->
+            padLife.forEach { (wheel, value) ->
+                buffer.putFloat(OFF_PAD_LIFE + wheel.ordinal * WEAR_STRIDE, value)
+            }
+            discLife.forEach { (wheel, value) ->
+                buffer.putFloat(OFF_DISC_LIFE + wheel.ordinal * WEAR_STRIDE, value)
+            }
         }
 
     private fun bestLapTimeBuffer(bestLapTimeMs: Int): ByteBuffer =
@@ -151,6 +167,47 @@ class AceWindowsMapperTest {
         val result = AceWindowsMapper.mapRemainingFuelLaps(remainingFuelLapsBuffer(0f))
 
         assertEquals(0f, result.remainingLaps)
+    }
+
+    @Test
+    fun `4輪それぞれのpad_lifeとdisc_lifeを摩耗指標として取得する`() {
+        val padLife =
+            mapOf(
+                WheelIndex.FRONT_LEFT to 0.90f,
+                WheelIndex.FRONT_RIGHT to 0.91f,
+                WheelIndex.REAR_LEFT to 0.95f,
+                WheelIndex.REAR_RIGHT to 0.96f,
+            )
+        val discLife =
+            mapOf(
+                WheelIndex.FRONT_LEFT to 0.80f,
+                WheelIndex.FRONT_RIGHT to 0.81f,
+                WheelIndex.REAR_LEFT to 0.90f,
+                WheelIndex.REAR_RIGHT to 0.91f,
+            )
+
+        val result = AceWindowsMapper.mapBrakeWear(brakeWearBuffer(padLife, discLife))
+
+        assertEquals(0.90, result.padLife[WheelIndex.FRONT_LEFT]!!, 0.0001)
+        assertEquals(0.91, result.padLife[WheelIndex.FRONT_RIGHT]!!, 0.0001)
+        assertEquals(0.95, result.padLife[WheelIndex.REAR_LEFT]!!, 0.0001)
+        assertEquals(0.96, result.padLife[WheelIndex.REAR_RIGHT]!!, 0.0001)
+        assertEquals(0.80, result.discLife[WheelIndex.FRONT_LEFT]!!, 0.0001)
+        assertEquals(0.81, result.discLife[WheelIndex.FRONT_RIGHT]!!, 0.0001)
+        assertEquals(0.90, result.discLife[WheelIndex.REAR_LEFT]!!, 0.0001)
+        assertEquals(0.91, result.discLife[WheelIndex.REAR_RIGHT]!!, 0.0001)
+    }
+
+    @Test
+    fun `pad_lifeとdisc_lifeが0のとき摩耗指標は0を返す`() {
+        val zero = WheelIndex.entries.associateWith { 0f }
+
+        val result = AceWindowsMapper.mapBrakeWear(brakeWearBuffer(zero, zero))
+
+        WheelIndex.entries.forEach { wheel ->
+            assertEquals(0.0, result.padLife[wheel]!!, 0.0001)
+            assertEquals(0.0, result.discLife[wheel]!!, 0.0001)
+        }
     }
 
     @Test

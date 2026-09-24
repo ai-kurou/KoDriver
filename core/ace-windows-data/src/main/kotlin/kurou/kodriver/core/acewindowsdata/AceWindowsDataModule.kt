@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMemorySource
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsBestLapTimeRepositoryImpl
+import kurou.kodriver.core.acewindowsdata.repository.AceWindowsBrakeWearRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFlagRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFuelRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsRemainingFuelLapsRepositoryImpl
@@ -13,6 +14,7 @@ import kurou.kodriver.core.acewindowsdata.repository.AceWindowsStatusRepositoryI
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsTyreCarcassTemperatureRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsVehicleApproachRepositoryImpl
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.model.AceWindowsBrakeWearData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
@@ -20,6 +22,7 @@ import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.repository.AceWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
@@ -79,6 +82,9 @@ val aceWindowsDataModule =
                 NoOpAceWindowsVehicleApproachRepository()
             }
         }
+        single<AceWindowsBrakeWearRepository> {
+            if (isWindows) AceWindowsBrakeWearRepositoryImpl(source = get()) else NoOpAceWindowsBrakeWearRepository()
+        }
     }
 
 private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
@@ -109,4 +115,8 @@ private class NoOpAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCar
 
 private class NoOpAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {
     override fun vehicleApproachStream(): Flow<AceWindowsVehicleApproachData> = emptyFlow()
+}
+
+private class NoOpAceWindowsBrakeWearRepository : AceWindowsBrakeWearRepository {
+    override fun brakeWearStream(): Flow<AceWindowsBrakeWearData> = emptyFlow()
 }
