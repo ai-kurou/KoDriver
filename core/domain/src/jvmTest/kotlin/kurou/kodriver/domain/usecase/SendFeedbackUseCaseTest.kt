@@ -151,4 +151,18 @@ class SendFeedbackUseCaseTest {
             assertTrue(result.isFailure)
             coVerify(exactly = 0) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(any()) }
         }
+
+    @Test
+    fun `クールダウン保存に失敗しても送信結果は成功として返す`() =
+        runTest {
+            coEvery { repository.send(any()) } returns Result.success(Unit)
+            coEvery {
+                cooldownRepository.saveLastFeedbackSentAtEpochMillis(any())
+            } throws IllegalStateException("write error")
+            val useCase = createUseCase()
+
+            val result = useCase(Feedback(type = FeedbackType.Question, message = "本文"))
+
+            assertTrue(result.isSuccess)
+        }
 }

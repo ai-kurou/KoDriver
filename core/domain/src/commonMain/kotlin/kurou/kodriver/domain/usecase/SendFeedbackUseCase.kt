@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.usecase
 
+import kotlinx.coroutines.CancellationException
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
@@ -20,8 +21,20 @@ class SendFeedbackUseCase(
         if (normalizedFeedback.message.isEmpty()) {
             return Result.failure(IllegalArgumentException("Feedback message must not be blank."))
         }
-        return repository.send(normalizedFeedback).onSuccess {
+        val result = repository.send(normalizedFeedback)
+        if (result.isSuccess) {
+            saveCooldownTimestamp()
+        }
+        return result
+    }
+
+    private suspend fun saveCooldownTimestamp() {
+        try {
             cooldownRepository.saveLastFeedbackSentAtEpochMillis(currentTimeMs())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // 送信自体は成功しているため、クールダウン記録の失敗で送信結果を失敗扱いにしない。
         }
     }
 }
