@@ -16,6 +16,7 @@ digraph G {
   ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:lmu-windows-rest-api-data" [label=":core:lmu-windows-rest-api-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:narrator" [label=":core:narrator", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:text-to-speech-data" [label=":core:text-to-speech-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#BBDEFB", color="#1E88E5"]
   ":core:windows-startup-data" [label=":core:windows-startup-data", fillcolor="#BBDEFB", color="#1E88E5"]
   ":server" [label=":server", fillcolor="#F8BBD0", color="#D81B60"]
@@ -46,6 +47,7 @@ digraph G {
   ":core:lmu-windows-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:windows-shared-memory"
   ":core:lmu-windows-rest-api-data" -> ":core:domain"
+  ":core:text-to-speech-data" -> ":core:domain"
   ":core:windows-startup-data" -> ":core:domain"
   ":server" -> ":core:domain"
   "feature" -> ":core:designsystem"
