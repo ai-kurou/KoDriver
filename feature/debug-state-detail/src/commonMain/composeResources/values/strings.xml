@@ -109,4 +109,13 @@
     <string name="debug_state_vehicle_damage_tyre_detached_fr">タイヤ脱落 FR: %1$s</string>
     <string name="debug_state_vehicle_damage_tyre_detached_rl">タイヤ脱落 RL: %1$s</string>
     <string name="debug_state_vehicle_damage_tyre_detached_rr">タイヤ脱落 RR: %1$s</string>
+    <string name="debug_state_brake_wear_title">ブレーキ摩耗 (ACEのみ)</string>
+    <string name="debug_state_brake_wear_pad_fl">パッド FL %1$s</string>
+    <string name="debug_state_brake_wear_pad_fr">パッド FR %1$s</string>
+    <string name="debug_state_brake_wear_pad_rl">パッド RL %1$s</string>
+    <string name="debug_state_brake_wear_pad_rr">パッド RR %1$s</string>
+    <string name="debug_state_brake_wear_disc_fl">ディスク FL %1$s</string>
+    <string name="debug_state_brake_wear_disc_fr">ディスク FR %1$s</string>
+    <string name="debug_state_brake_wear_disc_rl">ディスク RL %1$s</string>
+    <string name="debug_state_brake_wear_disc_rr">ディスク RR %1$s</string>
 </resources>

@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.AceWindowsBrakeWearData
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
@@ -141,6 +142,24 @@ private val sampleVehicleDamage =
 private val sampleTyreDetached =
     LmuWindowsTyreDetachedData(wheels = WheelIndex.entries.associateWith { it == WheelIndex.REAR_LEFT })
 
+private val sampleAceWindowsBrakeWear =
+    AceWindowsBrakeWearData(
+        padLife =
+            mapOf(
+                WheelIndex.FRONT_LEFT to 0.971,
+                WheelIndex.FRONT_RIGHT to 0.972,
+                WheelIndex.REAR_LEFT to 0.973,
+                WheelIndex.REAR_RIGHT to 0.974,
+            ),
+        discLife =
+            mapOf(
+                WheelIndex.FRONT_LEFT to 0.881,
+                WheelIndex.FRONT_RIGHT to 0.882,
+                WheelIndex.REAR_LEFT to 0.883,
+                WheelIndex.REAR_RIGHT to 0.884,
+            ),
+    )
+
 private val sampleVehicleApproach =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(4),
@@ -183,6 +202,7 @@ class DebugStateDetailPaneScreenshotTest {
             lmuWindowsPitStatus = sampleLmuWindowsPitStatus,
             vehicleDamage = sampleVehicleDamage,
             tyreDetached = sampleTyreDetached,
+            aceWindowsBrakeWear = sampleAceWindowsBrakeWear,
             enabledCardKeys = defaultDebugStateCardOrder.toSet(),
         )
 

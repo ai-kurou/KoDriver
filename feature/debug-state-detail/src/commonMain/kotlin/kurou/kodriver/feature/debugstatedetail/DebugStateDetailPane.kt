@@ -22,6 +22,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_best_lap_title
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_brake_wear_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_current_lap_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_title
@@ -138,6 +139,7 @@ private val debugStateCardTitles: Map<DebugStateCardKey, StringResource> =
         DebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to Res.string.debug_state_pit_timing_title,
         DebugStateCardKey.VEHICLE_DAMAGE to Res.string.debug_state_vehicle_damage_title,
+        DebugStateCardKey.BRAKE_WEAR to Res.string.debug_state_brake_wear_title,
     )
 
 private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugStateDetailUiState) -> Unit> =
@@ -215,6 +217,8 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
         DebugStateCardKey.VEHICLE_DAMAGE to { uiState ->
             VehicleDamageContent(uiState.vehicleDamage, uiState.tyreDetached)
         },
+        DebugStateCardKey.BRAKE_WEAR to
+            { uiState -> BrakeWearContent(uiState.selectedSimulator, uiState.aceWindowsBrakeWear) },
     )
 
 @Composable

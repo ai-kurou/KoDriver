@@ -17,4 +17,5 @@ enum class DebugStateCardKey {
     FUEL_CONSUMPTION,
     PIT_TIMING_REMAINING_LAPS,
     VEHICLE_DAMAGE,
+    BRAKE_WEAR,
 }

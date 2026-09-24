@@ -7,6 +7,7 @@ import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
+import kurou.kodriver.domain.model.AceWindowsBrakeWearData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
@@ -14,6 +15,7 @@ import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
+import kurou.kodriver.domain.repository.AceWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
@@ -113,6 +115,11 @@ class DesktopKoinModuleGraphTest {
                         single<AceWindowsVehicleApproachRepository> {
                             object : AceWindowsVehicleApproachRepository {
                                 override fun vehicleApproachStream() = emptyFlow<AceWindowsVehicleApproachData>()
+                            }
+                        }
+                        single<AceWindowsBrakeWearRepository> {
+                            object : AceWindowsBrakeWearRepository {
+                                override fun brakeWearStream() = emptyFlow<AceWindowsBrakeWearData>()
                             }
                         }
                     },
