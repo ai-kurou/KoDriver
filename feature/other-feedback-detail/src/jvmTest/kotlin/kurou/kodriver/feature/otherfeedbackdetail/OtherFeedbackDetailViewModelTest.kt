@@ -27,6 +27,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
+import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
@@ -45,6 +46,8 @@ class OtherFeedbackDetailViewModelTest {
 
     private val repository: FeedbackSenderRepository = mockk()
 
+    private val cooldownRepository: FeedbackCooldownPreferencesRepository = mockk(relaxUnitFun = true)
+
     private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
     @BeforeTest
@@ -59,7 +62,7 @@ class OtherFeedbackDetailViewModelTest {
 
     private fun createViewModel() =
         OtherFeedbackDetailViewModel(
-            SendFeedbackUseCase(repository),
+            SendFeedbackUseCase(repository, cooldownRepository),
             ObserveTelemetryLogDetailUseCase(telemetryLogRepository),
         )
 

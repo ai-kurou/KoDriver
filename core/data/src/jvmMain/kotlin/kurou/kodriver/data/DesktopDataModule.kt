@@ -14,6 +14,7 @@ import kurou.kodriver.data.preferences.createAceWindowsTyreTemperaturePreference
 import kurou.kodriver.data.preferences.createAceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
+import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelPreferencesRepository
@@ -54,6 +55,7 @@ import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
+import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
@@ -175,6 +177,9 @@ val desktopDataModule =
         }
         single<ConsoleAddressPreferencesRepository> {
             createConsoleAddressPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<FeedbackCooldownPreferencesRepository> {
+            createFeedbackCooldownPreferencesRepository(directory = kodriverDirectory)
         }
         // アプリ更新確認（GitHub リリース API を叩くネットワーク実装）
         single<AppUpdateRepository> { GitHubAppReleaseRepository() }
