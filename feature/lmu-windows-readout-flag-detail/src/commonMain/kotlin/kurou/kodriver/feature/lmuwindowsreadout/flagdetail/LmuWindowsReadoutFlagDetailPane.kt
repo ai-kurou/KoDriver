@@ -21,6 +21,8 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected_icon
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_supporting
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_unavailable
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
@@ -74,6 +76,10 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
         FlagReadoutItem.entries.forEach { item ->
             val chipLabel = stringResource(item.chipLabelRes)
             val checked = uiState.enabledStates[item.key] ?: true
+            // イエローフラッグのみ、カスタム文言が入力されていればそちらが読み上げに使われるため、
+            // 収録音声のチップとカスタム文言の入力欄の選択状態を排他にして、どちらが使われるかを明示する。
+            val customTextSelected =
+                item == FlagReadoutItem.SectorYellowFlag && uiState.sectorYellowFlagText.isNotEmpty()
             DetailPaneCard(
                 title = stringResource(item.labelRes),
                 checked = checked,
@@ -82,9 +88,13 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 bottomContent = {
                     DetailPaneCardChips(
                         chipLabels = listOf(chipLabel),
-                        selectedChipLabels = setOf(chipLabel),
+                        selectedChipLabels = if (customTextSelected) emptySet() else setOf(chipLabel),
                         chipEnabled = true,
-                        onChipClick = { onPreviewClicked(item) },
+                        onChipClick = {
+                            // 収録音声のチップを選び直す操作なので、入力済みのカスタム文言はクリアする。
+                            if (customTextSelected) onSectorYellowFlagTextChanged("")
+                            onPreviewClicked(item)
+                        },
                     )
                     if (item == FlagReadoutItem.SectorYellowFlag) {
                         DetailPaneCardTextField(
@@ -94,13 +104,23 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                             onValueChangeFinished = onSectorYellowFlagTextChanged,
                             onPreviewClick = onSectorYellowFlagTextPreviewClicked,
                             enabled = uiState.isTextToSpeechAvailable,
+                            selected = customTextSelected,
                             supportingText =
-                                if (uiState.isTextToSpeechAvailable) {
-                                    stringResource(Res.string.flag_custom_text_supporting)
-                                } else {
-                                    stringResource(Res.string.flag_custom_text_unavailable)
+                                when {
+                                    !uiState.isTextToSpeechAvailable -> {
+                                        stringResource(Res.string.flag_custom_text_unavailable)
+                                    }
+
+                                    customTextSelected -> {
+                                        stringResource(Res.string.flag_custom_text_selected)
+                                    }
+
+                                    else -> {
+                                        stringResource(Res.string.flag_custom_text_supporting)
+                                    }
                                 },
                             previewContentDescription = stringResource(Res.string.flag_custom_text_preview),
+                            selectedContentDescription = stringResource(Res.string.flag_custom_text_selected_icon),
                         )
                     }
                 },

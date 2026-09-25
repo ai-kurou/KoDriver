@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +37,10 @@ import androidx.compose.ui.unit.dp
  * ソフトウェアキーボードの完了操作のときに [onValueChangeFinished] で確定する（[ThresholdSlider] と同じ方針）。
  *
  * 末尾の再生ボタンは、入力中の文言（空欄なら既定の文言）の試聴に使う。
+ *
+ * [selected] が true のときは、同じ [DetailPaneCard] 内に並ぶ [DetailPaneCardChips] の選択済みチップと同じく
+ * チェックアイコンとプライマリ色のインジケーターを表示し、「いまはこちらが読み上げに使われる」ことを示す。
+ * チップ側と [selected] を排他にして渡すことで、どちらが使われるかを一目で判別できるようにする。
  */
 @Suppress("LongParameterList")
 @Composable
@@ -46,8 +52,10 @@ fun DetailPaneCardTextField(
     onPreviewClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    selected: Boolean = false,
     supportingText: String? = null,
     previewContentDescription: String? = null,
+    selectedContentDescription: String? = null,
 ) {
     val haptic = LocalHapticFeedback.current
     var text by remember(value) { mutableStateOf(value) }
@@ -61,6 +69,29 @@ fun DetailPaneCardTextField(
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { onValueChangeFinished(text) }),
+        colors =
+            if (selected) {
+                TextFieldDefaults.colors(
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                )
+            } else {
+                TextFieldDefaults.colors()
+            },
+        leadingIcon =
+            if (selected) {
+                {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = selectedContentDescription,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+            } else {
+                null
+            },
         trailingIcon = {
             IconButton(
                 onClick = {
@@ -110,6 +141,29 @@ private fun DetailPaneCardTextFieldPreview() {
                         onValueChangeFinished = {},
                         onPreviewClick = {},
                         supportingText = "空欄のままなら収録音声で読み上げます",
+                    )
+                },
+            )
+            DetailPaneCard(
+                title = "イエローフラッグ",
+                checked = true,
+                onCheckedChange = {},
+                modifier = Modifier.padding(KoDriverSpacing.large),
+                bottomContent = {
+                    DetailPaneCardChips(
+                        chipLabels = listOf("イエローフラッグ"),
+                        selectedChipLabels = emptySet(),
+                        chipEnabled = true,
+                        onChipClick = {},
+                    )
+                    DetailPaneCardTextField(
+                        value = "イエロー、前方注意",
+                        placeholder = "イエローフラッグ",
+                        maxLength = 30,
+                        onValueChangeFinished = {},
+                        onPreviewClick = {},
+                        selected = true,
+                        supportingText = "この文言を音声合成で読み上げます（収録音声は使いません）",
                     )
                 },
             )

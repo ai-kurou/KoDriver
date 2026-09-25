@@ -103,4 +103,41 @@ class DetailPaneCardTextFieldTest {
 
         assertNull(previewedText)
     }
+
+    @Test
+    fun `selectedがtrueのときはチェックアイコンが表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "イエロー、前方注意",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                    selected = true,
+                    selectedContentDescription = "この文言を読み上げます",
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("この文言を読み上げます").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedがfalseのときはチェックアイコンが表示されない`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                    selectedContentDescription = "この文言を読み上げます",
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("この文言を読み上げます").assertDoesNotExist()
+    }
 }

@@ -30,6 +30,7 @@ class DetailPaneCardTextFieldScreenshotTest {
         enabled: Boolean = true,
         darkTheme: Boolean = false,
     ) {
+        val selected = value.isNotEmpty()
         setContent {
             KoDriverTheme(darkTheme = darkTheme) {
                 Surface {
@@ -42,7 +43,7 @@ class DetailPaneCardTextFieldScreenshotTest {
                             bottomContent = {
                                 DetailPaneCardChips(
                                     chipLabels = listOf("イエローフラッグ"),
-                                    selectedChipLabels = setOf("イエローフラッグ"),
+                                    selectedChipLabels = if (selected) emptySet() else setOf("イエローフラッグ"),
                                     chipEnabled = true,
                                     onChipClick = {},
                                 )
@@ -53,7 +54,14 @@ class DetailPaneCardTextFieldScreenshotTest {
                                     onValueChangeFinished = {},
                                     onPreviewClick = {},
                                     enabled = enabled,
-                                    supportingText = "空欄のままなら収録音声で読み上げます",
+                                    selected = selected,
+                                    supportingText =
+                                        if (selected) {
+                                            "この文言を音声合成で読み上げます（収録音声は使いません）"
+                                        } else {
+                                            "空欄のままなら収録音声で読み上げます"
+                                        },
+                                    selectedContentDescription = "この文言を読み上げます",
                                 )
                             },
                         )

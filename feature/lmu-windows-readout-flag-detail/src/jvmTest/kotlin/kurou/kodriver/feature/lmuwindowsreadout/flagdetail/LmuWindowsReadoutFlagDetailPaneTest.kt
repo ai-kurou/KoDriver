@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
@@ -160,5 +161,60 @@ class LmuWindowsReadoutFlagDetailPaneTest {
         }
 
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].assertIsNotEnabled()
+    }
+
+    @Test
+    fun `カスタム文言があるときは入力欄が選択状態になりチップの選択は外れる`() {
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutFlagDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutFlagDetailUiState(
+                            sectorYellowFlagText = "イエロー、前方注意",
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onPreviewClicked = {},
+                    onRedFlagEnabledChanged = {},
+                    onRedFlagVoiceTypeChanged = {},
+                    onRedFlagPreviewClicked = {},
+                    onSectorYellowFlagTextChanged = {},
+                    onSectorYellowFlagTextPreviewClicked = {},
+                )
+            }
+        }
+
+        rule.onAllNodesWithContentDescription("この文言を読み上げます")[0].assertIsDisplayed()
+        rule.onAllNodesWithText("この文言を音声合成で読み上げます（収録音声は使いません）")[0].assertIsDisplayed()
+        rule.onAllNodesWithText("イエローフラッグ")[1].assertIsNotSelected()
+    }
+
+    @Test
+    fun `カスタム文言があるときにイエローフラッグのチップをタップするとカスタム文言がクリアされる`() {
+        var changedText: String? = null
+        var previewedItem: FlagReadoutItem? = null
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutFlagDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutFlagDetailUiState(
+                            sectorYellowFlagText = "イエロー、前方注意",
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onPreviewClicked = { previewedItem = it },
+                    onRedFlagEnabledChanged = {},
+                    onRedFlagVoiceTypeChanged = {},
+                    onRedFlagPreviewClicked = {},
+                    onSectorYellowFlagTextChanged = { changedText = it },
+                    onSectorYellowFlagTextPreviewClicked = {},
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("イエローフラッグ")[1].performClick()
+
+        assertEquals("", changedText)
+        assertEquals(FlagReadoutItem.SectorYellowFlag, previewedItem)
     }
 }
