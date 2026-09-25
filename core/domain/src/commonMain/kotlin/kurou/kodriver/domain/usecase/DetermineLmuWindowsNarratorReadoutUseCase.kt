@@ -109,6 +109,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val tyreTemperatureHighThresholdCelsius: Celsius,
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
     val tyreWearThresholdPercentage: Int,
+    val brakeTemperatureHighThresholdCelsius: Celsius,
     val remainingVirtualEnergyThresholdPercentage: Int,
     val pitTimingVirtualEnergyLapsThreshold: Int,
     val pitTimingTyreWearLapsThreshold: Int,
@@ -379,7 +380,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         data: LmuWindowsBrakeTemperatureData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
-        val hotThreshold = BRAKE_TEMPERATURE_OVERHEAT_THRESHOLD_CELSIUS
+        val hotThreshold = settings.brakeTemperatureHighThresholdCelsius.value.toFloat()
         val coolThreshold = hotThreshold - BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS
         val anyHot = data.wheels.values.any { it.value >= hotThreshold }
         val allCool = data.wheels.values.all { it.value <= coolThreshold }
@@ -658,7 +659,6 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60f
         const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
         const val PERCENTAGE_SCALE = 100.0
-        const val BRAKE_TEMPERATURE_OVERHEAT_THRESHOLD_CELSIUS = 700f
         const val BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS = 50f
     }
 }

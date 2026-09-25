@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
@@ -35,6 +37,7 @@ import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassTyreTemperatureH
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
@@ -118,6 +121,7 @@ internal data class RemainingVirtualEnergyUseCases(
 
 internal data class BrakeTemperatureUseCases(
     val observeBrakeTemperature: ObserveLmuWindowsBrakeTemperatureUseCase,
+    val observeHighThreshold: ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase,
 )
 
 internal data class PitTimingUseCases(
@@ -261,6 +265,16 @@ internal class LmuWindowsNarratorViewModel(
         tyreWearUseCases
             .observeThresholdPercentage()
             .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT)
+
+    private val brakeTemperatureHighThresholdCelsius =
+        brakeTemperatureUseCases
+            .observeHighThreshold()
+            .map { Celsius(it) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                Celsius(LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT),
+            )
 
     private val remainingVirtualEnergyThresholdPercentage =
         remainingVirtualEnergyUseCases
@@ -689,6 +703,7 @@ internal class LmuWindowsNarratorViewModel(
                 tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
                 tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
                 tyreWearThresholdPercentage = tyreWearThresholdPercentage.value,
+                brakeTemperatureHighThresholdCelsius = brakeTemperatureHighThresholdCelsius.value,
                 remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage.value,
                 pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold.value,
                 pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
