@@ -2,10 +2,13 @@
 
 package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.coVerifyOrder
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +33,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsSectorYellowFlagReadoutTextUseCase
@@ -77,6 +81,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                 SaveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
             speakText = SpeakTextUseCase(ttsRepository),
+            playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),
             checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(ttsRepository),
         )
 
@@ -298,17 +303,21 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         }
 
     @Test
-    fun `onSectorYellowFlagTextPreviewClicked は入力文言をTTSで読み上げる`() =
+    fun `onSectorYellowFlagTextPreviewClicked は開始音を鳴らしてから入力文言をTTSで読み上げる`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
             every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
             coEvery { ttsRepository.isAvailable() } returns true
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag) } just Runs
             val viewModel = createViewModel()
 
             viewModel.onSectorYellowFlagTextPreviewClicked("イエロー、注意")
 
-            coVerify(exactly = 1) { ttsRepository.speak("イエロー、注意", false) }
+            coVerifyOrder {
+                ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
+                ttsRepository.speak("イエロー、注意", false)
+            }
             confirmVerified(ttsEngine)
         }
 
@@ -325,6 +334,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             viewModel.onSectorYellowFlagTextPreviewClicked("")
 
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.YellowFlag, false) }
+            coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag) }
             confirmVerified(ttsEngine)
         }
 }

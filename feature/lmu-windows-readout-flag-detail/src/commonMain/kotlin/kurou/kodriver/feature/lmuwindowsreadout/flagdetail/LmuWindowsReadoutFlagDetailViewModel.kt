@@ -16,6 +16,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsSectorYellowFlagReadoutTextUseCase
@@ -31,6 +32,7 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
     private val saveSectorYellowFlagReadoutText: SaveLmuWindowsSectorYellowFlagReadoutTextUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
     private val speakText: SpeakTextUseCase,
+    private val playStartSoundForKey: PlayStartSoundForKeyUseCase,
     checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
 ) : ViewModel() {
     private val textToSpeechAvailable = MutableStateFlow(false)
@@ -93,7 +95,10 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         if (text.isBlank()) {
             playSpeechEvent(SpeechEvent.YellowFlag)
         } else {
-            viewModelScope.launch { speakText(text) }
+            viewModelScope.launch {
+                playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
+                speakText(text)
+            }
         }
     }
 }

@@ -19,12 +19,13 @@ import org.koin.dsl.module
  * 提供: LmuWindowsReadoutFlagDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: LmuWindowsFlagPreferencesRepository・LmuWindowsRedFlagPreferencesRepository・
  *   LmuWindowsFlagReadoutTextPreferencesRepository・TextToSpeechRepository（:core:data /
- *   :core:text-to-speech-data）、試聴用の named(Simulator.LmuWindows.id) の TextToSpeechEngine
- *   （:feature:lmu-windows-narrator で登録）。
+ *   :core:text-to-speech-data）、試聴用の named(Simulator.LmuWindows.id) の PlaySpeechEventUseCase・
+ *   PlayStartSoundForKeyUseCase（いずれも :feature:lmu-windows-narrator で登録）。
  */
 val lmuWindowsReadoutFlagDetailModule =
     module {
-        // ViewModel（get(named(Simulator.LmuWindows.id)) は narrator モジュールの TextToSpeechEngine を解決）
+        // ViewModel（get(named(Simulator.LmuWindows.id)) は narrator モジュールの
+        // PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase を解決）
         viewModel {
             LmuWindowsReadoutFlagDetailViewModel(
                 get(),
@@ -35,6 +36,7 @@ val lmuWindowsReadoutFlagDetailModule =
                 get(),
                 get(named(Simulator.LmuWindows.id)),
                 get(),
+                get(named(Simulator.LmuWindows.id)),
                 get(),
             )
         }
