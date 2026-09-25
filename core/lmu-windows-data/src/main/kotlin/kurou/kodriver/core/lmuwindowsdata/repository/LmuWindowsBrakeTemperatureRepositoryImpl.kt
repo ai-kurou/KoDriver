@@ -21,11 +21,7 @@ internal class LmuWindowsBrakeTemperatureRepositoryImpl(
         val wheels =
             LmuWindowsMapper
                 .readWheelDoubles(buffer, vehicleBase, LmuWheelDoubleField.BRAKE_TEMPERATURE)
-                .mapValues { (_, kelvin) -> CelsiusReading((kelvin - KELVIN_OFFSET).toFloat()) }
+                .mapValues { (_, celsius) -> CelsiusReading(celsius.toFloat()) }
         return LmuWindowsBrakeTemperatureData(wheels)
-    }
-
-    private companion object {
-        const val KELVIN_OFFSET = 273.15
     }
 }

@@ -75,7 +75,7 @@ import kotlin.time.Clock
  *   mVirtualEnergy       : +776 (float, LMU固有。0.0-1.0の残量割合)
  *
  * LMUWheel 主要フィールドオフセット (ホイール先頭からの相対値):
- *   mBrakeTemp           : +24 (Kelvin)
+ *   mBrakeTemp           : +24
  *   mPressure            : +120
  *   mTemperature[3]      : +128 (Kelvin, 中央値=+136)
  *   mWear                : +152
@@ -324,10 +324,7 @@ internal object LmuWindowsMapper {
                 LmuWindowsTyreWheelData(
                     surfaceTemperature = CelsiusReading((surfaceTempK - KELVIN_OFFSET).toFloat()),
                     carcassTemperature = CelsiusReading((carcassTempK - KELVIN_OFFSET).toFloat()),
-                    brakeTemperature =
-                        CelsiusReading(
-                            (buffer.getDouble(offset + OFF_WHEEL_BRAKE_TEMP) - KELVIN_OFFSET).toFloat(),
-                        ),
+                    brakeTemperature = CelsiusReading(buffer.getDouble(offset + OFF_WHEEL_BRAKE_TEMP).toFloat()),
                     pressureKpa = PressureKpa(buffer.getDouble(offset + OFF_WHEEL_PRESSURE)),
                     wear = LmuWindowsTyreWearRatio(buffer.getDouble(offset + OFF_WHEEL_WEAR)),
                 )
@@ -347,7 +344,7 @@ internal object LmuWindowsMapper {
 internal enum class LmuWheelDoubleField(
     val offset: Int,
 ) {
-    /** mBrakeTemp。単位は Kelvin。 */
+    /** mBrakeTemp。単位は Celsius（タイヤ温度系と異なり Kelvin ではない）。 */
     BRAKE_TEMPERATURE(24),
 
     /** mWear。残タイヤ溝割合（0.0-1.0）。 */
