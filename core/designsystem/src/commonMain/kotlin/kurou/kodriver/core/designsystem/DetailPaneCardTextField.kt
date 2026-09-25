@@ -16,9 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -33,8 +35,12 @@ import androidx.compose.ui.unit.dp
  *
  * [value] が空のときは [placeholder]（既定の読み上げ文言）をプレースホルダーとして表示し、
  * 「空欄なら既定の音声で読み上げる」という状態をそのまま画面上で表現する。
- * 入力途中の値はこの Composable 内のローカル状態として保持し、フォーカスが外れたときと
- * ソフトウェアキーボードの完了操作のときに [onValueChangeFinished] で確定する（[ThresholdSlider] と同じ方針）。
+ * 入力途中の値はこの Composable 内のローカル状態として保持し、フォーカスが外れたとき・
+ * ソフトウェアキーボードの完了操作のとき・この Composable がコンポジションから破棄されるとき
+ * （画面遷移などで [value] が確定済みの値のまま消えるとき）に [onValueChangeFinished] で確定する。
+ * 破棄時の確定を入れているのは、フォーカスが外れないまま（Doneキーや再生ボタンも押さないまま）
+ * 別ペインへ切り替える・アプリを閉じるといった操作をした場合、`onFocusChanged` はフォーカス喪失として
+ * 呼ばれない（ノードごと破棄されるだけ）ため、確定を破棄時にも行わないと入力内容が保存されずに失われるため。
  *
  * 末尾の再生ボタンは、入力中の文言（空欄なら既定の文言）の試聴に使う。
  *
@@ -63,6 +69,14 @@ fun DetailPaneCardTextField(
 ) {
     val haptic = LocalHapticFeedback.current
     var text by remember(value) { mutableStateOf(value) }
+
+    // 破棄時にも最新の入力内容・コールバックで確定できるよう、DisposableEffect の onDispose から
+    // 参照する text と onValueChangeFinished は rememberUpdatedState で常に最新のものを使う。
+    val latestText by rememberUpdatedState(text)
+    val latestOnValueChangeFinished by rememberUpdatedState(onValueChangeFinished)
+    DisposableEffect(Unit) {
+        onDispose { latestOnValueChangeFinished(latestText) }
+    }
 
     TextField(
         value = text,
