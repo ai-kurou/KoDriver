@@ -41,6 +41,10 @@ import androidx.compose.ui.unit.dp
  * 破棄時の確定を入れているのは、フォーカスが外れないまま（Doneキーや再生ボタンも押さないまま）
  * 別ペインへ切り替える・アプリを閉じるといった操作をした場合、`onFocusChanged` はフォーカス喪失として
  * 呼ばれない（ノードごと破棄されるだけ）ため、確定を破棄時にも行わないと入力内容が保存されずに失われるため。
+ * `onFocusChanged` は初回コンポーズ時にも「未フォーカス」を一度通知してくるため、一度もフォーカスを
+ * 得ないまま来た最初の通知では確定しない（実際にフォーカスを得た後で失った場合のみ確定する）。これを
+ * しないと、[value] がまだ確定済みの永続化値に更新されていないマウント直後の一瞬（例えば非同期に
+ * 読み込まれる前の初期値）に、その暫定値で確定＝上書き保存してしまう。
  *
  * 末尾の再生ボタンは、入力中の文言（空欄なら既定の文言）の試聴に使う。
  *
@@ -69,6 +73,7 @@ fun DetailPaneCardTextField(
 ) {
     val haptic = LocalHapticFeedback.current
     var text by remember(value) { mutableStateOf(value) }
+    var hasBeenFocused by remember { mutableStateOf(false) }
 
     // 破棄時にも最新の入力内容・コールバックで確定できるよう、DisposableEffect の onDispose から
     // 参照する text と onValueChangeFinished は rememberUpdatedState で常に最新のものを使う。
@@ -134,7 +139,13 @@ fun DetailPaneCardTextField(
         modifier =
             modifier
                 .fillMaxWidth()
-                .onFocusChanged { focusState -> if (!focusState.isFocused) onValueChangeFinished(text) },
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        hasBeenFocused = true
+                    } else if (hasBeenFocused) {
+                        onValueChangeFinished(text)
+                    }
+                },
     )
 }
 

@@ -40,6 +40,25 @@ class DetailPaneCardTextFieldTest {
     }
 
     @Test
+    fun `マウント直後は一度もフォーカスされていないため確定されない`() {
+        var finishedText: String? = null
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "イエロー、前方注意",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = { finishedText = it },
+                    onPreviewClick = {},
+                )
+            }
+        }
+        rule.waitForIdle()
+
+        assertNull(finishedText)
+    }
+
+    @Test
     fun `再生ボタンを押すと入力中の文言が確定され試聴される`() {
         var finishedText: String? = null
         var previewedText: String? = null
