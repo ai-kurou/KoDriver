@@ -1,11 +1,14 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
 import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -59,4 +62,20 @@ class AceWindowsWavNarratorEngineTest {
         verify(exactly = 1) { wavNarratorEngine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO) }
         confirmVerified(wavNarratorEngine)
     }
+
+    @Test
+    fun `playStartSoundはWavNarratorEngineのplayStartSoundForKeyへ委譲する`() =
+        runTest {
+            coEvery {
+                wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.AceWindows.VehicleApproach.Root)
+            } just Runs
+            val engine = AceWindowsWavNarratorEngine(wavNarratorEngine)
+
+            engine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root)
+
+            coVerify(exactly = 1) {
+                wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.AceWindows.VehicleApproach.Root)
+            }
+            confirmVerified(wavNarratorEngine)
+        }
 }

@@ -15,6 +15,7 @@ dependencies {
     implementation(projects.core.gt7Ps5Data)
     implementation(projects.core.aceWindowsData)
     implementation(projects.core.deviceVolumeData)
+    implementation(projects.core.textToSpeechData)
     implementation(projects.core.windowsStartupData)
     implementation(projects.server)
 
