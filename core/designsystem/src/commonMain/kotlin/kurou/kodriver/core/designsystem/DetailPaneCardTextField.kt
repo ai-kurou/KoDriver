@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -16,17 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -35,25 +29,19 @@ import androidx.compose.ui.unit.dp
  *
  * [value] が空のときは [placeholder]（既定の読み上げ文言）をプレースホルダーとして表示し、
  * 「空欄なら既定の音声で読み上げる」という状態をそのまま画面上で表現する。
- * 入力途中の値はこの Composable 内のローカル状態として保持し、フォーカスが外れたとき・
- * ソフトウェアキーボードの完了操作のとき・この Composable がコンポジションから破棄されるとき
- * （画面遷移などで [value] が確定済みの値のまま消えるとき）に [onValueChangeFinished] で確定する。
- * 破棄時の確定を入れているのは、フォーカスが外れないまま（Doneキーや再生ボタンも押さないまま）
- * 別ペインへ切り替える・アプリを閉じるといった操作をした場合、`onFocusChanged` はフォーカス喪失として
- * 呼ばれない（ノードごと破棄されるだけ）ため、確定を破棄時にも行わないと入力内容が保存されずに失われるため。
- * `onFocusChanged` は初回コンポーズ時にも「未フォーカス」を一度通知してくるため、一度もフォーカスを
- * 得ないまま来た最初の通知では確定しない（実際にフォーカスを得た後で失った場合のみ確定する）。これを
- * しないと、[value] がまだ確定済みの永続化値に更新されていないマウント直後の一瞬（例えば非同期に
- * 読み込まれる前の初期値）に、その暫定値で確定＝上書き保存してしまう。
+ * 入力途中の値はこの Composable 内のローカル状態として保持しつつ、1文字入力するたびに
+ * [onValueChangeFinished] で即座に確定（永続化）する。フォーカス喪失・Doneキー・アプリ終了といった
+ * 特定のイベントを待って確定する設計にすると、ソフトウェアキーボードを開いたままアプリを終了する等、
+ * そのイベントが発生しない操作をされた場合に入力内容が保存されないまま失われる（実際に発生した不具合）。
+ * 1文字ごとに確定することでこの問題を避ける。
  *
  * 末尾の再生ボタンは、入力中の文言（空欄なら既定の文言）の試聴に使う。
  *
  * [selected] が true のときは、同じ [DetailPaneCard] 内に並ぶ [DetailPaneCardChips] の選択済みチップと同じく
  * チェックアイコンとプライマリ色のインジケーターを表示し、「いまはこちらが読み上げに使われる」ことを示す。
  * チップ側と [selected] を排他にして渡すことで、どちらが使われるかを一目で判別できるようにする。
- * [selected] の判定は永続化された確定値ではなく、[onTextChanged] で通知される入力中の文字列に基づかせる想定。
- * こうすることで、フォーカスを外す・再生ボタンを押すといった確定操作を待たずに、1文字入力した時点で
- * 選択状態の見た目が切り替わる（永続化自体は [onValueChangeFinished] のタイミングのまま変えない）。
+ * [selected] の判定は [onTextChanged] で通知される入力中の文字列に基づかせる想定（[onValueChangeFinished]
+ * と同じタイミングで、1文字入力するたびに更新される）。
  */
 @Suppress("LongParameterList")
 @Composable
@@ -73,28 +61,18 @@ fun DetailPaneCardTextField(
 ) {
     val haptic = LocalHapticFeedback.current
     var text by remember(value) { mutableStateOf(value) }
-    var hasBeenFocused by remember { mutableStateOf(false) }
-
-    // 破棄時にも最新の入力内容・コールバックで確定できるよう、DisposableEffect の onDispose から
-    // 参照する text と onValueChangeFinished は rememberUpdatedState で常に最新のものを使う。
-    val latestText by rememberUpdatedState(text)
-    val latestOnValueChangeFinished by rememberUpdatedState(onValueChangeFinished)
-    DisposableEffect(Unit) {
-        onDispose { latestOnValueChangeFinished(latestText) }
-    }
 
     TextField(
         value = text,
         onValueChange = { input ->
             text = input.replace("\n", "").take(maxLength)
             onTextChanged(text)
+            onValueChangeFinished(text)
         },
         enabled = enabled,
         placeholder = { Text(text = placeholder) },
         supportingText = supportingText?.let { { Text(text = it) } },
         singleLine = true,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { onValueChangeFinished(text) }),
         colors =
             if (selected) {
                 TextFieldDefaults.colors(
@@ -122,7 +100,6 @@ fun DetailPaneCardTextField(
             IconButton(
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onValueChangeFinished(text)
                     onPreviewClick(text)
                 },
                 enabled = enabled,
@@ -136,16 +113,7 @@ fun DetailPaneCardTextField(
                 )
             }
         },
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .onFocusChanged { focusState ->
-                    if (focusState.isFocused) {
-                        hasBeenFocused = true
-                    } else if (hasBeenFocused) {
-                        onValueChangeFinished(text)
-                    }
-                },
+        modifier = modifier.fillMaxWidth(),
     )
 }
 

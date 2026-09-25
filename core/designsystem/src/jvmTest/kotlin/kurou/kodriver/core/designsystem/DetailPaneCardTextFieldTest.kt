@@ -1,9 +1,5 @@
 package kurou.kodriver.core.designsystem
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -40,7 +36,7 @@ class DetailPaneCardTextFieldTest {
     }
 
     @Test
-    fun `マウント直後は一度もフォーカスされていないため確定されない`() {
+    fun `マウント直後は入力していないため確定されない`() {
         var finishedText: String? = null
         rule.setContent {
             KoDriverTheme {
@@ -59,9 +55,8 @@ class DetailPaneCardTextFieldTest {
     }
 
     @Test
-    fun `再生ボタンを押すと入力中の文言が確定され試聴される`() {
+    fun `1文字入力するたびにonValueChangeFinishedが呼ばれて即座に確定される`() {
         var finishedText: String? = null
-        var previewedText: String? = null
         rule.setContent {
             KoDriverTheme {
                 DetailPaneCardTextField(
@@ -69,6 +64,26 @@ class DetailPaneCardTextFieldTest {
                     placeholder = "イエローフラッグ",
                     maxLength = 30,
                     onValueChangeFinished = { finishedText = it },
+                    onPreviewClick = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("イエローフラッグ").performTextInput("イ")
+
+        assertEquals("イ", finishedText)
+    }
+
+    @Test
+    fun `再生ボタンを押すと入力中の文言が試聴される`() {
+        var previewedText: String? = null
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
                     onPreviewClick = { previewedText = it },
                     previewContentDescription = "入力した文言を再生",
                 )
@@ -78,7 +93,6 @@ class DetailPaneCardTextFieldTest {
         rule.onNodeWithText("イエローフラッグ").performTextInput("イエロー、注意")
         rule.onNodeWithContentDescription("入力した文言を再生").performClick()
 
-        assertEquals("イエロー、注意", finishedText)
         assertEquals("イエロー、注意", previewedText)
     }
 
@@ -183,32 +197,5 @@ class DetailPaneCardTextFieldTest {
         rule.onNodeWithText("イエローフラッグ").performTextInput("イ")
 
         assertEquals("イ", changedText)
-    }
-
-    @Test
-    fun `フォーカスを外さずに破棄されても入力中の文言が確定される`() {
-        var finishedText: String? = null
-        lateinit var hide: () -> Unit
-        rule.setContent {
-            var visible by remember { mutableStateOf(true) }
-            hide = { visible = false }
-            KoDriverTheme {
-                if (visible) {
-                    DetailPaneCardTextField(
-                        value = "",
-                        placeholder = "イエローフラッグ",
-                        maxLength = 30,
-                        onValueChangeFinished = { finishedText = it },
-                        onPreviewClick = {},
-                    )
-                }
-            }
-        }
-
-        rule.onNodeWithText("イエローフラッグ").performTextInput("イエロー、注意")
-        rule.runOnIdle { hide() }
-        rule.waitForIdle()
-
-        assertEquals("イエロー、注意", finishedText)
     }
 }
