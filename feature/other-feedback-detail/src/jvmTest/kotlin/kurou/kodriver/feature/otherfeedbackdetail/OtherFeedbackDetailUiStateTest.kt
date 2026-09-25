@@ -86,4 +86,17 @@ class OtherFeedbackDetailUiStateTest {
 
         assertFalse(uiState.canSend)
     }
+
+    @Test
+    fun `クールダウン中なら送信できない`() {
+        val uiState =
+            OtherFeedbackDetailUiState(
+                message = "送信します",
+                name = "Kurou",
+                email = "user@example.com",
+                isCoolingDown = true,
+            )
+
+        assertFalse(uiState.canSend)
+    }
 }

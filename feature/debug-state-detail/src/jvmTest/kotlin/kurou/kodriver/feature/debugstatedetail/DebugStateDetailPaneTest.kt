@@ -212,7 +212,7 @@ class DebugStateDetailPaneTest {
     }
 
     @Test
-    fun `選択中のシミュレータがLMUの場合は表示名を表示する`() {
+    fun `選択中のシミュレーターがLMUの場合は表示名を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -295,7 +295,7 @@ class DebugStateDetailPaneTest {
     }
 
     @Test
-    fun `選択中のシミュレータがACEの場合はACEフラッグ種別ごとの表示文言を表示する`() {
+    fun `選択中のシミュレーターがACEの場合はACEフラッグ種別ごとの表示文言を表示する`() {
         val expectedByAceFlag =
             mapOf(
                 AceWindowsFlagType.NO_FLAG to "フラッグなし",
@@ -331,7 +331,7 @@ class DebugStateDetailPaneTest {
     }
 
     @Test
-    fun `選択中のシミュレータがACEでフラッグ情報が未取得またはUNKNOWNの場合は未取得の文言を表示する`() {
+    fun `選択中のシミュレーターがACEでフラッグ情報が未取得またはUNKNOWNの場合は未取得の文言を表示する`() {
         listOf(null, AceWindowsFlagData(flag = AceWindowsFlagType.UNKNOWN)).forEach { aceWindowsFlag ->
             rule.setContent {
                 MaterialTheme {
@@ -367,7 +367,7 @@ class DebugStateDetailPaneTest {
         }
 
         rule.onNodeWithText("フラグ情報").assertIsDisplayed()
-        rule.onNodeWithText("選択中のシミュレータ").assertIsDisplayed()
+        rule.onNodeWithText("選択中のシミュレーター").assertIsDisplayed()
     }
 
     @Test
