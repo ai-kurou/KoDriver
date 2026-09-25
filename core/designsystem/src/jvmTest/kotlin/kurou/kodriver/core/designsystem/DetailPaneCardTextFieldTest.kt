@@ -161,6 +161,42 @@ class DetailPaneCardTextFieldTest {
     }
 
     @Test
+    fun `値が空のときは文字数カウンターが0とmaxLengthで表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("0/30").assertIsDisplayed()
+    }
+
+    @Test
+    fun `入力するたびに文字数カウンターが更新される`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("イエローフラッグ").performTextInput("イエロー")
+
+        rule.onNodeWithText("4/30").assertIsDisplayed()
+    }
+
+    @Test
     fun `selectedがfalseのときはチェックアイコンが表示されない`() {
         rule.setContent {
             KoDriverTheme {

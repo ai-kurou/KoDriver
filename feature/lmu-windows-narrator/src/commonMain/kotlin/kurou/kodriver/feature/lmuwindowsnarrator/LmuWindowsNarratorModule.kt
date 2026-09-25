@@ -17,6 +17,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLaps
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
@@ -44,6 +45,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
@@ -58,8 +60,11 @@ import org.koin.dsl.module
  *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases /
  *   ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases / RemainingVirtualEnergyUseCases /
  *   PitTimingUseCases）、
- *   それらが束ねる各ドメイン UseCase、および named(Simulator.LmuWindows.id) の音声再生系
- *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine）。
+ *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
+ *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
+ *   ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase・TextToSpeechEngine）、
+ *   および LmuWindowsSectorYellowFlagCustomTextSpeaker（イエローフラッグの実際の読み上げ時に
+ *   収録WAVとカスタム文言のOS標準TTSを切り替えるフック。WavNarratorEngine の customSpeak に渡す）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は GT7 と区別するため named(Simulator.LmuWindows.id) で登録している。
@@ -119,6 +124,20 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { PlaySpeechEventUseCase(get(named(Simulator.LmuWindows.id))) }
         factory(named(Simulator.LmuWindows.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.LmuWindows.id))) }
         includes(platformSoundModule(named(Simulator.LmuWindows.id)))
+
+        // イエローフラッグの実際の読み上げ時に、チップ選択（収録WAV）とカスタム文言（OS標準TTS）を
+        // 切り替えるためのフック。unqualified の SpeakTextUseCase / ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase は
+        // feature:lmu-windows-readout-flag-detail が試聴用に別途定義しているため、
+        // 同じ型を二重定義しないよう named(Simulator.LmuWindows.id) で区別する。
+        factory(named(Simulator.LmuWindows.id)) { SpeakTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase(get()) }
+        factory {
+            LmuWindowsSectorYellowFlagCustomTextSpeaker(
+                observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
+                speakText = get(named(Simulator.LmuWindows.id)),
+            )
+        }
+
         single<TextToSpeechEngine>(named(Simulator.LmuWindows.id)) {
             LmuWindowsWavNarratorEngine(
                 WavNarratorEngine(
@@ -135,6 +154,7 @@ val lmuWindowsNarratorModule: Module =
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
+                    customSpeak = get<LmuWindowsSectorYellowFlagCustomTextSpeaker>()::invoke,
                 ),
             )
         }
