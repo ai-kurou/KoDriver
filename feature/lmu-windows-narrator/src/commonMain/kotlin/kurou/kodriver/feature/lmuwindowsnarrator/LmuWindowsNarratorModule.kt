@@ -42,6 +42,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -58,7 +59,7 @@ import org.koin.dsl.module
  *   ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases / RemainingVirtualEnergyUseCases /
  *   PitTimingUseCases）、
  *   それらが束ねる各ドメイン UseCase、および named(Simulator.LmuWindows.id) の音声再生系
- *   （PlaySpeechEventUseCase・TextToSpeechEngine）。
+ *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は GT7 と区別するため named(Simulator.LmuWindows.id) で登録している。
@@ -116,6 +117,7 @@ val lmuWindowsNarratorModule: Module =
 
         // 音声再生（named "lmu_windows" で GT7/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
         factory(named(Simulator.LmuWindows.id)) { PlaySpeechEventUseCase(get(named(Simulator.LmuWindows.id))) }
+        factory(named(Simulator.LmuWindows.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.LmuWindows.id))) }
         includes(platformSoundModule(named(Simulator.LmuWindows.id)))
         single<TextToSpeechEngine>(named(Simulator.LmuWindows.id)) {
             LmuWindowsWavNarratorEngine(

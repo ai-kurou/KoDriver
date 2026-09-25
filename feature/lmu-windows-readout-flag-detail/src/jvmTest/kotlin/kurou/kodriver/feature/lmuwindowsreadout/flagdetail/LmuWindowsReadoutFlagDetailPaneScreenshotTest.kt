@@ -28,20 +28,45 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
             )
         }
 
+    @Test
+    fun `イエローフラッグのカスタム文言あり`() =
+        composeScreenshotTest {
+            captureLmuWindowsReadoutFlagDetailPane(
+                enabledStates =
+                    mapOf(
+                        ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
+                        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
+                        ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                    ),
+                sectorYellowFlagText = "イエロー、前方注意",
+                isTextToSpeechAvailable = true,
+            )
+        }
+
     private fun DesktopComposeUiTest.captureLmuWindowsReadoutFlagDetailPane(
         enabledStates: Map<ReadoutItemKey, Boolean>,
+        sectorYellowFlagText: String = "",
+        isTextToSpeechAvailable: Boolean = false,
     ) {
         setContent {
             KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                         LmuWindowsReadoutFlagDetailPaneContent(
-                            uiState = LmuWindowsReadoutFlagDetailUiState(enabledStates = enabledStates),
+                            uiState =
+                                LmuWindowsReadoutFlagDetailUiState(
+                                    enabledStates = enabledStates,
+                                    sectorYellowFlagText = sectorYellowFlagText,
+                                    isTextToSpeechAvailable = isTextToSpeechAvailable,
+                                ),
                             onFlagEnabledChanged = { _, _ -> },
                             onPreviewClicked = {},
                             onRedFlagEnabledChanged = {},
                             onRedFlagVoiceTypeChanged = {},
                             onRedFlagPreviewClicked = {},
+                            onSectorYellowFlagTextChanged = {},
+                            onSectorYellowFlagTextPreviewClicked = {},
                         )
                     }
                 }

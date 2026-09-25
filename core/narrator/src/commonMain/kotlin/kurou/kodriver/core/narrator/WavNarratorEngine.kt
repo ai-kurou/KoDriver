@@ -178,4 +178,24 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
                 soundPlayer.play(sound, currentVolume)
             }
     }
+
+    /**
+     * [key] に紐づく開始音（現在選択中の [START_TYPE]）を再生し、再生完了まで待つ。
+     * WAV以外（OS標準TTS等）で本文を読み上げる前に、収録音声と同じ開始音を鳴らしたい場合に使う。
+     * [key] の開始音が無効化されている場合、または開始音が読み込めていない場合は何もしない。
+     */
+    suspend fun playStartSoundForKey(key: KEY) {
+        val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
+        if (!startSoundEnabled) return
+        val sound = startSounds[currentStartSoundType] ?: return
+        val barrier = cancelPlayback()
+        playbackParent = SupervisorJob()
+        val job =
+            scope.launch(playbackParent) {
+                barrier.join()
+                soundPlayer.play(sound, currentVolume)
+            }
+        playJob = job
+        job.join()
+    }
 }
