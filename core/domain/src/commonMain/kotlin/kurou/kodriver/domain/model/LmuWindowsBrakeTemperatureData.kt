@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  *
  * LMU 共有メモリの `LMUWheel.mBrakeTemp` は 1 輪あたり 1 値のみで、
  * タイヤ温度のような表面 / カーカスの区別やローター内外の区別は存在しない。
- * 共有メモリ側の単位が既に Celsius のため、Kelvin 変換は行わない。
+ * 共有メモリ側は Kelvin のため、Repository 実装側で Celsius へ変換して渡す。
  */
 @Serializable
 data class LmuWindowsBrakeTemperatureData(

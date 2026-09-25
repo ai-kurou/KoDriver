@@ -757,6 +757,7 @@ private fun LmuWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.Lmu
         ReadoutListItemType.LmuWindows.PitTiming -> LmuWindowsReadoutPitTimingDetailPane()
         ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
         ReadoutListItemType.LmuWindows.TyreWear -> LmuWindowsReadoutTyreWearDetailPane()
+        ReadoutListItemType.LmuWindows.BrakeTemperature -> Unit
         ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
     }
 }

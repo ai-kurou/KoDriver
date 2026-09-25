@@ -126,6 +126,13 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = true
             }
         }
+
+        sealed interface BrakeTemperature : LmuWindows {
+            data object Root : BrakeTemperature, TopLevel {
+                override val value = "lmu_windows_brake_temperature"
+                override val supportsQueue = true
+            }
+        }
     }
 
     sealed interface Gt7Ps5 : ReadoutItemKey {
@@ -284,6 +291,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.PitTiming.Root,
                 LmuWindows.RemainingVirtualEnergy.Root,
                 LmuWindows.TyreWear.Root,
+                LmuWindows.BrakeTemperature.Root,
                 LmuWindows.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,

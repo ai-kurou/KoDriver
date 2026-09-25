@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -1428,6 +1429,100 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `いずれかのブレーキが閾値以上になると BrakeOverheat を返す`() {
+        val decision =
+            useCase.determineBrakeTemperatureOverheat(
+                state = LmuWindowsNarratorState(),
+                data = brakeTemperature(fl = 750.0),
+                settings = settings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.BrakeOverheat), decision.events)
+        assertEquals(true, decision.state.brakeOverheating)
+    }
+
+    @Test
+    fun `ブレーキ高温状態が継続しても再度読み上げない`() {
+        val state = LmuWindowsNarratorState(brakeOverheating = true)
+        val decision =
+            useCase.determineBrakeTemperatureOverheat(
+                state = state,
+                data = brakeTemperature(fl = 750.0),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.brakeOverheating)
+    }
+
+    @Test
+    fun `全ブレーキがヒステリシス下限以下に冷えると再度読み上げ可能になる`() {
+        val overheatState =
+            useCase
+                .determineBrakeTemperatureOverheat(
+                    state = LmuWindowsNarratorState(),
+                    data = brakeTemperature(fl = 750.0),
+                    settings = settings(),
+                ).state
+
+        val cooledState =
+            useCase
+                .determineBrakeTemperatureOverheat(
+                    state = overheatState,
+                    data = brakeTemperature(fl = 600.0),
+                    settings = settings(),
+                ).state
+
+        val reovertDecision =
+            useCase.determineBrakeTemperatureOverheat(
+                state = cooledState,
+                data = brakeTemperature(fl = 750.0),
+                settings = settings(),
+            )
+
+        assertEquals(false, cooledState.brakeOverheating)
+        assertEquals(listOf(SpeechEvent.BrakeOverheat), reovertDecision.events)
+    }
+
+    @Test
+    fun `ヒステリシス範囲内に下がっただけではブレーキ過熱状態を維持し再度読み上げない`() {
+        val overheatState =
+            useCase
+                .determineBrakeTemperatureOverheat(
+                    state = LmuWindowsNarratorState(),
+                    data = brakeTemperature(fl = 750.0),
+                    settings = settings(),
+                ).state
+
+        val stillHotDecision =
+            useCase.determineBrakeTemperatureOverheat(
+                state = overheatState,
+                data = brakeTemperature(fl = 680.0),
+                settings = settings(),
+            )
+
+        assertEquals(true, stillHotDecision.state.brakeOverheating)
+        assertEquals(emptyList<SpeechEvent>(), stillHotDecision.events)
+    }
+
+    @Test
+    fun `ブレーキ温度項目が無効なら読み上げない`() {
+        val decision =
+            useCase.determineBrakeTemperatureOverheat(
+                state = LmuWindowsNarratorState(),
+                data = brakeTemperature(fl = 750.0),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.brakeOverheating)
+    }
+
+    @Test
     fun `残量が閾値以下になると RemainingVirtualEnergyWarning を返す`() {
         val decision =
             useCase.determineRemainingVirtualEnergy(
@@ -2183,6 +2278,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
         ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+        ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
         ReadoutItemKey.LmuWindows.PitTiming.Root to true,
         ReadoutItemKey.LmuWindows.Flag.Root to true,
@@ -2384,6 +2480,21 @@ private fun tyreWear(
             WheelIndex.FRONT_RIGHT to LmuWindowsTyreWearRatio(fr),
             WheelIndex.REAR_LEFT to LmuWindowsTyreWearRatio(rl),
             WheelIndex.REAR_RIGHT to LmuWindowsTyreWearRatio(rr),
+        ),
+)
+
+private fun brakeTemperature(
+    fl: Double = 20.0,
+    fr: Double = 20.0,
+    rl: Double = 20.0,
+    rr: Double = 20.0,
+) = LmuWindowsBrakeTemperatureData(
+    wheels =
+        mapOf(
+            WheelIndex.FRONT_LEFT to CelsiusReading(fl.toFloat()),
+            WheelIndex.FRONT_RIGHT to CelsiusReading(fr.toFloat()),
+            WheelIndex.REAR_LEFT to CelsiusReading(rl.toFloat()),
+            WheelIndex.REAR_RIGHT to CelsiusReading(rr.toFloat()),
         ),
 )
 
