@@ -25,6 +25,7 @@ import kurou.kodriver.data.preferences.createGt7Ps5MyBestLapPreferencesRepositor
 import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5TyreTemperaturePreferencesRepository
+import kurou.kodriver.data.preferences.createLmuWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsOverheatPreferencesRepository
@@ -95,6 +96,7 @@ import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesReposito
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -367,6 +369,9 @@ private fun androidDataModuleThresholdPreferences(context: Context) =
         }
         single<LmuWindowsTyreWearPreferencesRepository> {
             createLmuWindowsTyreWearPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsBrakeTemperaturePreferencesRepository> {
+            createLmuWindowsBrakeTemperaturePreferencesRepository(context.filesDir.absolutePath)
         }
         single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
             createLmuWindowsRemainingVirtualEnergyPreferencesRepository(context.filesDir.absolutePath)

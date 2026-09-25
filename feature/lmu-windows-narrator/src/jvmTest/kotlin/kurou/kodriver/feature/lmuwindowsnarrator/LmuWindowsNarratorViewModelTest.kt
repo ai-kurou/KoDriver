@@ -22,6 +22,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
@@ -58,6 +59,7 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
+import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -85,6 +87,7 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
@@ -168,6 +171,9 @@ class LmuWindowsNarratorViewModelTest {
     private val tyreWearPreferencesRepository: LmuWindowsTyreWearPreferencesRepository = mockk(relaxUnitFun = true)
 
     private val brakeTemperatureRepository: LmuWindowsBrakeTemperatureRepository = mockk(relaxUnitFun = true)
+
+    private val brakeTemperaturePreferencesRepository: LmuWindowsBrakeTemperaturePreferencesRepository =
+        mockk(relaxUnitFun = true)
 
     private val virtualEnergyRepository: LmuWindowsVirtualEnergyRepository = mockk(relaxUnitFun = true)
 
@@ -285,6 +291,8 @@ class LmuWindowsNarratorViewModelTest {
         every { tyreWearPreferencesRepository.observeThresholdPercentage() } returns
             MutableStateFlow(tyreWearThresholdPercentage)
         every { brakeTemperatureRepository.brakeTemperatureStream() } returns brakeTemperatureChannel.receiveAsFlow()
+        every { brakeTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns
+            MutableStateFlow(LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
         every { virtualEnergyRepository.virtualEnergyStream() } returns
             remainingVirtualEnergyChannel.receiveAsFlow()
         every { remainingVirtualEnergyPreferencesRepository.observeThresholdPercentage() } returns
@@ -458,6 +466,10 @@ class LmuWindowsNarratorViewModelTest {
             brakeTemperatureUseCases =
                 BrakeTemperatureUseCases(
                     observeBrakeTemperature = ObserveLmuWindowsBrakeTemperatureUseCase(brakeTemperatureRepository),
+                    observeHighThreshold =
+                        ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase(
+                            brakeTemperaturePreferencesRepository,
+                        ),
                 ),
             remainingVirtualEnergyUseCases =
                 RemainingVirtualEnergyUseCases(

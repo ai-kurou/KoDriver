@@ -1,0 +1,7 @@
+package kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail
+
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+
+internal data class LmuWindowsReadoutBrakeTemperatureDetailUiState(
+    val highThresholdCelsius: Int = LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+)

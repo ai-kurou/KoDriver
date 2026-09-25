@@ -9,6 +9,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
@@ -80,7 +81,7 @@ val lmuWindowsNarratorModule: Module =
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get(), get(), get()) }
         factory { TyreWearUseCases(get(), get()) }
-        factory { BrakeTemperatureUseCases(get()) }
+        factory { BrakeTemperatureUseCases(get(), get()) }
         factory { RemainingVirtualEnergyUseCases(get(), get()) }
         factory { PitTimingUseCases(get(), get()) }
         factory { LmuWindowsNarratorEventProcessor(get(named(Simulator.LmuWindows.id)), get()) }
@@ -113,6 +114,7 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsTyreWearUseCase(get()) }
         factory { ObserveLmuWindowsTyreWearThresholdPercentageUseCase(get()) }
         factory { ObserveLmuWindowsBrakeTemperatureUseCase(get()) }
+        factory { ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase(get()) }
         factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
         factory { ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(get()) }
