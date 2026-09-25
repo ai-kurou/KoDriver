@@ -46,6 +46,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-readout-tyre-temperature-detail` | タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-tyre-temperature-detail.svg) |
 | `:feature:lmu-windows-readout-remaining-virtual-energy-detail` | バーチャルエナジー残量アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-remaining-virtual-energy-detail.svg) |
 | `:feature:lmu-windows-readout-tyre-wear-detail` | タイヤ摩耗アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-tyre-wear-detail.svg) |
+| `:feature:lmu-windows-readout-brake-temperature-detail` | ブレーキ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-brake-temperature-detail.svg) |
 | `:feature:lmu-windows-readout-pit-timing-detail` | ピットタイミングアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-pit-timing-detail.svg) |
 | `:feature:gt7-ps5-connection` | GT7 PS5 との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-gt7-ps5-connection.svg) |
 | `:feature:gt7-ps5-narrator` | GT7 PS5 向け WAV 音声ファイルの再生とアナウンス制御を担当する | [図](graphs/feature-gt7-ps5-narrator.svg) |
