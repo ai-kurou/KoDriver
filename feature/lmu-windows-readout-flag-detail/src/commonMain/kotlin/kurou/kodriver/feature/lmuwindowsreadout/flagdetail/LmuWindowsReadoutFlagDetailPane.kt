@@ -78,9 +78,8 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
             text = stringResource(Res.string.flag_description),
         )
         // 収録音声のチップとカスタム文言の入力欄の選択状態を排他にして、どちらが使われるかを明示するための状態。
-        // 永続化された確定値（uiState.sectorYellowFlagText）ではなく、DetailPaneCardTextField から
-        // onTextChanged で都度通知される入力中の文字列を基準にすることで、フォーカスを外す・再生ボタンを
-        // 押すといった確定操作を待たずに、1文字入力した時点で選択状態の見た目を切り替える。
+        // DetailPaneCardTextField は1文字入力するたびに onValueChangeFinished（=
+        // onSectorYellowFlagTextChanged）で即座に確定するため、この値をそのまま選択状態の基準にできる。
         var sectorYellowFlagHasText by remember { mutableStateOf(uiState.sectorYellowFlagText.isNotEmpty()) }
         LaunchedEffect(uiState.sectorYellowFlagText) {
             sectorYellowFlagHasText = uiState.sectorYellowFlagText.isNotEmpty()
@@ -113,9 +112,11 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                             value = uiState.sectorYellowFlagText,
                             placeholder = chipLabel,
                             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-                            onValueChangeFinished = onSectorYellowFlagTextChanged,
+                            onValueChangeFinished = { text ->
+                                sectorYellowFlagHasText = text.isNotEmpty()
+                                onSectorYellowFlagTextChanged(text)
+                            },
                             onPreviewClick = onSectorYellowFlagTextPreviewClicked,
-                            onTextChanged = { text -> sectorYellowFlagHasText = text.isNotEmpty() },
                             enabled = uiState.isTextToSpeechAvailable,
                             selected = customTextSelected,
                             supportingText =
