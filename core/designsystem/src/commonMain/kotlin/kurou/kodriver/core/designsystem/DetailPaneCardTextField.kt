@@ -41,6 +41,9 @@ import androidx.compose.ui.unit.dp
  * [selected] が true のときは、同じ [DetailPaneCard] 内に並ぶ [DetailPaneCardChips] の選択済みチップと同じく
  * チェックアイコンとプライマリ色のインジケーターを表示し、「いまはこちらが読み上げに使われる」ことを示す。
  * チップ側と [selected] を排他にして渡すことで、どちらが使われるかを一目で判別できるようにする。
+ * [selected] の判定は永続化された確定値ではなく、[onTextChanged] で通知される入力中の文字列に基づかせる想定。
+ * こうすることで、フォーカスを外す・再生ボタンを押すといった確定操作を待たずに、1文字入力した時点で
+ * 選択状態の見た目が切り替わる（永続化自体は [onValueChangeFinished] のタイミングのまま変えない）。
  */
 @Suppress("LongParameterList")
 @Composable
@@ -56,13 +59,17 @@ fun DetailPaneCardTextField(
     supportingText: String? = null,
     previewContentDescription: String? = null,
     selectedContentDescription: String? = null,
+    onTextChanged: (String) -> Unit = {},
 ) {
     val haptic = LocalHapticFeedback.current
     var text by remember(value) { mutableStateOf(value) }
 
     TextField(
         value = text,
-        onValueChange = { input -> text = input.replace("\n", "").take(maxLength) },
+        onValueChange = { input ->
+            text = input.replace("\n", "").take(maxLength)
+            onTextChanged(text)
+        },
         enabled = enabled,
         placeholder = { Text(text = placeholder) },
         supportingText = supportingText?.let { { Text(text = it) } },

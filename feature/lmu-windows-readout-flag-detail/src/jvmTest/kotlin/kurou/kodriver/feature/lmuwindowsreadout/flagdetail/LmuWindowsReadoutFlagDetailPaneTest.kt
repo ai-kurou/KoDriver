@@ -217,4 +217,27 @@ class LmuWindowsReadoutFlagDetailPaneTest {
         assertEquals("", changedText)
         assertEquals(FlagReadoutItem.SectorYellowFlag, previewedItem)
     }
+
+    @Test
+    fun `カスタム文言を1文字入力しただけで確定操作なしに入力欄が選択状態になる`() {
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutFlagDetailPaneContent(
+                    uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onPreviewClicked = {},
+                    onRedFlagEnabledChanged = {},
+                    onRedFlagVoiceTypeChanged = {},
+                    onRedFlagPreviewClicked = {},
+                    onSectorYellowFlagTextChanged = {},
+                    onSectorYellowFlagTextPreviewClicked = {},
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("イエローフラッグ")[2].performTextInput("イ")
+
+        rule.onAllNodesWithContentDescription("この文言を読み上げます")[0].assertIsDisplayed()
+        rule.onAllNodesWithText("イエローフラッグ")[1].assertIsNotSelected()
+    }
 }

@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,13 +77,18 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
         DetailPaneDescription(
             text = stringResource(Res.string.flag_description),
         )
+        // 収録音声のチップとカスタム文言の入力欄の選択状態を排他にして、どちらが使われるかを明示するための状態。
+        // 永続化された確定値（uiState.sectorYellowFlagText）ではなく、DetailPaneCardTextField から
+        // onTextChanged で都度通知される入力中の文字列を基準にすることで、フォーカスを外す・再生ボタンを
+        // 押すといった確定操作を待たずに、1文字入力した時点で選択状態の見た目を切り替える。
+        var sectorYellowFlagHasText by remember { mutableStateOf(uiState.sectorYellowFlagText.isNotEmpty()) }
+        LaunchedEffect(uiState.sectorYellowFlagText) {
+            sectorYellowFlagHasText = uiState.sectorYellowFlagText.isNotEmpty()
+        }
         FlagReadoutItem.entries.forEach { item ->
             val chipLabel = stringResource(item.chipLabelRes)
             val checked = uiState.enabledStates[item.key] ?: true
-            // イエローフラッグのみ、カスタム文言が入力されていればそちらが読み上げに使われるため、
-            // 収録音声のチップとカスタム文言の入力欄の選択状態を排他にして、どちらが使われるかを明示する。
-            val customTextSelected =
-                item == FlagReadoutItem.SectorYellowFlag && uiState.sectorYellowFlagText.isNotEmpty()
+            val customTextSelected = item == FlagReadoutItem.SectorYellowFlag && sectorYellowFlagHasText
             DetailPaneCard(
                 title = stringResource(item.labelRes),
                 checked = checked,
@@ -92,7 +101,10 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                         chipEnabled = true,
                         onChipClick = {
                             // 収録音声のチップを選び直す操作なので、入力済みのカスタム文言はクリアする。
-                            if (customTextSelected) onSectorYellowFlagTextChanged("")
+                            if (customTextSelected) {
+                                sectorYellowFlagHasText = false
+                                onSectorYellowFlagTextChanged("")
+                            }
                             onPreviewClicked(item)
                         },
                     )
@@ -103,6 +115,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
                             onValueChangeFinished = onSectorYellowFlagTextChanged,
                             onPreviewClick = onSectorYellowFlagTextPreviewClicked,
+                            onTextChanged = { text -> sectorYellowFlagHasText = text.isNotEmpty() },
                             enabled = uiState.isTextToSpeechAvailable,
                             selected = customTextSelected,
                             supportingText =

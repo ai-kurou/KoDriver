@@ -140,4 +140,25 @@ class DetailPaneCardTextFieldTest {
 
         rule.onNodeWithContentDescription("この文言を読み上げます").assertDoesNotExist()
     }
+
+    @Test
+    fun `1文字入力するたびにonTextChangedが呼ばれる`() {
+        var changedText: String? = null
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                    onTextChanged = { changedText = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("イエローフラッグ").performTextInput("イ")
+
+        assertEquals("イ", changedText)
+    }
 }
