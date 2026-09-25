@@ -482,7 +482,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | `mSuspensionDeflection` | double | +0 | m | サスペンション圧縮量 |
 | `mRideHeight` | double | +8 | m | ライドハイト |
 | `mSuspForce` | double | +16 | N | プッシュロッド荷重 |
-| `mBrakeTemp` | double | +24 | ℃ | ブレーキ温度 |
+| `mBrakeTemp` | double | +24 | K | ブレーキ温度 |
 | `mBrakePressure` | double | +32 | 0.0–1.0 | ブレーキ圧（現状ドライバー入力とブレーキバランス依存。将来 kPa の実圧に変更予定） |
 | `mRotation` | double | +40 | rad/s | ホイール回転速度 |
 | `mLateralPatchVel` | double | +48 | m/s | 接地面横方向速度 |
@@ -538,7 +538,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 ## 注意事項
 
 - **`mBestSector2` / `mLastSector2` / `mCurSector2` は S1+S2 の累積値**。S2 単体の時間は `mBestSector2 - mBestSector1` のように差分で計算する
-- **タイヤ温度（表面・カーカス・内層）は Kelvin**（摂氏変換: K − 273.15）。ブレーキ温度・水温・油温は摂氏
+- **タイヤ温度（表面・カーカス・内層）・ブレーキ温度（`mBrakeTemp`）は Kelvin**（摂氏変換: K − 273.15）。水温・油温は摂氏。ブレーキ温度は実測でレース開始直後（コールド状態）に 280〜290K 台（≒常温）であることを確認済み
 - **`mSector`（0=S3, 1=S1, 2=S2）** と直感に反する順序に注意
 - **`_pack_=4` レイアウト**：`LMU_Data` は 4 バイト境界でアライメントされる。double が 8 バイト境界に乗らない箇所があるため、オフセットは本ドキュメントの実測値を使うこと
 - **タイム系フィールドは無効時に負値**（例: ラップ未計測時の `mBestLapTime` は -1.0）になるため、正値のみを有効値として扱う
