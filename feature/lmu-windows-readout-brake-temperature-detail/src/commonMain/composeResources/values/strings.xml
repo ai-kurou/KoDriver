@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="brake_temperature_description">ブレーキ温度が過熱した際に音声でお知らせします。</string>
+</resources>
