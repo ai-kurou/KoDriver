@@ -31,7 +31,7 @@ class LmuWindowsBrakeTemperatureRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリから4輪のブレーキ温度をCelsiusのまま読み取る`() =
+    fun `共有メモリから4輪のブレーキ温度をKelvinからCelsiusへ変換して読み取る`() =
         runBlocking {
             val reader =
                 FakeBrakeTemperatureMemoryReader(
@@ -51,10 +51,10 @@ class LmuWindowsBrakeTemperatureRepositoryImplTest {
 
             val result = repo.brakeTemperatureStream().first()
 
-            assertEquals(450.0f, result.wheels[WheelIndex.FRONT_LEFT]!!.value, 1e-4f)
-            assertEquals(451.0f, result.wheels[WheelIndex.FRONT_RIGHT]!!.value, 1e-4f)
-            assertEquals(452.0f, result.wheels[WheelIndex.REAR_LEFT]!!.value, 1e-4f)
-            assertEquals(453.0f, result.wheels[WheelIndex.REAR_RIGHT]!!.value, 1e-4f)
+            assertEquals((450.0 - KELVIN_OFFSET).toFloat(), result.wheels[WheelIndex.FRONT_LEFT]!!.value, 1e-4f)
+            assertEquals((451.0 - KELVIN_OFFSET).toFloat(), result.wheels[WheelIndex.FRONT_RIGHT]!!.value, 1e-4f)
+            assertEquals((452.0 - KELVIN_OFFSET).toFloat(), result.wheels[WheelIndex.REAR_LEFT]!!.value, 1e-4f)
+            assertEquals((453.0 - KELVIN_OFFSET).toFloat(), result.wheels[WheelIndex.REAR_RIGHT]!!.value, 1e-4f)
         }
 
     @Test
@@ -74,7 +74,7 @@ class LmuWindowsBrakeTemperatureRepositoryImplTest {
 
             val result = repo.brakeTemperatureStream().first()
 
-            assertEquals(512.0f, result.wheels[WheelIndex.FRONT_LEFT]!!.value, 1e-4f)
+            assertEquals((512.0 - KELVIN_OFFSET).toFloat(), result.wheels[WheelIndex.FRONT_LEFT]!!.value, 1e-4f)
         }
 
     @Test
@@ -163,6 +163,7 @@ class LmuWindowsBrakeTemperatureRepositoryImplTest {
         const val WHEEL_STRIDE = 260
         const val OFF_WHEEL_BRAKE_TEMP = 24
         const val BUFFER_SIZE = 135_000
+        const val KELVIN_OFFSET = 273.15
     }
 }
 
