@@ -1,6 +1,8 @@
 package kurou.kodriver.core.designsystem
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,6 +43,8 @@ import androidx.compose.ui.unit.dp
  * チェックアイコンとプライマリ色のインジケーターを表示し、「いまはこちらが読み上げに使われる」ことを示す。
  * チップ側と [selected] を排他にして渡すことで、どちらが使われるかを一目で判別できるようにする。
  * [selected] の判定は [onValueChangeFinished] で通知される文字列に基づかせる想定（1文字入力するたびに更新される）。
+ *
+ * [supportingText] の右側に、入力中の文字数と [maxLength] を「12/30」の形式で常に表示する。
  */
 @Suppress("LongParameterList")
 @Composable
@@ -68,7 +72,15 @@ fun DetailPaneCardTextField(
         },
         enabled = enabled,
         placeholder = { Text(text = placeholder) },
-        supportingText = supportingText?.let { { Text(text = it) } },
+        supportingText = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                supportingText?.let { Text(text = it, modifier = Modifier.weight(1f, fill = false)) }
+                Text(text = "${text.length}/$maxLength")
+            }
+        },
         singleLine = true,
         colors =
             if (selected) {
