@@ -1,0 +1,77 @@
+@file:Suppress("FunctionNaming")
+
+package kurou.kodriver.domain.usecase
+
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class ObserveLmuWindowsBrakeTemperatureUseCaseTest {
+    private val repo: LmuWindowsBrakeTemperatureRepository = mockk()
+
+    @Test
+    fun `invoke はリポジトリの brakeTemperatureStream を返す`() =
+        runTest {
+            val expected =
+                LmuWindowsBrakeTemperatureData(
+                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(450.0f)),
+                )
+            every { repo.brakeTemperatureStream() } returns flowOf(expected)
+            val useCase = ObserveLmuWindowsBrakeTemperatureUseCase(repo)
+
+            val result = useCase().first()
+
+            assertEquals(expected, result)
+            verify(exactly = 1) { repo.brakeTemperatureStream() }
+            confirmVerified(repo)
+        }
+
+    @Test
+    fun `invoke は空のフローをそのまま返す`() =
+        runTest {
+            every { repo.brakeTemperatureStream() } returns flowOf()
+            val useCase = ObserveLmuWindowsBrakeTemperatureUseCase(repo)
+
+            val results = buildList { useCase().collect { add(it) } }
+
+            assertTrue(results.isEmpty())
+            verify(exactly = 1) { repo.brakeTemperatureStream() }
+            confirmVerified(repo)
+        }
+
+    @Test
+    fun `複数のデータを順番通りに流す`() =
+        runTest {
+            val data1 =
+                LmuWindowsBrakeTemperatureData(
+                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(300.0f)),
+                )
+            val data2 =
+                LmuWindowsBrakeTemperatureData(
+                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(450.0f)),
+                )
+            val data3 =
+                LmuWindowsBrakeTemperatureData(
+                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(600.0f)),
+                )
+            every { repo.brakeTemperatureStream() } returns flowOf(data1, data2, data3)
+            val useCase = ObserveLmuWindowsBrakeTemperatureUseCase(repo)
+
+            val results = buildList { useCase().collect { add(it) } }
+
+            assertEquals(listOf(data1, data2, data3), results)
+            verify(exactly = 1) { repo.brakeTemperatureStream() }
+            confirmVerified(repo)
+        }
+}

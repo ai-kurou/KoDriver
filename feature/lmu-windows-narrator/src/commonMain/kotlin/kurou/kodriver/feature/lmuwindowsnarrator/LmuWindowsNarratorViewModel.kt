@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
@@ -35,6 +37,8 @@ import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassTyreTemperatureH
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
@@ -115,6 +119,11 @@ internal data class RemainingVirtualEnergyUseCases(
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
 )
 
+internal data class BrakeTemperatureUseCases(
+    val observeBrakeTemperature: ObserveLmuWindowsBrakeTemperatureUseCase,
+    val observeHighThreshold: ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase,
+)
+
 internal data class PitTimingUseCases(
     val observeVirtualEnergyLapsThreshold: ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
     val observeTyreWearLapsThreshold: ObserveLmuWindowsPitTimingTyreWearLapsUseCase,
@@ -136,6 +145,7 @@ internal class LmuWindowsNarratorViewModel(
     flagUseCases: FlagUseCases,
     tyreTemperatureUseCases: TyreTemperatureUseCases,
     tyreWearUseCases: TyreWearUseCases,
+    brakeTemperatureUseCases: BrakeTemperatureUseCases,
     remainingVirtualEnergyUseCases: RemainingVirtualEnergyUseCases,
     pitTimingUseCases: PitTimingUseCases,
     private val eventProcessor: LmuWindowsNarratorEventProcessor,
@@ -255,6 +265,16 @@ internal class LmuWindowsNarratorViewModel(
         tyreWearUseCases
             .observeThresholdPercentage()
             .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT)
+
+    private val brakeTemperatureHighThresholdCelsius =
+        brakeTemperatureUseCases
+            .observeHighThreshold()
+            .map { Celsius(it) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                Celsius(LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT),
+            )
 
     private val remainingVirtualEnergyThresholdPercentage =
         remainingVirtualEnergyUseCases
@@ -509,12 +529,48 @@ internal class LmuWindowsNarratorViewModel(
                 tyreWearUseCases.observeTyreWear()
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
+    private val brakeTemperatureFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+                brakeTemperatureUseCases.observeBrakeTemperature()
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
     private val virtualEnergyFlow =
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
                 remainingVirtualEnergyUseCases.observeRemainingVirtualEnergy()
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    @Suppress("UnusedPrivateProperty")
+    private val brakeTemperatureJob =
+        brakeTemperatureFlow
+            .onEach { brakeTemperature ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    narratorUseCases.determineReadout.determineBrakeTemperatureOverheat(
+                        state = state,
+                        data = brakeTemperature,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processBrakeTemperature(
+                    brakeTemperature = brakeTemperature,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
     private val tyreWearJob =
@@ -647,6 +703,7 @@ internal class LmuWindowsNarratorViewModel(
                 tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
                 tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
                 tyreWearThresholdPercentage = tyreWearThresholdPercentage.value,
+                brakeTemperatureHighThresholdCelsius = brakeTemperatureHighThresholdCelsius.value,
                 remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage.value,
                 pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold.value,
                 pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,

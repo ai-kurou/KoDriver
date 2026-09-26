@@ -9,6 +9,8 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
@@ -67,7 +69,9 @@ import org.koin.dsl.module
 val lmuWindowsNarratorModule: Module =
     module {
         // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel {
+            LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+        }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { NarratorUseCases(get(), get(), get(), get()) }
@@ -77,6 +81,7 @@ val lmuWindowsNarratorModule: Module =
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get(), get(), get()) }
         factory { TyreWearUseCases(get(), get()) }
+        factory { BrakeTemperatureUseCases(get(), get()) }
         factory { RemainingVirtualEnergyUseCases(get(), get()) }
         factory { PitTimingUseCases(get(), get()) }
         factory { LmuWindowsNarratorEventProcessor(get(named(Simulator.LmuWindows.id)), get()) }
@@ -108,6 +113,8 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
         factory { ObserveLmuWindowsTyreWearUseCase(get()) }
         factory { ObserveLmuWindowsTyreWearThresholdPercentageUseCase(get()) }
+        factory { ObserveLmuWindowsBrakeTemperatureUseCase(get()) }
+        factory { ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase(get()) }
         factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
         factory { ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(get()) }
@@ -163,6 +170,7 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
+        put(SpeechEvent.BrakeOverheat, "files/brake_overheat.wav")
         for (laps in 0..MAX_PIT_TIMING_LAPS) {
             put(SpeechEvent.PitTimingWarning(laps), "files/pit_timing_laps_$laps.wav")
         }

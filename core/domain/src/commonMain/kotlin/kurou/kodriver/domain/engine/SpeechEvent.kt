@@ -122,6 +122,11 @@ sealed interface SpeechEvent {
         override val narratedText = "タイヤ摩耗警告"
     }
 
+    data object BrakeOverheat : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root
+        override val narratedText = "ブレーキ過熱警告"
+    }
+
     data object RemainingVirtualEnergyWarning : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root
         override val narratedText = "バーチャルエナジー残量警告"

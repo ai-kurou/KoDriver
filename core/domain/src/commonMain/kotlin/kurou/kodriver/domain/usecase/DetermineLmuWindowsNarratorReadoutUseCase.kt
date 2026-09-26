@@ -3,6 +3,7 @@ package kurou.kodriver.domain.usecase
 import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -39,6 +40,7 @@ data class LmuWindowsNarratorState(
     val previousBestLapTimeMs: Long? = null,
     val tyreOverheating: Boolean = false,
     val tyreWearWarned: Boolean = false,
+    val brakeOverheating: Boolean = false,
     val previousGamePhaseForTyreLowWarning: SessionPhase? = null,
     val remainingVirtualEnergyWarned: Boolean = false,
     val lastAnnouncedPitTimingVirtualEnergyLaps: Int = -1,
@@ -107,6 +109,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val tyreTemperatureHighThresholdCelsius: Celsius,
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
     val tyreWearThresholdPercentage: Int,
+    val brakeTemperatureHighThresholdCelsius: Celsius,
     val remainingVirtualEnergyThresholdPercentage: Int,
     val pitTimingVirtualEnergyLapsThreshold: Int,
     val pitTimingTyreWearLapsThreshold: Int,
@@ -372,6 +375,30 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         )
     }
 
+    fun determineBrakeTemperatureOverheat(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsBrakeTemperatureData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): LmuWindowsNarratorReadoutDecision {
+        val hotThreshold = settings.brakeTemperatureHighThresholdCelsius.value.toFloat()
+        val coolThreshold = hotThreshold - BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS
+        val anyHot = data.wheels.values.any { it.value >= hotThreshold }
+        val allCool = data.wheels.values.all { it.value <= coolThreshold }
+        val nextOverheating =
+            when {
+                anyHot -> true
+                allCool -> false
+                else -> state.brakeOverheating
+            }
+        val shouldAnnounce =
+            !state.brakeOverheating && nextOverheating &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeTemperature.Root)
+        return LmuWindowsNarratorReadoutDecision(
+            state = state.copy(brakeOverheating = nextOverheating),
+            events = if (shouldAnnounce) listOf(SpeechEvent.BrakeOverheat) else emptyList(),
+        )
+    }
+
     fun determineRemainingVirtualEnergy(
         state: LmuWindowsNarratorState,
         data: LmuWindowsVirtualEnergyData,
@@ -540,21 +567,6 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             determineRedFlagEvent(previous, raceFlags, settings),
         )
 
-    private fun determineBlueFlagEvent(
-        previous: LmuWindowsRaceFlagsData,
-        raceFlags: LmuWindowsRaceFlagsData,
-        settings: LmuWindowsNarratorReadoutSettings,
-    ): SpeechEvent? =
-        if (
-            settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.Flag.BlueFlag) &&
-            previous.playerFlag != PrimaryFlag.BLUE &&
-            raceFlags.playerFlag == PrimaryFlag.BLUE
-        ) {
-            SpeechEvent.BlueFlag
-        } else {
-            null
-        }
-
     private fun determineYellowFlagEvent(
         previous: LmuWindowsRaceFlagsData,
         raceFlags: LmuWindowsRaceFlagsData,
@@ -647,8 +659,24 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60f
         const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
         const val PERCENTAGE_SCALE = 100.0
+        const val BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS = 50f
     }
 }
+
+private fun determineBlueFlagEvent(
+    previous: LmuWindowsRaceFlagsData,
+    raceFlags: LmuWindowsRaceFlagsData,
+    settings: LmuWindowsNarratorReadoutSettings,
+): SpeechEvent? =
+    if (
+        settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.Flag.BlueFlag) &&
+        previous.playerFlag != PrimaryFlag.BLUE &&
+        raceFlags.playerFlag == PrimaryFlag.BLUE
+    ) {
+        SpeechEvent.BlueFlag
+    } else {
+        null
+    }
 
 private const val PIT_TIMING_READOUT_BEFORE_BEST_LAP_MS = 30_000L
 
