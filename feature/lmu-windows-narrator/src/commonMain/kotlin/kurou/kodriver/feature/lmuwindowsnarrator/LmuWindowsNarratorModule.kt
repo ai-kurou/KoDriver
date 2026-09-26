@@ -170,6 +170,7 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
+        put(SpeechEvent.BrakeOverheat, "files/brake_overheat.wav")
         for (laps in 0..MAX_PIT_TIMING_LAPS) {
             put(SpeechEvent.PitTimingWarning(laps), "files/pit_timing_laps_$laps.wav")
         }
