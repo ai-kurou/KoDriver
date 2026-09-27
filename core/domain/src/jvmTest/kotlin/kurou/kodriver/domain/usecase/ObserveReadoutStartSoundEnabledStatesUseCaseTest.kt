@@ -35,6 +35,7 @@ class ObserveReadoutStartSoundEnabledStatesUseCaseTest {
                     ReadoutItemKey.LmuWindows.PitTiming.Root to true,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
                     ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,

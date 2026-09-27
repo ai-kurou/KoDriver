@@ -26,4 +26,31 @@ class ReadoutPreferencesDefaultsTest {
         assertEquals(true, enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat))
         assertEquals(true, enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.Flag.BlueFlag))
     }
+
+    @Test
+    fun `全てのTopLevelキーがREADOUT_ENABLED_STATE_DEFAULTに列挙されている`() {
+        val registered = READOUT_ENABLED_STATE_DEFAULT.values.flatMap { it.keys }.toSet()
+        val missing = ReadoutItemKey.entries.filterIsInstance<ReadoutItemKey.TopLevel>() - registered
+
+        assertEquals(emptyList(), missing)
+    }
+
+    @Test
+    fun `supportsQueueがtrueのTopLevelキーがQUEUE_ENABLED_STATE_DEFAULTに列挙されている`() {
+        val missing =
+            ReadoutItemKey.entries
+                .filterIsInstance<ReadoutItemKey.TopLevel>()
+                .filter { it.supportsQueue } - QUEUE_ENABLED_STATE_DEFAULT.keys
+
+        assertEquals(emptyList(), missing)
+    }
+
+    @Test
+    fun `全てのTopLevelキーがREADOUT_START_SOUND_ENABLED_STATE_DEFAULTに列挙されている`() {
+        val missing =
+            ReadoutItemKey.entries.filterIsInstance<ReadoutItemKey.TopLevel>() -
+                READOUT_START_SOUND_ENABLED_STATE_DEFAULT.keys
+
+        assertEquals(emptyList(), missing)
+    }
 }
