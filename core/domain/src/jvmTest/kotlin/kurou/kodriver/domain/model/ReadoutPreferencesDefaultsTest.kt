@@ -28,11 +28,23 @@ class ReadoutPreferencesDefaultsTest {
     }
 
     @Test
-    fun `全てのTopLevelキーがREADOUT_ENABLED_STATE_DEFAULTに列挙されている`() {
-        val registered = READOUT_ENABLED_STATE_DEFAULT.values.flatMap { it.keys }.toSet()
-        val missing = ReadoutItemKey.entries.filterIsInstance<ReadoutItemKey.TopLevel>() - registered
+    fun `全てのTopLevelキーが所属シミュレーターのREADOUT_ENABLED_STATE_DEFAULTに列挙されている`() {
+        val missing =
+            ReadoutItemKey.entries
+                .filterIsInstance<ReadoutItemKey.TopLevel>()
+                .filterNot { it in READOUT_ENABLED_STATE_DEFAULT[it.simulator()].orEmpty() }
 
         assertEquals(emptyList(), missing)
+    }
+
+    @Test
+    fun `READOUT_ENABLED_STATE_DEFAULTに別シミュレーターのキーが混入していない`() {
+        val misplaced =
+            READOUT_ENABLED_STATE_DEFAULT.flatMap { (simulator, enabledStates) ->
+                enabledStates.keys.filter { it.simulator() != simulator }
+            }
+
+        assertEquals(emptyList(), misplaced)
     }
 
     @Test
@@ -54,3 +66,10 @@ class ReadoutPreferencesDefaultsTest {
         assertEquals(emptyList(), missing)
     }
 }
+
+private fun ReadoutItemKey.simulator(): Simulator =
+    when (this) {
+        is ReadoutItemKey.LmuWindows -> Simulator.LmuWindows
+        is ReadoutItemKey.Gt7Ps5 -> Simulator.Gt7Ps5
+        is ReadoutItemKey.AceWindows -> Simulator.AceWindows
+    }
