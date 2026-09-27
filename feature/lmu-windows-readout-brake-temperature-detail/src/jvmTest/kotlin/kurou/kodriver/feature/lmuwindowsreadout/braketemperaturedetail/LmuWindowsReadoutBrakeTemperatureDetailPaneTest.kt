@@ -24,7 +24,11 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("ブレーキ温度が過熱した際に音声でお知らせします。").assertIsDisplayed()
+        rule
+            .onNodeWithText(
+                "ブレーキ温度が過熱した際に音声でお知らせします。" +
+                    "一度警告を読み上げた後は、4輪すべてが閾値より約100℃低い温度まで下がるまで再度読み上げません。",
+            ).assertIsDisplayed()
     }
 
     @Test

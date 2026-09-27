@@ -659,7 +659,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60f
         const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
         const val PERCENTAGE_SCALE = 100.0
-        const val BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS = 50f
+        const val BRAKE_TEMPERATURE_OVERHEAT_HYSTERESIS_CELSIUS = 100f
     }
 }
 
