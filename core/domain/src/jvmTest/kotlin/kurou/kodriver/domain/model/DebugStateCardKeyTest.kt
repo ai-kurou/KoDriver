@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 
 class DebugStateCardKeyTest {
     @Test
-    fun `SIMULATOR等16種類が定義されている`() {
+    fun `SIMULATOR等17種類が定義されている`() {
         assertEquals(
             listOf(
                 DebugStateCardKey.SIMULATOR,
@@ -20,6 +20,7 @@ class DebugStateCardKeyTest {
                 DebugStateCardKey.BEST_LAP,
                 DebugStateCardKey.TYRE_TEMPERATURE,
                 DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+                DebugStateCardKey.BRAKE_TEMPERATURE,
                 DebugStateCardKey.TYRE_WEAR,
                 DebugStateCardKey.FUEL_CONSUMPTION,
                 DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,

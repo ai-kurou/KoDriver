@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -127,6 +128,17 @@ private val sampleTyreCarcassTemperature =
             ),
     )
 
+private val sampleBrakeTemperature =
+    LmuWindowsBrakeTemperatureData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to CelsiusReading(320.0f),
+                WheelIndex.FRONT_RIGHT to CelsiusReading(325.0f),
+                WheelIndex.REAR_LEFT to CelsiusReading(280.0f),
+                WheelIndex.REAR_RIGHT to CelsiusReading(285.0f),
+            ),
+    )
+
 private val sampleVehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar")
 
 private val sampleAceWindowsStatus =
@@ -178,6 +190,7 @@ class DebugStateDetailPaneScreenshotTest {
             gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
             vehicleApproach = sampleVehicleApproach,
             tyreCarcassTemperature = sampleTyreCarcassTemperature,
+            brakeTemperature = sampleBrakeTemperature,
             lmuWindowsVehicleClass = sampleVehicleClass,
             aceWindowsStatus = sampleAceWindowsStatus,
             lmuWindowsPitStatus = sampleLmuWindowsPitStatus,

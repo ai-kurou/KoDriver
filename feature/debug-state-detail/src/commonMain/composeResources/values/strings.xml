@@ -64,6 +64,11 @@
     <string name="debug_state_tyre_carcass_temperature_fr">FR %1$s℃</string>
     <string name="debug_state_tyre_carcass_temperature_rl">RL %1$s℃</string>
     <string name="debug_state_tyre_carcass_temperature_rr">RR %1$s℃</string>
+    <string name="debug_state_brake_temperature_title">ブレーキ温度</string>
+    <string name="debug_state_brake_temperature_fl">FL %1$s℃</string>
+    <string name="debug_state_brake_temperature_fr">FR %1$s℃</string>
+    <string name="debug_state_brake_temperature_rl">RL %1$s℃</string>
+    <string name="debug_state_brake_temperature_rr">RR %1$s℃</string>
     <string name="debug_state_tyre_wear_title">タイヤ摩耗</string>
     <string name="debug_state_tyre_wear_fl">FL %1$s%</string>
     <string name="debug_state_tyre_wear_fr">FR %1$s%</string>

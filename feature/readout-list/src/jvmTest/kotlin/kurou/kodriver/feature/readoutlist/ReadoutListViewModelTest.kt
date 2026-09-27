@@ -117,6 +117,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 state.items,
             )
@@ -144,6 +145,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } returns Unit
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -164,6 +166,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 viewModel.uiState.first().items,
             )
@@ -179,6 +182,7 @@ class ReadoutListViewModelTest {
                         ReadoutItemKey.LmuWindows.TyreWear.Root,
                         ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                         ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                        ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ),
                 )
             }
@@ -281,6 +285,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 viewModel.uiState.first().items,
             )
@@ -305,6 +310,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } answers {
                 orderFlow.update { movedOrder }
@@ -327,6 +333,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 orderFlow.value,
             )
@@ -350,6 +357,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 )
             val secondMovedOrder =
                 listOf(
@@ -361,6 +369,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", firstMovedOrder) } returns Unit
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", secondMovedOrder) } returns Unit
@@ -383,6 +392,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 viewModel.uiState.first().items,
             )

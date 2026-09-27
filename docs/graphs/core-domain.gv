@@ -27,6 +27,7 @@ digraph G {
   ":feature:gt7-ps5-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:lmu-windows-readout-brake-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:lmu-windows-readout-pit-timing-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -78,6 +79,7 @@ digraph G {
   ":feature:gt7-ps5-readout-tyre-temperature-detail" -> ":core:domain"
   ":feature:lmu-windows-connection" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"
+  ":feature:lmu-windows-readout-brake-temperature-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-flag-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-my-best-lap-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-pit-timing-detail" -> ":core:domain"
