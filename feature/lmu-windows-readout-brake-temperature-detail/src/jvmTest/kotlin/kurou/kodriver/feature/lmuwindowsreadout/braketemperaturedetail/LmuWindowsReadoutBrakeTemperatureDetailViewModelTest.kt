@@ -119,27 +119,27 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
     fun `onVehicleClassHighThresholdResetを呼ぶとそのクラスの閾値がデフォルト値に戻る`() =
         runTest {
             val thresholdFlow =
-                MutableStateFlow<Map<LmuWindowsVehicleClassData, Int>>(mapOf(LmuWindowsVehicleClassData.Gt3 to 800))
+                MutableStateFlow<Map<LmuWindowsVehicleClassData, Int>>(mapOf(LmuWindowsVehicleClassData.Gt3 to 600))
             every { vehicleClassRepository.observeHighThresholdCelsius() } returns thresholdFlow
             every { vehicleClassRepository.observeSelectedVehicleClass() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             coEvery {
-                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 700)
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 800)
             } answers {
-                thresholdFlow.update { it + (LmuWindowsVehicleClassData.Gt3 to 700) }
+                thresholdFlow.update { it + (LmuWindowsVehicleClassData.Gt3 to 800) }
             }
             val viewModel = createViewModel()
 
             viewModel.onVehicleClassHighThresholdReset(LmuWindowsVehicleClassData.Gt3)
 
             assertEquals<Map<LmuWindowsVehicleClassData, Int>>(
-                mapOf(LmuWindowsVehicleClassData.Gt3 to 700),
+                mapOf(LmuWindowsVehicleClassData.Gt3 to 800),
                 viewModel.uiState.first().vehicleClassHighThresholdCelsius,
             )
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             coVerify(exactly = 1) {
-                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 700)
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 800)
             }
             confirmVerified(vehicleClassRepository)
         }

@@ -1599,7 +1599,7 @@ class LmuWindowsNarratorViewModelTest {
                 enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true),
             )
 
-            channel.send(brakeTemperature(fl = 750.0))
+            channel.send(brakeTemperature(fl = 850.0))
 
             assertEquals(listOf<SpeechEvent>(SpeechEvent.BrakeOverheat), spokenTexts)
         }
@@ -1616,8 +1616,8 @@ class LmuWindowsNarratorViewModelTest {
                 enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true),
             )
 
-            channel.send(brakeTemperature(fl = 750.0))
-            channel.send(brakeTemperature(fl = 750.0))
+            channel.send(brakeTemperature(fl = 850.0))
+            channel.send(brakeTemperature(fl = 850.0))
 
             assertEquals(listOf<SpeechEvent>(SpeechEvent.BrakeOverheat), spokenTexts)
         }
@@ -1634,9 +1634,9 @@ class LmuWindowsNarratorViewModelTest {
                 enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true),
             )
 
-            channel.send(brakeTemperature(fl = 750.0))
+            channel.send(brakeTemperature(fl = 850.0))
             channel.send(brakeTemperature(fl = 20.0))
-            channel.send(brakeTemperature(fl = 750.0))
+            channel.send(brakeTemperature(fl = 850.0))
 
             assertEquals(
                 listOf<SpeechEvent>(
@@ -1659,7 +1659,7 @@ class LmuWindowsNarratorViewModelTest {
                 enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to false),
             )
 
-            channel.send(brakeTemperature(fl = 750.0))
+            channel.send(brakeTemperature(fl = 850.0))
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
@@ -1679,7 +1679,7 @@ class LmuWindowsNarratorViewModelTest {
             )
             stubTelemetryLogSave(logs, createdAt = 123L, ReadoutItemKey.LmuWindows.BrakeTemperature.Root)
 
-            channel.send(brakeTemperature(fl = 750.0))
+            channel.send(brakeTemperature(fl = 850.0))
 
             assertEquals(1, logs.size)
             val log = logs.first()
@@ -1688,7 +1688,7 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(ReadoutItemKey.LmuWindows.BrakeTemperature.Root, log.readoutItemKey)
             assertContains(log.telemetryJson, """"state":{""")
             assertContains(log.telemetryJson, """"previousBrakeTemperature":null""")
-            assertContains(log.telemetryJson, """"brakeTemperature":{"wheels":{"FRONT_LEFT":750.0""")
+            assertContains(log.telemetryJson, """"brakeTemperature":{"wheels":{"FRONT_LEFT":850.0""")
             assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"finalState":{""")

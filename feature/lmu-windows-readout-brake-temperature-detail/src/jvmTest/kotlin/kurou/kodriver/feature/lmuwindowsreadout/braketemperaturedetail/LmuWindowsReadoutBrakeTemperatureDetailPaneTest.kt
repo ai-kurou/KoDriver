@@ -67,8 +67,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneTest {
         }
 
         rule.onNodeWithText("過熱閾値").assertIsDisplayed()
-        rule.onNodeWithText("いずれかのブレーキが700℃以上になると警告を読み上げます。").assertIsDisplayed()
-        rule.onNodeWithText("700℃").assertIsDisplayed()
+        rule.onNodeWithText("いずれかのブレーキが800℃以上になると警告を読み上げます。").assertIsDisplayed()
+        rule.onNodeWithText("800℃").assertIsDisplayed()
     }
 
     @Test
