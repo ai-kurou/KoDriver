@@ -12,6 +12,7 @@ import kurou.kodriver.core.designsystem.generated.resources.readout_item_ace_red
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_ace_white_flag
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_ace_yellow_flag
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_blue_flag
+import kurou.kodriver.core.designsystem.generated.resources.readout_item_brake_temperature
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_flag
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_full_course_yellow
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_my_best_lap
@@ -115,6 +116,7 @@ private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
         "lmu_windows_pit_timing" -> stringResource(Res.string.readout_item_pit_timing)
         "lmu_windows_remaining_virtual_energy" -> stringResource(Res.string.readout_item_remaining_virtual_energy)
         "lmu_windows_tyre_wear" -> stringResource(Res.string.readout_item_tyre_wear)
+        "lmu_windows_brake_temperature" -> stringResource(Res.string.readout_item_brake_temperature)
         else -> null
     }
 

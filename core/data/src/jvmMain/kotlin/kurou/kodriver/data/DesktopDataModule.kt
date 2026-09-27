@@ -30,6 +30,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsTyreTemperaturePreference
 import kurou.kodriver.data.preferences.createLmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
@@ -76,6 +77,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
@@ -205,6 +207,9 @@ val desktopDataModule =
         }
         single<LmuWindowsTyreWearPreferencesRepository> {
             createLmuWindowsTyreWearPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository> {
+            createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository(directory = kodriverDirectory)
         }
         single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
             createLmuWindowsRemainingVirtualEnergyPreferencesRepository(directory = kodriverDirectory)

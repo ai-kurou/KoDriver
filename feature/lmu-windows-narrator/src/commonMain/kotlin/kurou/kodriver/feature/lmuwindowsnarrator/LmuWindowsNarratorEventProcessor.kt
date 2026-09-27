@@ -10,6 +10,7 @@ import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
@@ -61,6 +62,7 @@ internal class LmuWindowsNarratorEventProcessor(
     private var previousRaceFlags: LmuWindowsRaceFlagsData? = null
     private var previousTyreWear: LmuWindowsTyreWearData? = null
     private var previousRemainingVirtualEnergy: LmuWindowsVirtualEnergyData? = null
+    private var previousBrakeTemperature: LmuWindowsBrakeTemperatureData? = null
 
     suspend fun processTelemetry(
         telemetry: LmuWindowsTelemetryData,
@@ -240,6 +242,36 @@ internal class LmuWindowsNarratorEventProcessor(
             )
         }
         previousTyreWear = tyreWear
+    }
+
+    suspend fun processBrakeTemperature(
+        brakeTemperature: LmuWindowsBrakeTemperatureData,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: LmuWindowsTelemetryLogContext,
+    ) {
+        val previous = previousBrakeTemperature
+        events.forEach { event ->
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = brakeTemperature,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
+        }
+        previousBrakeTemperature = brakeTemperature
     }
 
     suspend fun processRemainingVirtualEnergy(
@@ -517,6 +549,40 @@ private fun buildTelemetryLogJson(
                     },
             ),
         current = TelemetryLogJsonCurrentField(name = "tyreWear", json = TelemetryLogJson.encodeToString(current)),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
+
+/**
+ * ブレーキ温度判定入力（[LmuWindowsBrakeTemperatureData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineBrakeTemperatureOverheat]）と
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
+private fun buildTelemetryLogJson(
+    state: LmuWindowsNarratorState,
+    previous: LmuWindowsBrakeTemperatureData?,
+    current: LmuWindowsBrakeTemperatureData,
+    settings: LmuWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: LmuWindowsNarratorState,
+): String =
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousBrakeTemperature",
+                json =
+                    previous?.let {
+                        TelemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "brakeTemperature",
+                json = TelemetryLogJson.encodeToString(current),
+            ),
         settingsJson = TelemetryLogJson.encodeToString(settings),
         observedAtMs = observedAtMs,
         finalStateJson = TelemetryLogJson.encodeToString(finalState),
