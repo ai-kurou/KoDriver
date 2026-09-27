@@ -19,7 +19,6 @@ import kurou.kodriver.data.preferences.createGt7Ps5MyBestLapPreferencesRepositor
 import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5TyreTemperaturePreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsOverheatPreferencesRepository
@@ -30,6 +29,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsTyreTemperaturePreference
 import kurou.kodriver.data.preferences.createLmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
@@ -65,7 +65,6 @@ import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesReposito
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
-import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
@@ -76,6 +75,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
@@ -203,8 +203,8 @@ val desktopDataModule =
         single<LmuWindowsTyreWearPreferencesRepository> {
             createLmuWindowsTyreWearPreferencesRepository(directory = kodriverDirectory)
         }
-        single<LmuWindowsBrakeTemperaturePreferencesRepository> {
-            createLmuWindowsBrakeTemperaturePreferencesRepository(directory = kodriverDirectory)
+        single<LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository> {
+            createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository(directory = kodriverDirectory)
         }
         single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
             createLmuWindowsRemainingVirtualEnergyPreferencesRepository(directory = kodriverDirectory)

@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
@@ -32,12 +31,13 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
+import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
+import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsius
 import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
@@ -60,6 +60,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadou
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
@@ -121,7 +122,7 @@ internal data class RemainingVirtualEnergyUseCases(
 
 internal data class BrakeTemperatureUseCases(
     val observeBrakeTemperature: ObserveLmuWindowsBrakeTemperatureUseCase,
-    val observeHighThreshold: ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase,
+    val observeVehicleClassHighThreshold: ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase,
 )
 
 internal data class PitTimingUseCases(
@@ -267,14 +268,25 @@ internal class LmuWindowsNarratorViewModel(
             .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT)
 
     private val brakeTemperatureHighThresholdCelsius =
-        brakeTemperatureUseCases
-            .observeHighThreshold()
-            .map { Celsius(it) }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                Celsius(LMU_WINDOWS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT),
+        combine(
+            vehicleClassFlow,
+            brakeTemperatureUseCases.observeVehicleClassHighThreshold(),
+        ) { vehicleClass, thresholdsByVehicleClass ->
+            Celsius(
+                resolveLmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsius(
+                    thresholdsByVehicleClass,
+                    vehicleClass,
+                ),
             )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            Celsius(
+                lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(
+                    LmuWindowsVehicleClassData.Unknown(LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY),
+                ),
+            ),
+        )
 
     private val remainingVirtualEnergyThresholdPercentage =
         remainingVirtualEnergyUseCases

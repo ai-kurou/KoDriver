@@ -19,10 +19,13 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperaturePreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -32,7 +35,7 @@ import kotlin.test.assertEquals
 class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    private val repository: LmuWindowsBrakeTemperaturePreferencesRepository = mockk()
+    private val vehicleClassRepository: LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository = mockk()
 
     private val ttsEngine: TextToSpeechEngine = mockk()
 
@@ -48,70 +51,133 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutBrakeTemperatureDetailViewModel(
-            observeHighThresholdCelsius = ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase(repository),
-            saveHighThresholdCelsius = SaveLmuWindowsBrakeTemperatureHighThresholdUseCase(repository),
+            brakeTemperatureUseCases =
+                BrakeTemperatureUseCases(
+                    observeVehicleClassHighThreshold =
+                        ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase(vehicleClassRepository),
+                    observeVehicleClassSelection =
+                        ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase(vehicleClassRepository),
+                    saveVehicleClassHighThreshold =
+                        SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase(vehicleClassRepository),
+                    saveVehicleClassSelection =
+                        SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase(vehicleClassRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() =
         runTest {
-            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(700)
+            every { vehicleClassRepository.observeHighThresholdCelsius() } returns
+                MutableStateFlow(mapOf(LmuWindowsVehicleClassData.Gte to 700))
+            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
+                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             val viewModel = createViewModel()
 
             assertEquals(
-                LmuWindowsReadoutBrakeTemperatureDetailUiState(highThresholdCelsius = 700),
+                LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                    vehicleClassHighThresholdCelsius = mapOf(LmuWindowsVehicleClassData.Gte to 700),
+                    selectedVehicleClass = LmuWindowsVehicleClassData.Hypercar,
+                ),
                 viewModel.uiState.first(),
             )
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-            confirmVerified(repository)
+            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            confirmVerified(vehicleClassRepository)
         }
 
     @Test
-    fun `onThresholdChangedを呼ぶとuiStateのhighThresholdCelsiusが更新される`() =
+    fun `onVehicleClassHighThresholdChangedを呼ぶとuiStateのvehicleClassHighThresholdCelsiusが更新される`() =
         runTest {
-            val thresholdFlow = MutableStateFlow(700)
-            every { repository.observeHighThresholdCelsius() } returns thresholdFlow
-            coEvery { repository.saveHighThresholdCelsius(600) } answers { thresholdFlow.update { 600 } }
+            val thresholdFlow =
+                MutableStateFlow<Map<LmuWindowsVehicleClassData, Int>>(mapOf(LmuWindowsVehicleClassData.Gte to 700))
+            every { vehicleClassRepository.observeHighThresholdCelsius() } returns thresholdFlow
+            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
+                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
+            coEvery {
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 800)
+            } answers {
+                thresholdFlow.update { it + (LmuWindowsVehicleClassData.Gte to 800) }
+            }
             val viewModel = createViewModel()
 
-            viewModel.onThresholdChanged(600)
+            viewModel.onVehicleClassHighThresholdChanged(LmuWindowsVehicleClassData.Gte, 800)
 
-            assertEquals(600, viewModel.uiState.first().highThresholdCelsius)
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(600) }
-            confirmVerified(repository)
+            assertEquals<Map<LmuWindowsVehicleClassData, Int>>(
+                mapOf(LmuWindowsVehicleClassData.Gte to 800),
+                viewModel.uiState.first().vehicleClassHighThresholdCelsius,
+            )
+            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            coVerify(exactly = 1) {
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 800)
+            }
+            confirmVerified(vehicleClassRepository)
         }
 
     @Test
-    fun `onThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値700に戻る`() =
+    fun `onVehicleClassHighThresholdResetを呼ぶとそのクラスの閾値がデフォルト値に戻る`() =
         runTest {
-            val thresholdFlow = MutableStateFlow(700)
-            every { repository.observeHighThresholdCelsius() } returns thresholdFlow
-            coEvery { repository.saveHighThresholdCelsius(600) } answers { thresholdFlow.update { 600 } }
-            coEvery { repository.saveHighThresholdCelsius(700) } answers { thresholdFlow.update { 700 } }
+            val thresholdFlow =
+                MutableStateFlow<Map<LmuWindowsVehicleClassData, Int>>(mapOf(LmuWindowsVehicleClassData.Gt3 to 600))
+            every { vehicleClassRepository.observeHighThresholdCelsius() } returns thresholdFlow
+            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
+                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
+            coEvery {
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 800)
+            } answers {
+                thresholdFlow.update { it + (LmuWindowsVehicleClassData.Gt3 to 800) }
+            }
             val viewModel = createViewModel()
 
-            viewModel.onThresholdChanged(600)
-            viewModel.onThresholdReset()
+            viewModel.onVehicleClassHighThresholdReset(LmuWindowsVehicleClassData.Gt3)
 
-            assertEquals(700, viewModel.uiState.first().highThresholdCelsius)
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(600) }
-            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(700) }
-            confirmVerified(repository)
+            assertEquals<Map<LmuWindowsVehicleClassData, Int>>(
+                mapOf(LmuWindowsVehicleClassData.Gt3 to 800),
+                viewModel.uiState.first().vehicleClassHighThresholdCelsius,
+            )
+            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            coVerify(exactly = 1) {
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 800)
+            }
+            confirmVerified(vehicleClassRepository)
+        }
+
+    @Test
+    fun `onVehicleClassSelectedを呼ぶとuiStateのselectedVehicleClassが更新される`() =
+        runTest {
+            every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
+            val selectedVehicleClassFlow =
+                MutableStateFlow<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Hypercar)
+            every { vehicleClassRepository.observeSelectedVehicleClass() } returns selectedVehicleClassFlow
+            coEvery { vehicleClassRepository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte) } answers {
+                selectedVehicleClassFlow.value = LmuWindowsVehicleClassData.Gte
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onVehicleClassSelected(LmuWindowsVehicleClassData.Gte)
+
+            assertEquals(LmuWindowsVehicleClassData.Gte, viewModel.uiState.first().selectedVehicleClass)
+            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            coVerify(exactly = 1) { vehicleClassRepository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte) }
+            confirmVerified(vehicleClassRepository)
         }
 
     @Test
     fun `onWarningChipClickedを呼ぶとBrakeOverheatイベントが再生される`() {
-        every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(700)
+        every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
+        every { vehicleClassRepository.observeSelectedVehicleClass() } returns
+            MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
         every { ttsEngine.speak(SpeechEvent.BrakeOverheat, false) } returns Unit
         val viewModel = createViewModel()
 
         viewModel.onWarningChipClicked()
 
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+        verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
+        verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BrakeOverheat, false) }
-        confirmVerified(repository, ttsEngine)
+        confirmVerified(vehicleClassRepository, ttsEngine)
     }
 }
