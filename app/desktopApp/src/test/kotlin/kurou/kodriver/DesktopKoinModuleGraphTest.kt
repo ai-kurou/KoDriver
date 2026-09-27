@@ -9,12 +9,14 @@ import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
@@ -95,6 +97,11 @@ class DesktopKoinModuleGraphTest {
                         single<AceWindowsBestLapTimeRepository> {
                             object : AceWindowsBestLapTimeRepository {
                                 override fun bestLapTimeStream() = emptyFlow<AceWindowsBestLapTimeData>()
+                            }
+                        }
+                        single<AceWindowsRemainingFuelLapsRepository> {
+                            object : AceWindowsRemainingFuelLapsRepository {
+                                override fun remainingFuelLapsStream() = emptyFlow<AceWindowsRemainingFuelLapsData>()
                             }
                         }
                         single<AceWindowsTyreCarcassTemperatureRepository> {

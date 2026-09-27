@@ -1,24 +1,16 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CheckAccessLocalNetworkPermissionGrantedUseCaseTest {
-    @MockK
-    private lateinit var repository: AccessLocalNetworkPermissionRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: AccessLocalNetworkPermissionRepository = mockk()
 
     @Test
     fun `Repositoryがtrueを返す場合trueを返す`() {

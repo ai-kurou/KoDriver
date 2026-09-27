@@ -2,10 +2,9 @@
 
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -14,19 +13,12 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ObserveLmuWindowsTyreWearUseCaseTest {
-    @MockK
-    private lateinit var repo: LmuWindowsTyreWearRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repo: LmuWindowsTyreWearRepository = mockk()
 
     @Test
     fun `invoke はリポジトリの tyreWearStream を返す`() =

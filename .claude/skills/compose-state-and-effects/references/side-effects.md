@@ -103,7 +103,7 @@ val destination = remember {
 
 キャプチャした値がrememberされたオブジェクトの再作成を引き起こすべき場合は、それを `remember` のキーにし、`rememberUpdatedState` は使わないこと。`rememberUpdatedState` は、そのスコープを再起動**せずに**、長生きのスコープ（エフェクトのコルーチン、イベントコールバック）内で値を常に最新に保つ必要がある場合のために取っておく。
 
-`rememberUpdatedState` はレンダリングstateを「recomposeしないもの」にするわけでもない。UIが変化する値を表示する必要があるなら、composition内で通常の `State` を読むか、フレームレートの値には [Compose performance](../../compose-performance/SKILL.md) を使うこと。
+`rememberUpdatedState` はレンダリングstateを「recomposeしないもの」にするわけでもない。UIが変化する値を表示する必要があるなら、composition内で通常の `State` を読むか、フレームレートの値には「Compose performance」（未取り込み: chrisbanes/skills の `compose-performance`）を使うこと。
 
 ## Flowの収集
 
@@ -217,9 +217,9 @@ fun Preloader(interactionSource: MutableInteractionSource) {
 }
 ```
 
-複数のsnapshot readをサンプリングしたり、すべての派生値でエフェクトをキー付けせずに急な変化をdebounceしたりする必要がある場合は、`LaunchedEffect` 内で `snapshotFlow { … }` を使う。TV/D-padのフォーカスナビゲーションのセマンティクスについては [Compose focus navigation](../../compose-focus-navigation/SKILL.md) を参照。
+複数のsnapshot readをサンプリングしたり、すべての派生値でエフェクトをキー付けせずに急な変化をdebounceしたりする必要がある場合は、`LaunchedEffect` 内で `snapshotFlow { … }` を使う。TV/D-padのフォーカスナビゲーションのセマンティクスについては「Compose focus navigation」（未取り込み: chrisbanes/skills の `compose-focus-navigation`）を参照。
 
-**計測:** `onSizeChanged` / `onGloballyPositioned` は有効な**コールバック**だが、layoutフェーズで発火する。そこでsnapshot stateに書き込むのは、それより前のフェーズが読まない場合にのみ安全。兄弟がcomposition内でそのstateを読む場合、layoutがcompositionへback-writeしていることになり、measureのたびに兄弟がrecomposeする。キャプチャした寸法は `Modifier.layout` に適用すること（[Compose component design](../../compose-component-design/SKILL.md) と [Compose performance](../../compose-performance/SKILL.md) を参照）。
+**計測:** `onSizeChanged` / `onGloballyPositioned` は有効な**コールバック**だが、layoutフェーズで発火する。そこでsnapshot stateに書き込むのは、それより前のフェーズが読まない場合にのみ安全。兄弟がcomposition内でそのstateを読む場合、layoutがcompositionへback-writeしていることになり、measureのたびに兄弟がrecomposeする。キャプチャした寸法は `Modifier.layout` に適用すること（「Compose component design」（未取り込み: chrisbanes/skills の `compose-component-design`）と「Compose performance」（未取り込み: chrisbanes/skills の `compose-performance`）を参照）。
 
 ## レビュー時の危険信号
 

@@ -109,7 +109,7 @@ private fun DetailPaneCardLayout(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = titleColor,
                     modifier = Modifier.weight(1f),
                 )
@@ -173,7 +173,7 @@ fun DetailPaneCardChips(
 @Preview(showBackground = true)
 @Composable
 private fun DetailPaneCardPreview() {
-    MaterialTheme {
+    KoDriverTheme {
         Column {
             DetailPaneCard(
                 title = "車両接近",

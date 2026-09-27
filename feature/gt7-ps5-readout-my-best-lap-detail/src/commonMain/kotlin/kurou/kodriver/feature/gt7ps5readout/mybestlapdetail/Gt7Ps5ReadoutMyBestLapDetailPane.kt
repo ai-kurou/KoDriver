@@ -14,6 +14,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.Res
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_description
@@ -81,9 +82,11 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun Gt7Ps5ReadoutMyBestLapDetailPanePreview() {
-    Gt7Ps5ReadoutMyBestLapDetailPaneContent(
-        uiState = Gt7Ps5ReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.FORMAL),
-    )
+    KoDriverTheme {
+        Gt7Ps5ReadoutMyBestLapDetailPaneContent(
+            uiState = Gt7Ps5ReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.FORMAL),
+        )
+    }
 }
 
 @Composable

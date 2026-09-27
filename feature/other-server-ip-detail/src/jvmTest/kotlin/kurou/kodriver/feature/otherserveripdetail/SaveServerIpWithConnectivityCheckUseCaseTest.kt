@@ -1,28 +1,20 @@
 package kurou.kodriver.feature.otherserveripdetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
 import java.io.IOException
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class SaveServerIpWithConnectivityCheckUseCaseTest {
-    @MockK
-    private lateinit var repository: ServerIpPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: ServerIpPreferencesRepository = mockk()
 
     private fun createUseCase(
         reachable: Boolean = true,

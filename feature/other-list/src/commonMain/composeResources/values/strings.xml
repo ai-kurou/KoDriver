@@ -2,6 +2,9 @@
     <string name="item_volume">音量</string>
     <string name="item_keep_screen_on">テレメトリ受信中は画面をスリープさせない</string>
     <string name="item_readout_start_sound">読み上げ開始音</string>
+    <string name="item_overlay_visible">オーバーレイを表示</string>
+    <string name="item_overlay_text_size">文字サイズ</string>
+    <string name="item_overlay_background_opacity">背景の透明度</string>
     <string name="item_theme">テーマ</string>
     <string name="item_dynamic_color">ダイナミックカラー</string>
     <string name="item_haptic_feedback">ハプティックフィードバック</string>
@@ -17,6 +20,7 @@
     <string name="item_console_ip">ゲーム機・SimHubへ接続するIPアドレス</string>
     <string name="section_connection_settings">接続設定</string>
     <string name="section_readout_settings">読み上げ設定</string>
+    <string name="section_overlay_settings">オーバーレイ設定</string>
     <string name="section_app_settings">アプリ設定</string>
     <string name="section_information">情報</string>
 </resources>

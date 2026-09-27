@@ -1,22 +1,14 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class PlaySpeechEventUseCaseTest {
-    @MockK(relaxed = true)
-    private lateinit var engine: TextToSpeechEngine
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val engine: TextToSpeechEngine = mockk(relaxed = true)
 
     @Test
     fun `invoke を呼ぶと TextToSpeechEngine の speak が呼ばれる`() {

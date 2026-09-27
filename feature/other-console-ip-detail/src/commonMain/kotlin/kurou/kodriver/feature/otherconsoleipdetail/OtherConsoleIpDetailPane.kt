@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.Res
@@ -299,23 +300,29 @@ fun OtherConsoleIpDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun OtherConsoleIpDetailPaneDefaultPreview() {
-    OtherConsoleIpDetailPaneContent(
-        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
-    )
+    KoDriverTheme {
+        OtherConsoleIpDetailPaneContent(
+            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherConsoleIpDetailPaneInvalidPreview() {
-    OtherConsoleIpDetailPaneContent(
-        uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
-    )
+    KoDriverTheme {
+        OtherConsoleIpDetailPaneContent(
+            uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherConsoleIpDetailPaneSaveFailedPreview() {
-    OtherConsoleIpDetailPaneContent(
-        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100", saveFailed = true),
-    )
+    KoDriverTheme {
+        OtherConsoleIpDetailPaneContent(
+            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100", saveFailed = true),
+        )
+    }
 }

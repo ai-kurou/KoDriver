@@ -3,6 +3,7 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,7 +17,7 @@ internal class AndroidSimulatorPreferencesRepository(
     private val selectedSimulatorKey = stringPreferencesKey("selected_simulator")
 
     override fun selectedSimulator(): Flow<Simulator> =
-        dataStore.data.map {
+        dataStore.data.fallbackOnReadError(emptyPreferences()).map {
             Simulator.fromId(it[selectedSimulatorKey].orEmpty()) ?: SELECTED_SIMULATOR_DEFAULT
         }
 

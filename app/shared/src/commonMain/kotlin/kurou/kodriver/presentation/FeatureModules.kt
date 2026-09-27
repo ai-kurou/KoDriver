@@ -5,6 +5,7 @@ import kurou.kodriver.feature.acewindowsnarrator.aceWindowsNarratorModule
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.aceWindowsReadoutFlagDetailModule
 import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.aceWindowsReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.aceWindowsReadoutRemainingFuelDetailModule
+import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.aceWindowsReadoutRemainingFuelLapsDetailModule
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.aceWindowsReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.aceWindowsReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.debugstatedetail.debugStateDetailModule
@@ -16,6 +17,7 @@ import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.gt7Ps5Readou
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.gt7Ps5ReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.lmuwindowsconnection.lmuWindowsConnectionModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuWindowsNarratorModule
+import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.lmuWindowsReadoutBrakeTemperatureDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.lmuWindowsReadoutFlagDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.lmuWindowsReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.lmuWindowsReadoutPitTimingDetailModule
@@ -26,9 +28,12 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.lmuWindows
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.lmuWindowsReadoutVehicleDamageDetailModule
 import kurou.kodriver.feature.main.mainModule
 import kurou.kodriver.feature.main.mainPlatformModule
+import kurou.kodriver.feature.narratoroverlay.narratorOverlayModule
 import kurou.kodriver.feature.otherconsoleipdetail.otherConsoleIpDetailModule
 import kurou.kodriver.feature.otherfeedbackdetail.otherFeedbackDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
+import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.otherOverlayBackgroundOpacityDetailModule
+import kurou.kodriver.feature.otheroverlaytextsizedetail.otherOverlayTextSizeDetailModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.otherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
 import kurou.kodriver.feature.otherthemedetail.otherThemeDetailModule
@@ -62,6 +67,8 @@ val featureModules: List<Module> =
         otherFeedbackDetailModule,
         otherReadoutStartSoundDetailModule,
         otherThemeDetailModule,
+        otherOverlayTextSizeDetailModule,
+        otherOverlayBackgroundOpacityDetailModule,
         otherServerIpDetailModule,
         otherConsoleIpDetailModule,
         otherVolumeDetailModule,
@@ -75,6 +82,7 @@ val featureModules: List<Module> =
         lmuWindowsReadoutTyreTemperatureDetailModule,
         lmuWindowsReadoutRemainingVirtualEnergyDetailModule,
         lmuWindowsReadoutTyreWearDetailModule,
+        lmuWindowsReadoutBrakeTemperatureDetailModule,
         lmuWindowsReadoutPitTimingDetailModule,
         gt7Ps5ReadoutMyBestLapDetailModule,
         gt7Ps5ReadoutRemainingFuelDetailModule,
@@ -85,5 +93,7 @@ val featureModules: List<Module> =
         aceWindowsReadoutTyreTemperatureDetailModule,
         aceWindowsReadoutVehicleApproachDetailModule,
         aceWindowsReadoutMyBestLapDetailModule,
+        aceWindowsReadoutRemainingFuelLapsDetailModule,
         debugStateDetailModule,
+        narratorOverlayModule,
     )

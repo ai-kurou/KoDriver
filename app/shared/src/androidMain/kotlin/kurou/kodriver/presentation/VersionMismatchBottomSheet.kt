@@ -38,23 +38,27 @@ actual fun VersionMismatchBottomSheetEffect() {
 @Preview(showBackground = true)
 @Composable
 private fun VersionMismatchBottomSheetContentWindowsNewerPreview() {
-    Surface {
-        VersionMismatchBottomSheetContent(
-            windowsKoDriverVersion = "2.0.0",
-            appVersion = "1.0.0",
-            onDismiss = {},
-        )
+    AppTheme {
+        Surface {
+            VersionMismatchBottomSheetContent(
+                windowsKoDriverVersion = "2.0.0",
+                appVersion = "1.0.0",
+                onDismiss = {},
+            )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun VersionMismatchBottomSheetContentAppNewerPreview() {
-    Surface {
-        VersionMismatchBottomSheetContent(
-            windowsKoDriverVersion = "1.0.0",
-            appVersion = "2.0.0",
-            onDismiss = {},
-        )
+    AppTheme {
+        Surface {
+            VersionMismatchBottomSheetContent(
+                windowsKoDriverVersion = "1.0.0",
+                appVersion = "2.0.0",
+                onDismiss = {},
+            )
+        }
     }
 }

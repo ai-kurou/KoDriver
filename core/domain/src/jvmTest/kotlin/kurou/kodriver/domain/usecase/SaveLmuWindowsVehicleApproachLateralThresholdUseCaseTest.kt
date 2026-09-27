@@ -1,22 +1,14 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleApproachLateralThresholdUseCaseTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var repository: LmuWindowsVehicleApproachThresholdsPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: LmuWindowsVehicleApproachThresholdsPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `横方向閾値を保存するとFlowに反映され上書きで更新される`() =

@@ -3,9 +3,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -17,11 +17,11 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_lmu_windows_vehicle_damage_preferences_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = LmuWindowsVehicleDamagePreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = LmuWindowsVehicleDamagePreferencesRepositoryImpl(dataStore)
@@ -33,13 +33,13 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
 
     @Test
     fun `enabledStates の初期値は空Map`() =
-        testScope.runTest {
+        runTest {
             assertEquals(emptyMap(), repository.observeEnabledStates().first())
         }
 
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
 
             assertEquals(
@@ -50,7 +50,7 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
 
@@ -62,7 +62,7 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
 
     @Test
     fun `異なるキーで保存した値がすべて保持される`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
 

@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.otherfeedbackdetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
@@ -23,12 +22,15 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
+import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.CanSendFeedbackUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 import kurou.kodriver.domain.usecase.SendFeedbackUseCase
 import kotlin.test.AfterTest
@@ -43,16 +45,16 @@ import kotlin.test.assertTrue
 class OtherFeedbackDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var repository: FeedbackSenderRepository
+    private val repository: FeedbackSenderRepository = mockk()
 
-    @MockK
-    private lateinit var telemetryLogRepository: TelemetryLogRepository
+    private val cooldownRepository: FeedbackCooldownPreferencesRepository = mockk(relaxUnitFun = true)
+
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
+        every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
     }
 
     @AfterTest
@@ -62,7 +64,8 @@ class OtherFeedbackDetailViewModelTest {
 
     private fun createViewModel() =
         OtherFeedbackDetailViewModel(
-            SendFeedbackUseCase(repository),
+            SendFeedbackUseCase(repository, cooldownRepository),
+            CanSendFeedbackUseCase(cooldownRepository),
             ObserveTelemetryLogDetailUseCase(telemetryLogRepository),
         )
 
@@ -75,6 +78,7 @@ class OtherFeedbackDetailViewModelTest {
         simulator = Simulator.LmuWindows,
         readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
         narratedText = "イエローフラッグ",
+        narrationOutcome = NarrationOutcome.INTERRUPTED,
         telemetryJson = telemetryJson,
     )
 
@@ -390,6 +394,26 @@ class OtherFeedbackDetailViewModelTest {
             coVerify(exactly = 1) { repository.send(feedback) }
             verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }
             confirmVerified(repository, telemetryLogRepository)
+            collectionJob.cancel()
+        }
+
+    @Test
+    fun `クールダウン中は送信できずisCoolingDownがtrueになる`() =
+        runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns
+                flowOf(System.currentTimeMillis())
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.onMessageChanged("本文")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("user@example.com")
+            viewModel.onSend()
+
+            assertTrue(viewModel.uiState.value.isCoolingDown)
+            assertFalse(viewModel.uiState.value.canSend)
+            coVerify(exactly = 0) { repository.send(any()) }
+            confirmVerified(repository)
             collectionJob.cancel()
         }
 }

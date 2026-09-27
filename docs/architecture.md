@@ -34,6 +34,8 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-server-ip-detail` | その他画面の接続先サーバー IP 設定ダイアログ | [図](graphs/feature-other-server-ip-detail.svg) |
 | `:feature:other-console-ip-detail` | その他画面のゲーム機 IP 設定ダイアログ | [図](graphs/feature-other-console-ip-detail.svg) |
 | `:feature:other-theme-detail` | その他画面のテーマ設定詳細 | [図](graphs/feature-other-theme-detail.svg) |
+| `:feature:other-overlay-text-size-detail` | その他画面のオーバーレイ文字サイズ設定詳細 | [図](graphs/feature-other-overlay-text-size-detail.svg) |
+| `:feature:other-overlay-background-opacity-detail` | その他画面のオーバーレイ背景透明度設定詳細 | [図](graphs/feature-other-overlay-background-opacity-detail.svg) |
 | `:feature:other-volume-detail` | その他画面の読み上げ音量設定詳細 | [図](graphs/feature-other-volume-detail.svg) |
 | `:feature:other-feedback-detail` | その他画面のフィードバック送信詳細 | [図](graphs/feature-other-feedback-detail.svg) |
 | `:feature:readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-readout-list.svg) |
@@ -44,6 +46,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-readout-tyre-temperature-detail` | タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-tyre-temperature-detail.svg) |
 | `:feature:lmu-windows-readout-remaining-virtual-energy-detail` | バーチャルエナジー残量アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-remaining-virtual-energy-detail.svg) |
 | `:feature:lmu-windows-readout-tyre-wear-detail` | タイヤ摩耗アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-tyre-wear-detail.svg) |
+| `:feature:lmu-windows-readout-brake-temperature-detail` | ブレーキ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-brake-temperature-detail.svg) |
 | `:feature:lmu-windows-readout-pit-timing-detail` | ピットタイミングアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-pit-timing-detail.svg) |
 | `:feature:gt7-ps5-connection` | GT7 PS5 との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-gt7-ps5-connection.svg) |
 | `:feature:gt7-ps5-narrator` | GT7 PS5 向け WAV 音声ファイルの再生とアナウンス制御を担当する | [図](graphs/feature-gt7-ps5-narrator.svg) |
@@ -58,8 +61,10 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:ace-windows-readout-tyre-temperature-detail` | ACE タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-tyre-temperature-detail.svg) |
 | `:feature:ace-windows-readout-vehicle-approach-detail` | ACE 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-vehicle-approach-detail.svg) |
 | `:feature:ace-windows-readout-my-best-lap-detail` | ACE 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-my-best-lap-detail.svg) |
+| `:feature:ace-windows-readout-remaining-fuel-laps-detail` | ACE 燃料残り周回数アナウンスの詳細設定 UI（タイトルと説明のみ。読み上げ判定は未配線） | [図](graphs/feature-ace-windows-readout-remaining-fuel-laps-detail.svg) |
 | `:feature:telemetry-log-list` | テレメトリログの一覧表示 UI | [図](graphs/feature-telemetry-log-list.svg) |
 | `:feature:telemetry-log-detail` | テレメトリログの詳細表示 UI | [図](graphs/feature-telemetry-log-detail.svg) |
+| `:feature:narrator-overlay` | TelemetryLog の最新の読み上げ内容をライブ購読して表示するオーバーレイ | [図](graphs/feature-narrator-overlay.svg) |
 | `:server` | デスクトップアプリと同一プロセスで起動する Ktor サーバー。`/ws/<Simulator.id>/<feature>` WebSocket で共有メモリ由来の走行情報を配信する | [図](graphs/server.svg) |
 
 ## モジュール一覧の更新漏れ防止

@@ -1,23 +1,15 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleClassTyreTemperatureSelectionUseCaseTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var repository: LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: LmuWindowsVehicleClassTyreTemperaturePreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `選択したクラスを保存できる`() =

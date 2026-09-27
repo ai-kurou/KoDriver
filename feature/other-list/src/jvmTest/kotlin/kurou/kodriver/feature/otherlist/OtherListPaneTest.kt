@@ -16,6 +16,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ private class FakeHapticFeedback : HapticFeedback {
     }
 }
 
+@Suppress("TooManyFunctions")
 class OtherListPaneTest {
     @get:Rule
     val rule = createComposeRule()
@@ -47,6 +49,7 @@ class OtherListPaneTest {
                         items = listOf(OtherListItemType.Volume),
                     ),
                 onItemClick = { clickedItem = it },
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -57,6 +60,56 @@ class OtherListPaneTest {
         rule.onNode(hasText("音量")).performClick()
 
         assertEquals(OtherListItemType.Volume, clickedItem)
+    }
+
+    @Test
+    fun `オーバーレイ表示をクリックすると切り替えコールバックを呼ぶ`() {
+        var overlayVisible: Boolean? = null
+
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayVisible),
+                        overlayVisible = true,
+                    ),
+                onItemClick = {},
+                onOverlayVisibleChange = { overlayVisible = it },
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("オーバーレイを表示")).performClick()
+
+        assertEquals(false, overlayVisible)
+    }
+
+    @Test
+    fun `オーバーレイ表示がOFFのときにクリックするとONへ切り替えコールバックを呼ぶ`() {
+        var overlayVisible: Boolean? = null
+
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayVisible),
+                        overlayVisible = false,
+                    ),
+                onItemClick = {},
+                onOverlayVisibleChange = { overlayVisible = it },
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("オーバーレイを表示")).performClick()
+
+        assertEquals(true, overlayVisible)
     }
 
     @Test
@@ -71,6 +124,7 @@ class OtherListPaneTest {
                         keepScreenOn = true,
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -95,6 +149,7 @@ class OtherListPaneTest {
                         keepScreenOn = false,
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -119,6 +174,7 @@ class OtherListPaneTest {
                         dynamicColorEnabled = true,
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
                 onHapticFeedbackEnabledChange = {},
@@ -143,6 +199,7 @@ class OtherListPaneTest {
                         hapticFeedbackEnabled = true,
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = { hapticFeedbackEnabled = it },
@@ -167,6 +224,7 @@ class OtherListPaneTest {
                         startupEnabled = false,
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -196,6 +254,7 @@ class OtherListPaneTest {
                             ),
                     ),
                 onItemClick = { clickedItem = it },
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -224,6 +283,7 @@ class OtherListPaneTest {
                             keepScreenOn = true,
                         ),
                     onItemClick = {},
+                    onOverlayVisibleChange = {},
                     onKeepScreenOnChange = {},
                     onDynamicColorEnabledChange = {},
                     onHapticFeedbackEnabledChange = {},
@@ -250,6 +310,7 @@ class OtherListPaneTest {
                             dynamicColorEnabled = true,
                         ),
                     onItemClick = {},
+                    onOverlayVisibleChange = {},
                     onKeepScreenOnChange = {},
                     onDynamicColorEnabledChange = {},
                     onHapticFeedbackEnabledChange = {},
@@ -276,6 +337,7 @@ class OtherListPaneTest {
                             startupEnabled = false,
                         ),
                     onItemClick = {},
+                    onOverlayVisibleChange = {},
                     onKeepScreenOnChange = {},
                     onDynamicColorEnabledChange = {},
                     onHapticFeedbackEnabledChange = {},
@@ -300,6 +362,7 @@ class OtherListPaneTest {
                         appVersion = "1.2.3",
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -322,6 +385,7 @@ class OtherListPaneTest {
                         items = listOf(OtherListItemType.DebugState),
                     ),
                 onItemClick = { clickedItem = it },
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -345,6 +409,7 @@ class OtherListPaneTest {
                         items = listOf(OtherListItemType.Feedback),
                     ),
                 onItemClick = { clickedItem = it },
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -370,6 +435,7 @@ class OtherListPaneTest {
                         appVersion = "1.2.3",
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -398,6 +464,7 @@ class OtherListPaneTest {
                         appVersion = "1.2.3",
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -429,6 +496,7 @@ class OtherListPaneTest {
                             ),
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -451,6 +519,7 @@ class OtherListPaneTest {
                         items = listOf(OtherListItemType.Volume),
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -473,6 +542,7 @@ class OtherListPaneTest {
                         items = listOf(OtherListItemType.Theme),
                     ),
                 onItemClick = {},
+                onOverlayVisibleChange = {},
                 onKeepScreenOnChange = {},
                 onDynamicColorEnabledChange = {},
                 onHapticFeedbackEnabledChange = {},
@@ -482,6 +552,94 @@ class OtherListPaneTest {
 
         rule.onAllNodesWithText("アプリ設定").assertCountEquals(1)
         rule.onAllNodesWithText("テーマ").assertCountEquals(1)
+    }
+
+    @Test
+    fun `文字サイズ項目をオーバーレイ設定セクションに表示する`() {
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayTextSize),
+                    ),
+                onItemClick = {},
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onAllNodesWithText("オーバーレイ設定").assertCountEquals(1)
+        rule.onAllNodesWithText("文字サイズ").assertCountEquals(1)
+    }
+
+    @Test
+    fun `文字サイズ項目をクリックするとonItemClickが呼ばれる`() {
+        var clickedItem: OtherListItemType? = null
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayTextSize),
+                    ),
+                onItemClick = { clickedItem = it },
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNodeWithText("文字サイズ").performClick()
+
+        assertEquals(OtherListItemType.OverlayTextSize, clickedItem)
+    }
+
+    @Test
+    fun `背景の透明度項目をオーバーレイ設定セクションに表示する`() {
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayBackgroundOpacity),
+                    ),
+                onItemClick = {},
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onAllNodesWithText("オーバーレイ設定").assertCountEquals(1)
+        rule.onAllNodesWithText("背景の透明度").assertCountEquals(1)
+    }
+
+    @Test
+    fun `背景の透明度項目をクリックするとonItemClickが呼ばれる`() {
+        var clickedItem: OtherListItemType? = null
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayBackgroundOpacity),
+                    ),
+                onItemClick = { clickedItem = it },
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNodeWithText("背景の透明度").performClick()
+
+        assertEquals(OtherListItemType.OverlayBackgroundOpacity, clickedItem)
     }
 
     @Test
@@ -506,6 +664,7 @@ class OtherListPaneTest {
                                 ),
                         ),
                     onItemClick = {},
+                    onOverlayVisibleChange = {},
                     onKeepScreenOnChange = {},
                     onDynamicColorEnabledChange = {},
                     onHapticFeedbackEnabledChange = {},

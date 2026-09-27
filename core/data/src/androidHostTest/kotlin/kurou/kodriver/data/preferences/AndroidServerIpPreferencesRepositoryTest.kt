@@ -47,4 +47,12 @@ class AndroidServerIpPreferencesRepositoryTest {
 
             assertEquals("192.168.1.10", repository.serverIp().first())
         }
+
+    @Test
+    fun `読み取り失敗時はnullを返す`() =
+        runTest(testDispatcher) {
+            val failingRepository = AndroidServerIpPreferencesRepository(FailingPreferencesDataStore())
+
+            assertNull(failingRepository.serverIp().first())
+        }
 }

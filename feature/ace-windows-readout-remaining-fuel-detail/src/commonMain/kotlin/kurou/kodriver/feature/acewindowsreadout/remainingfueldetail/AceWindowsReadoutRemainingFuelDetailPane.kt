@@ -18,6 +18,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -115,5 +116,7 @@ internal fun AceWindowsReadoutRemainingFuelDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun AceWindowsReadoutRemainingFuelDetailPanePreview() {
-    AceWindowsReadoutRemainingFuelDetailPaneContent()
+    KoDriverTheme {
+        AceWindowsReadoutRemainingFuelDetailPaneContent()
+    }
 }

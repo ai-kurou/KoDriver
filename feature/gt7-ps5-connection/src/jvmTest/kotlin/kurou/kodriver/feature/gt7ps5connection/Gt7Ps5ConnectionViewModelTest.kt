@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.gt7ps5connection
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -39,11 +38,9 @@ import kotlin.test.assertNull
 class Gt7Ps5ConnectionViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
-    @MockK
-    private lateinit var connectionRepository: Gt7Ps5Repository
+    private val connectionRepository: Gt7Ps5Repository = mockk()
 
-    @MockK
-    private lateinit var simulatorRepository: SimulatorPreferencesRepository
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
     private val defaultTelemetry =
         Gt7Ps5TelemetryData(
@@ -56,7 +53,6 @@ class Gt7Ps5ConnectionViewModelTest {
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
     }
 

@@ -1,11 +1,10 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -15,7 +14,6 @@ import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -23,13 +21,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ObserveAceWindowsConnectionUseCaseTest {
-    @MockK
-    private lateinit var repository: AceWindowsFuelRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: AceWindowsFuelRepository = mockk()
 
     @Test
     fun `接続確認結果と燃料データを返す`() =

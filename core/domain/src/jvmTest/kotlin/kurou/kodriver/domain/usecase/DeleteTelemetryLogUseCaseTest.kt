@@ -1,23 +1,15 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class DeleteTelemetryLogUseCaseTest {
-    @MockK
-    private lateinit var repository: TelemetryLogRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: TelemetryLogRepository = mockk()
 
     @Test
     fun `指定したIDのログを削除する`() =

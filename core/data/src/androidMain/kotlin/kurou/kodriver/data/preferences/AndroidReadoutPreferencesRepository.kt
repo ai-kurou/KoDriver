@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,7 +22,7 @@ internal class AndroidReadoutPreferencesRepository(
     private fun orderKey(simulator: String) = stringPreferencesKey("${simulator}_order")
 
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
-        dataStore.data.map { prefs ->
+        dataStore.data.fallbackOnReadError(emptyPreferences()).map { prefs ->
             val prefix = "${simulator}_"
             val suffix = "_enabled"
             @Suppress("UNCHECKED_CAST")
@@ -43,7 +44,7 @@ internal class AndroidReadoutPreferencesRepository(
     }
 
     override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
-        dataStore.data.map { prefs ->
+        dataStore.data.fallbackOnReadError(emptyPreferences()).map { prefs ->
             prefs[orderKey(simulator)]
                 ?.split(",")
                 ?.filter { it.isNotEmpty() }

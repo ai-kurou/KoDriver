@@ -1,25 +1,17 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.ServerVersionRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class FetchServerVersionUseCaseTest {
-    @MockK
-    private lateinit var repository: ServerVersionRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: ServerVersionRepository = mockk()
 
     @Test
     fun `バージョン取得成功時にResultSuccessを返す`() =

@@ -30,7 +30,7 @@ class AppScreenPrimarySimulatorItemTest {
             AppScreenPrimarySimulatorIcon(simulatorId = "lmu_windows")
         }
 
-        rule.onNode(hasContentDescription("シミュレータを選択")).assertExists()
+        rule.onNode(hasContentDescription("シミュレーターを選択")).assertExists()
     }
 
     @Test

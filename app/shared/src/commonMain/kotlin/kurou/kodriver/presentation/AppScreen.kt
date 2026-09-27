@@ -68,6 +68,7 @@ import kurou.kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.AceWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.AceWindowsReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsReadoutRemainingFuelDetailPane
+import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.AceWindowsReadoutRemainingFuelLapsDetailPane
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.AceWindowsReadoutTyreTemperatureDetailPane
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.AceWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
@@ -75,6 +76,7 @@ import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestL
 import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.Gt7Ps5ReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.Gt7Ps5ReadoutTyreTemperatureDetailPane
+import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.LmuWindowsReadoutBrakeTemperatureDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.LmuWindowsReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.LmuWindowsReadoutPitTimingDetailPane
@@ -91,6 +93,8 @@ import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListViewModel
+import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPane
+import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
@@ -279,17 +283,22 @@ private fun DefaultOtherContent(
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
+    var showOverlayTextSizeDialog by rememberSaveable { mutableStateOf(false) }
     if (showReadoutStartSoundDialog) {
         OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
     }
     if (showThemeDialog) {
         OtherThemeDetailDialog(onDismiss = { showThemeDialog = false })
     }
+    if (showOverlayTextSizeDialog) {
+        OtherOverlayTextSizeDetailDialog(onDismiss = { showOverlayTextSizeDialog = false })
+    }
     OtherContent(
         backHandler = backHandler,
         scrollToTopRequest = scrollToTopRequest,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         onOpenThemeDialog = { showThemeDialog = true },
+        onOpenOverlayTextSizeDialog = { showOverlayTextSizeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId, feedbackAttachRequestId ->
             when (itemType) {
                 OtherListItemType.ServerIp -> {
@@ -302,6 +311,10 @@ private fun DefaultOtherContent(
 
                 OtherListItemType.Volume -> {
                     OtherVolumeDetailPane(canNavigateBack, onBack)
+                }
+
+                OtherListItemType.OverlayBackgroundOpacity -> {
+                    OtherOverlayBackgroundOpacityDetailPane(canNavigateBack, onBack)
                 }
 
                 OtherListItemType.License -> {
@@ -321,9 +334,11 @@ private fun DefaultOtherContent(
                     DebugStateDetailPane(canNavigateBack, onBack)
                 }
 
+                OtherListItemType.OverlayVisible,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Theme,
+                OtherListItemType.OverlayTextSize,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.Startup,
@@ -743,6 +758,7 @@ private fun LmuWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.Lmu
         ReadoutListItemType.LmuWindows.PitTiming -> LmuWindowsReadoutPitTimingDetailPane()
         ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
         ReadoutListItemType.LmuWindows.TyreWear -> LmuWindowsReadoutTyreWearDetailPane()
+        ReadoutListItemType.LmuWindows.BrakeTemperature -> LmuWindowsReadoutBrakeTemperatureDetailPane()
         ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
     }
 }
@@ -783,6 +799,10 @@ private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.Ace
             AceWindowsReadoutRemainingFuelDetailPane()
         }
 
+        ReadoutListItemType.AceWindows.RemainingFuelLaps -> {
+            AceWindowsReadoutRemainingFuelLapsDetailPane()
+        }
+
         ReadoutListItemType.AceWindows.VehicleApproach -> {
             AceWindowsReadoutVehicleApproachDetailPane()
         }
@@ -796,5 +816,7 @@ private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.Ace
 @Preview(showBackground = true)
 @Composable
 private fun AppScreenContentPreview() {
-    AppScreenContent()
+    AppTheme {
+        AppScreenContent()
+    }
 }

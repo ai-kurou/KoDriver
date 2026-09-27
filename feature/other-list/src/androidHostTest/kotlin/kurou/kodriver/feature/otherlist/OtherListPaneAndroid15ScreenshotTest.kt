@@ -34,6 +34,7 @@ class OtherListPaneAndroid15ScreenshotTest {
                         OtherListPane(
                             uiState = OtherListUiState(),
                             onItemClick = {},
+                            onOverlayVisibleChange = {},
                             onKeepScreenOnChange = {},
                             onDynamicColorEnabledChange = {},
                             onHapticFeedbackEnabledChange = {},

@@ -1,9 +1,8 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -15,14 +14,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
-    @MockK
-    lateinit var repository: AceWindowsFlagPreferencesRepository
+    val repository: AceWindowsFlagPreferencesRepository = mockk()
 
     private lateinit var useCase: ObserveAceWindowsFlagEnabledStatesUseCase
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         useCase = ObserveAceWindowsFlagEnabledStatesUseCase(repository)
     }
 

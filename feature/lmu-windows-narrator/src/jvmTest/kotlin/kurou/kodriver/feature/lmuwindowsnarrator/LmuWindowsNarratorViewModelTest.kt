@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.lmuwindowsnarrator
 
-import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +24,7 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -44,6 +44,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -57,6 +58,8 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
+import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
+import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -73,6 +76,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
@@ -83,6 +87,7 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
@@ -104,6 +109,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadou
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
@@ -124,93 +130,74 @@ import kotlin.test.assertEquals
 class LmuWindowsNarratorViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var vehicleApproachRepository: LmuWindowsVehicleApproachRepository
+    private val vehicleApproachRepository: LmuWindowsVehicleApproachRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var lmuWindowsRepository: LmuWindowsRepository
+    private val lmuWindowsRepository: LmuWindowsRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleApproachPreferencesRepository: LmuWindowsVehicleApproachPreferencesRepository
+    private val vehicleApproachPreferencesRepository: LmuWindowsVehicleApproachPreferencesRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleApproachThresholdsPreferencesRepository:
-        LmuWindowsVehicleApproachThresholdsPreferencesRepository
+    private val vehicleApproachThresholdsPreferencesRepository:
+        LmuWindowsVehicleApproachThresholdsPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleDamageRepository: LmuWindowsVehicleDamageRepository
+    private val vehicleDamageRepository: LmuWindowsVehicleDamageRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleDamagePreferencesRepository: LmuWindowsVehicleDamagePreferencesRepository
+    private val vehicleDamagePreferencesRepository: LmuWindowsVehicleDamagePreferencesRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreDetachedRepository: LmuWindowsTyreDetachedRepository
+    private val tyreDetachedRepository: LmuWindowsTyreDetachedRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
+    private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var readoutPreferencesRepository: ReadoutPreferencesRepository
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var flagRepository: LmuWindowsFlagRepository
+    private val flagRepository: LmuWindowsFlagRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var flagPreferencesRepository: LmuWindowsFlagPreferencesRepository
+    private val flagPreferencesRepository: LmuWindowsFlagPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreCarcassTemperatureRepository: LmuWindowsTyreCarcassTemperatureRepository
+    private val tyreCarcassTemperatureRepository: LmuWindowsTyreCarcassTemperatureRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreTemperaturePreferencesRepository: LmuWindowsTyreTemperaturePreferencesRepository
+    private val tyreTemperaturePreferencesRepository: LmuWindowsTyreTemperaturePreferencesRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleClassTyreTemperaturePreferencesRepository:
-        LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
+    private val vehicleClassTyreTemperaturePreferencesRepository:
+        LmuWindowsVehicleClassTyreTemperaturePreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var vehicleClassRepository: LmuWindowsVehicleClassRepository
+    private val vehicleClassRepository: LmuWindowsVehicleClassRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreWearRepository: LmuWindowsTyreWearRepository
+    private val tyreWearRepository: LmuWindowsTyreWearRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var tyreWearPreferencesRepository: LmuWindowsTyreWearPreferencesRepository
+    private val tyreWearPreferencesRepository: LmuWindowsTyreWearPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var virtualEnergyRepository: LmuWindowsVirtualEnergyRepository
+    private val brakeTemperatureRepository: LmuWindowsBrakeTemperatureRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var remainingVirtualEnergyPreferencesRepository:
-        LmuWindowsRemainingVirtualEnergyPreferencesRepository
+    private val vehicleClassBrakeTemperaturePreferencesRepository:
+        LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var pitTimingPreferencesRepository: LmuWindowsPitTimingPreferencesRepository
+    private val virtualEnergyRepository: LmuWindowsVirtualEnergyRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository
+    private val remainingVirtualEnergyPreferencesRepository: LmuWindowsRemainingVirtualEnergyPreferencesRepository =
+        mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var redFlagPreferencesRepository: LmuWindowsRedFlagPreferencesRepository
+    private val pitTimingPreferencesRepository: LmuWindowsPitTimingPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var overheatPreferencesRepository: LmuWindowsOverheatPreferencesRepository
+    private val myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var telemetryLogRepository: TelemetryLogRepository
+    private val redFlagPreferencesRepository: LmuWindowsRedFlagPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var queuePreferencesRepository: QueuePreferencesRepository
+    private val overheatPreferencesRepository: LmuWindowsOverheatPreferencesRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var ttsEngine: TextToSpeechEngine
+    private val telemetryLogRepository: TelemetryLogRepository = mockk(relaxUnitFun = true)
 
-    @MockK
-    private lateinit var priorityAwareTts: PriorityAwareTts
+    private val queuePreferencesRepository: QueuePreferencesRepository = mockk(relaxUnitFun = true)
+
+    private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
+
+    private val priorityAwareTts: PriorityAwareTts = mockk(relaxUnitFun = true)
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
         Dispatchers.setMain(testDispatcher)
     }
 
@@ -228,6 +215,7 @@ class LmuWindowsNarratorViewModelTest {
         telemetryChannel: Channel<LmuWindowsTelemetryData>,
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData>,
         tyreWearChannel: Channel<LmuWindowsTyreWearData>,
+        brakeTemperatureChannel: Channel<LmuWindowsBrakeTemperatureData>,
         remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData>,
         enabledOverrides: Map<ReadoutItemKey, Boolean>,
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean>,
@@ -302,6 +290,13 @@ class LmuWindowsNarratorViewModelTest {
         every { tyreWearRepository.tyreWearStream() } returns tyreWearChannel.receiveAsFlow()
         every { tyreWearPreferencesRepository.observeThresholdPercentage() } returns
             MutableStateFlow(tyreWearThresholdPercentage)
+        every { brakeTemperatureRepository.brakeTemperatureStream() } returns brakeTemperatureChannel.receiveAsFlow()
+        every { vehicleClassBrakeTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns
+            MutableStateFlow(
+                lmuWindowsAllVehicleClasses.associateWith {
+                    lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(it)
+                },
+            )
         every { virtualEnergyRepository.virtualEnergyStream() } returns
             remainingVirtualEnergyChannel.receiveAsFlow()
         every { remainingVirtualEnergyPreferencesRepository.observeThresholdPercentage() } returns
@@ -326,6 +321,7 @@ class LmuWindowsNarratorViewModelTest {
         telemetryChannel: Channel<LmuWindowsTelemetryData> = Channel(Channel.UNLIMITED),
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         tyreWearChannel: Channel<LmuWindowsTyreWearData> = Channel(Channel.UNLIMITED),
+        brakeTemperatureChannel: Channel<LmuWindowsBrakeTemperatureData> = Channel(Channel.UNLIMITED),
         remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -367,6 +363,7 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel = telemetryChannel,
             tyreTemperatureChannel = tyreTemperatureChannel,
             tyreWearChannel = tyreWearChannel,
+            brakeTemperatureChannel = brakeTemperatureChannel,
             remainingVirtualEnergyChannel = remainingVirtualEnergyChannel,
             enabledOverrides = enabledOverrides,
             flagEnabledOverrides = flagEnabledOverrides,
@@ -470,6 +467,14 @@ class LmuWindowsNarratorViewModelTest {
                             tyreWearPreferencesRepository,
                         ),
                 ),
+            brakeTemperatureUseCases =
+                BrakeTemperatureUseCases(
+                    observeBrakeTemperature = ObserveLmuWindowsBrakeTemperatureUseCase(brakeTemperatureRepository),
+                    observeVehicleClassHighThreshold =
+                        ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase(
+                            vehicleClassBrakeTemperaturePreferencesRepository,
+                        ),
+                ),
             remainingVirtualEnergyUseCases =
                 RemainingVirtualEnergyUseCases(
                     observeRemainingVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
@@ -549,12 +554,14 @@ class LmuWindowsNarratorViewModelTest {
     ) {
         val telemetryJsonSlot = slot<String>()
         val narratedTextSlot = slot<String>()
+        val narrationOutcomeSlot = slot<NarrationOutcome>()
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = createdAt,
                 simulator = Simulator.LmuWindows,
                 readoutItemKey = readoutItemKey,
                 narratedText = capture(narratedTextSlot),
+                narrationOutcome = capture(narrationOutcomeSlot),
                 telemetryJson = capture(telemetryJsonSlot),
             )
         } answers {
@@ -565,6 +572,7 @@ class LmuWindowsNarratorViewModelTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = readoutItemKey,
                     narratedText = narratedTextSlot.captured,
+                    narrationOutcome = narrationOutcomeSlot.captured,
                     telemetryJson = telemetryJsonSlot.captured,
                 ),
             )
@@ -849,7 +857,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `優先度制御で読み上げなかったイベントは保存しない`() =
+    fun `優先度制御で読み上げなかったイベントはSKIPPEDとして保存する`() =
         runTest(testDispatcher) {
             var fakeTime = 0L
             val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
@@ -872,7 +880,8 @@ class LmuWindowsNarratorViewModelTest {
             fakeTime = 50L
             channel.send(leftVehicleApproach(vehicleId = 1))
 
-            assertEquals(emptyList<TelemetryLog>(), logs)
+            assertEquals(1, logs.size)
+            assertEquals(NarrationOutcome.SKIPPED, logs.single().narrationOutcome)
         }
 
     @Test
@@ -1218,6 +1227,7 @@ class LmuWindowsNarratorViewModelTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = any(),
+                    narrationOutcome = any(),
                     telemetryJson = capture(slot()),
                 )
             } throws IllegalStateException("Failed to save")
@@ -1570,6 +1580,115 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"state":{""")
             assertContains(log.telemetryJson, """"previousTyreWear":null""")
             assertContains(log.telemetryJson, """"tyreWear":{"wheels":{"FRONT_LEFT":0.4""")
+            assertContains(log.telemetryJson, """"settings":{""")
+            assertContains(log.telemetryJson, """"observedAtMs":123""")
+            assertContains(log.telemetryJson, """"finalState":{""")
+        }
+
+    // --- ブレーキ温度 ---
+
+    @Test
+    fun `閾値以上のブレーキ温度が来ると BrakeOverheat を読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeTemperatureChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true),
+            )
+
+            channel.send(brakeTemperature(fl = 850.0))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.BrakeOverheat), spokenTexts)
+        }
+
+    @Test
+    fun `ブレーキ過熱状態が継続しても2回目は読み上げない`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeTemperatureChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true),
+            )
+
+            channel.send(brakeTemperature(fl = 850.0))
+            channel.send(brakeTemperature(fl = 850.0))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.BrakeOverheat), spokenTexts)
+        }
+
+    @Test
+    fun `全ブレーキが冷えると再度読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeTemperatureChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true),
+            )
+
+            channel.send(brakeTemperature(fl = 850.0))
+            channel.send(brakeTemperature(fl = 20.0))
+            channel.send(brakeTemperature(fl = 850.0))
+
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.BrakeOverheat,
+                    SpeechEvent.BrakeOverheat,
+                ),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `ブレーキ温度項目が無効なら読み上げない`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeTemperatureChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to false),
+            )
+
+            channel.send(brakeTemperature(fl = 850.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `ブレーキ過熱の読み上げでテレメトリログを保存する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeTemperatureData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeTemperatureChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true),
+                currentTimeMs = { 123L },
+            )
+            stubTelemetryLogSave(logs, createdAt = 123L, ReadoutItemKey.LmuWindows.BrakeTemperature.Root)
+
+            channel.send(brakeTemperature(fl = 850.0))
+
+            assertEquals(1, logs.size)
+            val log = logs.first()
+            assertEquals(123L, log.createdAt)
+            assertEquals(Simulator.LmuWindows, log.simulator)
+            assertEquals(ReadoutItemKey.LmuWindows.BrakeTemperature.Root, log.readoutItemKey)
+            assertContains(log.telemetryJson, """"state":{""")
+            assertContains(log.telemetryJson, """"previousBrakeTemperature":null""")
+            assertContains(log.telemetryJson, """"brakeTemperature":{"wheels":{"FRONT_LEFT":850.0""")
             assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"finalState":{""")
@@ -2255,6 +2374,21 @@ private fun tyreWear(
             WheelIndex.FRONT_RIGHT to LmuWindowsTyreWearRatio(fr),
             WheelIndex.REAR_LEFT to LmuWindowsTyreWearRatio(rl),
             WheelIndex.REAR_RIGHT to LmuWindowsTyreWearRatio(rr),
+        ),
+)
+
+private fun brakeTemperature(
+    fl: Double = 20.0,
+    fr: Double = 20.0,
+    rl: Double = 20.0,
+    rr: Double = 20.0,
+) = LmuWindowsBrakeTemperatureData(
+    wheels =
+        mapOf(
+            WheelIndex.FRONT_LEFT to CelsiusReading(fl.toFloat()),
+            WheelIndex.FRONT_RIGHT to CelsiusReading(fr.toFloat()),
+            WheelIndex.REAR_LEFT to CelsiusReading(rl.toFloat()),
+            WheelIndex.REAR_RIGHT to CelsiusReading(rr.toFloat()),
         ),
 )
 

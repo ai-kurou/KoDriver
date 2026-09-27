@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.otherserveripdetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,14 +33,12 @@ import kotlin.test.assertTrue
 class OtherServerIpDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var repository: ServerIpPreferencesRepository
+    private val repository: ServerIpPreferencesRepository = mockk()
 
     private val ipFlow = MutableStateFlow<String?>("192.168.1.1")
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

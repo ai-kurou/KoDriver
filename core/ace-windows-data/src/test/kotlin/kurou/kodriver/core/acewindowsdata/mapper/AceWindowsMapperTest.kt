@@ -23,6 +23,7 @@ class AceWindowsMapperTest {
         const val TYRE_STATE_STRIDE = 256
         const val OFF_TYRE_TEMPERATURE_C = 12
         const val OFF_CAR_LOCATION = 1388
+        const val OFF_LAPS_POSSIBLE_WITH_FUEL = 1464
         const val OFF_BEST_LAPTIME_MS = 2400
         const val OFF_FLAG = 2404
         const val OFF_CAR_COORDINATES = 3124
@@ -73,6 +74,11 @@ class AceWindowsMapperTest {
     private fun buffer(fuelPercent: Float): ByteBuffer =
         ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
             it.putFloat(OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT, fuelPercent)
+        }
+
+    private fun remainingFuelLapsBuffer(lapsPossibleWithFuel: Float): ByteBuffer =
+        ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
+            it.putFloat(OFF_LAPS_POSSIBLE_WITH_FUEL, lapsPossibleWithFuel)
         }
 
     private fun bestLapTimeBuffer(bestLapTimeMs: Int): ByteBuffer =
@@ -131,6 +137,20 @@ class AceWindowsMapperTest {
         assertEquals(CelsiusReading(81.0f), result.wheels[WheelIndex.FRONT_RIGHT])
         assertEquals(CelsiusReading(82.0f), result.wheels[WheelIndex.REAR_LEFT])
         assertEquals(CelsiusReading(83.0f), result.wheels[WheelIndex.REAR_RIGHT])
+    }
+
+    @Test
+    fun `laps_possible_with_fuel をremainingLapsとして取得する`() {
+        val result = AceWindowsMapper.mapRemainingFuelLaps(remainingFuelLapsBuffer(3.75f))
+
+        assertEquals(3.75f, result.remainingLaps)
+    }
+
+    @Test
+    fun `消費実績がなく laps_possible_with_fuel が0のとき remainingLaps は0を返す`() {
+        val result = AceWindowsMapper.mapRemainingFuelLaps(remainingFuelLapsBuffer(0f))
+
+        assertEquals(0f, result.remainingLaps)
     }
 
     @Test

@@ -17,6 +17,10 @@ class KoDriverServerFeatureTest {
             KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE.webSocketPath(Simulator.LmuWindows),
         )
         assertEquals(
+            "/ws/lmu_windows/brake_temperature",
+            KoDriverServerFeature.BRAKE_TEMPERATURE.webSocketPath(Simulator.LmuWindows),
+        )
+        assertEquals(
             "/ws/lmu_windows/tyre_wear",
             KoDriverServerFeature.TYRE_WEAR.webSocketPath(Simulator.LmuWindows),
         )

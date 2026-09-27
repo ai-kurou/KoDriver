@@ -10,6 +10,7 @@ val QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.LmuWindows.PitTiming.Root to true,
         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
         ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+        ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
         ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
         ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
         ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
@@ -17,6 +18,7 @@ val QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
         ReadoutItemKey.AceWindows.Flag.Root to false,
         ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+        ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true,
         ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
         ReadoutItemKey.AceWindows.MyBestLap.Root to false,
     )

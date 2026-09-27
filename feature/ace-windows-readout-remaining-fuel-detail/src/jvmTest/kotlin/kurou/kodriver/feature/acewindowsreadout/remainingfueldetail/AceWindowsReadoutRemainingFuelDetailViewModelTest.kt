@@ -2,12 +2,11 @@
 
 package kurou.kodriver.feature.acewindowsreadout.remainingfueldetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,15 +32,12 @@ import kotlin.test.assertEquals
 class AceWindowsReadoutRemainingFuelDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var repository: AceWindowsRemainingFuelPreferencesRepository
+    private val repository: AceWindowsRemainingFuelPreferencesRepository = mockk()
 
-    @MockK(relaxUnitFun = true)
-    private lateinit var ttsEngine: TextToSpeechEngine
+    private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 

@@ -3,9 +3,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
@@ -23,11 +23,11 @@ import kotlin.test.assertEquals
 class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
     private val tempDir =
         Files.createTempDirectory("kodriver_lmu_windows_vehicle_class_tyre_temperature_preferences_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = LmuWindowsVehicleClassTyreTemperaturePreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImpl(dataStore)
@@ -39,7 +39,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `初期値は全クラス分のデフォルト閾値`() =
-        testScope.runTest {
+        runTest {
             val expected =
                 lmuWindowsAllVehicleClasses.associateWith {
                     lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(it)
@@ -50,7 +50,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveHighThresholdCelsius で保存したクラスの値だけが更新され他クラスはデフォルトのまま`() =
-        testScope.runTest {
+        runTest {
             repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, Celsius(110))
 
             val result = repository.observeHighThresholdCelsius().first()
@@ -64,7 +64,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveHighThresholdCelsius を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, Celsius(80))
             repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, Celsius(100))
 
@@ -76,7 +76,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `Unknownクラスは raw 値によらず1つの閾値を共有する`() =
-        testScope.runTest {
+        runTest {
             repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Unknown("Formula2026"), Celsius(105))
 
             val result = repository.observeHighThresholdCelsius().first()
@@ -87,7 +87,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `GTEのデフォルト値定数を用いてデフォルト閾値を検証できる`() =
-        testScope.runTest {
+        runTest {
             assertEquals(
                 LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT,
                 repository.observeHighThresholdCelsius().first()[LmuWindowsVehicleClassData.Gte],
@@ -96,7 +96,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `対象クラスの初期選択値はデフォルト値`() =
-        testScope.runTest {
+        runTest {
             assertEquals(
                 LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT,
                 repository.observeSelectedVehicleClass().first(),
@@ -105,7 +105,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveSelectedVehicleClass で保存したクラスが選択値として反映される`() =
-        testScope.runTest {
+        runTest {
             repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte)
 
             assertEquals(LmuWindowsVehicleClassData.Gte, repository.observeSelectedVehicleClass().first())
@@ -113,7 +113,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveSelectedVehicleClass を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte)
             repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gt3)
 
@@ -122,7 +122,7 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `選択クラスがUnknownの場合は代表キーとして保存・復元される`() =
-        testScope.runTest {
+        runTest {
             repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Unknown("Formula2026"))
 
             val result = repository.observeSelectedVehicleClass().first()

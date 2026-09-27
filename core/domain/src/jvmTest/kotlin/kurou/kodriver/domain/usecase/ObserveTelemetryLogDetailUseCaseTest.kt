@@ -1,22 +1,21 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -53,6 +52,7 @@ private fun createTelemetryLogRepository(
             simulator = Simulator.Gt7Ps5,
             readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
             narratedText = "燃料は残り約1周",
+            narrationOutcome = NarrationOutcome.QUEUED,
             telemetryJson = """{"lapCount":1}""",
         ),
         TelemetryLog(
@@ -61,6 +61,7 @@ private fun createTelemetryLogRepository(
             simulator = Simulator.LmuWindows,
             readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
             narratedText = "イエローフラッグ",
+            narrationOutcome = NarrationOutcome.QUEUED,
             telemetryJson = """{"currentLap":2}""",
         ),
     ).forEach { log ->
@@ -70,6 +71,7 @@ private fun createTelemetryLogRepository(
                 log.simulator,
                 log.readoutItemKey,
                 log.narratedText,
+                log.narrationOutcome,
                 log.telemetryJson,
             )
         } answers {
@@ -84,13 +86,7 @@ private fun createTelemetryLogRepository(
 }
 
 class ObserveTelemetryLogDetailUseCaseTest {
-    @MockK
-    private lateinit var repository: TelemetryLogRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: TelemetryLogRepository = mockk()
 
     @Test
     fun `指定したidのログとその一つ前のログを返す`() =
@@ -167,5 +163,6 @@ private fun telemetryLog(
     simulator = Simulator.LmuWindows,
     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
     narratedText = "イエローフラッグ",
+    narrationOutcome = NarrationOutcome.QUEUED,
     telemetryJson = """{"id":$id}""",
 )

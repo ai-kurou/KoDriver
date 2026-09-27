@@ -2,14 +2,13 @@
 
 package kurou.kodriver.feature.gt7ps5narrator
 
-import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +29,7 @@ import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
@@ -61,42 +61,30 @@ import kotlin.test.assertEquals
 class Gt7Ps5NarratorViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var telemetryRepository: Gt7Ps5Repository
+    private val telemetryRepository: Gt7Ps5Repository = mockk()
 
-    @MockK
-    private lateinit var myBestLapPreferencesRepository: Gt7Ps5MyBestLapPreferencesRepository
+    private val myBestLapPreferencesRepository: Gt7Ps5MyBestLapPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var remainingFuelLapsPreferencesRepository: Gt7Ps5RemainingFuelLapsPreferencesRepository
+    private val remainingFuelLapsPreferencesRepository: Gt7Ps5RemainingFuelLapsPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var remainingFuelPreferencesRepository: Gt7Ps5RemainingFuelPreferencesRepository
+    private val remainingFuelPreferencesRepository: Gt7Ps5RemainingFuelPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var tyreTemperaturePreferencesRepository: Gt7Ps5TyreTemperaturePreferencesRepository
+    private val tyreTemperaturePreferencesRepository: Gt7Ps5TyreTemperaturePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
+    private val simulatorPreferencesRepository: SimulatorPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var readoutPreferencesRepository: ReadoutPreferencesRepository
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var telemetryLogRepository: TelemetryLogRepository
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
-    @MockK
-    private lateinit var queuePreferencesRepository: QueuePreferencesRepository
+    private val queuePreferencesRepository: QueuePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var ttsEngine: TextToSpeechEngine
+    private val ttsEngine: TextToSpeechEngine = mockk()
 
-    @MockK
-    private lateinit var priorityAwareTts: PriorityAwareTts
+    private val priorityAwareTts: PriorityAwareTts = mockk()
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
@@ -193,6 +181,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    any(),
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -230,6 +219,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    any(),
                     telemetryJsons.single(),
                 )
             }
@@ -403,6 +393,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
                     "残り燃料警告",
+                    any(),
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -421,6 +412,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
                     "残り燃料警告",
+                    any(),
                     telemetryJsons.single(),
                 )
             }
@@ -552,6 +544,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
                     "タイヤ過熱警告",
+                    any(),
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -590,6 +583,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
                     "タイヤ過熱警告",
+                    any(),
                     telemetryJsons.single(),
                 )
             }
@@ -623,7 +617,7 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     @Test
-    fun `優先度制御で読み上げなかったイベントは保存しない`() =
+    fun `優先度制御で読み上げなかったイベントはSKIPPEDとして保存する`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -635,11 +629,32 @@ class Gt7Ps5NarratorViewModelTest {
             stubReadoutDefaults(
                 orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
             )
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    any(),
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    "自己ベストラップ更新",
+                    NarrationOutcome.SKIPPED,
+                    any(),
+                )
+            } just Runs
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    any(),
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    "自己ベストラップ更新",
+                    NarrationOutcome.SKIPPED,
+                    any(),
+                )
+            }
             confirmVerified(telemetryLogRepository)
         }
 
@@ -758,6 +773,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    any(),
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -787,6 +803,7 @@ class Gt7Ps5NarratorViewModelTest {
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     "自己ベストラップ更新",
+                    any(),
                     telemetryJsons.single(),
                 )
             }
@@ -849,6 +866,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 myBestLapNarratedText,
+                any(),
                 capture(telemetryJsons),
             )
         } just Runs
@@ -857,6 +875,7 @@ class Gt7Ps5NarratorViewModelTest {
                 any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                any(),
                 any(),
                 capture(telemetryJsons),
             )
@@ -867,6 +886,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
                 "残り燃料警告",
+                any(),
                 capture(telemetryJsons),
             )
         } just Runs
@@ -876,6 +896,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
                 "タイヤ過熱警告",
+                any(),
                 capture(telemetryJsons),
             )
         } just Runs

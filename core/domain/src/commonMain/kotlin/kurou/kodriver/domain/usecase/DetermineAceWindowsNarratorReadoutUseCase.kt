@@ -1,12 +1,14 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
@@ -14,11 +16,12 @@ import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
+import kotlin.math.floor
 
 /**
  * ACE 向け読み上げ判定の継続状態。
  *
- * 同じ低燃料警告・同じ旗状態・同じタイヤ過熱状態・同じ車両接近状態を連続で読み上げないため、
+ * 同じ低燃料警告・同じ旗状態・同じタイヤ過熱状態・同じ車両接近状態・同じ燃料残り周回数を連続で読み上げないため、
  * 前回の判定結果を保持する。
  */
 data class AceWindowsNarratorState(
@@ -28,6 +31,8 @@ data class AceWindowsNarratorState(
     val vehicleApproaching: Boolean = false,
     val personalBestMs: Int = Int.MAX_VALUE,
     val previousBestLapTimeMs: Int? = null,
+    /** 直近に読み上げた（または給油後に基準とした）燃料残り周回数。閾値を上回っている間は null。 */
+    val lastRemainingFuelLaps: Int? = null,
 )
 
 /** ACE 向け読み上げ判定で参照するユーザー設定。 */
@@ -37,6 +42,7 @@ data class AceWindowsNarratorReadoutSettings(
     val tyreTemperatureHighThresholdCelsius: Celsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
     val vehicleApproachThresholdMeters: Double = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
     val myBestLapVoiceType: MyBestLapVoiceType = MY_BEST_LAP_VOICE_TYPE_DEFAULT,
+    val remainingFuelLapsThreshold: Int = ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT,
 )
 
 /** ACE 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
@@ -53,6 +59,11 @@ data class AceWindowsNarratorReadoutDecision(
  * [SpeechEvent.CarRight] 等）のような左右を区別した接近アナウンスはできない。単一の閾値
  * （[AceWindowsNarratorReadoutSettings.vehicleApproachThresholdMeters]）を下回る車両が1台でもいれば、
  * 左右を区別しない [SpeechEvent.AceWindowsVehicleApproach] を読み上げる。
+ *
+ * 燃料残り周回数（[ReadoutItemKey.AceWindows.RemainingFuelLaps.Root]）は、GT7 のように燃料消費を自前で追跡せず、
+ * ACE が算出した [AceWindowsRemainingFuelLapsData.remainingLaps] の整数部を使う（[determineRemainingFuelLaps]）。
+ * 閾値以下になった時点と、以降1周減るごとに読み上げる。給油で周回数が増えた場合は基準を更新し、
+ * 整数境界付近の揺れで同じ周回数を繰り返し読み上げないよう、基準の次の整数から0.5周以上の増加のみ給油とみなす。
  *
  * 自己ベストラップ（[ReadoutItemKey.AceWindows.MyBestLap.Root]）は [AceWindowsBestLapTimeData.bestLapTimeMs] の
  * 更新を [determineMyBestLap] で判定する。GT7（[DetermineGt7Ps5NarratorReadoutUseCase.determineMyBestLap]）と
@@ -89,6 +100,34 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         return AceWindowsNarratorReadoutDecision(
             state = stateWithCurrentBestLap.copy(personalBestMs = current),
             events = listOf(event),
+        )
+    }
+
+    fun determineRemainingFuelLaps(
+        state: AceWindowsNarratorState,
+        data: AceWindowsRemainingFuelLapsData,
+        settings: AceWindowsNarratorReadoutSettings,
+    ): AceWindowsNarratorReadoutDecision {
+        val remaining = data.remainingLaps
+        // 消費実績がない間は 0（または非有限値）のため、燃料切れと区別できず判定しない。
+        if (!remaining.isFinite() || remaining <= 0f) return AceWindowsNarratorReadoutDecision(state, emptyList())
+        val laps = floor(remaining).toInt()
+        if (laps > settings.remainingFuelLapsThreshold) {
+            return AceWindowsNarratorReadoutDecision(state.copy(lastRemainingFuelLaps = null), emptyList())
+        }
+        val last = state.lastRemainingFuelLaps
+        if (last != null && laps >= last) {
+            val refueled = remaining >= last + 1 + REFUEL_HYSTERESIS_LAPS
+            val nextState = if (refueled) state.copy(lastRemainingFuelLaps = laps) else state
+            return AceWindowsNarratorReadoutDecision(nextState, emptyList())
+        }
+        val nextState = state.copy(lastRemainingFuelLaps = laps)
+        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root)) {
+            return AceWindowsNarratorReadoutDecision(nextState, emptyList())
+        }
+        return AceWindowsNarratorReadoutDecision(
+            state = nextState,
+            events = listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps)),
         )
     }
 
@@ -219,5 +258,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
 
     private companion object {
         const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
+
+        /** 給油による燃料残り周回数の増加とみなす、前回基準の次の整数からの余裕（周）。 */
+        const val REFUEL_HYSTERESIS_LAPS = 0.5f
     }
 }

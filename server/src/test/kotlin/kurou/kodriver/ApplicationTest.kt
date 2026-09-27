@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
@@ -29,6 +30,7 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -59,9 +61,11 @@ import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -75,9 +79,11 @@ import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -118,6 +124,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -142,6 +152,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -178,6 +192,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -202,6 +220,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -239,6 +261,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -263,6 +289,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -316,6 +346,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -340,6 +374,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -389,6 +427,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -413,6 +455,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -455,6 +501,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -479,6 +529,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -527,6 +581,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -551,6 +609,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -597,6 +659,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -621,6 +687,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -668,6 +738,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -692,6 +766,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -741,6 +819,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 repository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -765,6 +847,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -812,6 +898,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 repository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -836,6 +926,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -866,6 +960,166 @@ class ApplicationTest {
         }
 
     @Test
+    fun `ブレーキ温度情報をJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeLmuWindowsBrakeTemperatureRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                repository,
+                            ),
+                        observeLmuWindowsVehicleClass =
+                            ObserveLmuWindowsVehicleClassUseCase(
+                                EmptyLmuWindowsVehicleClassRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
+                        observeAceWindowsTyreCarcassTemperature =
+                            ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
+                            ),
+                        observeLmuWindowsPitStatus =
+                            ObserveLmuWindowsPitStatusUseCase(
+                                EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/lmu_windows/brake_temperature") {
+                    repository.emit(brakeTemperatureData1)
+
+                    val message =
+                        withTimeout(1_000) {
+                            (incoming.receive() as Frame.Text).readText()
+                        }
+                    assertEquals(BRAKE_TEMPERATURE_JSON_1, message)
+                }
+        }
+
+    @Test
+    fun `ブレーキ温度情報の同一値は重複して送信されない`() =
+        testApplication {
+            val repository = FakeLmuWindowsBrakeTemperatureRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                repository,
+                            ),
+                        observeLmuWindowsVehicleClass =
+                            ObserveLmuWindowsVehicleClassUseCase(
+                                EmptyLmuWindowsVehicleClassRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
+                        observeAceWindowsTyreCarcassTemperature =
+                            ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
+                            ),
+                        observeLmuWindowsPitStatus =
+                            ObserveLmuWindowsPitStatusUseCase(
+                                EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/lmu_windows/brake_temperature") {
+                    repository.emit(brakeTemperatureData1)
+                    repository.emit(brakeTemperatureData1)
+                    repository.emit(brakeTemperatureData2)
+
+                    val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(BRAKE_TEMPERATURE_JSON_1, first)
+                    assertEquals(BRAKE_TEMPERATURE_JSON_2, second)
+                }
+        }
+
+    @Test
     fun `車両クラス情報をJSONでWebSocketへ送信する`() =
         testApplication {
             val repository = FakeLmuWindowsVehicleClassRepository()
@@ -884,6 +1138,10 @@ class ApplicationTest {
                         observeLmuWindowsTyreCarcassTemperature =
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
                             ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
@@ -909,6 +1167,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -956,6 +1218,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 repository,
@@ -980,6 +1246,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1029,6 +1299,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1053,6 +1327,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1100,6 +1378,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1124,6 +1406,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1173,6 +1459,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1194,6 +1484,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1241,6 +1535,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1262,6 +1560,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1311,6 +1613,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1335,6 +1641,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1382,6 +1692,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1406,6 +1720,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1455,6 +1773,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1479,6 +1801,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1526,6 +1852,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1550,6 +1880,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1599,6 +1933,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1623,6 +1961,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1670,6 +2012,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1694,6 +2040,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1743,6 +2093,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1764,6 +2118,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -1809,6 +2167,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1831,6 +2193,10 @@ class ApplicationTest {
                                 EmptyAceWindowsVehicleApproachRepository,
                             ),
                         observeAceWindowsBestLapTime = ObserveAceWindowsBestLapTimeUseCase(repository),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
+                            ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
                                 EmptyLmuWindowsPitStatusRepository,
@@ -1856,9 +2222,9 @@ class ApplicationTest {
         }
 
     @Test
-    fun `ピット状態をJSONでWebSocketへ送信する`() =
+    fun `ACE燃料残り周回数をJSONでWebSocketへ送信する`() =
         testApplication {
-            val repository = FakeLmuWindowsPitStatusRepository()
+            val repository = FakeAceWindowsRemainingFuelLapsRepository()
             application {
                 module(
                     KoDriverServerUseCases(
@@ -1874,6 +2240,10 @@ class ApplicationTest {
                         observeLmuWindowsTyreCarcassTemperature =
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
                             ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
@@ -1899,6 +2269,84 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps = ObserveAceWindowsRemainingFuelLapsUseCase(repository),
+                        observeLmuWindowsPitStatus =
+                            ObserveLmuWindowsPitStatusUseCase(
+                                EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/remaining_fuel_laps") {
+                    repository.emit(aceRemainingFuelLapsData)
+
+                    val message = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(ACE_REMAINING_FUEL_LAPS_JSON, message)
+                }
+        }
+
+    @Test
+    fun `ピット状態をJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeLmuWindowsPitStatusRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
+                        observeLmuWindowsVehicleClass =
+                            ObserveLmuWindowsVehicleClassUseCase(
+                                EmptyLmuWindowsVehicleClassRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
+                        observeAceWindowsTyreCarcassTemperature =
+                            ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                EmptyAceWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus = ObserveLmuWindowsPitStatusUseCase(repository),
                         observeLmuWindowsTyreDetached =
@@ -1943,6 +2391,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -1967,6 +2419,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus = ObserveLmuWindowsPitStatusUseCase(repository),
                         observeLmuWindowsTyreDetached =
@@ -2013,6 +2469,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -2037,6 +2497,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -2081,6 +2545,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -2105,6 +2573,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -2151,6 +2623,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -2175,6 +2651,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -2218,6 +2698,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -2242,6 +2726,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -2289,6 +2777,10 @@ class ApplicationTest {
                             ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                                 EmptyLmuWindowsTyreCarcassTemperatureRepository,
                             ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
                         observeLmuWindowsVehicleClass =
                             ObserveLmuWindowsVehicleClassUseCase(
                                 EmptyLmuWindowsVehicleClassRepository,
@@ -2313,6 +2805,10 @@ class ApplicationTest {
                         observeAceWindowsBestLapTime =
                             ObserveAceWindowsBestLapTimeUseCase(
                                 EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
                             ),
                         observeLmuWindowsPitStatus =
                             ObserveLmuWindowsPitStatusUseCase(
@@ -2354,6 +2850,9 @@ class ApplicationTest {
                         single<LmuWindowsTyreCarcassTemperatureRepository> {
                             EmptyLmuWindowsTyreCarcassTemperatureRepository
                         }
+                        single<LmuWindowsBrakeTemperatureRepository> {
+                            EmptyLmuWindowsBrakeTemperatureRepository
+                        }
                         single<LmuWindowsVehicleClassRepository> { EmptyLmuWindowsVehicleClassRepository }
                         single<LmuWindowsTyreWearRepository> { EmptyLmuWindowsTyreWearRepository }
                         single<LmuWindowsRepository> { EmptyLmuWindowsRepository }
@@ -2366,6 +2865,9 @@ class ApplicationTest {
                         }
                         single<AceWindowsVehicleApproachRepository> { EmptyAceWindowsVehicleApproachRepository }
                         single<AceWindowsBestLapTimeRepository> { EmptyAceWindowsBestLapTimeRepository }
+                        single<AceWindowsRemainingFuelLapsRepository> {
+                            EmptyAceWindowsRemainingFuelLapsRepository
+                        }
                         single<LmuWindowsPitStatusRepository> { EmptyLmuWindowsPitStatusRepository }
                         single<LmuWindowsTyreDetachedRepository> { EmptyLmuWindowsTyreDetachedRepository }
                     },
@@ -2488,6 +2990,34 @@ private const val TYRE_CARCASS_TEMPERATURE_JSON_1 =
 private const val TYRE_CARCASS_TEMPERATURE_JSON_2 =
     """{"wheels":{"FRONT_LEFT":90.0,"FRONT_RIGHT":91.0,"REAR_LEFT":92.0,"REAR_RIGHT":93.0}}"""
 
+private val brakeTemperatureData1 =
+    LmuWindowsBrakeTemperatureData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to CelsiusReading(320.0f),
+                WheelIndex.FRONT_RIGHT to CelsiusReading(325.0f),
+                WheelIndex.REAR_LEFT to CelsiusReading(280.0f),
+                WheelIndex.REAR_RIGHT to CelsiusReading(285.0f),
+            ),
+    )
+
+private val brakeTemperatureData2 =
+    LmuWindowsBrakeTemperatureData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to CelsiusReading(330.0f),
+                WheelIndex.FRONT_RIGHT to CelsiusReading(331.0f),
+                WheelIndex.REAR_LEFT to CelsiusReading(290.0f),
+                WheelIndex.REAR_RIGHT to CelsiusReading(291.0f),
+            ),
+    )
+
+private const val BRAKE_TEMPERATURE_JSON_1 =
+    """{"wheels":{"FRONT_LEFT":320.0,"FRONT_RIGHT":325.0,"REAR_LEFT":280.0,"REAR_RIGHT":285.0}}"""
+
+private const val BRAKE_TEMPERATURE_JSON_2 =
+    """{"wheels":{"FRONT_LEFT":330.0,"FRONT_RIGHT":331.0,"REAR_LEFT":290.0,"REAR_RIGHT":291.0}}"""
+
 private val vehicleClassData1 = LmuWindowsVehicleClassData.fromRawValue("Hypercar")
 
 private val vehicleClassData2 = LmuWindowsVehicleClassData.fromRawValue("LMP2")
@@ -2596,12 +3126,26 @@ private object EmptyLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreC
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
 }
 
+private object EmptyLmuWindowsBrakeTemperatureRepository : LmuWindowsBrakeTemperatureRepository {
+    override fun brakeTemperatureStream(): Flow<LmuWindowsBrakeTemperatureData> = emptyFlow()
+}
+
 private class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
     private val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(capacity = Channel.UNLIMITED)
 
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = channel.receiveAsFlow()
 
     fun emit(data: LmuWindowsTyreCarcassTemperatureData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private class FakeLmuWindowsBrakeTemperatureRepository : LmuWindowsBrakeTemperatureRepository {
+    private val channel = Channel<LmuWindowsBrakeTemperatureData>(capacity = Channel.UNLIMITED)
+
+    override fun brakeTemperatureStream(): Flow<LmuWindowsBrakeTemperatureData> = channel.receiveAsFlow()
+
+    fun emit(data: LmuWindowsBrakeTemperatureData) {
         channel.trySend(data).getOrThrow()
     }
 }
@@ -2815,6 +3359,10 @@ private object EmptyAceWindowsBestLapTimeRepository : AceWindowsBestLapTimeRepos
     override fun bestLapTimeStream(): Flow<AceWindowsBestLapTimeData> = emptyFlow()
 }
 
+private object EmptyAceWindowsRemainingFuelLapsRepository : AceWindowsRemainingFuelLapsRepository {
+    override fun remainingFuelLapsStream(): Flow<AceWindowsRemainingFuelLapsData> = emptyFlow()
+}
+
 private class FakeAceWindowsVehicleApproachRepository : AceWindowsVehicleApproachRepository {
     private val channel = Channel<AceWindowsVehicleApproachData>(capacity = Channel.UNLIMITED)
 
@@ -2843,6 +3391,20 @@ private class FakeAceWindowsBestLapTimeRepository : AceWindowsBestLapTimeReposit
 private val aceBestLapTimeData = AceWindowsBestLapTimeData(bestLapTimeMs = 95_123)
 
 private const val ACE_BEST_LAP_TIME_JSON = """{"bestLapTimeMs":95123}"""
+
+private class FakeAceWindowsRemainingFuelLapsRepository : AceWindowsRemainingFuelLapsRepository {
+    private val channel = Channel<AceWindowsRemainingFuelLapsData>(capacity = Channel.UNLIMITED)
+
+    override fun remainingFuelLapsStream(): Flow<AceWindowsRemainingFuelLapsData> = channel.receiveAsFlow()
+
+    fun emit(data: AceWindowsRemainingFuelLapsData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private val aceRemainingFuelLapsData = AceWindowsRemainingFuelLapsData(remainingLaps = 2.5f)
+
+private const val ACE_REMAINING_FUEL_LAPS_JSON = """{"remainingLaps":2.5}"""
 
 private val pitStatusData1 =
     LmuWindowsPitStatusData(inPits = true, pitState = LmuWindowsPitState.ENTERING, inGarageStall = false)

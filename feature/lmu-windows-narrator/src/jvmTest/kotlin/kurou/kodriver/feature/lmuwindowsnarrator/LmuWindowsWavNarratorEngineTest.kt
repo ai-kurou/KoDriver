@@ -1,28 +1,20 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
-import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LmuWindowsWavNarratorEngineTest {
-    @MockK
-    private lateinit var wavNarratorEngine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val wavNarratorEngine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 
     @Test
     fun `currentReadoutItemKeyはWavNarratorEngineのcurrentKeyを返す`() {

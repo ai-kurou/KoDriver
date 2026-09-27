@@ -32,9 +32,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -270,9 +272,11 @@ private fun TelemetryLogResultSnackbarEffect(
 @Preview(showBackground = true)
 @Composable
 private fun TelemetryLogContentPreview() {
-    TelemetryLogContentScaffold(
-        uiState = previewTelemetryLogListUiState,
-    )
+    KoDriverTheme {
+        TelemetryLogContentScaffold(
+            uiState = previewTelemetryLogListUiState,
+        )
+    }
 }
 
 internal val previewTelemetryLogListUiState =
@@ -285,6 +289,7 @@ internal val previewTelemetryLogListUiState =
                     simulator = Simulator.AceWindows,
                     readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
                     narratedText = "残り燃料警告",
+                    narrationOutcome = NarrationOutcome.QUEUED,
                     telemetryJson = """{"remainingFuelLiters":8.2}""",
                 ),
                 TelemetryLog(
@@ -293,7 +298,17 @@ internal val previewTelemetryLogListUiState =
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     narratedText = "イエローフラッグ",
+                    narrationOutcome = NarrationOutcome.INTERRUPTED,
                     telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
+                ),
+                TelemetryLog(
+                    id = 4,
+                    createdAt = 1_810_000,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "カーレフト",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = """{"left":true,"right":false}""",
                 ),
                 TelemetryLog(
                     id = 1,
@@ -301,6 +316,7 @@ internal val previewTelemetryLogListUiState =
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                     narratedText = "燃料は残り約3周",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = """{"remainingFuelLaps":3.6,"fuelPercent":18.2}""",
                 ),
             ),

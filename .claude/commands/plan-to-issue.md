@@ -40,7 +40,8 @@ description: 実装内容の説明（省略時は会話内容）を受け取り�
 
 5. `.github/ISSUE_TEMPLATE/claude-implementation.yml` の各フィールド（背景・目的、対象モジュール・ファイル、現状の挙動、期待する挙動、参考にすべき類似実装、実装手順案、受け入れ条件、スコープ外・触ってほしくない箇所、特に見てほしいテスト観点、参考URL・関連issue/PR）に沿って本文を組み立てる。
 6. 第二引数（更新対象issueのURL）が**ない場合**（新規作成）:
-   - `gh issue create --title "[Claude実装] <実装内容から要約した簡潔なタイトル>" --label claude-implementable --body <組み立てた本文>` で起票する。タイトル・本文は日本語で書き、署名やセッションURLは含めない。
+   - `gh issue create --title "[Claude実装] <実装内容から要約した簡潔なタイトル>" --body <組み立てた本文>` で起票する。タイトル・本文は日本語で書き、署名やセッションURLは含めない。
+   - ラベルは付けない。`claude-implementable` ラベルは夜間自動実装（`scripts/nightly-implement-local.sh`）の対象になる目印のため、付けるかどうかはユーザーが内容を確認したうえで手動で判断する。
 7. 第二引数（更新対象issueのURL）が**ある場合**（既存issue更新）:
    - 更新前に `gh issue view <URL>` で現在のタイトル・本文・状態（open/closed）を確認する。
    - 本文は既存内容を残さず、今回組み立てた本文で**丸ごと置き換える**（`gh issue edit <URL> --body <組み立てた本文>`）。タイトルも実装内容の変化に応じて必要なら `--title` で更新する。

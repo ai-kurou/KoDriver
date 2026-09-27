@@ -1,13 +1,12 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
-import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -16,9 +15,11 @@ import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -26,22 +27,14 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Suppress("TooManyFunctions")
 class AceWindowsNarratorEventProcessorTest {
-    @MockK
-    private lateinit var telemetryLogRepository: TelemetryLogRepository
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
 
-    @MockK
-    private lateinit var ttsEngine: TextToSpeechEngine
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val ttsEngine: TextToSpeechEngine = mockk()
 
     @Test
     fun `直前の燃料データがないイベントはnullとして保存する`() =
@@ -56,6 +49,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -67,7 +61,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
@@ -80,6 +73,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -100,11 +94,12 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
 
-            processor.processRemainingFuel(fuel(50.0), emptyList(), emptyList(), emptyMap(), 100L, logContext(), true)
+            processor.processRemainingFuel(fuel(50.0), emptyList(), emptyList(), emptyMap(), 100L, logContext())
             processor.processRemainingFuel(
                 fuel(20.0),
                 listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
@@ -112,7 +107,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 200L,
                 logContext(),
-                true,
             )
 
             assertEquals(1, telemetryJsons.size)
@@ -127,6 +121,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -134,11 +129,21 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `優先度の高い項目を再生中なら読み上げも保存もしない`() =
+    fun `優先度の高い項目を再生中なら読み上げずSKIPPEDとして保存する`() =
         runTest {
             val currentKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
             val otherKey = ReadoutItemKey.LmuWindows.Flag.Root
             every { ttsEngine.currentReadoutItemKey } returns currentKey
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    currentKey,
+                    "残り燃料警告",
+                    NarrationOutcome.SKIPPED,
+                    any(),
+                )
+            } just Runs
             val processor = createProcessor()
 
             processor.processRemainingFuel(
@@ -148,11 +153,20 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             verify(exactly = 0) { ttsEngine.stop() }
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    currentKey,
+                    "残り燃料警告",
+                    NarrationOutcome.SKIPPED,
+                    any(),
+                )
+            }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
@@ -169,6 +183,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.QUEUED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -181,7 +196,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             verify(exactly = 0) { ttsEngine.stop() }
@@ -192,6 +206,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.QUEUED,
                     telemetryJsons.single(),
                 )
             }
@@ -213,6 +228,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -225,7 +241,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             verify(exactly = 1) { ttsEngine.stop() }
@@ -237,6 +252,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
             }
@@ -250,7 +266,14 @@ class AceWindowsNarratorEventProcessorTest {
             val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
             every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
             coEvery {
-                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, "残り燃料警告", any())
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
+                    any(),
+                )
             } throws RuntimeException("db error")
 
             createProcessor().processRemainingFuel(
@@ -260,14 +283,22 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
             coVerify(
                 exactly = 1,
-            ) { telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, "残り燃料警告", any()) }
+            ) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
+                    any(),
+                )
+            }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
@@ -284,6 +315,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -295,7 +327,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":NaN}"""))
@@ -307,6 +338,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -314,7 +346,7 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `isOnTrackがfalseのときは読み上げも保存もしないが直前の燃料データは更新する`() =
+    fun `イベントがないときは読み上げも保存もしないが直前の燃料データは更新する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
@@ -326,6 +358,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -333,12 +366,11 @@ class AceWindowsNarratorEventProcessorTest {
 
             processor.processRemainingFuel(
                 fuel = fuel(20.0),
-                events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
+                events = emptyList(),
                 readoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
-                isOnTrack = false,
             )
             processor.processRemainingFuel(
                 fuel = fuel(80.0),
@@ -347,7 +379,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains(""""previousFuel":{"remainingPercent":20.0}"""))
@@ -359,6 +390,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "残り燃料警告",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -378,6 +410,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "自己ベストラップ更新",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -389,7 +422,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains("\"previousBestLapTime\":null"))
@@ -402,6 +434,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "自己ベストラップ更新",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -422,6 +455,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "自己ベストラップ更新",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -433,7 +467,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 100L,
                 logContext(),
-                true,
             )
             processor.processMyBestLap(
                 bestLapTime(89_000),
@@ -442,7 +475,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 200L,
                 logContext(),
-                true,
             )
 
             assertEquals(1, telemetryJsons.size)
@@ -456,6 +488,108 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "自己ベストラップ更新",
+                    NarrationOutcome.SPOKEN,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `直前の燃料残り周回数データがないイベントはnullとして保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "燃料は残り約2周",
+                    NarrationOutcome.SPOKEN,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+
+            createProcessor().processRemainingFuelLaps(
+                remainingFuelLaps = remainingFuelLaps(2.5f),
+                events = listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+
+            assertEquals(true, telemetryJsons.single().contains("\"previousRemainingFuelLaps\":null"))
+            assertEquals(true, telemetryJsons.single().contains(""""remainingFuelLaps":{"remainingLaps":2.5}"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "燃料は残り約2周",
+                    NarrationOutcome.SPOKEN,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `読み上げた燃料残り周回数イベントを直前と現在の燃料残り周回数データとともに保存する`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val processor = createProcessor()
+            val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "燃料は残り約2周",
+                    NarrationOutcome.SPOKEN,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+
+            processor.processRemainingFuelLaps(
+                remainingFuelLaps(3.5f),
+                emptyList(),
+                emptyList(),
+                emptyMap(),
+                100L,
+                logContext(),
+            )
+            processor.processRemainingFuelLaps(
+                remainingFuelLaps(2.5f),
+                listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)),
+                listOf(key),
+                emptyMap(),
+                200L,
+                logContext(),
+            )
+
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""previousRemainingFuelLaps":{"remainingLaps":3.5}"""),
+            )
+            assertEquals(true, telemetryJsons.single().contains(""""remainingFuelLaps":{"remainingLaps":2.5}"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    200L,
+                    Simulator.AceWindows,
+                    key,
+                    "燃料は残り約2周",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -475,6 +609,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "ブルーフラッグ",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -486,7 +621,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains("\"previousFlag\":null"))
@@ -499,6 +633,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "ブルーフラッグ",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -519,6 +654,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "ブルーフラッグ",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -530,7 +666,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 100L,
                 logContext(),
-                true,
             )
             processor.processFlag(
                 flag(AceWindowsFlagType.BLUE_FLAG),
@@ -539,7 +674,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 200L,
                 logContext(),
-                true,
             )
 
             assertEquals(1, telemetryJsons.size)
@@ -553,6 +687,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "ブルーフラッグ",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -572,6 +707,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "タイヤ過熱警告",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -583,7 +719,6 @@ class AceWindowsNarratorEventProcessorTest {
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
-                isOnTrack = true,
             )
 
             assertEquals(true, telemetryJsons.single().contains("\"previousTyreCarcassTemperature\":null"))
@@ -599,6 +734,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "タイヤ過熱警告",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -619,6 +755,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "タイヤ過熱警告",
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -630,7 +767,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 100L,
                 logContext(),
-                true,
             )
             processor.processTyreTemperature(
                 tyreCarcassTemperature(110.0f),
@@ -639,7 +775,6 @@ class AceWindowsNarratorEventProcessorTest {
                 emptyMap(),
                 200L,
                 logContext(),
-                true,
             )
 
             assertEquals(1, telemetryJsons.size)
@@ -659,6 +794,7 @@ class AceWindowsNarratorEventProcessorTest {
                     Simulator.AceWindows,
                     key,
                     "タイヤ過熱警告",
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -690,4 +826,6 @@ class AceWindowsNarratorEventProcessorTest {
                 ),
             finalState = AceWindowsNarratorState(),
         )
+
+    private fun remainingFuelLaps(remainingLaps: Float) = AceWindowsRemainingFuelLapsData(remainingLaps = remainingLaps)
 }

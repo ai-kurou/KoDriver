@@ -7,6 +7,7 @@ import kurou.kodriver.core.narrator.TelemetryLogJson
 import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
 import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
 import kurou.kodriver.core.narrator.buildTelemetryLogJson
+import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -14,6 +15,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
@@ -55,49 +57,73 @@ internal class Gt7Ps5NarratorEventProcessor(
     ) {
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    narratedText = event.narratedText,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = telemetry,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
-            }
+            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            saveTelemetryLogSafely(
+                createdAt = observedAtMs,
+                readoutItemKey = event.readoutItemKey,
+                narratedText = event.narratedText,
+                narrationOutcome = narrationOutcome,
+                telemetryJson =
+                    buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = telemetry,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+            )
         }
         previousTelemetry[sourceKey] = telemetry
     }
 
+    /**
+     * 読み上げの処理結果を返す。キュー追加・通常再生・割り込み再生・優先度負けによる読み上げなしの4種を
+     * 区別し、テレメトリログの narrationOutcome として保存される。
+     *
+     * 割り込み再生かどうかは共有関数の戻り値からは分からないため、[stop] が呼ばれたかどうかで判定する。
+     */
     private fun speakWithPriority(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    ): Boolean =
-        speakWithPriority(
-            eventKey = event.readoutItemKey,
-            currentKey = { ttsEngine.currentReadoutItemKey },
-            readoutOrder = readoutOrder,
-            queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
-            speak = { queue -> ttsEngine.speak(event, queue) },
-            stop = { ttsEngine.stop() },
-        )
+    ): NarrationOutcome {
+        var wasQueued: Boolean? = null
+        var didStop = false
+        val spoken =
+            speakWithPriority(
+                eventKey = event.readoutItemKey,
+                currentKey = { ttsEngine.currentReadoutItemKey },
+                readoutOrder = readoutOrder,
+                queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
+                speak = { queue ->
+                    wasQueued = queue
+                    ttsEngine.speak(event, queue)
+                },
+                stop = {
+                    didStop = true
+                    ttsEngine.stop()
+                },
+            )
+        return when {
+            !spoken -> NarrationOutcome.SKIPPED
+            wasQueued == true -> NarrationOutcome.QUEUED
+            didStop -> NarrationOutcome.INTERRUPTED
+            else -> NarrationOutcome.SPOKEN
+        }
+    }
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
         readoutItemKey: ReadoutItemKey,
         narratedText: String,
+        narrationOutcome: NarrationOutcome,
         telemetryJson: String,
     ) {
         try {
             saveTelemetryLog(
                 createdAt = createdAt,
+                narrationOutcome = narrationOutcome,
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = readoutItemKey,
                 narratedText = narratedText,
@@ -105,8 +131,9 @@ internal class Gt7Ps5NarratorEventProcessor(
             )
         } catch (e: CancellationException) {
             throw e
-        } catch (_: Exception) {
-            // ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない。
+        } catch (e: Exception) {
+            // ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない。記録のみ行う。
+            captureNarratorError(e)
         }
     }
 }

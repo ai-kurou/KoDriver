@@ -19,6 +19,7 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.feature.othervolumedetail.generated.resources.Res
@@ -140,5 +141,7 @@ fun OtherVolumeDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun OtherVolumeDetailPanePreview() {
-    OtherVolumeDetailPaneContent(uiState = OtherVolumeDetailUiState())
+    KoDriverTheme {
+        OtherVolumeDetailPaneContent(uiState = OtherVolumeDetailUiState())
+    }
 }

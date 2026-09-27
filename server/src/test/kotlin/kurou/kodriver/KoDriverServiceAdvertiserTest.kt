@@ -1,27 +1,18 @@
 package kurou.kodriver
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.verify
 import java.io.IOException
 import javax.jmdns.JmDNS
 import javax.jmdns.ServiceInfo
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class KoDriverServiceAdvertiserTest {
-    @RelaxedMockK
-    private lateinit var jmdns: JmDNS
+    private val jmdns: JmDNS = mockk(relaxed = true)
 
-    @RelaxedMockK
-    private lateinit var secondJmdns: JmDNS
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val secondJmdns: JmDNS = mockk(relaxed = true)
 
     @Test
     fun `startするとKoDriverプレフィックス＋サフィックスでmDNSサービスを登録する`() {

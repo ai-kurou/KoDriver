@@ -122,6 +122,11 @@ sealed interface SpeechEvent {
         override val narratedText = "タイヤ摩耗警告"
     }
 
+    data object BrakeOverheat : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root
+        override val narratedText = "ブレーキ過熱警告"
+    }
+
     data object RemainingVirtualEnergyWarning : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root
         override val narratedText = "バーチャルエナジー残量警告"
@@ -171,6 +176,14 @@ sealed interface SpeechEvent {
     ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root
         override val narratedText = if (laps <= 0) "必ずピットイン" else "残り約${laps}周でピットイン"
+    }
+
+    /** ACE の残燃料で走行可能な周回数を読み上げるイベント。文言・WAV は GT7 の [RemainingFuelLapsWarning] と共通。 */
+    data class AceWindowsRemainingFuelLapsWarning(
+        val laps: Int,
+    ) : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+        override val narratedText = if (laps <= 0) "燃料がありません" else "燃料は残り約${laps}周"
     }
 
     data object AceWindowsRemainingFuelWarning : SpeechEvent {

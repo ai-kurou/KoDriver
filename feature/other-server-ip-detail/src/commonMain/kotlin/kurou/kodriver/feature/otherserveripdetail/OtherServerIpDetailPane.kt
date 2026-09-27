@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.navigate_back
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_connectivity_warning
@@ -283,64 +284,78 @@ fun OtherServerIpDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDetailPanePreview() {
-    OtherServerIpDetailPaneContent(
-        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100"),
-    )
+    KoDriverTheme {
+        OtherServerIpDetailPaneContent(
+            uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100"),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDetailPaneEmptyInputPreview() {
-    OtherServerIpDetailPaneContent(
-        uiState = OtherServerIpDetailUiState(inputIp = ""),
-    )
+    KoDriverTheme {
+        OtherServerIpDetailPaneContent(
+            uiState = OtherServerIpDetailUiState(inputIp = ""),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDetailPaneInvalidPreview() {
-    OtherServerIpDetailPaneContent(
-        uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
-    )
+    KoDriverTheme {
+        OtherServerIpDetailPaneContent(
+            uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDetailPaneConnectivityWarningPreview() {
-    OtherServerIpDetailPaneContent(
-        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", connectivityWarning = true),
-    )
+    KoDriverTheme {
+        OtherServerIpDetailPaneContent(
+            uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", connectivityWarning = true),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDetailPaneCheckingConnectivityPreview() {
-    OtherServerIpDetailPaneContent(
-        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", isCheckingConnectivity = true),
-    )
+    KoDriverTheme {
+        OtherServerIpDetailPaneContent(
+            uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", isCheckingConnectivity = true),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDetailPaneDiscoveringPreview() {
-    OtherServerIpDetailPaneContent(
-        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", discoveredServers = emptyList()),
-    )
+    KoDriverTheme {
+        OtherServerIpDetailPaneContent(
+            uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", discoveredServers = emptyList()),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDetailPaneDiscoveredServersPreview() {
-    OtherServerIpDetailPaneContent(
-        uiState =
-            OtherServerIpDetailUiState(
-                inputIp = "192.168.1.100",
-                discoveredServers =
-                    listOf(
-                        DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
-                        DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
-                    ),
-                isDiscoveryDialogVisible = false,
-            ),
-    )
+    KoDriverTheme {
+        OtherServerIpDetailPaneContent(
+            uiState =
+                OtherServerIpDetailUiState(
+                    inputIp = "192.168.1.100",
+                    discoveredServers =
+                        listOf(
+                            DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
+                            DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
+                        ),
+                    isDiscoveryDialogVisible = false,
+                ),
+        )
+    }
 }

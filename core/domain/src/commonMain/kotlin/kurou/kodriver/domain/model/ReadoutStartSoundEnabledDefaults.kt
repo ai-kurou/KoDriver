@@ -13,6 +13,7 @@ val READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.LmuWindows.PitTiming.Root to true,
         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
         ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+        ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
         ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
         ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
         ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
@@ -21,6 +22,7 @@ val READOUT_START_SOUND_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.AceWindows.Flag.Root to true,
         ReadoutItemKey.AceWindows.VehicleApproach.Root to false,
         ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+        ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true,
         ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
         ReadoutItemKey.AceWindows.MyBestLap.Root to true,
     )

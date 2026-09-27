@@ -2,12 +2,11 @@
 
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -15,18 +14,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveQueueEnabledStatesUseCaseTest {
-    @MockK
-    private lateinit var repository: QueuePreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: QueuePreferencesRepository = mockk()
 
     @Test
     fun `初期値はsupportsQueue対象項目のデフォルトfalseを返す`() =
@@ -42,6 +34,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
                     ReadoutItemKey.LmuWindows.PitTiming.Root to true,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
                     ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
@@ -49,6 +42,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
                     ReadoutItemKey.AceWindows.Flag.Root to false,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
                     ReadoutItemKey.AceWindows.MyBestLap.Root to false,
                 ),
@@ -78,6 +72,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
                     ReadoutItemKey.LmuWindows.PitTiming.Root to true,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
                     ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
@@ -85,6 +80,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
                     ReadoutItemKey.AceWindows.Flag.Root to false,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
                     ReadoutItemKey.AceWindows.MyBestLap.Root to false,
                 ),

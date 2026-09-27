@@ -2,10 +2,9 @@
 
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -13,19 +12,12 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ObserveLmuWindowsPitStatusUseCaseTest {
-    @MockK
-    private lateinit var repo: LmuWindowsPitStatusRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repo: LmuWindowsPitStatusRepository = mockk()
 
     @Test
     fun `invoke はリポジトリの pitStatusStream を返す`() =

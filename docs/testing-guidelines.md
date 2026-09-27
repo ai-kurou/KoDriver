@@ -24,8 +24,10 @@
 - list/detail などアプリ全体・2ペイン構成: `720.dp x 640.dp` または `840.dp x 640.dp`
   - `840.dp x 640.dp`: `ReadoutContent`/`OtherContent`/`TelemetryLogContent` など、ナビゲーション用 chrome（NavigationRail 等）を含まない feature の `XxxContent` 単体をキャプチャする場合。2ペイン部分の表示確認に幅を丸ごと使う。
   - `720.dp x 640.dp`: `AppScreenContent` など、NavigationRail を含むアプリ全体の画面をキャプチャする場合。ボックス内に NavigationRail 自体の幅も含まれるため、2ペイン部分に使える幅は `840.dp` より狭くなる。
-- ダイアログ表示用のホスト: `480.dp x 320.dp`
-- デスクトップ Splash など独立したウィンドウ: 既存の専用サイズ
+- `AppScreenContent` の `NavigationSuiteType.NavigationBar`（スマホ縦画面・1ペイン）をキャプチャする場合: `360.dp x 640.dp`
+- ダイアログ・ボトムシート表示用のホスト: `480.dp x 320.dp`
+- デスクトップ Splash・オーバーレイなど独立したウィンドウ: 既存の専用サイズ
+- 上記いずれにも該当しない、Pane を構成する個々のコンポーネント（`DetailPaneCard`・`ThresholdSlider` 等）単体をキャプチャする場合: 幅は `360.dp` を基準に、高さはコンポーネントの内容に応じて過不足のないサイズにする
 
 新規追加・移動したスクリーンショットテストのゴールデン画像は、手元で生成してコミットしてはならない。ゴールデン画像の追加・更新は CI（`on-pull-request.yml` の verify → 失敗時の自動再記録）で行われる。動作確認などで手元に `**/snapshots/*.png` が生成・更新された場合は、PR 作成や報告の前に必ず破棄すること。Android 向けスクリーンショットテストを追加する場合は、PR 説明に Desktop/JVM 版と見た目が異なる理由を書くこと。
 
@@ -48,12 +50,12 @@ Windows 共有メモリ（JNA/kernel32）のように非 Windows 環境でイン
 - テスト名は日本語のバッククォート記法（`` `初期状態は Connecting を返す`() ``）
 - ViewModel の `uiState` から流れてきた内容を検証するときは `first()` を使う
 - テストケース数は最小限に絞ること。正常系・異常系・境界値の 3 軸を意識し、冗長なケースは省く
-- モックはテストクラスのプロパティとして `@MockK lateinit var` で宣言し、`setUp()`（`@BeforeTest` 関数）の `MockKAnnotations.init(this)` で初期化する。テストケース内やプロパティ初期化時に `mockk()` で生成しない。
+- モックはテストクラスのプロパティとして `private val xxx: Xxx = mockk()` で宣言する。`relaxUnitFun = true` / `relaxed = true` が必要な場合は `mockk(relaxUnitFun = true)` のように引数で指定する。`@MockK` アノテーション + `lateinit var` + `MockKAnnotations.init(this)` は使わない（DeepSource の `KT-W1047` 誤検出を避けるため。#1613）。テストケース内でモックを生成しない点は変わらない。
 - `every`/`coEvery` によるスタブ設定は **各テストケース内で行うこと**。`setUp()` でスタブまで済ませると、そのテストケースが何を前提にしているかがテスト本体だけを読んでも分からなくなり、他のテストケースの前提を変更した際に気づかず壊す原因になる。
 - `verify`/`coVerify` では `exactly = N` を必ず指定し、期待する呼び出し回数を明示する。
 - `verify`/`coVerify` を使用した各テストケースの最後で、検証対象のモックに対して `confirmVerified(...)` を呼び、検証していない呼び出しが残っていないことを確認する。
 - MockK API は import して短い名前で呼び出し、テストコード内に `io.mockk.` の完全修飾名を書かない。
-- 通常の `@MockK` / `@RelaxedMockK` は各テストの `MockKAnnotations.init(this)` で再初期化するため、`unmockkAll()` や `clearAllMocks()` を追加しない。
+- プロパティとして宣言した `mockk()` はテストクラスのインスタンスごとに新規生成される（JUnit/kotlin.test はテストメソッドごとに新しいインスタンスを作る）ため、`unmockkAll()` や `clearAllMocks()` を追加しない。
 - `mockkObject` / `mockkStatic` / `mockkConstructor` でグローバルな差し替えを行う場合に限り、`finally` または `@AfterTest` で対応する `unmockkObject` / `unmockkStatic` / `unmockkConstructor` を必ず呼ぶ。対象を限定せず全グローバルモックを解除する `unmockkAll()` は原則として使わない。
 
 ### mockk テストでの any() 使用

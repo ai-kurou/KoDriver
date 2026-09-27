@@ -47,4 +47,12 @@ class AndroidSimulatorPreferencesRepositoryTest {
 
             assertEquals(Simulator.Gt7Ps5, repository.selectedSimulator().first())
         }
+
+    @Test
+    fun `読み取り失敗時はデフォルトのLmuWindowsを返す`() =
+        runTest(testDispatcher) {
+            val failingRepository = AndroidSimulatorPreferencesRepository(FailingPreferencesDataStore())
+
+            assertEquals(Simulator.LmuWindows, failingRepository.selectedSimulator().first())
+        }
 }

@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.otherthemedetail
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,14 +28,12 @@ import kotlin.test.assertEquals
 class OtherThemeDetailViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var repository: ThemePreferencesRepository
+    private val repository: ThemePreferencesRepository = mockk()
 
     private val themeModeFlow = MutableStateFlow(ThemeMode.SYSTEM)
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
     }
 

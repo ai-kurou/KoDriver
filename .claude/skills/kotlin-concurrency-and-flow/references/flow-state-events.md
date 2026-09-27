@@ -173,6 +173,6 @@ val name: StateFlow<String> = userState
 
 ## 関連
 
-- [Kotlin control flow](../../kotlin-control-flow/SKILL.md) — stateとイベントをモデリングする際の `when`、ガード条件、網羅性、スマートキャスト、早期returnの選択。
+- 「Kotlin control flow」（未取り込み: chrisbanes/skills の `kotlin-control-flow`） — stateとイベントをモデリングする際の `when`、ガード条件、網羅性、スマートキャスト、早期returnの選択。
 - [Structured concurrency](structured-concurrency.md) — スコープの所有権、init内のlaunch、fire-and-forget境界、キャンセル、`runBlocking`
 - [Compose state and effects](../../compose-state-and-effects/SKILL.md) — イベントFlowの収集と、純粋なstate駆動のUIへのstate holderの配線

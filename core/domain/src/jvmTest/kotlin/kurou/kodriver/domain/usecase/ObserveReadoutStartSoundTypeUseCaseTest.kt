@@ -1,27 +1,19 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveReadoutStartSoundTypeUseCaseTest {
-    @MockK
-    private lateinit var repository: ReadoutStartSoundPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: ReadoutStartSoundPreferencesRepository = mockk()
 
     @Test
     fun `読み上げ開始音種別を監視できる`() =

@@ -31,11 +31,12 @@ data class OtherFeedbackDetailUiState(
     val showNameError: Boolean = false,
     val showEmailError: Boolean = false,
     val attachedTelemetryLog: TelemetryLog? = null,
+    val isCoolingDown: Boolean = false,
 ) {
     val canSend: Boolean
         get() =
             message.isNotBlank() && name.isNotBlank() && isValidEmail(email) &&
-                sendStatus != FeedbackSendStatus.Sending
+                sendStatus != FeedbackSendStatus.Sending && !isCoolingDown
 
     val showEmailFormatError: Boolean
         get() = showEmailError && email.isNotBlank()

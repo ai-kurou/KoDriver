@@ -8,11 +8,13 @@ import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
+import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelPreferencesRepository
@@ -27,8 +29,13 @@ import kurou.kodriver.data.preferences.createLmuWindowsTyreTemperaturePreference
 import kurou.kodriver.data.preferences.createLmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.data.preferences.createQueuePreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.createReadoutStartSoundEnabledPreferencesRepository
@@ -41,6 +48,7 @@ import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
@@ -48,6 +56,7 @@ import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
+import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
@@ -66,8 +75,13 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
+import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
+import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
+import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
+import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
@@ -136,6 +150,18 @@ val desktopDataModule =
         single<ThemePreferencesRepository> {
             createThemePreferencesRepository(directory = kodriverDirectory)
         }
+        single<OverlayTextSizePreferencesRepository> {
+            createOverlayTextSizePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<OverlayBackgroundOpacityPreferencesRepository> {
+            createOverlayBackgroundOpacityPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<OverlayVisiblePreferencesRepository> {
+            createOverlayVisiblePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<OverlayWindowBoundsPreferencesRepository> {
+            createOverlayWindowBoundsPreferencesRepository(directory = kodriverDirectory)
+        }
         single<Gt7Ps5MyBestLapPreferencesRepository> {
             createGt7Ps5MyBestLapPreferencesRepository(directory = kodriverDirectory)
         }
@@ -153,6 +179,9 @@ val desktopDataModule =
         }
         single<ConsoleAddressPreferencesRepository> {
             createConsoleAddressPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<FeedbackCooldownPreferencesRepository> {
+            createFeedbackCooldownPreferencesRepository(directory = kodriverDirectory)
         }
         // アプリ更新確認（GitHub リリース API を叩くネットワーク実装）
         single<AppUpdateRepository> { GitHubAppReleaseRepository() }
@@ -174,11 +203,17 @@ val desktopDataModule =
         single<LmuWindowsTyreWearPreferencesRepository> {
             createLmuWindowsTyreWearPreferencesRepository(directory = kodriverDirectory)
         }
+        single<LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository> {
+            createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository(directory = kodriverDirectory)
+        }
         single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
             createLmuWindowsRemainingVirtualEnergyPreferencesRepository(directory = kodriverDirectory)
         }
         single<AceWindowsRemainingFuelPreferencesRepository> {
             createAceWindowsRemainingFuelPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<AceWindowsRemainingFuelLapsPreferencesRepository> {
+            createAceWindowsRemainingFuelLapsPreferencesRepository(directory = kodriverDirectory)
         }
         single<AceWindowsFlagPreferencesRepository> {
             createAceWindowsFlagPreferencesRepository(directory = kodriverDirectory)

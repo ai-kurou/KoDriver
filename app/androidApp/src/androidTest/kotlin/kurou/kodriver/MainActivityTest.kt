@@ -14,6 +14,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -115,6 +116,11 @@ class MainActivityTest {
         clickItemAndVerifyDescription(
             "燃料残量",
             "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
+        )
+        clickItemAndVerifyDescription(
+            "燃料残り周回数",
+            "ACEが算出する残燃料で走行可能な周回数をもとに判定し、設定した周回数以下になると" +
+                "1周減るごとに音声でお知らせします。",
         )
         clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
@@ -396,5 +402,6 @@ private fun telemetryLog(
     simulator = Simulator.LmuWindows,
     readoutItemKey = readoutItemKey,
     narratedText = "イエローフラッグ",
+    narrationOutcome = NarrationOutcome.INTERRUPTED,
     telemetryJson = telemetryJson,
 )

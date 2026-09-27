@@ -3,9 +3,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
@@ -21,11 +21,11 @@ import kotlin.test.assertEquals
 class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     private val tempDir =
         Files.createTempDirectory("kodriver_lmu_windows_tyre_temperature_preferences_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = LmuWindowsTyreTemperaturePreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = LmuWindowsTyreTemperaturePreferencesRepositoryImpl(dataStore)
@@ -37,7 +37,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `highThresholdCelsius の初期値は 95`() =
-        testScope.runTest {
+        runTest {
             assertEquals(
                 LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
                 repository.observeHighThresholdCelsius().first(),
@@ -46,14 +46,14 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveHighThresholdCelsius で保存した値を observeHighThresholdCelsius で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveHighThresholdCelsius(Celsius(110))
             assertEquals(Celsius(110), repository.observeHighThresholdCelsius().first())
         }
 
     @Test
     fun `saveHighThresholdCelsius を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveHighThresholdCelsius(Celsius(80))
             repository.saveHighThresholdCelsius(Celsius(95))
             assertEquals(Celsius(95), repository.observeHighThresholdCelsius().first())
@@ -61,13 +61,13 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `enabledStates の初期値は空Map`() =
-        testScope.runTest {
+        runTest {
             assertEquals(emptyMap(), repository.observeEnabledStates().first())
         }
 
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
 
             assertEquals(
@@ -78,7 +78,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
 
@@ -90,7 +90,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `異なるキーで保存した値がすべて保持される`() =
-        testScope.runTest {
+        runTest {
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
 
@@ -105,13 +105,13 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `lowWarningPhases の初期値は空Map`() =
-        testScope.runTest {
+        runTest {
             assertEquals(emptyMap(), repository.observeLowWarningPhases().first())
         }
 
     @Test
     fun `saveLowWarningPhases で保存した値を observeLowWarningPhases で取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
             assertEquals(
                 mapOf(
@@ -126,7 +126,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveLowWarningPhases を複数回呼ぶと最後の値で上書きされる`() =
-        testScope.runTest {
+        runTest {
             repository.saveLowWarningPhases(setOf(SessionPhase.GARAGE))
             repository.saveLowWarningPhases(setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK))
             assertEquals(
@@ -142,7 +142,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveLowWarningPhases で空集合を保存できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveLowWarningPhases(emptySet())
             assertEquals(
                 mapOf(
@@ -157,7 +157,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `saveLowWarningPhases後にsaveHighThresholdCelsiusを呼んでもphasesは保持される`() =
-        testScope.runTest {
+        runTest {
             repository.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
             repository.saveHighThresholdCelsius(Celsius(100))
             assertEquals(

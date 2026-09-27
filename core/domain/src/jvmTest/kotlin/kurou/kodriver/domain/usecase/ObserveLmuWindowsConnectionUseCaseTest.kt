@@ -1,27 +1,19 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.repository.LmuWindowsRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ObserveLmuWindowsConnectionUseCaseTest {
-    @MockK
-    private lateinit var repository: LmuWindowsRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: LmuWindowsRepository = mockk()
 
     @Test
     fun `接続確認結果を返す`() =

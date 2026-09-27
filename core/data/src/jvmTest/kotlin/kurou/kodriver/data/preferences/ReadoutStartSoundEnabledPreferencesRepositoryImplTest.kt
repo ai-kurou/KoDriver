@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -16,11 +16,11 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReadoutStartSoundEnabledPreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_start_sound_enabled_prefs_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = ReadoutStartSoundEnabledPreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = ReadoutStartSoundEnabledPreferencesRepositoryImpl(dataStore)
@@ -32,7 +32,7 @@ class ReadoutStartSoundEnabledPreferencesRepositoryImplTest {
 
     @Test
     fun `初期値は空Map・保存した値を返す・上書きで更新される`() =
-        testScope.runTest {
+        runTest {
             assertTrue(repository.observeStartSoundEnabledStates().first().isEmpty())
 
             repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
@@ -50,7 +50,7 @@ class ReadoutStartSoundEnabledPreferencesRepositoryImplTest {
 
     @Test
     fun `複数項目を独立して保存・取得できる`() =
-        testScope.runTest {
+        runTest {
             repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
             repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, true)
             repository.saveStartSoundEnabledState(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, false)

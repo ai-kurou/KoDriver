@@ -24,6 +24,8 @@ sealed class ReadoutListItemType(
 
         data object TyreWear : LmuWindows(ReadoutItemKey.LmuWindows.TyreWear.Root)
 
+        data object BrakeTemperature : LmuWindows(ReadoutItemKey.LmuWindows.BrakeTemperature.Root)
+
         data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap.Root)
     }
 
@@ -49,6 +51,8 @@ sealed class ReadoutListItemType(
         data object TyreTemperature : AceWindows(ReadoutItemKey.AceWindows.TyreTemperature.Root)
 
         data object RemainingFuel : AceWindows(ReadoutItemKey.AceWindows.RemainingFuel.Root)
+
+        data object RemainingFuelLaps : AceWindows(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root)
 
         data object MyBestLap : AceWindows(ReadoutItemKey.AceWindows.MyBestLap.Root)
     }
@@ -80,6 +84,7 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.LmuWindows.PitTiming.Root -> LmuWindows.PitTiming
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
                 ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
+                ReadoutItemKey.LmuWindows.BrakeTemperature.Root -> LmuWindows.BrakeTemperature
                 ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
                 else -> null
             }
@@ -99,6 +104,7 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.AceWindows.Flag.Root -> AceWindows.Flag
                 ReadoutItemKey.AceWindows.TyreTemperature.Root -> AceWindows.TyreTemperature
                 ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
+                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root -> AceWindows.RemainingFuelLaps
                 ReadoutItemKey.AceWindows.MyBestLap.Root -> AceWindows.MyBestLap
                 else -> null
             }
@@ -136,6 +142,7 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.LmuWindows.TyreWear.Root -> 5
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 6
                 ReadoutItemKey.LmuWindows.MyBestLap.Root -> 7
+                ReadoutItemKey.LmuWindows.BrakeTemperature.Root -> 8
             }
 
         private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int =
@@ -152,7 +159,8 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.AceWindows.VehicleApproach.Root -> 1
                 ReadoutItemKey.AceWindows.TyreTemperature.Root -> 2
                 ReadoutItemKey.AceWindows.RemainingFuel.Root -> 3
-                ReadoutItemKey.AceWindows.MyBestLap.Root -> 4
+                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root -> 4
+                ReadoutItemKey.AceWindows.MyBestLap.Root -> 5
             }
     }
 }

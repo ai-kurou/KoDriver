@@ -1,26 +1,18 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCaseTest {
     // saveHighThresholdCelsius は戻り値 Unit の suspend 関数のため relaxUnitFun でスタブ不要にし、
     // coEvery を省略して coVerify のみで呼び出しを検証する
-    @MockK(relaxUnitFun = true)
-    private lateinit var repository: LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: LmuWindowsVehicleClassTyreTemperaturePreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `車両クラスごとに任意の値を保存できる`() =

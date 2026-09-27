@@ -17,6 +17,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_cancel
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_confirm
@@ -81,16 +82,18 @@ internal fun OtherServerIpDiscoveryDialog(
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDiscoveryDialogPreview() {
-    val servers =
-        listOf(
-            DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
-            DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
+    KoDriverTheme {
+        val servers =
+            listOf(
+                DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
+                DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
+            )
+        OtherServerIpDiscoveryDialog(
+            discoveredServers = servers,
+            selectedDiscoveredServer = servers.first(),
+            onServerSelected = {},
+            onConfirm = {},
+            onDismiss = {},
         )
-    OtherServerIpDiscoveryDialog(
-        discoveredServers = servers,
-        selectedDiscoveredServer = servers.first(),
-        onServerSelected = {},
-        onConfirm = {},
-        onDismiss = {},
-    )
+    }
 }

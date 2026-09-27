@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.engine
 
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -77,6 +78,25 @@ class SpeechEventTest {
     fun `PitTimingWarningはlapsが0以下のとき必ずピットインの文言を返す`() {
         assertEquals("必ずピットイン", SpeechEvent.PitTimingWarning(laps = 0).narratedText)
         assertEquals("必ずピットイン", SpeechEvent.PitTimingWarning(laps = -1).narratedText)
+    }
+
+    @Test
+    fun `AceWindowsRemainingFuelLapsWarningはlapsが1以上のとき残り周回数の文言を返す`() {
+        assertEquals("燃料は残り約3周", SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps = 3).narratedText)
+    }
+
+    @Test
+    fun `AceWindowsRemainingFuelLapsWarningはlapsが0以下のとき燃料切れの文言を返す`() {
+        assertEquals("燃料がありません", SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps = 0).narratedText)
+        assertEquals("燃料がありません", SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps = -1).narratedText)
+    }
+
+    @Test
+    fun `AceWindowsRemainingFuelLapsWarningのreadoutItemKeyはACEの燃料残り周回数`() {
+        assertEquals(
+            ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+            SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps = 3).readoutItemKey,
+        )
     }
 
     @Test

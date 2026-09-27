@@ -1,22 +1,14 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveConsoleAddressUseCaseTest {
-    @MockK(relaxUnitFun = true)
-    private lateinit var repository: ConsoleAddressPreferencesRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: ConsoleAddressPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `アドレスを保存する`() =

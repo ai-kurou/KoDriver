@@ -16,11 +16,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.usecase.CanSendFeedbackUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 import kurou.kodriver.domain.usecase.SendFeedbackUseCase
 
 internal class OtherFeedbackDetailViewModel(
     private val sendFeedback: SendFeedbackUseCase,
+    private val canSendFeedback: CanSendFeedbackUseCase,
     private val observeTelemetryLogDetail: ObserveTelemetryLogDetailUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(OtherFeedbackDetailUiState())
@@ -37,8 +39,9 @@ internal class OtherFeedbackDetailViewModel(
                     observeTelemetryLogDetail(id).map { it?.current }
                 }
             },
-        ) { state, attachedTelemetryLog ->
-            state.copy(attachedTelemetryLog = attachedTelemetryLog)
+            canSendFeedback(),
+        ) { state, attachedTelemetryLog, canSend ->
+            state.copy(attachedTelemetryLog = attachedTelemetryLog, isCoolingDown = !canSend)
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
@@ -105,7 +108,7 @@ internal class OtherFeedbackDetailViewModel(
             }
             return
         }
-        if (current.sendStatus == FeedbackSendStatus.Sending) return
+        if (current.sendStatus == FeedbackSendStatus.Sending || uiState.value.isCoolingDown) return
         val attachedTelemetryLog = uiState.value.attachedTelemetryLog
         _uiState.update { it.copy(sendStatus = FeedbackSendStatus.Sending) }
         viewModelScope.launch {

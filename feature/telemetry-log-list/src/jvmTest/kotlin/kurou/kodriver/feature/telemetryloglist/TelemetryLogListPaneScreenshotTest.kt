@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -108,6 +109,7 @@ private val manyTelemetryLogs =
                 simulator = Simulator.AceWindows,
                 readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root,
                 narratedText = "イエローフラッグ",
+                narrationOutcome = NarrationOutcome.INTERRUPTED,
                 telemetryJson = """{"flag":"green"}""",
             )
         } else {
@@ -117,6 +119,7 @@ private val manyTelemetryLogs =
                 simulator = Simulator.LmuWindows,
                 readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                 narratedText = "イエローフラッグ",
+                narrationOutcome = NarrationOutcome.INTERRUPTED,
                 telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
             )
         }

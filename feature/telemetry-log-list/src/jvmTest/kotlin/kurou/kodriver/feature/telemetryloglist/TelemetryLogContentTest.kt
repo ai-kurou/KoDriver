@@ -25,6 +25,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -79,6 +80,7 @@ class TelemetryLogContentTest {
                                     simulator = Simulator.AceWindows,
                                     readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root,
                                     narratedText = "イエローフラッグ",
+                                    narrationOutcome = NarrationOutcome.INTERRUPTED,
                                     telemetryJson = """{"flag":"green"}""",
                                 ),
                             ),
@@ -428,11 +430,13 @@ internal fun createTelemetryLog(
     readoutItemKey: ReadoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
     simulator: Simulator = Simulator.LmuWindows,
     narratedText: String = "イエローフラッグ",
+    narrationOutcome: NarrationOutcome = NarrationOutcome.INTERRUPTED,
 ) = TelemetryLog(
     id = id,
     createdAt = id,
     simulator = simulator,
     readoutItemKey = readoutItemKey,
     narratedText = narratedText,
+    narrationOutcome = narrationOutcome,
     telemetryJson = """{"id":$id}""",
 )

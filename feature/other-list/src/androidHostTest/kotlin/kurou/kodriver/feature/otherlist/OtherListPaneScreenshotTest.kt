@@ -37,6 +37,7 @@ class OtherListPaneScreenshotTest {
                         OtherListPane(
                             uiState = OtherListUiState(),
                             onItemClick = {},
+                            onOverlayVisibleChange = {},
                             onKeepScreenOnChange = {},
                             onDynamicColorEnabledChange = {},
                             onHapticFeedbackEnabledChange = {},
@@ -60,6 +61,7 @@ class OtherListPaneScreenshotTest {
                         OtherListPane(
                             uiState = OtherListUiState(hasAppUpdate = true),
                             onItemClick = {},
+                            onOverlayVisibleChange = {},
                             onKeepScreenOnChange = {},
                             onDynamicColorEnabledChange = {},
                             onHapticFeedbackEnabledChange = {},
@@ -84,6 +86,7 @@ class OtherListPaneScreenshotTest {
                         OtherListPane(
                             uiState = OtherListUiState(accessLocalNetworkPermissionGranted = false),
                             onItemClick = {},
+                            onOverlayVisibleChange = {},
                             onKeepScreenOnChange = {},
                             onDynamicColorEnabledChange = {},
                             onHapticFeedbackEnabledChange = {},
@@ -110,6 +113,7 @@ class OtherListPaneScreenshotTest {
                                     items = buildOtherListItems().filterNot { it == OtherListItemType.HapticFeedback },
                                 ),
                             onItemClick = {},
+                            onOverlayVisibleChange = {},
                             onKeepScreenOnChange = {},
                             onDynamicColorEnabledChange = {},
                             onHapticFeedbackEnabledChange = {},

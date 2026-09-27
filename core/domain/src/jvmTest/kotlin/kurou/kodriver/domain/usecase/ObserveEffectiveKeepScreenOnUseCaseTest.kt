@@ -1,9 +1,8 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -16,31 +15,20 @@ import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ObserveEffectiveKeepScreenOnUseCaseTest {
-    @MockK
-    private lateinit var keepScreenOnRepository: KeepScreenOnEnabledRepository
+    private val keepScreenOnRepository: KeepScreenOnEnabledRepository = mockk()
 
-    @MockK
-    private lateinit var simulatorRepository: SimulatorPreferencesRepository
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var lmuWindowsRepository: LmuWindowsRepository
+    private val lmuWindowsRepository: LmuWindowsRepository = mockk()
 
-    @MockK
-    private lateinit var gt7Ps5Repository: Gt7Ps5Repository
+    private val gt7Ps5Repository: Gt7Ps5Repository = mockk()
 
-    @MockK
-    private lateinit var aceWindowsStatusRepository: AceWindowsStatusRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val aceWindowsStatusRepository: AceWindowsStatusRepository = mockk()
 
     private fun createUseCase() =
         ObserveEffectiveKeepScreenOnUseCase(

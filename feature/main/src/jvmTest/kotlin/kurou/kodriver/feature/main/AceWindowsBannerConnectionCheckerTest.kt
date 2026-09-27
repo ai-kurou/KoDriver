@@ -1,28 +1,20 @@
 package kurou.kodriver.feature.main
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.usecase.CheckAceWindowsConnectionUseCase
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AceWindowsBannerConnectionCheckerTest {
-    @MockK
-    private lateinit var repository: AceWindowsFuelRepository
-
-    @BeforeTest
-    fun setUp() {
-        MockKAnnotations.init(this)
-    }
+    private val repository: AceWindowsFuelRepository = mockk()
 
     @Test
     fun `接続確認に成功するとCONNECTEDを返す`() =

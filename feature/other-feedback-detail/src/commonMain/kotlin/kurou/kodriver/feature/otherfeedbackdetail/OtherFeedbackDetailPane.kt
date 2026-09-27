@@ -48,12 +48,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.Res
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_attached_telemetry_log_chip
+import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_cooldown
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description_prefix
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description_sentry_link
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description_suffix
@@ -357,6 +360,14 @@ private fun AttachedTelemetryLogChip(
 
 @Composable
 private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
+    if (uiState.isCoolingDown && uiState.sendStatus != FeedbackSendStatus.Sent) {
+        Text(
+            text = stringResource(Res.string.feedback_cooldown),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall,
+        )
+        Spacer(modifier = Modifier.height(KoDriverSpacing.small))
+    }
     when (uiState.sendStatus) {
         FeedbackSendStatus.Sent -> {
             Text(
@@ -392,24 +403,37 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
 @Preview(showBackground = true)
 @Composable
 private fun OtherFeedbackDetailPanePreview() {
-    OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState())
+    KoDriverTheme {
+        OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState())
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherFeedbackDetailPaneCoolingDownPreview() {
+    KoDriverTheme {
+        OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState(isCoolingDown = true))
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OtherFeedbackDetailPaneAttachedTelemetryLogPreview() {
-    OtherFeedbackDetailPaneContent(
-        uiState =
-            OtherFeedbackDetailUiState(
-                attachedTelemetryLog =
-                    TelemetryLog(
-                        id = 1L,
-                        createdAt = 0L,
-                        simulator = Simulator.LmuWindows,
-                        readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
-                        narratedText = "イエローフラッグ",
-                        telemetryJson = "",
-                    ),
-            ),
-    )
+    KoDriverTheme {
+        OtherFeedbackDetailPaneContent(
+            uiState =
+                OtherFeedbackDetailUiState(
+                    attachedTelemetryLog =
+                        TelemetryLog(
+                            id = 1L,
+                            createdAt = 0L,
+                            simulator = Simulator.LmuWindows,
+                            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                            narratedText = "イエローフラッグ",
+                            narrationOutcome = NarrationOutcome.INTERRUPTED,
+                            telemetryJson = "",
+                        ),
+                ),
+        )
+    }
 }

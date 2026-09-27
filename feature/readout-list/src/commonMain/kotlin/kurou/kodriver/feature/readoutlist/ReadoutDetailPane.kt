@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
 import kurou.kodriver.feature.readoutlist.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
@@ -66,5 +67,7 @@ internal fun ReadoutDetailPane(
 @Preview(showBackground = true)
 @Composable
 private fun ReadoutDetailPanePreview() {
-    ReadoutDetailPane(title = "フラッグ", canNavigateBack = true, onBack = {}, content = {})
+    KoDriverTheme {
+        ReadoutDetailPane(title = "フラッグ", canNavigateBack = true, onBack = {}, content = {})
+    }
 }

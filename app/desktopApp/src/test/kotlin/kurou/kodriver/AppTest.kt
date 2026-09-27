@@ -19,6 +19,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -34,6 +35,7 @@ import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import kurou.kodriver.presentation.AppScreen
+import kurou.kodriver.presentation.NarratorOverlayScreen
 import kurou.kodriver.presentation.featureModules
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -170,6 +172,12 @@ class AppTest {
             "燃料残量",
             "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
         )
+        scrollToItem("燃料残り周回数")
+        clickItemAndVerifyDescription(
+            "燃料残り周回数",
+            "ACEが算出する残燃料で走行可能な周回数をもとに判定し、設定した周回数以下になると" +
+                "1周減るごとに音声でお知らせします。",
+        )
         scrollToItem("自己ベストラップ")
         clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
@@ -179,7 +187,7 @@ class AppTest {
         setContent()
 
         selectSimulator("Le Mans Ultimate（Windows版）")
-        waitUntilDisplayed("シミュレータ接続待機中")
+        waitUntilDisplayed("シミュレーター接続待機中")
         // Desktop ではサーバーIP設定への導線がないため、バナー表示のみ確認する。
     }
 
@@ -188,7 +196,7 @@ class AppTest {
         setContent()
 
         selectSimulator("Assetto Corsa EVO（Windows版）")
-        waitUntilDisplayed("シミュレータ接続待機中")
+        waitUntilDisplayed("シミュレーター接続待機中")
         // Desktop ではサーバーIP設定への導線がないため、バナー表示のみ確認する。
     }
 
@@ -331,6 +339,28 @@ class AppTest {
         waitUntilDisplayed("フラッグ")
     }
 
+    @Test
+    fun `NarratorOverlayScreenに最新の読み上げ内容が表示される`() {
+        fakeTelemetryLogRepository.emit(
+            listOf(
+                telemetryLog(
+                    id = 1,
+                    createdAt = 100,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+                    telemetryJson = """{"flag":"yellow"}""",
+                ),
+            ),
+        )
+
+        rule.setContent {
+            Box(modifier = Modifier.requiredSize(400.dp, 120.dp)) {
+                NarratorOverlayScreen()
+            }
+        }
+
+        waitUntilDisplayed("イエローフラッグ")
+    }
+
     private fun selectSimulator(simulatorName: String) {
         rule.onNodeWithTag("primarySimulatorNavItem").performClick()
         rule.waitForIdle()
@@ -403,5 +433,6 @@ private fun telemetryLog(
     simulator = Simulator.LmuWindows,
     readoutItemKey = readoutItemKey,
     narratedText = "イエローフラッグ",
+    narrationOutcome = NarrationOutcome.INTERRUPTED,
     telemetryJson = telemetryJson,
 )

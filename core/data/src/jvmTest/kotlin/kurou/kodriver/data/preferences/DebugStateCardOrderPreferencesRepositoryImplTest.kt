@@ -1,9 +1,9 @@
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStoreFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.DebugStateCardKey
@@ -18,11 +18,11 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
         Files
             .createTempDirectory("kodriver_debug_state_card_order_preferences_test")
             .toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
+    private val dataStoreScope = CoroutineScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
             serializer = DebugStateCardOrderPreferencesSerializer,
-            scope = testScope,
+            scope = dataStoreScope,
             produceFile = { tempDir.resolve("test.pb") },
         )
     private val repository = DebugStateCardOrderPreferencesRepositoryImpl(dataStore)
@@ -34,7 +34,7 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
 
     @Test
     fun `初期値は空リスト・保存した順序を読み出せる・上書きで更新される`() =
-        testScope.runTest {
+        runTest {
             assertEquals(emptyList(), repository.observeCardOrder().first())
 
             repository.saveCardOrder(listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR))
@@ -52,7 +52,7 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
 
     @Test
     fun `存在しないキー名は無視される`() =
-        testScope.runTest {
+        runTest {
             dataStore.updateData { it.copy(cardOrder = listOf("SESSION", "REMOVED_KEY", "SIMULATOR")) }
 
             assertEquals(

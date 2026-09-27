@@ -3,12 +3,14 @@ package kurou.kodriver.feature.debugstatedetail
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -35,6 +37,7 @@ internal val defaultDebugStateCardOrder =
         DebugStateCardKey.BEST_LAP,
         DebugStateCardKey.TYRE_TEMPERATURE,
         DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+        DebugStateCardKey.BRAKE_TEMPERATURE,
         DebugStateCardKey.TYRE_WEAR,
         DebugStateCardKey.FUEL_CONSUMPTION,
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
@@ -51,11 +54,13 @@ data class DebugStateDetailUiState(
     val aceWindowsFlag: AceWindowsFlagData? = null,
     val aceWindowsStatus: AceWindowsStatusData? = null,
     val aceWindowsBestLapTime: AceWindowsBestLapTimeData? = null,
+    val aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData? = null,
     val lmuWindowsPitStatus: LmuWindowsPitStatusData? = null,
     val vehicleApproach: LmuWindowsVehicleApproachData? = null,
     val aceWindowsVehicleApproach: AceWindowsVehicleApproachData? = null,
     val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData? = null,
     val aceWindowsTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null,
+    val brakeTemperature: LmuWindowsBrakeTemperatureData? = null,
     val lmuWindowsVehicleClass: LmuWindowsVehicleClassData? = null,
     val gt7Ps5VehicleClass: Gt7Ps5VehicleClassData? = null,
     val vehicleDamage: LmuWindowsVehicleDamageData? = null,

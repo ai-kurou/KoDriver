@@ -25,6 +25,7 @@ class OtherListPaneScreenshotTest {
                             OtherListPane(
                                 uiState = OtherListUiState(),
                                 onItemClick = {},
+                                onOverlayVisibleChange = {},
                                 onKeepScreenOnChange = {},
                                 onDynamicColorEnabledChange = {},
                                 onHapticFeedbackEnabledChange = {},
@@ -48,6 +49,7 @@ class OtherListPaneScreenshotTest {
                             OtherListPane(
                                 uiState = OtherListUiState(hasAppUpdate = true),
                                 onItemClick = {},
+                                onOverlayVisibleChange = {},
                                 onKeepScreenOnChange = {},
                                 onDynamicColorEnabledChange = {},
                                 onHapticFeedbackEnabledChange = {},
@@ -84,6 +86,7 @@ class OtherListPaneScreenshotTest {
                                             },
                                     ),
                                 onItemClick = {},
+                                onOverlayVisibleChange = {},
                                 onKeepScreenOnChange = {},
                                 onDynamicColorEnabledChange = {},
                                 onHapticFeedbackEnabledChange = {},

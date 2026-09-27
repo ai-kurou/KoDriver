@@ -1,11 +1,10 @@
 package kurou.kodriver.feature.readoutlist
 
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,21 +30,16 @@ import kotlin.test.assertEquals
 class ReadoutListViewModelAceWindowsTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    @MockK
-    private lateinit var simulatorRepository: SimulatorPreferencesRepository
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var readoutRepository: ReadoutPreferencesRepository
+    private val readoutRepository: ReadoutPreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var queueRepository: QueuePreferencesRepository
+    private val queueRepository: QueuePreferencesRepository = mockk()
 
-    @MockK
-    private lateinit var startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository
+    private val startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository = mockk()
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
@@ -55,7 +49,7 @@ class ReadoutListViewModelAceWindowsTest {
     }
 
     @Test
-    fun `ace_windowsを選択するとlistPaneにフラッグと車両接近とタイヤ温度と燃料残量と自己ベストラップアイテムが表示される`() =
+    fun `ace_windowsを選択するとlistPaneにフラッグと車両接近とタイヤ温度と燃料残量と燃料残り周回数と自己ベストラップアイテムが表示される`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.AceWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -79,6 +73,7 @@ class ReadoutListViewModelAceWindowsTest {
                     ReadoutItemKey.AceWindows.VehicleApproach.Root,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
                     ReadoutItemKey.AceWindows.MyBestLap.Root,
                 ),
                 state.items,
@@ -87,11 +82,13 @@ class ReadoutListViewModelAceWindowsTest {
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.VehicleApproach.Root])
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
             assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
+            assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuelLaps.Root])
             assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.AceWindows.MyBestLap.Root])
             assertEquals(false, state.queueEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
             assertEquals(null, state.queueEnabledStates[ReadoutItemKey.AceWindows.VehicleApproach.Root])
             assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
             assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
+            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuelLaps.Root])
             assertEquals(false, state.queueEnabledStates[ReadoutItemKey.AceWindows.MyBestLap.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("ace_windows") }

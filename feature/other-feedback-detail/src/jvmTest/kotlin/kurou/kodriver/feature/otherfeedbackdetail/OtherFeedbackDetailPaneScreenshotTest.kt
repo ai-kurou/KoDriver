@@ -11,6 +11,7 @@ import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -38,6 +39,12 @@ class OtherFeedbackDetailPaneScreenshotTest {
         }
 
     @Test
+    fun `クールダウン中`() =
+        composeScreenshotTest {
+            capture(uiState = OtherFeedbackDetailUiState(isCoolingDown = true))
+        }
+
+    @Test
     fun `ログ添付済み`() =
         composeScreenshotTest {
             capture(
@@ -50,6 +57,7 @@ class OtherFeedbackDetailPaneScreenshotTest {
                                 simulator = Simulator.LmuWindows,
                                 readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                                 narratedText = "イエローフラッグ",
+                                narrationOutcome = NarrationOutcome.INTERRUPTED,
                                 telemetryJson = "",
                             ),
                     ),

@@ -186,12 +186,12 @@ private class ConnectionBannerContentPreviewParameterProvider : PreviewParameter
         sequenceOf(
             ConnectionBannerUiState(
                 status = ConnectionBannerStatus.CONNECTED,
-                message = "シミュレータに接続中",
+                message = "シミュレーターに接続中",
                 iconType = ConnectionBannerIconType.SIMULATOR,
             ),
             ConnectionBannerUiState(
                 status = ConnectionBannerStatus.DISCONNECTED,
-                message = "シミュレータ接続待機中",
+                message = "シミュレーター接続待機中",
                 iconType = ConnectionBannerIconType.SIMULATOR,
             ),
             ConnectionBannerUiState(
@@ -219,5 +219,7 @@ private class ConnectionBannerContentPreviewParameterProvider : PreviewParameter
 private fun ConnectionBannerContentPreview(
     @PreviewParameter(ConnectionBannerContentPreviewParameterProvider::class) uiState: ConnectionBannerUiState,
 ) {
-    ConnectionBannerContent(uiState = uiState, onClick = {})
+    AppTheme {
+        ConnectionBannerContent(uiState = uiState, onClick = {})
+    }
 }

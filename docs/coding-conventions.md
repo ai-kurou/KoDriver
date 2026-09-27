@@ -1,14 +1,42 @@
 # コーディング規約
 
 - Compose の状態管理は `StateFlow` + `ViewModel`（`ReadoutListViewModel` を参照）。
-- `LmuRepository` は `Flow<LmuTelemetryData>` を emit する cold flow として実装する。ポーリング間隔デフォルトは 16ms（≈60fps）。
+- `LmuWindowsRepository.telemetryStream()` は `Flow<LmuWindowsTelemetryData>` を emit する cold flow として実装する。ポーリング間隔デフォルトは 16ms（`LmuWindowsSharedMemorySource` の `pollingIntervalMs`、≈60fps）。
 - 共有メモリのパースロジックは `internal object XxxMapper` に隔離し、ドメイン層には持ち込まない。
 - `core:data` は `kotlinMultiplatform` プラグイン（JVM + Android ターゲット）を使用する。JVM 実装は `src/jvmMain/kotlin`、Android 実装は `src/androidMain/kotlin` に置く。
 - LMU Windows共有メモリ固有の実装はJVM専用の `core:lmu-windows-data` に置き、`core:data` へ依存させない。
 - `@Preview` 関数は実体の `@Composable` と同一ファイルに記述する。`@Preview` のインポートは `androidx.compose.ui.tooling.preview.Preview` を使う（`org.jetbrains.compose.ui.tooling.preview.Preview` は commonMain で解決されないため使用不可）。
 - `@Preview` 関数名は末尾を `Preview` で終える（例: `XxxScreenPreview`）こと。detekt の `UnusedPrivateMember`（`config/detekt/detekt.yml`）は `@Preview` にアノテーション除外設定が無いため、`allowedNames: '.*Preview'` という命名規則ベースの除外で対応している。この命名から外れると、IDEプレビュー/スクリーンショットテストからのみ呼び出される `@Preview` 関数が未使用コードとして detekt に検出される。
-- 文字スタイルは `MaterialTheme.typography.*` を参照し、`fontSize` / `FontWeight` を Composable 内で直接指定しない。アプリ全体のタイポグラフィは `:core:designsystem` の `KoDriverTypography` で一元管理する。
+- 文字スタイルは `MaterialTheme.typography.*` を参照し、`fontSize` / `FontWeight` を Composable 内で直接指定しない。アプリ全体のタイポグラフィは `:core:designsystem` の `KoDriverTypography` で一元管理する。等幅・数値表示は `:core:designsystem` の `koDriverMonospaceTextStyle()` / `koDriverNumericTextStyle()` を使い、`FontFamily` を feature で直接指定しない。
+- 角丸は `MaterialTheme.shapes.*` を参照し、`RoundedCornerShape` を Composable 内で直接指定しない。アプリ全体の角丸は `:core:designsystem` の `KoDriverShapes` で一元管理する。
+- 余白（padding・Spacer・`Arrangement.spacedBy`）のうち 4/8/12/16/24dp の値は、Composable 内で dp を直接指定せず `:core:designsystem` の `KoDriverSpacing`（`app:shared` では `AppSpacing`）を参照する。アイコンサイズ等「余白ではない」寸法は対象外。
+- `MaterialTheme.colorScheme` にロールがない拡張カラー（警告色等）は、色を直接 `Color(0x...)` で書かず `:core:designsystem` の `KoDriverExtendedColors.current`（`app:shared` では `AppExtendedColors.current`）を参照する。ライト/ダークの値は `ExtendedColors.kt`（`app:shared` では `AppExtendedColors.kt`）に定義し、`KoDriverTheme`/`AppTheme` が `CompositionLocalProvider` で配布する。ただし、ゲーム画面に重ねるオーバーレイ（`NarratorOverlayContent` 等）のようにアプリテーマ（ライト/ダーク）から独立させる必要のある固定色は、その理由を KDoc に書いたうえで `private val` として直接定義してよい。テーマのカラーパレット定義（`AppTheme.kt` 等）も対象外。
+
+## 見出しのタイポグラフィ階層
+
+ListPane・DetailPane の見出しは、画面の階層（見出し → セクション → 項目）に応じて以下のスタイル・色を使い分けること。
+
+| 階層 | スタイル | 色 |
+|---|---|---|
+| ListPane のページ見出し（例: `ReadoutListPane` の「読み上げ優先度」） | `titleMedium` | `onSurface` |
+| DetailPane のセクション見出し（`DetailPaneSubtitle`） | `titleSmall` | `primary` |
+| カード・項目のタイトル（`DetailPaneCard` 等） | `bodyLarge` | `onSurface` |
+
+ページ見出しを `titleLarge` / `headlineSmall` にすると ListPane 上部の余白が大きくなり、スマホでの一覧表示件数が減るため `titleMedium` にとどめる。
+
 - DataStore のキーには **ASCII の内部 ID を使うこと**。日本語などのマルチバイト文字をキーに使うと、表示名の変更でデータが孤立する。内部 ID（例: `"vehicle_approach"`）と表示名（例: `"車両接近"`）は `XxxViewModel` 内の `xxxDisplayNames: Map<String, String>` で分離する。
+
+## コメント・KDoc の言語
+
+コメントと KDoc は**日本語で書く**こと。言語が混在すると読み手の負担が増え、新しくコードを書くときにどちらへ合わせるべきか判断しにくくなる。
+
+ただし、次のものは英語のままでよい。
+
+- 共有メモリの構造体フィールド名・オフセット表（`mCurrentET`、`mWheels[4]` 等）や、`OpenFileMappingA` のような API 名といった固有名詞。
+- 外部仕様・公式ドキュメントからの引用や、そこで定義された用語（Salsa20 の `column round` など）。必要なら `列ラウンド（column round）` のように訳語と併記する。
+- 識別子だけを見出しとして書くコメント（テストの `// bufferFlow`、Koin モジュールの `// ViewModel` など）。
+
+説明文（散文）として書く部分は日本語にする。
 
 ## Repository の命名規則
 
