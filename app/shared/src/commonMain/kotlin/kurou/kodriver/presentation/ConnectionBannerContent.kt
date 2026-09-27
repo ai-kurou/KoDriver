@@ -1,5 +1,7 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -7,6 +9,8 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -151,15 +155,17 @@ fun ConnectionBannerContent(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = contentColor,
-                modifier =
-                    Modifier
-                        .size(18.dp)
-                        .pulseWhile(enabled = uiState.status == ConnectionBannerStatus.DISCONNECTED),
-            )
+            Crossfade(targetState = icon, label = "connectionBannerIcon") { animatedIcon ->
+                Icon(
+                    imageVector = animatedIcon,
+                    contentDescription = null,
+                    tint = contentColor,
+                    modifier =
+                        Modifier
+                            .size(18.dp)
+                            .pulseWhile(enabled = uiState.status == ConnectionBannerStatus.DISCONNECTED),
+                )
+            }
             Spacer(modifier = Modifier.width(AppSpacing.small))
             Text(
                 text = uiState.message,
@@ -167,15 +173,17 @@ fun ConnectionBannerContent(
                 color = contentColor,
             )
         }
-        if (isTappable) {
+        AnimatedVisibility(
+            visible = isTappable,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.CenterEnd),
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.NavigateNext,
                 contentDescription = null,
                 tint = contentColor,
-                modifier =
-                    Modifier
-                        .size(18.dp)
-                        .align(Alignment.CenterEnd),
+                modifier = Modifier.size(18.dp),
             )
         }
     }
