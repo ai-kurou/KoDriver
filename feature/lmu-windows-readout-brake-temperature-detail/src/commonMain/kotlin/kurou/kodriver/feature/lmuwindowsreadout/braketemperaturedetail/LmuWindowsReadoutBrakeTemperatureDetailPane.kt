@@ -3,12 +3,16 @@ package kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,6 +23,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -30,6 +35,8 @@ import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThr
 import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.generated.resources.brake_temperature_description
 import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.generated.resources.brake_temperature_threshold_description
+import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.generated.resources.brake_temperature_threshold_help_description
+import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.generated.resources.brake_temperature_threshold_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.generated.resources.brake_temperature_threshold_label
 import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.generated.resources.brake_temperature_threshold_reset
 import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.generated.resources.brake_temperature_threshold_subtitle
@@ -80,6 +87,8 @@ internal fun LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
         )
         val warningChipLabel = stringResource(Res.string.brake_temperature_warning_chip)
         val thresholdLabelTemplate = stringResource(Res.string.brake_temperature_threshold_label)
+        val helpIconContentDescription =
+            stringResource(Res.string.brake_temperature_threshold_help_icon_content_description)
         DetailPaneCard(
             title = stringResource(Res.string.brake_temperature_warning_title),
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
@@ -137,7 +146,15 @@ internal fun LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
                                 vertical = KoDriverSpacing.small,
                             ),
                     )
-                    DetailPaneSubtitle(text = stringResource(Res.string.brake_temperature_threshold_subtitle))
+                    DetailPaneSubtitle(
+                        text = stringResource(Res.string.brake_temperature_threshold_subtitle),
+                        trailingContent = {
+                            HelpIconButton(
+                                contentDescription = helpIconContentDescription,
+                                sheetContent = { BrakeTemperatureThresholdHelpSheetContent() },
+                            )
+                        },
+                    )
                     val selectedVehicleClassHighThresholdCelsius =
                         uiState.vehicleClassHighThresholdCelsius[uiState.selectedVehicleClass]
                             ?: lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(
@@ -167,6 +184,17 @@ internal fun LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
             },
         )
     }
+}
+
+@Composable
+internal fun BrakeTemperatureThresholdHelpSheetContent(modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(Res.string.brake_temperature_threshold_help_description),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
+    )
+    Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
 }
 
 @Preview(showBackground = true)
