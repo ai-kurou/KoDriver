@@ -1506,6 +1506,35 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `ヒステリシス下限をわずかに上回る温度では再度読み上げない`() {
+        val overheatState =
+            useCase
+                .determineBrakeTemperatureOverheat(
+                    state = LmuWindowsNarratorState(),
+                    data = brakeTemperature(fl = 750.0),
+                    settings = settings(),
+                ).state
+
+        val cooledState =
+            useCase
+                .determineBrakeTemperatureOverheat(
+                    state = overheatState,
+                    data = brakeTemperature(fl = 601.0),
+                    settings = settings(),
+                ).state
+
+        val decision =
+            useCase.determineBrakeTemperatureOverheat(
+                state = cooledState,
+                data = brakeTemperature(fl = 750.0),
+                settings = settings(),
+            )
+
+        assertEquals(true, cooledState.brakeOverheating)
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
     fun `ブレーキ温度項目が無効なら読み上げない`() {
         val decision =
             useCase.determineBrakeTemperatureOverheat(
