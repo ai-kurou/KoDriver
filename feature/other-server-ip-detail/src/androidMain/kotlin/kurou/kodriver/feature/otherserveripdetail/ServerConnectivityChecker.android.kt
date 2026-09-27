@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherserveripdetail
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -12,18 +13,22 @@ private const val TIMEOUT_MS = 3000
 
 internal class TcpServerConnectivityChecker(
     private val port: Int = DEFAULT_PORT,
+    private val connect: (InetAddress, Int, Int) -> Unit = { address, port, timeoutMs ->
+        Socket().use { socket -> socket.connect(InetSocketAddress(address, port), timeoutMs) }
+    },
 ) : ServerConnectivityChecker {
     override suspend fun isReachable(ip: String): Boolean =
         withContext(Dispatchers.IO) {
             val address = ip.toIpv4InetAddress() ?: return@withContext false
             try {
-                Socket().use { socket ->
-                    socket.connect(InetSocketAddress(address, port), TIMEOUT_MS)
-                    true
-                }
+                connect(address, port, TIMEOUT_MS)
+                true
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: IOException) {
+                false
             } catch (e: Exception) {
+                captureOtherServerIpDetailError(e)
                 false
             }
         }
