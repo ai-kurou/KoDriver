@@ -1,8 +1,10 @@
 package kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail
 
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -11,16 +13,23 @@ import org.koin.dsl.module
 /**
  * ブレーキ温度アナウンス詳細設定（lmu-windows-readout-brake-temperature-detail feature）の Koin モジュール。
  *
- * 提供: LmuWindowsReadoutBrakeTemperatureDetailViewModel と、それが使うドメイン UseCase。
- * 消費（get で解決）: LmuWindowsBrakeTemperaturePreferencesRepository（:core:data）、試聴用の
+ * 提供: LmuWindowsReadoutBrakeTemperatureDetailViewModel、この feature 内で定義した
+ *   UseCase 集約 data class（BrakeTemperatureUseCases）、それが束ねる各ドメイン UseCase。
+ * 消費（get で解決）: LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository（:core:data）、試聴用の
  *   named(Simulator.LmuWindows.id) の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
  */
 val lmuWindowsReadoutBrakeTemperatureDetailModule =
     module {
         viewModel {
-            LmuWindowsReadoutBrakeTemperatureDetailViewModel(get(), get(), get(named(Simulator.LmuWindows.id)))
+            LmuWindowsReadoutBrakeTemperatureDetailViewModel(get(), get(named(Simulator.LmuWindows.id)))
         }
 
-        factoryOf(::ObserveLmuWindowsBrakeTemperatureHighThresholdUseCase)
-        factoryOf(::SaveLmuWindowsBrakeTemperatureHighThresholdUseCase)
+        factory {
+            BrakeTemperatureUseCases(get(), get(), get(), get())
+        }
+
+        factoryOf(::ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase)
+        factoryOf(::ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase)
+        factoryOf(::SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase)
+        factoryOf(::SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase)
     }

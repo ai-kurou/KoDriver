@@ -10,24 +10,27 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class LmuWindowsBrakeTemperaturePreferencesSerializerTest {
+class LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializerTest {
     @Test
-    fun `デフォルト値は highThresholdCelsius が 700`() {
+    fun `デフォルト値は highThresholdCelsiusByVehicleClass が空Map`() {
         assertEquals(
-            LmuWindowsBrakeTemperaturePreferences(highThresholdCelsius = 700),
-            LmuWindowsBrakeTemperaturePreferencesSerializer.defaultValue,
+            LmuWindowsVehicleClassBrakeTemperaturePreferences(highThresholdCelsiusByVehicleClass = emptyMap()),
+            LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializer.defaultValue,
         )
     }
 
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = LmuWindowsBrakeTemperaturePreferences(highThresholdCelsius = 600)
+            val original =
+                LmuWindowsVehicleClassBrakeTemperaturePreferences(
+                    highThresholdCelsiusByVehicleClass = mapOf("GTE" to 750),
+                )
             val output = ByteArrayOutputStream()
-            LmuWindowsBrakeTemperaturePreferencesSerializer.writeTo(original, output)
+            LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializer.writeTo(original, output)
 
             val restored =
-                LmuWindowsBrakeTemperaturePreferencesSerializer.readFrom(
+                LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializer.readFrom(
                     ByteArrayInputStream(output.toByteArray()),
                 )
 
@@ -40,7 +43,7 @@ class LmuWindowsBrakeTemperaturePreferencesSerializerTest {
             val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
 
             assertFailsWith<CorruptionException> {
-                LmuWindowsBrakeTemperaturePreferencesSerializer.readFrom(corrupt)
+                LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializer.readFrom(corrupt)
             }
         }
 }

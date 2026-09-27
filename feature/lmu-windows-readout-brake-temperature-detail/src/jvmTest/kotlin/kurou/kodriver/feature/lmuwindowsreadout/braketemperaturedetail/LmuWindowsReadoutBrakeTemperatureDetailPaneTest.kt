@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -72,18 +73,22 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneTest {
 
     @Test
     fun `デフォルト値から変更している場合にリセットボタンをタップするとonThresholdResetが呼ばれる`() {
-        var resetCalled = false
+        var resetVehicleClass: LmuWindowsVehicleClassData? = null
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
-                    uiState = LmuWindowsReadoutBrakeTemperatureDetailUiState(highThresholdCelsius = 600),
-                    onThresholdReset = { resetCalled = true },
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            vehicleClassHighThresholdCelsius = mapOf(LmuWindowsVehicleClassData.Hypercar to 600),
+                            selectedVehicleClass = LmuWindowsVehicleClassData.Hypercar,
+                        ),
+                    onThresholdReset = { resetVehicleClass = it },
                 )
             }
         }
 
         rule.onNodeWithContentDescription("デフォルトに戻す").performClick()
 
-        assertEquals(true, resetCalled)
+        assertEquals(LmuWindowsVehicleClassData.Hypercar, resetVehicleClass)
     }
 }
