@@ -20,10 +20,15 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,13 +40,19 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
 
     private val repository: LmuWindowsMyBestLapPreferencesRepository = mockk()
 
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+
     private val ttsEngine: TextToSpeechEngine = mockk()
 
     private val voiceTypeFlow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
 
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
+            enabledStatesFlow
     }
 
     @AfterTest
@@ -53,6 +64,8 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
         LmuWindowsReadoutMyBestLapDetailViewModel(
             observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
             saveMyBestLapVoiceType = SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
@@ -63,8 +76,10 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             val viewModel = createViewModel()
 
             assertEquals(MyBestLapVoiceType.FORMAL, viewModel.uiState.first().voiceType)
+            assertEquals(true, viewModel.uiState.first().enabled)
             verify(exactly = 1) { repository.observeVoiceType() }
-            confirmVerified(repository)
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -80,8 +95,39 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
 
             assertEquals(MyBestLapVoiceType.CASUAL, viewModel.uiState.first().voiceType)
             verify(exactly = 1) { repository.observeVoiceType() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
+        }
+
+    @Test
+    fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
+        runTest {
+            every { repository.observeVoiceType() } returns voiceTypeFlow
+            coEvery {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.LmuWindows.id,
+                    ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled,
+                    false,
+                )
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false) }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().enabled)
+            verify(exactly = 1) { repository.observeVoiceType() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            coVerify(exactly = 1) {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.LmuWindows.id,
+                    ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled,
+                    false,
+                )
+            }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -93,8 +139,9 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
         viewModel.onPreviewClicked(MyBestLapVoiceType.FORMAL)
 
         verify(exactly = 1) { repository.observeVoiceType() }
+        verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsMyBestLapFormal, false) }
-        confirmVerified(repository, ttsEngine)
+        confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
     }
 
     @Test
@@ -106,7 +153,8 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
         viewModel.onPreviewClicked(MyBestLapVoiceType.CASUAL)
 
         verify(exactly = 1) { repository.observeVoiceType() }
+        verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsMyBestLapCasual, false) }
-        confirmVerified(repository, ttsEngine)
+        confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
     }
 }

@@ -286,6 +286,33 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `自己ベストラップの読み上げはRootが有効でもdetailPane側のスイッチが無効なら読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 60_000L),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false),
+                    ),
+            )
+
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 59_000L),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
     fun `左接近が50ms継続するとCarLeftを返す`() {
         val first =
             useCase.determineVehicleApproach(
@@ -1279,7 +1306,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `タイヤ温度項目が無効なら読み上げない`() {
+    fun `タイヤ温度項目が無効なら過熱警告スイッチがONでも読み上げない`() {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = LmuWindowsNarratorState(),
@@ -1288,7 +1315,11 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                     settings(
                         tyreTemperatureHighThresholdCelsius = 90,
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
+                            allEnabledStates +
+                                mapOf(
+                                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+                                ),
                     ),
             )
 
@@ -1504,7 +1535,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `ヒステリシス範囲内に下がっただけではブレーキ過熱状態を維持し再度読み上げない`() {
+    fun `ヒステリシス下限をわずかに上回る温度では過熱状態を維持し再度読み上げない`() {
         val overheatState =
             useCase
                 .determineBrakeTemperatureOverheat(
@@ -1513,43 +1544,22 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                     settings = settings(),
                 ).state
 
-        val stillHotDecision =
+        val cooledDecision =
             useCase.determineBrakeTemperatureOverheat(
                 state = overheatState,
-                data = brakeTemperature(fl = 680.0),
+                data = brakeTemperature(fl = 601.0),
                 settings = settings(),
             )
 
-        assertEquals(true, stillHotDecision.state.brakeOverheating)
-        assertEquals(emptyList<SpeechEvent>(), stillHotDecision.events)
-    }
-
-    @Test
-    fun `ヒステリシス下限をわずかに上回る温度では再度読み上げない`() {
-        val overheatState =
-            useCase
-                .determineBrakeTemperatureOverheat(
-                    state = LmuWindowsNarratorState(),
-                    data = brakeTemperature(fl = 750.0),
-                    settings = settings(),
-                ).state
-
-        val cooledState =
-            useCase
-                .determineBrakeTemperatureOverheat(
-                    state = overheatState,
-                    data = brakeTemperature(fl = 601.0),
-                    settings = settings(),
-                ).state
-
         val decision =
             useCase.determineBrakeTemperatureOverheat(
-                state = cooledState,
+                state = cooledDecision.state,
                 data = brakeTemperature(fl = 750.0),
                 settings = settings(),
             )
 
-        assertEquals(true, cooledState.brakeOverheating)
+        assertEquals(true, cooledDecision.state.brakeOverheating)
+        assertEquals(emptyList<SpeechEvent>(), cooledDecision.events)
         assertEquals(emptyList<SpeechEvent>(), decision.events)
     }
 
@@ -1696,28 +1706,6 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `タイヤ温度項目が無効なら過熱警告スイッチがONでも読み上げない`() {
-        val decision =
-            useCase.determineTyreTemperatureOverheat(
-                state = LmuWindowsNarratorState(),
-                input = tyreTemperatureInput(fl = 95.0),
-                settings =
-                    settings(
-                        tyreTemperatureHighThresholdCelsius = 90,
-                        enabledStates =
-                            allEnabledStates +
-                                mapOf(
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
-                                ),
-                    ),
-            )
-
-        assertEquals(emptyList<SpeechEvent>(), decision.events)
-        assertEquals(true, decision.state.tyreOverheating)
-    }
-
-    @Test
     fun `閾値ちょうどは高温扱い`() {
         val decision =
             useCase.determineTyreTemperatureOverheat(
@@ -1756,26 +1744,6 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         assertEquals(true, bandState.state.tyreOverheating)
         assertEquals(emptyList<SpeechEvent>(), bandState.events)
         assertEquals(emptyList<SpeechEvent>(), reheatedDecision.events)
-    }
-
-    @Test
-    fun `ヒステリシス下限まで下がると再度読み上げ可能になる`() {
-        val overheatState =
-            useCase
-                .determineTyreTemperatureOverheat(
-                    state = LmuWindowsNarratorState(),
-                    input = tyreTemperatureInput(fl = 95.0),
-                    settings = settings(tyreTemperatureHighThresholdCelsius = 90),
-                ).state
-
-        val cooledState =
-            useCase.determineTyreTemperatureOverheat(
-                state = overheatState,
-                input = tyreTemperatureInput(fl = 85.0),
-                settings = settings(tyreTemperatureHighThresholdCelsius = 90),
-            )
-
-        assertEquals(false, cooledState.state.tyreOverheating)
     }
 
     @Test
@@ -2352,6 +2320,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
     mapOf(
         ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
+        ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to true,
         ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
         ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
         ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
