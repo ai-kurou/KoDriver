@@ -496,7 +496,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | `mGripFract` | double | +112 | 0.0–1.0 | スリップしている接地面の割合（近似値） |
 | `mPressure` | double | +120 | kPa | タイヤ空気圧 |
 | `mTemperature[3]` | double[3] | +128 (+136=中央, +144=右) | K | タイヤ表面温度（左/中央/右。内/中/外ではない点に注意） |
-| `mWear` | double | +152 | 0.0–1.0 | タイヤ摩耗（0=新品, 1=完全摩耗。グリップ低下と比例するとは限らない） |
+| `mWear` | double | +152 | 0.0–1.0 | タイヤ残溝割合（1=新品, 0=摩耗限界。TinyPedal `module_wheels.py` の `tyre.wear()` 実装で確認。グリップ低下と比例するとは限らない） |
 | `mTerrainName[16]` | char[16] | +160 | — | 路面種別名（TDFファイルのプレフィックス） |
 | `mSurfaceType` | uint8 | +176 | enum | 路面タイプ（下表参照） |
 | `mFlat` | bool | +177 | — | パンクしているか |
