@@ -20,12 +20,17 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -37,11 +42,17 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
 
     private val vehicleClassRepository: LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository = mockk()
 
-    private val ttsEngine: TextToSpeechEngine = mockk()
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+
+    private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
+
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
+            enabledStatesFlow
     }
 
     @AfterTest
@@ -62,6 +73,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
                     saveVehicleClassSelection =
                         SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase(vehicleClassRepository),
                 ),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
@@ -78,12 +91,14 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
                 LmuWindowsReadoutBrakeTemperatureDetailUiState(
                     vehicleClassHighThresholdCelsius = mapOf(LmuWindowsVehicleClassData.Gte to 700),
                     selectedVehicleClass = LmuWindowsVehicleClassData.Hypercar,
+                    enabled = true,
                 ),
                 viewModel.uiState.first(),
             )
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            confirmVerified(vehicleClassRepository)
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
         }
 
     @Test
@@ -109,10 +124,11 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             )
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 800)
             }
-            confirmVerified(vehicleClassRepository)
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
         }
 
     @Test
@@ -138,10 +154,11 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             )
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 800)
             }
-            confirmVerified(vehicleClassRepository)
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
         }
 
     @Test
@@ -161,8 +178,9 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             assertEquals(LmuWindowsVehicleClassData.Gte, viewModel.uiState.first().selectedVehicleClass)
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { vehicleClassRepository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte) }
-            confirmVerified(vehicleClassRepository)
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
         }
 
     @Test
@@ -170,14 +188,49 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
         every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
         every { vehicleClassRepository.observeSelectedVehicleClass() } returns
             MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
-        every { ttsEngine.speak(SpeechEvent.BrakeOverheat, false) } returns Unit
         val viewModel = createViewModel()
 
         viewModel.onWarningChipClicked()
 
         verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
         verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+        verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BrakeOverheat, false) }
-        confirmVerified(vehicleClassRepository, ttsEngine)
+        confirmVerified(vehicleClassRepository, readoutPreferencesRepository, ttsEngine)
     }
+
+    @Test
+    fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
+        runTest {
+            every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
+            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
+                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
+            coEvery {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.LmuWindows.id,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout,
+                    false,
+                )
+            } answers {
+                enabledStatesFlow.update {
+                    it + (ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout to false)
+                }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().enabled)
+            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            coVerify(exactly = 1) {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.LmuWindows.id,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout,
+                    false,
+                )
+            }
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+        }
 }

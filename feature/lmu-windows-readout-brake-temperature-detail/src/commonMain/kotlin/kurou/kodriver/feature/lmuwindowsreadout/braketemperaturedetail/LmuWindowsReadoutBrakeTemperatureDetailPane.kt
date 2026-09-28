@@ -59,6 +59,7 @@ fun LmuWindowsReadoutBrakeTemperatureDetailPane(modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
         uiState = uiState,
+        onEnabledChanged = viewModel::onEnabledChanged,
         onWarningChipClicked = viewModel::onWarningChipClicked,
         onVehicleClassSelected = viewModel::onVehicleClassSelected,
         onThresholdChanged = viewModel::onVehicleClassHighThresholdChanged,
@@ -70,6 +71,7 @@ fun LmuWindowsReadoutBrakeTemperatureDetailPane(modifier: Modifier = Modifier) {
 @Composable
 internal fun LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
     uiState: LmuWindowsReadoutBrakeTemperatureDetailUiState = LmuWindowsReadoutBrakeTemperatureDetailUiState(),
+    onEnabledChanged: (Boolean) -> Unit = {},
     onWarningChipClicked: () -> Unit = {},
     onVehicleClassSelected: (LmuWindowsVehicleClassData) -> Unit = {},
     onThresholdChanged: (LmuWindowsVehicleClassData, Int) -> Unit = { _, _ -> },
@@ -91,13 +93,15 @@ internal fun LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
             stringResource(Res.string.brake_temperature_threshold_help_icon_content_description)
         DetailPaneCard(
             title = stringResource(Res.string.brake_temperature_warning_title),
+            checked = uiState.enabled,
+            onCheckedChange = onEnabledChanged,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
                         chipLabels = listOf(warningChipLabel),
                         selectedChipLabels = setOf(warningChipLabel),
-                        chipEnabled = true,
+                        chipEnabled = uiState.enabled,
                         onChipClick = { onWarningChipClicked() },
                     )
                     HorizontalDivider(
@@ -133,7 +137,7 @@ internal fun LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
                         DetailPaneCardChips(
                             chipLabels = vehicleClassByChipLabel.keys.toList(),
                             selectedChipLabels = setOfNotNull(selectedVehicleClassChipLabel),
-                            chipEnabled = true,
+                            chipEnabled = uiState.enabled,
                             onChipClick = { label ->
                                 vehicleClassByChipLabel[label]?.let { onVehicleClassSelected(it) }
                             },

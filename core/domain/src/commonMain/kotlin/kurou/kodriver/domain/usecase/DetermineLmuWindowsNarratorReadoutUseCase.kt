@@ -393,7 +393,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             }
         val shouldAnnounce =
             !state.brakeOverheating && nextOverheating &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeTemperature.Root)
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(brakeOverheating = nextOverheating),
             events = if (shouldAnnounce) listOf(SpeechEvent.BrakeOverheat) else emptyList(),
