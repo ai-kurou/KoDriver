@@ -87,10 +87,14 @@ class OtherListViewModel(
                     state.items.filterNot {
                         // TTSが利用できる（理由がnull）間はどちらの案内項目も表示しない。
                         // 理由が判明した場合は、その理由に対応する項目のみを表示する。
-                        (it == OtherListItemType.TtsEngineMissing &&
-                            ttsUnavailableReason != TextToSpeechUnavailableReason.EngineMissing) ||
-                            (it == OtherListItemType.TtsLanguageDataMissing &&
-                                ttsUnavailableReason != TextToSpeechUnavailableReason.LanguageDataMissing)
+                        (
+                            it == OtherListItemType.TtsEngineMissing &&
+                                ttsUnavailableReason != TextToSpeechUnavailableReason.EngineMissing
+                        ) ||
+                            (
+                                it == OtherListItemType.TtsLanguageDataMissing &&
+                                    ttsUnavailableReason != TextToSpeechUnavailableReason.LanguageDataMissing
+                            )
                     },
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)

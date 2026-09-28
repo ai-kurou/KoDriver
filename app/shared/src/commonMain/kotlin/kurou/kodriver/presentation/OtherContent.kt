@@ -95,6 +95,7 @@ fun OtherContent(
     )
 }
 
+@Suppress("LongParameterList")
 private fun handleOtherItemClick(
     itemType: OtherListItemType,
     onItemSelected: (OtherListItemType) -> Unit,

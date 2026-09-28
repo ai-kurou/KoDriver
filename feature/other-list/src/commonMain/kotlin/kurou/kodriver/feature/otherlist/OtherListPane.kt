@@ -157,20 +157,12 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
             stringResource(Res.string.item_console_ip)
         }
 
-        OtherListItemType.Volume -> {
-            stringResource(Res.string.item_volume)
-        }
-
-        OtherListItemType.ReadoutStartSound -> {
-            stringResource(Res.string.item_readout_start_sound)
-        }
-
-        OtherListItemType.TtsEngineMissing -> {
-            stringResource(Res.string.item_tts_engine_missing)
-        }
-
-        OtherListItemType.TtsLanguageDataMissing -> {
-            stringResource(Res.string.item_tts_language_data_missing)
+        OtherListItemType.Volume,
+        OtherListItemType.ReadoutStartSound,
+        OtherListItemType.TtsEngineMissing,
+        OtherListItemType.TtsLanguageDataMissing,
+        -> {
+            otherReadoutSettingsItemDisplayName(itemType)
         }
 
         OtherListItemType.OverlayVisible,
@@ -208,6 +200,16 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
         -> {
             otherAppSettingsItemDisplayName(itemType)
         }
+    }
+
+@Composable
+private fun otherReadoutSettingsItemDisplayName(itemType: OtherListItemType): String =
+    when (itemType) {
+        OtherListItemType.Volume -> stringResource(Res.string.item_volume)
+        OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
+        OtherListItemType.TtsEngineMissing -> stringResource(Res.string.item_tts_engine_missing)
+        OtherListItemType.TtsLanguageDataMissing -> stringResource(Res.string.item_tts_language_data_missing)
+        else -> error("unexpected item type: $itemType")
     }
 
 @Composable
