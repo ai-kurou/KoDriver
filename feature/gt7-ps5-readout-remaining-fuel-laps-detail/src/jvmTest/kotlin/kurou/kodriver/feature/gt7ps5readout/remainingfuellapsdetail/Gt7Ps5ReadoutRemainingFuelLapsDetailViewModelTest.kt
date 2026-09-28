@@ -20,10 +20,15 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,13 +40,19 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
 
     private val repository: Gt7Ps5RemainingFuelLapsPreferencesRepository = mockk()
 
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+
     private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
 
     private val remainingFuelLapsFlow = MutableStateFlow(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT)
 
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            enabledStatesFlow
     }
 
     @AfterTest
@@ -53,6 +64,8 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
         Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
             observeGt7Ps5RemainingFuelLaps = ObserveGt7Ps5RemainingFuelLapsUseCase(repository),
             saveGt7Ps5RemainingFuelLaps = SaveGt7Ps5RemainingFuelLapsUseCase(repository),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
@@ -63,8 +76,10 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
             val viewModel = createViewModel()
 
             assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
+            assertEquals(true, viewModel.uiState.first().enabled)
             verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-            confirmVerified(repository)
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -78,8 +93,9 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
 
             assertEquals(1, viewModel.uiState.first().remainingFuelLaps)
             verify(exactly = 1) { repository.observeRemainingFuelLaps() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             coVerify(exactly = 1) { repository.saveRemainingFuelLaps(1) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -96,8 +112,39 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
 
             assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
             verify(exactly = 1) { repository.observeRemainingFuelLaps() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             coVerify(exactly = 1) { repository.saveRemainingFuelLaps(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
+        }
+
+    @Test
+    fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
+        runTest {
+            every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
+            coEvery {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.Gt7Ps5.id,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    false,
+                )
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false) }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().enabled)
+            verify(exactly = 1) { repository.observeRemainingFuelLaps() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            coVerify(exactly = 1) {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.Gt7Ps5.id,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    false,
+                )
+            }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -111,8 +158,9 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
             viewModel.onPreviewClicked()
 
             verify(exactly = 1) { repository.observeRemainingFuelLaps() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingFuelLapsWarning(4), false) }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingFuelLapsWarning(0), true) }
-            confirmVerified(repository, ttsEngine)
+            confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
         }
 }
