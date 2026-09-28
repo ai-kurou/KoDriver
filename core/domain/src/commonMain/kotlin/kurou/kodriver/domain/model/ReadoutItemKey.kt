@@ -288,6 +288,10 @@ sealed interface ReadoutItemKey {
                 override val value = "ace_windows_remaining_fuel_laps"
                 override val supportsQueue = true
             }
+
+            data object DetailEnabled : RemainingFuelLaps {
+                override val value = "ace_windows_remaining_fuel_laps_detail_enabled"
+            }
         }
 
         sealed interface MyBestLap : AceWindows {
@@ -363,6 +367,7 @@ sealed interface ReadoutItemKey {
                 AceWindows.RemainingFuel.Root,
                 AceWindows.RemainingFuel.DetailEnabled,
                 AceWindows.RemainingFuelLaps.Root,
+                AceWindows.RemainingFuelLaps.DetailEnabled,
                 AceWindows.TyreTemperature.Root,
                 AceWindows.TyreTemperature.OverheatWarning,
                 AceWindows.MyBestLap.Root,

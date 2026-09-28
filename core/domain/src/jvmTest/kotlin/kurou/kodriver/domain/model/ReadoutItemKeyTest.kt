@@ -152,6 +152,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
             ReadoutItemKey.fromValue("ace_windows_remaining_fuel_laps"),
         )
+        assertEquals(
+            ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled,
+            ReadoutItemKey.fromValue("ace_windows_remaining_fuel_laps_detail_enabled"),
+        )
     }
 
     @Test

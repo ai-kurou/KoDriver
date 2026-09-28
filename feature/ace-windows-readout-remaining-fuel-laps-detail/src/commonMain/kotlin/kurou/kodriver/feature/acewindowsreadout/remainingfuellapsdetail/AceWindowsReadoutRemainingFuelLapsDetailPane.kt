@@ -42,6 +42,7 @@ fun AceWindowsReadoutRemainingFuelLapsDetailPane(modifier: Modifier = Modifier) 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
         uiState = uiState,
+        onEnabledChanged = viewModel::onEnabledChanged,
         onRemainingFuelLapsChanged = viewModel::onRemainingFuelLapsChanged,
         onResetRemainingFuelLaps = viewModel::onResetRemainingFuelLaps,
         onPreviewClicked = viewModel::onPreviewClicked,
@@ -52,6 +53,7 @@ fun AceWindowsReadoutRemainingFuelLapsDetailPane(modifier: Modifier = Modifier) 
 @Composable
 internal fun AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
     uiState: AceWindowsReadoutRemainingFuelLapsDetailUiState = AceWindowsReadoutRemainingFuelLapsDetailUiState(),
+    onEnabledChanged: (Boolean) -> Unit = {},
     onRemainingFuelLapsChanged: (Int) -> Unit = {},
     onResetRemainingFuelLaps: () -> Unit = {},
     onPreviewClicked: () -> Unit = {},
@@ -76,13 +78,15 @@ internal fun AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.remaining_fuel_laps_enabled),
+            checked = uiState.enabled,
+            onCheckedChange = onEnabledChanged,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
                         chipLabels = listOf(voiceTypeLabel),
                         selectedChipLabels = setOf(voiceTypeLabel),
-                        chipEnabled = true,
+                        chipEnabled = uiState.enabled,
                         onChipClick = { onPreviewClicked() },
                     )
                     HorizontalDivider(
