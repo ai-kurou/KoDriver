@@ -46,6 +46,7 @@ fun Gt7Ps5ReadoutRemainingFuelDetailPane(modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
         uiState = uiState,
+        onEnabledChanged = viewModel::onEnabledChanged,
         onThresholdChanged = viewModel::onThresholdChanged,
         onThresholdReset = viewModel::onThresholdReset,
         onPreviewClicked = viewModel::onPreviewClicked,
@@ -56,6 +57,7 @@ fun Gt7Ps5ReadoutRemainingFuelDetailPane(modifier: Modifier = Modifier) {
 @Composable
 internal fun Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
     uiState: Gt7Ps5ReadoutRemainingFuelDetailUiState = Gt7Ps5ReadoutRemainingFuelDetailUiState(),
+    onEnabledChanged: (Boolean) -> Unit = {},
     onThresholdChanged: (Int) -> Unit = {},
     onThresholdReset: () -> Unit = {},
     onPreviewClicked: () -> Unit = {},
@@ -75,13 +77,15 @@ internal fun Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.remaining_fuel_title),
+            checked = uiState.enabled,
+            onCheckedChange = onEnabledChanged,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
                         chipLabels = listOf(previewLabel),
                         selectedChipLabels = setOf(previewLabel),
-                        chipEnabled = true,
+                        chipEnabled = uiState.enabled,
                         onChipClick = { onPreviewClicked() },
                     )
                     HorizontalDivider(
