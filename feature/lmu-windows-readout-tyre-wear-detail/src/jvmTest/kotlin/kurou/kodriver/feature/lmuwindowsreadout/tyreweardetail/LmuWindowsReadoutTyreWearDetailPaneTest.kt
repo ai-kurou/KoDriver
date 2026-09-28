@@ -25,8 +25,8 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
 
         rule
             .onNodeWithText(
-                "タイヤの摩耗率が設定した閾値以上になった場合に音声でお知らせします。" +
-                    "いずれかのタイヤが条件を満たすと読み上げ、全タイヤが閾値未満に戻るまでは再度読み上げません。",
+                "タイヤの残り（残存率）が設定した閾値以下になった場合に音声でお知らせします。" +
+                    "いずれかのタイヤが条件を満たすと読み上げ、全タイヤが閾値を上回るまでは再度読み上げません。",
             ).assertIsDisplayed()
     }
 
@@ -62,15 +62,15 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
     }
 
     @Test
-    fun `摩耗閾値のサブタイトルと説明とデフォルト値のスライダーラベルが表示される`() {
+    fun `残存率閾値のサブタイトルと説明とデフォルト値のスライダーラベルが表示される`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreWearDetailPaneContent()
             }
         }
 
-        rule.onNodeWithText("摩耗閾値").assertIsDisplayed()
-        rule.onNodeWithText("摩耗が50%以上になると警告を読み上げます。").assertIsDisplayed()
+        rule.onNodeWithText("残存率閾値").assertIsDisplayed()
+        rule.onNodeWithText("タイヤの残りが50%以下になると警告を読み上げます。").assertIsDisplayed()
         rule.onNodeWithText("50%").assertIsDisplayed()
     }
 

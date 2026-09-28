@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.model
 
 /**
- * タイヤ摩耗警告のデフォルト閾値（摩耗率 %）。
+ * タイヤ摩耗警告のデフォルト閾値（タイヤ残存率 %。この値以下になると警告する）。
  *
  * DataStore のデフォルト値（LmuWindowsTyreWearPreferences）・詳細設定画面のリセット値・
  * Narrator の購読初期値が同じ値を参照できるよう、この一箇所にのみ定義する。

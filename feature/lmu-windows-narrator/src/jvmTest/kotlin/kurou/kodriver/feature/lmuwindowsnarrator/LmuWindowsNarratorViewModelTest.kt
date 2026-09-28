@@ -1484,7 +1484,7 @@ class LmuWindowsNarratorViewModelTest {
     // --- タイヤ摩耗 ---
 
     @Test
-    fun `閾値以上のタイヤ摩耗が来ると TyreWearWarning を読み上げる`() =
+    fun `閾値以下のタイヤ残存率が来ると TyreWearWarning を読み上げる`() =
         runTest(testDispatcher) {
             val channel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()

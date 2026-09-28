@@ -1374,7 +1374,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `いずれかのタイヤの摩耗率が閾値以上になると TyreWearWarning を返す`() {
+    fun `いずれかのタイヤの残存率が閾値以下になると TyreWearWarning を返す`() {
         val decision =
             useCase.determineTyreWear(
                 state = LmuWindowsNarratorState(),
@@ -1401,7 +1401,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `全タイヤが閾値未満に戻ると再度読み上げ可能になる`() {
+    fun `全タイヤが閾値を上回ると再度読み上げ可能になる`() {
         val warnedState =
             useCase
                 .determineTyreWear(
@@ -1430,7 +1430,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `いずれのタイヤも閾値未満なら読み上げない`() {
+    fun `いずれのタイヤも閾値を上回るなら読み上げない`() {
         val decision =
             useCase.determineTyreWear(
                 state = LmuWindowsNarratorState(),

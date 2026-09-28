@@ -366,7 +366,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val anyWorn =
             data.wheels.values.any { remainingRatio ->
-                (1.0 - remainingRatio.value) * PERCENTAGE_SCALE >= settings.tyreWearThresholdPercentage
+                remainingRatio.value * PERCENTAGE_SCALE <= settings.tyreWearThresholdPercentage
             }
         val shouldAnnounce =
             !state.tyreWearWarned && anyWorn &&
