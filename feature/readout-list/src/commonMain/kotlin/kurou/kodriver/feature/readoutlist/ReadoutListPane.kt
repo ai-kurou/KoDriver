@@ -56,13 +56,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -84,6 +82,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
@@ -618,19 +617,6 @@ private fun ReadoutListReadoutSwitch(
             checked = checked,
             onCheckedChange = onCheckedChangeWithHaptic,
         )
-    }
-}
-
-@Composable
-private fun ScrollToTopEffect(
-    scrollToTopRequest: Int,
-    scrollToTop: suspend () -> Unit,
-) {
-    val currentScrollToTop by rememberUpdatedState(scrollToTop)
-    LaunchedEffect(scrollToTopRequest) {
-        if (scrollToTopRequest > 0) {
-            currentScrollToTop()
-        }
     }
 }
 
