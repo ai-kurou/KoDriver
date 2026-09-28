@@ -1,5 +1,6 @@
 package kurou.kodriver.core.narrator
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -557,6 +558,39 @@ class WavNarratorEngineTest {
             runCurrent()
 
             assertEquals(listOf(CAR_LEFT), receivedEvents)
+        }
+
+    @Test
+    fun `customSpeakが発話完了まで実際にsuspendする場合stopで中断するまでcurrentKeyを保持し中断をcustomSpeakへ伝える`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            var wasCancelled = false
+            val engine =
+                createEngine(
+                    player,
+                    customSpeak = {
+                        try {
+                            awaitCancellation()
+                        } catch (e: CancellationException) {
+                            wasCancelled = true
+                            throw e
+                        }
+                    },
+                )
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            // customSpeakがまだ発話中（suspendしたまま）のため、再生済みは開始音のみ。
+            assertEquals(1, player.playedSounds.size)
+            assertEquals(CAR_LEFT_KEY, engine.currentKey)
+
+            engine.stop()
+            runCurrent()
+
+            assertEquals(null, engine.currentKey)
+            assertEquals(true, wasCancelled)
         }
 
     private fun TestScope.createEngine(
