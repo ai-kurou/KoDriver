@@ -143,7 +143,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         val shouldAnnounce =
             !state.remainingFuelWarned &&
                 isLow &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled)
         return Gt7Ps5NarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
             events = if (shouldAnnounce) listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning) else emptyList(),
@@ -269,7 +270,9 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         if (remainingLapsFloor == state.lastAnnouncedRemainingLaps) {
             return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
         }
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)) {
+        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root) ||
+            !settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled)
+        ) {
             return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
         }
         return RemainingFuelLapsEvaluation(fuelState.currentLap, remainingLapsFloor)

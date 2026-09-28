@@ -67,8 +67,16 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_laps"),
         )
         assertEquals(
+            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled,
+            ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_laps_detail_enabled"),
+        )
+        assertEquals(
             ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
             ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel"),
+        )
+        assertEquals(
+            ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled,
+            ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_detail_enabled"),
         )
         assertEquals(
             ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,

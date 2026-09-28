@@ -134,11 +134,11 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             coEvery {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled,
                     false,
                 )
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false) }
+                enabledStatesFlow.update { it + (ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled to false) }
             }
             val viewModel = createViewModel()
 
@@ -150,7 +150,7 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             coVerify(exactly = 1) {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled,
                     false,
                 )
             }
