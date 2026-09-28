@@ -52,7 +52,6 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.TelemetryLog
@@ -213,19 +213,6 @@ internal fun TelemetryLogListPane(
                     },
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun ScrollToTopEffect(
-    scrollToTopRequest: Int,
-    scrollToTop: suspend () -> Unit,
-) {
-    val currentScrollToTop by rememberUpdatedState(scrollToTop)
-    LaunchedEffect(scrollToTopRequest) {
-        if (scrollToTopRequest > 0) {
-            currentScrollToTop()
         }
     }
 }
