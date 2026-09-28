@@ -304,6 +304,27 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `残り燃料の読み上げはRootが有効でもdetailPane側のスイッチが無効なら読み上げない`() {
+        val decision =
+            useCase.determineRemainingFuel(
+                state = AceWindowsNarratorState(),
+                data = fuel(remainingPercent = 20.0),
+                settings =
+                    settings(
+                        thresholdPercentage = 30,
+                        enabledStates =
+                            mapOf(
+                                ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+                                ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled to false,
+                            ),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.remainingFuelWarned)
+    }
+
+    @Test
     fun `燃料残り周回数が閾値以下になると整数部の周回数を読み上げる`() {
         val above = remainingFuelLaps(state = AceWindowsNarratorState(), laps = 4.2f)
         val decision = remainingFuelLaps(state = above.state, laps = 2.9f)

@@ -103,6 +103,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.fromValue("ace_windows_remaining_fuel"),
         )
         assertEquals(
+            ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled,
+            ReadoutItemKey.fromValue("ace_windows_remaining_fuel_detail_enabled"),
+        )
+        assertEquals(
             ReadoutItemKey.AceWindows.Flag.Root,
             ReadoutItemKey.fromValue("ace_windows_flag"),
         )

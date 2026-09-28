@@ -4,4 +4,5 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTA
 
 internal data class AceWindowsReadoutRemainingFuelDetailUiState(
     val thresholdPercentage: Int = ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT,
+    val enabled: Boolean = true,
 )

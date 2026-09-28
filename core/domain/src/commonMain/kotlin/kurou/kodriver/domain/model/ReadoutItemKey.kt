@@ -277,6 +277,10 @@ sealed interface ReadoutItemKey {
                 override val value = "ace_windows_remaining_fuel"
                 override val supportsQueue = true
             }
+
+            data object DetailEnabled : RemainingFuel {
+                override val value = "ace_windows_remaining_fuel_detail_enabled"
+            }
         }
 
         sealed interface RemainingFuelLaps : AceWindows {
@@ -357,6 +361,7 @@ sealed interface ReadoutItemKey {
                 AceWindows.Flag.OrangeCircleFlag,
                 AceWindows.Flag.RedYellowStripesFlag,
                 AceWindows.RemainingFuel.Root,
+                AceWindows.RemainingFuel.DetailEnabled,
                 AceWindows.RemainingFuelLaps.Root,
                 AceWindows.TyreTemperature.Root,
                 AceWindows.TyreTemperature.OverheatWarning,

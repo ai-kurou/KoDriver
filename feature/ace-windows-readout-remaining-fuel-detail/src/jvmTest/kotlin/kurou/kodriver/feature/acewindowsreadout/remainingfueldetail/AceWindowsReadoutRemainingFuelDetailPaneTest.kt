@@ -86,4 +86,21 @@ class AceWindowsReadoutRemainingFuelDetailPaneTest {
 
         assertEquals(true, resetCalled)
     }
+
+    @Test
+    fun `スイッチをタップするとonEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            KoDriverTheme {
+                AceWindowsReadoutRemainingFuelDetailPaneContent(
+                    uiState = AceWindowsReadoutRemainingFuelDetailUiState(enabled = true),
+                    onEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("残り燃料").performClick()
+
+        assertEquals(false, changedEnabled)
+    }
 }
