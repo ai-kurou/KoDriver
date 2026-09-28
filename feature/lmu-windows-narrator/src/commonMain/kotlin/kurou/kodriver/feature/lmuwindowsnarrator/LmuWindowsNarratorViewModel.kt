@@ -42,6 +42,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -128,6 +129,7 @@ internal data class BrakeTemperatureUseCases(
 internal data class PitTimingUseCases(
     val observeVirtualEnergyLapsThreshold: ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
     val observeTyreWearLapsThreshold: ObserveLmuWindowsPitTimingTyreWearLapsUseCase,
+    val observeEnabledStates: ObserveLmuWindowsPitTimingEnabledStatesUseCase,
 )
 
 internal data class NarratorUseCases(
@@ -168,22 +170,19 @@ internal class LmuWindowsNarratorViewModel(
     // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
     private val mergedEnabledStates =
         combine(
-            selectedSimulator
-                .flatMapLatest { simulator ->
-                    readoutListUseCases.observeReadoutEnabledStates(simulator.id)
-                },
-            flagUseCases.observeFlagEnabledStates(),
-            vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
-            tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
-            vehicleApproachUseCases.observeEnabledStates(),
-        ) {
-            readoutStates: Map<ReadoutItemKey, Boolean>,
-            flagStates,
-            vehicleDamageStates,
-            tyreTemperatureStates,
-            vehicleApproachStates,
-            ->
-            readoutStates + flagStates + vehicleDamageStates + tyreTemperatureStates + vehicleApproachStates
+            listOf(
+                selectedSimulator
+                    .flatMapLatest { simulator ->
+                        readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+                    },
+                flagUseCases.observeFlagEnabledStates(),
+                vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
+                tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
+                vehicleApproachUseCases.observeEnabledStates(),
+                pitTimingUseCases.observeEnabledStates(),
+            ),
+        ) { states: Array<Map<ReadoutItemKey, Boolean>> ->
+            states.fold(emptyMap<ReadoutItemKey, Boolean>()) { acc, states -> acc + states }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）

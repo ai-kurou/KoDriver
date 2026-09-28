@@ -33,10 +33,11 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
                     "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、" +
                     "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。",
             ).assertIsDisplayed()
-        rule.onNodeWithText("予想残り周回数").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエナジー").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ摩耗").assertIsDisplayed()
         rule.onNodeWithText("バーチャルエナジー予想残り周回数").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗予想残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("N周以内にピットイン・必ずピットイン").assertIsDisplayed()
+        rule.onAllNodesWithText("N周以内にピットイン・必ずピットイン").assertCountEquals(2)
         rule.onAllNodesWithText("残り約: 3 周").assertCountEquals(2)
     }
 
@@ -51,9 +52,43 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("N周以内にピットイン・必ずピットイン").performClick()
+        rule.onAllNodesWithText("N周以内にピットイン・必ずピットイン")[0].performClick()
 
         assert(previewClicked)
+    }
+
+    @Test
+    fun `バーチャルエナジーのスイッチをタップするとコールバックが呼ばれる`() {
+        var virtualEnergyEnabled = true
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsReadoutPitTimingDetailUiState(virtualEnergyEnabled = virtualEnergyEnabled),
+                    onVirtualEnergyEnabledChanged = { virtualEnergyEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("バーチャルエナジー").performClick()
+
+        assert(!virtualEnergyEnabled)
+    }
+
+    @Test
+    fun `タイヤ摩耗のスイッチをタップするとコールバックが呼ばれる`() {
+        var tyreWearEnabled = true
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsReadoutPitTimingDetailUiState(tyreWearEnabled = tyreWearEnabled),
+                    onTyreWearEnabledChanged = { tyreWearEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ摩耗").performClick()
+
+        assert(!tyreWearEnabled)
     }
 
     @Test

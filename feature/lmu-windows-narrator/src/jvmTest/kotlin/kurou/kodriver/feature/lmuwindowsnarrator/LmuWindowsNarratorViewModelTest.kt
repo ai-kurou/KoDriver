@@ -91,6 +91,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -242,6 +243,7 @@ class LmuWindowsNarratorViewModelTest {
         pitTimingTyreWearLapsThreshold: Int,
         simulator: Simulator,
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
         every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
         every { lmuWindowsRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
@@ -305,6 +307,8 @@ class LmuWindowsNarratorViewModelTest {
             MutableStateFlow(pitTimingVirtualEnergyLapsThreshold)
         every { pitTimingPreferencesRepository.observeTyreWearLaps() } returns
             MutableStateFlow(pitTimingTyreWearLapsThreshold)
+        every { pitTimingPreferencesRepository.observeEnabledStates() } returns
+            MutableStateFlow(pitTimingEnabledOverrides)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
         every { redFlagPreferencesRepository.observeVoiceType() } returns MutableStateFlow(redFlagVoiceType)
         every { overheatPreferencesRepository.observeVoiceType() } returns MutableStateFlow(overheatVoiceType)
@@ -354,6 +358,7 @@ class LmuWindowsNarratorViewModelTest {
         simulator: Simulator = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ): LmuWindowsNarratorViewModel {
         stubRepositories(
             vehicleApproachChannel = vehicleApproachChannel,
@@ -390,6 +395,7 @@ class LmuWindowsNarratorViewModelTest {
             pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold,
             simulator = simulator,
             queueEnabledOverrides = queueEnabledOverrides,
+            pitTimingEnabledOverrides = pitTimingEnabledOverrides,
         )
 
         return LmuWindowsNarratorViewModel(
@@ -491,6 +497,10 @@ class LmuWindowsNarratorViewModelTest {
                         ),
                     observeTyreWearLapsThreshold =
                         ObserveLmuWindowsPitTimingTyreWearLapsUseCase(
+                            pitTimingPreferencesRepository,
+                        ),
+                    observeEnabledStates =
+                        ObserveLmuWindowsPitTimingEnabledStatesUseCase(
                             pitTimingPreferencesRepository,
                         ),
                 ),
@@ -1872,6 +1882,74 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
             currentTime = 150_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `バーチャルエナジーのピットタイミングが無効ならRoot有効でもPitTimingWarningを読み上げない`() =
+        runTest(testDispatcher) {
+            val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            var currentTime = 0L
+            createViewModel(
+                telemetryChannel = telemetryChannel,
+                remainingVirtualEnergyChannel = virtualEnergyChannel,
+                tyreWearChannel = tyreWearChannel,
+                ttsEngine = tts,
+                pitTimingVirtualEnergyLapsThreshold = 3,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+                pitTimingEnabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to false),
+                currentTimeMs = { currentTime },
+            )
+
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyreWearChannel.send(tyreWear())
+            telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            currentTime = 45_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
+            currentTime = 90_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            currentTime = 150_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `タイヤ摩耗のピットタイミングが無効ならRoot有効でもPitTimingWarningを読み上げない`() =
+        runTest(testDispatcher) {
+            val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            var currentTime = 0L
+            createViewModel(
+                telemetryChannel = telemetryChannel,
+                remainingVirtualEnergyChannel = virtualEnergyChannel,
+                tyreWearChannel = tyreWearChannel,
+                ttsEngine = tts,
+                pitTimingTyreWearLapsThreshold = 3,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+                pitTimingEnabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.TyreWear to false),
+                currentTimeMs = { currentTime },
+            )
+
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyreWearChannel.send(tyreWear(fl = 1.0))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            currentTime = 45_000L
+            tyreWearChannel.send(tyreWear(fl = 0.9))
+            currentTime = 90_000L
+            tyreWearChannel.send(tyreWear(fl = 0.8))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            currentTime = 150_000L
+            tyreWearChannel.send(tyreWear(fl = 0.05))
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
