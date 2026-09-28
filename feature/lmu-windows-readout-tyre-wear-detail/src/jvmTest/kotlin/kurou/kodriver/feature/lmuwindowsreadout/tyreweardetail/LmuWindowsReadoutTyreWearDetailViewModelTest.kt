@@ -19,10 +19,15 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,11 +39,17 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
 
     private val repository: LmuWindowsTyreWearPreferencesRepository = mockk()
 
-    private val ttsEngine: TextToSpeechEngine = mockk()
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+
+    private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
+
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
+            enabledStatesFlow
     }
 
     @AfterTest
@@ -50,6 +61,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
         LmuWindowsReadoutTyreWearDetailViewModel(
             observeThresholdPercentage = ObserveLmuWindowsTyreWearThresholdPercentageUseCase(repository),
             saveThresholdPercentage = SaveLmuWindowsTyreWearThresholdPercentageUseCase(repository),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
@@ -60,11 +73,12 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             val viewModel = createViewModel()
 
             assertEquals(
-                LmuWindowsReadoutTyreWearDetailUiState(thresholdPercentage = 50),
+                LmuWindowsReadoutTyreWearDetailUiState(thresholdPercentage = 50, enabled = true),
                 viewModel.uiState.first(),
             )
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            confirmVerified(repository)
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -79,8 +93,9 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
 
             assertEquals(30, viewModel.uiState.first().thresholdPercentage)
             verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -97,21 +112,54 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
 
             assertEquals(50, viewModel.uiState.first().thresholdPercentage)
             verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
     fun `onWarningChipClickedを呼ぶとTyreWearWarningイベントが再生される`() {
         every { repository.observeThresholdPercentage() } returns MutableStateFlow(50)
-        every { ttsEngine.speak(SpeechEvent.TyreWearWarning, false) } returns Unit
         val viewModel = createViewModel()
 
         viewModel.onWarningChipClicked()
 
         verify(exactly = 1) { repository.observeThresholdPercentage() }
+        verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreWearWarning, false) }
-        confirmVerified(repository, ttsEngine)
+        confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
     }
+
+    @Test
+    fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
+        runTest {
+            every { repository.observeThresholdPercentage() } returns MutableStateFlow(50)
+            coEvery {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.LmuWindows.id,
+                    ReadoutItemKey.LmuWindows.TyreWear.WarningReadout,
+                    false,
+                )
+            } answers {
+                enabledStatesFlow.update {
+                    it + (ReadoutItemKey.LmuWindows.TyreWear.WarningReadout to false)
+                }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().enabled)
+            verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            coVerify(exactly = 1) {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.LmuWindows.id,
+                    ReadoutItemKey.LmuWindows.TyreWear.WarningReadout,
+                    false,
+                )
+            }
+            confirmVerified(repository, readoutPreferencesRepository)
+        }
 }

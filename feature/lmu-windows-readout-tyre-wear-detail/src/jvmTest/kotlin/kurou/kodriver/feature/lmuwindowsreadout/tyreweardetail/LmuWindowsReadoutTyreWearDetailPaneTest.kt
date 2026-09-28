@@ -90,4 +90,21 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
 
         assertEquals(true, resetCalled)
     }
+
+    @Test
+    fun `スイッチをタップするとonEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreWearDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreWearDetailUiState(enabled = true),
+                    onEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("摩耗警告").performClick()
+
+        assertEquals(false, changedEnabled)
+    }
 }

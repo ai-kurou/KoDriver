@@ -46,6 +46,7 @@ fun LmuWindowsReadoutTyreWearDetailPane(modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutTyreWearDetailPaneContent(
         uiState = uiState,
+        onEnabledChanged = viewModel::onEnabledChanged,
         onWarningChipClicked = viewModel::onWarningChipClicked,
         onThresholdChanged = viewModel::onThresholdChanged,
         onThresholdReset = viewModel::onThresholdReset,
@@ -56,6 +57,7 @@ fun LmuWindowsReadoutTyreWearDetailPane(modifier: Modifier = Modifier) {
 @Composable
 internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
     uiState: LmuWindowsReadoutTyreWearDetailUiState = LmuWindowsReadoutTyreWearDetailUiState(),
+    onEnabledChanged: (Boolean) -> Unit = {},
     onWarningChipClicked: () -> Unit = {},
     onThresholdChanged: (Int) -> Unit = {},
     onThresholdReset: () -> Unit = {},
@@ -74,13 +76,15 @@ internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
         val thresholdLabelTemplate = stringResource(Res.string.tyre_wear_threshold_label)
         DetailPaneCard(
             title = stringResource(Res.string.tyre_wear_warning_title),
+            checked = uiState.enabled,
+            onCheckedChange = onEnabledChanged,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
                         chipLabels = listOf(warningChipLabel),
                         selectedChipLabels = setOf(warningChipLabel),
-                        chipEnabled = true,
+                        chipEnabled = uiState.enabled,
                         onChipClick = { onWarningChipClicked() },
                     )
                     HorizontalDivider(

@@ -1429,6 +1429,25 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `タイヤ摩耗のdetailPaneスイッチが無効なら読み上げない`() {
+        val decision =
+            useCase.determineTyreWear(
+                state = LmuWindowsNarratorState(),
+                data = tyreWear(fl = 0.4),
+                settings =
+                    settings(
+                        tyreWearThresholdPercentage = 50,
+                        enabledStates =
+                            allEnabledStates +
+                                mapOf(ReadoutItemKey.LmuWindows.TyreWear.WarningReadout to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreWearWarned)
+    }
+
+    @Test
     fun `いずれかのブレーキが閾値以上になると BrakeOverheat を返す`() {
         val decision =
             useCase.determineBrakeTemperatureOverheat(
@@ -2326,6 +2345,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
         ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+        ReadoutItemKey.LmuWindows.TyreWear.WarningReadout to true,
         ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout to true,
