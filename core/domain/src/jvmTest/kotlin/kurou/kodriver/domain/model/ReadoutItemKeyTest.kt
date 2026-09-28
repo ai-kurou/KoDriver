@@ -42,6 +42,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.fromValue("lmu_windows_remaining_virtual_energy"),
         )
         assertEquals(
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout,
+            ReadoutItemKey.fromValue("lmu_windows_remaining_virtual_energy_warning_readout"),
+        )
+        assertEquals(
             ReadoutItemKey.LmuWindows.TyreWear.Root,
             ReadoutItemKey.fromValue("lmu_windows_tyre_wear"),
         )

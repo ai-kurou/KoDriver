@@ -32,7 +32,7 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
         ) { thresholdPercentage, enabledStates ->
             LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(
                 thresholdPercentage = thresholdPercentage,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                enabled = enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout),
             )
         }.stateIn(
             viewModelScope,
@@ -58,7 +58,7 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
         viewModelScope.launch {
             saveReadoutEnabledState(
                 Simulator.LmuWindows.id,
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout,
                 enabled,
             )
         }
