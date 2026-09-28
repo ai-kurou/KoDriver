@@ -19,10 +19,15 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,11 +39,17 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
 
     private val repository: LmuWindowsRemainingVirtualEnergyPreferencesRepository = mockk()
 
-    private val ttsEngine: TextToSpeechEngine = mockk()
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+
+    private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
+
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
+            enabledStatesFlow
     }
 
     @AfterTest
@@ -50,6 +61,8 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
         LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
             observeThresholdPercentage = ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
             saveThresholdPercentage = SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
@@ -60,11 +73,12 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
             val viewModel = createViewModel()
 
             assertEquals(
-                LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(thresholdPercentage = 30),
+                LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(thresholdPercentage = 30, enabled = false),
                 viewModel.uiState.first(),
             )
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            confirmVerified(repository)
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -79,8 +93,9 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
 
             assertEquals(30, viewModel.uiState.first().thresholdPercentage)
             verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -95,20 +110,51 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
 
             assertEquals(30, viewModel.uiState.first().thresholdPercentage)
             verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
     fun `onWarningChipClickedを呼ぶとRemainingVirtualEnergyWarningイベントが再生される`() {
         every { repository.observeThresholdPercentage() } returns MutableStateFlow(50)
-        every { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, false) } returns Unit
         val viewModel = createViewModel()
 
         viewModel.onWarningChipClicked()
 
         verify(exactly = 1) { repository.observeThresholdPercentage() }
+        verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, false) }
-        confirmVerified(repository, ttsEngine)
+        confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
     }
+
+    @Test
+    fun `onEnabledChangedにtrueを渡すとuiStateのenabledがtrueになる`() =
+        runTest {
+            every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
+            coEvery {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.LmuWindows.id,
+                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    true,
+                )
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true) }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onEnabledChanged(true)
+
+            assertEquals(true, viewModel.uiState.first().enabled)
+            verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            coVerify(exactly = 1) {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.LmuWindows.id,
+                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    true,
+                )
+            }
+            confirmVerified(repository, readoutPreferencesRepository)
+        }
 }

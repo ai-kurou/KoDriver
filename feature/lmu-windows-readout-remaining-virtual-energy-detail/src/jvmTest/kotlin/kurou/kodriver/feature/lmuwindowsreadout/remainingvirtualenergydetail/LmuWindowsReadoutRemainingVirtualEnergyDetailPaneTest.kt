@@ -86,4 +86,21 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneTest {
 
         assertEquals(true, resetCalled)
     }
+
+    @Test
+    fun `スイッチをタップするとonEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
+                    uiState = LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(enabled = true),
+                    onEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("残量警告").performClick()
+
+        assertEquals(false, changedEnabled)
+    }
 }
