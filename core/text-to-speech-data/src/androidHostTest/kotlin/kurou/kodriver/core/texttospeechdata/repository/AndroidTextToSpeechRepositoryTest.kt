@@ -267,6 +267,10 @@ class AndroidTextToSpeechRepositoryTest {
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
             assertNull(repository.unavailableReason())
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            confirmVerified(textToSpeech)
         }
 
     @Test
