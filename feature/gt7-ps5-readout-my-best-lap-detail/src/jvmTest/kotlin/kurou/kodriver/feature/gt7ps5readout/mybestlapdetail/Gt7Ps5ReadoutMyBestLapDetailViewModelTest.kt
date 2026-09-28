@@ -20,10 +20,15 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5MyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,13 +40,19 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
 
     private val repository: Gt7Ps5MyBestLapPreferencesRepository = mockk()
 
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+
     private val ttsEngine: TextToSpeechEngine = mockk()
 
     private val voiceTypeFlow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
 
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            enabledStatesFlow
     }
 
     @AfterTest
@@ -53,6 +64,8 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
         Gt7Ps5ReadoutMyBestLapDetailViewModel(
             observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
             saveMyBestLapVoiceType = SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
@@ -63,8 +76,10 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             val viewModel = createViewModel()
 
             assertEquals(MyBestLapVoiceType.FORMAL, viewModel.uiState.first().voiceType)
+            assertEquals(true, viewModel.uiState.first().enabled)
             verify(exactly = 1) { repository.observeVoiceType() }
-            confirmVerified(repository)
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -80,8 +95,39 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
 
             assertEquals(MyBestLapVoiceType.CASUAL, viewModel.uiState.first().voiceType)
             verify(exactly = 1) { repository.observeVoiceType() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
+        }
+
+    @Test
+    fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
+        runTest {
+            every { repository.observeVoiceType() } returns voiceTypeFlow
+            coEvery {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.Gt7Ps5.id,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
+                    false,
+                )
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled to false) }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().enabled)
+            verify(exactly = 1) { repository.observeVoiceType() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            coVerify(exactly = 1) {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.Gt7Ps5.id,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
+                    false,
+                )
+            }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -93,8 +139,9 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
         viewModel.onPreviewClicked(MyBestLapVoiceType.FORMAL)
 
         verify(exactly = 1) { repository.observeVoiceType() }
+        verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
-        confirmVerified(repository, ttsEngine)
+        confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
     }
 
     @Test
@@ -106,7 +153,8 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
         viewModel.onPreviewClicked(MyBestLapVoiceType.CASUAL)
 
         verify(exactly = 1) { repository.observeVoiceType() }
+        verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapCasual, false) }
-        confirmVerified(repository, ttsEngine)
+        confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
     }
 }

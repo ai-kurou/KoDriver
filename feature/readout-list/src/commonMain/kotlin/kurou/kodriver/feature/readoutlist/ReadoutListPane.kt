@@ -121,7 +121,7 @@ private fun lmuWindowsItemIcon(itemId: ReadoutItemKey.LmuWindows): ImageVector =
 
 private fun gt7Ps5ItemIcon(itemId: ReadoutItemKey.Gt7Ps5): ImageVector =
     when (itemId) {
-        is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
+        is ReadoutItemKey.Gt7Ps5.MyBestLap -> Icons.Filled.Timer
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.Gt7Ps5.TyreTemperature -> Icons.Filled.DeviceThermostat
