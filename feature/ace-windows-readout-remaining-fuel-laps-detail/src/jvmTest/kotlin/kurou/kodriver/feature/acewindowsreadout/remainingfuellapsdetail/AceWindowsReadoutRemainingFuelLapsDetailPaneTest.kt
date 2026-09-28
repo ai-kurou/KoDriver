@@ -98,6 +98,23 @@ class AceWindowsReadoutRemainingFuelLapsDetailPaneTest {
     }
 
     @Test
+    fun `スイッチをタップするとonEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
+                    uiState = AceWindowsReadoutRemainingFuelLapsDetailUiState(enabled = true),
+                    onEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("燃料残り周回数").performClick()
+
+        assertEquals(false, changedEnabled)
+    }
+
+    @Test
     fun `チップをタップするとonPreviewClickedが呼ばれる`() {
         var previewClicked = false
         rule.setContent {

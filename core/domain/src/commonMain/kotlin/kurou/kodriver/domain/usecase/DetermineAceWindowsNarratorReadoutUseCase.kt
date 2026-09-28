@@ -122,7 +122,9 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
         val nextState = state.copy(lastRemainingFuelLaps = laps)
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root)) {
+        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) ||
+            !settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled)
+        ) {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
         return AceWindowsNarratorReadoutDecision(

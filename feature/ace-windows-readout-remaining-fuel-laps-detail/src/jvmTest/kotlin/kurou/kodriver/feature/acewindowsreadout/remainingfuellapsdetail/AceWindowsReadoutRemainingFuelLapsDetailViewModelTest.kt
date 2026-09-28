@@ -20,10 +20,15 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,13 +40,19 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
 
     private val repository: AceWindowsRemainingFuelLapsPreferencesRepository = mockk()
 
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+
     private val ttsEngine: TextToSpeechEngine = mockk(relaxUnitFun = true)
 
     private val remainingFuelLapsFlow = MutableStateFlow(ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT)
 
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+            enabledStatesFlow
     }
 
     @AfterTest
@@ -54,6 +65,8 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             observeAceWindowsRemainingFuelLapsThreshold =
                 ObserveAceWindowsRemainingFuelLapsThresholdUseCase(repository),
             saveAceWindowsRemainingFuelLapsThreshold = SaveAceWindowsRemainingFuelLapsThresholdUseCase(repository),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
@@ -63,9 +76,16 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             every { repository.observeThresholdLaps() } returns remainingFuelLapsFlow
             val viewModel = createViewModel()
 
-            assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
+            assertEquals(
+                AceWindowsReadoutRemainingFuelLapsDetailUiState(
+                    remainingFuelLaps = ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT,
+                    enabled = true,
+                ),
+                viewModel.uiState.first(),
+            )
             verify(exactly = 1) { repository.observeThresholdLaps() }
-            confirmVerified(repository)
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -79,8 +99,9 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
 
             assertEquals(1, viewModel.uiState.first().remainingFuelLaps)
             verify(exactly = 1) { repository.observeThresholdLaps() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdLaps(1) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -97,8 +118,41 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
 
             assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
             verify(exactly = 1) { repository.observeThresholdLaps() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdLaps(ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
+        }
+
+    @Test
+    fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
+        runTest {
+            every { repository.observeThresholdLaps() } returns remainingFuelLapsFlow
+            coEvery {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.AceWindows.id,
+                    ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled,
+                    false,
+                )
+            } answers {
+                enabledStatesFlow.update {
+                    it + (ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled to false)
+                }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().enabled)
+            verify(exactly = 1) { repository.observeThresholdLaps() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
+            coVerify(exactly = 1) {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.AceWindows.id,
+                    ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled,
+                    false,
+                )
+            }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -112,8 +166,9 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             viewModel.onPreviewClicked()
 
             verify(exactly = 1) { repository.observeThresholdLaps() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(4), false) }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(0), true) }
-            confirmVerified(repository, ttsEngine)
+            confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
         }
 }
