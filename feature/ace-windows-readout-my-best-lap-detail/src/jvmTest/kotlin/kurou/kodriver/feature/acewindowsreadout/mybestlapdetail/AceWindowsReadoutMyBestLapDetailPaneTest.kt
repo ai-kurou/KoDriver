@@ -66,4 +66,21 @@ class AceWindowsReadoutMyBestLapDetailPaneTest {
         assertEquals(MyBestLapVoiceType.CASUAL, changedVoiceType)
         assertEquals(MyBestLapVoiceType.CASUAL, previewedVoiceType)
     }
+
+    @Test
+    fun `スイッチをタップするとonEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsReadoutMyBestLapDetailPaneContent(
+                    uiState = AceWindowsReadoutMyBestLapDetailUiState(enabled = true),
+                    onEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("自己ベストラップ更新")[0].performClick()
+
+        assertEquals(false, changedEnabled)
+    }
 }

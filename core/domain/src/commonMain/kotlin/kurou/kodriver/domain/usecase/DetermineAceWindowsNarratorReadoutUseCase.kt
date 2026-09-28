@@ -88,7 +88,9 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         if (current >= state.personalBestMs) {
             return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.Root)) {
+        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.Root) ||
+            !settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled)
+        ) {
             return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 

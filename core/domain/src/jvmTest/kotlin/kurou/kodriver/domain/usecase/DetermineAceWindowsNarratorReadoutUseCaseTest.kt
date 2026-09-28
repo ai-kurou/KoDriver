@@ -178,6 +178,31 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `自己ベストのdetailPaneスイッチが無効なら読み上げない`() {
+        val initialDecision =
+            useCase.determineMyBestLap(
+                state = AceWindowsNarratorState(),
+                data = bestLapTime(bestLapTimeMs = 90_000),
+                settings =
+                    myBestLapSettings(
+                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled to false),
+                    ),
+            )
+        val decision =
+            useCase.determineMyBestLap(
+                state = initialDecision.state,
+                data = bestLapTime(bestLapTimeMs = 89_000),
+                settings =
+                    myBestLapSettings(
+                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled to false),
+                    ),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(Int.MAX_VALUE, decision.state.personalBestMs)
+    }
+
+    @Test
     fun `enabledStatesが空でも例外にならずデフォルトtrueで読み上げる`() {
         val fuelDecision =
             useCase.determineRemainingFuel(
