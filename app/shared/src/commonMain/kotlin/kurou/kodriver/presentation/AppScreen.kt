@@ -345,6 +345,8 @@ private fun DefaultOtherContent(
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.AccessLocalNetworkPermission,
+                OtherListItemType.TtsEngineMissing,
+                OtherListItemType.TtsLanguageDataMissing,
                 -> {}
             }
         },

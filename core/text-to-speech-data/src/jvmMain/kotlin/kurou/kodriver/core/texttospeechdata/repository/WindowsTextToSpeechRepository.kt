@@ -5,6 +5,7 @@ import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import kurou.kodriver.core.texttospeechdata.windows.SapiSpeechSynthesizer
 import kurou.kodriver.core.texttospeechdata.windows.WindowsSpeechSynthesizer
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 
 /**
@@ -22,6 +23,9 @@ internal class WindowsTextToSpeechRepository(
     private val synthesizer: WindowsSpeechSynthesizer = SapiSpeechSynthesizer(),
 ) : TextToSpeechRepository {
     override suspend fun isAvailable(): Boolean = withContext(Dispatchers.IO) { synthesizer.isAvailable() }
+
+    // Windowsでは理由の切り分けを行わないため常にnull（判定対象外）を返す。
+    override suspend fun unavailableReason(): TextToSpeechUnavailableReason? = null
 
     override suspend fun speak(
         text: String,

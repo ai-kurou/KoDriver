@@ -24,9 +24,11 @@ import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
+import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
+import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
@@ -65,6 +67,8 @@ class OtherListViewModelTest {
 
     private val accessLocalNetworkPermissionRepository: AccessLocalNetworkPermissionRepository = mockk()
 
+    private val textToSpeechRepository: TextToSpeechRepository = mockk()
+
     private val overlayVisibleFlow = MutableStateFlow(true)
     private val keepScreenOnFlow = MutableStateFlow(true)
     private val dynamicColorFlow = MutableStateFlow(false)
@@ -102,6 +106,7 @@ class OtherListViewModelTest {
             checkHapticFeedbackAvailable = CheckHapticFeedbackAvailableUseCase(hapticFeedbackAvailabilityRepository),
             checkAccessLocalNetworkPermissionGranted =
                 CheckAccessLocalNetworkPermissionGrantedUseCase(accessLocalNetworkPermissionRepository),
+            checkTextToSpeechUnavailableReason = CheckTextToSpeechUnavailableReasonUseCase(textToSpeechRepository),
             startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
             appVersionInfo =
                 OtherListAppVersionInfo(
@@ -832,6 +837,38 @@ class OtherListViewModelTest {
                 hapticFeedbackEnabledRepository,
                 hapticFeedbackAvailabilityRepository,
                 accessLocalNetworkPermissionRepository,
+            )
+        }
+
+    @Test
+    fun `checkTextToSpeechAvailabilityでTTSが利用可能ならTTS案内項目は表示されない`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            coEvery { textToSpeechRepository.unavailableReason() } returns null
+            val viewModel = createViewModel()
+
+            viewModel.checkTextToSpeechAvailability()
+
+            val items = viewModel.uiState.first().items
+            assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
+            assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
+            coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                overlayVisibleRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+                textToSpeechRepository,
             )
         }
 }

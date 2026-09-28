@@ -10,5 +10,7 @@ actual fun buildOtherListItems(): List<OtherListItemType> =
             it != OtherListItemType.KeepScreenOn &&
             it != OtherListItemType.DynamicColor &&
             it != OtherListItemType.HapticFeedback &&
-            it != OtherListItemType.DebugState
+            it != OtherListItemType.DebugState &&
+            it != OtherListItemType.TtsEngineMissing &&
+            it != OtherListItemType.TtsLanguageDataMissing
     }
