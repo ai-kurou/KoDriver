@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -17,6 +18,15 @@ class WindowsTextToSpeechRepositoryTest {
             assertTrue(WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer()).isAvailable())
             assertFalse(
                 WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer(available = false)).isAvailable(),
+            )
+        }
+
+    @Test
+    fun `unavailableReasonは常にnullを返す`() =
+        runTest {
+            assertNull(WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer()).unavailableReason())
+            assertNull(
+                WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer(available = false)).unavailableReason(),
             )
         }
 

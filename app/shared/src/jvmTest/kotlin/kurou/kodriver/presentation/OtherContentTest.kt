@@ -249,4 +249,24 @@ class OtherContentTest {
         rule.waitUntil { clearSelectedItemCallCount == 1 }
         assertEquals(null, selectedItem)
     }
+
+    @Test
+    fun `音声合成アプリをインストール項目をクリックするとPlayストア誘導コールバックを呼ぶ`() {
+        var ttsEnginePlayStoreOpened = false
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.TtsEngineMissing)),
+                onItemSelected = {},
+                onOpenTtsEngineInPlayStore = { ttsEnginePlayStoreOpened = true },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+
+        rule.onNode(hasText("音声合成アプリをインストール")).performClick()
+
+        assertTrue(ttsEnginePlayStoreOpened)
+    }
 }

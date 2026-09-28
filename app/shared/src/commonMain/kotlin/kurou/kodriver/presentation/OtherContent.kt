@@ -37,6 +37,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val GITHUB_REPOSITORY_URL = "https://github.com/ai-kurou/KoDriver"
 private const val RELEASE_PAGE_URL = "$GITHUB_REPOSITORY_URL/releases"
+private const val TTS_ENGINE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.google.android.tts"
 
 /**
  * Other のコンテンツを表示する Composable。
@@ -61,6 +62,7 @@ fun OtherContent(
     LaunchedEffect(Unit) {
         viewModel.checkUpdate()
         viewModel.checkStartupEnabled()
+        viewModel.checkTextToSpeechAvailability()
     }
 
     LifecycleResumeEffect(Unit) {
@@ -73,6 +75,7 @@ fun OtherContent(
         onItemSelected = viewModel::onItemSelected,
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
+        onOpenTtsEngineInPlayStore = { uriHandler.openUri(TTS_ENGINE_PLAY_STORE_URL) },
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onOpenThemeDialog = onOpenThemeDialog,
         onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
@@ -100,6 +103,7 @@ private fun handleOtherItemClick(
     onOpenReadoutStartSoundDialog: () -> Unit,
     onOpenThemeDialog: () -> Unit,
     onOpenOverlayTextSizeDialog: () -> Unit,
+    onOpenTtsEngineInPlayStore: () -> Unit,
 ) {
     when (itemType) {
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
@@ -112,10 +116,14 @@ private fun handleOtherItemClick(
 
         OtherListItemType.ReleasePage -> onOpenReleasePage()
 
+        OtherListItemType.TtsEngineMissing -> onOpenTtsEngineInPlayStore()
+
         OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        // TtsLanguageDataMissingはOtherListPane側でOS設定画面を直接開くため、ここには到達しない。
+        OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
@@ -139,6 +147,7 @@ internal fun OtherContent(
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
     onOpenOverlayTextSizeDialog: () -> Unit = {},
+    onOpenTtsEngineInPlayStore: () -> Unit = {},
     onOverlayVisibleChange: (Boolean) -> Unit = {},
     onKeepScreenOnChange: (Boolean) -> Unit = {},
     onDynamicColorEnabledChange: (Boolean) -> Unit = {},
@@ -253,6 +262,7 @@ internal fun OtherContent(
                         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
                         onOpenThemeDialog = onOpenThemeDialog,
                         onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
+                        onOpenTtsEngineInPlayStore = onOpenTtsEngineInPlayStore,
                     )
                 },
                 scrollToTopRequest = scrollToTopRequest,

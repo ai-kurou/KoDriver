@@ -13,10 +13,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -258,12 +260,23 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
-    fun `読み上げ言語が利用できない場合は利用不可としてエンジンを破棄する`() =
+    fun `利用可能な場合はunavailableReasonがnullを返す`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(any()) } returns TextToSpeech.SUCCESS
+            val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
+
+            assertNull(repository.unavailableReason())
+        }
+
+    @Test
+    fun `読み上げ言語が利用できない場合は利用不可としてエンジンを破棄しLanguageDataMissingを返す`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_NOT_SUPPORTED
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
             assertFalse(repository.isAvailable())
+            assertEquals(TextToSpeechUnavailableReason.LanguageDataMissing, repository.unavailableReason())
             repository.speak("ベストラップ", queue = false)
 
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
@@ -272,24 +285,26 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
-    fun `初期化に失敗した場合は利用不可としてエンジンを破棄する`() =
+    fun `初期化に失敗した場合は利用不可としてエンジンを破棄しEngineMissingを返す`() =
         runTest {
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.ERROR))
 
             assertFalse(repository.isAvailable())
+            assertEquals(TextToSpeechUnavailableReason.EngineMissing, repository.unavailableReason())
 
             verify(exactly = 1) { textToSpeech.shutdown() }
             confirmVerified(textToSpeech)
         }
 
     @Test
-    fun `発話完了通知リスナーの登録に失敗した場合は利用不可としてエンジンを破棄する`() =
+    fun `発話完了通知リスナーの登録に失敗した場合は利用不可としてエンジンを破棄しEngineMissingを返す`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(any()) } returns TextToSpeech.ERROR
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
             assertFalse(repository.isAvailable())
+            assertEquals(TextToSpeechUnavailableReason.EngineMissing, repository.unavailableReason())
 
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
             verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }

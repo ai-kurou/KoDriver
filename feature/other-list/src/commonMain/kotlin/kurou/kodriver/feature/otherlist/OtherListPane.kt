@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PowerSettingsNew
+import androidx.compose.material.icons.outlined.RecordVoiceOver
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Vibration
@@ -77,6 +78,8 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_release_page
 import kurou.kodriver.feature.otherlist.generated.resources.item_server_ip
 import kurou.kodriver.feature.otherlist.generated.resources.item_startup
 import kurou.kodriver.feature.otherlist.generated.resources.item_theme
+import kurou.kodriver.feature.otherlist.generated.resources.item_tts_engine_missing
+import kurou.kodriver.feature.otherlist.generated.resources.item_tts_language_data_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
@@ -114,6 +117,8 @@ private fun OtherListItemType.section(): OtherListSection =
 
         OtherListItemType.Volume,
         OtherListItemType.ReadoutStartSound,
+        OtherListItemType.TtsEngineMissing,
+        OtherListItemType.TtsLanguageDataMissing,
         -> OtherListSection.ReadoutSettings
 
         OtherListItemType.OverlayVisible,
@@ -158,6 +163,14 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
 
         OtherListItemType.ReadoutStartSound -> {
             stringResource(Res.string.item_readout_start_sound)
+        }
+
+        OtherListItemType.TtsEngineMissing -> {
+            stringResource(Res.string.item_tts_engine_missing)
+        }
+
+        OtherListItemType.TtsLanguageDataMissing -> {
+            stringResource(Res.string.item_tts_language_data_missing)
         }
 
         OtherListItemType.OverlayVisible,
@@ -238,6 +251,10 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
         OtherListItemType.Volume -> Icons.AutoMirrored.Outlined.VolumeUp
 
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
+
+        OtherListItemType.TtsEngineMissing,
+        OtherListItemType.TtsLanguageDataMissing,
+        -> Icons.Outlined.RecordVoiceOver
 
         OtherListItemType.OverlayVisible,
         OtherListItemType.OverlayTextSize,
@@ -329,6 +346,8 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         OtherListItemType.AccessLocalNetworkPermission,
+        OtherListItemType.TtsEngineMissing,
+        OtherListItemType.TtsLanguageDataMissing,
         -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
     }
 }
@@ -442,6 +461,7 @@ private fun OtherListItem(
 ) {
     val haptic = LocalHapticFeedback.current
     val openAccessLocalNetworkPermissionSettings = rememberOpenAccessLocalNetworkPermissionSettings()
+    val openTtsSettings = rememberOpenTtsSettings()
     val onOverlayVisibleChangeWithHaptic: (Boolean) -> Unit = {
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onOverlayVisibleChange(it)
@@ -547,6 +567,8 @@ private fun OtherListItem(
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.TtsEngineMissing,
+                OtherListItemType.TtsLanguageDataMissing,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayTextSize,
                 OtherListItemType.OverlayBackgroundOpacity,
@@ -582,6 +604,7 @@ private fun OtherListItem(
                         onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
                         onStartupEnabledChange = onStartupEnabledChange,
                         openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
+                        openTtsSettings = openTtsSettings,
                         onItemClick = onItemClick,
                     )
                 },
@@ -598,6 +621,7 @@ private fun handleOtherListItemClick(
     onHapticFeedbackEnabledChange: (Boolean) -> Unit,
     onStartupEnabledChange: (Boolean) -> Unit,
     openAccessLocalNetworkPermissionSettings: () -> Unit,
+    openTtsSettings: () -> Unit,
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
@@ -625,10 +649,15 @@ private fun handleOtherListItemClick(
             openAccessLocalNetworkPermissionSettings()
         }
 
+        OtherListItemType.TtsLanguageDataMissing -> {
+            openTtsSettings()
+        }
+
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
         OtherListItemType.ReadoutStartSound,
+        OtherListItemType.TtsEngineMissing,
         OtherListItemType.Theme,
         OtherListItemType.OverlayTextSize,
         OtherListItemType.OverlayBackgroundOpacity,

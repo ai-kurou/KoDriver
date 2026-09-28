@@ -6,6 +6,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
@@ -43,11 +44,21 @@ internal class AndroidTextToSpeechRepository(
     private val mutex = Mutex()
     private var initialized = false
     private var textToSpeech: TextToSpeech? = null
+    private var unavailableReason: TextToSpeechUnavailableReason? = null
     private val pendingUtterances = ConcurrentHashMap<String, CompletableDeferred<Unit>>()
     private val utteranceIdSequence = AtomicLong()
     private val activeUtteranceId = AtomicReference<String?>()
 
     override suspend fun isAvailable(): Boolean = ensureInitialized() != null
+
+    /**
+     * 利用できない理由を返す。[ensureInitialized] が設定する [unavailableReason] をそのまま返すため、
+     * 未初期化なら先に初期化を待ち合わせる。
+     */
+    override suspend fun unavailableReason(): TextToSpeechUnavailableReason? {
+        ensureInitialized()
+        return unavailableReason
+    }
 
     override suspend fun speak(
         text: String,
@@ -102,7 +113,13 @@ internal class AndroidTextToSpeechRepository(
 
     /**
      * 初回呼び出し時のみ [TextToSpeech] を生成し、初期化完了を待つ。
-     * 利用できない場合は `null` を返し、以降は再初期化しない。
+     * 利用できない場合は `null` を返し、[unavailableReason] にその理由を記録した上で以降は再初期化しない。
+     *
+     * 理由の切り分けは、[TextToSpeech.OnInitListener] の結果と [TextToSpeech.setLanguage] の結果の
+     * どちらで失敗したかで行う。エンジンサービス自体が端末に存在しない・バインドに失敗した場合は
+     * 初期化そのものが `SUCCESS` 以外で完了するため [TextToSpeechUnavailableReason.EngineMissing] とし、
+     * 初期化自体は成功したが言語データ（日本語）が無い場合は [TextToSpeechUnavailableReason.LanguageDataMissing] とする。
+     * 発話完了通知の登録失敗はエンジン自体の異常とみなし [TextToSpeechUnavailableReason.EngineMissing] 扱いにする。
      */
     private suspend fun ensureInitialized(): TextToSpeech? =
         mutex.withLock {
@@ -110,29 +127,41 @@ internal class AndroidTextToSpeechRepository(
             initialized = true
             val initStatus = CompletableDeferred<Int>()
             val engine = textToSpeechFactory { status -> initStatus.complete(status) }
+            if (initStatus.await() != TextToSpeech.SUCCESS) {
+                unavailableReason = TextToSpeechUnavailableReason.EngineMissing
+                engine.shutdown()
+                textToSpeech = null
+                return@withLock null
+            }
+            if (engine.setLanguage(locale) < TextToSpeech.LANG_AVAILABLE) {
+                unavailableReason = TextToSpeechUnavailableReason.LanguageDataMissing
+                engine.shutdown()
+                textToSpeech = null
+                return@withLock null
+            }
+            val listenerRegistered =
+                engine.setOnUtteranceProgressListener(
+                    object : UtteranceProgressListener() {
+                        override fun onStart(utteranceId: String?) {
+                            activeUtteranceId.set(utteranceId)
+                        }
+
+                        override fun onDone(utteranceId: String?) = completeUtterance(utteranceId)
+
+                        override fun onStop(
+                            utteranceId: String?,
+                            interrupted: Boolean,
+                        ) = completeUtterance(utteranceId)
+
+                        @Deprecated("Deprecated in Java")
+                        override fun onError(utteranceId: String?) = completeUtterance(utteranceId)
+                    },
+                ) == TextToSpeech.SUCCESS
             textToSpeech =
-                if (initStatus.await() == TextToSpeech.SUCCESS &&
-                    engine.setLanguage(locale) >= TextToSpeech.LANG_AVAILABLE &&
-                    engine.setOnUtteranceProgressListener(
-                        object : UtteranceProgressListener() {
-                            override fun onStart(utteranceId: String?) {
-                                activeUtteranceId.set(utteranceId)
-                            }
-
-                            override fun onDone(utteranceId: String?) = completeUtterance(utteranceId)
-
-                            override fun onStop(
-                                utteranceId: String?,
-                                interrupted: Boolean,
-                            ) = completeUtterance(utteranceId)
-
-                            @Deprecated("Deprecated in Java")
-                            override fun onError(utteranceId: String?) = completeUtterance(utteranceId)
-                        },
-                    ) == TextToSpeech.SUCCESS
-                ) {
+                if (listenerRegistered) {
                     engine
                 } else {
+                    unavailableReason = TextToSpeechUnavailableReason.EngineMissing
                     engine.shutdown()
                     null
                 }

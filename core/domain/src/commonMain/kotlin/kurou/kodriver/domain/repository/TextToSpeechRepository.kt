@@ -1,5 +1,7 @@
 package kurou.kodriver.domain.repository
 
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
+
 /**
  * OS標準の音声合成（TTS）で任意のテキストを読み上げるRepository。
  *
@@ -11,6 +13,15 @@ package kurou.kodriver.domain.repository
 interface TextToSpeechRepository {
     /** このプラットフォームでTTSが利用できるかどうか。エンジンの初期化を伴う場合がある。 */
     suspend fun isAvailable(): Boolean
+
+    /**
+     * TTSが利用できない理由。利用できる場合は `null`。
+     *
+     * Androidでのユーザー向け案内（アプリストア誘導・OS設定誘導）に使う。Windowsでは理由の
+     * 切り分けを行わないため常に `null` を返す（[isAvailable] の判定とは独立）。
+     * [isAvailable] と同様、エンジンの初期化を伴う場合がある。
+     */
+    suspend fun unavailableReason(): TextToSpeechUnavailableReason?
 
     /**
      * [text] を読み上げる。実装は読み上げが実際に完了する（または [stop] やコルーチンのキャンセルで

@@ -9,9 +9,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
+import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
@@ -46,11 +48,13 @@ class OtherListViewModel(
     private val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
     checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
+    private val checkTextToSpeechUnavailableReason: CheckTextToSpeechUnavailableReasonUseCase,
     private val startupRegistration: StartupRegistrationUseCases,
     appVersionInfo: OtherListAppVersionInfo,
 ) : ViewModel() {
     private val currentVersion = appVersionInfo.currentVersion
     private val hapticFeedbackAvailable = checkHapticFeedbackAvailable()
+    private val textToSpeechUnavailableReason = MutableStateFlow<TextToSpeechUnavailableReason?>(null)
     private val _uiState =
         MutableStateFlow(
             OtherListUiState(
@@ -77,6 +81,18 @@ class OtherListViewModel(
                 dynamicColorEnabled = dynamicColorEnabled,
                 hapticFeedbackEnabled = hapticFeedbackEnabled,
             )
+        }.combine(textToSpeechUnavailableReason) { state, ttsUnavailableReason ->
+            state.copy(
+                items =
+                    state.items.filterNot {
+                        // TTSが利用できる（理由がnull）間はどちらの案内項目も表示しない。
+                        // 理由が判明した場合は、その理由に対応する項目のみを表示する。
+                        (it == OtherListItemType.TtsEngineMissing &&
+                            ttsUnavailableReason != TextToSpeechUnavailableReason.EngineMissing) ||
+                            (it == OtherListItemType.TtsLanguageDataMissing &&
+                                ttsUnavailableReason != TextToSpeechUnavailableReason.LanguageDataMissing)
+                    },
+            )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun checkUpdate() {
@@ -96,6 +112,12 @@ class OtherListViewModel(
         viewModelScope.launch {
             val enabled = startupRegistration.getEnabled()
             _uiState.update { it.copy(startupEnabled = enabled) }
+        }
+    }
+
+    fun checkTextToSpeechAvailability() {
+        viewModelScope.launch {
+            textToSpeechUnavailableReason.value = checkTextToSpeechUnavailableReason()
         }
     }
 

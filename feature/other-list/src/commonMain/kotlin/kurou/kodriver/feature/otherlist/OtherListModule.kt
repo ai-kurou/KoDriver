@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherlist
 
+import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
@@ -30,6 +31,7 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
+                get(),
                 OtherListAppVersionInfo(
                     currentVersion = currentAppVersion(),
                     appVersionLabel = currentAppVersionLabel(),
@@ -43,4 +45,7 @@ val otherListModule =
         // オーバーレイ表示ON/OFF（:core:domain。get() は :core:data の Repository を解決）
         factory { ObserveOverlayVisibleUseCase(get()) }
         factory { SaveOverlayVisibleUseCase(get()) }
+
+        // TTS利用不可理由の判定（:core:domain。get() は :core:text-to-speech-data の Repository を解決）
+        factory { CheckTextToSpeechUnavailableReasonUseCase(get()) }
     }

@@ -10,6 +10,8 @@ enum class OtherListItemType(
     ServerIp("server_ip"),
     ConsoleIp("console_ip"),
     Volume("volume"),
+    TtsEngineMissing("tts_engine_missing"),
+    TtsLanguageDataMissing("tts_language_data_missing"),
     KeepScreenOn("keep_screen_on"),
     ReadoutStartSound("readout_start_sound"),
     Theme("theme"),

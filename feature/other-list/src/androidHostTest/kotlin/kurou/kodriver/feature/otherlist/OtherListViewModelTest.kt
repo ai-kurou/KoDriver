@@ -2,6 +2,8 @@
 
 package kurou.kodriver.feature.otherlist
 
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -14,6 +16,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
@@ -22,9 +25,11 @@ import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
+import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
+import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
@@ -44,9 +49,10 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
- * Android実機（SDK 31+）における buildOtherListItems() とのHapticFeedback項目のフィルタリング連携を確認する。
- * :core:data のプラットフォーム振り分けにより、jvmTestではHapticFeedback項目自体が定義されないため
- * ここでのみ検証する（他のケースは [OtherListViewModelTest]（jvmTest）を参照）。
+ * Android実機（SDK 31+）における buildOtherListItems() とのHapticFeedback項目・TTS案内項目の
+ * フィルタリング連携を確認する。:core:data のプラットフォーム振り分けにより、jvmTestでは
+ * HapticFeedback項目・TTS案内項目自体が定義されないため、ここでのみ検証する
+ * （他のケースは [OtherListViewModelTest]（jvmTest）を参照）。
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -69,6 +75,8 @@ class OtherListViewModelTest {
     private val startupRegistrationRepository: StartupEnabledRepository = mockk()
 
     private val accessLocalNetworkPermissionRepository: AccessLocalNetworkPermissionRepository = mockk()
+
+    private val textToSpeechRepository: TextToSpeechRepository = mockk()
 
     private val overlayVisibleFlow = MutableStateFlow(true)
     private val keepScreenOnFlow = MutableStateFlow(true)
@@ -101,6 +109,7 @@ class OtherListViewModelTest {
             checkHapticFeedbackAvailable = CheckHapticFeedbackAvailableUseCase(hapticFeedbackAvailabilityRepository),
             checkAccessLocalNetworkPermissionGranted =
                 CheckAccessLocalNetworkPermissionGrantedUseCase(accessLocalNetworkPermissionRepository),
+            checkTextToSpeechUnavailableReason = CheckTextToSpeechUnavailableReasonUseCase(textToSpeechRepository),
             startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
             appVersionInfo =
                 OtherListAppVersionInfo(
@@ -167,6 +176,101 @@ class OtherListViewModelTest {
                 dynamicColorRepository,
                 hapticFeedbackEnabledRepository,
                 hapticFeedbackAvailabilityRepository,
+            )
+        }
+
+    @Test
+    fun `初期状態ではTTS案内項目は表示されない`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+
+            val items = viewModel.uiState.first().items
+            assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
+            assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                overlayVisibleRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+            )
+        }
+
+    @Test
+    fun `checkTextToSpeechAvailabilityでエンジン未インストールと判明した場合はエンジンインストール案内のみ表示される`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            coEvery {
+                textToSpeechRepository.unavailableReason()
+            } returns TextToSpeechUnavailableReason.EngineMissing
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+
+            viewModel.checkTextToSpeechAvailability()
+
+            val items = viewModel.uiState.first().items
+            assertTrue(items.contains(OtherListItemType.TtsEngineMissing))
+            assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
+            coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                overlayVisibleRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+                textToSpeechRepository,
+            )
+        }
+
+    @Test
+    fun `checkTextToSpeechAvailabilityで言語データ未インストールと判明した場合は言語データ設定案内のみ表示される`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            coEvery {
+                textToSpeechRepository.unavailableReason()
+            } returns TextToSpeechUnavailableReason.LanguageDataMissing
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+
+            viewModel.checkTextToSpeechAvailability()
+
+            val items = viewModel.uiState.first().items
+            assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
+            assertTrue(items.contains(OtherListItemType.TtsLanguageDataMissing))
+            coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                overlayVisibleRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+                textToSpeechRepository,
             )
         }
 }
