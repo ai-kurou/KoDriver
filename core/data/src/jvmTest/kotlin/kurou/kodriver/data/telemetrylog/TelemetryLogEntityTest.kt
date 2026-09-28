@@ -37,6 +37,38 @@ class TelemetryLogEntityTest {
     }
 
     @Test
+    fun `toDomainは未知のsimulatorIdにnullを返す`() {
+        val entity =
+            TelemetryLogEntity(
+                id = 1L,
+                createdAt = 1000L,
+                simulatorId = "unknown",
+                readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                narratedText = "燃料は残り約1周",
+                narrationOutcome = NarrationOutcome.QUEUED.id,
+                telemetryJson = """{"lapCount":1}""",
+            )
+
+        assertNull(entity.toDomain())
+    }
+
+    @Test
+    fun `toDomainは未知のreadoutItemKeyにnullを返す`() {
+        val entity =
+            TelemetryLogEntity(
+                id = 1L,
+                createdAt = 1000L,
+                simulatorId = Simulator.Gt7Ps5.id,
+                readoutItemKey = "unknown",
+                narratedText = "燃料は残り約1周",
+                narrationOutcome = NarrationOutcome.QUEUED.id,
+                telemetryJson = """{"lapCount":1}""",
+            )
+
+        assertNull(entity.toDomain())
+    }
+
+    @Test
     fun `toDomainは未知のnarrationOutcomeにnullを返す`() {
         val entity =
             TelemetryLogEntity(

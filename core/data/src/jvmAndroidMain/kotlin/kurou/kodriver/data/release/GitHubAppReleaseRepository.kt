@@ -5,6 +5,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kurou.kodriver.domain.model.AppUpdate
@@ -30,7 +31,7 @@ internal class GitHubAppReleaseRepository(
                         .parseToJsonElement(body)
                         .jsonObject["tag_name"]
                         ?.jsonPrimitive
-                        ?.content
+                        ?.contentOrNull
                 tagName?.let { AppUpdate(it) }
             } catch (e: CancellationException) {
                 throw e
