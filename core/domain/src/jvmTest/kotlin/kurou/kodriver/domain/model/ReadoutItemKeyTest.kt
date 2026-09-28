@@ -38,6 +38,10 @@ class ReadoutItemKeyTest {
         )
         assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, ReadoutItemKey.fromValue("lmu_windows_my_best_lap"))
         assertEquals(
+            ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled,
+            ReadoutItemKey.fromValue("lmu_windows_my_best_lap_detail_enabled"),
+        )
+        assertEquals(
             ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
             ReadoutItemKey.fromValue("lmu_windows_remaining_virtual_energy"),
         )

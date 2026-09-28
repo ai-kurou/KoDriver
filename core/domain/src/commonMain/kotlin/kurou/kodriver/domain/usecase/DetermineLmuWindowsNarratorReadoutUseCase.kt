@@ -153,7 +153,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         if (current >= state.personalBestMs) {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.MyBestLap.Root)) {
+        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.MyBestLap.Root) ||
+            !settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled)
+        ) {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 

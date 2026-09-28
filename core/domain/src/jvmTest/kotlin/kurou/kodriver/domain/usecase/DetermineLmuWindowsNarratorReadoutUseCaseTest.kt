@@ -286,6 +286,33 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `自己ベストラップの読み上げはRootが有効でもdetailPane側のスイッチが無効なら読み上げない`() {
+        val first =
+            useCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 60_000L),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false),
+                    ),
+            )
+
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 59_000L),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
     fun `左接近が50ms継続するとCarLeftを返す`() {
         val first =
             useCase.determineVehicleApproach(
@@ -2275,6 +2302,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
     mapOf(
         ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
+        ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to true,
         ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
         ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
         ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
