@@ -112,4 +112,21 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
 
         assertTrue(previewClicked)
     }
+
+    @Test
+    fun `スイッチをタップするとonEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            MaterialTheme {
+                Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
+                    uiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(enabled = true),
+                    onEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("燃料残り周回数").performClick()
+
+        assertEquals(false, changedEnabled)
+    }
 }
