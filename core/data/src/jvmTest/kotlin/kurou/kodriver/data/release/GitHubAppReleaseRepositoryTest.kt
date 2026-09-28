@@ -44,6 +44,17 @@ class GitHubAppReleaseRepositoryTest {
         }
 
     @Test
+    fun `tag_nameがnullのJSONのときnullを返す`() =
+        runTest {
+            val repository =
+                GitHubAppReleaseRepository(
+                    fetch = { """{"tag_name":null}""" },
+                )
+
+            assertNull(repository.getLatestRelease())
+        }
+
+    @Test
     fun `fetchが例外をスローするときnullを返す`() =
         runTest {
             val repository = GitHubAppReleaseRepository(fetch = { error("network error") })
@@ -72,6 +83,7 @@ class GitHubAppReleaseRepositoryTest {
             listOf(
                 URI("http://api.github.com/repos/ai-kurou/KoDriver/releases/latest"),
                 URI("https://example.com/repos/ai-kurou/KoDriver/releases/latest"),
+                URI("https://api.github.com/repos/other-owner/OtherRepo/releases/latest"),
                 URI("https://api.github.com/repos/ai-kurou/KoDriver/releases/latest?redirect=https://example.com"),
                 URI("https://api.github.com/repos/ai-kurou/KoDriver/releases/latest#fragment"),
             )
