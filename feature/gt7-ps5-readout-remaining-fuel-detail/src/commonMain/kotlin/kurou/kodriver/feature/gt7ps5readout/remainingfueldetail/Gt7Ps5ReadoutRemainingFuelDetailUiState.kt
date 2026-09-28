@@ -4,4 +4,5 @@ import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_D
 
 internal data class Gt7Ps5ReadoutRemainingFuelDetailUiState(
     val thresholdPercentage: Int = GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT,
+    val enabled: Boolean = true,
 )

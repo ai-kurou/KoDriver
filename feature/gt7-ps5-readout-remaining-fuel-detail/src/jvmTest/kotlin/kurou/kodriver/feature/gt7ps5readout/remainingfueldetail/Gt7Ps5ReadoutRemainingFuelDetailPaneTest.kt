@@ -86,4 +86,21 @@ class Gt7Ps5ReadoutRemainingFuelDetailPaneTest {
 
         assertEquals(true, resetCalled)
     }
+
+    @Test
+    fun `スイッチをタップするとonEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            KoDriverTheme {
+                Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
+                    uiState = Gt7Ps5ReadoutRemainingFuelDetailUiState(enabled = true),
+                    onEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("残り燃料").performClick()
+
+        assertEquals(false, changedEnabled)
+    }
 }

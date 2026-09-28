@@ -20,10 +20,15 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,13 +40,19 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
 
     private val repository: Gt7Ps5RemainingFuelPreferencesRepository = mockk()
 
+    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+
     private val ttsEngine: TextToSpeechEngine = mockk()
 
     private val thresholdFlow = MutableStateFlow(GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
 
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+            enabledStatesFlow
     }
 
     @AfterTest
@@ -53,6 +64,8 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
         Gt7Ps5ReadoutRemainingFuelDetailViewModel(
             observeThresholdPercentage = ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
             saveThresholdPercentage = SaveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
@@ -66,8 +79,10 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
                 GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT,
                 viewModel.uiState.first().thresholdPercentage,
             )
+            assertEquals(true, viewModel.uiState.first().enabled)
             verify(exactly = 1) { repository.observeThresholdPercentage() }
-            confirmVerified(repository)
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -81,8 +96,9 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
 
             assertEquals(45, viewModel.uiState.first().thresholdPercentage)
             verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(45) }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -104,10 +120,41 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
                 viewModel.uiState.first().thresholdPercentage,
             )
             verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             coVerify(exactly = 1) {
                 repository.saveThresholdPercentage(GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
             }
-            confirmVerified(repository)
+            confirmVerified(repository, readoutPreferencesRepository)
+        }
+
+    @Test
+    fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
+        runTest {
+            every { repository.observeThresholdPercentage() } returns thresholdFlow
+            coEvery {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.Gt7Ps5.id,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    false,
+                )
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false) }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().enabled)
+            verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
+            coVerify(exactly = 1) {
+                readoutPreferencesRepository.saveReadoutEnabledState(
+                    Simulator.Gt7Ps5.id,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    false,
+                )
+            }
+            confirmVerified(repository, readoutPreferencesRepository)
         }
 
     @Test
@@ -120,7 +167,8 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             viewModel.onPreviewClicked()
 
             verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning, false) }
-            confirmVerified(repository, ttsEngine)
+            confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
         }
 }
