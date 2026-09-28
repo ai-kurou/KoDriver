@@ -49,7 +49,7 @@ import kotlin.test.BeforeTest
 class AppTest {
     companion object {
         private const val READOUT_PRIORITY_HELP_DESCRIPTION =
-            "上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます"
+            "上位の項目は読み上げ中でも割り込みます。読み上げ中の下位の項目は無視されます"
 
         @BeforeClass
         @JvmStatic
