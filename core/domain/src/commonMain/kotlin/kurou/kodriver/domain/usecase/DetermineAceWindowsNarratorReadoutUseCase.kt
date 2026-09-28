@@ -141,7 +141,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                 data.remainingPercent.value <= settings.remainingFuelThresholdPercentage
         val shouldAnnounce =
             !state.remainingFuelWarned && isLow &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuel.Root)
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuel.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
             events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsRemainingFuelWarning) else emptyList(),
