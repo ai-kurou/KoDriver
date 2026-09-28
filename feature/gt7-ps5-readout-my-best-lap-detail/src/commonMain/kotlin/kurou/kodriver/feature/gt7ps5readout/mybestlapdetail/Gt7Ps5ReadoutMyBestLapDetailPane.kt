@@ -33,6 +33,7 @@ fun Gt7Ps5ReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Gt7Ps5ReadoutMyBestLapDetailPaneContent(
         uiState = uiState,
+        onEnabledChanged = viewModel::onEnabledChanged,
         onVoiceTypeChanged = viewModel::onVoiceTypeChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
@@ -42,6 +43,7 @@ fun Gt7Ps5ReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
 @Composable
 internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
     uiState: Gt7Ps5ReadoutMyBestLapDetailUiState = Gt7Ps5ReadoutMyBestLapDetailUiState(),
+    onEnabledChanged: (Boolean) -> Unit = {},
     onVoiceTypeChanged: (MyBestLapVoiceType) -> Unit = {},
     onPreviewClicked: (MyBestLapVoiceType) -> Unit = {},
     modifier: Modifier = Modifier,
@@ -58,6 +60,8 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.my_best_lap_enabled),
+            checked = uiState.enabled,
+            onCheckedChange = onEnabledChanged,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 DetailPaneCardChips(
@@ -67,7 +71,7 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
                             .filter { (type, _) -> type == uiState.voiceType }
                             .map { (_, label) -> label }
                             .toSet(),
-                    chipEnabled = true,
+                    chipEnabled = uiState.enabled,
                     onChipClick = { label ->
                         val type = voiceTypeLabels.first { (_, typeLabel) -> typeLabel == label }.first
                         onVoiceTypeChanged(type)

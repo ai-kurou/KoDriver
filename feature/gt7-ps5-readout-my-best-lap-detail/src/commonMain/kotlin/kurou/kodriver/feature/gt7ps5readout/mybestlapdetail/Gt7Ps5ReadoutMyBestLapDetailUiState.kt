@@ -4,4 +4,5 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 
 internal data class Gt7Ps5ReadoutMyBestLapDetailUiState(
     val voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+    val enabled: Boolean = true,
 )

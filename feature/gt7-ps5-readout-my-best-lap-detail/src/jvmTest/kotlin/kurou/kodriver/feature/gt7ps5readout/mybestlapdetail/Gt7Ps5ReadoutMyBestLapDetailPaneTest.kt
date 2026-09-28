@@ -50,4 +50,21 @@ class Gt7Ps5ReadoutMyBestLapDetailPaneTest {
         assertEquals(MyBestLapVoiceType.CASUAL, changedVoiceType)
         assertEquals(MyBestLapVoiceType.CASUAL, previewedVoiceType)
     }
+
+    @Test
+    fun `スイッチをタップするとonEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            MaterialTheme {
+                Gt7Ps5ReadoutMyBestLapDetailPaneContent(
+                    uiState = Gt7Ps5ReadoutMyBestLapDetailUiState(enabled = true),
+                    onEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("自己ベストラップ更新")[0].performClick()
+
+        assertEquals(false, changedEnabled)
+    }
 }
