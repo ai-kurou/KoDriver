@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -54,5 +55,49 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
             repository.saveTyreWearLaps(5)
 
             assertEquals(5, repository.observeTyreWearLaps().first())
+        }
+
+    @Test
+    fun `enabledStates の初期値は空Map`() =
+        runTest {
+            assertEquals(emptyMap(), repository.observeEnabledStates().first())
+        }
+
+    @Test
+    fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
+        runTest {
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to false),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
+        runTest {
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, true)
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to false),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `異なるキーで保存した値がすべて保持される`() =
+        runTest {
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, true)
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to true,
+                    ReadoutItemKey.LmuWindows.PitTiming.TyreWear to false,
+                ),
+                repository.observeEnabledStates().first(),
+            )
         }
 }

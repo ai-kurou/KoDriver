@@ -457,7 +457,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 lastEvaluationLap = stateAfterTracking.lastPitTimingVirtualEnergyEvaluationLap,
                 lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingVirtualEnergyLaps,
                 threshold = settings.pitTimingVirtualEnergyLapsThreshold,
-                enabled = settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                enabled =
+                    settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.Root) &&
+                        settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy),
             )
         val stateAfterEvaluation =
             stateAfterTracking.copy(lastPitTimingVirtualEnergyEvaluationLap = evaluation.evaluatedLap)
@@ -518,7 +520,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 lastEvaluationLap = stateAfterTracking.lastPitTimingTyreWearEvaluationLap,
                 lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingTyreWearLaps,
                 threshold = settings.pitTimingTyreWearLapsThreshold,
-                enabled = settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                enabled =
+                    settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.Root) &&
+                        settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.TyreWear),
             )
         val stateAfterEvaluation =
             stateAfterTracking.copy(lastPitTimingTyreWearEvaluationLap = evaluation.evaluatedLap)

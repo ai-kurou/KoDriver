@@ -35,6 +35,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resour
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_laps_slider_label
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_laps_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_laps_subtitle
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_title
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_subtitle
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_title
@@ -55,7 +56,9 @@ fun LmuWindowsReadoutPitTimingDetailPane(modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutPitTimingDetailPaneContent(
         uiState = uiState,
+        onVirtualEnergyEnabledChanged = viewModel::onVirtualEnergyEnabledChanged,
         onVirtualEnergyLapsChanged = viewModel::onVirtualEnergyLapsChanged,
+        onTyreWearEnabledChanged = viewModel::onTyreWearEnabledChanged,
         onTyreWearLapsChanged = viewModel::onTyreWearLapsChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
@@ -66,7 +69,9 @@ fun LmuWindowsReadoutPitTimingDetailPane(modifier: Modifier = Modifier) {
 @Composable
 internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
     uiState: LmuWindowsReadoutPitTimingDetailUiState = LmuWindowsReadoutPitTimingDetailUiState(),
+    onVirtualEnergyEnabledChanged: (Boolean) -> Unit = {},
     onVirtualEnergyLapsChanged: (Int) -> Unit = {},
+    onTyreWearEnabledChanged: (Boolean) -> Unit = {},
     onTyreWearLapsChanged: (Int) -> Unit = {},
     onPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -90,13 +95,15 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.pit_timing_virtual_energy_title),
+            checked = uiState.virtualEnergyEnabled,
+            onCheckedChange = onVirtualEnergyEnabledChanged,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
                         chipLabels = listOf(voiceTypeLabel),
                         selectedChipLabels = setOf(voiceTypeLabel),
-                        chipEnabled = true,
+                        chipEnabled = uiState.virtualEnergyEnabled,
                         onChipClick = { onPreviewClicked() },
                     )
                     HorizontalDivider(
@@ -126,6 +133,29 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                             onVirtualEnergyLapsChanged(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT)
                         },
                         resetContentDescription = resetToDefaultLabel,
+                    )
+                }
+            },
+        )
+        DetailPaneCard(
+            title = stringResource(Res.string.pit_timing_tyre_wear_title),
+            checked = uiState.tyreWearEnabled,
+            onCheckedChange = onTyreWearEnabledChanged,
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
+            bottomContent = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    DetailPaneCardChips(
+                        chipLabels = listOf(voiceTypeLabel),
+                        selectedChipLabels = setOf(voiceTypeLabel),
+                        chipEnabled = uiState.tyreWearEnabled,
+                        onChipClick = { onPreviewClicked() },
+                    )
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(
+                                horizontal = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.small,
+                            ),
                     )
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.pit_timing_tyre_wear_laps_subtitle),

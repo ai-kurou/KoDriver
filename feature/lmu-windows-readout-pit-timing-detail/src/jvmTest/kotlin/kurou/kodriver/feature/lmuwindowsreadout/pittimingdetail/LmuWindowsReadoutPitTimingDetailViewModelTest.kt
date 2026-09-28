@@ -19,10 +19,13 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kotlin.test.AfterTest
@@ -40,6 +43,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
 
     private val virtualEnergyLapsFlow = MutableStateFlow(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT)
     private val tyreWearLapsFlow = MutableStateFlow(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     @BeforeTest
     fun setUp() {
@@ -51,6 +55,12 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private fun stubRepository() {
+        every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
+        every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+        every { repository.observeEnabledStates() } returns enabledStatesFlow
+    }
+
     private fun createViewModel() =
         LmuWindowsReadoutPitTimingDetailViewModel(
             observeLmuWindowsPitTimingVirtualEnergyLaps =
@@ -58,32 +68,35 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
                     repository,
                 ),
             observeLmuWindowsPitTimingTyreWearLaps = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
+            observeLmuWindowsPitTimingEnabledStates = ObserveLmuWindowsPitTimingEnabledStatesUseCase(repository),
             saveLmuWindowsPitTimingVirtualEnergyLaps = SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
             saveLmuWindowsPitTimingTyreWearLaps = SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
+            saveLmuWindowsPitTimingEnabledState = SaveLmuWindowsPitTimingEnabledStateUseCase(repository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
     @Test
-    fun `初期状態は両方とも3周のUiStateを返す`() =
+    fun `初期状態は両方とも3周かつ有効のUiStateを返す`() =
         runTest {
-            every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
-            every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+            stubRepository()
             val viewModel = createViewModel()
 
             val uiState = viewModel.uiState.first()
 
             assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT, uiState.virtualEnergyLaps)
             assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, uiState.tyreWearLaps)
+            assertEquals(true, uiState.virtualEnergyEnabled)
+            assertEquals(true, uiState.tyreWearEnabled)
             verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
             verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
             confirmVerified(repository)
         }
 
     @Test
     fun `onVirtualEnergyLapsChangedに5を渡すと保存されvirtualEnergyLapsが5になる`() =
         runTest {
-            every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
-            every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+            stubRepository()
             coEvery { repository.saveVirtualEnergyLaps(5) } answers { virtualEnergyLapsFlow.update { 5 } }
             val viewModel = createViewModel()
 
@@ -92,6 +105,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             assertEquals(5, viewModel.uiState.first().virtualEnergyLaps)
             verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
             verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
             coVerify(exactly = 1) { repository.saveVirtualEnergyLaps(5) }
             confirmVerified(repository)
         }
@@ -99,8 +113,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
     @Test
     fun `onTyreWearLapsChangedに1を渡すと保存されtyreWearLapsが1になる`() =
         runTest {
-            every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
-            every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+            stubRepository()
             coEvery { repository.saveTyreWearLaps(1) } answers { tyreWearLapsFlow.update { 1 } }
             val viewModel = createViewModel()
 
@@ -109,14 +122,56 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             assertEquals(1, viewModel.uiState.first().tyreWearLaps)
             verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
             verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
             coVerify(exactly = 1) { repository.saveTyreWearLaps(1) }
             confirmVerified(repository)
         }
 
     @Test
+    fun `onVirtualEnergyEnabledChangedにfalseを渡すと保存されvirtualEnergyEnabledがfalseになる`() =
+        runTest {
+            stubRepository()
+            coEvery { repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false) } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to false) }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onVirtualEnergyEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().virtualEnergyEnabled)
+            verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+            verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            coVerify(exactly = 1) {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
+            }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onTyreWearEnabledChangedにfalseを渡すと保存されtyreWearEnabledがfalseになる`() =
+        runTest {
+            stubRepository()
+            coEvery { repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, false) } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.PitTiming.TyreWear to false) }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onTyreWearEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().tyreWearEnabled)
+            verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+            verify(exactly = 1) { repository.observeTyreWearLaps() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            coVerify(exactly = 1) {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, false)
+            }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `onPreviewClickedを呼ぶと5周と0周のPitTimingWarningイベントが再生される`() {
-        every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
-        every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+        stubRepository()
         every { ttsEngine.speak(SpeechEvent.PitTimingWarning(5), false) } returns Unit
         every { ttsEngine.speak(SpeechEvent.PitTimingWarning(0), true) } returns Unit
         val viewModel = createViewModel()
@@ -125,6 +180,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
 
         verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
         verify(exactly = 1) { repository.observeTyreWearLaps() }
+        verify(exactly = 1) { repository.observeEnabledStates() }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(5), false) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(0), true) }
         confirmVerified(repository, ttsEngine)

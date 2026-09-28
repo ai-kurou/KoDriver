@@ -13,6 +13,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -83,7 +84,7 @@ val lmuWindowsNarratorModule: Module =
         factory { TyreWearUseCases(get(), get()) }
         factory { BrakeTemperatureUseCases(get(), get()) }
         factory { RemainingVirtualEnergyUseCases(get(), get()) }
-        factory { PitTimingUseCases(get(), get()) }
+        factory { PitTimingUseCases(get(), get(), get()) }
         factory { LmuWindowsNarratorEventProcessor(get(named(Simulator.LmuWindows.id)), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
@@ -119,6 +120,7 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingTyreWearLapsUseCase(get()) }
+        factory { ObserveLmuWindowsPitTimingEnabledStatesUseCase(get()) }
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
         // 音声再生（named "lmu_windows" で GT7/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）

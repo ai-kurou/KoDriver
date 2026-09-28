@@ -111,6 +111,14 @@ sealed interface ReadoutItemKey {
                 override val value = "lmu_windows_pit_timing"
                 override val supportsQueue = true
             }
+
+            data object VirtualEnergy : PitTiming {
+                override val value = "lmu_windows_pit_timing_virtual_energy"
+            }
+
+            data object TyreWear : PitTiming {
+                override val value = "lmu_windows_pit_timing_tyre_wear"
+            }
         }
 
         sealed interface RemainingVirtualEnergy : LmuWindows {
@@ -289,6 +297,8 @@ sealed interface ReadoutItemKey {
                 LmuWindows.TyreTemperature.OverheatWarning,
                 LmuWindows.TyreTemperature.LowWarning,
                 LmuWindows.PitTiming.Root,
+                LmuWindows.PitTiming.VirtualEnergy,
+                LmuWindows.PitTiming.TyreWear,
                 LmuWindows.RemainingVirtualEnergy.Root,
                 LmuWindows.TyreWear.Root,
                 LmuWindows.BrakeTemperature.Root,

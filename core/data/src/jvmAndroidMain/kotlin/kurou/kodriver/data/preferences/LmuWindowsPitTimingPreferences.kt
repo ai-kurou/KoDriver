@@ -11,4 +11,5 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DE
 internal data class LmuWindowsPitTimingPreferences(
     @ProtoNumber(1) val virtualEnergyLaps: Int = LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT,
     @ProtoNumber(2) val tyreWearLaps: Int = LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT,
+    @ProtoNumber(3) val enabledStates: Map<String, Boolean> = emptyMap(),
 )
