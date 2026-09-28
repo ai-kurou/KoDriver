@@ -1,11 +1,15 @@
 package kurou.kodriver.core.texttospeechdata.repository
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class WindowsTextToSpeechRepositoryTest {
     @Test
     fun `isAvailableは音声合成の利用可否をそのまま返す`() =
@@ -44,5 +48,19 @@ class WindowsTextToSpeechRepositoryTest {
             WindowsTextToSpeechRepository(synthesizer).stop()
 
             assertEquals(1, synthesizer.stopCount)
+        }
+
+    @Test
+    fun `コルーチンをキャンセルするとブロック中の音声合成へ割り込む`() =
+        runTest {
+            val synthesizer = FakeWindowsSpeechSynthesizer(blockUntilInterrupted = true)
+
+            val job = launch { WindowsTextToSpeechRepository(synthesizer).speak("ベストラップ", queue = false) }
+            runCurrent()
+            synthesizer.speakStarted.await()
+            job.cancel()
+            job.join()
+
+            assertTrue(synthesizer.wasInterrupted)
         }
 }

@@ -13,7 +13,10 @@ interface TextToSpeechRepository {
     suspend fun isAvailable(): Boolean
 
     /**
-     * [text] を読み上げる。
+     * [text] を読み上げる。実装は読み上げが実際に完了する（または [stop] やコルーチンのキャンセルで
+     * 打ち切られる）まで suspend すること。`:core:narrator` の `WavNarratorEngine` はWAV再生と同じ
+     * コルーチン上で完了・優先度判定・割り込みを扱う前提でこのRepositoryを呼び出すため、
+     * 即座に返ってしまうと読み上げ中に次のイベントの音声が重なって再生されてしまう。
      *
      * @param queue `true` なら再生中の読み上げの後ろへ追加し、`false` なら再生中の読み上げを
      *   打ち切って即座に読み上げる（`:core:narrator` の `speak(queue)` と同じ意味）。
