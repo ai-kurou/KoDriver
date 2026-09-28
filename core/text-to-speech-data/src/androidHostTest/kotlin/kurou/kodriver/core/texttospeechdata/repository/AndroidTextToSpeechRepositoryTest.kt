@@ -105,16 +105,19 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
-    fun `キャンセルされた場合は読み上げを停止する`() =
+    fun `再生中にキャンセルされた場合は読み上げを停止する`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
-            every { textToSpeech.speak(any(), any(), null, any()) } returns TextToSpeech.SUCCESS
+            val utteranceIdSlot = slot<String>()
+            every { textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot)) } returns TextToSpeech.SUCCESS
             every { textToSpeech.stop() } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
             val job = launch { repository.speak("ベストラップ", queue = false) }
             runCurrent()
+            listenerSlot.captured.onStart(utteranceIdSlot.captured)
+
             job.cancel()
             job.join()
 
@@ -159,7 +162,7 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
-    fun `新しい発話要求へ上書きされた古い呼び出しがキャンセルされても新しい発話を止めない`() =
+    fun `再生開始前にキャンセルされた場合は再生中の別の発話を止めない`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
@@ -167,20 +170,48 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot)) } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
-            val oldJob = launch { repository.speak("古い発話", queue = false) }
+            // Aが実際に再生中（onStart済み）。
+            val jobA = launch { repository.speak("A", queue = false) }
             runCurrent()
-            // 新しい発話要求（QUEUE_FLUSH）が古い発話を上書きする。
-            val newJob = launch { repository.speak("新しい発話", queue = false) }
+            val utteranceIdA = utteranceIdSlot.captured
+            listenerSlot.captured.onStart(utteranceIdA)
+
+            // BはAの後ろにキューイングされただけで、まだ再生開始（onStart）していない。
+            val jobB = launch { repository.speak("B", queue = true) }
             runCurrent()
-            val newUtteranceId = utteranceIdSlot.captured
 
-            oldJob.cancel()
-            oldJob.join()
-
+            // Bをキャンセルしても、まだ再生中のAを巻き添えで止めない。
+            jobB.cancel()
+            jobB.join()
             verify(exactly = 0) { textToSpeech.stop() }
 
-            listenerSlot.captured.onDone(newUtteranceId)
-            newJob.join()
+            listenerSlot.captured.onDone(utteranceIdA)
+            jobA.join()
+        }
+
+    @Test
+    fun `明示的なstopはonStop等のコールバックが来なくてもpending中のspeakを完了させる`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.speak(any(), any(), null, any()) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.stop() } returns TextToSpeech.SUCCESS
+            val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
+            var completed = false
+
+            val job =
+                launch {
+                    repository.speak("ベストラップ", queue = false)
+                    completed = true
+                }
+            runCurrent()
+            assertFalse(completed)
+
+            repository.stop()
+            runCurrent()
+
+            assertTrue(completed)
+            job.join()
         }
 
     @Test

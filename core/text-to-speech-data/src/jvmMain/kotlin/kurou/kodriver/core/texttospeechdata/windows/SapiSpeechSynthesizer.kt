@@ -18,11 +18,14 @@ package kurou.kodriver.core.texttospeechdata.windows
  * `queue = true` で前の発話の終了を待つ間は [lock] を保持しない。保持したままだと、待っている間に
  * 呼ばれた [stop] や別スレッドからの `queue = false` の [speak] 呼び出しが [lock] を取得できず、
  * 前の発話が自然に終わるまで割り込めなくなってしまう（`runInterruptible` によるコルーチンの
- * キャンセル伝播の意味がなくなる）。
+ * キャンセル伝播の意味がなくなる）。ただし [lock] を保持しない間に別スレッドの [speak] 呼び出しが
+ * 割り込んでいる可能性があるため、待機後は [requestToken] で自分がまだ最新の要求かを確認し、
+ * 既に別の呼び出しに追い越されていれば新しいプロセスは起動しない（起動すると音声が重なってしまう）。
  */
 internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     private val lock = Any()
     private var process: Process? = null
+    private var requestToken = 0L
 
     override fun isAvailable(): Boolean = IS_WINDOWS
 
@@ -31,6 +34,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
         queue: Boolean,
     ) {
         if (!IS_WINDOWS) return
+        val token = synchronized(lock) { ++requestToken }
         if (queue) {
             awaitInterruptibly(synchronized(lock) { process })
         } else {
@@ -38,6 +42,8 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
         }
         val started =
             synchronized(lock) {
+                // 待機中に別スレッドの新しい呼び出しへ追い越されていたら、今さら発話を開始しない。
+                if (token != requestToken) return
                 val newProcess =
                     ProcessBuilder(POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", buildScript(text))
                         .redirectErrorStream(true)

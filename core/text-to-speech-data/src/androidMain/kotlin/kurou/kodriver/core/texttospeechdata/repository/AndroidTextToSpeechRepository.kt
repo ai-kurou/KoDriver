@@ -28,8 +28,9 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * このRepositoryはKoinで `single` 登録されアプリ全体で共有されるため、コルーチンのキャンセルで
  * [TextToSpeech.stop] （エンジン全体の発話を止める）を呼ぶのは、キャンセルされた呼び出しが
- * まだ最新の発話要求である場合に限る。既に別の呼び出しに [TextToSpeech.QUEUE_FLUSH] 等で
- * 上書きされた古い呼び出しがキャンセルされても、無関係な新しい発話を巻き添えで止めない。
+ * 実際にエンジン上で再生中（[UtteranceProgressListener.onStart] 済み）である場合に限る。
+ * まだ再生開始前（＝他の発話の後ろにキューイングされているだけ）の呼び出しがキャンセルされても、
+ * 現在再生中の無関係な発話を巻き添えで止めない。
  *
  * @param textToSpeechFactory `OnInitListener` を受け取って [TextToSpeech] を生成する。
  *   `Context` への依存をKoinモジュール側に閉じ込め、テストではFakeを渡せるようにするためラムダで受ける。
@@ -57,7 +58,6 @@ internal class AndroidTextToSpeechRepository(
         val utteranceId = "kodriver_tts_${utteranceIdSequence.incrementAndGet()}"
         val completed = CompletableDeferred<Unit>()
         pendingUtterances[utteranceId] = completed
-        activeUtteranceId.set(utteranceId)
         val result =
             engine.speak(
                 text,
@@ -74,9 +74,9 @@ internal class AndroidTextToSpeechRepository(
         try {
             completed.await()
         } catch (e: CancellationException) {
-            // 既に別の発話要求（QUEUE_FLUSH等）へ上書きされている場合、このキャンセルで
-            // engine.stop()を呼ぶと無関係な新しい発話まで止めてしまうため、まだこの呼び出しが
-            // 最新（＝実際にエンジン上でアクティブ）な場合のみ停止する。
+            // まだ再生開始前（他の発話の後ろにキューイングされているだけ）の呼び出しがキャンセルされても、
+            // engine.stop()を呼ぶと現在再生中の無関係な発話まで止めてしまうため、このutteranceIdが
+            // 実際に再生中（onStart済み）の場合のみ停止する。
             if (activeUtteranceId.get() == utteranceId) {
                 engine.stop()
             }
@@ -87,7 +87,13 @@ internal class AndroidTextToSpeechRepository(
     }
 
     override suspend fun stop() {
-        mutex.withLock { textToSpeech?.stop() }
+        mutex.withLock {
+            textToSpeech?.stop()
+            // stop()はonStopを発火させるが、コールバックが来ない経路（未再生のキュー分等）に
+            // 備えて、残っているpendingUtterancesもここで明示的に完了させる。
+            pendingUtterances.values.toList().forEach { it.complete(Unit) }
+            pendingUtterances.clear()
+        }
     }
 
     /**
@@ -105,7 +111,9 @@ internal class AndroidTextToSpeechRepository(
                     engine.setLanguage(locale) >= TextToSpeech.LANG_AVAILABLE &&
                     engine.setOnUtteranceProgressListener(
                         object : UtteranceProgressListener() {
-                            override fun onStart(utteranceId: String?) = Unit
+                            override fun onStart(utteranceId: String?) {
+                                activeUtteranceId.set(utteranceId)
+                            }
 
                             override fun onDone(utteranceId: String?) = completeUtterance(utteranceId)
 
