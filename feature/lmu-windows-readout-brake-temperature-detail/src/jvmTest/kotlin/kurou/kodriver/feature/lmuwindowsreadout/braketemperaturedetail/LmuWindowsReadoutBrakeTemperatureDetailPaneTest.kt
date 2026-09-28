@@ -95,4 +95,21 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneTest {
 
         assertEquals(LmuWindowsVehicleClassData.Hypercar, resetVehicleClass)
     }
+
+    @Test
+    fun `スイッチをタップするとonEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutBrakeTemperatureDetailUiState(enabled = true),
+                    onEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("過熱警告").performClick()
+
+        assertEquals(false, changedEnabled)
+    }
 }

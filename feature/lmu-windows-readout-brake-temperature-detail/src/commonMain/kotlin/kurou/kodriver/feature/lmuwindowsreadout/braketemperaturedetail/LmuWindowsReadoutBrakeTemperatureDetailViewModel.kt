@@ -9,12 +9,17 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
+import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
 internal data class BrakeTemperatureUseCases(
     val observeVehicleClassHighThreshold: ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase,
@@ -25,16 +30,20 @@ internal data class BrakeTemperatureUseCases(
 
 internal class LmuWindowsReadoutBrakeTemperatureDetailViewModel(
     private val brakeTemperatureUseCases: BrakeTemperatureUseCases,
+    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<LmuWindowsReadoutBrakeTemperatureDetailUiState> =
         combine(
             brakeTemperatureUseCases.observeVehicleClassHighThreshold(),
             brakeTemperatureUseCases.observeVehicleClassSelection(),
-        ) { vehicleClassHighThresholdCelsius, selectedVehicleClass ->
+            observeReadoutEnabledStates(Simulator.LmuWindows.id),
+        ) { vehicleClassHighThresholdCelsius, selectedVehicleClass, enabledStates ->
             LmuWindowsReadoutBrakeTemperatureDetailUiState(
                 vehicleClassHighThresholdCelsius = vehicleClassHighThresholdCelsius,
                 selectedVehicleClass = selectedVehicleClass,
+                enabled = enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout),
             )
         }.stateIn(
             viewModelScope,
@@ -64,6 +73,16 @@ internal class LmuWindowsReadoutBrakeTemperatureDetailViewModel(
             brakeTemperatureUseCases.saveVehicleClassHighThreshold(
                 vehicleClass,
                 lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(vehicleClass),
+            )
+        }
+    }
+
+    fun onEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            saveReadoutEnabledState(
+                Simulator.LmuWindows.id,
+                ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout,
+                enabled,
             )
         }
     }

@@ -65,6 +65,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
             ReadoutItemKey.fromValue("lmu_windows_brake_temperature"),
         )
+        assertEquals(
+            ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout,
+            ReadoutItemKey.fromValue("lmu_windows_brake_temperature_warning_readout"),
+        )
         assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
         assertEquals(
             ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
