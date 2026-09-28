@@ -24,4 +24,6 @@ internal class Gt7Ps5WavNarratorEngine(
     override fun stop() = engine.stop()
 
     override fun previewStartSound(type: ReadoutStartSoundType) = engine.previewStartSound(type)
+
+    override suspend fun playStartSound(key: ReadoutItemKey) = engine.playStartSoundForKey(key)
 }

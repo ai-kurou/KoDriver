@@ -40,6 +40,14 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     volumeFlow: Flow<Int> = flowOf(100),
     startSoundTypeFlow: Flow<START_TYPE> = flowOf(defaultStartSoundType),
     startSoundEnabledStatesFlow: Flow<Map<KEY, Boolean>> = flowOf(emptyMap()),
+    /**
+     * [event] を渡し、WAV の代わりにこの関数側で読み上げを行わせたい場合に使うフック。
+     * `true` を返すと、開始音は通常通り再生した上でWAV本編（[EVENT] に対応する [sounds]）の再生をスキップする。
+     * `false`（既定）を返す、またはこのフック自体を渡さない場合は、常にWAVで読み上げる。
+     * 再生中・優先度判定・割り込み（[currentKey] / [stop]）は呼び出し元の [play] と同じコルーチン上で
+     * 実行されるため、WAVと同じ仕組みでそのまま扱える。
+     */
+    private val customSpeak: (suspend (EVENT) -> Boolean)? = null,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) {
     @Volatile
@@ -141,7 +149,10 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
         if (startSoundEnabled) {
             startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         }
-        soundPlayer.play(mainSound, vol)
+        val spokenByCustomSpeak = customSpeak?.invoke(event) == true
+        if (!spokenByCustomSpeak) {
+            soundPlayer.play(mainSound, vol)
+        }
         _currentKey = null
     }
 
@@ -177,5 +188,25 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
                 barrier.join()
                 soundPlayer.play(sound, currentVolume)
             }
+    }
+
+    /**
+     * [key] に紐づく開始音（現在選択中の [START_TYPE]）を再生し、再生完了まで待つ。
+     * WAV以外（OS標準TTS等）で本文を読み上げる前に、収録音声と同じ開始音を鳴らしたい場合に使う。
+     * [key] の開始音が無効化されている場合、または開始音が読み込めていない場合は何もしない。
+     */
+    suspend fun playStartSoundForKey(key: KEY) {
+        val startSoundEnabled = currentStartSoundEnabledStates[key] ?: true
+        if (!startSoundEnabled) return
+        val sound = startSounds[currentStartSoundType] ?: return
+        val barrier = cancelPlayback()
+        playbackParent = SupervisorJob()
+        val job =
+            scope.launch(playbackParent) {
+                barrier.join()
+                soundPlayer.play(sound, currentVolume)
+            }
+        playJob = job
+        job.join()
     }
 }

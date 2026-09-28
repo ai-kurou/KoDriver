@@ -1,5 +1,6 @@
 package kurou.kodriver.core.narrator
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -417,6 +418,51 @@ class WavNarratorEngineTest {
         }
 
     @Test
+    fun `playStartSoundForKeyは開始音のみを再生し完了まで待つ`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.playStartSoundForKey(CAR_LEFT_KEY)
+
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
+        }
+
+    @Test
+    fun `playStartSoundForKeyは開始音が無効なキーなら何も再生しない`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine =
+                createEngine(
+                    player = player,
+                    startSoundEnabledStatesFlow = flowOf(mapOf(CAR_LEFT_KEY to false)),
+                )
+            runCurrent()
+
+            engine.playStartSoundForKey(CAR_LEFT_KEY)
+
+            assertEquals(emptyList(), player.playedSounds)
+        }
+
+    @Test
+    fun `playStartSoundForKeyは未ロードの開始音タイプなら何も再生しない`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine =
+                createEngine(
+                    player = player,
+                    startSoundResourceLoader = { error("load failed") },
+                )
+            runCurrent()
+
+            engine.playStartSoundForKey(CAR_LEFT_KEY)
+
+            assertEquals(emptyList(), player.playedSounds)
+        }
+
+    @Test
     fun `currentKeyは再生中のイベントに対応するキーを返す`() =
         runTest {
             val cancellationSignal = CompletableDeferred<Unit>()
@@ -464,11 +510,95 @@ class WavNarratorEngineTest {
             advanceUntilIdle()
         }
 
+    @Test
+    fun `customSpeakがtrueを返すとイベント音声を再生せず開始音のみ再生する`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player, customSpeak = { true })
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
+        }
+
+    @Test
+    fun `customSpeakがfalseを返すとイベント音声をWAVで再生する`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player, customSpeak = { false })
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            assertEquals(2, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+        }
+
+    @Test
+    fun `customSpeakにはeventToKeyに渡した元のEVENTが渡される`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val receivedEvents = mutableListOf<String>()
+            val engine =
+                createEngine(
+                    player,
+                    customSpeak = { event ->
+                        receivedEvents += event
+                        false
+                    },
+                )
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            assertEquals(listOf(CAR_LEFT), receivedEvents)
+        }
+
+    @Test
+    fun `customSpeakが発話完了まで実際にsuspendする場合stopで中断するまでcurrentKeyを保持し中断をcustomSpeakへ伝える`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            var wasCancelled = false
+            val engine =
+                createEngine(
+                    player,
+                    customSpeak = {
+                        try {
+                            awaitCancellation()
+                        } catch (e: CancellationException) {
+                            wasCancelled = true
+                            throw e
+                        }
+                    },
+                )
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            // customSpeakがまだ発話中（suspendしたまま）のため、再生済みは開始音のみ。
+            assertEquals(1, player.playedSounds.size)
+            assertEquals(CAR_LEFT_KEY, engine.currentKey)
+
+            engine.stop()
+            runCurrent()
+
+            assertEquals(null, engine.currentKey)
+            assertEquals(true, wasCancelled)
+        }
+
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
         volumeFlow: Flow<Int> = flowOf(100),
         startSoundTypeFlow: Flow<String> = flowOf(FORMULA_RADIO),
         startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
+        customSpeak: (suspend (String) -> Boolean)? = null,
         resourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
                 CAR_LEFT_PATH -> CAR_LEFT_SOUND
@@ -508,6 +638,7 @@ class WavNarratorEngineTest {
             volumeFlow = volumeFlow,
             startSoundTypeFlow = startSoundTypeFlow,
             startSoundEnabledStatesFlow = startSoundEnabledStatesFlow,
+            customSpeak = customSpeak,
             scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
         )
 

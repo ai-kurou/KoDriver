@@ -15,4 +15,10 @@ interface TextToSpeechEngine {
     fun stop()
 
     fun previewStartSound(type: ReadoutStartSoundType)
+
+    /**
+     * [key] に紐づく開始音（現在の設定の [ReadoutStartSoundType]）を再生し、再生完了まで待つ。
+     * WAV以外（OS標準TTS等）で本文を読み上げる前に、収録音声と同じ開始音を鳴らしたい場合に使う。
+     */
+    suspend fun playStartSound(key: ReadoutItemKey)
 }

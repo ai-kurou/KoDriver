@@ -527,6 +527,7 @@ dependencies {
     kover(project(":core:gt7-ps5-data"))
     kover(project(":core:ace-windows-data"))
     kover(project(":core:device-volume-data"))
+    kover(project(":core:text-to-speech-data"))
     kover(project(":core:windows-startup-data"))
     kover(project(":core:windows-shared-memory"))
     kover(project(":core:designsystem"))

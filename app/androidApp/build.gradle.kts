@@ -19,6 +19,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.gt7Ps5Data)
     implementation(projects.core.deviceVolumeData)
+    implementation(projects.core.textToSpeechData)
     implementation(projects.core.windowsStartupData)
 
     implementation(libs.androidx.activity.compose)
