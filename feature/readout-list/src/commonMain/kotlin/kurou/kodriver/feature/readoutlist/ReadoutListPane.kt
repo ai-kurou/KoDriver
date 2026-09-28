@@ -116,7 +116,7 @@ private fun lmuWindowsItemIcon(itemId: ReadoutItemKey.LmuWindows): ImageVector =
         is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.LmuWindows.TyreWear -> Icons.Filled.DonutLarge
         is ReadoutItemKey.LmuWindows.BrakeTemperature.Root -> Icons.Filled.DeviceThermostat
-        is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
+        is ReadoutItemKey.LmuWindows.MyBestLap -> Icons.Filled.Timer
     }
 
 private fun gt7Ps5ItemIcon(itemId: ReadoutItemKey.Gt7Ps5): ImageVector =

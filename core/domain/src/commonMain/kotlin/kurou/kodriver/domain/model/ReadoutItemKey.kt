@@ -47,6 +47,10 @@ sealed interface ReadoutItemKey {
                 override val value = "lmu_windows_my_best_lap"
                 override val supportsQueue = true
             }
+
+            data object DetailEnabled : MyBestLap {
+                override val value = "lmu_windows_my_best_lap_detail_enabled"
+            }
         }
 
         sealed interface Flag : LmuWindows {
@@ -325,6 +329,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.TyreWear.WarningReadout,
                 LmuWindows.BrakeTemperature.Root,
                 LmuWindows.MyBestLap.Root,
+                LmuWindows.MyBestLap.DetailEnabled,
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.DetailEnabled,
                 Gt7Ps5.RemainingFuelLaps.Root,
