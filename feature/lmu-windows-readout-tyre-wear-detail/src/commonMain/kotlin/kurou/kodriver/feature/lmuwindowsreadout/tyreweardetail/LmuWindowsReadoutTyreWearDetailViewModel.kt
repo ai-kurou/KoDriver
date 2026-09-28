@@ -4,28 +4,41 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
 internal class LmuWindowsReadoutTyreWearDetailViewModel(
     observeThresholdPercentage: ObserveLmuWindowsTyreWearThresholdPercentageUseCase,
     private val saveThresholdPercentage: SaveLmuWindowsTyreWearThresholdPercentageUseCase,
+    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<LmuWindowsReadoutTyreWearDetailUiState> =
-        observeThresholdPercentage()
-            .map { LmuWindowsReadoutTyreWearDetailUiState(thresholdPercentage = it) }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5_000),
-                LmuWindowsReadoutTyreWearDetailUiState(),
+        combine(
+            observeThresholdPercentage(),
+            observeReadoutEnabledStates(Simulator.LmuWindows.id),
+        ) { thresholdPercentage, enabledStates ->
+            LmuWindowsReadoutTyreWearDetailUiState(
+                thresholdPercentage = thresholdPercentage,
+                enabled = enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreWear.WarningReadout),
             )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LmuWindowsReadoutTyreWearDetailUiState(),
+        )
 
     fun onWarningChipClicked() {
         playSpeechEvent(SpeechEvent.TyreWearWarning)
@@ -37,5 +50,15 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
 
     fun onThresholdReset() {
         viewModelScope.launch { saveThresholdPercentage(LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT) }
+    }
+
+    fun onEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            saveReadoutEnabledState(
+                Simulator.LmuWindows.id,
+                ReadoutItemKey.LmuWindows.TyreWear.WarningReadout,
+                enabled,
+            )
+        }
     }
 }

@@ -368,7 +368,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             }
         val shouldAnnounce =
             !state.tyreWearWarned && anyWorn &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreWear.Root)
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreWear.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreWear.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(tyreWearWarned = anyWorn),
             events = if (shouldAnnounce) listOf(SpeechEvent.TyreWearWarning) else emptyList(),

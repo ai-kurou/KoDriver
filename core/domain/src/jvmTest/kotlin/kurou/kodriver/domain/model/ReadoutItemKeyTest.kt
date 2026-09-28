@@ -50,6 +50,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.fromValue("lmu_windows_tyre_wear"),
         )
         assertEquals(
+            ReadoutItemKey.LmuWindows.TyreWear.WarningReadout,
+            ReadoutItemKey.fromValue("lmu_windows_tyre_wear_warning_readout"),
+        )
+        assertEquals(
             ReadoutItemKey.LmuWindows.PitTiming.Root,
             ReadoutItemKey.fromValue("lmu_windows_pit_timing"),
         )

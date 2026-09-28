@@ -4,4 +4,5 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DE
 
 internal data class LmuWindowsReadoutTyreWearDetailUiState(
     val thresholdPercentage: Int = LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT,
+    val enabled: Boolean = true,
 )
