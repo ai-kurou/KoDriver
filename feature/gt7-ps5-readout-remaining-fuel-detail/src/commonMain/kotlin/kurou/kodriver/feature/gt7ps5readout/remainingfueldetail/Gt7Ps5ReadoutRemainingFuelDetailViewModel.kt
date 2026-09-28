@@ -32,7 +32,7 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
         ) { thresholdPercentage, enabledStates ->
             Gt7Ps5ReadoutRemainingFuelDetailUiState(
                 thresholdPercentage = thresholdPercentage,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
+                enabled = enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled),
             )
         }.stateIn(
             viewModelScope,
@@ -50,7 +50,7 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(Simulator.Gt7Ps5.id, ReadoutItemKey.Gt7Ps5.RemainingFuel.Root, enabled)
+            saveReadoutEnabledState(Simulator.Gt7Ps5.id, ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled, enabled)
         }
     }
 

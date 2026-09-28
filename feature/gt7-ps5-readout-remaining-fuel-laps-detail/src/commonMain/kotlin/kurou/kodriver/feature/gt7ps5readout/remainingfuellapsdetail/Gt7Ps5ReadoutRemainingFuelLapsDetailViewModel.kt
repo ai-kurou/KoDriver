@@ -32,7 +32,7 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
         ) { remainingFuelLaps, enabledStates ->
             Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(
                 remainingFuelLaps = remainingFuelLaps,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root),
+                enabled = enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled),
             )
         }.stateIn(
             viewModelScope,
@@ -52,7 +52,7 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(Simulator.Gt7Ps5.id, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, enabled)
+            saveReadoutEnabledState(Simulator.Gt7Ps5.id, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled, enabled)
         }
     }
 

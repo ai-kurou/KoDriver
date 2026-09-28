@@ -285,6 +285,39 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `燃料残り周回数はRootが有効でもdetailPane側のスイッチが無効なら読み上げない`() {
+        val disabledStates: Map<ReadoutItemKey, Boolean> =
+            mapOf(
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled to false,
+            )
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
+                settings = settings(enabledStates = disabledStates),
+                observedAtMs = 0L,
+            )
+        val nextLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = firstLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
+                settings = settings(enabledStates = disabledStates),
+                observedAtMs = 100_000L,
+            )
+        val decision =
+            useCase.determineRemainingFuelLaps(
+                state = nextLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
+                settings = settings(enabledStates = disabledStates),
+                observedAtMs = 160_000L,
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(2, decision.state.lastFuelEvaluationLap)
+    }
+
+    @Test
     fun `給油後は同じ燃料残り周回数でも再度読み上げる`() {
         val firstLapDecision =
             useCase.determineRemainingFuelLaps(
@@ -574,6 +607,26 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 state = Gt7Ps5NarratorState(),
                 telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
                 settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false)),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(true, decision.state.remainingFuelWarned)
+    }
+
+    @Test
+    fun `燃料残量はRootが有効でもdetailPane側のスイッチが無効なら読み上げない`() {
+        val decision =
+            useCase.determineRemainingFuel(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
+                settings =
+                    settings(
+                        enabledStates =
+                            mapOf(
+                                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
+                                ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled to false,
+                            ),
+                    ),
             )
 
         assertTrue(decision.events.isEmpty())

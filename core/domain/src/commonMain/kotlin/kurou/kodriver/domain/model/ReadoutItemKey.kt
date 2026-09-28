@@ -168,12 +168,20 @@ sealed interface ReadoutItemKey {
                 override val value = "gt7_ps5_remaining_fuel_laps"
                 override val supportsQueue = true
             }
+
+            data object DetailEnabled : RemainingFuelLaps {
+                override val value = "gt7_ps5_remaining_fuel_laps_detail_enabled"
+            }
         }
 
         sealed interface RemainingFuel : Gt7Ps5 {
             data object Root : RemainingFuel, TopLevel {
                 override val value = "gt7_ps5_remaining_fuel"
                 override val supportsQueue = true
+            }
+
+            data object DetailEnabled : RemainingFuel {
+                override val value = "gt7_ps5_remaining_fuel_detail_enabled"
             }
         }
 
@@ -315,7 +323,9 @@ sealed interface ReadoutItemKey {
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.DetailEnabled,
                 Gt7Ps5.RemainingFuelLaps.Root,
+                Gt7Ps5.RemainingFuelLaps.DetailEnabled,
                 Gt7Ps5.RemainingFuel.Root,
+                Gt7Ps5.RemainingFuel.DetailEnabled,
                 Gt7Ps5.TyreTemperature.Root,
                 Gt7Ps5.TyreTemperature.OverheatWarning,
                 AceWindows.VehicleApproach.Root,
