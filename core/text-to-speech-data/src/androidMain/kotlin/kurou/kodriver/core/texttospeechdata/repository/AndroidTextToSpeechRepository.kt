@@ -58,6 +58,11 @@ internal class AndroidTextToSpeechRepository(
         val utteranceId = "kodriver_tts_${utteranceIdSequence.incrementAndGet()}"
         val completed = CompletableDeferred<Unit>()
         pendingUtterances[utteranceId] = completed
+        if (!queue) {
+            // QUEUE_FLUSHは現在再生中・キュー中の発話をすべて打ち切るため、それらに対応する
+            // speak()呼び出しがonStop通知を待ち続けないよう、ここで明示的に完了させる。
+            completePendingUtterancesExcept(utteranceId)
+        }
         val result =
             engine.speak(
                 text,
@@ -91,8 +96,7 @@ internal class AndroidTextToSpeechRepository(
             textToSpeech?.stop()
             // stop()はonStopを発火させるが、コールバックが来ない経路（未再生のキュー分等）に
             // 備えて、残っているpendingUtterancesもここで明示的に完了させる。
-            pendingUtterances.values.toList().forEach { it.complete(Unit) }
-            pendingUtterances.clear()
+            completePendingUtterancesExcept(exceptUtteranceId = null)
         }
     }
 
@@ -143,5 +147,16 @@ internal class AndroidTextToSpeechRepository(
      */
     private fun completeUtterance(utteranceId: String?) {
         utteranceId?.let { pendingUtterances.remove(it)?.complete(Unit) }
+    }
+
+    /**
+     * [exceptUtteranceId] 以外の残っているpendingな発話をすべて即座に完了させる。
+     * `QUEUE_FLUSH`（新しい発話要求）や明示的な [stop] は、Androidが実際に `onStop` を
+     * 通知するかどうかに関わらず対象の発話をすべて打ち切るため、コールバックを待たずここで解決する。
+     */
+    private fun completePendingUtterancesExcept(exceptUtteranceId: String?) {
+        pendingUtterances.keys
+            .filter { it != exceptUtteranceId }
+            .forEach { id -> pendingUtterances.remove(id)?.complete(Unit) }
     }
 }

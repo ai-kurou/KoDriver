@@ -162,6 +162,36 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
+    fun `新しい発話要求は打ち切られる古い発話をonStop等を待たず即座に完了させる`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            val utteranceIdSlot = slot<String>()
+            every { textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot)) } returns TextToSpeech.SUCCESS
+            val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
+            var oldCompleted = false
+
+            val oldJob =
+                launch {
+                    repository.speak("古い発話", queue = false)
+                    oldCompleted = true
+                }
+            runCurrent()
+            assertFalse(oldCompleted)
+
+            // 新しい発話要求（QUEUE_FLUSH）を出すと、onStop等の通知を待たず古い発話が即座に完了する。
+            val newJob = launch { repository.speak("新しい発話", queue = false) }
+            runCurrent()
+            val newUtteranceId = utteranceIdSlot.captured
+
+            assertTrue(oldCompleted)
+            oldJob.join()
+
+            listenerSlot.captured.onDone(newUtteranceId)
+            newJob.join()
+        }
+
+    @Test
     fun `再生開始前にキャンセルされた場合は再生中の別の発話を止めない`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
