@@ -153,6 +153,10 @@ sealed interface ReadoutItemKey {
                 override val value = "gt7_ps5_my_best_lap"
                 override val supportsQueue = true
             }
+
+            data object DetailEnabled : MyBestLap {
+                override val value = "gt7_ps5_my_best_lap_detail_enabled"
+            }
         }
 
         sealed interface RemainingFuelLaps : Gt7Ps5 {
@@ -304,6 +308,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.BrakeTemperature.Root,
                 LmuWindows.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.Root,
+                Gt7Ps5.MyBestLap.DetailEnabled,
                 Gt7Ps5.RemainingFuelLaps.Root,
                 Gt7Ps5.RemainingFuel.Root,
                 Gt7Ps5.TyreTemperature.Root,

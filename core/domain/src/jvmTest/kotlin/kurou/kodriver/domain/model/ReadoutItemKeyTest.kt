@@ -55,6 +55,10 @@ class ReadoutItemKeyTest {
         )
         assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
         assertEquals(
+            ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
+            ReadoutItemKey.fromValue("gt7_ps5_my_best_lap_detail_enabled"),
+        )
+        assertEquals(
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
             ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_laps"),
         )

@@ -32,7 +32,7 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
         ) { voiceType, enabledStates ->
             Gt7Ps5ReadoutMyBestLapDetailUiState(
                 voiceType = voiceType,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+                enabled = enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled),
             )
         }.stateIn(
             viewModelScope,
@@ -48,7 +48,7 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(Simulator.Gt7Ps5.id, ReadoutItemKey.Gt7Ps5.MyBestLap.Root, enabled)
+            saveReadoutEnabledState(Simulator.Gt7Ps5.id, ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled, enabled)
         }
     }
 

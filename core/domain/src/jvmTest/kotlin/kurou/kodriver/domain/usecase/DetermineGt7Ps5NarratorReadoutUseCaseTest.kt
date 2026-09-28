@@ -166,6 +166,39 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `自己ベストの読み上げはRootが有効でもdetailPane側のスイッチが無効なら読み上げない`() {
+        val initialDecision =
+            useCase.determineMyBestLap(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 90_000),
+                settings =
+                    settings(
+                        enabledStates =
+                            mapOf(
+                                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
+                                ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled to false,
+                            ),
+                    ),
+            )
+        val decision =
+            useCase.determineMyBestLap(
+                state = initialDecision.state,
+                telemetry = telemetry(bestLapTimeMs = 89_000),
+                settings =
+                    settings(
+                        enabledStates =
+                            mapOf(
+                                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
+                                ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled to false,
+                            ),
+                    ),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(Int.MAX_VALUE, decision.state.personalBestMs)
+    }
+
+    @Test
     fun `燃料残り周回数は最速ラップの30秒前を過ぎて閾値以下になったら読み上げる`() {
         val firstLapDecision =
             useCase.determineRemainingFuelLaps(

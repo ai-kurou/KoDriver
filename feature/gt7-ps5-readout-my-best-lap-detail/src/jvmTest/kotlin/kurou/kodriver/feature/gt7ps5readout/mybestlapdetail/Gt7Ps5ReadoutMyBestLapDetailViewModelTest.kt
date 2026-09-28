@@ -107,11 +107,11 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             coEvery {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
                     false,
                 )
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false) }
+                enabledStatesFlow.update { it + (ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled to false) }
             }
             val viewModel = createViewModel()
 
@@ -123,7 +123,7 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             coVerify(exactly = 1) {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
                     false,
                 )
             }
