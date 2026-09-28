@@ -126,6 +126,10 @@ sealed interface ReadoutItemKey {
                 override val value = "lmu_windows_remaining_virtual_energy"
                 override val supportsQueue = true
             }
+
+            data object WarningReadout : RemainingVirtualEnergy {
+                override val value = "lmu_windows_remaining_virtual_energy_warning_readout"
+            }
         }
 
         sealed interface TyreWear : LmuWindows {
@@ -300,6 +304,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.PitTiming.VirtualEnergy,
                 LmuWindows.PitTiming.TyreWear,
                 LmuWindows.RemainingVirtualEnergy.Root,
+                LmuWindows.RemainingVirtualEnergy.WarningReadout,
                 LmuWindows.TyreWear.Root,
                 LmuWindows.BrakeTemperature.Root,
                 LmuWindows.MyBestLap.Root,

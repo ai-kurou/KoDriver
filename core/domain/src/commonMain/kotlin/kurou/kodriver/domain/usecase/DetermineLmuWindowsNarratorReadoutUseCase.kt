@@ -407,7 +407,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val isLow = data.remainingRatio.value * PERCENTAGE_SCALE <= settings.remainingVirtualEnergyThresholdPercentage
         val shouldAnnounce =
             !state.remainingVirtualEnergyWarned && isLow &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(remainingVirtualEnergyWarned = isLow),
             events = if (shouldAnnounce) listOf(SpeechEvent.RemainingVirtualEnergyWarning) else emptyList(),

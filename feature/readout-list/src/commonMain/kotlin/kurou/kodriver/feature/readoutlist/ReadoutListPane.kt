@@ -113,7 +113,7 @@ private fun lmuWindowsItemIcon(itemId: ReadoutItemKey.LmuWindows): ImageVector =
         is ReadoutItemKey.LmuWindows.VehicleDamage -> Icons.Filled.Build
         is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
         is ReadoutItemKey.LmuWindows.PitTiming -> Icons.Filled.AccessTime
-        is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> Icons.Filled.LocalGasStation
+        is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DonutLarge
         is ReadoutItemKey.LmuWindows.BrakeTemperature.Root -> Icons.Filled.DeviceThermostat
         is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
