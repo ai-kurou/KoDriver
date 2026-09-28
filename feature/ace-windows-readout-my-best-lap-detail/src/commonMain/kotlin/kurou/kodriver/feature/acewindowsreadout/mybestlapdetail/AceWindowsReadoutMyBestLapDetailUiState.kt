@@ -4,4 +4,5 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 
 internal data class AceWindowsReadoutMyBestLapDetailUiState(
     val voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+    val enabled: Boolean = true,
 )

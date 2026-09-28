@@ -134,7 +134,7 @@ private fun aceWindowsItemIcon(itemId: ReadoutItemKey.AceWindows): ImageVector =
         is ReadoutItemKey.AceWindows.RemainingFuel -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.AceWindows.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.AceWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
-        is ReadoutItemKey.AceWindows.MyBestLap.Root -> Icons.Filled.Timer
+        is ReadoutItemKey.AceWindows.MyBestLap -> Icons.Filled.Timer
     }
 
 private fun readoutItemIndex(

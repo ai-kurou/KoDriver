@@ -149,6 +149,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.fromValue("ace_windows_my_best_lap"),
         )
         assertEquals(
+            ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled,
+            ReadoutItemKey.fromValue("ace_windows_my_best_lap_detail_enabled"),
+        )
+        assertEquals(
             ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
             ReadoutItemKey.fromValue("ace_windows_remaining_fuel_laps"),
         )
