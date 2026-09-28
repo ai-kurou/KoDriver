@@ -14,6 +14,11 @@ package kurou.kodriver.core.texttospeechdata.windows
  *
  * Windows専用の外部プロセスを起動するためユニットテストの対象外とし、
  * 読み上げ制御のロジックは [WindowsSpeechSynthesizer] を差し替えられる呼び出し側で検証する。
+ *
+ * `queue = true` で前の発話の終了を待つ間は [lock] を保持しない。保持したままだと、待っている間に
+ * 呼ばれた [stop] や別スレッドからの `queue = false` の [speak] 呼び出しが [lock] を取得できず、
+ * 前の発話が自然に終わるまで割り込めなくなってしまう（`runInterruptible` によるコルーチンの
+ * キャンセル伝播の意味がなくなる）。
  */
 internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     private val lock = Any()
@@ -26,9 +31,13 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
         queue: Boolean,
     ) {
         if (!IS_WINDOWS) return
+        if (queue) {
+            awaitInterruptibly(synchronized(lock) { process })
+        } else {
+            synchronized(lock) { destroyProcess() }
+        }
         val started =
             synchronized(lock) {
-                if (queue) process?.waitFor() else destroyProcess()
                 val newProcess =
                     ProcessBuilder(POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", buildScript(text))
                         .redirectErrorStream(true)
@@ -40,6 +49,16 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
             started.waitFor()
         } catch (e: InterruptedException) {
             synchronized(lock) { if (process === started) destroyProcess() }
+            throw e
+        }
+    }
+
+    /** [lock] を保持せずに [target] の終了を待つ。割り込まれた場合は、まだ現在の発話であれば破棄する。 */
+    private fun awaitInterruptibly(target: Process?) {
+        try {
+            target?.waitFor()
+        } catch (e: InterruptedException) {
+            synchronized(lock) { if (process === target) destroyProcess() }
             throw e
         }
     }
