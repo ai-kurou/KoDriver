@@ -2,7 +2,9 @@ package kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail
 
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -12,15 +14,23 @@ import org.koin.dsl.module
  * バーチャルエナジー残量アナウンス詳細設定（lmu-windows-readout-remaining-virtual-energy-detail feature）の Koin モジュール。
  *
  * 提供: LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel と、それが使うドメイン UseCase。
- * 消費（get で解決）: LmuWindowsRemainingVirtualEnergyPreferencesRepository（:core:data）、試聴用の
- *   named(Simulator.LmuWindows.id) の PlaySpeechEventUseCase（:feature:lmu-windows-narrator で登録）。
+ * 消費（get で解決）: LmuWindowsRemainingVirtualEnergyPreferencesRepository・ReadoutPreferencesRepository（:core:data）、
+ *   試聴用の named(Simulator.LmuWindows.id) の PlaySpeechEventUseCase（:feature:lmu-windows-narrator で登録）。
  */
 val lmuWindowsReadoutRemainingVirtualEnergyDetailModule =
     module {
         viewModel {
-            LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(get(), get(), get(named(Simulator.LmuWindows.id)))
+            LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(named(Simulator.LmuWindows.id)),
+            )
         }
 
         factoryOf(::ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
         factoryOf(::SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
+        factoryOf(::ObserveReadoutEnabledStatesUseCase)
+        factoryOf(::SaveReadoutEnabledStateUseCase)
     }

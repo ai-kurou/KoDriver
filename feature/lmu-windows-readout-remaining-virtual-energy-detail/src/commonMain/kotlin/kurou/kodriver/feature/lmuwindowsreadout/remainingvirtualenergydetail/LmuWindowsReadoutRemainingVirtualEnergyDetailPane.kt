@@ -46,6 +46,7 @@ fun LmuWindowsReadoutRemainingVirtualEnergyDetailPane(modifier: Modifier = Modif
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
         uiState = uiState,
+        onEnabledChanged = viewModel::onEnabledChanged,
         onWarningChipClicked = viewModel::onWarningChipClicked,
         onThresholdChanged = viewModel::onThresholdChanged,
         onThresholdReset = viewModel::onThresholdReset,
@@ -57,6 +58,7 @@ fun LmuWindowsReadoutRemainingVirtualEnergyDetailPane(modifier: Modifier = Modif
 internal fun LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
     uiState: LmuWindowsReadoutRemainingVirtualEnergyDetailUiState =
         LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(),
+    onEnabledChanged: (Boolean) -> Unit = {},
     onWarningChipClicked: () -> Unit = {},
     onThresholdChanged: (Int) -> Unit = {},
     onThresholdReset: () -> Unit = {},
@@ -75,13 +77,15 @@ internal fun LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
         val thresholdLabelTemplate = stringResource(Res.string.remaining_virtual_energy_threshold_label)
         DetailPaneCard(
             title = stringResource(Res.string.remaining_virtual_energy_warning_title),
+            checked = uiState.enabled,
+            onCheckedChange = onEnabledChanged,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     DetailPaneCardChips(
                         chipLabels = listOf(warningChipLabel),
                         selectedChipLabels = setOf(warningChipLabel),
-                        chipEnabled = true,
+                        chipEnabled = uiState.enabled,
                         onChipClick = { onWarningChipClicked() },
                     )
                     HorizontalDivider(
