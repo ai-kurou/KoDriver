@@ -63,15 +63,18 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutPitTimingDetailViewModel(
-            observeLmuWindowsPitTimingVirtualEnergyLaps =
-                ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(
-                    repository,
+            pitTimingUseCases =
+                PitTimingUseCases(
+                    observeVirtualEnergyLaps =
+                        ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(
+                            repository,
+                        ),
+                    observeTyreWearLaps = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
+                    observeEnabledStates = ObserveLmuWindowsPitTimingEnabledStatesUseCase(repository),
+                    saveVirtualEnergyLaps = SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
+                    saveTyreWearLaps = SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
+                    saveEnabledState = SaveLmuWindowsPitTimingEnabledStateUseCase(repository),
                 ),
-            observeLmuWindowsPitTimingTyreWearLaps = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
-            observeLmuWindowsPitTimingEnabledStates = ObserveLmuWindowsPitTimingEnabledStatesUseCase(repository),
-            saveLmuWindowsPitTimingVirtualEnergyLaps = SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
-            saveLmuWindowsPitTimingTyreWearLaps = SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
-            saveLmuWindowsPitTimingEnabledState = SaveLmuWindowsPitTimingEnabledStateUseCase(repository),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
