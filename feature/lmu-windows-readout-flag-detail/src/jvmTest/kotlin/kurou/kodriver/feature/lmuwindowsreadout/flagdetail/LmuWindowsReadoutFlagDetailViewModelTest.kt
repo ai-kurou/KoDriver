@@ -29,11 +29,13 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlackFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsBlackFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsSectorYellowFlagReadoutTextUseCase
@@ -57,11 +59,14 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
     private val textRepository: LmuWindowsFlagReadoutTextPreferencesRepository = mockk(relaxUnitFun = true)
 
+    private val blackFlagTextRepository: LmuWindowsFlagReadoutTextPreferencesRepository = mockk(relaxUnitFun = true)
+
     private val ttsRepository: TextToSpeechRepository = mockk(relaxUnitFun = true)
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        every { blackFlagTextRepository.observeBlackFlagText() } returns MutableStateFlow("")
     }
 
     @AfterTest
@@ -81,6 +86,11 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                         ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
                     saveSectorYellowFlagReadoutText =
                         SaveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
+                ),
+            blackFlagReadoutTextUseCases =
+                BlackFlagReadoutTextUseCases(
+                    observe = ObserveLmuWindowsBlackFlagReadoutTextUseCase(blackFlagTextRepository),
+                    save = SaveLmuWindowsBlackFlagReadoutTextUseCase(blackFlagTextRepository),
                 ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
             speakText = SpeakTextUseCase(ttsRepository),
@@ -383,5 +393,49 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository, ttsEngine)
+        }
+
+    @Test
+    fun `ブラックフラッグ文言を保存してUiStateに反映する`() =
+        runTest {
+            val blackFlagTextFlow = MutableStateFlow("")
+            every { blackFlagTextRepository.observeBlackFlagText() } returns blackFlagTextFlow
+            coEvery { blackFlagTextRepository.saveBlackFlagText(any()) } answers {
+                blackFlagTextFlow.value = firstArg()
+            }
+            every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
+            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+            coEvery { ttsRepository.isAvailable() } returns true
+            val viewModel = createViewModel()
+
+            viewModel.onBlackFlagTextChanged("ブラック、ピットイン")
+
+            assertEquals("ブラック、ピットイン", viewModel.uiState.first().blackFlagText)
+            coVerify(exactly = 1) { blackFlagTextRepository.saveBlackFlagText("ブラック、ピットイン") }
+            verify(exactly = 1) { blackFlagTextRepository.observeBlackFlagText() }
+            confirmVerified(blackFlagTextRepository)
+        }
+
+    @Test
+    fun `ブラックフラッグ文言の試聴で開始音のあとにTTSを再生する`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
+            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+            coEvery { ttsRepository.isAvailable() } returns true
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } just Runs
+            val viewModel = createViewModel()
+
+            viewModel.onBlackFlagTextPreviewClicked("ブラック、停止してください")
+
+            coVerifyOrder {
+                ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root)
+                ttsRepository.speak("ブラック、停止してください", false)
+            }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
+            coVerify(exactly = 1) { ttsRepository.speak("ブラック、停止してください", false) }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(ttsRepository, ttsEngine)
         }
 }

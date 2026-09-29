@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import org.junit.Rule
@@ -88,7 +89,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("レッドフラッグ")[1].performClick()
+        rule.onAllNodesWithText("レッドフラッグ")[1].performScrollTo().performClick()
 
         assertEquals(RedFlagVoiceType.RED_FLAG, changedVoiceType)
         assertEquals(RedFlagVoiceType.RED_FLAG, previewedVoiceType)
@@ -113,7 +114,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("セッションストップ")[0].performClick()
+        rule.onAllNodesWithText("セッションストップ")[0].performScrollTo().performClick()
 
         assertEquals(RedFlagVoiceType.SESSION_STOP, changedVoiceType)
         assertEquals(RedFlagVoiceType.SESSION_STOP, previewedVoiceType)
@@ -239,5 +240,35 @@ class LmuWindowsReadoutFlagDetailPaneTest {
 
         rule.onAllNodesWithContentDescription("この文言を読み上げます")[0].assertIsDisplayed()
         rule.onAllNodesWithText("イエローフラッグ")[1].assertIsNotSelected()
+    }
+
+    @Test
+    fun `ブラックフラッグの保存済み文言は独立した試聴欄に表示される`() {
+        var previewText: String? = null
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutFlagDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutFlagDetailUiState(
+                            blackFlagText = "ブラック、停止してください",
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onPreviewClicked = {},
+                    onRedFlagEnabledChanged = {},
+                    onRedFlagVoiceTypeChanged = {},
+                    onRedFlagPreviewClicked = {},
+                    onSectorYellowFlagTextChanged = {},
+                    onSectorYellowFlagTextPreviewClicked = {},
+                    onBlackFlagTextChanged = {},
+                    onBlackFlagTextPreviewClicked = { previewText = it },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("ブラック、停止してください")[0].assertIsDisplayed()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performClick()
+
+        assertEquals("ブラック、停止してください", previewText)
     }
 }

@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_black
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_preview
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected_icon
@@ -51,11 +52,13 @@ fun LmuWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
         onRedFlagPreviewClicked = viewModel::onRedFlagPreviewClicked,
         onSectorYellowFlagTextChanged = viewModel::onSectorYellowFlagTextChanged,
         onSectorYellowFlagTextPreviewClicked = viewModel::onSectorYellowFlagTextPreviewClicked,
+        onBlackFlagTextChanged = viewModel::onBlackFlagTextChanged,
+        onBlackFlagTextPreviewClicked = viewModel::onBlackFlagTextPreviewClicked,
         modifier = modifier,
     )
 }
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "CyclomaticComplexMethod")
 @Composable
 internal fun LmuWindowsReadoutFlagDetailPaneContent(
     uiState: LmuWindowsReadoutFlagDetailUiState,
@@ -66,6 +69,8 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     onRedFlagPreviewClicked: (RedFlagVoiceType) -> Unit,
     onSectorYellowFlagTextChanged: (String) -> Unit,
     onSectorYellowFlagTextPreviewClicked: (String) -> Unit,
+    onBlackFlagTextChanged: (String) -> Unit = {},
+    onBlackFlagTextPreviewClicked: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -140,6 +145,31 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 },
             )
         }
+        val blackFlagLabel = stringResource(Res.string.flag_black)
+        val hasBlackFlagCustomText = uiState.blackFlagText.isNotEmpty()
+        DetailPaneCard(
+            title = blackFlagLabel,
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
+            bottomContent = {
+                DetailPaneCardTextField(
+                    value = uiState.blackFlagText,
+                    placeholder = blackFlagLabel,
+                    maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                    onValueChangeFinished = onBlackFlagTextChanged,
+                    onPreviewClick = onBlackFlagTextPreviewClicked,
+                    enabled = uiState.isTextToSpeechAvailable,
+                    selected = hasBlackFlagCustomText,
+                    supportingText =
+                        when {
+                            !uiState.isTextToSpeechAvailable -> stringResource(Res.string.flag_custom_text_unavailable)
+                            hasBlackFlagCustomText -> stringResource(Res.string.flag_custom_text_selected)
+                            else -> stringResource(Res.string.flag_custom_text_supporting)
+                        },
+                    previewContentDescription = stringResource(Res.string.flag_custom_text_preview),
+                    selectedContentDescription = stringResource(Res.string.flag_custom_text_selected_icon),
+                )
+            },
+        )
         val redFlagLabel = stringResource(Res.string.flag_red)
         val sessionStopLabel = stringResource(Res.string.flag_session_stop)
         val redFlagChecked = uiState.enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag] ?: true
@@ -197,6 +227,8 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
             onRedFlagPreviewClicked = {},
             onSectorYellowFlagTextChanged = {},
             onSectorYellowFlagTextPreviewClicked = {},
+            onBlackFlagTextChanged = {},
+            onBlackFlagTextPreviewClicked = {},
         )
     }
 }

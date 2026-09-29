@@ -12,11 +12,13 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlackFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsBlackFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsSectorYellowFlagReadoutTextUseCase
@@ -31,8 +33,14 @@ internal data class FlagSettingsUseCases(
     val saveSectorYellowFlagReadoutText: SaveLmuWindowsSectorYellowFlagReadoutTextUseCase,
 )
 
+internal data class BlackFlagReadoutTextUseCases(
+    val observe: ObserveLmuWindowsBlackFlagReadoutTextUseCase,
+    val save: SaveLmuWindowsBlackFlagReadoutTextUseCase,
+)
+
 internal class LmuWindowsReadoutFlagDetailViewModel(
     private val settingsUseCases: FlagSettingsUseCases,
+    private val blackFlagReadoutTextUseCases: BlackFlagReadoutTextUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
     private val speakText: SpeakTextUseCase,
     private val playStartSoundForKey: PlayStartSoundForKeyUseCase,
@@ -49,12 +57,14 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
             settingsUseCases.observeFlagEnabledStates(),
             settingsUseCases.observeRedFlagVoiceType(),
             settingsUseCases.observeSectorYellowFlagReadoutText(),
+            blackFlagReadoutTextUseCases.observe(),
             textToSpeechAvailable,
-        ) { enabledStates, redFlagVoiceType, sectorYellowFlagText, isTextToSpeechAvailable ->
+        ) { enabledStates, redFlagVoiceType, sectorYellowFlagText, blackFlagText, isTextToSpeechAvailable ->
             LmuWindowsReadoutFlagDetailUiState(
                 enabledStates = enabledStates,
                 redFlagVoiceType = redFlagVoiceType,
                 sectorYellowFlagText = sectorYellowFlagText,
+                blackFlagText = blackFlagText,
                 isTextToSpeechAvailable = isTextToSpeechAvailable,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutFlagDetailUiState())
@@ -102,6 +112,19 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
                 playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
                 speakText(text)
             }
+        }
+    }
+
+    fun onBlackFlagTextChanged(text: String) {
+        viewModelScope.launch { blackFlagReadoutTextUseCases.save(text) }
+    }
+
+    /** Black flag telemetry is not currently exposed by LMU shared memory; this previews only the saved custom text. */
+    fun onBlackFlagTextPreviewClicked(text: String) {
+        if (text.isBlank()) return
+        viewModelScope.launch {
+            playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.Root)
+            speakText(text)
         }
     }
 }

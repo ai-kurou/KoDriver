@@ -9,6 +9,8 @@ internal data class LmuWindowsReadoutFlagDetailUiState(
     val redFlagVoiceType: RedFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
     /** イエローフラッグのカスタム読み上げ文言。空文字なら収録済みWAVで読み上げる。 */
     val sectorYellowFlagText: String = READOUT_CUSTOM_TEXT_DEFAULT,
+    /** LMU ブラックフラッグのカスタム読み上げ文言。 */
+    val blackFlagText: String = READOUT_CUSTOM_TEXT_DEFAULT,
     /** OS標準のTTSを利用できるか。利用できない場合はカスタム文言の入力を受け付けない。 */
     val isTextToSpeechAvailable: Boolean = false,
 )
