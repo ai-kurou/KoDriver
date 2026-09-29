@@ -140,8 +140,8 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> 3
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 4
                 ReadoutItemKey.LmuWindows.TyreWear.Root -> 5
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 6
-                ReadoutItemKey.LmuWindows.BrakeTemperature.Root -> 7
+                ReadoutItemKey.LmuWindows.BrakeTemperature.Root -> 6
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 7
                 ReadoutItemKey.LmuWindows.MyBestLap.Root -> 8
             }
 
