@@ -12,4 +12,10 @@ internal class LmuWindowsFlagReadoutTextPreferencesRepositoryImpl(
     override suspend fun saveSectorYellowFlagText(text: String) {
         dataStore.saveProperty(text) { prefs, value -> prefs.copy(sectorYellowFlagText = value) }
     }
+
+    override fun observeBlackFlagText(): Flow<String> = dataStore.observeProperty { it.blackFlagText }
+
+    override suspend fun saveBlackFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(blackFlagText = value) }
+    }
 }

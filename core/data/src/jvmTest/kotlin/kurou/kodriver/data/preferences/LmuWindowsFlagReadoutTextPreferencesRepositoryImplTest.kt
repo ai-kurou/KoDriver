@@ -51,4 +51,29 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
 
             assertEquals("", repository.observeSectorYellowFlagText().first())
         }
+
+    @Test
+    fun `blackFlagText の初期値は空文字`() =
+        runTest {
+            assertEquals("", repository.observeBlackFlagText().first())
+        }
+
+    @Test
+    fun `saveBlackFlagText で保存した値を observeBlackFlagText で取得できる`() =
+        runTest {
+            repository.saveBlackFlagText("ブラック、停止")
+
+            assertEquals("ブラック、停止", repository.observeBlackFlagText().first())
+            assertEquals("", repository.observeSectorYellowFlagText().first())
+        }
+
+    @Test
+    fun `ブラックとイエローの文言を別々に保存できる`() =
+        runTest {
+            repository.saveBlackFlagText("ブラック、停止")
+            repository.saveSectorYellowFlagText("イエロー、注意")
+
+            assertEquals("ブラック、停止", repository.observeBlackFlagText().first())
+            assertEquals("イエロー、注意", repository.observeSectorYellowFlagText().first())
+        }
 }

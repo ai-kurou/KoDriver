@@ -13,7 +13,10 @@ class FlagReadoutTextPreferencesSerializerTest {
     @Test
     fun `デフォルト値は初期設定を返す`() {
         assertEquals(
-            FlagReadoutTextPreferences(sectorYellowFlagText = READOUT_CUSTOM_TEXT_DEFAULT),
+            FlagReadoutTextPreferences(
+                sectorYellowFlagText = READOUT_CUSTOM_TEXT_DEFAULT,
+                blackFlagText = READOUT_CUSTOM_TEXT_DEFAULT,
+            ),
             FlagReadoutTextPreferencesSerializer.defaultValue,
         )
     }
@@ -21,13 +24,29 @@ class FlagReadoutTextPreferencesSerializerTest {
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = FlagReadoutTextPreferences(sectorYellowFlagText = "イエロー、注意")
+            val original =
+                FlagReadoutTextPreferences(
+                    sectorYellowFlagText = "イエロー、注意",
+                    blackFlagText = "ブラック、停止",
+                )
             val output = ByteArrayOutputStream()
             FlagReadoutTextPreferencesSerializer.writeTo(original, output)
 
             val restored = FlagReadoutTextPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
 
             assertEquals(original, restored)
+        }
+
+    @Test
+    fun `ブラックフラッグ項目がない既存データは空文字として読み込む`() =
+        runTest {
+            val original = FlagReadoutTextPreferences(sectorYellowFlagText = "イエロー、注意")
+            val output = ByteArrayOutputStream()
+            FlagReadoutTextPreferencesSerializer.writeTo(original, output)
+
+            val restored = FlagReadoutTextPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
+
+            assertEquals("", restored.blackFlagText)
         }
 
     @Test
