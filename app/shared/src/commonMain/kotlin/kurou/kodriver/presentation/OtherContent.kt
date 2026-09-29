@@ -62,11 +62,11 @@ fun OtherContent(
     LaunchedEffect(Unit) {
         viewModel.checkUpdate()
         viewModel.checkStartupEnabled()
-        viewModel.checkTextToSpeechAvailability()
     }
 
     LifecycleResumeEffect(Unit) {
         viewModel.checkAccessLocalNetworkPermission()
+        viewModel.checkTextToSpeechAvailability()
         onPauseOrDispose {}
     }
 
