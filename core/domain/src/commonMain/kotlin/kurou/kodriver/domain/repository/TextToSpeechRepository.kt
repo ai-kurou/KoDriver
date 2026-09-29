@@ -17,8 +17,9 @@ interface TextToSpeechRepository {
     /**
      * TTSが利用できない理由。利用できる場合は `null`。
      *
-     * Androidでのユーザー向け案内（アプリストア誘導・OS設定誘導）に使う。Windowsでは理由の
-     * 切り分けを行わないため常に `null` を返す（[isAvailable] の判定とは独立）。
+     * ユーザー向け案内に使う。Androidではエンジンと言語データを区別し、Windowsでは
+     * 音声合成または日本語音声が使えない場合に [TextToSpeechUnavailableReason.WindowsSpeechUnavailable]
+     * を返す。
      * [isAvailable] と同様、エンジンの初期化を伴う場合がある。
      */
     suspend fun unavailableReason(): TextToSpeechUnavailableReason?

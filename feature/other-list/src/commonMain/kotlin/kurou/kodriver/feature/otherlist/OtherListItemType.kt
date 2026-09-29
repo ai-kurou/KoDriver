@@ -12,6 +12,7 @@ enum class OtherListItemType(
     Volume("volume"),
     TtsEngineMissing("tts_engine_missing"),
     TtsLanguageDataMissing("tts_language_data_missing"),
+    WindowsSpeechUnavailable("windows_speech_unavailable"),
     KeepScreenOn("keep_screen_on"),
     ReadoutStartSound("readout_start_sound"),
     Theme("theme"),

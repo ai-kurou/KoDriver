@@ -347,6 +347,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.AccessLocalNetworkPermission,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
+                OtherListItemType.WindowsSpeechUnavailable,
                 -> {}
             }
         },

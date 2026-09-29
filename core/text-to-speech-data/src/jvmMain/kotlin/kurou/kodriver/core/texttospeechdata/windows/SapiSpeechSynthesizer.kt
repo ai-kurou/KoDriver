@@ -27,7 +27,28 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     private var process: Process? = null
     private var requestToken = 0L
 
-    override fun isAvailable(): Boolean = IS_WINDOWS
+    override fun isAvailable(): Boolean {
+        if (!IS_WINDOWS) return false
+        return try {
+            val process =
+                ProcessBuilder(
+                    POWERSHELL,
+                    "-NoProfile",
+                    "-NonInteractive",
+                    "-Command",
+                    "Add-Type -AssemblyName System.Speech; " +
+                        "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
+                        "if (-not ($s.GetInstalledVoices() | Where-Object { $_.VoiceInfo.Culture.Name -eq 'ja-JP' })) { exit 1 }",
+                ).redirectErrorStream(true).start()
+            try {
+                process.waitFor() == 0
+            } finally {
+                process.destroy()
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
 
     override fun speak(
         text: String,

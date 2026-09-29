@@ -59,4 +59,25 @@ class OtherListPaneTtsGuidanceTest {
 
         assertNull(clickedItem)
     }
+
+    @Test
+    fun `Windowsの日本語音声を設定項目をクリックしても項目クリックコールバックは呼ばない`() {
+        var clickedItem: OtherListItemType? = null
+
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.WindowsSpeechUnavailable)),
+                onItemClick = { clickedItem = it },
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("Windowsの日本語音声を設定")).performClick()
+
+        assertNull(clickedItem)
+    }
 }
