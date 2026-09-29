@@ -18,17 +18,21 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
+internal data class MyBestLapUseCases(
+    val observeVoiceType: ObserveAceWindowsMyBestLapVoiceTypeUseCase,
+    val saveVoiceType: SaveAceWindowsMyBestLapVoiceTypeUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
 internal class AceWindowsReadoutMyBestLapDetailViewModel(
-    observeMyBestLapVoiceType: ObserveAceWindowsMyBestLapVoiceTypeUseCase,
-    private val saveMyBestLapVoiceType: SaveAceWindowsMyBestLapVoiceTypeUseCase,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val myBestLapUseCases: MyBestLapUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<AceWindowsReadoutMyBestLapDetailUiState> =
         combine(
-            observeMyBestLapVoiceType(),
-            observeReadoutEnabledStates(Simulator.AceWindows.id),
+            myBestLapUseCases.observeVoiceType(),
+            myBestLapUseCases.observeReadoutEnabledStates(Simulator.AceWindows.id),
         ) { voiceType, enabledStates ->
             AceWindowsReadoutMyBestLapDetailUiState(
                 voiceType = voiceType,
@@ -42,13 +46,17 @@ internal class AceWindowsReadoutMyBestLapDetailViewModel(
 
     fun onVoiceTypeChanged(type: MyBestLapVoiceType) {
         viewModelScope.launch {
-            saveMyBestLapVoiceType(type)
+            myBestLapUseCases.saveVoiceType(type)
         }
     }
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(Simulator.AceWindows.id, ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled, enabled)
+            myBestLapUseCases.saveReadoutEnabledState(
+                Simulator.AceWindows.id,
+                ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled,
+                enabled,
+            )
         }
     }
 
