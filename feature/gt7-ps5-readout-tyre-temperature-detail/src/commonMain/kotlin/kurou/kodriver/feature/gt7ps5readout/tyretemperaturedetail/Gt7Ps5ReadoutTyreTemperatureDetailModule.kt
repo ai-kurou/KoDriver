@@ -18,9 +18,10 @@ import org.koin.dsl.module
 val gt7Ps5ReadoutTyreTemperatureDetailModule =
     module {
         viewModel {
-            Gt7Ps5ReadoutTyreTemperatureDetailViewModel(get(), get(), get(), get(), get(named(Simulator.Gt7Ps5.id)))
+            Gt7Ps5ReadoutTyreTemperatureDetailViewModel(get(), get(named(Simulator.Gt7Ps5.id)))
         }
 
+        factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
         factoryOf(::ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase)
         factoryOf(::ObserveGt7Ps5TyreTemperatureHighThresholdUseCase)
         factoryOf(::SaveGt7Ps5TyreTemperatureEnabledStateUseCase)
