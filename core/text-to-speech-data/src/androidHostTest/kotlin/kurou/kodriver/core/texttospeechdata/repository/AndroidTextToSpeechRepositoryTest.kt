@@ -42,7 +42,7 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
             val utteranceIdSlot = slot<String>()
             every {
-                textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot))
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_ADD, null, capture(utteranceIdSlot))
             } answers {
                 listenerSlot.captured.onDone(utteranceIdSlot.captured)
                 TextToSpeech.SUCCESS
@@ -52,8 +52,10 @@ class AndroidTextToSpeechRepositoryTest {
             repository.speak("ベストラップ", queue = true)
 
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
-            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
-            verify(exactly = 1) { textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_ADD, null, any()) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_ADD, null, utteranceIdSlot.captured)
+            }
             confirmVerified(textToSpeech)
         }
 
@@ -63,7 +65,9 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
             val utteranceIdSlot = slot<String>()
-            every { textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot)) } returns TextToSpeech.SUCCESS
+            every {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
+            } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
             var completed = false
 
@@ -80,6 +84,12 @@ class AndroidTextToSpeechRepositoryTest {
             job.join()
 
             assertTrue(completed)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, utteranceIdSlot.captured)
+            }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -88,7 +98,9 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
             val utteranceIdSlot = slot<String>()
-            every { textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot)) } returns TextToSpeech.SUCCESS
+            every {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
+            } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
             var completed = false
 
@@ -104,6 +116,12 @@ class AndroidTextToSpeechRepositoryTest {
             job.join()
 
             assertTrue(completed)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, utteranceIdSlot.captured)
+            }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -112,7 +130,9 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
             val utteranceIdSlot = slot<String>()
-            every { textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot)) } returns TextToSpeech.SUCCESS
+            every {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
+            } returns TextToSpeech.SUCCESS
             every { textToSpeech.stop() } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
@@ -124,7 +144,13 @@ class AndroidTextToSpeechRepositoryTest {
             job.join()
 
             assertTrue(job.isCancelled)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, utteranceIdSlot.captured)
+            }
             verify(exactly = 1) { textToSpeech.stop() }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -132,12 +158,20 @@ class AndroidTextToSpeechRepositoryTest {
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
-            every { textToSpeech.speak(any(), any(), null, any()) } returns TextToSpeech.ERROR
+            val utteranceIdSlot = slot<String>()
+            every {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
+            } returns TextToSpeech.ERROR
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
             repository.speak("ベストラップ", queue = false)
 
-            verify(exactly = 1) { textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, any()) }
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, utteranceIdSlot.captured)
+            }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -146,7 +180,9 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
             val utteranceIdSlot = slot<String>()
-            every { textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot)) } returns TextToSpeech.SUCCESS
+            every {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
+            } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
             var completed = false
 
@@ -161,6 +197,12 @@ class AndroidTextToSpeechRepositoryTest {
             job.join()
 
             assertTrue(completed)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, utteranceIdSlot.captured)
+            }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -169,7 +211,13 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
             val utteranceIdSlot = slot<String>()
-            every { textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot)) } returns TextToSpeech.SUCCESS
+            every {
+                textToSpeech.speak("古い発話", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
+            } returns TextToSpeech.SUCCESS andThen TextToSpeech.SUCCESS
+            val newUtteranceIdSlot = slot<String>()
+            every {
+                textToSpeech.speak("新しい発話", TextToSpeech.QUEUE_FLUSH, null, capture(newUtteranceIdSlot))
+            } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
             var oldCompleted = false
 
@@ -184,13 +232,23 @@ class AndroidTextToSpeechRepositoryTest {
             // 新しい発話要求（QUEUE_FLUSH）を出すと、onStop等の通知を待たず古い発話が即座に完了する。
             val newJob = launch { repository.speak("新しい発話", queue = false) }
             runCurrent()
-            val newUtteranceId = utteranceIdSlot.captured
+            val newUtteranceId = newUtteranceIdSlot.captured
 
             assertTrue(oldCompleted)
             oldJob.join()
 
             listenerSlot.captured.onDone(newUtteranceId)
             newJob.join()
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) {
+                textToSpeech.speak("古い発話", TextToSpeech.QUEUE_FLUSH, null, utteranceIdSlot.captured)
+            }
+            verify(exactly = 1) {
+                textToSpeech.speak("新しい発話", TextToSpeech.QUEUE_FLUSH, null, newUtteranceId)
+            }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -199,7 +257,13 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
             val utteranceIdSlot = slot<String>()
-            every { textToSpeech.speak(any(), any(), null, capture(utteranceIdSlot)) } returns TextToSpeech.SUCCESS
+            every {
+                textToSpeech.speak("A", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
+            } returns TextToSpeech.SUCCESS andThen TextToSpeech.SUCCESS
+            val utteranceIdBSlot = slot<String>()
+            every {
+                textToSpeech.speak("B", TextToSpeech.QUEUE_ADD, null, capture(utteranceIdBSlot))
+            } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
             // Aが実際に再生中（onStart済み）。
@@ -219,6 +283,17 @@ class AndroidTextToSpeechRepositoryTest {
 
             listenerSlot.captured.onDone(utteranceIdA)
             jobA.join()
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) {
+                textToSpeech.speak("A", TextToSpeech.QUEUE_FLUSH, null, utteranceIdA)
+            }
+            verify(exactly = 1) {
+                textToSpeech.speak("B", TextToSpeech.QUEUE_ADD, null, utteranceIdBSlot.captured)
+            }
+            verify(exactly = 0) { textToSpeech.stop() }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -226,7 +301,10 @@ class AndroidTextToSpeechRepositoryTest {
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
-            every { textToSpeech.speak(any(), any(), null, any()) } returns TextToSpeech.SUCCESS
+            val utteranceIdSlot = slot<String>()
+            every {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
+            } returns TextToSpeech.SUCCESS
             every { textToSpeech.stop() } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
             var completed = false
@@ -244,19 +322,31 @@ class AndroidTextToSpeechRepositoryTest {
 
             assertTrue(completed)
             job.join()
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) {
+                textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, utteranceIdSlot.captured)
+            }
+            verify(exactly = 1) { textToSpeech.stop() }
+            confirmVerified(textToSpeech)
         }
 
     @Test
     fun `初期化は最初の1回のみ行う`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
-            every { textToSpeech.setOnUtteranceProgressListener(any()) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
             assertTrue(repository.isAvailable())
             assertTrue(repository.isAvailable())
 
             assertEquals(1, factoryCallCount)
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -304,14 +394,14 @@ class AndroidTextToSpeechRepositoryTest {
     fun `発話完了通知リスナーの登録に失敗した場合は利用不可としてエンジンを破棄しEngineMissingを返す`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
-            every { textToSpeech.setOnUtteranceProgressListener(any()) } returns TextToSpeech.ERROR
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.ERROR
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
             assertFalse(repository.isAvailable())
             assertEquals(TextToSpeechUnavailableReason.EngineMissing, repository.unavailableReason())
 
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
-            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
             verify(exactly = 1) { textToSpeech.shutdown() }
             confirmVerified(textToSpeech)
         }
@@ -331,7 +421,7 @@ class AndroidTextToSpeechRepositoryTest {
     fun `stopは初期化済みのエンジンに対してのみ停止を呼び出す`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
-            every { textToSpeech.setOnUtteranceProgressListener(any()) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
             every { textToSpeech.stop() } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
@@ -342,7 +432,7 @@ class AndroidTextToSpeechRepositoryTest {
             repository.stop()
 
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
-            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
             verify(exactly = 1) { textToSpeech.stop() }
             confirmVerified(textToSpeech)
         }

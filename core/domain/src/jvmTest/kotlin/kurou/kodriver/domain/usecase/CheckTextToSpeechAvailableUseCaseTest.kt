@@ -1,6 +1,8 @@
 package kurou.kodriver.domain.usecase
 
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.TextToSpeechRepository
@@ -17,6 +19,8 @@ class CheckTextToSpeechAvailableUseCaseTest {
             coEvery { repository.isAvailable() } returns true
 
             assertTrue(CheckTextToSpeechAvailableUseCase(repository)())
+            coVerify(exactly = 1) { repository.isAvailable() }
+            confirmVerified(repository)
         }
 
     @Test
@@ -25,5 +29,7 @@ class CheckTextToSpeechAvailableUseCaseTest {
             coEvery { repository.isAvailable() } returns false
 
             assertFalse(CheckTextToSpeechAvailableUseCase(repository)())
+            coVerify(exactly = 1) { repository.isAvailable() }
+            confirmVerified(repository)
         }
 }

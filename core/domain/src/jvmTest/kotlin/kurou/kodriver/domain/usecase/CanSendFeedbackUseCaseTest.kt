@@ -1,7 +1,9 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -21,6 +23,8 @@ class CanSendFeedbackUseCaseTest {
             val useCase = CanSendFeedbackUseCase(repository, currentTimeMs = { 1_000_000L })
 
             assertTrue(useCase().first())
+            verify(exactly = 1) { repository.lastFeedbackSentAtEpochMillis() }
+            confirmVerified(repository)
         }
 
     @Test
@@ -35,6 +39,8 @@ class CanSendFeedbackUseCaseTest {
                 )
 
             assertTrue(useCase().first())
+            verify(exactly = 1) { repository.lastFeedbackSentAtEpochMillis() }
+            confirmVerified(repository)
         }
 
     @Test
@@ -49,5 +55,7 @@ class CanSendFeedbackUseCaseTest {
                 )
 
             assertFalse(useCase().first())
+            verify(exactly = 1) { repository.lastFeedbackSentAtEpochMillis() }
+            confirmVerified(repository)
         }
 }

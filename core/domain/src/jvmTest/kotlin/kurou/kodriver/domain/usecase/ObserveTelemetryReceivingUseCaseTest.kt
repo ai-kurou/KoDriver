@@ -1,7 +1,9 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,6 +59,11 @@ class ObserveTelemetryReceivingUseCaseTest {
             val useCase = createUseCase()
 
             assertTrue(withTimeout(5_000L) { useCase().first { it } })
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 0) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 0) { aceWindowsStatusRepository.statusStream() }
+            confirmVerified(simulatorRepository, lmuWindowsRepository, gt7Ps5Repository, aceWindowsStatusRepository)
         }
 
     @Test
@@ -69,6 +76,11 @@ class ObserveTelemetryReceivingUseCaseTest {
             val useCase = createUseCase()
 
             assertFalse(useCase().first())
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 0) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 0) { aceWindowsStatusRepository.statusStream() }
+            confirmVerified(simulatorRepository, lmuWindowsRepository, gt7Ps5Repository, aceWindowsStatusRepository)
         }
 
     @Test
@@ -85,6 +97,11 @@ class ObserveTelemetryReceivingUseCaseTest {
             val results = withTimeout(10_000L) { useCase().take(3).toList() }
 
             assertEquals(listOf(false, true, false), results)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 0) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 0) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
+            confirmVerified(simulatorRepository, lmuWindowsRepository, gt7Ps5Repository, aceWindowsStatusRepository)
         }
 
     @Test
@@ -109,5 +126,10 @@ class ObserveTelemetryReceivingUseCaseTest {
 
             assertTrue(values.last())
             job.cancel()
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 0) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 0) { aceWindowsStatusRepository.statusStream() }
+            confirmVerified(simulatorRepository, lmuWindowsRepository, gt7Ps5Repository, aceWindowsStatusRepository)
         }
 }

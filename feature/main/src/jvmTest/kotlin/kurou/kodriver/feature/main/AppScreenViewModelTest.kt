@@ -5,6 +5,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -271,6 +272,8 @@ class AppScreenViewModelTest {
             advanceUntilIdle()
 
             coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
+            verify(exactly = 2) { simulatorRepository.selectedSimulator() }
+            confirmVerified(simulatorRepository)
         }
 
     @Test
@@ -281,7 +284,9 @@ class AppScreenViewModelTest {
             viewModel.selectSimulator("unknown_simulator")
             advanceUntilIdle()
 
-            coVerify(exactly = 0) { simulatorRepository.saveSelectedSimulator(any()) }
+            coVerify(exactly = 0) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
+            verify(exactly = 2) { simulatorRepository.selectedSimulator() }
+            confirmVerified(simulatorRepository)
         }
 
     @Test

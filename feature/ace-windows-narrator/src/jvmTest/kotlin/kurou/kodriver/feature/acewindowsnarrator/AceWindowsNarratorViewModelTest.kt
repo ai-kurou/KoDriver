@@ -4,9 +4,12 @@ package kurou.kodriver.feature.acewindowsnarrator
 
 import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.slot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -30,6 +33,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -247,7 +251,7 @@ class AceWindowsNarratorViewModelTest {
         runTest(testDispatcher) {
             val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
-            val telemetryJsons = mutableListOf<String>()
+            val telemetryJsonSlot = slot<String>()
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(thresholdPercentage = 30)
             coEvery {
@@ -256,8 +260,8 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root,
                     "残り燃料警告",
-                    any(),
-                    capture(telemetryJsons),
+                    NarrationOutcome.QUEUED,
+                    match { it.isNotEmpty() },
                 )
             } just Runs
             createViewModel(fuelChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
@@ -265,10 +269,20 @@ class AceWindowsNarratorViewModelTest {
             channel.send(fuel(50.0))
             channel.send(fuel(20.0))
 
-            assertEquals(1, telemetryJsons.size)
-            assertEquals(true, telemetryJsons.single().contains(""""previousFuel":{"remainingPercent":50.0}"""))
-            assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":20.0}"""))
-            assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    "残り燃料警告",
+                    NarrationOutcome.QUEUED,
+                    capture(telemetryJsonSlot),
+                )
+            }
+            assertEquals(true, telemetryJsonSlot.captured.contains(""""previousFuel":{"remainingPercent":50.0}"""))
+            assertEquals(true, telemetryJsonSlot.captured.contains(""""fuel":{"remainingPercent":20.0}"""))
+            confirmVerified(telemetryLogRepository)
+            assertEquals(true, telemetryJsonSlot.captured.contains(""""observedAtMs":123456"""))
         }
 
     @Test
@@ -321,7 +335,7 @@ class AceWindowsNarratorViewModelTest {
     fun `燃料残り周回数の読み上げ時に現在と直前のデータを保存する`() =
         runTest(testDispatcher) {
             val remainingFuelLapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
-            val telemetryJsons = mutableListOf<String>()
+            val telemetryJsonSlot = slot<String>()
             val ttsEngine = mockTts(mutableListOf())
             stubReadoutDefaults(thresholdPercentage = 30, remainingFuelLapsThreshold = 3)
             coEvery {
@@ -330,8 +344,8 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
                     "燃料は残り約3周",
-                    any(),
-                    capture(telemetryJsons),
+                    NarrationOutcome.QUEUED,
+                    match { it.isNotEmpty() },
                 )
             } just Runs
             createViewModel(
@@ -344,12 +358,22 @@ class AceWindowsNarratorViewModelTest {
             remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 4.5f))
             remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 3.5f))
 
-            assertEquals(1, telemetryJsons.size)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+                    "燃料は残り約3周",
+                    NarrationOutcome.QUEUED,
+                    capture(telemetryJsonSlot),
+                )
+            }
             assertEquals(
                 true,
-                telemetryJsons.single().contains(""""previousRemainingFuelLaps":{"remainingLaps":4.5}"""),
+                telemetryJsonSlot.captured.contains(""""previousRemainingFuelLaps":{"remainingLaps":4.5}"""),
             )
-            assertEquals(true, telemetryJsons.single().contains(""""remainingFuelLaps":{"remainingLaps":3.5}"""))
+            assertEquals(true, telemetryJsonSlot.captured.contains(""""remainingFuelLaps":{"remainingLaps":3.5}"""))
+            confirmVerified(telemetryLogRepository)
         }
 
     @Test
@@ -376,12 +400,12 @@ class AceWindowsNarratorViewModelTest {
     private fun stubRemainingFuelLapsTelemetryLog() {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
-                any(),
+                0L,
                 Simulator.AceWindows,
                 ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
-                any(),
-                any(),
-                any(),
+                "燃料は残り約3周",
+                NarrationOutcome.SPOKEN,
+                "{}",
             )
         } just Runs
     }
@@ -437,12 +461,12 @@ class AceWindowsNarratorViewModelTest {
         } returns MutableStateFlow(vehicleApproachThresholdMeters)
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
-                any(),
+                0L,
                 Simulator.AceWindows,
                 ReadoutItemKey.AceWindows.RemainingFuel.Root,
                 "残り燃料警告",
-                any(),
-                any(),
+                NarrationOutcome.SPOKEN,
+                "{}",
             )
         } just Runs
     }
@@ -576,7 +600,7 @@ class AceWindowsNarratorViewModelTest {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val tyreCarcassTemperatureChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
-            val telemetryJsons = mutableListOf<String>()
+            val telemetryJsonSlot = slot<String>()
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(thresholdPercentage = 30, tyreTemperatureHighThresholdCelsius = 90)
             coEvery {
@@ -585,8 +609,8 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root,
                     "タイヤ過熱警告",
-                    any(),
-                    capture(telemetryJsons),
+                    NarrationOutcome.QUEUED,
+                    match { it.isNotEmpty() },
                 )
             } just Runs
             createViewModel(
@@ -599,16 +623,28 @@ class AceWindowsNarratorViewModelTest {
             tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0f))
             tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0f))
 
-            assertEquals(1, telemetryJsons.size)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.TyreTemperature.Root,
+                    "タイヤ過熱警告",
+                    NarrationOutcome.QUEUED,
+                    capture(telemetryJsonSlot),
+                )
+            }
             assertEquals(
                 true,
-                telemetryJsons.single().contains(""""previousTyreCarcassTemperature":{"wheels":{"FRONT_LEFT":85.0}}"""),
+                telemetryJsonSlot.captured.contains(
+                    """"previousTyreCarcassTemperature":{"wheels":{"FRONT_LEFT":85.0}}""",
+                ),
             )
             assertEquals(
                 true,
-                telemetryJsons.single().contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":95.0}}"""),
+                telemetryJsonSlot.captured.contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":95.0}}"""),
             )
-            assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+            assertEquals(true, telemetryJsonSlot.captured.contains(""""observedAtMs":123456"""))
+            confirmVerified(telemetryLogRepository)
         }
 
     @Test
@@ -762,7 +798,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.VehicleApproach.Root,
                     "車両接近",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -788,6 +824,17 @@ class AceWindowsNarratorViewModelTest {
                 telemetryJsons.single().contains(""""vehicleApproach":{"nearbyVehicles":[{"distanceMeters":5.0}]}"""),
             )
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    "車両接近",
+                    NarrationOutcome.SPOKEN,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 
     @Test
@@ -881,7 +928,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.MyBestLap.Root,
                     "自己ベストラップ更新",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -899,6 +946,17 @@ class AceWindowsNarratorViewModelTest {
             assertEquals(true, telemetryJsons.single().contains(""""previousBestLapTime":{"bestLapTimeMs":90000}"""))
             assertEquals(true, telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000}"""))
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.MyBestLap.Root,
+                    "自己ベストラップ更新",
+                    NarrationOutcome.SPOKEN,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 
     private fun bestLapTime(bestLapTimeMs: Int) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)

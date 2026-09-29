@@ -23,8 +23,18 @@ class SendFeedbackUseCaseTest {
     @Test
     fun `入力値を正規化してRepositoryへ送信する`() =
         runTest {
-            coEvery { repository.send(any()) } returns Result.success(Unit)
-            coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(any()) } returns Unit
+            coEvery {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "動作しません",
+                        email = "user@example.com",
+                        name = "Kurou",
+                        includesDiagnostics = true,
+                    ),
+                )
+            } returns Result.success(Unit)
+            coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) } returns Unit
             val useCase = createUseCase()
 
             val result =
@@ -50,14 +60,17 @@ class SendFeedbackUseCaseTest {
                     ),
                 )
             }
-            confirmVerified(repository)
+            coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
     fun `任意項目が空文字ならnullとして送信する`() =
         runTest {
-            coEvery { repository.send(any()) } returns Result.success(Unit)
-            coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(any()) } returns Unit
+            coEvery {
+                repository.send(Feedback(type = FeedbackType.Other, message = "本文", email = null, name = null))
+            } returns Result.success(Unit)
+            coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) } returns Unit
             val useCase = createUseCase()
 
             val result =
@@ -81,14 +94,24 @@ class SendFeedbackUseCaseTest {
                     ),
                 )
             }
-            confirmVerified(repository)
+            coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
     fun `添付されたテレメトリログの情報はそのままRepositoryへ送信する`() =
         runTest {
-            coEvery { repository.send(any()) } returns Result.success(Unit)
-            coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(any()) } returns Unit
+            coEvery {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "本文",
+                        telemetryLogId = 1L,
+                        telemetryLogJson = """{"lapCount":1}""",
+                    ),
+                )
+            } returns Result.success(Unit)
+            coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) } returns Unit
             val useCase = createUseCase()
 
             val result =
@@ -112,7 +135,8 @@ class SendFeedbackUseCaseTest {
                     ),
                 )
             }
-            confirmVerified(repository)
+            coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
@@ -124,45 +148,55 @@ class SendFeedbackUseCaseTest {
 
             assertTrue(result.isFailure)
             assertEquals("Feedback message must not be blank.", result.exceptionOrNull()?.message)
-            coVerify(exactly = 0) { repository.send(any()) }
+            coVerify(exactly = 0) { repository.send(Feedback(type = FeedbackType.Question, message = "  ")) }
             confirmVerified(repository)
         }
 
     @Test
     fun `送信成功時は現在時刻をクールダウンRepositoryへ保存する`() =
         runTest {
-            coEvery { repository.send(any()) } returns Result.success(Unit)
-            coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(any()) } returns Unit
+            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns
+                Result.success(Unit)
+            coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_234_567_890L) } returns Unit
             val useCase = createUseCase(currentTimeMs = 1_234_567_890L)
 
             useCase(Feedback(type = FeedbackType.Question, message = "本文"))
 
+            coVerify(exactly = 1) { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) }
             coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_234_567_890L) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
     fun `送信失敗時はクールダウンRepositoryへ保存しない`() =
         runTest {
-            coEvery { repository.send(any()) } returns Result.failure(IllegalStateException("network error"))
+            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns
+                Result.failure(IllegalStateException("network error"))
             val useCase = createUseCase()
 
             val result = useCase(Feedback(type = FeedbackType.Question, message = "本文"))
 
             assertTrue(result.isFailure)
-            coVerify(exactly = 0) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(any()) }
+            coVerify(exactly = 1) { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) }
+            coVerify(exactly = 0) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
     fun `クールダウン保存に失敗しても送信結果は成功として返す`() =
         runTest {
-            coEvery { repository.send(any()) } returns Result.success(Unit)
+            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns
+                Result.success(Unit)
             coEvery {
-                cooldownRepository.saveLastFeedbackSentAtEpochMillis(any())
+                cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L)
             } throws IllegalStateException("write error")
             val useCase = createUseCase()
 
             val result = useCase(Feedback(type = FeedbackType.Question, message = "本文"))
 
             assertTrue(result.isSuccess)
+            coVerify(exactly = 1) { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) }
+            coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+            confirmVerified(repository, cooldownRepository)
         }
 }

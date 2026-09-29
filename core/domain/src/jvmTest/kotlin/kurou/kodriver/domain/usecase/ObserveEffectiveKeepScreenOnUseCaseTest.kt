@@ -53,7 +53,9 @@ class ObserveEffectiveKeepScreenOnUseCaseTest {
             assertTrue(useCase().first { it })
 
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
-            confirmVerified(keepScreenOnRepository)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            confirmVerified(keepScreenOnRepository, simulatorRepository, gt7Ps5Repository)
         }
 
     @Test
@@ -67,7 +69,9 @@ class ObserveEffectiveKeepScreenOnUseCaseTest {
             assertFalse(useCase().first())
 
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
-            confirmVerified(keepScreenOnRepository)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            confirmVerified(keepScreenOnRepository, simulatorRepository, gt7Ps5Repository)
         }
 
     @Test
@@ -81,6 +85,8 @@ class ObserveEffectiveKeepScreenOnUseCaseTest {
             assertFalse(useCase().first())
 
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
-            confirmVerified(keepScreenOnRepository)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            confirmVerified(keepScreenOnRepository, simulatorRepository, gt7Ps5Repository)
         }
 }

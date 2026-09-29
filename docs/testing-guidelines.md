@@ -52,8 +52,9 @@ Windows 共有メモリ（JNA/kernel32）のように非 Windows 環境でイン
 - テストケース数は最小限に絞ること。正常系・異常系・境界値の 3 軸を意識し、冗長なケースは省く
 - モックはテストクラスのプロパティとして `private val xxx: Xxx = mockk()` で宣言する。`relaxUnitFun = true` / `relaxed = true` が必要な場合は `mockk(relaxUnitFun = true)` のように引数で指定する。`@MockK` アノテーション + `lateinit var` + `MockKAnnotations.init(this)` は使わない（DeepSource の `KT-W1047` 誤検出を避けるため。#1613）。テストケース内でモックを生成しない点は変わらない。
 - `every`/`coEvery` によるスタブ設定は **各テストケース内で行うこと**。`setUp()` でスタブまで済ませると、そのテストケースが何を前提にしているかがテスト本体だけを読んでも分からなくなり、他のテストケースの前提を変更した際に気づかず壊す原因になる。
+- モックへの呼び出し自体をテスト対象として検証する場合は、通常関数を `every` でスタブしたら対応する `verify`、suspend 関数を `coEvery` でスタブしたら対応する `coVerify` を書き、メソッド・引数・回数を一致させる。呼び出されないことを期待する場合も `verify(exactly = 0)` / `coVerify(exactly = 0)` で明示する。戻り値や状態を作るためだけのスタブには、実装詳細への過剰な依存を避けるため呼び出し検証を要求しない。
 - `verify`/`coVerify` では `exactly = N` を必ず指定し、期待する呼び出し回数を明示する。
-- `verify`/`coVerify` を使用した各テストケースの最後で、検証対象のモックに対して `confirmVerified(...)` を呼び、検証していない呼び出しが残っていないことを確認する。
+- `verify` / `coVerify` を使う各テストケースの最後で、呼び出し検証の対象にしたすべてのモックを `confirmVerified(...)` に渡す。これにより、想定外または未検証の呼び出しがないことを確認する。
 - MockK API は import して短い名前で呼び出し、テストコード内に `io.mockk.` の完全修飾名を書かない。
 - プロパティとして宣言した `mockk()` はテストクラスのインスタンスごとに新規生成される（JUnit/kotlin.test はテストメソッドごとに新しいインスタンスを作る）ため、`unmockkAll()` や `clearAllMocks()` を追加しない。
 - `mockkObject` / `mockkStatic` / `mockkConstructor` でグローバルな差し替えを行う場合に限り、`finally` または `@AfterTest` で対応する `unmockkObject` / `unmockkStatic` / `unmockkConstructor` を必ず呼ぶ。対象を限定せず全グローバルモックを解除する `unmockkAll()` は原則として使わない。
