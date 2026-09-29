@@ -16,15 +16,22 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageEnabledStateUseCase
 
+internal data class VehicleDamageUseCases(
+    val observeEnabledStates: ObserveLmuWindowsVehicleDamageEnabledStatesUseCase,
+    val observeOverheatVoiceType: ObserveLmuWindowsOverheatVoiceTypeUseCase,
+    val saveEnabledState: SaveLmuWindowsVehicleDamageEnabledStateUseCase,
+    val saveOverheatVoiceType: SaveLmuWindowsOverheatVoiceTypeUseCase,
+)
+
 internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
-    observeEnabledStates: ObserveLmuWindowsVehicleDamageEnabledStatesUseCase,
-    observeOverheatVoiceType: ObserveLmuWindowsOverheatVoiceTypeUseCase,
-    private val saveEnabledState: SaveLmuWindowsVehicleDamageEnabledStateUseCase,
-    private val saveOverheatVoiceType: SaveLmuWindowsOverheatVoiceTypeUseCase,
+    private val vehicleDamageUseCases: VehicleDamageUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<LmuWindowsReadoutVehicleDamageDetailUiState> =
-        combine(observeEnabledStates(), observeOverheatVoiceType()) { states, overheatVoiceType ->
+        combine(
+            vehicleDamageUseCases.observeEnabledStates(),
+            vehicleDamageUseCases.observeOverheatVoiceType(),
+        ) { states, overheatVoiceType ->
             LmuWindowsReadoutVehicleDamageDetailUiState(
                 overheatEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat),
                 overheatVoiceType = overheatVoiceType,
@@ -38,11 +45,13 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
         )
 
     fun onOverheatEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch { saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, enabled) }
+        viewModelScope.launch {
+            vehicleDamageUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, enabled)
+        }
     }
 
     fun onOverheatVoiceTypeChanged(type: OverheatVoiceType) {
-        viewModelScope.launch { saveOverheatVoiceType(type) }
+        viewModelScope.launch { vehicleDamageUseCases.saveOverheatVoiceType(type) }
     }
 
     fun onPreviewClicked(type: OverheatVoiceType) {
@@ -55,7 +64,9 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     }
 
     fun onPartDetachedEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch { saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, enabled) }
+        viewModelScope.launch {
+            vehicleDamageUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, enabled)
+        }
     }
 
     fun onPartDetachedPreviewClicked() {
@@ -63,7 +74,9 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     }
 
     fun onTyreDetachedEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch { saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, enabled) }
+        viewModelScope.launch {
+            vehicleDamageUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, enabled)
+        }
     }
 
     fun onTyreDetachedPreviewClicked() {

@@ -18,17 +18,21 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
+internal data class RemainingVirtualEnergyUseCases(
+    val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
+    val saveThresholdPercentage: SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
 internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
-    observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
-    private val saveThresholdPercentage: SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val remainingVirtualEnergyUseCases: RemainingVirtualEnergyUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<LmuWindowsReadoutRemainingVirtualEnergyDetailUiState> =
         combine(
-            observeThresholdPercentage(),
-            observeReadoutEnabledStates(Simulator.LmuWindows.id),
+            remainingVirtualEnergyUseCases.observeThresholdPercentage(),
+            remainingVirtualEnergyUseCases.observeReadoutEnabledStates(Simulator.LmuWindows.id),
         ) { thresholdPercentage, enabledStates ->
             LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(
                 thresholdPercentage = thresholdPercentage,
@@ -45,18 +49,20 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
     }
 
     fun onThresholdChanged(percentage: Int) {
-        viewModelScope.launch { saveThresholdPercentage(percentage) }
+        viewModelScope.launch { remainingVirtualEnergyUseCases.saveThresholdPercentage(percentage) }
     }
 
     fun onThresholdReset() {
         viewModelScope.launch {
-            saveThresholdPercentage(LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT)
+            remainingVirtualEnergyUseCases.saveThresholdPercentage(
+                LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT,
+            )
         }
     }
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(
+            remainingVirtualEnergyUseCases.saveReadoutEnabledState(
                 Simulator.LmuWindows.id,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout,
                 enabled,

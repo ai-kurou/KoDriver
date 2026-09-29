@@ -22,9 +22,6 @@ val lmuWindowsReadoutTyreWearDetailModule =
         viewModel {
             LmuWindowsReadoutTyreWearDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.LmuWindows.id)),
             )
         }

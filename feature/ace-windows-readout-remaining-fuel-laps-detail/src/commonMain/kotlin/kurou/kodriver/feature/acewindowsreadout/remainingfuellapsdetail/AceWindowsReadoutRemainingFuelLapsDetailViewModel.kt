@@ -18,17 +18,21 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
+internal data class RemainingFuelLapsUseCases(
+    val observeThreshold: ObserveAceWindowsRemainingFuelLapsThresholdUseCase,
+    val saveThreshold: SaveAceWindowsRemainingFuelLapsThresholdUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
 internal class AceWindowsReadoutRemainingFuelLapsDetailViewModel(
-    observeAceWindowsRemainingFuelLapsThreshold: ObserveAceWindowsRemainingFuelLapsThresholdUseCase,
-    private val saveAceWindowsRemainingFuelLapsThreshold: SaveAceWindowsRemainingFuelLapsThresholdUseCase,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val remainingFuelLapsUseCases: RemainingFuelLapsUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<AceWindowsReadoutRemainingFuelLapsDetailUiState> =
         combine(
-            observeAceWindowsRemainingFuelLapsThreshold(),
-            observeReadoutEnabledStates(Simulator.AceWindows.id),
+            remainingFuelLapsUseCases.observeThreshold(),
+            remainingFuelLapsUseCases.observeReadoutEnabledStates(Simulator.AceWindows.id),
         ) { remainingFuelLaps, enabledStates ->
             AceWindowsReadoutRemainingFuelLapsDetailUiState(
                 remainingFuelLaps = remainingFuelLaps,
@@ -42,7 +46,7 @@ internal class AceWindowsReadoutRemainingFuelLapsDetailViewModel(
 
     fun onRemainingFuelLapsChanged(laps: Int) {
         viewModelScope.launch {
-            saveAceWindowsRemainingFuelLapsThreshold(laps)
+            remainingFuelLapsUseCases.saveThreshold(laps)
         }
     }
 
@@ -52,7 +56,7 @@ internal class AceWindowsReadoutRemainingFuelLapsDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(
+            remainingFuelLapsUseCases.saveReadoutEnabledState(
                 Simulator.AceWindows.id,
                 ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled,
                 enabled,

@@ -55,10 +55,12 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutVehicleDamageDetailViewModel(
-            observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repository),
-            observeOverheatVoiceType = ObserveLmuWindowsOverheatVoiceTypeUseCase(overheatRepository),
-            saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository),
-            saveOverheatVoiceType = SaveLmuWindowsOverheatVoiceTypeUseCase(overheatRepository),
+            vehicleDamageUseCases = VehicleDamageUseCases(
+                observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repository),
+                observeOverheatVoiceType = ObserveLmuWindowsOverheatVoiceTypeUseCase(overheatRepository),
+                saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository),
+                saveOverheatVoiceType = SaveLmuWindowsOverheatVoiceTypeUseCase(overheatRepository),
+            ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 

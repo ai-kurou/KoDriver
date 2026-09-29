@@ -23,9 +23,6 @@ val aceWindowsReadoutRemainingFuelLapsDetailModule =
         viewModel {
             AceWindowsReadoutRemainingFuelLapsDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.AceWindows.id)),
             )
         }

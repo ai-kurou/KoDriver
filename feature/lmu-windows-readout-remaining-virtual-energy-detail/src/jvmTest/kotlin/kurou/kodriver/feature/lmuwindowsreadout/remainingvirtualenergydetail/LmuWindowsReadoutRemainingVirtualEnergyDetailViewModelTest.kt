@@ -59,10 +59,12 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
-            observeThresholdPercentage = ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
-            saveThresholdPercentage = SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+            remainingVirtualEnergyUseCases = RemainingVirtualEnergyUseCases(
+                observeThresholdPercentage = ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
+                saveThresholdPercentage = SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
+                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+            ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 

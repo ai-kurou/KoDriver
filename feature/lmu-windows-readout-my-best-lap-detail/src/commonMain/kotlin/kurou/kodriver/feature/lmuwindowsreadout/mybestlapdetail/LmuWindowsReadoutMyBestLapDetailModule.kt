@@ -22,9 +22,6 @@ val lmuWindowsReadoutMyBestLapDetailModule =
         viewModel {
             LmuWindowsReadoutMyBestLapDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.LmuWindows.id)),
             )
         }
