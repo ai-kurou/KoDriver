@@ -55,10 +55,13 @@ class AceWindowsReadoutTyreTemperatureDetailViewModelTest {
 
     private fun createViewModel() =
         AceWindowsReadoutTyreTemperatureDetailViewModel(
-            observeEnabledStates = ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(repository),
-            observeHighThreshold = ObserveAceWindowsTyreTemperatureHighThresholdUseCase(repository),
-            saveEnabledState = SaveAceWindowsTyreTemperatureEnabledStateUseCase(repository),
-            saveHighThreshold = SaveAceWindowsTyreTemperatureHighThresholdUseCase(repository),
+            tyreTemperatureUseCases =
+                TyreTemperatureUseCases(
+                    observeEnabledStates = ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(repository),
+                    observeHighThreshold = ObserveAceWindowsTyreTemperatureHighThresholdUseCase(repository),
+                    saveEnabledState = SaveAceWindowsTyreTemperatureEnabledStateUseCase(repository),
+                    saveHighThreshold = SaveAceWindowsTyreTemperatureHighThresholdUseCase(repository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 

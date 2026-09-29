@@ -22,15 +22,22 @@ import kurou.kodriver.domain.usecase.SaveAceWindowsTyreTemperatureHighThresholdU
  *
  * 高温閾値（スライダー）・過熱警告の有効/無効はいずれも DataStore に永続化される。
  */
+internal data class TyreTemperatureUseCases(
+    val observeEnabledStates: ObserveAceWindowsTyreTemperatureEnabledStatesUseCase,
+    val observeHighThreshold: ObserveAceWindowsTyreTemperatureHighThresholdUseCase,
+    val saveEnabledState: SaveAceWindowsTyreTemperatureEnabledStateUseCase,
+    val saveHighThreshold: SaveAceWindowsTyreTemperatureHighThresholdUseCase,
+)
+
 internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
-    observeEnabledStates: ObserveAceWindowsTyreTemperatureEnabledStatesUseCase,
-    observeHighThreshold: ObserveAceWindowsTyreTemperatureHighThresholdUseCase,
-    private val saveEnabledState: SaveAceWindowsTyreTemperatureEnabledStateUseCase,
-    private val saveHighThreshold: SaveAceWindowsTyreTemperatureHighThresholdUseCase,
+    private val tyreTemperatureUseCases: TyreTemperatureUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<AceWindowsReadoutTyreTemperatureDetailUiState> =
-        combine(observeEnabledStates(), observeHighThreshold()) { states, highThresholdCelsius ->
+        combine(
+            tyreTemperatureUseCases.observeEnabledStates(),
+            tyreTemperatureUseCases.observeHighThreshold(),
+        ) { states, highThresholdCelsius ->
             AceWindowsReadoutTyreTemperatureDetailUiState(
                 overheatWarningEnabled = states.getValue(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning),
                 highThresholdCelsius = highThresholdCelsius.value,
@@ -43,12 +50,12 @@ internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
 
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, enabled)
+            tyreTemperatureUseCases.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, enabled)
         }
     }
 
     fun onHighThresholdChanged(celsius: Int) {
-        viewModelScope.launch { saveHighThreshold(Celsius(celsius)) }
+        viewModelScope.launch { tyreTemperatureUseCases.saveHighThreshold(Celsius(celsius)) }
     }
 
     fun onHighThresholdReset() {

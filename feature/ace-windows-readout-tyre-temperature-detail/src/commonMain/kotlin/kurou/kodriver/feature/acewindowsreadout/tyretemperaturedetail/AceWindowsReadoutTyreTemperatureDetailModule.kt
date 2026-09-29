@@ -23,13 +23,11 @@ val aceWindowsReadoutTyreTemperatureDetailModule =
         viewModel {
             AceWindowsReadoutTyreTemperatureDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.AceWindows.id)),
             )
         }
 
+        factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
         factoryOf(::ObserveAceWindowsTyreTemperatureEnabledStatesUseCase)
         factoryOf(::ObserveAceWindowsTyreTemperatureHighThresholdUseCase)
         factoryOf(::SaveAceWindowsTyreTemperatureEnabledStateUseCase)

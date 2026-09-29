@@ -55,10 +55,13 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
 
     private fun createViewModel() =
         Gt7Ps5ReadoutTyreTemperatureDetailViewModel(
-            observeEnabledStates = ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(repository),
-            observeHighThreshold = ObserveGt7Ps5TyreTemperatureHighThresholdUseCase(repository),
-            saveEnabledState = SaveGt7Ps5TyreTemperatureEnabledStateUseCase(repository),
-            saveHighThreshold = SaveGt7Ps5TyreTemperatureHighThresholdUseCase(repository),
+            tyreTemperatureUseCases =
+                TyreTemperatureUseCases(
+                    observeEnabledStates = ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(repository),
+                    observeHighThreshold = ObserveGt7Ps5TyreTemperatureHighThresholdUseCase(repository),
+                    saveEnabledState = SaveGt7Ps5TyreTemperatureEnabledStateUseCase(repository),
+                    saveHighThreshold = SaveGt7Ps5TyreTemperatureHighThresholdUseCase(repository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
