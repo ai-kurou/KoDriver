@@ -431,8 +431,9 @@ class LmuWindowsNarratorViewModelTest {
                         ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(
                             vehicleDamagePreferencesRepository,
                         ),
-                    observeTyreDetached = ObserveLmuWindowsTyreDetachedUseCase(tyreDetachedRepository),
                 ),
+            tyreDetachedUseCases =
+                TyreDetachedUseCases(ObserveLmuWindowsTyreDetachedUseCase(tyreDetachedRepository)),
             readoutListUseCases =
                 ReadoutListUseCases(
                     observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
