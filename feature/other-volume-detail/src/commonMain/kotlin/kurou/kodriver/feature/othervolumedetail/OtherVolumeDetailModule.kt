@@ -28,6 +28,8 @@ val otherVolumeDetailModule =
         factory { SaveSoundVolumeUseCase(get()) }
         factory { GetDeviceVolumeUseCase(get()) }
         factory { SetDeviceVolumeUseCase(get()) }
+        factory { SoundVolumeUseCases(get(), get()) }
+        factory { DeviceVolumeUseCases(get(), get()) }
 
         // 試聴再生（named(Simulator.LmuWindows.id) の TextToSpeechEngine に依存）
         factory { PlaySpeechEventUseCase(get(named(Simulator.LmuWindows.id))) }
