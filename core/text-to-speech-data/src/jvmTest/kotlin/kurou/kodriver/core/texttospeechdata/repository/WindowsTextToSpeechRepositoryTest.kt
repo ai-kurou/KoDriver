@@ -28,7 +28,19 @@ class WindowsTextToSpeechRepositoryTest {
             assertNull(WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer()).unavailableReason())
             assertEquals(
                 TextToSpeechUnavailableReason.WindowsSpeechUnavailable,
-                WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer(available = false)).unavailableReason(),
+                WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer(available = false), isWindows = true)
+                    .unavailableReason(),
+            )
+        }
+
+    @Test
+    fun `Windows以外ではWindows向けの利用不可理由を返さない`() =
+        runTest {
+            assertNull(
+                WindowsTextToSpeechRepository(
+                    FakeWindowsSpeechSynthesizer(available = false),
+                    isWindows = false,
+                ).unavailableReason(),
             )
         }
 
