@@ -119,6 +119,15 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         viewModelScope.launch { blackFlagReadoutTextUseCases.save(text) }
     }
 
+    /** Clear the custom text and preview the black flag chip with text-to-speech. */
+    fun onBlackFlagChipClicked(text: String) {
+        viewModelScope.launch {
+            blackFlagReadoutTextUseCases.save("")
+            playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.Root)
+            speakText(text)
+        }
+    }
+
     /** Black flag telemetry is not currently exposed by LMU shared memory; this previews only the saved custom text. */
     fun onBlackFlagTextPreviewClicked(text: String) {
         if (text.isBlank()) return

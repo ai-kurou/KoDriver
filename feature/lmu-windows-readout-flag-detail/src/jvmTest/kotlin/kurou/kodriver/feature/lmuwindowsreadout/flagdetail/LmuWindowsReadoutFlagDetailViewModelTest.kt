@@ -396,7 +396,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         }
 
     @Test
-    fun `ブラックフラッグ文言を保存してUiStateに反映する`() =
+    fun `ブラックフラッグ文言を保存してチップから標準文言を試聴できる`() =
         runTest {
             val blackFlagTextFlow = MutableStateFlow("")
             every { blackFlagTextRepository.observeBlackFlagText() } returns blackFlagTextFlow
@@ -407,14 +407,28 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
             every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
             coEvery { ttsRepository.isAvailable() } returns true
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } just Runs
+            coEvery { ttsRepository.speak("ブラックフラッグ（LMU）", false) } just Runs
             val viewModel = createViewModel()
 
             viewModel.onBlackFlagTextChanged("ブラック、ピットイン")
 
             assertEquals("ブラック、ピットイン", viewModel.uiState.first().blackFlagText)
+            viewModel.onBlackFlagChipClicked("ブラックフラッグ（LMU）")
+            assertEquals("", viewModel.uiState.first().blackFlagText)
+            coVerifyOrder {
+                blackFlagTextRepository.saveBlackFlagText("ブラック、ピットイン")
+                blackFlagTextRepository.saveBlackFlagText("")
+                ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root)
+                ttsRepository.speak("ブラックフラッグ（LMU）", false)
+            }
             coVerify(exactly = 1) { blackFlagTextRepository.saveBlackFlagText("ブラック、ピットイン") }
+            coVerify(exactly = 1) { blackFlagTextRepository.saveBlackFlagText("") }
             verify(exactly = 1) { blackFlagTextRepository.observeBlackFlagText() }
-            confirmVerified(blackFlagTextRepository)
+            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
+            coVerify(exactly = 1) { ttsRepository.speak("ブラックフラッグ（LMU）", false) }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(blackFlagTextRepository, ttsRepository, ttsEngine)
         }
 
     @Test

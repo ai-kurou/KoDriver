@@ -4,6 +4,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
@@ -65,7 +67,11 @@ class LmuWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("レッドフラッグ")[0].performClick()
+        rule
+            .onAllNodes(hasClickAction().and(hasText("レッドフラッグ")))
+            .get(0)
+            .performScrollTo()
+            .performClick()
 
         assertEquals(false, changedEnabled)
     }
@@ -270,5 +276,29 @@ class LmuWindowsReadoutFlagDetailPaneTest {
         rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performClick()
 
         assertEquals("ブラック、停止してください", previewText)
+    }
+
+    @Test
+    fun `ブラックフラッグチップから標準の読み上げを試聴できる`() {
+        var previewText: String? = null
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutFlagDetailPaneContent(
+                    uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onPreviewClicked = {},
+                    onRedFlagEnabledChanged = {},
+                    onRedFlagVoiceTypeChanged = {},
+                    onRedFlagPreviewClicked = {},
+                    onSectorYellowFlagTextChanged = {},
+                    onSectorYellowFlagTextPreviewClicked = {},
+                    onBlackFlagChipClicked = { previewText = it },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("ブラックフラッグ（LMU）").get(1).performClick()
+
+        assertEquals("ブラックフラッグ（LMU）", previewText)
     }
 }

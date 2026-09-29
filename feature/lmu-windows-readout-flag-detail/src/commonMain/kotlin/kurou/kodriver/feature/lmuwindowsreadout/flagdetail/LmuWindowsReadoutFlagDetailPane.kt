@@ -25,6 +25,8 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_black
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_black_custom_text_supporting
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_black_custom_text_unavailable
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_preview
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected_icon
@@ -54,6 +56,7 @@ fun LmuWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
         onSectorYellowFlagTextPreviewClicked = viewModel::onSectorYellowFlagTextPreviewClicked,
         onBlackFlagTextChanged = viewModel::onBlackFlagTextChanged,
         onBlackFlagTextPreviewClicked = viewModel::onBlackFlagTextPreviewClicked,
+        onBlackFlagChipClicked = viewModel::onBlackFlagChipClicked,
         modifier = modifier,
     )
 }
@@ -71,6 +74,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     onSectorYellowFlagTextPreviewClicked: (String) -> Unit,
     onBlackFlagTextChanged: (String) -> Unit = {},
     onBlackFlagTextPreviewClicked: (String) -> Unit = {},
+    onBlackFlagChipClicked: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -146,24 +150,47 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
             )
         }
         val blackFlagLabel = stringResource(Res.string.flag_black)
-        val hasBlackFlagCustomText = uiState.blackFlagText.isNotEmpty()
+        var blackFlagHasText by remember { mutableStateOf(uiState.blackFlagText.isNotEmpty()) }
+        LaunchedEffect(uiState.blackFlagText) {
+            blackFlagHasText = uiState.blackFlagText.isNotEmpty()
+        }
         DetailPaneCard(
             title = blackFlagLabel,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = listOf(blackFlagLabel),
+                    selectedChipLabels = if (blackFlagHasText) emptySet() else setOf(blackFlagLabel),
+                    chipEnabled = uiState.isTextToSpeechAvailable,
+                    onChipClick = {
+                        blackFlagHasText = false
+                        onBlackFlagChipClicked(blackFlagLabel)
+                    },
+                )
                 DetailPaneCardTextField(
                     value = uiState.blackFlagText,
                     placeholder = blackFlagLabel,
                     maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-                    onValueChangeFinished = onBlackFlagTextChanged,
+                    onValueChangeFinished = { text ->
+                        blackFlagHasText = text.isNotEmpty()
+                        onBlackFlagTextChanged(text)
+                    },
                     onPreviewClick = onBlackFlagTextPreviewClicked,
                     enabled = uiState.isTextToSpeechAvailable,
-                    selected = hasBlackFlagCustomText,
+                    selected = blackFlagHasText,
                     supportingText =
                         when {
-                            !uiState.isTextToSpeechAvailable -> stringResource(Res.string.flag_custom_text_unavailable)
-                            hasBlackFlagCustomText -> stringResource(Res.string.flag_custom_text_selected)
-                            else -> stringResource(Res.string.flag_custom_text_supporting)
+                            !uiState.isTextToSpeechAvailable -> {
+                                stringResource(Res.string.flag_black_custom_text_unavailable)
+                            }
+
+                            blackFlagHasText -> {
+                                stringResource(Res.string.flag_custom_text_selected)
+                            }
+
+                            else -> {
+                                stringResource(Res.string.flag_black_custom_text_supporting)
+                            }
                         },
                     previewContentDescription = stringResource(Res.string.flag_custom_text_preview),
                     selectedContentDescription = stringResource(Res.string.flag_custom_text_selected_icon),
@@ -229,6 +256,7 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
             onSectorYellowFlagTextPreviewClicked = {},
             onBlackFlagTextChanged = {},
             onBlackFlagTextPreviewClicked = {},
+            onBlackFlagChipClicked = {},
         )
     }
 }
