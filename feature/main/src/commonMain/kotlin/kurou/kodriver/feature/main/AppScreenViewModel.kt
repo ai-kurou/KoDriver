@@ -18,6 +18,14 @@ import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
+data class AppScreenSettingsUseCases(
+    val observeEffectiveKeepScreenOn: ObserveEffectiveKeepScreenOnUseCase,
+    val observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
+    val observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
+    val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
+)
+
 /**
  * AppScreen 画面の状態管理とユーザー操作を扱う ViewModel。
  */
@@ -25,11 +33,7 @@ import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 class AppScreenViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
-    observeEffectiveKeepScreenOn: ObserveEffectiveKeepScreenOnUseCase,
-    observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
-    observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
-    observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
-    private val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
+    private val settingsUseCases: AppScreenSettingsUseCases,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
 ) : ViewModel() {
     private val _hasAppUpdate = MutableStateFlow(false)
@@ -42,10 +46,10 @@ class AppScreenViewModel(
     val uiState: StateFlow<AppScreenUiState> =
         combine(
             badgeState,
-            observeEffectiveKeepScreenOn(),
-            observeDynamicColorEnabled(),
-            observeHapticFeedbackEnabled(),
-            observeSelectedSimulator(),
+            settingsUseCases.observeEffectiveKeepScreenOn(),
+            settingsUseCases.observeDynamicColorEnabled(),
+            settingsUseCases.observeHapticFeedbackEnabled(),
+            settingsUseCases.observeSelectedSimulator(),
         ) { (hasUpdate, permissionGranted), keepOn, dynamicColorEnabled, hapticFeedbackEnabled, selectedSimulator ->
             AppScreenUiState(
                 hasAppUpdate = hasUpdate,
@@ -76,7 +80,7 @@ class AppScreenViewModel(
     fun selectSimulator(simulatorId: String) {
         val simulator = Simulator.fromId(simulatorId) ?: return
         viewModelScope.launch {
-            saveSelectedSimulator(simulator)
+            settingsUseCases.saveSelectedSimulator(simulator)
         }
     }
 }

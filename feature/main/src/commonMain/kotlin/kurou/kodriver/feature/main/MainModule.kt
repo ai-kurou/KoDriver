@@ -32,7 +32,7 @@ import org.koin.dsl.module
 val mainModule =
     module {
         // ViewModel
-        viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get(), get(), get(), get(), get()) }
+        viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get()) }
         viewModelOf(::ConnectionBannerViewModel)
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
@@ -52,6 +52,7 @@ val mainModule =
         factory { ObserveAceWindowsStatusUseCase(get()) }
         factory { ObserveTelemetryReceivingUseCase(get(), get(), get(), get()) }
         factory { ObserveEffectiveKeepScreenOnUseCase(get(), get()) }
+        factory { AppScreenSettingsUseCases(get(), get(), get(), get(), get()) }
     }
 
 expect val mainPlatformModule: Module
