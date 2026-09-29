@@ -18,17 +18,21 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
+internal data class RemainingFuelUseCases(
+    val observeThresholdPercentage: ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase,
+    val saveThresholdPercentage: SaveGt7Ps5RemainingFuelThresholdPercentageUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
 internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
-    observeThresholdPercentage: ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase,
-    private val saveThresholdPercentage: SaveGt7Ps5RemainingFuelThresholdPercentageUseCase,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val remainingFuelUseCases: RemainingFuelUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<Gt7Ps5ReadoutRemainingFuelDetailUiState> =
         combine(
-            observeThresholdPercentage(),
-            observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
+            remainingFuelUseCases.observeThresholdPercentage(),
+            remainingFuelUseCases.observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
         ) { thresholdPercentage, enabledStates ->
             Gt7Ps5ReadoutRemainingFuelDetailUiState(
                 thresholdPercentage = thresholdPercentage,
@@ -41,7 +45,7 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
         )
 
     fun onThresholdChanged(percentage: Int) {
-        viewModelScope.launch { saveThresholdPercentage(percentage) }
+        viewModelScope.launch { remainingFuelUseCases.saveThresholdPercentage(percentage) }
     }
 
     fun onThresholdReset() {
@@ -50,7 +54,11 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(Simulator.Gt7Ps5.id, ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled, enabled)
+            remainingFuelUseCases.saveReadoutEnabledState(
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled,
+                enabled,
+            )
         }
     }
 

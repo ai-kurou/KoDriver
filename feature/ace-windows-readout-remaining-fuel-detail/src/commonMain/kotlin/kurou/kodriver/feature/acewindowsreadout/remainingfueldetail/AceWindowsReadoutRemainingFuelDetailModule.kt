@@ -23,12 +23,11 @@ val aceWindowsReadoutRemainingFuelDetailModule =
         viewModel {
             AceWindowsReadoutRemainingFuelDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.AceWindows.id)),
             )
         }
+
+        factory { RemainingFuelUseCases(get(), get(), get(), get()) }
 
         factoryOf(::ObserveAceWindowsRemainingFuelThresholdPercentageUseCase)
         factoryOf(::SaveAceWindowsRemainingFuelThresholdPercentageUseCase)

@@ -18,17 +18,21 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
+internal data class RemainingFuelUseCases(
+    val observeThresholdPercentage: ObserveAceWindowsRemainingFuelThresholdPercentageUseCase,
+    val saveThresholdPercentage: SaveAceWindowsRemainingFuelThresholdPercentageUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
 internal class AceWindowsReadoutRemainingFuelDetailViewModel(
-    observeThresholdPercentage: ObserveAceWindowsRemainingFuelThresholdPercentageUseCase,
-    private val saveThresholdPercentage: SaveAceWindowsRemainingFuelThresholdPercentageUseCase,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val remainingFuelUseCases: RemainingFuelUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<AceWindowsReadoutRemainingFuelDetailUiState> =
         combine(
-            observeThresholdPercentage(),
-            observeReadoutEnabledStates(Simulator.AceWindows.id),
+            remainingFuelUseCases.observeThresholdPercentage(),
+            remainingFuelUseCases.observeReadoutEnabledStates(Simulator.AceWindows.id),
         ) { thresholdPercentage, enabledStates ->
             AceWindowsReadoutRemainingFuelDetailUiState(
                 thresholdPercentage = thresholdPercentage,
@@ -41,16 +45,18 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
         )
 
     fun onThresholdChanged(percentage: Int) {
-        viewModelScope.launch { saveThresholdPercentage(percentage) }
+        viewModelScope.launch { remainingFuelUseCases.saveThresholdPercentage(percentage) }
     }
 
     fun onThresholdReset() {
-        viewModelScope.launch { saveThresholdPercentage(ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT) }
+        viewModelScope.launch {
+            remainingFuelUseCases.saveThresholdPercentage(ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
+        }
     }
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(
+            remainingFuelUseCases.saveReadoutEnabledState(
                 Simulator.AceWindows.id,
                 ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled,
                 enabled,

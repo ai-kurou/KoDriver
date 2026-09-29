@@ -59,10 +59,13 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
 
     private fun createViewModel() =
         AceWindowsReadoutRemainingFuelDetailViewModel(
-            observeThresholdPercentage = ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
-            saveThresholdPercentage = SaveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+            remainingFuelUseCases =
+                RemainingFuelUseCases(
+                    observeThresholdPercentage = ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
+                    saveThresholdPercentage = SaveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 

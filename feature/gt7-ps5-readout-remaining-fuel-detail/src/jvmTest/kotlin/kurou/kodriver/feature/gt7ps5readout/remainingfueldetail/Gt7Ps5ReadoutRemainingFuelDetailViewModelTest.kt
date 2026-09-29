@@ -62,10 +62,13 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
 
     private fun createViewModel() =
         Gt7Ps5ReadoutRemainingFuelDetailViewModel(
-            observeThresholdPercentage = ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
-            saveThresholdPercentage = SaveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+            remainingFuelUseCases =
+                RemainingFuelUseCases(
+                    observeThresholdPercentage = ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
+                    saveThresholdPercentage = SaveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
