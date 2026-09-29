@@ -95,14 +95,17 @@ class OtherListViewModelTest {
         } returns accessLocalNetworkPermissionGranted
         return OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
-            observeOverlayVisible = ObserveOverlayVisibleUseCase(overlayVisibleRepository),
-            saveOverlayVisible = SaveOverlayVisibleUseCase(overlayVisibleRepository),
-            observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
-            saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
-            observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorRepository),
-            saveDynamicColorEnabled = SaveDynamicColorEnabledUseCase(dynamicColorRepository),
-            observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
-            saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
+            settingsUseCases =
+                OtherListSettingsUseCases(
+                    observeOverlayVisible = ObserveOverlayVisibleUseCase(overlayVisibleRepository),
+                    saveOverlayVisible = SaveOverlayVisibleUseCase(overlayVisibleRepository),
+                    observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
+                    saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
+                    observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorRepository),
+                    saveDynamicColorEnabled = SaveDynamicColorEnabledUseCase(dynamicColorRepository),
+                    observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
+                    saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
+                ),
             checkHapticFeedbackAvailable = CheckHapticFeedbackAvailableUseCase(hapticFeedbackAvailabilityRepository),
             checkAccessLocalNetworkPermissionGranted =
                 CheckAccessLocalNetworkPermissionGrantedUseCase(accessLocalNetworkPermissionRepository),
