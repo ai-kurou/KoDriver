@@ -31,4 +31,5 @@ val lmuWindowsReadoutMyBestLapDetailModule =
         factory { SaveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
         factory { ObserveReadoutEnabledStatesUseCase(get()) }
         factory { SaveReadoutEnabledStateUseCase(get()) }
+        factory { MyBestLapUseCases(get(), get(), get(), get()) }
     }

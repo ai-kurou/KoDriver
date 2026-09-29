@@ -30,4 +30,5 @@ val lmuWindowsReadoutTyreWearDetailModule =
         factoryOf(::SaveLmuWindowsTyreWearThresholdPercentageUseCase)
         factoryOf(::ObserveReadoutEnabledStatesUseCase)
         factoryOf(::SaveReadoutEnabledStateUseCase)
+        factory { TyreWearUseCases(get(), get(), get(), get()) }
     }

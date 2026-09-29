@@ -30,4 +30,5 @@ val lmuWindowsReadoutRemainingVirtualEnergyDetailModule =
         factoryOf(::SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
         factoryOf(::ObserveReadoutEnabledStatesUseCase)
         factoryOf(::SaveReadoutEnabledStateUseCase)
+        factory { RemainingVirtualEnergyUseCases(get(), get(), get(), get()) }
     }

@@ -32,4 +32,5 @@ val lmuWindowsReadoutVehicleDamageDetailModule =
         factory { ObserveLmuWindowsOverheatVoiceTypeUseCase(get()) }
         factory { SaveLmuWindowsVehicleDamageEnabledStateUseCase(get()) }
         factory { SaveLmuWindowsOverheatVoiceTypeUseCase(get()) }
+        factory { VehicleDamageUseCases(get(), get(), get(), get()) }
     }

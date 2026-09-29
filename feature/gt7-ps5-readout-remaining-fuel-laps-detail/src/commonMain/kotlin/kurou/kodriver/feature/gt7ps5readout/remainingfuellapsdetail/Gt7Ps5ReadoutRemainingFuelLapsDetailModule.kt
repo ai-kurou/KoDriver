@@ -31,4 +31,5 @@ val gt7Ps5ReadoutRemainingFuelLapsDetailModule =
         factory { SaveGt7Ps5RemainingFuelLapsUseCase(get()) }
         factory { ObserveReadoutEnabledStatesUseCase(get()) }
         factory { SaveReadoutEnabledStateUseCase(get()) }
+        factory { RemainingFuelLapsUseCases(get(), get(), get(), get()) }
     }
