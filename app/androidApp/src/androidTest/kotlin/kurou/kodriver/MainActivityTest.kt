@@ -56,7 +56,7 @@ class MainActivityTest {
         waitUntilDisplayed("フラッグ")
         clickItemAndVerifyDescription(
             "フラッグ",
-            "ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。",
+            "ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。ブラックフラッグの読み上げ文言も設定できます。",
         )
         clickItemAndVerifyDescription(
             "タイヤ温度",
