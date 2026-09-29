@@ -42,7 +42,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
                         "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
                         "\$voices = \$s.GetInstalledVoices(); " +
                         "if (-not (\$voices | Where-Object { " +
-                        "\$_.VoiceInfo.Culture.Name -eq 'ja-JP' })) { exit 1 }",
+                        "\$_.Enabled -and \$_.VoiceInfo.Culture.Name -eq 'ja-JP' })) { exit 1 }",
                 ).redirectErrorStream(true)
                     .redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     .start()
