@@ -16,8 +16,10 @@ import org.koin.dsl.module
 val gt7Ps5ReadoutRemainingFuelDetailModule =
     module {
         viewModel {
-            Gt7Ps5ReadoutRemainingFuelDetailViewModel(get(), get(), get(), get(), get(named(Simulator.Gt7Ps5.id)))
+            Gt7Ps5ReadoutRemainingFuelDetailViewModel(get(), get(named(Simulator.Gt7Ps5.id)))
         }
+
+        factory { RemainingFuelUseCases(get(), get(), get(), get()) }
 
         factoryOf(::ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase)
         factoryOf(::SaveGt7Ps5RemainingFuelThresholdPercentageUseCase)
