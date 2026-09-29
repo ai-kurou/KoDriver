@@ -59,12 +59,13 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutTyreWearDetailViewModel(
-            tyreWearUseCases = TyreWearUseCases(
-                observeThresholdPercentage = ObserveLmuWindowsTyreWearThresholdPercentageUseCase(repository),
-                saveThresholdPercentage = SaveLmuWindowsTyreWearThresholdPercentageUseCase(repository),
-                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
-            ),
+            tyreWearUseCases =
+                TyreWearUseCases(
+                    observeThresholdPercentage = ObserveLmuWindowsTyreWearThresholdPercentageUseCase(repository),
+                    saveThresholdPercentage = SaveLmuWindowsTyreWearThresholdPercentageUseCase(repository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 

@@ -63,9 +63,12 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
                 RemainingVirtualEnergyUseCases(
                     observeThresholdPercentage =
                         ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
-                    saveThresholdPercentage = SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
-                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                    saveThresholdPercentage =
+                        SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
+                    observeReadoutEnabledStates =
+                        ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    saveReadoutEnabledState =
+                        SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
                 ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
