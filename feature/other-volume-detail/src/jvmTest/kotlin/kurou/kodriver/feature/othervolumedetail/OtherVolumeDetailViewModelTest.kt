@@ -60,10 +60,14 @@ class OtherVolumeDetailViewModelTest {
 
     private fun createViewModel() =
         OtherVolumeDetailViewModel(
-            observeSoundVolume = ObserveSoundVolumeUseCase(soundVolumeRepository),
-            saveSoundVolume = SaveSoundVolumeUseCase(soundVolumeRepository),
-            getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
-            setDeviceVolume = SetDeviceVolumeUseCase(deviceVolumeRepository),
+            soundVolumeUseCases = SoundVolumeUseCases(
+                observeSoundVolume = ObserveSoundVolumeUseCase(soundVolumeRepository),
+                saveSoundVolume = SaveSoundVolumeUseCase(soundVolumeRepository),
+            ),
+            deviceVolumeUseCases = DeviceVolumeUseCases(
+                getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
+                setDeviceVolume = SetDeviceVolumeUseCase(deviceVolumeRepository),
+            ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 

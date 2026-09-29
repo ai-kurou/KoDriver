@@ -26,11 +26,19 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
 
+internal data class SoundVolumeUseCases(
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
+    val saveSoundVolume: SaveSoundVolumeUseCase,
+)
+
+internal data class DeviceVolumeUseCases(
+    val getDeviceVolume: GetDeviceVolumeUseCase,
+    val setDeviceVolume: SetDeviceVolumeUseCase,
+)
+
 internal class OtherVolumeDetailViewModel(
-    observeSoundVolume: ObserveSoundVolumeUseCase,
-    private val saveSoundVolume: SaveSoundVolumeUseCase,
-    private val getDeviceVolume: GetDeviceVolumeUseCase,
-    private val setDeviceVolume: SetDeviceVolumeUseCase,
+    private val soundVolumeUseCases: SoundVolumeUseCases,
+    private val deviceVolumeUseCases: DeviceVolumeUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     private val deviceVolumeRefreshTrigger = MutableStateFlow(0)
@@ -54,9 +62,9 @@ internal class OtherVolumeDetailViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<OtherVolumeDetailUiState> =
         combine(
-            observeSoundVolume(),
+            soundVolumeUseCases.observeSoundVolume(),
             merge(deviceVolumeRefreshTrigger.map { }, deviceVolumePollingTicker)
-                .mapLatest { getDeviceVolume() },
+                .mapLatest { deviceVolumeUseCases.getDeviceVolume() },
         ) { volume, deviceVolume ->
             OtherVolumeDetailUiState(volume = volume, deviceVolume = deviceVolume)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVolumeDetailUiState())
@@ -66,12 +74,12 @@ internal class OtherVolumeDetailViewModel(
         deviceVolumeRequest
             .filterNotNull()
             .onEach { volume ->
-                setDeviceVolume(volume)
+                deviceVolumeUseCases.setDeviceVolume(volume)
                 deviceVolumeRefreshTrigger.update { it + 1 }
             }.launchIn(viewModelScope)
 
     fun onVolumeChanged(volume: Int) {
-        viewModelScope.launch { saveSoundVolume(volume) }
+        viewModelScope.launch { soundVolumeUseCases.saveSoundVolume(volume) }
     }
 
     fun onPreviewClicked() {
