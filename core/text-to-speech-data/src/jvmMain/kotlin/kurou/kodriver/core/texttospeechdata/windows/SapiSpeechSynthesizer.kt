@@ -1,5 +1,7 @@
 package kurou.kodriver.core.texttospeechdata.windows
 
+import java.util.concurrent.TimeUnit
+
 /**
  * Windows標準の音声合成（SAPI）をPowerShellの`System.Speech.Synthesis.SpeechSynthesizer`経由で
  * 呼び出す [WindowsSpeechSynthesizer] の実装。
@@ -41,10 +43,15 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
                         "\$voices = \$s.GetInstalledVoices(); " +
                         "if (-not (\$voices | Where-Object { " +
                         "\$_.VoiceInfo.Culture.Name -eq 'ja-JP' })) { exit 1 }",
-                ).redirectErrorStream(true).start()
+                ).redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                    .start()
             try {
-                process.inputStream.bufferedReader().use { it.readText() }
-                process.waitFor() == 0
+                if (!process.waitFor(5, TimeUnit.SECONDS)) {
+                    process.destroyForcibly()
+                    return false
+                }
+                process.exitValue() == 0
             } finally {
                 process.destroy()
             }
