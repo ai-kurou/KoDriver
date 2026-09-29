@@ -110,14 +110,14 @@ class ReadoutListViewModelTest {
             assertEquals(
                 listOf(
                     ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     ReadoutItemKey.LmuWindows.PitTiming.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 state.items,
             )
@@ -137,15 +137,15 @@ class ReadoutListViewModelTest {
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             val movedOrder =
                 listOf(
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.PitTiming.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } returns Unit
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -158,15 +158,15 @@ class ReadoutListViewModelTest {
 
             assertEquals(
                 listOf(
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.PitTiming.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 viewModel.uiState.first().items,
             )
@@ -174,15 +174,15 @@ class ReadoutListViewModelTest {
                 readoutRepository.saveReadoutOrder(
                     "lmu_windows",
                     listOf(
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                        ReadoutItemKey.LmuWindows.Flag.Root,
                         ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                        ReadoutItemKey.LmuWindows.Flag.Root,
                         ReadoutItemKey.LmuWindows.PitTiming.Root,
                         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                         ReadoutItemKey.LmuWindows.TyreWear.Root,
+                        ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                         ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                         ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                        ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ),
                 )
             }
@@ -279,13 +279,13 @@ class ReadoutListViewModelTest {
                 listOf(
                     ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.PitTiming.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 viewModel.uiState.first().items,
             )
@@ -302,15 +302,15 @@ class ReadoutListViewModelTest {
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns orderFlow
             val movedOrder =
                 listOf(
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.PitTiming.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } answers {
                 orderFlow.update { movedOrder }
@@ -325,15 +325,15 @@ class ReadoutListViewModelTest {
 
             assertEquals(
                 listOf(
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.PitTiming.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 orderFlow.value,
             )
@@ -349,27 +349,27 @@ class ReadoutListViewModelTest {
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             val firstMovedOrder =
                 listOf(
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    ReadoutItemKey.LmuWindows.Flag.Root,
                     ReadoutItemKey.LmuWindows.PitTiming.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 )
             val secondMovedOrder =
                 listOf(
                     ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     ReadoutItemKey.LmuWindows.PitTiming.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", firstMovedOrder) } returns Unit
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", secondMovedOrder) } returns Unit
@@ -385,14 +385,14 @@ class ReadoutListViewModelTest {
             assertEquals(
                 listOf(
                     ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     ReadoutItemKey.LmuWindows.PitTiming.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
                 ),
                 viewModel.uiState.first().items,
             )
