@@ -60,7 +60,7 @@ import org.koin.dsl.module
  * LMU アナウンス制御（lmu-windows-narrator feature）の Koin モジュール。
  *
  * 提供: LmuWindowsNarratorViewModel、LmuWindowsNarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
- *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases /
+ *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases / TyreDetachedUseCases /
  *   SimulatorUseCases / ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases / RemainingVirtualEnergyUseCases /
  *   PitTimingUseCases）、
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
@@ -90,6 +90,7 @@ val lmuWindowsNarratorModule: Module =
                 get(),
                 get(),
                 get(),
+                get(),
             )
         }
 
@@ -97,7 +98,8 @@ val lmuWindowsNarratorModule: Module =
         factory { NarratorUseCases(get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
-        factory { VehicleDamageUseCases(get(), get(), get()) }
+        factory { VehicleDamageUseCases(get(), get()) }
+        factory { TyreDetachedUseCases(get()) }
         factory { SimulatorUseCases(get()) }
         factory { ReadoutListUseCases(get(), get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get(), get(), get()) }

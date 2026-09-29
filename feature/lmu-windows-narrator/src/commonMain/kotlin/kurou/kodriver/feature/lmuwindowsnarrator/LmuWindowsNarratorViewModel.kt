@@ -88,6 +88,9 @@ internal data class VehicleApproachUseCases(
 internal data class VehicleDamageUseCases(
     val observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
     val observeVehicleDamageEnabledStates: ObserveLmuWindowsVehicleDamageEnabledStatesUseCase,
+)
+
+internal data class TyreDetachedUseCases(
     val observeTyreDetached: ObserveLmuWindowsTyreDetachedUseCase,
 )
 
@@ -147,6 +150,7 @@ internal data class NarratorUseCases(
 internal class LmuWindowsNarratorViewModel(
     vehicleApproachUseCases: VehicleApproachUseCases,
     vehicleDamageUseCases: VehicleDamageUseCases,
+    tyreDetachedUseCases: TyreDetachedUseCases,
     simulatorUseCases: SimulatorUseCases,
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
@@ -437,7 +441,7 @@ internal class LmuWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-                vehicleDamageUseCases.observeTyreDetached()
+                tyreDetachedUseCases.observeTyreDetached()
             }.onEach { tyreDetached ->
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
