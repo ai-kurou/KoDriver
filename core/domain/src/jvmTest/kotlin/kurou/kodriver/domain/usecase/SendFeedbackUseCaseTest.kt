@@ -155,7 +155,8 @@ class SendFeedbackUseCaseTest {
     @Test
     fun `送信成功時は現在時刻をクールダウンRepositoryへ保存する`() =
         runTest {
-            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns Result.success(Unit)
+            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns
+                Result.success(Unit)
             coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_234_567_890L) } returns Unit
             val useCase = createUseCase(currentTimeMs = 1_234_567_890L)
 
@@ -184,7 +185,8 @@ class SendFeedbackUseCaseTest {
     @Test
     fun `クールダウン保存に失敗しても送信結果は成功として返す`() =
         runTest {
-            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns Result.success(Unit)
+            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns
+                Result.success(Unit)
             coEvery {
                 cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L)
             } throws IllegalStateException("write error")

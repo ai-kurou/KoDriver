@@ -120,7 +120,17 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `入力したフィードバックを送信できる`() =
         runTest {
-            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns Result.success(Unit)
+            coEvery {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.FeatureRequest,
+                        message = "改善してほしいです",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
+            } returns Result.success(Unit)
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -149,8 +159,17 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `送信に失敗したらエラーを表示する`() =
         runTest {
-            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns
-                Result.failure(IllegalStateException("failed"))
+            coEvery {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "失敗します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
+            } returns Result.failure(IllegalStateException("failed"))
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -179,8 +198,17 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `送信中に想定外の例外が発生したらエラーを表示する`() =
         runTest {
-            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } throws
-                IllegalStateException("unexpected")
+            coEvery {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "失敗します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
+            } throws IllegalStateException("unexpected")
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -209,7 +237,17 @@ class OtherFeedbackDetailViewModelTest {
     fun `送信中に再送信してもRepositoryは1回だけ呼ばれる`() =
         runTest {
             val deferredResult = CompletableDeferred<Result<Unit>>()
-            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } coAnswers { deferredResult.await() }
+            coEvery {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "送信します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
+            } coAnswers { deferredResult.await() }
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -241,7 +279,17 @@ class OtherFeedbackDetailViewModelTest {
     fun `送信中に入力を変更してもSending状態が維持され再送信できない`() =
         runTest {
             val deferredResult = CompletableDeferred<Result<Unit>>()
-            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } coAnswers { deferredResult.await() }
+            coEvery {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "送信します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
+            } coAnswers { deferredResult.await() }
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -329,7 +377,19 @@ class OtherFeedbackDetailViewModelTest {
             val log = telemetryLog(id = 1L, telemetryJson = """{"lapCount":1}""")
             every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
                 flowOf(TelemetryLogDetail(current = log, previous = null))
-            coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns Result.success(Unit)
+            coEvery {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "添付します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                        telemetryLogId = 1L,
+                        telemetryLogJson = """{"lapCount":1}""",
+                    ),
+                )
+            } returns Result.success(Unit)
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
             viewModel.setTelemetryLogId(1L)

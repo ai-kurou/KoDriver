@@ -72,7 +72,7 @@ class TcpServerConnectivityCheckerTest {
             assertFalse(checker.isReachable("127.0.0.1"))
 
             verify(exactly = 1) { Sentry.captureException(exception) }
-            confirmVerified(Sentry)
+            confirmVerified(Sentry::class)
         }
 
     @Test

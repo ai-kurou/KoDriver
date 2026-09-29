@@ -212,6 +212,10 @@ class AndroidTextToSpeechRepositoryTest {
             every {
                 textToSpeech.speak("古い発話", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
             } returns TextToSpeech.SUCCESS andThen TextToSpeech.SUCCESS
+            val newUtteranceIdSlot = slot<String>()
+            every {
+                textToSpeech.speak("新しい発話", TextToSpeech.QUEUE_FLUSH, null, capture(newUtteranceIdSlot))
+            } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
             var oldCompleted = false
 
@@ -226,7 +230,7 @@ class AndroidTextToSpeechRepositoryTest {
             // 新しい発話要求（QUEUE_FLUSH）を出すと、onStop等の通知を待たず古い発話が即座に完了する。
             val newJob = launch { repository.speak("新しい発話", queue = false) }
             runCurrent()
-            val newUtteranceId = utteranceIdSlot.captured
+            val newUtteranceId = newUtteranceIdSlot.captured
 
             assertTrue(oldCompleted)
             oldJob.join()
@@ -254,6 +258,10 @@ class AndroidTextToSpeechRepositoryTest {
             every {
                 textToSpeech.speak("A", TextToSpeech.QUEUE_FLUSH, null, capture(utteranceIdSlot))
             } returns TextToSpeech.SUCCESS andThen TextToSpeech.SUCCESS
+            val utteranceIdBSlot = slot<String>()
+            every {
+                textToSpeech.speak("B", TextToSpeech.QUEUE_ADD, null, capture(utteranceIdBSlot))
+            } returns TextToSpeech.SUCCESS
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
             // Aが実際に再生中（onStart済み）。
@@ -280,7 +288,7 @@ class AndroidTextToSpeechRepositoryTest {
                 textToSpeech.speak("A", TextToSpeech.QUEUE_FLUSH, null, utteranceIdA)
             }
             verify(exactly = 1) {
-                textToSpeech.speak("B", TextToSpeech.QUEUE_ADD, null, utteranceIdSlot.captured)
+                textToSpeech.speak("B", TextToSpeech.QUEUE_ADD, null, utteranceIdBSlot.captured)
             }
             verify(exactly = 0) { textToSpeech.stop() }
             confirmVerified(textToSpeech)

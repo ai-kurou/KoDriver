@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.every
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
