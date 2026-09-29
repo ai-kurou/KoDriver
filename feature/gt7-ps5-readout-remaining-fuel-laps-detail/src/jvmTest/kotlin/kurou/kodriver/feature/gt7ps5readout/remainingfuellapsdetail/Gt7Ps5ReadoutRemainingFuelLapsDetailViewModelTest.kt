@@ -62,12 +62,13 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
 
     private fun createViewModel() =
         Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
-            remainingFuelLapsUseCases = RemainingFuelLapsUseCases(
-                observeRemainingFuelLaps = ObserveGt7Ps5RemainingFuelLapsUseCase(repository),
-                saveRemainingFuelLaps = SaveGt7Ps5RemainingFuelLapsUseCase(repository),
-                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
-            ),
+            remainingFuelLapsUseCases =
+                RemainingFuelLapsUseCases(
+                    observeRemainingFuelLaps = ObserveGt7Ps5RemainingFuelLapsUseCase(repository),
+                    saveRemainingFuelLaps = SaveGt7Ps5RemainingFuelLapsUseCase(repository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 

@@ -64,11 +64,11 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
         AceWindowsReadoutRemainingFuelLapsDetailViewModel(
             remainingFuelLapsUseCases =
                 RemainingFuelLapsUseCases(
-                observeThreshold = ObserveAceWindowsRemainingFuelLapsThresholdUseCase(repository),
-                saveThreshold = SaveAceWindowsRemainingFuelLapsThresholdUseCase(repository),
-                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
-            ),
+                    observeThreshold = ObserveAceWindowsRemainingFuelLapsThresholdUseCase(repository),
+                    saveThreshold = SaveAceWindowsRemainingFuelLapsThresholdUseCase(repository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
