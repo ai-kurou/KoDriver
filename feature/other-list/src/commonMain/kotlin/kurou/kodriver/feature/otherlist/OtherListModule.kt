@@ -25,19 +25,14 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
                 OtherListAppVersionInfo(
                     currentVersion = currentAppVersion(),
                     appVersionLabel = currentAppVersionLabel(),
                 ),
             )
         }
+
+        factory { OtherListSettingsUseCases(get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:windows-startup-data の Repository を解決）
         factory { StartupRegistrationUseCases(get()) }

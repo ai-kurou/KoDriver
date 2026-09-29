@@ -32,20 +32,24 @@ data class OtherListAppVersionInfo(
     val appVersionLabel: String,
 )
 
+data class OtherListSettingsUseCases(
+    val observeOverlayVisible: ObserveOverlayVisibleUseCase,
+    val saveOverlayVisible: SaveOverlayVisibleUseCase,
+    val observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
+    val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
+    val observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
+    val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
+    val observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
+    val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
+)
+
 /**
  * OtherList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
 @Suppress("LongParameterList")
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
-    observeOverlayVisible: ObserveOverlayVisibleUseCase,
-    private val saveOverlayVisible: SaveOverlayVisibleUseCase,
-    observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
-    private val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
-    observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
-    private val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
-    observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
-    private val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
+    private val settingsUseCases: OtherListSettingsUseCases,
     checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
     private val checkTextToSpeechUnavailableReason: CheckTextToSpeechUnavailableReasonUseCase,
@@ -70,10 +74,10 @@ class OtherListViewModel(
     val uiState: StateFlow<OtherListUiState> =
         combine(
             _uiState,
-            observeOverlayVisible(),
-            observeKeepScreenOn(),
-            observeDynamicColorEnabled(),
-            observeHapticFeedbackEnabled(),
+            settingsUseCases.observeOverlayVisible(),
+            settingsUseCases.observeKeepScreenOn(),
+            settingsUseCases.observeDynamicColorEnabled(),
+            settingsUseCases.observeHapticFeedbackEnabled(),
         ) { state, overlayVisible, keepScreenOn, dynamicColorEnabled, hapticFeedbackEnabled ->
             state.copy(
                 overlayVisible = overlayVisible,
@@ -167,18 +171,18 @@ class OtherListViewModel(
     }
 
     fun onOverlayVisibleChange(visible: Boolean) {
-        viewModelScope.launch { saveOverlayVisible(visible) }
+        viewModelScope.launch { settingsUseCases.saveOverlayVisible(visible) }
     }
 
     fun onKeepScreenOnChange(enabled: Boolean) {
-        viewModelScope.launch { saveKeepScreenOn(enabled) }
+        viewModelScope.launch { settingsUseCases.saveKeepScreenOn(enabled) }
     }
 
     fun onDynamicColorEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { saveDynamicColorEnabled(enabled) }
+        viewModelScope.launch { settingsUseCases.saveDynamicColorEnabled(enabled) }
     }
 
     fun onHapticFeedbackEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { saveHapticFeedbackEnabled(enabled) }
+        viewModelScope.launch { settingsUseCases.saveHapticFeedbackEnabled(enabled) }
     }
 }
