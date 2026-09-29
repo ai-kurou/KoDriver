@@ -78,6 +78,10 @@ class AndroidTextToSpeechRepositoryTest {
             job.join()
 
             assertTrue(completed)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            verify(exactly = 1) { textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, any()) }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -102,6 +106,10 @@ class AndroidTextToSpeechRepositoryTest {
             job.join()
 
             assertTrue(completed)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            verify(exactly = 1) { textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, any()) }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -122,7 +130,11 @@ class AndroidTextToSpeechRepositoryTest {
             job.join()
 
             assertTrue(job.isCancelled)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            verify(exactly = 1) { textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, any()) }
             verify(exactly = 1) { textToSpeech.stop() }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -135,7 +147,10 @@ class AndroidTextToSpeechRepositoryTest {
 
             repository.speak("ベストラップ", queue = false)
 
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
             verify(exactly = 1) { textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, any()) }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -159,6 +174,10 @@ class AndroidTextToSpeechRepositoryTest {
             job.join()
 
             assertTrue(completed)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            verify(exactly = 1) { textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, any()) }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -189,6 +208,12 @@ class AndroidTextToSpeechRepositoryTest {
 
             listenerSlot.captured.onDone(newUtteranceId)
             newJob.join()
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            verify(exactly = 1) { textToSpeech.speak("古い発話", TextToSpeech.QUEUE_FLUSH, null, any()) }
+            verify(exactly = 1) { textToSpeech.speak("新しい発話", TextToSpeech.QUEUE_FLUSH, null, any()) }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -217,6 +242,13 @@ class AndroidTextToSpeechRepositoryTest {
 
             listenerSlot.captured.onDone(utteranceIdA)
             jobA.join()
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            verify(exactly = 1) { textToSpeech.speak("A", TextToSpeech.QUEUE_FLUSH, null, any()) }
+            verify(exactly = 1) { textToSpeech.speak("B", TextToSpeech.QUEUE_ADD, null, any()) }
+            verify(exactly = 0) { textToSpeech.stop() }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -242,6 +274,12 @@ class AndroidTextToSpeechRepositoryTest {
 
             assertTrue(completed)
             job.join()
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            verify(exactly = 1) { textToSpeech.speak("ベストラップ", TextToSpeech.QUEUE_FLUSH, null, any()) }
+            verify(exactly = 1) { textToSpeech.stop() }
+            confirmVerified(textToSpeech)
         }
 
     @Test
@@ -255,6 +293,10 @@ class AndroidTextToSpeechRepositoryTest {
             assertTrue(repository.isAvailable())
 
             assertEquals(1, factoryCallCount)
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(any()) }
+            confirmVerified(textToSpeech)
         }
 
     @Test

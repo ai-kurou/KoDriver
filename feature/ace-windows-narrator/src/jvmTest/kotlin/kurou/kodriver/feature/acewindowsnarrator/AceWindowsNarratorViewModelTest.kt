@@ -4,6 +4,8 @@ package kurou.kodriver.feature.acewindowsnarrator
 
 import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -268,6 +270,17 @@ class AceWindowsNarratorViewModelTest {
             assertEquals(1, telemetryJsons.size)
             assertEquals(true, telemetryJsons.single().contains(""""previousFuel":{"remainingPercent":50.0}"""))
             assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":20.0}"""))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    "残り燃料警告",
+                    any(),
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository)
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
         }
 
@@ -350,6 +363,17 @@ class AceWindowsNarratorViewModelTest {
                 telemetryJsons.single().contains(""""previousRemainingFuelLaps":{"remainingLaps":4.5}"""),
             )
             assertEquals(true, telemetryJsons.single().contains(""""remainingFuelLaps":{"remainingLaps":3.5}"""))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+                    "燃料は残り約3周",
+                    any(),
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 
     @Test
@@ -609,6 +633,17 @@ class AceWindowsNarratorViewModelTest {
                 telemetryJsons.single().contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":95.0}}"""),
             )
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.TyreTemperature.Root,
+                    "タイヤ過熱警告",
+                    any(),
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 
     @Test
@@ -788,6 +823,17 @@ class AceWindowsNarratorViewModelTest {
                 telemetryJsons.single().contains(""""vehicleApproach":{"nearbyVehicles":[{"distanceMeters":5.0}]}"""),
             )
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    "車両接近",
+                    any(),
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 
     @Test
@@ -899,6 +945,17 @@ class AceWindowsNarratorViewModelTest {
             assertEquals(true, telemetryJsons.single().contains(""""previousBestLapTime":{"bestLapTimeMs":90000}"""))
             assertEquals(true, telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000}"""))
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.MyBestLap.Root,
+                    "自己ベストラップ更新",
+                    any(),
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 
     private fun bestLapTime(bestLapTimeMs: Int) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)

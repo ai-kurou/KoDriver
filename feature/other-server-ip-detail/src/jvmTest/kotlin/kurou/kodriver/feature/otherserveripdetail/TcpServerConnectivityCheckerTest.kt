@@ -2,6 +2,7 @@
 
 package kurou.kodriver.feature.otherserveripdetail
 
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
@@ -66,6 +67,7 @@ class TcpServerConnectivityCheckerTest {
             assertFalse(checker.isReachable("127.0.0.1"))
 
             verify(exactly = 0) { Sentry.captureException(any()) }
+            confirmVerified(Sentry)
         }
 
     @Test
@@ -78,6 +80,7 @@ class TcpServerConnectivityCheckerTest {
             assertFalse(checker.isReachable("127.0.0.1"))
 
             verify(exactly = 1) { Sentry.captureException(exception) }
+            confirmVerified(Sentry)
         }
 
     @Test

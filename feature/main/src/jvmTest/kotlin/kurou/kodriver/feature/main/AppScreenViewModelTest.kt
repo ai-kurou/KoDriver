@@ -271,6 +271,7 @@ class AppScreenViewModelTest {
             advanceUntilIdle()
 
             coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
+            confirmVerified(simulatorRepository)
         }
 
     @Test
@@ -282,6 +283,7 @@ class AppScreenViewModelTest {
             advanceUntilIdle()
 
             coVerify(exactly = 0) { simulatorRepository.saveSelectedSimulator(any()) }
+            confirmVerified(simulatorRepository)
         }
 
     @Test

@@ -412,8 +412,9 @@ class OtherFeedbackDetailViewModelTest {
 
             assertTrue(viewModel.uiState.value.isCoolingDown)
             assertFalse(viewModel.uiState.value.canSend)
+            verify(exactly = 1) { cooldownRepository.lastFeedbackSentAtEpochMillis() }
             coVerify(exactly = 0) { repository.send(any()) }
-            confirmVerified(repository)
+            confirmVerified(cooldownRepository, repository)
             collectionJob.cancel()
         }
 }

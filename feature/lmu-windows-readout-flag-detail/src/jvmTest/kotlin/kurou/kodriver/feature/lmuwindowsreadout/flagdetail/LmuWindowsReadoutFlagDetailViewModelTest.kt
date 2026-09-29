@@ -102,7 +102,10 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             assertEquals(true, state.enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag])
             assertEquals(RedFlagVoiceType.SESSION_STOP, state.redFlagVoiceType)
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
-            confirmVerified(repository)
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 
     @Test
@@ -124,7 +127,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false) }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            confirmVerified(repository, redFlagRepository)
+            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 
     @Test
@@ -146,7 +151,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            confirmVerified(repository, redFlagRepository)
+            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 
     @Test
@@ -168,7 +175,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coVerify(exactly = 1) { redFlagRepository.saveVoiceType(RedFlagVoiceType.RED_FLAG) }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            confirmVerified(redFlagRepository, repository)
+            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 
     @Test
@@ -185,7 +194,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BlueFlag, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        confirmVerified(ttsEngine, repository, redFlagRepository)
+        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        coVerify(exactly = 1) { ttsRepository.isAvailable() }
+        confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
 
     @Test
@@ -202,7 +213,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.YellowFlag, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        confirmVerified(ttsEngine, repository, redFlagRepository)
+        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        coVerify(exactly = 1) { ttsRepository.isAvailable() }
+        confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
 
     @Test
@@ -219,7 +232,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.FullCourseYellow, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        confirmVerified(ttsEngine, repository, redFlagRepository)
+        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        coVerify(exactly = 1) { ttsRepository.isAvailable() }
+        confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
 
     @Test
@@ -236,7 +251,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RedFlag, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        confirmVerified(ttsEngine, repository, redFlagRepository)
+        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        coVerify(exactly = 1) { ttsRepository.isAvailable() }
+        confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
 
     @Test
@@ -253,7 +270,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.SessionStop, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        confirmVerified(ttsEngine, repository, redFlagRepository)
+        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        coVerify(exactly = 1) { ttsRepository.isAvailable() }
+        confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
 
     @Test
@@ -269,6 +288,11 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
             assertEquals("イエロー、注意", state.sectorYellowFlagText)
             assertTrue(state.isTextToSpeechAvailable)
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 
     @Test
@@ -281,6 +305,11 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             val viewModel = createViewModel()
 
             assertFalse(viewModel.uiState.first().isTextToSpeechAvailable)
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 
     @Test
@@ -300,6 +329,11 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
             assertEquals("イエロー、注意", viewModel.uiState.first().sectorYellowFlagText)
             coVerify(exactly = 1) { textRepository.saveSectorYellowFlagText("イエロー、注意") }
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 
     @Test
@@ -318,7 +352,13 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                 ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
                 ttsRepository.speak("イエロー、注意", false)
             }
-            confirmVerified(ttsEngine)
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag) }
+            coVerify(exactly = 1) { ttsRepository.speak("イエロー、注意", false) }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository, ttsEngine)
         }
 
     @Test
@@ -335,6 +375,10 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.YellowFlag, false) }
             coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag) }
-            confirmVerified(ttsEngine)
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository, ttsEngine)
         }
 }

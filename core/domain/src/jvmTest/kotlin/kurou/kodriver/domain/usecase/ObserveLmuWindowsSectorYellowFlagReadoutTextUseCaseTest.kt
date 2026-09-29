@@ -1,7 +1,9 @@
 package kurou.kodriver.domain.usecase
 
 import io.mockk.every
+import io.mockk.confirmVerified
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -21,5 +23,7 @@ class ObserveLmuWindowsSectorYellowFlagReadoutTextUseCaseTest {
                 "イエロー、注意",
                 ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase(repository)().first(),
             )
+            verify(exactly = 1) { repository.observeSectorYellowFlagText() }
+            confirmVerified(repository)
         }
 }

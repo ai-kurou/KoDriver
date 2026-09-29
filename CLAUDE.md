@@ -66,6 +66,8 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 テストの配置先（commonTest / jvmTest）・スクリーンショットテストの配置先や画面サイズ・テストパターン（命名規則、MockKの使い方、any()禁止等）・カバレッジ計測の詳細は [`docs/testing-guidelines.md`](docs/testing-guidelines.md) を参照。
 
+モックへの呼び出し自体を検証する場合、通常関数は `every` と `verify`、suspend 関数は `coEvery` と `coVerify` を対応させ、メソッド・引数・回数を一致させる。戻り値や状態を作るだけのスタブには呼び出し検証を要求しない。`verify`/`coVerify` には必ず `exactly = N` を指定し、検証対象の全モックを各テストケース末尾の `confirmVerified(...)` に渡す。詳細は [`docs/testing-guidelines.md`](docs/testing-guidelines.md) を参照。
+
 ---
 
 ## ライブラリバージョン管理

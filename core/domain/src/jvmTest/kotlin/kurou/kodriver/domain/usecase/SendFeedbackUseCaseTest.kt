@@ -50,7 +50,8 @@ class SendFeedbackUseCaseTest {
                     ),
                 )
             }
-            confirmVerified(repository)
+            coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
@@ -81,7 +82,8 @@ class SendFeedbackUseCaseTest {
                     ),
                 )
             }
-            confirmVerified(repository)
+            coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
@@ -112,7 +114,8 @@ class SendFeedbackUseCaseTest {
                     ),
                 )
             }
-            confirmVerified(repository)
+            coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
@@ -137,7 +140,9 @@ class SendFeedbackUseCaseTest {
 
             useCase(Feedback(type = FeedbackType.Question, message = "本文"))
 
+            coVerify(exactly = 1) { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) }
             coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_234_567_890L) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
@@ -149,7 +154,9 @@ class SendFeedbackUseCaseTest {
             val result = useCase(Feedback(type = FeedbackType.Question, message = "本文"))
 
             assertTrue(result.isFailure)
+            coVerify(exactly = 1) { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) }
             coVerify(exactly = 0) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(any()) }
+            confirmVerified(repository, cooldownRepository)
         }
 
     @Test
@@ -164,5 +171,8 @@ class SendFeedbackUseCaseTest {
             val result = useCase(Feedback(type = FeedbackType.Question, message = "本文"))
 
             assertTrue(result.isSuccess)
+            coVerify(exactly = 1) { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) }
+            coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+            confirmVerified(repository, cooldownRepository)
         }
 }
