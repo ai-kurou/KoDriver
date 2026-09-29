@@ -19,20 +19,24 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingVirtualEnergyLapsUse
 
 private const val PIT_TIMING_PREVIEW_LAPS = 5
 
+internal data class PitTimingUseCases(
+    val observeVirtualEnergyLaps: ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
+    val observeTyreWearLaps: ObserveLmuWindowsPitTimingTyreWearLapsUseCase,
+    val observeEnabledStates: ObserveLmuWindowsPitTimingEnabledStatesUseCase,
+    val saveVirtualEnergyLaps: SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
+    val saveTyreWearLaps: SaveLmuWindowsPitTimingTyreWearLapsUseCase,
+    val saveEnabledState: SaveLmuWindowsPitTimingEnabledStateUseCase,
+)
+
 internal class LmuWindowsReadoutPitTimingDetailViewModel(
-    observeLmuWindowsPitTimingVirtualEnergyLaps: ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
-    observeLmuWindowsPitTimingTyreWearLaps: ObserveLmuWindowsPitTimingTyreWearLapsUseCase,
-    observeLmuWindowsPitTimingEnabledStates: ObserveLmuWindowsPitTimingEnabledStatesUseCase,
-    private val saveLmuWindowsPitTimingVirtualEnergyLaps: SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
-    private val saveLmuWindowsPitTimingTyreWearLaps: SaveLmuWindowsPitTimingTyreWearLapsUseCase,
-    private val saveLmuWindowsPitTimingEnabledState: SaveLmuWindowsPitTimingEnabledStateUseCase,
+    private val pitTimingUseCases: PitTimingUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<LmuWindowsReadoutPitTimingDetailUiState> =
         combine(
-            observeLmuWindowsPitTimingVirtualEnergyLaps(),
-            observeLmuWindowsPitTimingTyreWearLaps(),
-            observeLmuWindowsPitTimingEnabledStates(),
+            pitTimingUseCases.observeVirtualEnergyLaps(),
+            pitTimingUseCases.observeTyreWearLaps(),
+            pitTimingUseCases.observeEnabledStates(),
         ) { virtualEnergyLaps, tyreWearLaps, enabledStates ->
             LmuWindowsReadoutPitTimingDetailUiState(
                 virtualEnergyEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy),
@@ -48,25 +52,25 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
 
     fun onVirtualEnergyEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveLmuWindowsPitTimingEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, enabled)
+            pitTimingUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, enabled)
         }
     }
 
     fun onVirtualEnergyLapsChanged(laps: Int) {
         viewModelScope.launch {
-            saveLmuWindowsPitTimingVirtualEnergyLaps(laps)
+            pitTimingUseCases.saveVirtualEnergyLaps(laps)
         }
     }
 
     fun onTyreWearEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveLmuWindowsPitTimingEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, enabled)
+            pitTimingUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, enabled)
         }
     }
 
     fun onTyreWearLapsChanged(laps: Int) {
         viewModelScope.launch {
-            saveLmuWindowsPitTimingTyreWearLaps(laps)
+            pitTimingUseCases.saveTyreWearLaps(laps)
         }
     }
 

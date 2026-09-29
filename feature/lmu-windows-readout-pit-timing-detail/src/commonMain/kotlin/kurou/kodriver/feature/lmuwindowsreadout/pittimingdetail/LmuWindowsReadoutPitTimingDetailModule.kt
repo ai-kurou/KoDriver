@@ -25,14 +25,10 @@ val lmuWindowsReadoutPitTimingDetailModule =
         viewModel {
             LmuWindowsReadoutPitTimingDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.LmuWindows.id)),
             )
         }
+        factory { PitTimingUseCases(get(), get(), get(), get(), get(), get()) }
         factoryOf(::ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
         factoryOf(::ObserveLmuWindowsPitTimingTyreWearLapsUseCase)
         factoryOf(::ObserveLmuWindowsPitTimingEnabledStatesUseCase)
