@@ -113,7 +113,12 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     private fun buildScript(text: String): String {
         val escaped = text.replace("'", "''")
         return "Add-Type -AssemblyName System.Speech; " +
-            "(New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('$escaped')"
+            "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
+            "\$s.SelectVoiceByHints(" +
+            "[System.Speech.Synthesis.VoiceGender]::NotSet, " +
+            "[System.Speech.Synthesis.VoiceAge]::NotSet, 0, " +
+            "[System.Globalization.CultureInfo]::GetCultureInfo('ja-JP')); " +
+            "\$s.Speak('$escaped')"
     }
 
     private companion object {
