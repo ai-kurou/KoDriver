@@ -11,4 +11,8 @@ interface LmuWindowsFlagReadoutTextPreferencesRepository {
     fun observeSectorYellowFlagText(): Flow<String>
 
     suspend fun saveSectorYellowFlagText(text: String)
+
+    fun observeBlackFlagText(): Flow<String>
+
+    suspend fun saveBlackFlagText(text: String)
 }
