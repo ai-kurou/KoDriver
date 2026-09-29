@@ -91,14 +91,14 @@ class ReadoutListItemTypeFromIdTest {
         assertEquals(
             listOf(
                 ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.PitTiming.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
         )
