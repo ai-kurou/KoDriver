@@ -79,8 +79,8 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_startup
 import kurou.kodriver.feature.otherlist.generated.resources.item_theme
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_engine_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_language_data_missing
-import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
+import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
@@ -649,7 +649,7 @@ private fun handleOtherListItemClick(
         }
 
         OtherListItemType.WindowsSpeechUnavailable -> {
-            openTtsSettings()
+            onItemClick(item)
         }
 
         OtherListItemType.ServerIp,

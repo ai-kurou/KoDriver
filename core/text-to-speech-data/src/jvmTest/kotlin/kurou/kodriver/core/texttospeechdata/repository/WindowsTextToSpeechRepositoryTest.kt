@@ -4,12 +4,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WindowsTextToSpeechRepositoryTest {

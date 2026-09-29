@@ -119,13 +119,14 @@ private fun handleOtherItemClick(
 
         OtherListItemType.TtsEngineMissing -> onOpenTtsEngineInPlayStore()
 
+        OtherListItemType.WindowsSpeechUnavailable -> openWindowsSpeechSettings()
+
         OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
         // TtsLanguageDataMissingはOtherListPane側でOS設定画面を直接開くため、ここには到達しない。
         OtherListItemType.TtsLanguageDataMissing,
-        OtherListItemType.WindowsSpeechUnavailable,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
