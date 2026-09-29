@@ -23,9 +23,6 @@ val lmuWindowsReadoutVehicleDamageDetailModule =
         viewModel {
             LmuWindowsReadoutVehicleDamageDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.LmuWindows.id)),
             )
         }
@@ -35,4 +32,5 @@ val lmuWindowsReadoutVehicleDamageDetailModule =
         factory { ObserveLmuWindowsOverheatVoiceTypeUseCase(get()) }
         factory { SaveLmuWindowsVehicleDamageEnabledStateUseCase(get()) }
         factory { SaveLmuWindowsOverheatVoiceTypeUseCase(get()) }
+        factory { VehicleDamageUseCases(get(), get(), get(), get()) }
     }

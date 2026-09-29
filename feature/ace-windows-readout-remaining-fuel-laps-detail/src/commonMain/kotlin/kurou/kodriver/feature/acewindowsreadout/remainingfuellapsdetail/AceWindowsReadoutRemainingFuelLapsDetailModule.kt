@@ -23,9 +23,6 @@ val aceWindowsReadoutRemainingFuelLapsDetailModule =
         viewModel {
             AceWindowsReadoutRemainingFuelLapsDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.AceWindows.id)),
             )
         }
@@ -35,4 +32,5 @@ val aceWindowsReadoutRemainingFuelLapsDetailModule =
         factory { SaveAceWindowsRemainingFuelLapsThresholdUseCase(get()) }
         factoryOf(::ObserveReadoutEnabledStatesUseCase)
         factoryOf(::SaveReadoutEnabledStateUseCase)
+        factory { RemainingFuelLapsUseCases(get(), get(), get(), get()) }
     }

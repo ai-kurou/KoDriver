@@ -22,9 +22,6 @@ val lmuWindowsReadoutMyBestLapDetailModule =
         viewModel {
             LmuWindowsReadoutMyBestLapDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.LmuWindows.id)),
             )
         }
@@ -34,4 +31,5 @@ val lmuWindowsReadoutMyBestLapDetailModule =
         factory { SaveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
         factory { ObserveReadoutEnabledStatesUseCase(get()) }
         factory { SaveReadoutEnabledStateUseCase(get()) }
+        factory { MyBestLapUseCases(get(), get(), get(), get()) }
     }

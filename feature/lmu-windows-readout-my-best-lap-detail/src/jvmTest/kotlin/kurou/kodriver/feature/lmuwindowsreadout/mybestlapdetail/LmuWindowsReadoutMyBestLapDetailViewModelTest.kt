@@ -62,10 +62,13 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutMyBestLapDetailViewModel(
-            observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
-            saveMyBestLapVoiceType = SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+            myBestLapUseCases =
+                MyBestLapUseCases(
+                    observeVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
+                    saveVoiceType = SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 

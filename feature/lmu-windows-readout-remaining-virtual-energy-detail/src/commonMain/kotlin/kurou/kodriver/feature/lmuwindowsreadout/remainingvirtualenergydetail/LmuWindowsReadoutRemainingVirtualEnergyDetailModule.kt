@@ -22,9 +22,6 @@ val lmuWindowsReadoutRemainingVirtualEnergyDetailModule =
         viewModel {
             LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.LmuWindows.id)),
             )
         }
@@ -33,4 +30,5 @@ val lmuWindowsReadoutRemainingVirtualEnergyDetailModule =
         factoryOf(::SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
         factoryOf(::ObserveReadoutEnabledStatesUseCase)
         factoryOf(::SaveReadoutEnabledStateUseCase)
+        factory { RemainingVirtualEnergyUseCases(get(), get(), get(), get()) }
     }

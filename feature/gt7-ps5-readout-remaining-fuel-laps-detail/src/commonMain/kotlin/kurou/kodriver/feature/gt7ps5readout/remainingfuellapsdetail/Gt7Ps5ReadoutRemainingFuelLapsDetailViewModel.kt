@@ -18,17 +18,21 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
+internal data class RemainingFuelLapsUseCases(
+    val observeRemainingFuelLaps: ObserveGt7Ps5RemainingFuelLapsUseCase,
+    val saveRemainingFuelLaps: SaveGt7Ps5RemainingFuelLapsUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
 internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
-    observeGt7Ps5RemainingFuelLaps: ObserveGt7Ps5RemainingFuelLapsUseCase,
-    private val saveGt7Ps5RemainingFuelLaps: SaveGt7Ps5RemainingFuelLapsUseCase,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val remainingFuelLapsUseCases: RemainingFuelLapsUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<Gt7Ps5ReadoutRemainingFuelLapsDetailUiState> =
         combine(
-            observeGt7Ps5RemainingFuelLaps(),
-            observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
+            remainingFuelLapsUseCases.observeRemainingFuelLaps(),
+            remainingFuelLapsUseCases.observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
         ) { remainingFuelLaps, enabledStates ->
             Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(
                 remainingFuelLaps = remainingFuelLaps,
@@ -42,7 +46,7 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
 
     fun onRemainingFuelLapsChanged(laps: Int) {
         viewModelScope.launch {
-            saveGt7Ps5RemainingFuelLaps(laps)
+            remainingFuelLapsUseCases.saveRemainingFuelLaps(laps)
         }
     }
 
@@ -52,7 +56,11 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(Simulator.Gt7Ps5.id, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled, enabled)
+            remainingFuelLapsUseCases.saveReadoutEnabledState(
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled,
+                enabled,
+            )
         }
     }
 

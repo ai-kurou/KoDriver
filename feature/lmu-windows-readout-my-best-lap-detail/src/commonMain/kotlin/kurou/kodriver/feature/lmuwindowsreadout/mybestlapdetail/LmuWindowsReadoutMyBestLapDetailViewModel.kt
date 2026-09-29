@@ -18,17 +18,21 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
+internal data class MyBestLapUseCases(
+    val observeVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
+    val saveVoiceType: SaveLmuWindowsMyBestLapVoiceTypeUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
 internal class LmuWindowsReadoutMyBestLapDetailViewModel(
-    observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
-    private val saveMyBestLapVoiceType: SaveLmuWindowsMyBestLapVoiceTypeUseCase,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val myBestLapUseCases: MyBestLapUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<LmuWindowsReadoutMyBestLapDetailUiState> =
         combine(
-            observeMyBestLapVoiceType(),
-            observeReadoutEnabledStates(Simulator.LmuWindows.id),
+            myBestLapUseCases.observeVoiceType(),
+            myBestLapUseCases.observeReadoutEnabledStates(Simulator.LmuWindows.id),
         ) { voiceType, enabledStates ->
             LmuWindowsReadoutMyBestLapDetailUiState(
                 voiceType = voiceType,
@@ -42,13 +46,17 @@ internal class LmuWindowsReadoutMyBestLapDetailViewModel(
 
     fun onVoiceTypeChanged(type: MyBestLapVoiceType) {
         viewModelScope.launch {
-            saveMyBestLapVoiceType(type)
+            myBestLapUseCases.saveVoiceType(type)
         }
     }
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(Simulator.LmuWindows.id, ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled, enabled)
+            myBestLapUseCases.saveReadoutEnabledState(
+                Simulator.LmuWindows.id,
+                ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled,
+                enabled,
+            )
         }
     }
 

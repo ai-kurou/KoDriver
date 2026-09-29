@@ -20,7 +20,10 @@ val gt7Ps5ReadoutRemainingFuelLapsDetailModule =
     module {
         // ViewModel（get(named(Simulator.Gt7Ps5.id)) は narrator モジュールの TextToSpeechEngine を解決）
         viewModel {
-            Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(get(), get(), get(), get(), get(named(Simulator.Gt7Ps5.id)))
+            Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
+                get(),
+                get(named(Simulator.Gt7Ps5.id)),
+            )
         }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
@@ -28,4 +31,5 @@ val gt7Ps5ReadoutRemainingFuelLapsDetailModule =
         factory { SaveGt7Ps5RemainingFuelLapsUseCase(get()) }
         factory { ObserveReadoutEnabledStatesUseCase(get()) }
         factory { SaveReadoutEnabledStateUseCase(get()) }
+        factory { RemainingFuelLapsUseCases(get(), get(), get(), get()) }
     }

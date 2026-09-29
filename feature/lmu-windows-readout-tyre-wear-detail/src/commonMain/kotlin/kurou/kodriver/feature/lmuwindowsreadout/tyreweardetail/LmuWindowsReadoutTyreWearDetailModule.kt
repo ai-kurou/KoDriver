@@ -22,9 +22,6 @@ val lmuWindowsReadoutTyreWearDetailModule =
         viewModel {
             LmuWindowsReadoutTyreWearDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.LmuWindows.id)),
             )
         }
@@ -33,4 +30,5 @@ val lmuWindowsReadoutTyreWearDetailModule =
         factoryOf(::SaveLmuWindowsTyreWearThresholdPercentageUseCase)
         factoryOf(::ObserveReadoutEnabledStatesUseCase)
         factoryOf(::SaveReadoutEnabledStateUseCase)
+        factory { TyreWearUseCases(get(), get(), get(), get()) }
     }
