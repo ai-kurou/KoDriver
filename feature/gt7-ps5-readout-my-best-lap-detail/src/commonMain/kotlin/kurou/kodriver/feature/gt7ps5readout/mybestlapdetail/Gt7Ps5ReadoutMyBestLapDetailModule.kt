@@ -19,7 +19,9 @@ import org.koin.dsl.module
 val gt7Ps5ReadoutMyBestLapDetailModule =
     module {
         // ViewModel（get(named(Simulator.Gt7Ps5.id)) は narrator モジュールの TextToSpeechEngine を解決）
-        viewModel { Gt7Ps5ReadoutMyBestLapDetailViewModel(get(), get(), get(), get(), get(named(Simulator.Gt7Ps5.id))) }
+        viewModel { Gt7Ps5ReadoutMyBestLapDetailViewModel(get(), get(named(Simulator.Gt7Ps5.id))) }
+
+        factory { MyBestLapUseCases(get(), get(), get(), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveGt7Ps5MyBestLapVoiceTypeUseCase(get()) }

@@ -62,10 +62,13 @@ class AceWindowsReadoutMyBestLapDetailViewModelTest {
 
     private fun createViewModel() =
         AceWindowsReadoutMyBestLapDetailViewModel(
-            observeMyBestLapVoiceType = ObserveAceWindowsMyBestLapVoiceTypeUseCase(repository),
-            saveMyBestLapVoiceType = SaveAceWindowsMyBestLapVoiceTypeUseCase(repository),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+            myBestLapUseCases =
+                MyBestLapUseCases(
+                    observeVoiceType = ObserveAceWindowsMyBestLapVoiceTypeUseCase(repository),
+                    saveVoiceType = SaveAceWindowsMyBestLapVoiceTypeUseCase(repository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 

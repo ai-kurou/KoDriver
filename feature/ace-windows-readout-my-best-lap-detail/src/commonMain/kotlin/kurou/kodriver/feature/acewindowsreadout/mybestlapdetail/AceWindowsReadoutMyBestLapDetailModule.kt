@@ -22,12 +22,11 @@ val aceWindowsReadoutMyBestLapDetailModule =
         viewModel {
             AceWindowsReadoutMyBestLapDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.AceWindows.id)),
             )
         }
+
+        factory { MyBestLapUseCases(get(), get(), get(), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveAceWindowsMyBestLapVoiceTypeUseCase(get()) }

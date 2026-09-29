@@ -18,17 +18,21 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 
+internal data class MyBestLapUseCases(
+    val observeVoiceType: ObserveGt7Ps5MyBestLapVoiceTypeUseCase,
+    val saveVoiceType: SaveGt7Ps5MyBestLapVoiceTypeUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
 internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
-    observeMyBestLapVoiceType: ObserveGt7Ps5MyBestLapVoiceTypeUseCase,
-    private val saveMyBestLapVoiceType: SaveGt7Ps5MyBestLapVoiceTypeUseCase,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val myBestLapUseCases: MyBestLapUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<Gt7Ps5ReadoutMyBestLapDetailUiState> =
         combine(
-            observeMyBestLapVoiceType(),
-            observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
+            myBestLapUseCases.observeVoiceType(),
+            myBestLapUseCases.observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
         ) { voiceType, enabledStates ->
             Gt7Ps5ReadoutMyBestLapDetailUiState(
                 voiceType = voiceType,
@@ -42,13 +46,17 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
 
     fun onVoiceTypeChanged(type: MyBestLapVoiceType) {
         viewModelScope.launch {
-            saveMyBestLapVoiceType(type)
+            myBestLapUseCases.saveVoiceType(type)
         }
     }
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(Simulator.Gt7Ps5.id, ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled, enabled)
+            myBestLapUseCases.saveReadoutEnabledState(
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
+                enabled,
+            )
         }
     }
 

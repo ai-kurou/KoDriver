@@ -62,10 +62,13 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
 
     private fun createViewModel() =
         Gt7Ps5ReadoutMyBestLapDetailViewModel(
-            observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
-            saveMyBestLapVoiceType = SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+            myBestLapUseCases =
+                MyBestLapUseCases(
+                    observeVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
+                    saveVoiceType = SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
 
