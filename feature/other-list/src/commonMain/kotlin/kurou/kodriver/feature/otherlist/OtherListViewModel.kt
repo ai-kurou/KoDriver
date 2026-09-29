@@ -94,7 +94,10 @@ class OtherListViewModel(
                             it == OtherListItemType.TtsLanguageDataMissing
                     } +
                         when (ttsUnavailableReason) {
-                            TextToSpeechUnavailableReason.EngineMissing -> listOf(OtherListItemType.TtsEngineMissing)
+                            TextToSpeechUnavailableReason.EngineMissing -> {
+                                listOf(OtherListItemType.TtsEngineMissing)
+                            }
+
                             TextToSpeechUnavailableReason.LanguageDataMissing -> {
                                 listOf(OtherListItemType.TtsLanguageDataMissing)
                             }
@@ -103,7 +106,9 @@ class OtherListViewModel(
                                 listOf(OtherListItemType.WindowsSpeechUnavailable)
                             }
 
-                            null -> emptyList()
+                            null -> {
+                                emptyList()
+                            }
                         },
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)

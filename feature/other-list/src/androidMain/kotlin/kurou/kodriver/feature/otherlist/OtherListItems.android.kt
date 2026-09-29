@@ -10,6 +10,7 @@ actual fun buildOtherListItems(): List<OtherListItemType> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             OtherListItemType.entries.filter {
                 it != OtherListItemType.DebugState &&
+                    it != OtherListItemType.WindowsSpeechUnavailable &&
                     it != OtherListItemType.Startup &&
                     it != OtherListItemType.OverlayVisible &&
                     it != OtherListItemType.OverlayTextSize &&
@@ -19,6 +20,7 @@ actual fun buildOtherListItems(): List<OtherListItemType> {
             OtherListItemType.entries.filter {
                 it != OtherListItemType.DynamicColor &&
                     it != OtherListItemType.DebugState &&
+                    it != OtherListItemType.WindowsSpeechUnavailable &&
                     it != OtherListItemType.Startup &&
                     it != OtherListItemType.OverlayVisible &&
                     it != OtherListItemType.OverlayTextSize &&
