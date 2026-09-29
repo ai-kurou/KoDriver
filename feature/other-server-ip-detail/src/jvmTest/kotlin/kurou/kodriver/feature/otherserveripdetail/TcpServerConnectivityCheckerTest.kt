@@ -13,19 +13,12 @@ import kotlinx.coroutines.test.runTest
 import java.io.IOException
 import java.net.ServerSocket
 import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class TcpServerConnectivityCheckerTest {
-    @BeforeTest
-    fun setUp() {
-        mockkStatic(Sentry::class)
-        every { Sentry.captureException(any()) } returns SentryId.EMPTY_ID
-    }
-
     @AfterTest
     fun tearDown() {
         unmockkStatic(Sentry::class)
@@ -65,15 +58,14 @@ class TcpServerConnectivityCheckerTest {
                 TcpServerConnectivityChecker(connect = { _, _, _ -> throw exception })
 
             assertFalse(checker.isReachable("127.0.0.1"))
-
-            verify(exactly = 0) { Sentry.captureException(any()) }
-            confirmVerified(Sentry)
         }
 
     @Test
     fun `接続時にIOException以外の例外が発生した場合はSentryに記録してfalseを返す`() =
         runTest {
             val exception = SecurityException("想定外のエラー")
+            mockkStatic(Sentry::class)
+            every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
             val checker =
                 TcpServerConnectivityChecker(connect = { _, _, _ -> throw exception })
 

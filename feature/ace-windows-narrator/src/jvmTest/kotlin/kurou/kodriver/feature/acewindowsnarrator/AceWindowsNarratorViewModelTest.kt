@@ -32,6 +32,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -258,7 +259,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root,
                     "残り燃料警告",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -276,7 +277,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root,
                     "残り燃料警告",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -343,7 +344,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
                     "燃料は残り約3周",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -369,7 +370,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
                     "燃料は残り約3周",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -400,12 +401,12 @@ class AceWindowsNarratorViewModelTest {
     private fun stubRemainingFuelLapsTelemetryLog() {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
-                any(),
+                0L,
                 Simulator.AceWindows,
                 ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
-                any(),
-                any(),
-                any(),
+                "燃料は残り約3周",
+                NarrationOutcome.SPOKEN,
+                "{}",
             )
         } just Runs
     }
@@ -461,12 +462,12 @@ class AceWindowsNarratorViewModelTest {
         } returns MutableStateFlow(vehicleApproachThresholdMeters)
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
-                any(),
+                0L,
                 Simulator.AceWindows,
                 ReadoutItemKey.AceWindows.RemainingFuel.Root,
                 "残り燃料警告",
-                any(),
-                any(),
+                NarrationOutcome.SPOKEN,
+                "{}",
             )
         } just Runs
     }
@@ -609,7 +610,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root,
                     "タイヤ過熱警告",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -639,7 +640,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root,
                     "タイヤ過熱警告",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -797,7 +798,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.VehicleApproach.Root,
                     "車両接近",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -829,7 +830,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.VehicleApproach.Root,
                     "車両接近",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }
@@ -927,7 +928,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.MyBestLap.Root,
                     "自己ベストラップ更新",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
             } just Runs
@@ -951,7 +952,7 @@ class AceWindowsNarratorViewModelTest {
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.MyBestLap.Root,
                     "自己ベストラップ更新",
-                    any(),
+                    NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
             }

@@ -282,7 +282,7 @@ class AppScreenViewModelTest {
             viewModel.selectSimulator("unknown_simulator")
             advanceUntilIdle()
 
-            coVerify(exactly = 0) { simulatorRepository.saveSelectedSimulator(any()) }
+            coVerify(exactly = 0) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
             confirmVerified(simulatorRepository)
         }
 
