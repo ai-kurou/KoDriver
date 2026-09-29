@@ -71,14 +71,17 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutFlagDetailViewModel(
-            observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(repository),
-            observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
-            saveFlagEnabledState = SaveLmuWindowsFlagEnabledStateUseCase(repository),
-            saveRedFlagVoiceType = SaveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
-            observeSectorYellowFlagReadoutText =
-                ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
-            saveSectorYellowFlagReadoutText =
-                SaveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
+            settingsUseCases =
+                FlagSettingsUseCases(
+                    observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(repository),
+                    observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
+                    saveFlagEnabledState = SaveLmuWindowsFlagEnabledStateUseCase(repository),
+                    saveRedFlagVoiceType = SaveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
+                    observeSectorYellowFlagReadoutText =
+                        ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
+                    saveSectorYellowFlagReadoutText =
+                        SaveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
+                ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
             speakText = SpeakTextUseCase(ttsRepository),
             playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),

@@ -29,17 +29,14 @@ val lmuWindowsReadoutFlagDetailModule =
         viewModel {
             LmuWindowsReadoutFlagDetailViewModel(
                 get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
                 get(named(Simulator.LmuWindows.id)),
                 get(),
                 get(named(Simulator.LmuWindows.id)),
                 get(),
             )
         }
+
+        factory { FlagSettingsUseCases(get(), get(), get(), get(), get(), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
