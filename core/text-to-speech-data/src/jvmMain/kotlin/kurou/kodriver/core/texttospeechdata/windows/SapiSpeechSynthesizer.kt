@@ -38,7 +38,8 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
                     "-Command",
                     "Add-Type -AssemblyName System.Speech; " +
                         "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
-                        "if (-not ($s.GetInstalledVoices() | Where-Object { $_.VoiceInfo.Culture.Name -eq 'ja-JP' })) { exit 1 }",
+                        "if (-not ($s.GetInstalledVoices() | " +
+                        "Where-Object { $_.VoiceInfo.Culture.Name -eq 'ja-JP' })) { exit 1 }",
                 ).redirectErrorStream(true).start()
             try {
                 process.waitFor() == 0
