@@ -94,8 +94,11 @@ internal data class TyreDetachedUseCases(
     val observeTyreDetached: ObserveLmuWindowsTyreDetachedUseCase,
 )
 
-internal data class ReadoutListUseCases(
+internal data class SimulatorUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+)
+
+internal data class ReadoutListUseCases(
     val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     val observeReadoutOrder: ObserveReadoutOrderUseCase,
     val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
@@ -148,6 +151,7 @@ internal class LmuWindowsNarratorViewModel(
     vehicleApproachUseCases: VehicleApproachUseCases,
     vehicleDamageUseCases: VehicleDamageUseCases,
     tyreDetachedUseCases: TyreDetachedUseCases,
+    simulatorUseCases: SimulatorUseCases,
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
     tyreTemperatureUseCases: TyreTemperatureUseCases,
@@ -166,7 +170,7 @@ internal class LmuWindowsNarratorViewModel(
     private var lastAnnouncedPitTimingLap: Int = -1
 
     private val selectedSimulator =
-        readoutListUseCases
+        simulatorUseCases
             .observeSelectedSimulator()
             .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 

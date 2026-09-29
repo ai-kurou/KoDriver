@@ -35,7 +35,7 @@ import org.koin.dsl.module
  * GT7 PS5 アナウンス制御（gt7-ps5-narrator feature）の Koin モジュール。
  *
  * 提供: Gt7Ps5NarratorViewModel、Gt7Ps5NarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
- *   （MyBestLapUseCases / ReadoutListUseCases / RemainingFuelLapsUseCases / RemainingFuelUseCases /
+ *   （MyBestLapUseCases / SimulatorUseCases / ReadoutListUseCases / RemainingFuelLapsUseCases / RemainingFuelUseCases /
  *   TyreTemperatureUseCases）、それらが束ねる
  *   各ドメイン UseCase、および named(Simulator.Gt7Ps5.id) の音声再生系
  *   （PlaySpeechEventUseCase・TextToSpeechEngine）。
@@ -47,11 +47,12 @@ import org.koin.dsl.module
 val gt7Ps5NarratorModule: Module =
     module {
         // ViewModel（Gt7Ps5NarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { MyBestLapUseCases(get(), get()) }
-        factory { ReadoutListUseCases(get(), get(), get(), get()) }
+        factory { SimulatorUseCases(get()) }
+        factory { ReadoutListUseCases(get(), get(), get()) }
         factory { RemainingFuelLapsUseCases(get()) }
         factory { RemainingFuelUseCases(get()) }
         factory { TyreTemperatureUseCases(get(), get()) }

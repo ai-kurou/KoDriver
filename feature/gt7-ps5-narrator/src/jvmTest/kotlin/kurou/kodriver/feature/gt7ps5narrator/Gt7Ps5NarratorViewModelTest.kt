@@ -105,9 +105,10 @@ class Gt7Ps5NarratorViewModelTest {
                     observeGt7Ps5 = ObserveGt7Ps5UseCase(telemetryRepository),
                     observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
                 ),
+            simulatorUseCases =
+                SimulatorUseCases(ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository)),
             readoutListUseCases =
                 ReadoutListUseCases(
-                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
                     observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
                     observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
                     observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),

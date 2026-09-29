@@ -75,8 +75,11 @@ internal data class VehicleApproachUseCases(
     val thresholds: AceWindowsVehicleApproachThresholdsUseCases,
 )
 
-internal data class ReadoutListUseCases(
+internal data class SimulatorUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+)
+
+internal data class ReadoutListUseCases(
     val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     val observeReadoutOrder: ObserveReadoutOrderUseCase,
     val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
@@ -88,6 +91,7 @@ internal class AceWindowsNarratorViewModel(
     myBestLapUseCases: MyBestLapUseCases,
     remainingFuelUseCases: RemainingFuelUseCases,
     remainingFuelLapsUseCases: RemainingFuelLapsUseCases,
+    simulatorUseCases: SimulatorUseCases,
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
     tyreTemperatureUseCases: TyreTemperatureUseCases,
@@ -98,7 +102,7 @@ internal class AceWindowsNarratorViewModel(
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
     private val selectedSimulator =
-        readoutListUseCases
+        simulatorUseCases
             .observeSelectedSimulator()
             .stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
