@@ -22,14 +22,17 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
-@Suppress("LongParameterList")
+internal data class FlagSettingsUseCases(
+    val observeFlagEnabledStates: ObserveLmuWindowsFlagEnabledStatesUseCase,
+    val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
+    val observeSectorYellowFlagReadoutText: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase,
+    val saveFlagEnabledState: SaveLmuWindowsFlagEnabledStateUseCase,
+    val saveRedFlagVoiceType: SaveLmuWindowsRedFlagVoiceTypeUseCase,
+    val saveSectorYellowFlagReadoutText: SaveLmuWindowsSectorYellowFlagReadoutTextUseCase,
+)
+
 internal class LmuWindowsReadoutFlagDetailViewModel(
-    observeFlagEnabledStates: ObserveLmuWindowsFlagEnabledStatesUseCase,
-    observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
-    observeSectorYellowFlagReadoutText: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase,
-    private val saveFlagEnabledState: SaveLmuWindowsFlagEnabledStateUseCase,
-    private val saveRedFlagVoiceType: SaveLmuWindowsRedFlagVoiceTypeUseCase,
-    private val saveSectorYellowFlagReadoutText: SaveLmuWindowsSectorYellowFlagReadoutTextUseCase,
+    private val settingsUseCases: FlagSettingsUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
     private val speakText: SpeakTextUseCase,
     private val playStartSoundForKey: PlayStartSoundForKeyUseCase,
@@ -43,9 +46,9 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
 
     val uiState: StateFlow<LmuWindowsReadoutFlagDetailUiState> =
         combine(
-            observeFlagEnabledStates(),
-            observeRedFlagVoiceType(),
-            observeSectorYellowFlagReadoutText(),
+            settingsUseCases.observeFlagEnabledStates(),
+            settingsUseCases.observeRedFlagVoiceType(),
+            settingsUseCases.observeSectorYellowFlagReadoutText(),
             textToSpeechAvailable,
         ) { enabledStates, redFlagVoiceType, sectorYellowFlagText, isTextToSpeechAvailable ->
             LmuWindowsReadoutFlagDetailUiState(
@@ -60,11 +63,11 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         item: FlagReadoutItem,
         enabled: Boolean,
     ) {
-        viewModelScope.launch { saveFlagEnabledState(item.key, enabled) }
+        viewModelScope.launch { settingsUseCases.saveFlagEnabledState(item.key, enabled) }
     }
 
     fun onRedFlagEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch { saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, enabled) }
+        viewModelScope.launch { settingsUseCases.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, enabled) }
     }
 
     fun onPreviewClicked(item: FlagReadoutItem) {
@@ -72,7 +75,7 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
     }
 
     fun onRedFlagVoiceTypeChanged(type: RedFlagVoiceType) {
-        viewModelScope.launch { saveRedFlagVoiceType(type) }
+        viewModelScope.launch { settingsUseCases.saveRedFlagVoiceType(type) }
     }
 
     fun onRedFlagPreviewClicked(type: RedFlagVoiceType) {
@@ -85,7 +88,7 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
     }
 
     fun onSectorYellowFlagTextChanged(text: String) {
-        viewModelScope.launch { saveSectorYellowFlagReadoutText(text) }
+        viewModelScope.launch { settingsUseCases.saveSectorYellowFlagReadoutText(text) }
     }
 
     /**
