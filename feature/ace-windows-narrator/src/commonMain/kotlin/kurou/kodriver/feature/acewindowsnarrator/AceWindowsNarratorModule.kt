@@ -44,7 +44,7 @@ import org.koin.dsl.module
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
- *   ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
+ *   SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
@@ -54,13 +54,14 @@ import org.koin.dsl.module
 val aceWindowsNarratorModule: Module =
     module {
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { MyBestLapUseCases(get(), get()) }
         factory { RemainingFuelUseCases(get(), get()) }
         factory { RemainingFuelLapsUseCases(get(), get()) }
-        factory { ReadoutListUseCases(get(), get(), get(), get()) }
+        factory { SimulatorUseCases(get()) }
+        factory { ReadoutListUseCases(get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get()) }

@@ -433,9 +433,10 @@ class LmuWindowsNarratorViewModelTest {
                         ),
                     observeTyreDetached = ObserveLmuWindowsTyreDetachedUseCase(tyreDetachedRepository),
                 ),
+            simulatorUseCases =
+                SimulatorUseCases(ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository)),
             readoutListUseCases =
                 ReadoutListUseCases(
-                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
                     observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
                     observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
                     observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
