@@ -1,8 +1,10 @@
 package kurou.kodriver.feature.otherlist
 
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
+import kurou.kodriver.domain.repository.TextToSpeechRepository
 import org.koin.dsl.module
 
 /**
@@ -17,6 +19,7 @@ val fakeOtherListModule =
         single<StartupEnabledRepository> { FakeStartupEnabledRepository() }
         single<HapticFeedbackAvailabilityRepository> { FakeHapticFeedbackAvailabilityRepository() }
         single<AccessLocalNetworkPermissionRepository> { FakeAccessLocalNetworkPermissionRepository() }
+        single<TextToSpeechRepository> { FakeTextToSpeechRepository() }
     }
 
 class FakeStartupEnabledRepository : StartupEnabledRepository {
@@ -27,6 +30,20 @@ class FakeStartupEnabledRepository : StartupEnabledRepository {
     override suspend fun setEnabled(enabled: Boolean) {
         this.enabled = enabled
     }
+}
+
+class FakeTextToSpeechRepository : TextToSpeechRepository {
+    override suspend fun isAvailable(): Boolean = false
+
+    override suspend fun unavailableReason(): TextToSpeechUnavailableReason =
+        TextToSpeechUnavailableReason.WindowsSpeechUnavailable
+
+    override suspend fun speak(
+        text: String,
+        queue: Boolean,
+    ) = Unit
+
+    override suspend fun stop() = Unit
 }
 
 class FakeHapticFeedbackAvailabilityRepository : HapticFeedbackAvailabilityRepository {
