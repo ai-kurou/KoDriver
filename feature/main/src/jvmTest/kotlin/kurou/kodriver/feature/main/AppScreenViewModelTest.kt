@@ -116,21 +116,24 @@ class AppScreenViewModelTest {
         return AppScreenViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
             currentVersion = version,
-            observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorEnabledRepository),
-            observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
-            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-            observeEffectiveKeepScreenOn =
-                ObserveEffectiveKeepScreenOnUseCase(
-                    observeKeepScreenOnEnabled = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
-                    observeTelemetryReceiving =
-                        ObserveTelemetryReceivingUseCase(
-                            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-                            observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
-                            observeGt7Ps5 = ObserveGt7Ps5UseCase(gt7Ps5Repository),
-                            observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
+            settingsUseCases =
+                AppScreenSettingsUseCases(
+                    observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorEnabledRepository),
+                    observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
+                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+                    observeEffectiveKeepScreenOn =
+                        ObserveEffectiveKeepScreenOnUseCase(
+                            observeKeepScreenOnEnabled = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
+                            observeTelemetryReceiving =
+                                ObserveTelemetryReceivingUseCase(
+                                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+                                    observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
+                                    observeGt7Ps5 = ObserveGt7Ps5UseCase(gt7Ps5Repository),
+                                    observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
+                                ),
                         ),
+                    saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
                 ),
-            saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
             checkAccessLocalNetworkPermissionGranted =
                 CheckAccessLocalNetworkPermissionGrantedUseCase(accessLocalNetworkPermissionRepository),
         )
