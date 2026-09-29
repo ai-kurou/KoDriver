@@ -62,7 +62,8 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
 
     private fun createViewModel() =
         AceWindowsReadoutRemainingFuelLapsDetailViewModel(
-            remainingFuelLapsUseCases = RemainingFuelLapsUseCases(
+            remainingFuelLapsUseCases =
+                RemainingFuelLapsUseCases(
                 observeThreshold = ObserveAceWindowsRemainingFuelLapsThresholdUseCase(repository),
                 saveThreshold = SaveAceWindowsRemainingFuelLapsThresholdUseCase(repository),
                 observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),

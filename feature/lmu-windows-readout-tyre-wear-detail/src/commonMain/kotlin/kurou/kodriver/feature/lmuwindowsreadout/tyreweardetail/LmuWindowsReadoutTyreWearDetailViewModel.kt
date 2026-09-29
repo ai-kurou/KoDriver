@@ -53,7 +53,9 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
     }
 
     fun onThresholdReset() {
-        viewModelScope.launch { tyreWearUseCases.saveThresholdPercentage(LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT) }
+        viewModelScope.launch {
+            tyreWearUseCases.saveThresholdPercentage(LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT)
+        }
     }
 
     fun onEnabledChanged(enabled: Boolean) {
