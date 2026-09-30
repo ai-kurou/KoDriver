@@ -27,7 +27,7 @@ data class Gt7Ps5NarratorState(
 /**
  * GT7 の燃料消費量推定に使う追跡状態。
  *
- * 燃料残量の増加は給油として扱い、レース開始時燃料・現在ラップ・経過時間から
+ * 閾値を超える燃料残量の増加は給油として扱い、レース開始時燃料・現在ラップ・経過時間から
  * 残り周回数警告のタイミングを推定する。
  */
 data class Gt7Ps5FuelTrackingState(
@@ -220,7 +220,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             }
 
             else -> {
-                val refueled = (telemetry.gasLevel - state.currentGasLevel).coerceAtLeast(Gt7Ps5FuelUnit(0f))
+                val refueled = detectRefueled(telemetry.gasLevel - state.currentGasLevel, telemetry.gasCapacity)
                 val currentLapStartedAtMs =
                     if (telemetry.lapCount != state.currentLap) {
                         observedAtMs
@@ -238,6 +238,28 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                     observedAtMs = observedAtMs,
                 )
             }
+        }
+
+    /**
+     * 残量の変化 [delta] のうち、給油として消費量の推定に加算すべき量。給油でなければ 0 を返す。
+     *
+     * UDP パケットの `gasLevel` は生の Float であり微小な上振れ（ジッタ・torn read）を含みうるため、
+     * タンク容量に対して [REFUEL_DETECTION_MIN_RATIO] 未満の増加は給油とみなさない。閾値を持たないと
+     * ジッタが `totalRefueled` に累積して消費量が過大に見積もられ、残り周回数が実際より少なく読み上げられる。
+     * また給油とみなすたびに読み上げ履歴がリセットされるため、同じ周回数が繰り返し読み上げられる。
+     *
+     * タンク容量はICEで100前後・カートで5と車両により20倍の差があるため、絶対量ではなく容量に対する
+     * 割合で判定する。容量が 0 以下（EV・未取得）の場合は燃料量に基づく推定自体が成立しないため、
+     * 増加を給油とみなさない。
+     */
+    private fun detectRefueled(
+        delta: Gt7Ps5FuelUnit,
+        gasCapacity: Gt7Ps5FuelUnit,
+    ): Gt7Ps5FuelUnit =
+        if (gasCapacity > Gt7Ps5FuelUnit(0f) && delta.value >= gasCapacity.value * REFUEL_DETECTION_MIN_RATIO) {
+            delta
+        } else {
+            Gt7Ps5FuelUnit(0f)
         }
 
     private fun calculateRemainingFuelLaps(
@@ -290,6 +312,9 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         const val REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000
         const val CURRENT_LAP_CONSUMPTION_WEIGHT = 0.9f
         const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
+
+        /** これ未満の残量増加はジッタとみなし、給油として扱わない（タンク容量に対する割合 0.0〜1.0）。 */
+        const val REFUEL_DETECTION_MIN_RATIO = 0.005f
     }
 }
 
