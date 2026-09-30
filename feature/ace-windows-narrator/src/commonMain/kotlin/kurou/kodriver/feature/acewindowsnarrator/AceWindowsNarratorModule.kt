@@ -6,6 +6,7 @@ import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_MAX
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
@@ -130,12 +131,10 @@ private val aceWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.AceWindowsVehicleApproach, "files/vehicle_approach.wav")
         put(SpeechEvent.AceWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.AceWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
-        for (laps in 0..MAX_REMAINING_FUEL_LAPS) {
+        for (laps in 0..ACE_WINDOWS_REMAINING_FUEL_LAPS_MAX) {
             put(SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps), "files/remaining_fuel_laps_$laps.wav")
         }
     }
-
-private const val MAX_REMAINING_FUEL_LAPS = 5
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(

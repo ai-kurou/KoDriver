@@ -1,3 +1,5 @@
 package kurou.kodriver.domain.model
 
 const val ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT = 3
+const val ACE_WINDOWS_REMAINING_FUEL_LAPS_MIN = 1
+const val ACE_WINDOWS_REMAINING_FUEL_LAPS_MAX = 5
