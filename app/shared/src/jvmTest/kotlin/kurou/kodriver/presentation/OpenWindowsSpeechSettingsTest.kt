@@ -29,12 +29,39 @@ class OpenWindowsSpeechSettingsTest {
     }
 
     @Test
-    fun `プロセス起動でIOExceptionが発生しても例外を伝播しない`() {
-        openWindowsSpeechSettings(isWindows = true, startProcess = { throw IOException("failed") })
+    fun `プロセス起動でIOExceptionが発生しても例外を伝播せずSentryへ記録する`() {
+        val error = IOException("failed")
+        val captured = mutableListOf<Throwable>()
+
+        openWindowsSpeechSettings(
+            isWindows = true,
+            startProcess = { throw error },
+            captureException = { captured += it },
+        )
+
+        assertEquals(listOf<Throwable>(error), captured)
     }
 
     @Test
-    fun `プロセス起動でSecurityExceptionが発生しても例外を伝播しない`() {
-        openWindowsSpeechSettings(isWindows = true, startProcess = { throw SecurityException("denied") })
+    fun `プロセス起動でSecurityExceptionが発生しても例外を伝播せずSentryへ記録する`() {
+        val error = SecurityException("denied")
+        val captured = mutableListOf<Throwable>()
+
+        openWindowsSpeechSettings(
+            isWindows = true,
+            startProcess = { throw error },
+            captureException = { captured += it },
+        )
+
+        assertEquals(listOf<Throwable>(error), captured)
+    }
+
+    @Test
+    fun `Windows以外では例外を記録しない`() {
+        val captured = mutableListOf<Throwable>()
+
+        openWindowsSpeechSettings(isWindows = false, startProcess = {}, captureException = { captured += it })
+
+        assertEquals(emptyList(), captured)
     }
 }

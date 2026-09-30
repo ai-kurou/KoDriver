@@ -51,6 +51,8 @@ kotlin {
     sourceSets {
         jvmMain.dependencies {
             implementation(libs.compose.uiTooling)
+            implementation(project.dependencies.platform(libs.sentry.bom))
+            implementation(libs.sentry)
         }
         commonMain.dependencies {
             implementation(projects.feature.desktopSplash)
