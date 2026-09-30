@@ -165,9 +165,8 @@ internal class LmuWindowsNarratorViewModel(
 ) : ViewModel() {
     private var narratorState = LmuWindowsNarratorState()
 
-    // バーチャルエナジー・タイヤ摩耗のピットタイミング警告は同一ラップ内で1回だけ読み上げる。
-    // 別tickで各々が閾値を跨いで先着した場合も、後着の警告で二重読み上げしないようにラップ単位でロックする。
-    private var lastAnnouncedPitTimingLap: Int = -1
+    // ピットタイミング警告は同一ラップ内で予想残り周回数が最も低いものだけを読み上げる（別tickの後着もより緊急なら読み上げる）。
+    private val pitTimingLapGate = PitTimingLapGate()
 
     private val selectedSimulator =
         simulatorUseCases
@@ -679,14 +678,10 @@ internal class LmuWindowsNarratorViewModel(
                     )
                 narratorState = tyreWearDecision.state
                 val pitTimingEvents =
-                    if (telemetry.timing.currentLap == lastAnnouncedPitTimingLap) {
-                        emptyList()
-                    } else {
-                        selectLowerPitTimingEvent(virtualEnergyDecision.events, tyreWearDecision.events)
-                    }
-                if (pitTimingEvents.isNotEmpty()) {
-                    lastAnnouncedPitTimingLap = telemetry.timing.currentLap
-                }
+                    pitTimingLapGate.filter(
+                        currentLap = telemetry.timing.currentLap,
+                        events = selectLowerPitTimingEvent(virtualEnergyDecision.events, tyreWearDecision.events),
+                    )
                 eventProcessor.processPitTiming(
                     snapshot =
                         LmuWindowsPitTimingSnapshot(
