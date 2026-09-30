@@ -429,6 +429,47 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `閾値未満の増加が複数パケットに分かれても累積で閾値に達したら給油として扱う`() {
+        var state = Gt7Ps5NarratorState()
+        val results =
+            listOf(20f, 20.125f, 20.25f, 20.375f, 20.5f).map { gasLevel ->
+                state =
+                    useCase
+                        .determineRemainingFuelLaps(
+                            state = state,
+                            telemetry = telemetry(lapCount = 1, gasLevel = gasLevel, gasCapacity = 100f),
+                            settings = settings(),
+                            observedAtMs = 0L,
+                        ).state
+                state.fuelTrackingState
+            }
+
+        assertEquals(listOf(0f, 0f, 0f, 0f, 0.5f), results.map { it.totalRefueled.value })
+        assertEquals(true, results.last().hasRefueled)
+        assertEquals(Gt7Ps5FuelUnit(20.5f), results.last().refuelBaselineGasLevel)
+    }
+
+    @Test
+    fun `残量が減ったら給油判定の基準値を追従させる`() {
+        var state = Gt7Ps5NarratorState()
+        val results =
+            listOf(20f, 20.25f, 19.75f, 20f, 20.25f).map { gasLevel ->
+                state =
+                    useCase
+                        .determineRemainingFuelLaps(
+                            state = state,
+                            telemetry = telemetry(lapCount = 1, gasLevel = gasLevel, gasCapacity = 100f),
+                            settings = settings(),
+                            observedAtMs = 0L,
+                        ).state
+                state.fuelTrackingState
+            }
+
+        assertEquals(listOf(0f, 0f, 0f, 0f, 0.5f), results.map { it.totalRefueled.value })
+        assertEquals(Gt7Ps5FuelUnit(19.75f), results[2].refuelBaselineGasLevel)
+    }
+
+    @Test
     fun `タンク容量に対する閾値以上の残量増加は給油として扱う`() {
         val initialDecision =
             useCase.determineRemainingFuelLaps(

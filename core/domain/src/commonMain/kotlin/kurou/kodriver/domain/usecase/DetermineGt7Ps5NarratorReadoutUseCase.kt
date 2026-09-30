@@ -36,6 +36,7 @@ data class Gt7Ps5FuelTrackingState(
     val currentLap: Int = -1,
     val currentLapStartedAtMs: Long = 0L,
     val currentGasLevel: Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(0f),
+    val refuelBaselineGasLevel: Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(0f),
     val bestLapTimeMs: Int = -1,
     val totalRefueled: Gt7Ps5FuelUnit = Gt7Ps5FuelUnit(0f),
     val hasRefueled: Boolean = false,
@@ -196,6 +197,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                     currentLap = telemetry.lapCount,
                     currentLapStartedAtMs = observedAtMs,
                     currentGasLevel = telemetry.gasLevel,
+                    refuelBaselineGasLevel = telemetry.gasLevel,
                     bestLapTimeMs = telemetry.bestLapTimeMs,
                     totalRefueled = Gt7Ps5FuelUnit(0f),
                     hasRefueled = false,
@@ -211,6 +213,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                     currentLap = telemetry.lapCount,
                     currentLapStartedAtMs = observedAtMs,
                     currentGasLevel = telemetry.gasLevel,
+                    refuelBaselineGasLevel = telemetry.gasLevel,
                     bestLapTimeMs = telemetry.bestLapTimeMs,
                     totalRefueled = Gt7Ps5FuelUnit(0f),
                     hasRefueled = false,
@@ -220,7 +223,15 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             }
 
             else -> {
-                val refueled = detectRefueled(telemetry.gasLevel - state.currentGasLevel, telemetry.gasCapacity)
+                val refueled =
+                    detectRefueled(telemetry.gasLevel - state.refuelBaselineGasLevel, telemetry.gasCapacity)
+                // 閾値未満の増加は基準値を据え置き、複数パケットに分かれた給油を累積で検出できるようにする
+                val refuelBaselineGasLevel =
+                    if (refueled > Gt7Ps5FuelUnit(0f) || telemetry.gasLevel < state.refuelBaselineGasLevel) {
+                        telemetry.gasLevel
+                    } else {
+                        state.refuelBaselineGasLevel
+                    }
                 val currentLapStartedAtMs =
                     if (telemetry.lapCount != state.currentLap) {
                         observedAtMs
@@ -231,6 +242,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                     currentLap = telemetry.lapCount,
                     currentLapStartedAtMs = currentLapStartedAtMs,
                     currentGasLevel = telemetry.gasLevel,
+                    refuelBaselineGasLevel = refuelBaselineGasLevel,
                     bestLapTimeMs = telemetry.bestLapTimeMs,
                     totalRefueled = state.totalRefueled + refueled,
                     hasRefueled = refueled > Gt7Ps5FuelUnit(0f),
@@ -241,7 +253,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         }
 
     /**
-     * 残量の変化 [delta] のうち、給油として消費量の推定に加算すべき量。給油でなければ 0 を返す。
+     * 給油判定の基準値からの増加量 [delta] のうち、給油として消費量の推定に加算すべき量。給油でなければ 0 を返す。
      *
      * UDP パケットの `gasLevel` は生の Float であり微小な上振れ（ジッタ・torn read）を含みうるため、
      * タンク容量に対して [REFUEL_DETECTION_MIN_RATIO] 未満の増加は給油とみなさない。閾値を持たないと
