@@ -72,7 +72,9 @@ import org.koin.dsl.module
  *   および LmuWindowsFlagCustomTextSpeaker（フラッグの実際の読み上げ時に
  *   収録WAVとカスタム文言のOS標準TTSを切り替えるフック。WavNarratorEngine の customSpeak に渡す）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
- *   SoundPlayer（[platformSoundModule]）。
+ *   SoundPlayer（[platformSoundModule]）、unqualified の CheckTextToSpeechAvailableUseCase
+ *   （:feature:lmu-windows-readout-flag-detail が登録。TTSが実際に利用可能かどうかは
+ *   試聴用途と共有しても問題ないため named では区別しない）。
  * 音声系は GT7 と区別するため named(Simulator.LmuWindows.id) で登録している。
  */
 @OptIn(ExperimentalResourceApi::class)
@@ -168,6 +170,7 @@ val lmuWindowsNarratorModule: Module =
                 observeBlueFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeFullCourseYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeRedFlagReadoutText = get(named(Simulator.LmuWindows.id)),
+                checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )
         }
