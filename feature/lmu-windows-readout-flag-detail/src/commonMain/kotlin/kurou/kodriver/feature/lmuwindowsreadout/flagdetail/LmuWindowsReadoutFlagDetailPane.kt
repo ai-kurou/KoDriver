@@ -51,6 +51,8 @@ fun LmuWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
         onRedFlagPreviewClicked = viewModel::onRedFlagPreviewClicked,
         onFlagTextChanged = viewModel::onFlagTextChanged,
         onFlagTextPreviewClicked = viewModel::onFlagTextPreviewClicked,
+        onRedFlagTextChanged = viewModel::onRedFlagTextChanged,
+        onRedFlagTextPreviewClicked = viewModel::onRedFlagTextPreviewClicked,
         modifier = modifier,
     )
 }
@@ -66,6 +68,8 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     onRedFlagPreviewClicked: (RedFlagVoiceType) -> Unit,
     onFlagTextChanged: (FlagReadoutItem, String) -> Unit,
     onFlagTextPreviewClicked: (FlagReadoutItem, String) -> Unit,
+    onRedFlagTextChanged: (String) -> Unit,
+    onRedFlagTextPreviewClicked: (String, RedFlagVoiceType) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -78,99 +82,181 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
             text = stringResource(Res.string.flag_description),
         )
         FlagReadoutItem.entries.forEach { item ->
-            val chipLabel = stringResource(item.chipLabelRes)
-            val checked = uiState.enabledStates[item.key] ?: true
-            val flagText = uiState.flagText(item)
-            // 収録音声のチップとカスタム文言の入力欄の選択状態を排他にして、どちらが使われるかを明示するための状態。
-            // DetailPaneCardTextField は1文字入力するたびに onValueChangeFinished（= onFlagTextChanged）で
-            // 即座に確定するため、この値をそのまま選択状態の基準にできる。
-            var hasText by remember(item) { mutableStateOf(flagText.isNotEmpty()) }
-            LaunchedEffect(flagText) {
-                hasText = flagText.isNotEmpty()
-            }
-            val customTextSelected = hasText
-            DetailPaneCard(
-                title = stringResource(item.labelRes),
-                checked = checked,
+            FlagReadoutCard(
+                item = item,
+                checked = uiState.enabledStates[item.key] ?: true,
+                text = uiState.flagText(item),
+                isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
-                modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
-                bottomContent = {
-                    DetailPaneCardChips(
-                        chipLabels = listOf(chipLabel),
-                        selectedChipLabels = if (customTextSelected) emptySet() else setOf(chipLabel),
-                        chipEnabled = true,
-                        onChipClick = {
-                            // 収録音声のチップを選び直す操作なので、入力済みのカスタム文言はクリアする。
-                            if (customTextSelected) {
-                                hasText = false
-                                onFlagTextChanged(item, "")
-                            }
-                            onPreviewClicked(item)
-                        },
-                    )
-                    DetailPaneCardTextField(
-                        value = flagText,
-                        placeholder = chipLabel,
-                        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-                        onValueChangeFinished = { text ->
-                            hasText = text.isNotEmpty()
-                            onFlagTextChanged(item, text)
-                        },
-                        onPreviewClick = { text -> onFlagTextPreviewClicked(item, text) },
-                        enabled = uiState.isTextToSpeechAvailable,
-                        selected = customTextSelected,
-                        supportingText =
-                            when {
-                                !uiState.isTextToSpeechAvailable -> {
-                                    stringResource(Res.string.flag_custom_text_unavailable)
-                                }
-
-                                customTextSelected -> {
-                                    stringResource(Res.string.flag_custom_text_selected)
-                                }
-
-                                else -> {
-                                    stringResource(Res.string.flag_custom_text_supporting)
-                                }
-                            },
-                        previewContentDescription = stringResource(Res.string.flag_custom_text_preview),
-                        selectedContentDescription = stringResource(Res.string.flag_custom_text_selected_icon),
-                    )
-                },
+                onChipClick = { onPreviewClicked(item) },
+                onTextChanged = { text -> onFlagTextChanged(item, text) },
+                onTextPreviewClick = { text -> onFlagTextPreviewClicked(item, text) },
             )
         }
-        val redFlagLabel = stringResource(Res.string.flag_red)
-        val sessionStopLabel = stringResource(Res.string.flag_session_stop)
-        val redFlagChecked = uiState.enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag] ?: true
-        val selectedRedFlagLabel =
-            when (uiState.redFlagVoiceType) {
-                RedFlagVoiceType.RED_FLAG -> redFlagLabel
-                RedFlagVoiceType.SESSION_STOP -> sessionStopLabel
-            }
-        DetailPaneCard(
-            title = redFlagLabel,
-            checked = redFlagChecked,
+        RedFlagReadoutCard(
+            checked = uiState.enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag] ?: true,
+            voiceType = uiState.redFlagVoiceType,
+            text = uiState.redFlagText,
+            isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
             onCheckedChange = onRedFlagEnabledChanged,
-            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
-            bottomContent = {
-                DetailPaneCardChips(
-                    chipLabels = listOf(redFlagLabel, sessionStopLabel),
-                    selectedChipLabels = setOf(selectedRedFlagLabel),
-                    chipEnabled = true,
-                    onChipClick = { label ->
-                        val type =
-                            if (label == redFlagLabel) {
-                                RedFlagVoiceType.RED_FLAG
-                            } else {
-                                RedFlagVoiceType.SESSION_STOP
-                            }
-                        onRedFlagVoiceTypeChanged(type)
-                        onRedFlagPreviewClicked(type)
-                    },
-                )
-            },
+            onVoiceTypeChanged = onRedFlagVoiceTypeChanged,
+            onVoiceTypePreviewClicked = onRedFlagPreviewClicked,
+            onTextChanged = onRedFlagTextChanged,
+            onTextPreviewClick = { text -> onRedFlagTextPreviewClicked(text, uiState.redFlagVoiceType) },
         )
     }
+}
+
+/**
+ * 収録音声のチップとカスタム文言の入力欄を持つフラッグ項目のカード。
+ *
+ * 収録音声のチップとカスタム文言の選択状態は排他にして、どちらが使われるかを明示する。
+ * DetailPaneCardTextField は1文字入力するたびに onValueChangeFinished（= [onTextChanged]）で
+ * 即座に確定するため、入力の有無をそのまま選択状態の基準にできる。
+ */
+@Suppress("LongParameterList")
+@Composable
+private fun FlagReadoutCard(
+    item: FlagReadoutItem,
+    checked: Boolean,
+    text: String,
+    isTextToSpeechAvailable: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onChipClick: () -> Unit,
+    onTextChanged: (String) -> Unit,
+    onTextPreviewClick: (String) -> Unit,
+) {
+    val chipLabel = stringResource(item.chipLabelRes)
+    var hasText by remember(item) { mutableStateOf(text.isNotEmpty()) }
+    LaunchedEffect(text) {
+        hasText = text.isNotEmpty()
+    }
+    DetailPaneCard(
+        title = stringResource(item.labelRes),
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
+        bottomContent = {
+            DetailPaneCardChips(
+                chipLabels = listOf(chipLabel),
+                selectedChipLabels = if (hasText) emptySet() else setOf(chipLabel),
+                chipEnabled = true,
+                onChipClick = {
+                    // 収録音声のチップを選び直す操作なので、入力済みのカスタム文言はクリアする。
+                    if (hasText) {
+                        hasText = false
+                        onTextChanged("")
+                    }
+                    onChipClick()
+                },
+            )
+            FlagCustomTextField(
+                value = text,
+                placeholder = chipLabel,
+                selected = hasText,
+                isTextToSpeechAvailable = isTextToSpeechAvailable,
+                onValueChangeFinished = { newText ->
+                    hasText = newText.isNotEmpty()
+                    onTextChanged(newText)
+                },
+                onPreviewClick = onTextPreviewClick,
+            )
+        },
+    )
+}
+
+/** レッドフラッグのカード。音声種別（RedFlag / SessionStop）のチップと、それらで共有するカスタム文言の入力欄を持つ。 */
+@Suppress("LongParameterList")
+@Composable
+private fun RedFlagReadoutCard(
+    checked: Boolean,
+    voiceType: RedFlagVoiceType,
+    text: String,
+    isTextToSpeechAvailable: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onVoiceTypeChanged: (RedFlagVoiceType) -> Unit,
+    onVoiceTypePreviewClicked: (RedFlagVoiceType) -> Unit,
+    onTextChanged: (String) -> Unit,
+    onTextPreviewClick: (String) -> Unit,
+) {
+    val redFlagLabel = stringResource(Res.string.flag_red)
+    val sessionStopLabel = stringResource(Res.string.flag_session_stop)
+    val selectedLabel =
+        when (voiceType) {
+            RedFlagVoiceType.RED_FLAG -> redFlagLabel
+            RedFlagVoiceType.SESSION_STOP -> sessionStopLabel
+        }
+    var hasText by remember { mutableStateOf(text.isNotEmpty()) }
+    LaunchedEffect(text) {
+        hasText = text.isNotEmpty()
+    }
+    DetailPaneCard(
+        title = redFlagLabel,
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
+        bottomContent = {
+            DetailPaneCardChips(
+                chipLabels = listOf(redFlagLabel, sessionStopLabel),
+                selectedChipLabels = if (hasText) emptySet() else setOf(selectedLabel),
+                chipEnabled = true,
+                onChipClick = { label ->
+                    val type =
+                        if (label == redFlagLabel) {
+                            RedFlagVoiceType.RED_FLAG
+                        } else {
+                            RedFlagVoiceType.SESSION_STOP
+                        }
+                    // 収録音声のチップを選び直す操作なので、入力済みのカスタム文言はクリアする。
+                    if (hasText) {
+                        hasText = false
+                        onTextChanged("")
+                    }
+                    onVoiceTypeChanged(type)
+                    onVoiceTypePreviewClicked(type)
+                },
+            )
+            FlagCustomTextField(
+                value = text,
+                placeholder = selectedLabel,
+                selected = hasText,
+                isTextToSpeechAvailable = isTextToSpeechAvailable,
+                onValueChangeFinished = { newText ->
+                    hasText = newText.isNotEmpty()
+                    onTextChanged(newText)
+                },
+                onPreviewClick = onTextPreviewClick,
+            )
+        },
+    )
+}
+
+@Composable
+private fun FlagCustomTextField(
+    value: String,
+    placeholder: String,
+    selected: Boolean,
+    isTextToSpeechAvailable: Boolean,
+    onValueChangeFinished: (String) -> Unit,
+    onPreviewClick: (String) -> Unit,
+) {
+    DetailPaneCardTextField(
+        value = value,
+        placeholder = placeholder,
+        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+        onValueChangeFinished = onValueChangeFinished,
+        onPreviewClick = onPreviewClick,
+        enabled = isTextToSpeechAvailable,
+        selected = selected,
+        supportingText =
+            when {
+                !isTextToSpeechAvailable -> stringResource(Res.string.flag_custom_text_unavailable)
+                selected -> stringResource(Res.string.flag_custom_text_selected)
+                else -> stringResource(Res.string.flag_custom_text_supporting)
+            },
+        previewContentDescription = stringResource(Res.string.flag_custom_text_preview),
+        selectedContentDescription = stringResource(Res.string.flag_custom_text_selected_icon),
+    )
 }
 
 @Preview(showBackground = true)
@@ -196,6 +282,8 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
             onRedFlagPreviewClicked = {},
             onFlagTextChanged = { _, _ -> },
             onFlagTextPreviewClicked = { _, _ -> },
+            onRedFlagTextChanged = {},
+            onRedFlagTextPreviewClicked = { _, _ -> },
         )
     }
 }
