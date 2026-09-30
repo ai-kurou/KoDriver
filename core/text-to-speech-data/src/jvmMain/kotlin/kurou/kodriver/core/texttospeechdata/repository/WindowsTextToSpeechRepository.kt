@@ -21,11 +21,16 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
  */
 internal class WindowsTextToSpeechRepository(
     private val synthesizer: WindowsSpeechSynthesizer = SapiSpeechSynthesizer(),
+    private val isWindows: Boolean = System.getProperty("os.name").lowercase().startsWith("windows"),
 ) : TextToSpeechRepository {
     override suspend fun isAvailable(): Boolean = withContext(Dispatchers.IO) { synthesizer.isAvailable() }
 
-    // Windowsでは理由の切り分けを行わないため常にnull（判定対象外）を返す。
-    override suspend fun unavailableReason(): TextToSpeechUnavailableReason? = null
+    override suspend fun unavailableReason(): TextToSpeechUnavailableReason? =
+        if (!isWindows || isAvailable()) {
+            null
+        } else {
+            TextToSpeechUnavailableReason.WindowsSpeechUnavailable
+        }
 
     override suspend fun speak(
         text: String,

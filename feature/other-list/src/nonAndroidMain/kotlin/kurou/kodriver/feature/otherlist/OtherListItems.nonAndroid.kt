@@ -12,5 +12,6 @@ actual fun buildOtherListItems(): List<OtherListItemType> =
             it != OtherListItemType.HapticFeedback &&
             it != OtherListItemType.DebugState &&
             it != OtherListItemType.TtsEngineMissing &&
-            it != OtherListItemType.TtsLanguageDataMissing
+            it != OtherListItemType.TtsLanguageDataMissing &&
+            it != OtherListItemType.WindowsSpeechUnavailable
     }

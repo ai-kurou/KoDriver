@@ -80,6 +80,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_theme
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_engine_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_language_data_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
+import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
@@ -118,6 +119,7 @@ private fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
+        OtherListItemType.WindowsSpeechUnavailable,
         -> OtherListSection.ReadoutSettings
 
         OtherListItemType.OverlayVisible,
@@ -160,6 +162,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
+        OtherListItemType.WindowsSpeechUnavailable,
         -> {
             otherReadoutSettingsItemDisplayName(itemType)
         }
@@ -208,6 +211,7 @@ private fun otherReadoutSettingsItemDisplayName(itemType: OtherListItemType): St
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
         OtherListItemType.TtsEngineMissing -> stringResource(Res.string.item_tts_engine_missing)
         OtherListItemType.TtsLanguageDataMissing -> stringResource(Res.string.item_tts_language_data_missing)
+        OtherListItemType.WindowsSpeechUnavailable -> stringResource(Res.string.item_windows_speech_unavailable)
         else -> error("unexpected item type: $itemType")
     }
 
@@ -255,6 +259,7 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
 
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
+        OtherListItemType.WindowsSpeechUnavailable,
         -> Icons.Outlined.RecordVoiceOver
 
         OtherListItemType.OverlayVisible,
@@ -349,6 +354,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
+        OtherListItemType.WindowsSpeechUnavailable,
         -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
     }
 }
@@ -557,6 +563,7 @@ private fun OtherListItem(
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
+                OtherListItemType.WindowsSpeechUnavailable,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayTextSize,
                 OtherListItemType.OverlayBackgroundOpacity,
@@ -639,6 +646,10 @@ private fun handleOtherListItemClick(
 
         OtherListItemType.TtsLanguageDataMissing -> {
             openTtsSettings()
+        }
+
+        OtherListItemType.WindowsSpeechUnavailable -> {
+            onItemClick(item)
         }
 
         OtherListItemType.ServerIp,

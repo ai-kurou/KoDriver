@@ -4,6 +4,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -22,11 +23,24 @@ class WindowsTextToSpeechRepositoryTest {
         }
 
     @Test
-    fun `unavailableReasonは常にnullを返す`() =
+    fun `unavailableReasonは利用できる時はnullで利用できない時は案内理由を返す`() =
         runTest {
             assertNull(WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer()).unavailableReason())
+            assertEquals(
+                TextToSpeechUnavailableReason.WindowsSpeechUnavailable,
+                WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer(available = false), isWindows = true)
+                    .unavailableReason(),
+            )
+        }
+
+    @Test
+    fun `Windows以外ではWindows向けの利用不可理由を返さない`() =
+        runTest {
             assertNull(
-                WindowsTextToSpeechRepository(FakeWindowsSpeechSynthesizer(available = false)).unavailableReason(),
+                WindowsTextToSpeechRepository(
+                    FakeWindowsSpeechSynthesizer(available = false),
+                    isWindows = false,
+                ).unavailableReason(),
             )
         }
 

@@ -67,10 +67,10 @@ class OtherListPaneScreenshotTest {
     @Test
     fun `振動機能がない端末ではハプティックフィードバック項目が表示されない`() =
         composeScreenshotTest {
-            // Desktop向けのbuildOtherListItems()は元々HapticFeedbackを含まないため、
-            // 除外前の状態としてHapticFeedbackを含むAndroid相当の項目セットを明示的に組み立てる。
+            // Desktop向けのbuildOtherListItems()は元々HapticFeedbackとAndroid専用TTS案内を含まないため、
+            // AndroidのOS別フィルタ適用後の項目セットを起点にする。
             val itemsIncludingHapticFeedback =
-                OtherListItemType.entries.filterNot {
+                (OtherListItemType.entries - OtherListItemType.WindowsSpeechUnavailable).filterNot {
                     it == OtherListItemType.DebugState || it == OtherListItemType.Startup
                 }
             setContent {

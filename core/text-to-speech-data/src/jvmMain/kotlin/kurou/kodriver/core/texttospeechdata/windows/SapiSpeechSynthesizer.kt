@@ -1,5 +1,7 @@
 package kurou.kodriver.core.texttospeechdata.windows
 
+import java.util.concurrent.TimeUnit
+
 /**
  * Windows標準の音声合成（SAPI）をPowerShellの`System.Speech.Synthesis.SpeechSynthesizer`経由で
  * 呼び出す [WindowsSpeechSynthesizer] の実装。
@@ -27,7 +29,36 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     private var process: Process? = null
     private var requestToken = 0L
 
-    override fun isAvailable(): Boolean = IS_WINDOWS
+    override fun isAvailable(): Boolean {
+        if (!IS_WINDOWS) return false
+        return try {
+            val process =
+                ProcessBuilder(
+                    POWERSHELL,
+                    "-NoProfile",
+                    "-NonInteractive",
+                    "-Command",
+                    "Add-Type -AssemblyName System.Speech; " +
+                        "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
+                        "\$voices = \$s.GetInstalledVoices(); " +
+                        "if (-not (\$voices | Where-Object { " +
+                        "\$_.Enabled -and \$_.VoiceInfo.Culture.Name -eq 'ja-JP' })) { exit 1 }",
+                ).redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                    .start()
+            try {
+                if (!process.waitFor(5, TimeUnit.SECONDS)) {
+                    process.destroyForcibly()
+                    return false
+                }
+                process.exitValue() == 0
+            } finally {
+                process.destroy()
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
 
     override fun speak(
         text: String,
@@ -82,7 +113,12 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     private fun buildScript(text: String): String {
         val escaped = text.replace("'", "''")
         return "Add-Type -AssemblyName System.Speech; " +
-            "(New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('$escaped')"
+            "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
+            "\$s.SelectVoiceByHints(" +
+            "[System.Speech.Synthesis.VoiceGender]::NotSet, " +
+            "[System.Speech.Synthesis.VoiceAge]::NotSet, 0, " +
+            "[System.Globalization.CultureInfo]::GetCultureInfo('ja-JP')); " +
+            "\$s.Speak('$escaped')"
     }
 
     private companion object {

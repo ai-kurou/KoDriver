@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
@@ -856,6 +857,41 @@ class OtherListViewModelTest {
             viewModel.checkTextToSpeechAvailability()
 
             val items = viewModel.uiState.first().items
+            assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
+            assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
+            assertFalse(items.contains(OtherListItemType.WindowsSpeechUnavailable))
+            coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                overlayVisibleRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+                textToSpeechRepository,
+            )
+        }
+
+    @Test
+    fun `checkTextToSpeechAvailabilityでWindows音声が利用できない場合はWindows向け案内を表示する`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            coEvery { textToSpeechRepository.unavailableReason() } returns
+                TextToSpeechUnavailableReason.WindowsSpeechUnavailable
+            val viewModel = createViewModel()
+
+            viewModel.checkTextToSpeechAvailability()
+
+            val items = viewModel.uiState.first().items
+            assertTrue(items.contains(OtherListItemType.WindowsSpeechUnavailable))
             assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
             assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
             coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }

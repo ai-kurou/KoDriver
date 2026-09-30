@@ -223,6 +223,9 @@ class AppTest {
         // 「テレメトリ受信中は画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
         clickItem("テーマ")
         clickItem("キャンセル")
+        scrollToItem("Windowsの日本語音声を設定")
+        clickItem("Windowsの日本語音声を設定")
+        scrollToItem("PC起動時に自動起動")
         clickItem("PC起動時に自動起動")
         scrollToItem("フィードバックを送信")
         clickItem("フィードバックを送信")
