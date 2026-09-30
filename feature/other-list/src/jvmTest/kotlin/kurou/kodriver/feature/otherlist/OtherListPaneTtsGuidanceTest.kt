@@ -6,11 +6,22 @@ import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class OtherListPaneTtsGuidanceTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `Windows案内のテストデータはAndroid向け案内を同時に含めない`() {
+        val windowsItems = listOf(OtherListItemType.WindowsSpeechUnavailable)
+
+        assertTrue(windowsItems.contains(OtherListItemType.WindowsSpeechUnavailable))
+        assertFalse(windowsItems.contains(OtherListItemType.TtsEngineMissing))
+        assertFalse(windowsItems.contains(OtherListItemType.TtsLanguageDataMissing))
+    }
 
     @Test
     fun `音声合成アプリをインストール項目をクリックすると項目クリックコールバックを呼ぶ`() {
