@@ -29,7 +29,7 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
         }
 
     @Test
-    fun `イエローフラッグのカスタム文言あり`() =
+    fun `カスタム文言あり`() =
         composeScreenshotTest {
             captureLmuWindowsReadoutFlagDetailPane(
                 enabledStates =
@@ -39,27 +39,15 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                         ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
                         ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
                     ),
-                flagTexts = mapOf(FlagReadoutItem.SectorYellowFlag to "イエロー、前方注意"),
-                isTextToSpeechAvailable = true,
-            )
-        }
-
-    @Test
-    fun `ブルーフラッグとフルコースイエローのカスタム文言あり`() =
-        composeScreenshotTest {
-            captureLmuWindowsReadoutFlagDetailPane(
-                enabledStates =
-                    mapOf(
-                        ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                        ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
-                    ),
+                // カスタム文言の入力欄を持つ全項目に文言を入力した状態にする。
                 flagTexts =
-                    mapOf(
-                        FlagReadoutItem.BlueFlag to "ブルー、後続に譲ってください",
-                        FlagReadoutItem.FullCourseYellow to "フルコースイエロー、減速",
-                    ),
+                    FlagReadoutItem.entries.associateWith { item ->
+                        when (item) {
+                            FlagReadoutItem.BlueFlag -> "ブルー、後続に譲ってください"
+                            FlagReadoutItem.SectorYellowFlag -> "イエロー、前方注意"
+                            FlagReadoutItem.FullCourseYellow -> "フルコースイエロー、減速"
+                        }
+                    },
                 isTextToSpeechAvailable = true,
             )
         }
