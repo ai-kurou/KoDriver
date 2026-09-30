@@ -369,8 +369,8 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_NOT_SUPPORTED
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
-            assertFalse(repository.isAvailable())
             assertEquals(TextToSpeechUnavailableReason.LanguageDataMissing, repository.unavailableReason())
+            assertFalse(repository.isAvailable())
             repository.speak("ベストラップ", queue = false)
 
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
@@ -383,8 +383,8 @@ class AndroidTextToSpeechRepositoryTest {
         runTest {
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.ERROR))
 
-            assertFalse(repository.isAvailable())
             assertEquals(TextToSpeechUnavailableReason.EngineMissing, repository.unavailableReason())
+            assertFalse(repository.isAvailable())
 
             verify(exactly = 1) { textToSpeech.shutdown() }
             confirmVerified(textToSpeech)
@@ -397,8 +397,8 @@ class AndroidTextToSpeechRepositoryTest {
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.ERROR
             val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
 
-            assertFalse(repository.isAvailable())
             assertEquals(TextToSpeechUnavailableReason.EngineMissing, repository.unavailableReason())
+            assertFalse(repository.isAvailable())
 
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
             verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
@@ -434,6 +434,42 @@ class AndroidTextToSpeechRepositoryTest {
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
             verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
             verify(exactly = 1) { textToSpeech.stop() }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `利用不可だった後にunavailableReasonを呼ぶと再初期化して利用可能になればnullを返す`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returnsMany
+                listOf(TextToSpeech.LANG_NOT_SUPPORTED, TextToSpeech.LANG_AVAILABLE)
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
+
+            assertEquals(TextToSpeechUnavailableReason.LanguageDataMissing, repository.unavailableReason())
+            assertFalse(repository.isAvailable())
+            assertNull(repository.unavailableReason())
+            assertTrue(repository.isAvailable())
+
+            assertEquals(2, factoryCallCount)
+            verify(exactly = 2) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.shutdown() }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `利用不可の間はisAvailableとspeakでは再初期化しない`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_NOT_SUPPORTED
+            val repository = AndroidTextToSpeechRepository(factory(TextToSpeech.SUCCESS))
+
+            assertFalse(repository.isAvailable())
+            assertFalse(repository.isAvailable())
+            repository.speak("ベストラップ", queue = false)
+
+            assertEquals(1, factoryCallCount)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.shutdown() }
             confirmVerified(textToSpeech)
         }
 }

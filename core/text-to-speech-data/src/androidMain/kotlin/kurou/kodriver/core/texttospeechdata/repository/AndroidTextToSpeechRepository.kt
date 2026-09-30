@@ -52,11 +52,14 @@ internal class AndroidTextToSpeechRepository(
     override suspend fun isAvailable(): Boolean = ensureInitialized() != null
 
     /**
-     * 利用できない理由を返す。[ensureInitialized] が設定する [unavailableReason] をそのまま返すため、
+     * 利用できない理由を返す。[ensureInitialized] が設定する [unavailableReason] を返すため、
      * 未初期化なら先に初期化を待ち合わせる。
+     *
+     * 前回の初期化が失敗している場合は、ユーザーがエンジンや日本語データを導入した可能性があるため
+     * 再初期化を試みる。読み上げ（[speak]）のたびにエンジンを生成し直さないよう、再試行はここでのみ行う。
      */
     override suspend fun unavailableReason(): TextToSpeechUnavailableReason? {
-        ensureInitialized()
+        ensureInitialized(retryIfUnavailable = true)
         return unavailableReason
     }
 
@@ -113,7 +116,8 @@ internal class AndroidTextToSpeechRepository(
 
     /**
      * 初回呼び出し時のみ [TextToSpeech] を生成し、初期化完了を待つ。
-     * 利用できない場合は `null` を返し、[unavailableReason] にその理由を記録した上で以降は再初期化しない。
+     * 利用できない場合は `null` を返し、[unavailableReason] にその理由を記録する。以降の [speak] / [isAvailable] では再初期化せず、
+     * [unavailableReason] の呼び出し時のみ再初期化する。
      *
      * 理由の切り分けは、[TextToSpeech.OnInitListener] の結果と [TextToSpeech.setLanguage] の結果の
      * どちらで失敗したかで行う。エンジンサービス自体が端末に存在しない・バインドに失敗した場合は
@@ -121,10 +125,11 @@ internal class AndroidTextToSpeechRepository(
      * 初期化自体は成功したが言語データ（日本語）が無い場合は [TextToSpeechUnavailableReason.LanguageDataMissing] とする。
      * 発話完了通知の登録失敗はエンジン自体の異常とみなし [TextToSpeechUnavailableReason.EngineMissing] 扱いにする。
      */
-    private suspend fun ensureInitialized(): TextToSpeech? =
+    private suspend fun ensureInitialized(retryIfUnavailable: Boolean = false): TextToSpeech? =
         mutex.withLock {
-            if (initialized) return@withLock textToSpeech
+            if (initialized && !(retryIfUnavailable && textToSpeech == null)) return@withLock textToSpeech
             initialized = true
+            unavailableReason = null
             val initStatus = CompletableDeferred<Int>()
             val engine = textToSpeechFactory { status -> initStatus.complete(status) }
             if (initStatus.await() != TextToSpeech.SUCCESS) {
