@@ -6,6 +6,7 @@ import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MAX
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
@@ -223,7 +224,7 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
         put(SpeechEvent.BrakeOverheat, "files/brake_overheat.wav")
-        for (laps in 0..MAX_PIT_TIMING_LAPS) {
+        for (laps in 0..LMU_WINDOWS_PIT_TIMING_LAPS_MAX) {
             put(SpeechEvent.PitTimingWarning(laps), "files/pit_timing_laps_$laps.wav")
         }
     }
@@ -233,5 +234,3 @@ private val lmuWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
         ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
         ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
     )
-
-private const val MAX_PIT_TIMING_LAPS = 5

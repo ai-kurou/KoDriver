@@ -20,6 +20,8 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_MAX
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_MIN
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.Res
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_description
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_enabled
@@ -30,8 +32,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
-private const val MINIMUM_REMAINING_FUEL_LAPS = 1f
-private const val MAXIMUM_REMAINING_FUEL_LAPS = 5f
+private const val MINIMUM_REMAINING_FUEL_LAPS = GT7_PS5_REMAINING_FUEL_LAPS_MIN.toFloat()
+private const val MAXIMUM_REMAINING_FUEL_LAPS = GT7_PS5_REMAINING_FUEL_LAPS_MAX.toFloat()
 
 /**
  * Gt7Ps5ReadoutRemainingFuelLapsDetail の画面を表示する Composable。

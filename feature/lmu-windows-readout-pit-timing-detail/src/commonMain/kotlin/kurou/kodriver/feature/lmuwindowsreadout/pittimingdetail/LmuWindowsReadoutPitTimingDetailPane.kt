@@ -26,6 +26,8 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MAX
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MIN
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.Res
@@ -44,8 +46,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
-private const val MINIMUM_PIT_TIMING_LAPS = 1f
-private const val MAXIMUM_PIT_TIMING_LAPS = 5f
+private const val MINIMUM_PIT_TIMING_LAPS = LMU_WINDOWS_PIT_TIMING_LAPS_MIN.toFloat()
+private const val MAXIMUM_PIT_TIMING_LAPS = LMU_WINDOWS_PIT_TIMING_LAPS_MAX.toFloat()
 
 /**
  * LmuWindowsReadoutPitTimingDetail の画面を表示する Composable。

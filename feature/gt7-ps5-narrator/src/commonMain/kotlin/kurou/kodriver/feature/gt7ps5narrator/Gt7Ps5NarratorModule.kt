@@ -6,6 +6,7 @@ import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_MAX
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
@@ -102,7 +103,7 @@ private val gt7Ps5EventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.Gt7Ps5MyBestLapCasual, "files/my_best_lap_casual.wav")
         put(SpeechEvent.Gt7Ps5RemainingFuelWarning, "files/remaining_fuel_caution.wav")
         put(SpeechEvent.Gt7Ps5TyreOverheat, "files/tyre_overheat.wav")
-        for (laps in 0..MAX_REMAINING_FUEL_LAPS) {
+        for (laps in 0..GT7_PS5_REMAINING_FUEL_LAPS_MAX) {
             put(SpeechEvent.RemainingFuelLapsWarning(laps), "files/remaining_fuel_laps_$laps.wav")
         }
     }
@@ -112,5 +113,3 @@ private val gt7Ps5StartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
         ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
         ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
     )
-
-private const val MAX_REMAINING_FUEL_LAPS = 5
