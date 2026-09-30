@@ -86,31 +86,7 @@ class OtherListViewModel(
                 hapticFeedbackEnabled = hapticFeedbackEnabled,
             )
         }.combine(textToSpeechUnavailableReason) { state, ttsUnavailableReason ->
-            state.copy(
-                items =
-                    state.items.filterNot {
-                        it == OtherListItemType.WindowsSpeechUnavailable ||
-                            it == OtherListItemType.TtsEngineMissing ||
-                            it == OtherListItemType.TtsLanguageDataMissing
-                    } +
-                        when (ttsUnavailableReason) {
-                            TextToSpeechUnavailableReason.EngineMissing -> {
-                                listOf(OtherListItemType.TtsEngineMissing)
-                            }
-
-                            TextToSpeechUnavailableReason.LanguageDataMissing -> {
-                                listOf(OtherListItemType.TtsLanguageDataMissing)
-                            }
-
-                            TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> {
-                                listOf(OtherListItemType.WindowsSpeechUnavailable)
-                            }
-
-                            null -> {
-                                emptyList()
-                            }
-                        },
-            )
+            state.copy(items = state.items.withTtsGuidance(ttsUnavailableReason))
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun checkUpdate() {
@@ -195,4 +171,25 @@ class OtherListViewModel(
     fun onHapticFeedbackEnabledChange(enabled: Boolean) {
         viewModelScope.launch { settingsUseCases.saveHapticFeedbackEnabled(enabled) }
     }
+}
+
+/**
+ * TTS案内項目を [reason] に対応する1つだけに差し替える。
+ * 追加した項目がセクション内の並びを崩さないよう、enumの宣言順に並べ直す。
+ */
+private fun List<OtherListItemType>.withTtsGuidance(reason: TextToSpeechUnavailableReason?): List<OtherListItemType> {
+    val guidance =
+        when (reason) {
+            TextToSpeechUnavailableReason.EngineMissing -> OtherListItemType.TtsEngineMissing
+            TextToSpeechUnavailableReason.LanguageDataMissing -> OtherListItemType.TtsLanguageDataMissing
+            TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> OtherListItemType.WindowsSpeechUnavailable
+            null -> null
+        }
+    return (
+        filterNot {
+            it == OtherListItemType.WindowsSpeechUnavailable ||
+                it == OtherListItemType.TtsEngineMissing ||
+                it == OtherListItemType.TtsLanguageDataMissing
+        } + listOfNotNull(guidance)
+    ).sortedBy { it.ordinal }
 }

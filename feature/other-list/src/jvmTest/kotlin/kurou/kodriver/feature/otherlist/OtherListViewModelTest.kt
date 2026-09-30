@@ -892,6 +892,7 @@ class OtherListViewModelTest {
 
             val items = viewModel.uiState.first().items
             assertTrue(items.contains(OtherListItemType.WindowsSpeechUnavailable))
+            assertEquals(items.sortedBy { it.ordinal }, items)
             assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
             assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
             coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
