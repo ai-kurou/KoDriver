@@ -14,12 +14,14 @@ import org.koin.dsl.module
  * AccessLocalNetworkPermissionRepository を常に許可済みとするFake実装に差し替え、
  * テスト実行環境（実機・エミュレータ）のハードウェア・権限状態にテスト結果が左右されないようにする。
  */
+val fakeTextToSpeechRepository = FakeTextToSpeechRepository()
+
 val fakeOtherListModule =
     module {
         single<StartupEnabledRepository> { FakeStartupEnabledRepository() }
         single<HapticFeedbackAvailabilityRepository> { FakeHapticFeedbackAvailabilityRepository() }
         single<AccessLocalNetworkPermissionRepository> { FakeAccessLocalNetworkPermissionRepository() }
-        single<TextToSpeechRepository> { FakeTextToSpeechRepository() }
+        single<TextToSpeechRepository> { fakeTextToSpeechRepository }
     }
 
 class FakeStartupEnabledRepository : StartupEnabledRepository {
@@ -33,10 +35,11 @@ class FakeStartupEnabledRepository : StartupEnabledRepository {
 }
 
 class FakeTextToSpeechRepository : TextToSpeechRepository {
+    var unavailableReason: TextToSpeechUnavailableReason = TextToSpeechUnavailableReason.WindowsSpeechUnavailable
+
     override suspend fun isAvailable(): Boolean = false
 
-    override suspend fun unavailableReason(): TextToSpeechUnavailableReason =
-        TextToSpeechUnavailableReason.WindowsSpeechUnavailable
+    override suspend fun unavailableReason(): TextToSpeechUnavailableReason = unavailableReason
 
     override suspend fun speak(
         text: String,
