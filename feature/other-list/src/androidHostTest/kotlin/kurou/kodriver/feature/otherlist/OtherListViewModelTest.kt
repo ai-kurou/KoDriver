@@ -45,6 +45,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -225,6 +226,7 @@ class OtherListViewModelTest {
 
             val items = viewModel.uiState.first().items
             assertTrue(items.contains(OtherListItemType.TtsEngineMissing))
+            assertEquals(items.sortedBy { it.ordinal }, items)
             assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
             coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
