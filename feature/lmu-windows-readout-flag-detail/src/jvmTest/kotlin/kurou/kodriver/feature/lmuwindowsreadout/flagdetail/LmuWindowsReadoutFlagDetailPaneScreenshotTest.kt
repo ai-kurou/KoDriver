@@ -46,6 +46,7 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                             FlagReadoutItem.BlueFlag -> "ブルー、後続に譲ってください"
                             FlagReadoutItem.SectorYellowFlag -> "イエロー、前方注意"
                             FlagReadoutItem.FullCourseYellow -> "フルコースイエロー、減速"
+                            FlagReadoutItem.RedFlag -> "レッドフラッグ、走行を中止してください"
                         }
                     },
                 isTextToSpeechAvailable = true,
@@ -70,7 +71,6 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                                 ),
                             onFlagEnabledChanged = { _, _ -> },
                             onPreviewClicked = {},
-                            onRedFlagEnabledChanged = {},
                             onRedFlagVoiceTypeChanged = {},
                             onRedFlagPreviewClicked = {},
                             onFlagTextChanged = { _, _ -> },
