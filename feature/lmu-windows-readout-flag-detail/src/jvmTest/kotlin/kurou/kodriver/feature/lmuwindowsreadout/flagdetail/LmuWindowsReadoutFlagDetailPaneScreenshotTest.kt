@@ -39,14 +39,34 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                         ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
                         ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
                     ),
-                sectorYellowFlagText = "イエロー、前方注意",
+                flagTexts = mapOf(FlagReadoutItem.SectorYellowFlag to "イエロー、前方注意"),
+                isTextToSpeechAvailable = true,
+            )
+        }
+
+    @Test
+    fun `ブルーフラッグとフルコースイエローのカスタム文言あり`() =
+        composeScreenshotTest {
+            captureLmuWindowsReadoutFlagDetailPane(
+                enabledStates =
+                    mapOf(
+                        ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
+                        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
+                        ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                    ),
+                flagTexts =
+                    mapOf(
+                        FlagReadoutItem.BlueFlag to "ブルー、後続に譲ってください",
+                        FlagReadoutItem.FullCourseYellow to "フルコースイエロー、減速",
+                    ),
                 isTextToSpeechAvailable = true,
             )
         }
 
     private fun DesktopComposeUiTest.captureLmuWindowsReadoutFlagDetailPane(
         enabledStates: Map<ReadoutItemKey, Boolean>,
-        sectorYellowFlagText: String = "",
+        flagTexts: Map<FlagReadoutItem, String> = emptyMap(),
         isTextToSpeechAvailable: Boolean = false,
     ) {
         setContent {
@@ -57,7 +77,7 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                             uiState =
                                 LmuWindowsReadoutFlagDetailUiState(
                                     enabledStates = enabledStates,
-                                    sectorYellowFlagText = sectorYellowFlagText,
+                                    flagTexts = flagTexts,
                                     isTextToSpeechAvailable = isTextToSpeechAvailable,
                                 ),
                             onFlagEnabledChanged = { _, _ -> },
@@ -65,8 +85,8 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                             onRedFlagEnabledChanged = {},
                             onRedFlagVoiceTypeChanged = {},
                             onRedFlagPreviewClicked = {},
-                            onSectorYellowFlagTextChanged = {},
-                            onSectorYellowFlagTextPreviewClicked = {},
+                            onFlagTextChanged = { _, _ -> },
+                            onFlagTextPreviewClicked = { _, _ -> },
                         )
                     }
                 }

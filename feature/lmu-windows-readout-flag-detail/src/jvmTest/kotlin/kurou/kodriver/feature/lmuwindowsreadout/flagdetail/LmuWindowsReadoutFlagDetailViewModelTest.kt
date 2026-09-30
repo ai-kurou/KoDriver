@@ -29,12 +29,16 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -77,10 +81,20 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                     observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
                     saveFlagEnabledState = SaveLmuWindowsFlagEnabledStateUseCase(repository),
                     saveRedFlagVoiceType = SaveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
-                    observeSectorYellowFlagReadoutText =
-                        ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
-                    saveSectorYellowFlagReadoutText =
-                        SaveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
+                    readoutTexts =
+                        FlagReadoutTextUseCases(
+                            observeSectorYellowFlag =
+                                ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase(
+                                    textRepository,
+                                ),
+                            observeBlueFlag = ObserveLmuWindowsBlueFlagReadoutTextUseCase(textRepository),
+                            observeFullCourseYellow =
+                                ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(textRepository),
+                            saveSectorYellowFlag = SaveLmuWindowsSectorYellowFlagReadoutTextUseCase(textRepository),
+                            saveBlueFlag = SaveLmuWindowsBlueFlagReadoutTextUseCase(textRepository),
+                            saveFullCourseYellow =
+                                SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(textRepository),
+                        ),
                 ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
             speakText = SpeakTextUseCase(ttsRepository),
@@ -88,12 +102,28 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(ttsRepository),
         )
 
+    private fun stubReadoutTexts(
+        sectorYellow: String = "",
+        blue: String = "",
+        fullCourseYellow: String = "",
+    ) {
+        every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow(sectorYellow)
+        every { textRepository.observeBlueFlagText() } returns MutableStateFlow(blue)
+        every { textRepository.observeFullCourseYellowFlagText() } returns MutableStateFlow(fullCourseYellow)
+    }
+
+    private fun verifyReadoutTextsObserved() {
+        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        verify(exactly = 1) { textRepository.observeBlueFlagText() }
+        verify(exactly = 1) { textRepository.observeFullCourseYellowFlagText() }
+    }
+
     @Test
     fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+            stubReadoutTexts()
             coEvery { ttsRepository.isAvailable() } returns true
             val viewModel = createViewModel()
 
@@ -106,7 +136,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             assertEquals(RedFlagVoiceType.SESSION_STOP, state.redFlagVoiceType)
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
@@ -120,7 +150,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                 statesFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.BlueFlag to false) }
             }
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+            stubReadoutTexts()
             coEvery { ttsRepository.isAvailable() } returns true
             val viewModel = createViewModel()
 
@@ -130,7 +160,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false) }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
@@ -144,7 +174,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                 statesFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.RedFlag to false) }
             }
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+            stubReadoutTexts()
             coEvery { ttsRepository.isAvailable() } returns true
             val viewModel = createViewModel()
 
@@ -154,7 +184,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
@@ -165,7 +195,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             val voiceTypeFlow = MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
             every { redFlagRepository.observeVoiceType() } returns voiceTypeFlow
-            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+            stubReadoutTexts()
             coEvery { ttsRepository.isAvailable() } returns true
             coEvery { redFlagRepository.saveVoiceType(RedFlagVoiceType.RED_FLAG) } answers {
                 voiceTypeFlow.update { RedFlagVoiceType.RED_FLAG }
@@ -178,7 +208,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coVerify(exactly = 1) { redFlagRepository.saveVoiceType(RedFlagVoiceType.RED_FLAG) }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
@@ -187,7 +217,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     fun `onPreviewClicked に BlueFlag を渡すと BlueFlag イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-        every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+        stubReadoutTexts()
         coEvery { ttsRepository.isAvailable() } returns true
         every { ttsEngine.speak(SpeechEvent.BlueFlag, false) } returns Unit
         val viewModel = createViewModel()
@@ -197,7 +227,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BlueFlag, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        verifyReadoutTextsObserved()
         coVerify(exactly = 1) { ttsRepository.isAvailable() }
         confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
@@ -206,7 +236,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     fun `onPreviewClicked に SectorYellowFlag を渡すと YellowFlag イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-        every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+        stubReadoutTexts()
         coEvery { ttsRepository.isAvailable() } returns true
         every { ttsEngine.speak(SpeechEvent.YellowFlag, false) } returns Unit
         val viewModel = createViewModel()
@@ -216,7 +246,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.YellowFlag, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        verifyReadoutTextsObserved()
         coVerify(exactly = 1) { ttsRepository.isAvailable() }
         confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
@@ -225,7 +255,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     fun `onPreviewClicked に FullCourseYellow を渡すと FullCourseYellow イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-        every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+        stubReadoutTexts()
         coEvery { ttsRepository.isAvailable() } returns true
         every { ttsEngine.speak(SpeechEvent.FullCourseYellow, false) } returns Unit
         val viewModel = createViewModel()
@@ -235,7 +265,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.FullCourseYellow, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        verifyReadoutTextsObserved()
         coVerify(exactly = 1) { ttsRepository.isAvailable() }
         confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
@@ -244,7 +274,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     fun `onRedFlagPreviewClicked に RED_FLAG を渡すと RedFlag イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-        every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+        stubReadoutTexts()
         coEvery { ttsRepository.isAvailable() } returns true
         every { ttsEngine.speak(SpeechEvent.RedFlag, false) } returns Unit
         val viewModel = createViewModel()
@@ -254,7 +284,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RedFlag, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        verifyReadoutTextsObserved()
         coVerify(exactly = 1) { ttsRepository.isAvailable() }
         confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
@@ -263,7 +293,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     fun `onRedFlagPreviewClicked に SESSION_STOP を渡すと SessionStop イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-        every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+        stubReadoutTexts()
         coEvery { ttsRepository.isAvailable() } returns true
         every { ttsEngine.speak(SpeechEvent.SessionStop, false) } returns Unit
         val viewModel = createViewModel()
@@ -273,7 +303,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.SessionStop, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+        verifyReadoutTextsObserved()
         coVerify(exactly = 1) { ttsRepository.isAvailable() }
         confirmVerified(ttsEngine, repository, redFlagRepository, textRepository, ttsRepository)
     }
@@ -283,17 +313,19 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("イエロー、注意")
+            stubReadoutTexts(sectorYellow = "イエロー、注意", blue = "ブルー、譲って", fullCourseYellow = "フルコース、減速")
             coEvery { ttsRepository.isAvailable() } returns true
             val viewModel = createViewModel()
 
             val state = viewModel.uiState.first()
 
-            assertEquals("イエロー、注意", state.sectorYellowFlagText)
+            assertEquals("イエロー、注意", state.flagText(FlagReadoutItem.SectorYellowFlag))
+            assertEquals("ブルー、譲って", state.flagText(FlagReadoutItem.BlueFlag))
+            assertEquals("フルコース、減速", state.flagText(FlagReadoutItem.FullCourseYellow))
             assertTrue(state.isTextToSpeechAvailable)
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
@@ -303,84 +335,106 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+            stubReadoutTexts()
             coEvery { ttsRepository.isAvailable() } returns false
             val viewModel = createViewModel()
 
             assertFalse(viewModel.uiState.first().isTextToSpeechAvailable)
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 
     @Test
-    fun `onSectorYellowFlagTextChanged を呼ぶと UiState が更新される`() =
+    fun `onFlagTextChanged はフラッグごとの保存先に文言を保存し UiState が更新される`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-            val textFlow = MutableStateFlow("")
-            every { textRepository.observeSectorYellowFlagText() } returns textFlow
+            val yellowFlow = MutableStateFlow("")
+            val blueFlow = MutableStateFlow("")
+            val fullCourseYellowFlow = MutableStateFlow("")
+            every { textRepository.observeSectorYellowFlagText() } returns yellowFlow
+            every { textRepository.observeBlueFlagText() } returns blueFlow
+            every { textRepository.observeFullCourseYellowFlagText() } returns fullCourseYellowFlow
             coEvery { textRepository.saveSectorYellowFlagText("イエロー、注意") } answers {
-                textFlow.update { "イエロー、注意" }
+                yellowFlow.update { "イエロー、注意" }
+            }
+            coEvery { textRepository.saveBlueFlagText("ブルー、譲って") } answers {
+                blueFlow.update { "ブルー、譲って" }
+            }
+            coEvery { textRepository.saveFullCourseYellowFlagText("フルコース、減速") } answers {
+                fullCourseYellowFlow.update { "フルコース、減速" }
             }
             coEvery { ttsRepository.isAvailable() } returns true
             val viewModel = createViewModel()
 
-            viewModel.onSectorYellowFlagTextChanged("イエロー、注意")
+            viewModel.onFlagTextChanged(FlagReadoutItem.SectorYellowFlag, "イエロー、注意")
+            viewModel.onFlagTextChanged(FlagReadoutItem.BlueFlag, "ブルー、譲って")
+            viewModel.onFlagTextChanged(FlagReadoutItem.FullCourseYellow, "フルコース、減速")
 
-            assertEquals("イエロー、注意", viewModel.uiState.first().sectorYellowFlagText)
+            val state = viewModel.uiState.first()
+            assertEquals("イエロー、注意", state.flagText(FlagReadoutItem.SectorYellowFlag))
+            assertEquals("ブルー、譲って", state.flagText(FlagReadoutItem.BlueFlag))
+            assertEquals("フルコース、減速", state.flagText(FlagReadoutItem.FullCourseYellow))
             coVerify(exactly = 1) { textRepository.saveSectorYellowFlagText("イエロー、注意") }
+            coVerify(exactly = 1) { textRepository.saveBlueFlagText("ブルー、譲って") }
+            coVerify(exactly = 1) { textRepository.saveFullCourseYellowFlagText("フルコース、減速") }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 
     @Test
-    fun `onSectorYellowFlagTextPreviewClicked は開始音を鳴らしてから入力文言をTTSで読み上げる`() =
+    fun `onFlagTextPreviewClicked は開始音を鳴らしてから入力文言をTTSで読み上げる`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+            stubReadoutTexts()
             coEvery { ttsRepository.isAvailable() } returns true
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag) } just Runs
+            FlagReadoutItem.entries.forEach { item -> coEvery { ttsEngine.playStartSound(item.key) } just Runs }
             val viewModel = createViewModel()
 
-            viewModel.onSectorYellowFlagTextPreviewClicked("イエロー、注意")
+            FlagReadoutItem.entries.forEach { item ->
+                viewModel.onFlagTextPreviewClicked(item, "${item.name}の文言")
+            }
 
-            coVerifyOrder {
-                ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
-                ttsRepository.speak("イエロー、注意", false)
+            FlagReadoutItem.entries.forEach { item ->
+                coVerifyOrder {
+                    ttsEngine.playStartSound(item.key)
+                    ttsRepository.speak("${item.name}の文言", false)
+                }
+                coVerify(exactly = 1) { ttsEngine.playStartSound(item.key) }
+                coVerify(exactly = 1) { ttsRepository.speak("${item.name}の文言", false) }
             }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
-            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag) }
-            coVerify(exactly = 1) { ttsRepository.speak("イエロー、注意", false) }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository, ttsEngine)
         }
 
     @Test
-    fun `onSectorYellowFlagTextPreviewClicked は文言が空なら収録音声を再生する`() =
+    fun `onFlagTextPreviewClicked は文言が空なら収録音声を再生する`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-            every { textRepository.observeSectorYellowFlagText() } returns MutableStateFlow("")
+            stubReadoutTexts()
             coEvery { ttsRepository.isAvailable() } returns true
-            every { ttsEngine.speak(SpeechEvent.YellowFlag, false) } returns Unit
+            FlagReadoutItem.entries.forEach { item -> every { ttsEngine.speak(item.previewEvent, false) } returns Unit }
             val viewModel = createViewModel()
 
-            viewModel.onSectorYellowFlagTextPreviewClicked("")
+            FlagReadoutItem.entries.forEach { item -> viewModel.onFlagTextPreviewClicked(item, "") }
 
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.YellowFlag, false) }
-            coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag) }
+            FlagReadoutItem.entries.forEach { item ->
+                verify(exactly = 1) { ttsEngine.speak(item.previewEvent, false) }
+            }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-            verify(exactly = 1) { textRepository.observeSectorYellowFlagText() }
+            verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository, ttsEngine)
         }
