@@ -47,7 +47,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
                     .redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     .start()
             try {
-                if (!process.waitFor(5, TimeUnit.SECONDS)) {
+                if (!process.waitFor(AVAILABILITY_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                     process.destroyForcibly()
                     return false
                 }
@@ -123,6 +123,9 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
 
     private companion object {
         const val POWERSHELL = "powershell.exe"
+
+        /** 初回の`Add-Type`は低スペック環境やウイルス対策ソフトの影響で遅くなるため、誤検知を避けて余裕を持たせる。 */
+        const val AVAILABILITY_CHECK_TIMEOUT_SECONDS = 15L
         val IS_WINDOWS = System.getProperty("os.name").lowercase().startsWith("windows")
     }
 }

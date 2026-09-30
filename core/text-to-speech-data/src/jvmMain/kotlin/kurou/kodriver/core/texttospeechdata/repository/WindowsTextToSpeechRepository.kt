@@ -2,6 +2,8 @@ package kurou.kodriver.core.texttospeechdata.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kurou.kodriver.core.texttospeechdata.windows.SapiSpeechSynthesizer
 import kurou.kodriver.core.texttospeechdata.windows.WindowsSpeechSynthesizer
@@ -18,12 +20,25 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
  * であることを前提に、その呼び出しを [runInterruptible] で包む。これにより、
  * 呼び出し元のコルーチンがキャンセルされるとブロック中のスレッドへ割り込みが送られ、
  * [WindowsSpeechSynthesizer.speak] 側でプロセスを破棄して読み上げを実際に打ち切ることができる。
+ *
+ * [WindowsSpeechSynthesizer.isAvailable] は外部プロセスを起動する重い判定のため、利用できると判明した後は
+ * 結果を保持して再判定しない。利用できない間は、ユーザーが音声を導入した場合に検出できるよう
+ * 呼び出しごとに再判定し、同時に複数のプロセスが起動しないよう排他する。
  */
 internal class WindowsTextToSpeechRepository(
     private val synthesizer: WindowsSpeechSynthesizer = SapiSpeechSynthesizer(),
     private val isWindows: Boolean = System.getProperty("os.name").lowercase().startsWith("windows"),
 ) : TextToSpeechRepository {
-    override suspend fun isAvailable(): Boolean = withContext(Dispatchers.IO) { synthesizer.isAvailable() }
+    private val availabilityMutex = Mutex()
+    private var availableConfirmed = false
+
+    override suspend fun isAvailable(): Boolean =
+        availabilityMutex.withLock {
+            if (!availableConfirmed) {
+                availableConfirmed = withContext(Dispatchers.IO) { synthesizer.isAvailable() }
+            }
+            availableConfirmed
+        }
 
     override suspend fun unavailableReason(): TextToSpeechUnavailableReason? =
         if (!isWindows || isAvailable()) {
