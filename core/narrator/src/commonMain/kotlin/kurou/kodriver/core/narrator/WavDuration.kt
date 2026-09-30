@@ -9,8 +9,9 @@ package kurou.kodriver.core.narrator
  * `fmt ` チャンクが先頭に無い WAV や、`fmt ` と `data` の間に `LIST` などのチャンクを挟む WAV にも対応するため、
  * `byteRate` を固定オフセットではなくチャンク走査中に見つけた `fmt ` チャンクから読む。
  * また RIFF はチャンクサイズが奇数のとき 1 バイトのパディングが入るため、走査時にその分を加算する。
- * 不正なチャンクサイズ（0 以下・オーバーフローするような巨大値）を検出した場合は、走査位置が進まず
- * 無限ループになるのを避けるため走査を打ち切る。
+ * 不正なチャンクサイズ（負値・オーバーフローするような巨大値）を検出した場合は、走査位置が進まず
+ * 無限ループになるのを避けるため走査を打ち切る。RIFF は本文 0 バイトのチャンクも許容し、その場合も
+ * 8 バイトのチャンクヘッダ分だけ走査位置が進むため、サイズ 0 は不正として扱わない。
  */
 @Suppress("ReturnCount")
 internal fun wavDurationMs(bytes: ByteArray): Long? {
@@ -19,10 +20,13 @@ internal fun wavDurationMs(bytes: ByteArray): Long? {
     var offset = RIFF_HEADER_SIZE
     while (offset + CHUNK_HEADER_SIZE <= bytes.size) {
         val chunkSize = bytes.readInt32LE(offset + CHUNK_ID_SIZE)
-        if (chunkSize <= 0) return null
+        if (chunkSize < 0) return null
         val bodyOffset = offset + CHUNK_HEADER_SIZE
         when {
             bytes.matchesChunkId(offset, FMT_CHUNK_ID) -> {
+                // 宣言サイズが byteRate フィールドに届かない fmt では、後続チャンクの識別子を byteRate として
+                // 読んでしまうため、ファイル境界とは別に宣言サイズも検証する。
+                if (chunkSize < FMT_BYTE_RATE_OFFSET + INT32_SIZE) return null
                 if (bodyOffset + FMT_BYTE_RATE_OFFSET + INT32_SIZE > bytes.size) return null
                 byteRate = bytes.readInt32LE(bodyOffset + FMT_BYTE_RATE_OFFSET)
             }
@@ -32,6 +36,8 @@ internal fun wavDurationMs(bytes: ByteArray): Long? {
                 // 途中で切れた WAV では data のチャンクサイズが実バイト数を超える。
                 // そのまま使うと実際の音声より長い再生時間になるため、実バイト数で抑える。
                 val dataSize = chunkSize.coerceAtMost(bytes.size - bodyOffset)
+                // 本文が空の data は再生すべき音声が無く、0 を返すと即座に停止して無音になるため不明として扱う。
+                if (dataSize <= 0) return null
                 return dataSize.toLong() * MILLIS_PER_SECOND / byteRate
             }
         }

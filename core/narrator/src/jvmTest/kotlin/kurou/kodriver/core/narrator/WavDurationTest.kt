@@ -50,8 +50,16 @@ class WavDurationTest {
     }
 
     @Test
-    fun `チャンクサイズが 0 でも無限ループせず null を返す`() {
-        val bytes = wav(chunks = listOf(rawChunk("LIST", size = 0, body = ByteArray(0)), dataChunk(BYTE_RATE)))
+    fun `本文が空の補助チャンクを挟んでも再生時間を算出する`() {
+        val emptyJunk = rawChunk("JUNK", size = 0, body = ByteArray(0))
+        val bytes = wav(chunks = listOf(fmtChunk(), emptyJunk, dataChunk(BYTE_RATE)))
+
+        assertEquals(1000L, wavDurationMs(bytes))
+    }
+
+    @Test
+    fun `本文が空の data チャンクでは null を返す`() {
+        val bytes = wav(chunks = listOf(fmtChunk(), dataChunk(0)))
 
         assertNull(wavDurationMs(bytes))
     }
@@ -118,8 +126,17 @@ class WavDurationTest {
     }
 
     @Test
-    fun `fmt チャンクが byteRate の位置まで届かず途中で切れている場合は null を返す`() {
-        val bytes = wav(chunks = listOf(rawChunk("fmt ", size = 8, body = ByteArray(8))))
+    fun `fmt の宣言サイズが byteRate に届かない場合は後続に data があっても null を返す`() {
+        val shortFmt = rawChunk("fmt ", size = 8, body = ByteArray(8))
+        val bytes = wav(chunks = listOf(shortFmt, dataChunk(BYTE_RATE)))
+
+        assertNull(wavDurationMs(bytes))
+    }
+
+    @Test
+    fun `fmt が宣言サイズ分のバイトを持たず途中で切れている場合は null を返す`() {
+        val truncatedFmt = rawChunk("fmt ", size = 16, body = ByteArray(4))
+        val bytes = wav(chunks = listOf(truncatedFmt))
 
         assertNull(wavDurationMs(bytes))
     }

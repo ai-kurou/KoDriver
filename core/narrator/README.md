@@ -10,8 +10,8 @@ WAV 音声を読み上げる narrator feature（`feature:lmu-windows-narrator` /
 `wavDurationMs`（`WavDuration.kt`）は WAV（RIFF）ヘッダから再生時間を求める純粋関数です。再生完了を通知しない
 `SoundPool` を使う Android 実装が、再生時間だけ待ってから `stop()` するために利用します（JVM 実装は
 `SourceDataLine.drain()` で完了を検知できるため不要）。`fmt ` が先頭に無い WAV や `fmt ` と `data` の間に `LIST` などを
-挟む WAV、奇数サイズのチャンクに対応し、壊れたチャンクサイズ（0 以下・オーバーフローする巨大値）では走査を
-打ち切って `null`（再生時間不明）を返します。Android 実装は `null` のとき Sentry へ報告したうえで、音声が全く鳴らなく
+挟む WAV、奇数サイズのチャンク・本文が空のチャンクに対応し、壊れたチャンクサイズ（負値・オーバーフローする
+巨大値）や `byteRate` を含まない短い `fmt ` では走査を打ち切って `null`（再生時間不明）を返します。Android 実装は `null` のとき Sentry へ報告したうえで、音声が全く鳴らなく
 なるのを避けるためフォールバックの待ち時間を使います。プラットフォーム非依存の純粋なバイト列解析なので
 `commonMain` に置き、`jvmTest` でテストしています（`androidMain` の `private companion object` に置くとテストできません）。
 
