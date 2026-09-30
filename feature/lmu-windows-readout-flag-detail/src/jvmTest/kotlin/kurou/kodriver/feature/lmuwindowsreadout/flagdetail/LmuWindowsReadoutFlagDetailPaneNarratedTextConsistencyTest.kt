@@ -27,8 +27,8 @@ class LmuWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
                     onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
-                    onSectorYellowFlagTextChanged = {},
-                    onSectorYellowFlagTextPreviewClicked = {},
+                    onFlagTextChanged = { _, _ -> },
+                    onFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }

@@ -29,7 +29,7 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
         }
 
     @Test
-    fun `イエローフラッグのカスタム文言あり`() =
+    fun `カスタム文言あり`() =
         composeScreenshotTest {
             captureLmuWindowsReadoutFlagDetailPane(
                 enabledStates =
@@ -39,14 +39,22 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                         ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
                         ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
                     ),
-                sectorYellowFlagText = "イエロー、前方注意",
+                // カスタム文言の入力欄を持つ全項目に文言を入力した状態にする。
+                flagTexts =
+                    FlagReadoutItem.entries.associateWith { item ->
+                        when (item) {
+                            FlagReadoutItem.BlueFlag -> "ブルー、後続に譲ってください"
+                            FlagReadoutItem.SectorYellowFlag -> "イエロー、前方注意"
+                            FlagReadoutItem.FullCourseYellow -> "フルコースイエロー、減速"
+                        }
+                    },
                 isTextToSpeechAvailable = true,
             )
         }
 
     private fun DesktopComposeUiTest.captureLmuWindowsReadoutFlagDetailPane(
         enabledStates: Map<ReadoutItemKey, Boolean>,
-        sectorYellowFlagText: String = "",
+        flagTexts: Map<FlagReadoutItem, String> = emptyMap(),
         isTextToSpeechAvailable: Boolean = false,
     ) {
         setContent {
@@ -57,7 +65,7 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                             uiState =
                                 LmuWindowsReadoutFlagDetailUiState(
                                     enabledStates = enabledStates,
-                                    sectorYellowFlagText = sectorYellowFlagText,
+                                    flagTexts = flagTexts,
                                     isTextToSpeechAvailable = isTextToSpeechAvailable,
                                 ),
                             onFlagEnabledChanged = { _, _ -> },
@@ -65,8 +73,8 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                             onRedFlagEnabledChanged = {},
                             onRedFlagVoiceTypeChanged = {},
                             onRedFlagPreviewClicked = {},
-                            onSectorYellowFlagTextChanged = {},
-                            onSectorYellowFlagTextPreviewClicked = {},
+                            onFlagTextChanged = { _, _ -> },
+                            onFlagTextPreviewClicked = { _, _ -> },
                         )
                     }
                 }
