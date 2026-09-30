@@ -50,7 +50,7 @@ class AndroidSoundPlayer(
                 File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
             }
         try {
-            val durationMs = wavDurationMs(bytes)
+            val durationMs = playbackDurationMs(bytes)
             val soundId = loadSound(temp.absolutePath)
             if (soundId == 0) return
             val v = (volume / 100.0f).coerceIn(0f, 1f)
@@ -118,27 +118,22 @@ class AndroidSoundPlayer(
             }
         }
 
-    private companion object {
-        const val LOAD_TIMEOUT_MS = 5_000L
-
-        fun wavDurationMs(bytes: ByteArray): Long {
-            if (bytes.size < 44) return 0L
-            val byteRate = bytes.readInt32LE(28)
-            if (byteRate <= 0) return 0L
-            var offset = 12
-            while (offset + 8 <= bytes.size) {
-                val chunkId = String(bytes, offset, 4, Charsets.US_ASCII)
-                val chunkSize = bytes.readInt32LE(offset + 4)
-                if (chunkId == "data") return chunkSize.toLong() * 1000L / byteRate
-                offset += 8 + chunkSize
-            }
-            return 0L
+    /**
+     * [bytes] の再生時間。`SoundPool` は再生完了を通知しないため、この時間だけ待ってから停止する。
+     *
+     * ヘッダから再生時間を判定できない場合は、[FALLBACK_DURATION_MS] で代替する。0 を返して即座に
+     * `stop()` すると音声が全く鳴らなくなるため、同梱 WAV の最長（約 5.7 秒）を上回る時間を待つ。
+     * 優先度の高いイベントで割り込む際は再生ジョブ自体がキャンセルされるため、待ち時間が長めでも
+     * 割り込みの応答性には影響しない。
+     */
+    private fun playbackDurationMs(bytes: ByteArray): Long =
+        wavDurationMs(bytes) ?: run {
+            captureNarratorError(IllegalStateException("WAV duration unknown: ${bytes.size} bytes"))
+            FALLBACK_DURATION_MS
         }
 
-        fun ByteArray.readInt32LE(offset: Int): Int =
-            (this[offset].toInt() and 0xFF) or
-                ((this[offset + 1].toInt() and 0xFF) shl 8) or
-                ((this[offset + 2].toInt() and 0xFF) shl 16) or
-                ((this[offset + 3].toInt() and 0xFF) shl 24)
+    private companion object {
+        const val LOAD_TIMEOUT_MS = 5_000L
+        const val FALLBACK_DURATION_MS = 6_000L
     }
 }
