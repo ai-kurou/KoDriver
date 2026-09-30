@@ -18,7 +18,9 @@ import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.feature.otherlist.fakeOtherListModule
+import kurou.kodriver.feature.otherlist.fakeTextToSpeechRepository
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import org.junit.After
@@ -40,6 +42,7 @@ class MainActivityTest {
         loadFakeTelemetryLogListModuleIfNeeded()
         loadFakeOtherListModuleIfNeeded()
         fakeTelemetryLogRepository.clear()
+        fakeTextToSpeechRepository.unavailableReason = TextToSpeechUnavailableReason.WindowsSpeechUnavailable
     }
 
     @After
@@ -167,10 +170,36 @@ class MainActivityTest {
         clickScrollableItem("テレメトリ受信中は画面をスリープさせない")
         clickScrollableItem("テーマ")
         clickItem("キャンセル")
+        clickScrollableItem("オーバーレイを表示")
+        clickScrollableItem("文字サイズ")
+        clickItem("キャンセル")
+        clickItemAndNavigateBack("背景の透明度")
         clickScrollableItem("ダイナミックカラー")
         clickScrollableItem("ハプティックフィードバック")
         clickItemAndNavigateBack("フィードバックを送信")
         clickItemAndNavigateBack("ライセンス")
+    }
+
+    @Test
+    fun `TTSエンジン未インストール時にインストール案内項目が表示される`() {
+        fakeTextToSpeechRepository.unavailableReason = TextToSpeechUnavailableReason.EngineMissing
+
+        launchActivity()
+        clickItem("その他")
+
+        scrollToItem("音声合成アプリをインストール")
+        waitUntilDisplayed("音声合成アプリをインストール")
+    }
+
+    @Test
+    fun `TTS日本語データ未インストール時に設定案内項目が表示される`() {
+        fakeTextToSpeechRepository.unavailableReason = TextToSpeechUnavailableReason.LanguageDataMissing
+
+        launchActivity()
+        clickItem("その他")
+
+        scrollToItem("音声合成の日本語データを設定")
+        waitUntilDisplayed("音声合成の日本語データを設定")
     }
 
     @Test
