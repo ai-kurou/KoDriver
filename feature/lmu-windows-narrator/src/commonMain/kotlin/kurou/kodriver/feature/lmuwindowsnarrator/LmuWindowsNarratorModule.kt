@@ -9,14 +9,17 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
@@ -65,8 +68,8 @@ import org.koin.dsl.module
  *   PitTimingUseCases）、
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
- *   ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase・TextToSpeechEngine）、
- *   および LmuWindowsSectorYellowFlagCustomTextSpeaker（イエローフラッグの実際の読み上げ時に
+ *   各フラッグのカスタム文言の Observe UseCase・TextToSpeechEngine）、
+ *   および LmuWindowsFlagCustomTextSpeaker（フラッグの実際の読み上げ時に
  *   収録WAVとカスタム文言のOS標準TTSを切り替えるフック。WavNarratorEngine の customSpeak に渡す）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
@@ -150,15 +153,21 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.LmuWindows.id))) }
         includes(platformSoundModule(named(Simulator.LmuWindows.id)))
 
-        // イエローフラッグの実際の読み上げ時に、チップ選択（収録WAV）とカスタム文言（OS標準TTS）を
-        // 切り替えるためのフック。unqualified の SpeakTextUseCase / ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase は
+        // フラッグの実際の読み上げ時に、チップ選択（収録WAV）とカスタム文言（OS標準TTS）を
+        // 切り替えるためのフック。unqualified の SpeakTextUseCase / 各フラッグの Observe…ReadoutTextUseCase は
         // feature:lmu-windows-readout-flag-detail が試聴用に別途定義しているため、
         // 同じ型を二重定義しないよう named(Simulator.LmuWindows.id) で区別する。
         factory(named(Simulator.LmuWindows.id)) { SpeakTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBlueFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRedFlagReadoutTextUseCase(get()) }
         factory {
-            LmuWindowsSectorYellowFlagCustomTextSpeaker(
+            LmuWindowsFlagCustomTextSpeaker(
                 observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeBlueFlagReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeFullCourseYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeRedFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )
         }
@@ -179,7 +188,7 @@ val lmuWindowsNarratorModule: Module =
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
-                    customSpeak = get<LmuWindowsSectorYellowFlagCustomTextSpeaker>()::invoke,
+                    customSpeak = get<LmuWindowsFlagCustomTextSpeaker>()::invoke,
                 ),
             )
         }
