@@ -51,4 +51,46 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
 
             assertEquals("", repository.observeSectorYellowFlagText().first())
         }
+
+    @Test
+    fun `blueFlagText の初期値は空文字`() =
+        runTest {
+            assertEquals("", repository.observeBlueFlagText().first())
+        }
+
+    @Test
+    fun `saveBlueFlagText で保存した値を observeBlueFlagText で取得できる`() =
+        runTest {
+            repository.saveBlueFlagText("ブルー、道を譲れ")
+
+            assertEquals("ブルー、道を譲れ", repository.observeBlueFlagText().first())
+        }
+
+    @Test
+    fun `fullCourseYellowFlagText の初期値は空文字`() =
+        runTest {
+            assertEquals("", repository.observeFullCourseYellowFlagText().first())
+        }
+
+    @Test
+    fun `saveFullCourseYellowFlagText で保存した値を observeFullCourseYellowFlagText で取得できる`() =
+        runTest {
+            repository.saveFullCourseYellowFlagText("フルコースイエロー")
+
+            assertEquals("フルコースイエロー", repository.observeFullCourseYellowFlagText().first())
+        }
+
+    @Test
+    fun `redFlagText の初期値は空文字`() =
+        runTest {
+            assertEquals("", repository.observeRedFlagText().first())
+        }
+
+    @Test
+    fun `saveRedFlagText で保存した値を observeRedFlagText で取得できる`() =
+        runTest {
+            repository.saveRedFlagText("レッドフラッグ、セッション中断")
+
+            assertEquals("レッドフラッグ、セッション中断", repository.observeRedFlagText().first())
+        }
 }

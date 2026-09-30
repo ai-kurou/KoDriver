@@ -9,4 +9,7 @@ import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_DEFAULT
 @Serializable
 internal data class FlagReadoutTextPreferences(
     @ProtoNumber(1) val sectorYellowFlagText: String = READOUT_CUSTOM_TEXT_DEFAULT,
+    @ProtoNumber(2) val blueFlagText: String = READOUT_CUSTOM_TEXT_DEFAULT,
+    @ProtoNumber(3) val fullCourseYellowFlagText: String = READOUT_CUSTOM_TEXT_DEFAULT,
+    @ProtoNumber(4) val redFlagText: String = READOUT_CUSTOM_TEXT_DEFAULT,
 )
