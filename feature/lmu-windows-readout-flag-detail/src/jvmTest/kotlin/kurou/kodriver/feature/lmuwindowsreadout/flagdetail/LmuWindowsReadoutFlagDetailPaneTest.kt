@@ -32,13 +32,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         changedEnabled = enabled
                     },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -50,27 +47,29 @@ class LmuWindowsReadoutFlagDetailPaneTest {
     }
 
     @Test
-    fun `レッドフラッグカードをタップするとonRedFlagEnabledChangedが呼ばれる`() {
+    fun `レッドフラッグカードをタップするとレッドフラッグでonFlagEnabledChangedが呼ばれる`() {
+        var changedItem: FlagReadoutItem? = null
         var changedEnabled: Boolean? = null
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState = LmuWindowsReadoutFlagDetailUiState(),
-                    onFlagEnabledChanged = { _, _ -> },
+                    onFlagEnabledChanged = { item, enabled ->
+                        changedItem = item
+                        changedEnabled = enabled
+                    },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = { changedEnabled = it },
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
 
-        rule.onAllNodesWithText("レッドフラッグ")[0].performClick()
+        rule.onAllNodesWithText("レッドフラッグ")[0].performScrollTo().performClick()
 
+        assertEquals(FlagReadoutItem.RedFlag, changedItem)
         assertEquals(false, changedEnabled)
     }
 
@@ -84,13 +83,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                     uiState = LmuWindowsReadoutFlagDetailUiState(),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = { changedVoiceType = it },
                     onRedFlagPreviewClicked = { previewedVoiceType = it },
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -111,13 +107,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                     uiState = LmuWindowsReadoutFlagDetailUiState(redFlagVoiceType = RedFlagVoiceType.RED_FLAG),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = { changedVoiceType = it },
                     onRedFlagPreviewClicked = { previewedVoiceType = it },
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -137,13 +130,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                     uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, text -> changedText = text },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -168,13 +158,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         ),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { item, text -> changes += item to text },
                     onFlagTextPreviewClicked = { item, text -> previews += item to text },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -198,13 +185,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                     uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = false),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -224,13 +208,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         ),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -254,13 +235,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         ),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = { previewedItem = it },
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, text -> changedText = text },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -279,13 +257,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                     uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -297,35 +272,28 @@ class LmuWindowsReadoutFlagDetailPaneTest {
     }
 
     @Test
-    fun `レッドフラッグのカスタム文言を入力すると入力と試聴のコールバックが呼ばれる`() {
-        var changedText: String? = null
-        var previewed: Pair<String, RedFlagVoiceType>? = null
+    fun `レッドフラッグのカスタム文言を入力するとレッドフラッグでonFlagTextChangedとonFlagTextPreviewClickedが呼ばれる`() {
+        val changes = mutableListOf<Pair<FlagReadoutItem, String>>()
+        val previews = mutableListOf<Pair<FlagReadoutItem, String>>()
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutFlagDetailPaneContent(
-                    uiState =
-                        LmuWindowsReadoutFlagDetailUiState(
-                            redFlagVoiceType = RedFlagVoiceType.RED_FLAG,
-                            isTextToSpeechAvailable = true,
-                        ),
+                    uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
-                    onFlagTextChanged = { _, _ -> },
-                    onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = { changedText = it },
-                    onRedFlagTextPreviewClicked = { text, type -> previewed = text to type },
+                    onFlagTextChanged = { item, text -> changes += item to text },
+                    onFlagTextPreviewClicked = { item, text -> previews += item to text },
                 )
             }
         }
 
-        rule.onAllNodesWithText("レッドフラッグ")[2].performScrollTo().performTextInput("赤旗、停止")
+        rule.onAllNodesWithText("セッションストップ")[1].performScrollTo().performTextInput("赤旗、停止")
         rule.onAllNodesWithContentDescription("入力した文言を再生")[3].performScrollTo().performClick()
 
-        assertEquals("赤旗、停止", changedText)
-        assertEquals("赤旗、停止" to RedFlagVoiceType.RED_FLAG, previewed)
+        assertEquals(listOf(FlagReadoutItem.RedFlag to "赤旗、停止"), changes)
+        assertEquals(listOf(FlagReadoutItem.RedFlag to "赤旗、停止"), previews)
     }
 
     @Test
@@ -335,18 +303,15 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState =
                         LmuWindowsReadoutFlagDetailUiState(
-                            redFlagText = "赤旗、停止",
+                            flagTexts = mapOf(FlagReadoutItem.RedFlag to "赤旗、停止"),
                             isTextToSpeechAvailable = true,
                         ),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = {},
                     onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = {},
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
@@ -357,7 +322,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
 
     @Test
     fun `カスタム文言があるときにレッドフラッグのチップをタップすると文言がクリアされ音声種別が選ばれる`() {
-        var changedText: String? = null
+        var changed: Pair<FlagReadoutItem, String>? = null
         var changedVoiceType: RedFlagVoiceType? = null
         var previewedVoiceType: RedFlagVoiceType? = null
         rule.setContent {
@@ -365,25 +330,22 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState =
                         LmuWindowsReadoutFlagDetailUiState(
-                            redFlagText = "赤旗、停止",
+                            flagTexts = mapOf(FlagReadoutItem.RedFlag to "赤旗、停止"),
                             isTextToSpeechAvailable = true,
                         ),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
-                    onRedFlagEnabledChanged = {},
                     onRedFlagVoiceTypeChanged = { changedVoiceType = it },
                     onRedFlagPreviewClicked = { previewedVoiceType = it },
-                    onFlagTextChanged = { _, _ -> },
+                    onFlagTextChanged = { item, text -> changed = item to text },
                     onFlagTextPreviewClicked = { _, _ -> },
-                    onRedFlagTextChanged = { changedText = it },
-                    onRedFlagTextPreviewClicked = { _, _ -> },
                 )
             }
         }
 
         rule.onAllNodesWithText("セッションストップ")[0].performScrollTo().performClick()
 
-        assertEquals("", changedText)
+        assertEquals(FlagReadoutItem.RedFlag to "", changed)
         assertEquals(RedFlagVoiceType.SESSION_STOP, changedVoiceType)
         assertEquals(RedFlagVoiceType.SESSION_STOP, previewedVoiceType)
     }

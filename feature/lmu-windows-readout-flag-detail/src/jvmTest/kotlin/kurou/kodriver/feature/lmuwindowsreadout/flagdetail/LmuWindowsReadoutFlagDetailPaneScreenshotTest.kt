@@ -46,9 +46,9 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                             FlagReadoutItem.BlueFlag -> "ブルー、後続に譲ってください"
                             FlagReadoutItem.SectorYellowFlag -> "イエロー、前方注意"
                             FlagReadoutItem.FullCourseYellow -> "フルコースイエロー、減速"
+                            FlagReadoutItem.RedFlag -> "レッドフラッグ、走行を中止してください"
                         }
                     },
-                redFlagText = "レッドフラッグ、走行を中止してください",
                 isTextToSpeechAvailable = true,
             )
         }
@@ -56,7 +56,6 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
     private fun DesktopComposeUiTest.captureLmuWindowsReadoutFlagDetailPane(
         enabledStates: Map<ReadoutItemKey, Boolean>,
         flagTexts: Map<FlagReadoutItem, String> = emptyMap(),
-        redFlagText: String = "",
         isTextToSpeechAvailable: Boolean = false,
     ) {
         setContent {
@@ -68,18 +67,14 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                                 LmuWindowsReadoutFlagDetailUiState(
                                     enabledStates = enabledStates,
                                     flagTexts = flagTexts,
-                                    redFlagText = redFlagText,
                                     isTextToSpeechAvailable = isTextToSpeechAvailable,
                                 ),
                             onFlagEnabledChanged = { _, _ -> },
                             onPreviewClicked = {},
-                            onRedFlagEnabledChanged = {},
                             onRedFlagVoiceTypeChanged = {},
                             onRedFlagPreviewClicked = {},
                             onFlagTextChanged = { _, _ -> },
                             onFlagTextPreviewClicked = { _, _ -> },
-                            onRedFlagTextChanged = {},
-                            onRedFlagTextPreviewClicked = { _, _ -> },
                         )
                     }
                 }

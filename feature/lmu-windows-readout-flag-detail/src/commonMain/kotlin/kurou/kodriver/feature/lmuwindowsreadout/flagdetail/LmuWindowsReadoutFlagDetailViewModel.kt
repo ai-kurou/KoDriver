@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
@@ -54,6 +54,7 @@ internal data class FlagReadoutTextUseCases(
             FlagReadoutItem.BlueFlag -> observeBlueFlag()
             FlagReadoutItem.SectorYellowFlag -> observeSectorYellowFlag()
             FlagReadoutItem.FullCourseYellow -> observeFullCourseYellow()
+            FlagReadoutItem.RedFlag -> observeRedFlag()
         }
 
     suspend fun save(
@@ -64,6 +65,7 @@ internal data class FlagReadoutTextUseCases(
             FlagReadoutItem.BlueFlag -> saveBlueFlag(text)
             FlagReadoutItem.SectorYellowFlag -> saveSectorYellowFlag(text)
             FlagReadoutItem.FullCourseYellow -> saveFullCourseYellow(text)
+            FlagReadoutItem.RedFlag -> saveRedFlag(text)
         }
     }
 }
@@ -85,7 +87,6 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         combine(
             settingsUseCases.observeFlagEnabledStates(),
             settingsUseCases.observeRedFlagVoiceType(),
-            settingsUseCases.readoutTexts.observeRedFlag(),
             combine(
                 FlagReadoutItem.entries.map { item ->
                     settingsUseCases.readoutTexts.observe(item).map { item to it }
@@ -94,11 +95,10 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
                 it.toMap()
             },
             textToSpeechAvailable,
-        ) { enabledStates, redFlagVoiceType, redFlagText, flagTexts, isTextToSpeechAvailable ->
+        ) { enabledStates, redFlagVoiceType, flagTexts, isTextToSpeechAvailable ->
             LmuWindowsReadoutFlagDetailUiState(
                 enabledStates = enabledStates,
                 redFlagVoiceType = redFlagVoiceType,
-                redFlagText = redFlagText,
                 flagTexts = flagTexts,
                 isTextToSpeechAvailable = isTextToSpeechAvailable,
             )
@@ -111,10 +111,6 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         viewModelScope.launch { settingsUseCases.saveFlagEnabledState(item.key, enabled) }
     }
 
-    fun onRedFlagEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch { settingsUseCases.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, enabled) }
-    }
-
     fun onPreviewClicked(item: FlagReadoutItem) {
         playSpeechEvent(item.previewEvent)
     }
@@ -124,34 +120,7 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
     }
 
     fun onRedFlagPreviewClicked(type: RedFlagVoiceType) {
-        playSpeechEvent(
-            when (type) {
-                RedFlagVoiceType.RED_FLAG -> SpeechEvent.RedFlag
-                RedFlagVoiceType.SESSION_STOP -> SpeechEvent.SessionStop
-            },
-        )
-    }
-
-    fun onRedFlagTextChanged(text: String) {
-        viewModelScope.launch { settingsUseCases.readoutTexts.saveRedFlag(text) }
-    }
-
-    /**
-     * レッドフラッグのカスタム文言の試聴。文言が空のときは、実際の読み上げと同じく
-     * 選択中の音声種別 [voiceType] の収録済みWAVを再生する。
-     */
-    fun onRedFlagTextPreviewClicked(
-        text: String,
-        voiceType: RedFlagVoiceType,
-    ) {
-        if (text.isBlank()) {
-            onRedFlagPreviewClicked(voiceType)
-        } else {
-            viewModelScope.launch {
-                playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.RedFlag)
-                speakText(text)
-            }
-        }
+        playSpeechEvent(type.speechEvent())
     }
 
     fun onFlagTextChanged(
@@ -163,18 +132,32 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
 
     /**
      * カスタム文言の試聴。文言が空のときは、実際の読み上げと同じく収録済みWAVを再生する。
+     * レッドフラッグは音声種別（RedFlag / SessionStop）で収録音声が異なるため、選択中の種別のWAVを再生する。
      */
     fun onFlagTextPreviewClicked(
         item: FlagReadoutItem,
         text: String,
     ) {
-        if (text.isBlank()) {
-            playSpeechEvent(item.previewEvent)
-        } else {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            if (text.isBlank()) {
+                playSpeechEvent(previewEvent(item))
+            } else {
                 playStartSoundForKey(item.key)
                 speakText(text)
             }
         }
     }
+
+    private suspend fun previewEvent(item: FlagReadoutItem): SpeechEvent =
+        if (item == FlagReadoutItem.RedFlag) {
+            settingsUseCases.observeRedFlagVoiceType().first().speechEvent()
+        } else {
+            item.previewEvent
+        }
+
+    private fun RedFlagVoiceType.speechEvent(): SpeechEvent =
+        when (this) {
+            RedFlagVoiceType.RED_FLAG -> SpeechEvent.RedFlag
+            RedFlagVoiceType.SESSION_STOP -> SpeechEvent.SessionStop
+        }
 }

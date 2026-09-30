@@ -168,7 +168,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         }
 
     @Test
-    fun `onRedFlagEnabledChanged を呼ぶと UiState が更新される`() =
+    fun `onFlagEnabledChanged にレッドフラッグを渡すと UiState が更新される`() =
         runTest {
             val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { repository.observeFlagEnabledStates() } returns statesFlow
@@ -180,7 +180,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coEvery { ttsRepository.isAvailable() } returns true
             val viewModel = createViewModel()
 
-            viewModel.onRedFlagEnabledChanged(false)
+            viewModel.onFlagEnabledChanged(FlagReadoutItem.RedFlag, false)
 
             assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag])
             coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) }

@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_blue
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_full_course_yellow
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_red
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_yellow
 import org.jetbrains.compose.resources.StringResource
 
@@ -31,5 +32,11 @@ internal enum class FlagReadoutItem(
         labelRes = Res.string.flag_full_course_yellow,
         chipLabelRes = Res.string.flag_full_course_yellow,
         previewEvent = SpeechEvent.FullCourseYellow,
+    ),
+    RedFlag(
+        key = ReadoutItemKey.LmuWindows.Flag.RedFlag,
+        labelRes = Res.string.flag_red,
+        chipLabelRes = Res.string.flag_red,
+        previewEvent = SpeechEvent.RedFlag,
     ),
 }
