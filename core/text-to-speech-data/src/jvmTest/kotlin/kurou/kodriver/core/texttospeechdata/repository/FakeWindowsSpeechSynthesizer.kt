@@ -21,7 +21,13 @@ class FakeWindowsSpeechSynthesizer(
     /** [speak] が呼ばれてブロックを開始したことを、呼び出し側スレッドから待ち合わせるためのラッチ。 */
     val speakStarted = CountDownLatch(1)
 
-    override fun isAvailable(): Boolean = available
+    var isAvailableCallCount = 0
+        private set
+
+    override fun isAvailable(): Boolean {
+        isAvailableCallCount++
+        return available
+    }
 
     override fun speak(
         text: String,

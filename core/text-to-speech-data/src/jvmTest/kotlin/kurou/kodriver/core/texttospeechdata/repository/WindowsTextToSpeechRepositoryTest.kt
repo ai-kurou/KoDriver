@@ -45,6 +45,31 @@ class WindowsTextToSpeechRepositoryTest {
         }
 
     @Test
+    fun `利用できると判明した後は再判定しない`() =
+        runTest {
+            val synthesizer = FakeWindowsSpeechSynthesizer()
+            val repository = WindowsTextToSpeechRepository(synthesizer, isWindows = true)
+
+            assertTrue(repository.isAvailable())
+            assertTrue(repository.isAvailable())
+            assertNull(repository.unavailableReason())
+
+            assertEquals(1, synthesizer.isAvailableCallCount)
+        }
+
+    @Test
+    fun `利用できない間は呼び出しごとに再判定する`() =
+        runTest {
+            val synthesizer = FakeWindowsSpeechSynthesizer(available = false)
+            val repository = WindowsTextToSpeechRepository(synthesizer, isWindows = true)
+
+            assertFalse(repository.isAvailable())
+            assertEquals(TextToSpeechUnavailableReason.WindowsSpeechUnavailable, repository.unavailableReason())
+
+            assertEquals(2, synthesizer.isAvailableCallCount)
+        }
+
+    @Test
     fun `speakはテキストとqueueをそのまま音声合成へ渡す`() =
         runTest {
             val synthesizer = FakeWindowsSpeechSynthesizer()
