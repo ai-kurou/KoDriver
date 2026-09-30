@@ -370,6 +370,193 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `同じラップで既に評価済みなら燃料残り周回数を再評価しない`() {
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+        val secondLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = firstLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 30f),
+                settings = settings(),
+                observedAtMs = 100_000L,
+            )
+        val warningDecision =
+            useCase.determineRemainingFuelLaps(
+                state = secondLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 30f),
+                settings = settings(),
+                observedAtMs = 160_000L,
+            )
+        val sameLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = warningDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 29f),
+                settings = settings(),
+                observedAtMs = 170_000L,
+            )
+
+        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), warningDecision.events)
+        assertTrue(sameLapDecision.events.isEmpty())
+        assertEquals(2, sameLapDecision.state.lastFuelEvaluationLap)
+        assertEquals(0, sameLapDecision.state.lastAnnouncedRemainingLaps)
+    }
+
+    @Test
+    fun `タンク容量に対する閾値未満の残量増加は給油として扱わない`() {
+        val initialDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+        val decision =
+            useCase.determineRemainingFuelLaps(
+                state = initialDecision.state,
+                telemetry = telemetry(lapCount = 1, gasLevel = 100.3f, gasCapacity = 100f),
+                settings = settings(),
+                observedAtMs = 1_000L,
+            )
+
+        assertEquals(Gt7Ps5FuelUnit(0f), decision.state.fuelTrackingState.totalRefueled)
+        assertEquals(false, decision.state.fuelTrackingState.hasRefueled)
+        assertEquals(Gt7Ps5FuelUnit(100.3f), decision.state.fuelTrackingState.currentGasLevel)
+    }
+
+    @Test
+    fun `閾値未満の増加が複数パケットに分かれても累積で閾値に達したら給油として扱う`() {
+        var state = Gt7Ps5NarratorState()
+        val results =
+            listOf(20f, 20.125f, 20.25f, 20.375f, 20.5f).map { gasLevel ->
+                state =
+                    useCase
+                        .determineRemainingFuelLaps(
+                            state = state,
+                            telemetry = telemetry(lapCount = 1, gasLevel = gasLevel, gasCapacity = 100f),
+                            settings = settings(),
+                            observedAtMs = 0L,
+                        ).state
+                state.fuelTrackingState
+            }
+
+        assertEquals(listOf(0f, 0f, 0f, 0f, 0.5f), results.map { it.totalRefueled.value })
+        assertEquals(true, results.last().hasRefueled)
+        assertEquals(Gt7Ps5FuelUnit(20.5f), results.last().refuelBaselineGasLevel)
+    }
+
+    @Test
+    fun `残量が減ったら給油判定の基準値を追従させる`() {
+        var state = Gt7Ps5NarratorState()
+        val results =
+            listOf(20f, 20.25f, 19.75f, 20f, 20.25f).map { gasLevel ->
+                state =
+                    useCase
+                        .determineRemainingFuelLaps(
+                            state = state,
+                            telemetry = telemetry(lapCount = 1, gasLevel = gasLevel, gasCapacity = 100f),
+                            settings = settings(),
+                            observedAtMs = 0L,
+                        ).state
+                state.fuelTrackingState
+            }
+
+        assertEquals(listOf(0f, 0f, 0f, 0f, 0.5f), results.map { it.totalRefueled.value })
+        assertEquals(Gt7Ps5FuelUnit(19.75f), results[2].refuelBaselineGasLevel)
+    }
+
+    @Test
+    fun `タンク容量に対する閾値以上の残量増加は給油として扱う`() {
+        val initialDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+        val decision =
+            useCase.determineRemainingFuelLaps(
+                state = initialDecision.state,
+                telemetry = telemetry(lapCount = 1, gasLevel = 100.5f, gasCapacity = 100f),
+                settings = settings(),
+                observedAtMs = 1_000L,
+            )
+
+        assertEquals(Gt7Ps5FuelUnit(0.5f), decision.state.fuelTrackingState.totalRefueled)
+        assertEquals(true, decision.state.fuelTrackingState.hasRefueled)
+    }
+
+    @Test
+    fun `タンク容量が0のEVでは残量が増えても給油として扱わない`() {
+        val initialDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, gasLevel = 0f, gasCapacity = 0f),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+        val decision =
+            useCase.determineRemainingFuelLaps(
+                state = initialDecision.state,
+                telemetry = telemetry(lapCount = 1, gasLevel = 0.3f, gasCapacity = 0f),
+                settings = settings(),
+                observedAtMs = 1_000L,
+            )
+
+        assertEquals(Gt7Ps5FuelUnit(0f), decision.state.fuelTrackingState.totalRefueled)
+        assertEquals(false, decision.state.fuelTrackingState.hasRefueled)
+    }
+
+    @Test
+    fun `閾値未満の残量増加では同じ燃料残り周回数を再度読み上げない`() {
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
+                settings = settings(),
+                observedAtMs = 0L,
+            )
+        val secondLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = firstLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 30f),
+                settings = settings(),
+                observedAtMs = 100_000L,
+            )
+        val firstWarningDecision =
+            useCase.determineRemainingFuelLaps(
+                state = secondLapDecision.state,
+                telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 30f),
+                settings = settings(),
+                observedAtMs = 160_000L,
+            )
+        val thirdLapDecision =
+            useCase.determineRemainingFuelLaps(
+                state = firstWarningDecision.state,
+                telemetry = telemetry(lapCount = 3, bestLapTimeMs = 90_000, gasLevel = 10f),
+                settings = settings(),
+                observedAtMs = 200_000L,
+            )
+        val jitterDecision =
+            useCase.determineRemainingFuelLaps(
+                state = thirdLapDecision.state,
+                telemetry = telemetry(lapCount = 3, bestLapTimeMs = 90_000, gasLevel = 10.3f),
+                settings = settings(),
+                observedAtMs = 260_000L,
+            )
+
+        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), firstWarningDecision.events)
+        assertEquals(Gt7Ps5FuelUnit(0f), jitterDecision.state.fuelTrackingState.totalRefueled)
+        assertEquals(false, jitterDecision.state.fuelTrackingState.hasRefueled)
+        assertTrue(jitterDecision.events.isEmpty())
+        assertEquals(0, jitterDecision.state.lastAnnouncedRemainingLaps)
+    }
+
+    @Test
     fun `ラップ数が戻ったら燃料残り周回数の読み上げ履歴をリセットする`() {
         val state =
             Gt7Ps5NarratorState(
