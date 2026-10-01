@@ -119,8 +119,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
         event: EVENT,
         queue: Boolean = false,
     ) {
-        val mainSound = sounds[event]
-        if (mainSound == null && event !in customSpeakEvents) return
+        val body = playbackBody(event) ?: return
         if (queue) {
             // stop() 直後で playbackParent がキャンセル済みのままだと、その配下へ launch した
             // 瞬間に子ジョブごとキャンセルされてしまうため、生存中でなければ差し替える。
@@ -129,7 +128,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
             playJob =
                 scope.launch(playbackParent) {
                     previousJob?.join()
-                    play(event, mainSound)
+                    play(event, body)
                 }
             return
         }
@@ -138,13 +137,25 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
         playJob =
             scope.launch(playbackParent) {
                 barrier.join()
-                play(event, mainSound)
+                play(event, body)
             }
+    }
+
+    /**
+     * [event] の本編（開始音の後に再生するもの）。[customSpeakEvents] は [customSpeak] による読み上げ、
+     * それ以外は対応するWAV。どちらも無いイベントは再生対象外として null を返す。引数は読み上げ音量（0〜100）。
+     */
+    private fun playbackBody(event: EVENT): (suspend (Int) -> Unit)? {
+        if (event in customSpeakEvents) {
+            return { volume -> customSpeak?.invoke(event, volume) }
+        }
+        val sound = sounds[event] ?: return null
+        return { volume -> soundPlayer.play(sound, volume) }
     }
 
     private suspend fun play(
         event: EVENT,
-        mainSound: ByteArray?,
+        body: suspend (Int) -> Unit,
     ) {
         val key = eventToKey(event)
         _currentKey = key
@@ -153,11 +164,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
         if (startSoundEnabled) {
             startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         }
-        if (event in customSpeakEvents) {
-            customSpeak?.invoke(event, vol)
-        } else if (mainSound != null) {
-            soundPlayer.play(mainSound, vol)
-        }
+        body(vol)
         _currentKey = null
     }
 
