@@ -18,12 +18,12 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
-import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_preview
-import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected
-import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected_icon
-import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_supporting
-import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_unavailable
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_selected
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_selected_icon
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_supporting
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_unavailable
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -65,7 +65,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 item = item,
                 checked = uiState.enabledStates[item.key] ?: true,
                 text = uiState.flagText(item),
-                customTextSelected = uiState.isCustomTextSelected(item),
+                hasReadoutText = uiState.hasReadoutText(item),
                 isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
                 onTextChanged = { text -> onFlagTextChanged(item, text) },
@@ -82,7 +82,7 @@ private fun FlagReadoutCard(
     item: FlagReadoutItem,
     checked: Boolean,
     text: String,
-    customTextSelected: Boolean,
+    hasReadoutText: Boolean,
     isTextToSpeechAvailable: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onTextChanged: (String) -> Unit,
@@ -101,15 +101,15 @@ private fun FlagReadoutCard(
                 onValueChangeFinished = onTextChanged,
                 onPreviewClick = onTextPreviewClick,
                 enabled = isTextToSpeechAvailable,
-                selected = customTextSelected,
+                selected = hasReadoutText,
                 supportingText =
                     when {
-                        !isTextToSpeechAvailable -> stringResource(Res.string.flag_custom_text_unavailable)
-                        customTextSelected -> stringResource(Res.string.flag_custom_text_selected)
-                        else -> stringResource(Res.string.flag_custom_text_supporting)
+                        !isTextToSpeechAvailable -> stringResource(Res.string.flag_text_unavailable)
+                        hasReadoutText -> stringResource(Res.string.flag_text_selected)
+                        else -> stringResource(Res.string.flag_text_supporting)
                     },
-                previewContentDescription = stringResource(Res.string.flag_custom_text_preview),
-                selectedContentDescription = stringResource(Res.string.flag_custom_text_selected_icon),
+                previewContentDescription = stringResource(Res.string.flag_text_preview),
+                selectedContentDescription = stringResource(Res.string.flag_text_selected_icon),
             )
         },
     )

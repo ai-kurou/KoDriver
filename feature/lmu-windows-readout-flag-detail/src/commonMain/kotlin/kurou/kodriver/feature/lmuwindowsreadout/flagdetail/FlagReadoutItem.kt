@@ -15,7 +15,7 @@ import org.jetbrains.compose.resources.StringResource
 internal enum class FlagReadoutItem(
     val key: ReadoutItemKey,
     val labelRes: StringResource,
-    /** カスタム読み上げ文言の初期値。 */
+    /** 読み上げ文言の初期値。 */
     val defaultText: String,
 ) {
     BlueFlag(

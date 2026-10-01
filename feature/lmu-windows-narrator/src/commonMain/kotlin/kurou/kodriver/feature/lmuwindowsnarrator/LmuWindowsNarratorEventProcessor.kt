@@ -197,9 +197,7 @@ internal class LmuWindowsNarratorEventProcessor(
         events.forEach { event ->
             val text = flagReadoutText(event)
             val narrationOutcome =
-                if (text ==
-                    null
-                ) {
+                if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
                     speakWithPriority(event, readoutOrder, queueEnabledStates)

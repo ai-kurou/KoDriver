@@ -68,7 +68,7 @@ import org.koin.dsl.module
  *   PitTimingUseCases）、
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
- *   各フラッグのカスタム文言の Observe UseCase・TextToSpeechEngine）、
+ *   各フラッグの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
  *   および LmuWindowsFlagTextSpeaker（フラッグの実際の読み上げ時に
  *   自由文字列をOS標準TTSで読み上げるフック。WavNarratorEngine の customSpeak に渡す）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
