@@ -26,7 +26,6 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.OVERHEAT_VOICE_TYPE_DEFAULT
-import kurou.kodriver.domain.model.RED_FLAG_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -46,7 +45,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseC
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
@@ -141,7 +139,6 @@ internal data class PitTimingUseCases(
 internal data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
-    val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
     val observeOverheatVoiceType: ObserveLmuWindowsOverheatVoiceTypeUseCase,
 )
 
@@ -189,7 +186,7 @@ internal class LmuWindowsNarratorViewModel(
                 pitTimingUseCases.observeEnabledStates(),
             ),
         ) { states: Array<Map<ReadoutItemKey, Boolean>> ->
-            states.fold(emptyMap<ReadoutItemKey, Boolean>()) { acc, states -> acc + states }
+            states.fold(emptyMap<ReadoutItemKey, Boolean>()) { acc, enabledStates -> acc + enabledStates }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）
@@ -231,11 +228,6 @@ internal class LmuWindowsNarratorViewModel(
         narratorUseCases
             .observeMyBestLapVoiceType()
             .stateIn(viewModelScope, SharingStarted.Eagerly, MY_BEST_LAP_VOICE_TYPE_DEFAULT)
-
-    private val redFlagVoiceType =
-        narratorUseCases
-            .observeRedFlagVoiceType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, RED_FLAG_VOICE_TYPE_DEFAULT)
 
     private val overheatVoiceType =
         narratorUseCases
@@ -707,7 +699,6 @@ internal class LmuWindowsNarratorViewModel(
             LmuWindowsNarratorReadoutSettings(
                 enabledStates = mergedEnabledStates.value,
                 myBestLapVoiceType = voiceType.value,
-                redFlagVoiceType = redFlagVoiceType.value,
                 overheatVoiceType = overheatVoiceType.value,
                 currentLap = currentLap.value,
                 skipFirstLap = skipFirstLap.value,

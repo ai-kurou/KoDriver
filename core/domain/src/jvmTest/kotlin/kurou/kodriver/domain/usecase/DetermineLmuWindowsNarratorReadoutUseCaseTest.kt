@@ -27,7 +27,6 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
@@ -752,7 +751,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `赤旗の音声種別がSESSION_STOPでもRedFlagイベントに変換する`() {
+    fun `赤旗の変化をRedFlagイベントに変換する`() {
         val first =
             useCase.determineRaceFlags(
                 state = LmuWindowsNarratorState(),
@@ -765,25 +764,6 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 state = first.state,
                 raceFlags = clearFlags(gamePhase = SessionPhase.RED_FLAG),
                 settings = settings(),
-            )
-
-        assertEquals(listOf(SpeechEvent.RedFlag), second.events)
-    }
-
-    @Test
-    fun `赤旗の音声種別がRED_FLAGのときはRedFlagイベントに変換する`() {
-        val first =
-            useCase.determineRaceFlags(
-                state = LmuWindowsNarratorState(),
-                raceFlags = clearFlags(),
-                settings = settings(redFlagVoiceType = RedFlagVoiceType.RED_FLAG),
-            )
-
-        val second =
-            useCase.determineRaceFlags(
-                state = first.state,
-                raceFlags = clearFlags(gamePhase = SessionPhase.RED_FLAG),
-                settings = settings(redFlagVoiceType = RedFlagVoiceType.RED_FLAG),
             )
 
         assertEquals(listOf(SpeechEvent.RedFlag), second.events)
@@ -2352,7 +2332,6 @@ private val pitTimingDisabledStates: Map<ReadoutItemKey, Boolean> =
 private fun settings(
     enabledStates: Map<ReadoutItemKey, Boolean> = allEnabledStates,
     myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-    redFlagVoiceType: RedFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
     overheatVoiceType: OverheatVoiceType = OverheatVoiceType.GP2_GP2,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,
@@ -2368,7 +2347,6 @@ private fun settings(
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
     myBestLapVoiceType = myBestLapVoiceType,
-    redFlagVoiceType = redFlagVoiceType,
     overheatVoiceType = overheatVoiceType,
     currentLap = currentLap,
     skipFirstLap = skipFirstLap,

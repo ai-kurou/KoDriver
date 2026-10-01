@@ -48,7 +48,6 @@ import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
@@ -65,7 +64,6 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
@@ -95,7 +93,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseC
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
@@ -185,8 +182,6 @@ class LmuWindowsNarratorViewModelTest {
 
     private val myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository = mockk(relaxUnitFun = true)
 
-    private val redFlagPreferencesRepository: LmuWindowsRedFlagPreferencesRepository = mockk(relaxUnitFun = true)
-
     private val overheatPreferencesRepository: LmuWindowsOverheatPreferencesRepository = mockk(relaxUnitFun = true)
 
     private val telemetryLogRepository: TelemetryLogRepository = mockk(relaxUnitFun = true)
@@ -223,7 +218,6 @@ class LmuWindowsNarratorViewModelTest {
         vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean>,
         orderOverride: List<ReadoutItemKey>,
         voiceType: MyBestLapVoiceType,
-        redFlagVoiceType: RedFlagVoiceType,
         overheatVoiceType: OverheatVoiceType,
         skipFirstLap: Boolean,
         startReadoutEnabled: Boolean,
@@ -310,7 +304,6 @@ class LmuWindowsNarratorViewModelTest {
         every { pitTimingPreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(pitTimingEnabledOverrides)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
-        every { redFlagPreferencesRepository.observeVoiceType() } returns MutableStateFlow(redFlagVoiceType)
         every { overheatPreferencesRepository.observeVoiceType() } returns MutableStateFlow(overheatVoiceType)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns
             MutableStateFlow(queueEnabledOverrides)
@@ -337,7 +330,6 @@ class LmuWindowsNarratorViewModelTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-        redFlagVoiceType: RedFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
         overheatVoiceType: OverheatVoiceType = OverheatVoiceType.GP2_GP2,
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
@@ -375,7 +367,6 @@ class LmuWindowsNarratorViewModelTest {
             vehicleDamageEnabledOverrides = vehicleDamageEnabledOverrides,
             orderOverride = orderOverride,
             voiceType = voiceType,
-            redFlagVoiceType = redFlagVoiceType,
             overheatVoiceType = overheatVoiceType,
             skipFirstLap = skipFirstLap,
             startReadoutEnabled = startReadoutEnabled,
@@ -510,6 +501,7 @@ class LmuWindowsNarratorViewModelTest {
                 LmuWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+                    flagReadoutText = { it.narratedText },
                 ),
             narratorUseCases =
                 NarratorUseCases(
@@ -517,10 +509,6 @@ class LmuWindowsNarratorViewModelTest {
                     observeMyBestLapVoiceType =
                         ObserveLmuWindowsMyBestLapVoiceTypeUseCase(
                             myBestLapPreferencesRepository,
-                        ),
-                    observeRedFlagVoiceType =
-                        ObserveLmuWindowsRedFlagVoiceTypeUseCase(
-                            redFlagPreferencesRepository,
                         ),
                     observeOverheatVoiceType =
                         ObserveLmuWindowsOverheatVoiceTypeUseCase(
@@ -1206,7 +1194,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `赤旗音声タイプがRED_FLAGのときはRedFlagイベントを読み上げる`() =
+    fun `赤旗イベントを読み上げる`() =
         runTest(testDispatcher) {
             val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -1214,7 +1202,6 @@ class LmuWindowsNarratorViewModelTest {
             createViewModel(
                 flagChannel = flagChannel,
                 ttsEngine = tts,
-                redFlagVoiceType = RedFlagVoiceType.RED_FLAG,
             )
 
             flagChannel.send(clearFlags())

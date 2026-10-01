@@ -70,10 +70,6 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                                     isTextToSpeechAvailable = isTextToSpeechAvailable,
                                 ),
                             onFlagEnabledChanged = { _, _ -> },
-                            onPreviewClicked = {},
-                            onRecordedVoiceSelected = { _, _ -> },
-                            onRedFlagVoiceTypeChanged = {},
-                            onRedFlagPreviewClicked = {},
                             onFlagTextChanged = { _, _ -> },
                             onFlagTextPreviewClicked = { _, _ -> },
                         )

@@ -5,7 +5,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 /**
  * 音声エンジンへ渡す読み上げイベント。
  *
- * 各イベントは、実際に再生される WAV ファイルの種類と、読み上げ可否を判定する
+ * 各イベントは、WAVまたはOS標準TTSによる読み上げの種類と、読み上げ可否を判定する
  * [ReadoutItemKey] を結び付ける。キューイング可否はイベント単位ではなく
  * [readoutItemKey] のトップレベル項目で判定する。
  */
@@ -14,11 +14,9 @@ sealed interface SpeechEvent {
     val readoutItemKey: ReadoutItemKey
 
     /**
-     * 実際に再生される WAV ファイルの内容と同じ文字列。
-     *
-     * WAV は各読み上げ項目の詳細設定画面（`*ReadoutXxxDetailPane`）の Chip に表示される文言と
-     * 同一内容で収録しているため、その文言をリテラルで複製する。ドメイン層は Compose Resources
-     * （`strings.xml`）に依存できないため、Chip 側の文言を変更した場合はここも合わせて更新すること。
+     * テレメトリログに記録するイベントの既定文言。
+     * WAVイベントでは収録音声・チップ表示と一致し、LMUフラッグでは自由文字列の既定値に一致する。
+     * ドメイン層はCompose Resourcesに依存しないため、表示文言の変更時はここも更新する。
      */
     val narratedText: String
 
@@ -75,11 +73,6 @@ sealed interface SpeechEvent {
     data object FullCourseYellow : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
         override val narratedText = "フルコースイエロー"
-    }
-
-    data object SessionStop : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
-        override val narratedText = "セッションストップ"
     }
 
     data object RedFlag : SpeechEvent {

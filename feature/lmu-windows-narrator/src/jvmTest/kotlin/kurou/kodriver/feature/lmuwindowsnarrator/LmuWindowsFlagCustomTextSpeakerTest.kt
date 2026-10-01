@@ -57,7 +57,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         }
 
     @Test
-    fun `セクターイエローのカスタム文言が空のときはfalseを返しWAVでの読み上げに任せる`() =
+    fun `セクターイエローのカスタム文言が空のときはfalseを返し本文を読み上げない`() =
         runTest {
             coEvery { observeSectorYellow() } returns flowOf("")
 
@@ -69,7 +69,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         }
 
     @Test
-    fun `セクターイエローのカスタム文言は設定されているがTTSが利用不可のときはfalseを返しWAVでの読み上げに任せる`() =
+    fun `セクターイエローのカスタム文言は設定されているがTTSが利用不可のときはfalseを返し本文を読み上げない`() =
         runTest {
             coEvery { observeSectorYellow() } returns flowOf("イエロー、前方注意")
             coEvery { checkTextToSpeechAvailable() } returns false
@@ -155,18 +155,17 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         }
 
     @Test
-    fun `レッドフラッグとセッション停止は同じカスタム文言を読み上げる`() =
+    fun `レッドフラッグの自由文字列を読み上げる`() =
         runTest {
             coEvery { observeRed() } returns flowOf("赤旗、停止")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("赤旗、停止", volume = VOLUME) } just Runs
 
             assertTrue(speaker(SpeechEvent.RedFlag, VOLUME))
-            assertTrue(speaker(SpeechEvent.SessionStop, VOLUME))
 
-            coVerify(exactly = 2) { observeRed() }
-            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 2) { speakText("赤旗、停止", volume = VOLUME) }
+            coVerify(exactly = 1) { observeRed() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("赤旗、停止", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
@@ -245,7 +244,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         }
 
     @Test
-    fun `フルコースイエローはTTSが利用不可ならWAVに任せる`() =
+    fun `フルコースイエローはTTSが利用不可なら本文を読み上げない`() =
         runTest {
             coEvery { observeFullCourseYellow() } returns flowOf("フルコースイエロー")
             coEvery { checkTextToSpeechAvailable() } returns false

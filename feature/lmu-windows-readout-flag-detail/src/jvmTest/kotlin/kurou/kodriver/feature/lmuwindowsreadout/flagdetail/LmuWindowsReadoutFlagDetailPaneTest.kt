@@ -33,10 +33,6 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         changedItem = item
                         changedEnabled = enabled
                     },
-                    onPreviewClicked = {},
-                    onRecordedVoiceSelected = { _, _ -> },
-                    onRedFlagVoiceTypeChanged = {},
-                    onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
                 )
@@ -61,10 +57,6 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         changedItem = item
                         changedEnabled = enabled
                     },
-                    onPreviewClicked = {},
-                    onRecordedVoiceSelected = { _, _ -> },
-                    onRedFlagVoiceTypeChanged = {},
-                    onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
                 )
@@ -89,10 +81,6 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                             isTextToSpeechAvailable = true,
                         ),
                     onFlagEnabledChanged = { _, _ -> },
-                    onPreviewClicked = {},
-                    onRecordedVoiceSelected = { _, _ -> },
-                    onRedFlagVoiceTypeChanged = {},
-                    onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, text -> changedText = text },
                     onFlagTextPreviewClicked = { _, _ -> },
                 )
@@ -118,10 +106,6 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                             isTextToSpeechAvailable = true,
                         ),
                     onFlagEnabledChanged = { _, _ -> },
-                    onPreviewClicked = {},
-                    onRecordedVoiceSelected = { _, _ -> },
-                    onRedFlagVoiceTypeChanged = {},
-                    onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { item, text -> changes += item to text },
                     onFlagTextPreviewClicked = { item, text -> previews += item to text },
                 )
@@ -146,10 +130,6 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
                     onFlagEnabledChanged = { _, _ -> },
-                    onPreviewClicked = {},
-                    onRecordedVoiceSelected = { _, _ -> },
-                    onRedFlagVoiceTypeChanged = {},
-                    onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
                 )
@@ -171,10 +151,6 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = false),
                     onFlagEnabledChanged = { _, _ -> },
-                    onPreviewClicked = {},
-                    onRecordedVoiceSelected = { _, _ -> },
-                    onRedFlagVoiceTypeChanged = {},
-                    onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
                 )
@@ -197,10 +173,6 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState = uiState,
                     onFlagEnabledChanged = { _, _ -> },
-                    onPreviewClicked = {},
-                    onRecordedVoiceSelected = { _, _ -> },
-                    onRedFlagVoiceTypeChanged = {},
-                    onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { item, text ->
                         uiState = uiState.copy(flagTexts = mapOf(item to text))
                     },
@@ -228,10 +200,6 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                             isTextToSpeechAvailable = true,
                         ),
                     onFlagEnabledChanged = { _, _ -> },
-                    onPreviewClicked = {},
-                    onRecordedVoiceSelected = { _, _ -> },
-                    onRedFlagVoiceTypeChanged = {},
-                    onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { item, text -> changes += item to text },
                     onFlagTextPreviewClicked = { item, text -> previews += item to text },
                 )

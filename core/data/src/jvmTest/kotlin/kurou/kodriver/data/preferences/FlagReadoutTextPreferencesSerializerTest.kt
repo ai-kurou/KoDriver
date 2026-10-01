@@ -24,7 +24,6 @@ class FlagReadoutTextPreferencesSerializerTest {
             val original =
                 FlagReadoutTextPreferences(
                     sectorYellowFlagText = "イエロー、注意",
-                    blueFlagRecordedVoiceSelected = true,
                 )
             val output = ByteArrayOutputStream()
             FlagReadoutTextPreferencesSerializer.writeTo(original, output)
@@ -32,6 +31,16 @@ class FlagReadoutTextPreferencesSerializerTest {
             val restored = FlagReadoutTextPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
 
             assertEquals(original, restored)
+        }
+
+    @Test
+    fun `旧収録音声選択フィールドを含む設定でも文言と空文字を保持する`() =
+        runTest {
+            // field 1: 空文字、field 2: "blue"、廃止したfield 5〜8: true。
+            val legacy = byteArrayOf(0x0a, 0, 0x12, 4, 98, 108, 117, 101, 0x28, 1, 0x30, 1, 0x38, 1, 0x40, 1)
+            val restored = FlagReadoutTextPreferencesSerializer.readFrom(ByteArrayInputStream(legacy))
+            assertEquals("", restored.sectorYellowFlagText)
+            assertEquals("blue", restored.blueFlagText)
         }
 
     @Test

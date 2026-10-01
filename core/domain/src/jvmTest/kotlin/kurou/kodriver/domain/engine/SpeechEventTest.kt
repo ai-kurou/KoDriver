@@ -18,11 +18,10 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `LMUフラッグ系のnarratedTextはChipと同じ文言を返す`() {
+    fun `LMUフラッグ系のnarratedTextは既定文言を返す`() {
         assertEquals("ブルーフラッグ", SpeechEvent.BlueFlag.narratedText)
         assertEquals("イエローフラッグ", SpeechEvent.YellowFlag.narratedText)
         assertEquals("フルコースイエロー", SpeechEvent.FullCourseYellow.narratedText)
-        assertEquals("セッションストップ", SpeechEvent.SessionStop.narratedText)
         assertEquals("レッドフラッグ", SpeechEvent.RedFlag.narratedText)
     }
 

@@ -13,13 +13,13 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * フラッグの自由文字列をOS標準TTSで読み上げる、
  * [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine] 用のフック。
  * 全フラッグで過去の収録音声選択設定を無視する。
- * 空欄またはTTSが利用できない場合は収録済みWAVへフォールバックする。
+ * 空欄またはTTSが利用できない場合は本文を読み上げない。
  *
  * 対象イベントと文言の対応:
  * - [SpeechEvent.YellowFlag] : セクターイエロー
  * - [SpeechEvent.BlueFlag] : ブルー
  * - [SpeechEvent.FullCourseYellow] : フルコースイエロー
- * - [SpeechEvent.RedFlag] / [SpeechEvent.SessionStop] : レッド（2つの音声種別で1つの文言を共有する）
+ * - [SpeechEvent.RedFlag] : レッド
  */
 internal class LmuWindowsFlagCustomTextSpeaker(
     private val observeSectorYellowFlagReadoutText: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase,
@@ -33,17 +33,22 @@ internal class LmuWindowsFlagCustomTextSpeaker(
      * @param volume アプリの読み上げ音量（0〜100）。
      * @return カスタム文言を読み上げた場合 true（呼び出し元はWAVの再生をスキップする）。
      *   [event] がフラッグ以外、カスタム文言が未設定、またはTTSが利用不可の場合は
-     *   false（WAVでの読み上げに任せる）。
+     *   false（フラッグ本文は再生しない）。
      */
     suspend operator fun invoke(
         event: SpeechEvent,
         volume: Int,
     ): Boolean {
-        val text = customText(event) ?: return false
-        if (text.isBlank()) return false
-        if (!checkTextToSpeechAvailable()) return false
+        val text = readoutText(event) ?: return false
         speakText(text, volume = volume)
         return true
+    }
+
+    /** 現在の発話対象文言。空欄・TTS利用不可・フラッグ以外は null。 */
+    suspend fun readoutText(event: SpeechEvent): String? {
+        val text = customText(event) ?: return null
+        if (text.isBlank() || !checkTextToSpeechAvailable()) return null
+        return text
     }
 
     private suspend fun customText(event: SpeechEvent): String? =
@@ -51,7 +56,7 @@ internal class LmuWindowsFlagCustomTextSpeaker(
             SpeechEvent.YellowFlag -> observeSectorYellowFlagReadoutText().first()
             SpeechEvent.BlueFlag -> observeBlueFlagReadoutText().first()
             SpeechEvent.FullCourseYellow -> observeFullCourseYellowFlagReadoutText().first()
-            SpeechEvent.RedFlag, SpeechEvent.SessionStop -> observeRedFlagReadoutText().first()
+            SpeechEvent.RedFlag -> observeRedFlagReadoutText().first()
             else -> null
         }
 }
