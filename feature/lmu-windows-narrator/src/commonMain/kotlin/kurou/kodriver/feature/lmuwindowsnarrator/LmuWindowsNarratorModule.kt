@@ -46,10 +46,12 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
@@ -131,6 +133,8 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
         factory { ObserveReadoutEnabledStatesUseCase(get()) }
         factory { ObserveReadoutOrderUseCase(get()) }
+        factory { ResolveReadoutOrderUseCase() }
+        factory { ObserveResolvedReadoutOrderUseCase(get(), get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }

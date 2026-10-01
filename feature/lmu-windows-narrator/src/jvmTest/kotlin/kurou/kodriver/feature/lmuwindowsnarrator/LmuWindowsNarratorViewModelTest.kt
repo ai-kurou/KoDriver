@@ -115,7 +115,9 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -429,7 +431,11 @@ class LmuWindowsNarratorViewModelTest {
             readoutListUseCases =
                 ReadoutListUseCases(
                     observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
+                    observeReadoutOrder =
+                        ObserveResolvedReadoutOrderUseCase(
+                            ObserveReadoutOrderUseCase(readoutPreferencesRepository),
+                            ResolveReadoutOrderUseCase(),
+                        ),
                     observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
                 ),
             flagUseCases =
