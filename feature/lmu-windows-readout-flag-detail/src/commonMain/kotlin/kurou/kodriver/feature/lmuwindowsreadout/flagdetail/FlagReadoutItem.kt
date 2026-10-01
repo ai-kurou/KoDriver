@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_DEFAULT
@@ -48,6 +49,8 @@ internal enum class FlagReadoutItem(
         chipLabelRes = Res.string.flag_full_course_yellow,
         previewEvent = SpeechEvent.FullCourseYellow,
         target = LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW,
+        recordedVoiceSelectable = false,
+        defaultText = LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT,
     ),
     RedFlag(
         key = ReadoutItemKey.LmuWindows.Flag.RedFlag,

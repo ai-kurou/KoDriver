@@ -47,9 +47,9 @@ internal class LmuWindowsFlagCustomTextSpeaker(
     ): Boolean {
         val text = customText(event) ?: return false
         if (text.isBlank()) return false
-        // ブルー・イエローフラッグはチップを持たないため、過去に保存された選択状態は無視する。
-        if (event != SpeechEvent.BlueFlag && event != SpeechEvent.YellowFlag &&
-            observeRecordedVoiceSelected(target(event)).first()
+        // 収録音声のチップはレッドフラッグのみ。ほかのフラッグの過去の選択状態は無視する。
+        if ((event == SpeechEvent.RedFlag || event == SpeechEvent.SessionStop) &&
+            observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG).first()
         ) {
             return false
         }
@@ -57,14 +57,6 @@ internal class LmuWindowsFlagCustomTextSpeaker(
         speakText(text, volume = volume)
         return true
     }
-
-    private fun target(event: SpeechEvent): LmuWindowsFlagReadoutTarget =
-        when (event) {
-            SpeechEvent.YellowFlag -> LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG
-            SpeechEvent.BlueFlag -> LmuWindowsFlagReadoutTarget.BLUE_FLAG
-            SpeechEvent.FullCourseYellow -> LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW
-            else -> LmuWindowsFlagReadoutTarget.RED_FLAG
-        }
 
     private suspend fun customText(event: SpeechEvent): String? =
         when (event) {
