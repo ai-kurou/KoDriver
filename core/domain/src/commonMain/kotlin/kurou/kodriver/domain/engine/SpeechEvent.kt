@@ -1,5 +1,9 @@
 package kurou.kodriver.domain.engine
 
+import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 /**
@@ -15,7 +19,8 @@ sealed interface SpeechEvent {
 
     /**
      * テレメトリログに記録するイベントの既定文言。
-     * WAVイベントでは収録音声・チップ表示と一致し、LMUフラッグでは自由文字列の既定値に一致する。
+     * WAVイベントでは収録音声・チップ表示と一致する。LMUフラッグは自由文字列を読み上げるため、
+     * 実際の本文ではなく既定文言の定数（`LMU_WINDOWS_*_FLAG_READOUT_TEXT_DEFAULT`）を参照する。
      * ドメイン層はCompose Resourcesに依存しないため、表示文言の変更時はここも更新する。
      */
     val narratedText: String
@@ -62,22 +67,22 @@ sealed interface SpeechEvent {
 
     data object BlueFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
-        override val narratedText = "ブルーフラッグ"
+        override val narratedText = LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object YellowFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
-        override val narratedText = "イエローフラッグ"
+        override val narratedText = LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object FullCourseYellow : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
-        override val narratedText = "フルコースイエロー"
+        override val narratedText = LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object RedFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
-        override val narratedText = "レッドフラッグ"
+        override val narratedText = LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object Overheating : SpeechEvent {
