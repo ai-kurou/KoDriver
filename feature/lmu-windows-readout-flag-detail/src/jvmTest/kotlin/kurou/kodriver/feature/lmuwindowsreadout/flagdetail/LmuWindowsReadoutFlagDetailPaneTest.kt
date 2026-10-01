@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
@@ -162,7 +163,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState =
                         LmuWindowsReadoutFlagDetailUiState(
-                            flagTexts = mapOf(FlagReadoutItem.FullCourseYellow to "減速"),
+                            flagTexts = mapOf(FlagReadoutItem.BlueFlag to "", FlagReadoutItem.FullCourseYellow to "減速"),
                             isTextToSpeechAvailable = true,
                         ),
                     onFlagEnabledChanged = { _, _ -> },
@@ -176,7 +177,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("ブルーフラッグ")[2].performTextInput("譲って")
+        rule.onAllNodesWithText("ブルーフラッグ")[1].performTextInput("譲って")
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performClick()
         rule.onAllNodesWithContentDescription("入力した文言を再生")[2].performClick()
 
@@ -185,6 +186,29 @@ class LmuWindowsReadoutFlagDetailPaneTest {
             listOf(FlagReadoutItem.BlueFlag to "譲って", FlagReadoutItem.FullCourseYellow to "減速"),
             previews,
         )
+    }
+
+    @Test
+    fun `ブルーフラッグは収録音声のチップを表示せず既定の文言が入力欄に表示される`() {
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutFlagDetailPaneContent(
+                    uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onPreviewClicked = {},
+                    onRecordedVoiceSelected = { _, _ -> },
+                    onRedFlagVoiceTypeChanged = {},
+                    onRedFlagPreviewClicked = {},
+                    onFlagTextChanged = { _, _ -> },
+                    onFlagTextPreviewClicked = { _, _ -> },
+                )
+            }
+        }
+
+        // カードのタイトルと入力欄の既定文言のみ（チップがあれば3つになる）。
+        rule.onAllNodesWithText("ブルーフラッグ").assertCountEquals(2)
+        // 他のフラッグはタイトル・チップ・入力欄（プレースホルダー）の3つ。
+        rule.onAllNodesWithText("イエローフラッグ").assertCountEquals(3)
     }
 
     @Test

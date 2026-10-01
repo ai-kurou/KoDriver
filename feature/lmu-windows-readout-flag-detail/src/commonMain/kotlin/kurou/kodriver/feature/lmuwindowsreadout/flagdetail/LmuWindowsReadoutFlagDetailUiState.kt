@@ -1,6 +1,5 @@
 package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 
-import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_DEFAULT
 import kurou.kodriver.domain.model.READOUT_RECORDED_VOICE_SELECTED_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
@@ -15,14 +14,17 @@ internal data class LmuWindowsReadoutFlagDetailUiState(
     /** OS標準のTTSを利用できるか。利用できない場合はカスタム文言の入力を受け付けない。 */
     val isTextToSpeechAvailable: Boolean = false,
 ) {
-    /** [item] のカスタム読み上げ文言。未設定なら [READOUT_CUSTOM_TEXT_DEFAULT]（空文字）。 */
-    fun flagText(item: FlagReadoutItem): String = flagTexts[item] ?: READOUT_CUSTOM_TEXT_DEFAULT
+    /** [item] のカスタム読み上げ文言。未設定なら [FlagReadoutItem.defaultText]。 */
+    fun flagText(item: FlagReadoutItem): String = flagTexts[item] ?: item.defaultText
 
     /** [item] で収録音声が明示的に選ばれているか。未設定なら [READOUT_RECORDED_VOICE_SELECTED_DEFAULT]。 */
     fun isRecordedVoiceSelected(item: FlagReadoutItem): Boolean =
         recordedVoiceSelected[item] ?: READOUT_RECORDED_VOICE_SELECTED_DEFAULT
 
-    /** [item] でカスタム文言が読み上げに使われるか。文言があり、かつ収録音声が明示的に選ばれていない場合。 */
+    /**
+     * [item] でカスタム文言が読み上げに使われるか。文言があり、かつ収録音声が明示的に選ばれていない場合。
+     * 収録音声を選べない項目（[FlagReadoutItem.recordedVoiceSelectable] が false）は、文言があれば常に使われる。
+     */
     fun isCustomTextSelected(item: FlagReadoutItem): Boolean =
-        flagText(item).isNotEmpty() && !isRecordedVoiceSelected(item)
+        flagText(item).isNotEmpty() && (!item.recordedVoiceSelectable || !isRecordedVoiceSelected(item))
 }
