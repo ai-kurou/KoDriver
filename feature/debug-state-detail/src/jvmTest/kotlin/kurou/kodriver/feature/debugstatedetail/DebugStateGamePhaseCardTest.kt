@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
@@ -79,10 +78,7 @@ class DebugStateGamePhaseCardTest {
             gamePhase = gamePhase,
             yellowFlagState = SessionYellowFlagState.NONE,
             sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-            startLight = 0,
-            numRedLights = 0,
             playerFlag = PrimaryFlag.GREEN,
             playerUnderYellow = false,
-            playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
         )
 }

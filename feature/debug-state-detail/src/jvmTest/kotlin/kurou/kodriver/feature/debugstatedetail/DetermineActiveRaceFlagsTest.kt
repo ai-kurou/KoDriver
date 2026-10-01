@@ -1,6 +1,5 @@
 package kurou.kodriver.feature.debugstatedetail
 
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -69,10 +68,7 @@ class DetermineActiveRaceFlagsTest {
         gamePhase = gamePhase,
         yellowFlagState = SessionYellowFlagState.NONE,
         sectorFlags = sectorFlags,
-        startLight = 0,
-        numRedLights = 0,
         playerFlag = playerFlag,
         playerUnderYellow = playerUnderYellow,
-        playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
     )
 }

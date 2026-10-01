@@ -27,7 +27,6 @@ import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
@@ -319,8 +318,7 @@ class ApplicationTest {
                     assertEquals(
                         """{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE",""" +
                             """"sectorFlags":["CLEAR","YELLOW","CLEAR"],""" +
-                            """"startLight":4,"numRedLights":2,"playerFlag":"BLUE","playerUnderYellow":true,""" +
-                            """"playerCountLapFlag":"COUNT_LAP_AND_TIME"}""",
+                            """"playerFlag":"BLUE","playerUnderYellow":true}""",
                         message,
                     )
                 }
@@ -2889,11 +2887,8 @@ private val greenFlagData =
         gamePhase = SessionPhase.GREEN_FLAG,
         yellowFlagState = SessionYellowFlagState.NONE,
         sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
-        startLight = 4,
-        numRedLights = 2,
         playerFlag = PrimaryFlag.BLUE,
         playerUnderYellow = true,
-        playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
     )
 
 private val yellowFlagData =
@@ -2901,22 +2896,17 @@ private val yellowFlagData =
         gamePhase = SessionPhase.FULL_COURSE_YELLOW,
         yellowFlagState = SessionYellowFlagState.PENDING,
         sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.YELLOW, SectorFlagState.YELLOW),
-        startLight = 0,
-        numRedLights = 0,
         playerFlag = PrimaryFlag.UNKNOWN,
         playerUnderYellow = true,
-        playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
     )
 
 private const val GREEN_FLAG_JSON =
     """{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE","sectorFlags":["CLEAR","YELLOW","CLEAR"],""" +
-        """"startLight":4,"numRedLights":2,"playerFlag":"BLUE","playerUnderYellow":true,""" +
-        """"playerCountLapFlag":"COUNT_LAP_AND_TIME"}"""
+        """"playerFlag":"BLUE","playerUnderYellow":true}"""
 
 private const val YELLOW_FLAG_JSON =
     """{"gamePhase":"FULL_COURSE_YELLOW","yellowFlagState":"PENDING","sectorFlags":["YELLOW","YELLOW","YELLOW"],""" +
-        """"startLight":0,"numRedLights":0,"playerFlag":"UNKNOWN","playerUnderYellow":true,""" +
-        """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"}"""
+        """"playerFlag":"UNKNOWN","playerUnderYellow":true}"""
 
 private val vehicleApproachDataLeft =
     LmuWindowsVehicleApproachData(

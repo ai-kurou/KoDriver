@@ -22,7 +22,6 @@ import kotlinx.serialization.json.long
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -992,11 +991,8 @@ private fun raceFlags(playerFlag: PrimaryFlag) =
         gamePhase = SessionPhase.GREEN_FLAG,
         yellowFlagState = SessionYellowFlagState.NONE,
         sectorFlags = emptyList(),
-        startLight = 0,
-        numRedLights = 0,
         playerFlag = playerFlag,
         playerUnderYellow = false,
-        playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
     )
 
 private fun tyreWear(frontLeft: Double) =

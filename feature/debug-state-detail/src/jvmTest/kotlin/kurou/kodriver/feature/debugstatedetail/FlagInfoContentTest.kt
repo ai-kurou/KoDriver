@@ -6,7 +6,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
@@ -163,10 +162,7 @@ class FlagInfoContentTest {
             gamePhase = SessionPhase.GREEN_FLAG,
             yellowFlagState = SessionYellowFlagState.NONE,
             sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-            startLight = 0,
-            numRedLights = 0,
             playerFlag = playerFlag,
             playerUnderYellow = false,
-            playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
         )
 }
