@@ -12,7 +12,6 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
 /**
  * フラッグの自由文字列をOS標準TTSで読み上げる、
  * [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine] 用のフック。
- * 全フラッグで過去の収録音声選択設定を無視する。
  * 空欄またはTTSが利用できない場合は本文を読み上げない。
  *
  * 対象イベントと文言の対応:
@@ -21,7 +20,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [SpeechEvent.FullCourseYellow] : フルコースイエロー
  * - [SpeechEvent.RedFlag] : レッド
  */
-internal class LmuWindowsFlagCustomTextSpeaker(
+internal class LmuWindowsFlagTextSpeaker(
     private val observeSectorYellowFlagReadoutText: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase,
     private val observeBlueFlagReadoutText: ObserveLmuWindowsBlueFlagReadoutTextUseCase,
     private val observeFullCourseYellowFlagReadoutText: ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase,
@@ -31,8 +30,8 @@ internal class LmuWindowsFlagCustomTextSpeaker(
 ) {
     /**
      * @param volume アプリの読み上げ音量（0〜100）。
-     * @return カスタム文言を読み上げた場合 true（呼び出し元はWAVの再生をスキップする）。
-     *   [event] がフラッグ以外、カスタム文言が未設定、またはTTSが利用不可の場合は
+     * @return 本文を読み上げた場合 true（呼び出し元はWAVの再生をスキップする）。
+     *   [event] がフラッグ以外、文言が空白、またはTTSが利用不可の場合は
      *   false（フラッグ本文は再生しない）。
      */
     suspend operator fun invoke(
@@ -44,7 +43,7 @@ internal class LmuWindowsFlagCustomTextSpeaker(
         return true
     }
 
-    /** 現在の発話対象文言。空欄・TTS利用不可・フラッグ以外は null。 */
+    /** 現在の読み上げ文言。空欄・TTS利用不可・フラッグ以外は null。 */
     suspend fun readoutText(event: SpeechEvent): String? {
         val text = customText(event) ?: return null
         if (text.isBlank() || !checkTextToSpeechAvailable()) return null

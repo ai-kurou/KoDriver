@@ -19,7 +19,7 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class LmuWindowsFlagCustomTextSpeakerTest {
+class LmuWindowsFlagTextSpeakerTest {
     private val observeSectorYellow: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase = mockk()
     private val observeBlue: ObserveLmuWindowsBlueFlagReadoutTextUseCase = mockk()
     private val observeFullCourseYellow: ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase = mockk()
@@ -27,7 +27,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
-        LmuWindowsFlagCustomTextSpeaker(
+        LmuWindowsFlagTextSpeaker(
             observeSectorYellow,
             observeBlue,
             observeFullCourseYellow,
