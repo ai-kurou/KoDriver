@@ -69,22 +69,23 @@ mockk の `every`/`coEvery`/`verify`/`coVerify` では、**`any()` でないと�
 
 ```kotlin
 // NG: 具体値がわかっているのに any()
-verify { jmdns.registerService(any()) }
+verify(exactly = 1) { jmdns.registerService(any()) }
 
 // OK: withArg で実値を検証
-verify {
+verify(exactly = 1) {
     jmdns.registerService(
         withArg<ServiceInfo> {
-            assert(it.name == "my-pc")
+            assert(it.name == "KoDriver-A1B2")
             assert(it.port == 8080)
         },
     )
 }
+confirmVerified(jmdns)
 ```
 
 ## カバレッジ
 
-Kover でカバレッジを計測する。新しいモジュールを追加した場合、ルートの `build.gradle.kts` の `kover { }` ブロックに `kover(project(":module:name"))` を追加しないとカバレッジ集計から除外される。
+Kover でカバレッジを計測する。新しいモジュールを追加した場合、ルートの `build.gradle.kts` の `dependencies { }` ブロックに `kover(project(":module:name"))` を追加しないとカバレッジ集計から除外される。
 
 ```bash
 # ローカルでカバレッジレポート生成

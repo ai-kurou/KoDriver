@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 
-Le Mans Ultimate（LMU）から Windows 共有メモリ経由で、Gran Turismo 7（GT7 PS5）から UDP 経由でテレメトリデータを取得し、Compose Multiplatform アプリで表示・WAV 音声再生によるアナウンスを行う。デスクトップアプリ内で Ktor サーバーも起動し、LMU 由来の走行情報を WebSocket で配信する。
+Le Mans Ultimate（LMU）・Assetto Corsa EVO（ACE）から Windows 共有メモリ経由で、Gran Turismo 7（GT7 PS5）から UDP 経由でテレメトリデータを取得し、Compose Multiplatform アプリで表示・WAV 音声再生によるアナウンスを行う。デスクトップアプリ内で Ktor サーバーも起動し、LMU / ACE 由来の走行情報を WebSocket で配信する。
 
 ---
 
@@ -118,7 +118,9 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 1. **ユニットテストの追加・更新**（→「[テスト方針](#テスト方針)」を参照。テストは実装と同時に書くこと）
 2. `./gradlew preSubmitChecks`（必須チェックの集約タスク。以下をすべて含む）
    - 全モジュールの detekt（モジュール単位の `:xxx:detekt` だけでは `app:shared` 等の連鎖的な問題を見落とすため、全体で実行される）
+   - 全モジュールのコードスタイル検証（`ktlintCheck`）
    - モジュールグラフの検証（`assertModuleGraph`）
+   - モジュール一覧とアーキテクチャドキュメントの一致確認（`assertArchitectureDocModuleList`）
    - 全ユニットテスト＋カバレッジレポート生成（`koverXmlReport`）
    - Android アプリ・デスクトップアプリのビルド確認
    - デスクトップアプリの統合テスト（Koin モジュール構成の変更は `AppTest` に影響するため）

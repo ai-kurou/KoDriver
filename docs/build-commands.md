@@ -16,8 +16,9 @@
 # Kover 対象モジュールのテストとカバレッジレポート生成
 ./gradlew koverXmlReport
 
-# 完了報告・PR 作成前の必須チェック一式（detekt・モジュールグラフ検証・
-# 全ユニットテスト（カバレッジ付き）・両アプリのビルド・デスクトップ統合テスト）
+# 完了報告・PR 作成前の必須チェック一式（全モジュールのdetekt・ktlintCheck・
+# assertModuleGraph・assertArchitectureDocModuleList・全ユニットテスト（カバレッジ付き）・
+# 両アプリのビルド・デスクトップ統合テスト）
 ./gradlew preSubmitChecks
 
 # 静的解析とモジュール依存関係の検証

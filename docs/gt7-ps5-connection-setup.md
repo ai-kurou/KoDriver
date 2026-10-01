@@ -10,7 +10,7 @@ SimHubを含むその他のダッシュボードアプリ等を使用せず、Wi
 
 1. PS5のIPアドレスを確認する
    - PS5の「設定 → ネットワーク → 接続状態を確認する」からIPアドレスを確認する
-2. KoDriverの「その他 → ゲーム機・SimHubへ接続するIPアドレス」にPS5のIPアドレスを入力して保存する
+2. Windows版・Android版とも、KoDriverの「その他 → ゲーム機・SimHubへ接続するIPアドレス」にPS5のIPアドレスを入力し、受信ポートとして `33740` を選択して保存する
 
 **Windows版の追加手順：**
 
@@ -50,20 +50,22 @@ Windows版とAndroid版の両方を使う場合は、画像のようにForward�
 
 ### KoDriver Windows側の設定
 
-KoDriverの「その他 → ゲーム機・SimHubへ接続するIPアドレス」にSimHubを実行しているWindowsのIPアドレスを入力して保存する。
+KoDriverの「その他 → ゲーム機・SimHubへ接続するIPアドレス」にSimHubを実行しているWindowsのIPアドレスを入力し、受信ポートとして `33741` を選択して保存する。
 SimHubとWindows版KoDriverを同じPCで実行している場合は `127.0.0.1` を入力する。
 
 | 項目 | 設定値 |
 |---|---|
 | ゲーム機・SimHubへ接続するIPアドレス | SimHubを実行しているWindowsのIPアドレス（同一PCの場合は `127.0.0.1`） |
+| 受信ポート | `33741`（SimHubのForward先ポートと一致させる） |
 
 ### KoDriver Android側の設定
 
-KoDriverの「その他 → ゲーム機・SimHubへ接続するIPアドレス」にSimHubを実行しているWindowsのIPアドレスを入力して保存する。
+KoDriverの「その他 → ゲーム機・SimHubへ接続するIPアドレス」にSimHubを実行しているWindowsのIPアドレスを入力し、受信ポートとして `33741` を選択して保存する。
 
 | 項目 | 設定値 |
 |---|---|
 | ゲーム機・SimHubへ接続するIPアドレス | SimHubを実行しているWindowsのIPアドレス（例: `192.168.1.10`） |
+| 受信ポート | `33741`（SimHubのForward先ポートと一致させる） |
 
 ### ネットワーク構成の例（Windows版KoDriverの場合）
 
@@ -78,6 +80,7 @@ SimHub設定:
 
 KoDriver Windows設定:
   ゲーム機・SimHubへ接続するIPアドレス : 127.0.0.1
+  受信ポート : 33741
 ```
 
 ### ネットワーク構成の例（Android版KoDriverの場合）
@@ -94,6 +97,7 @@ SimHub設定:
 
 KoDriver Android設定:
   ゲーム機・SimHubへ接続するIPアドレス : 192.168.1.10  （WindowsのIP）
+  受信ポート : 33741
 ```
 
 ### ネットワーク構成の例（Windows版とAndroid版KoDriverを同時に使う場合）
@@ -111,7 +115,9 @@ SimHub設定:
 
 KoDriver Windows設定:
   ゲーム機・SimHubへ接続するIPアドレス : 127.0.0.1
+  受信ポート : 33741
 
 KoDriver Android設定:
   ゲーム機・SimHubへ接続するIPアドレス : 192.168.1.10  （WindowsのIP）
+  受信ポート : 33741
 ```
