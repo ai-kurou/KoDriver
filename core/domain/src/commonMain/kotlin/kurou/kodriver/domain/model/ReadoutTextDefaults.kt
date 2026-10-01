@@ -28,3 +28,6 @@ const val LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT = "ブルーフラッグ"
 
 /** LMU のイエローフラッグ読み上げ文言の初期値。空欄の場合は収録済みWAVにフォールバックする。 */
 const val LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT = "イエローフラッグ"
+
+/** LMU のフルコースイエロー読み上げ文言の初期値。空欄の場合は収録済みWAVにフォールバックする。 */
+const val LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT = "フルコースイエロー"

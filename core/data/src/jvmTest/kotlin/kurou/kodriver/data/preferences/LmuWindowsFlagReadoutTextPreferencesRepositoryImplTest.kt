@@ -70,9 +70,9 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `fullCourseYellowFlagText の初期値は空文字`() =
+    fun `fullCourseYellowFlagText の初期値はフルコースイエロー`() =
         runTest {
-            assertEquals("", repository.observeFullCourseYellowFlagText().first())
+            assertEquals("フルコースイエロー", repository.observeFullCourseYellowFlagText().first())
         }
 
     @Test
@@ -81,6 +81,14 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
             repository.saveFullCourseYellowFlagText("フルコースイエロー")
 
             assertEquals("フルコースイエロー", repository.observeFullCourseYellowFlagText().first())
+        }
+
+    @Test
+    fun `フルコースイエローの空文字は保存後も空文字のまま取得できる`() =
+        runTest {
+            repository.saveFullCourseYellowFlagText("")
+
+            assertEquals("", repository.observeFullCourseYellowFlagText().first())
         }
 
     @Test
