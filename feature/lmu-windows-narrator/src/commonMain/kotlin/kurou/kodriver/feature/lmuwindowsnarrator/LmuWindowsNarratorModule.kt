@@ -112,7 +112,13 @@ val lmuWindowsNarratorModule: Module =
         factory { BrakeTemperatureUseCases(get(), get()) }
         factory { RemainingVirtualEnergyUseCases(get(), get()) }
         factory { PitTimingUseCases(get(), get(), get()) }
-        factory { LmuWindowsNarratorEventProcessor(get(named(Simulator.LmuWindows.id)), get()) }
+        factory {
+            LmuWindowsNarratorEventProcessor(
+                get(named(Simulator.LmuWindows.id)),
+                get(),
+                get<LmuWindowsFlagCustomTextSpeaker>()::readoutText,
+            )
+        }
 
         // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
         factory { DetermineLmuWindowsNarratorReadoutUseCase() }

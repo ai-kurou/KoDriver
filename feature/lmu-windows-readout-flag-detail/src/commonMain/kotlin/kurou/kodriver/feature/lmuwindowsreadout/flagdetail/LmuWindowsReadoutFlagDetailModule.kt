@@ -7,6 +7,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
@@ -36,6 +37,7 @@ val lmuWindowsReadoutFlagDetailModule =
                 get(),
                 get(named(Simulator.LmuWindows.id)),
                 get(),
+                get(),
             )
         }
 
@@ -53,6 +55,7 @@ val lmuWindowsReadoutFlagDetailModule =
         factory { SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(get()) }
         factory { ObserveLmuWindowsRedFlagReadoutTextUseCase(get()) }
         factory { SaveLmuWindowsRedFlagReadoutTextUseCase(get()) }
+        factory { ObserveSoundVolumeUseCase(get()) }
         factory { SpeakTextUseCase(get()) }
         factory { CheckTextToSpeechAvailableUseCase(get()) }
     }

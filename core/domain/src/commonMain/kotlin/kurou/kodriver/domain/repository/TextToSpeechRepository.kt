@@ -5,8 +5,8 @@ import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 /**
  * OS標準の音声合成（TTS）で任意のテキストを読み上げるRepository。
  *
- * KoDriver本来の読み上げは収録済みWAVの再生（`:core:narrator`）だが、ラップタイムのように
- * 事前収録では表現しきれない動的な文言を読み上げるための代替手段としてOSのTTSを使う。
+ * LMUフラッグの自由文字列や、ラップタイムなどの動的な文言をOSのTTSで読み上げる。
+ * 収録済みWAVの再生は `:core:narrator` が担当する。
  * 実装はWindows（デスクトップ）とAndroidのみで、それ以外のプラットフォームでは
  * [isAvailable] が `false` を返すNo-Op実装にフォールバックする。
  */

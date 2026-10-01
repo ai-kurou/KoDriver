@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -16,6 +17,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
@@ -67,6 +69,7 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
     private val speakText: SpeakTextUseCase,
     private val playStartSoundForKey: PlayStartSoundForKeyUseCase,
     checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
+    private val observeSoundVolume: ObserveSoundVolumeUseCase,
 ) : ViewModel() {
     private val textToSpeechAvailable =
         flow { emit(checkTextToSpeechAvailable()) }
@@ -112,8 +115,10 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
     ) {
         if (text.isBlank() || !textToSpeechAvailable.value) return
         viewModelScope.launch {
+            val volume = observeSoundVolume().first()
+            if (volume <= 0) return@launch
             playStartSoundForKey(item.key)
-            speakText(text)
+            speakText(text, volume = volume)
         }
     }
 }

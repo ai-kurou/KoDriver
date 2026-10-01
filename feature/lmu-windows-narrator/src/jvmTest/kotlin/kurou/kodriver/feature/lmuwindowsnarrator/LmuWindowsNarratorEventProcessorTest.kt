@@ -861,10 +861,85 @@ class LmuWindowsNarratorEventProcessorTest {
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
-    private fun createProcessor() =
+    @Test
+    fun `フラッグの自由文字列をログに保存する`() =
+        runTest {
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.BlueFlag, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    narratedText = "後続に譲ってください",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { "後続に譲ってください" }.processRaceFlags(
+                raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
+                events = listOf(SpeechEvent.BlueFlag),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BlueFlag, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    narratedText = "後続に譲ってください",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `本文を読み上げられないフラッグはスキップとして記録する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { null }.processRaceFlags(
+                raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
+                events = listOf(SpeechEvent.BlueFlag),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    private fun createProcessor(flagReadoutText: suspend (SpeechEvent) -> String? = { it.narratedText }) =
         LmuWindowsNarratorEventProcessor(
             ttsEngine = ttsEngine,
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            flagReadoutText = flagReadoutText,
         )
 }
 

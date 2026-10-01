@@ -43,7 +43,6 @@ fun LmuWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
     )
 }
 
-@Suppress("LongParameterList")
 @Composable
 internal fun LmuWindowsReadoutFlagDetailPaneContent(
     uiState: LmuWindowsReadoutFlagDetailUiState,

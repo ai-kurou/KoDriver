@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
+import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
@@ -44,6 +46,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     private val texts: LmuWindowsFlagReadoutTextPreferencesRepository = mockk()
     private val tts: TextToSpeechRepository = mockk()
     private val engine: TextToSpeechEngine = mockk()
+    private val volumes: SoundVolumePreferencesRepository = mockk()
 
     @BeforeTest
     fun setUp() {
@@ -63,8 +66,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         every { texts.observeRedFlagText() } returns flowOf("停止")
     }
 
-    private fun createViewModel() =
-        LmuWindowsReadoutFlagDetailViewModel(
+    private fun createViewModel(volume: Int = 42): LmuWindowsReadoutFlagDetailViewModel {
+        every { volumes.volume() } returns flowOf(volume)
+        return LmuWindowsReadoutFlagDetailViewModel(
             FlagSettingsUseCases(
                 ObserveLmuWindowsFlagEnabledStatesUseCase(flags),
                 SaveLmuWindowsFlagEnabledStateUseCase(flags),
@@ -82,7 +86,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             SpeakTextUseCase(tts),
             PlayStartSoundForKeyUseCase(engine),
             CheckTextToSpeechAvailableUseCase(tts),
+            ObserveSoundVolumeUseCase(volumes),
         )
+    }
 
     @Test
     fun `全フラッグの文言と有効状態を取得する`() =
@@ -136,14 +142,26 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         runTest {
             coEvery { tts.isAvailable() } returns true
             FlagReadoutItem.entries.forEach { coEvery { engine.playStartSound(it.key) } returns Unit }
-            coEvery { tts.speak("注意", false, 100) } returns Unit
+            coEvery { tts.speak("注意", false, 42) } returns Unit
             stubReadouts()
             val vm = createViewModel()
             FlagReadoutItem.entries.forEach { vm.onFlagTextPreviewClicked(it, "注意") }
             FlagReadoutItem.entries.forEach { coVerify(exactly = 1) { engine.playStartSound(it.key) } }
-            coVerify(exactly = 4) { tts.speak("注意", false, 100) }
+            coVerify(exactly = 4) { tts.speak("注意", false, 42) }
             coVerify(exactly = 1) { tts.isAvailable() }
             confirmVerified(engine, tts)
+        }
+
+    @Test
+    fun `音量ゼロでは開始音も本文も試聴しない`() =
+        runTest {
+            coEvery { tts.isAvailable() } returns true
+            stubReadouts()
+            val vm = createViewModel(volume = 0)
+            FlagReadoutItem.entries.forEach { vm.onFlagTextPreviewClicked(it, "注意") }
+            coVerify(exactly = 1) { tts.isAvailable() }
+            verify(exactly = 4) { volumes.volume() }
+            confirmVerified(tts, engine, volumes)
         }
 
     @Test

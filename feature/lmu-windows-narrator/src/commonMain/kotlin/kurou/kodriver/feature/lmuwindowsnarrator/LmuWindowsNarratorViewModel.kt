@@ -186,7 +186,7 @@ internal class LmuWindowsNarratorViewModel(
                 pitTimingUseCases.observeEnabledStates(),
             ),
         ) { states: Array<Map<ReadoutItemKey, Boolean>> ->
-            states.fold(emptyMap<ReadoutItemKey, Boolean>()) { acc, states -> acc + states }
+            states.fold(emptyMap<ReadoutItemKey, Boolean>()) { acc, enabledStates -> acc + enabledStates }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）

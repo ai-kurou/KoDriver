@@ -39,11 +39,16 @@ internal class LmuWindowsFlagCustomTextSpeaker(
         event: SpeechEvent,
         volume: Int,
     ): Boolean {
-        val text = customText(event) ?: return false
-        if (text.isBlank()) return false
-        if (!checkTextToSpeechAvailable()) return false
+        val text = readoutText(event) ?: return false
         speakText(text, volume = volume)
         return true
+    }
+
+    /** 現在の発話対象文言。空欄・TTS利用不可・フラッグ以外は null。 */
+    suspend fun readoutText(event: SpeechEvent): String? {
+        val text = customText(event) ?: return null
+        if (text.isBlank() || !checkTextToSpeechAvailable()) return null
+        return text
     }
 
     private suspend fun customText(event: SpeechEvent): String? =

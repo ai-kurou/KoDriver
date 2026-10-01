@@ -501,6 +501,7 @@ class LmuWindowsNarratorViewModelTest {
                 LmuWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+                    flagReadoutText = { it.narratedText },
                 ),
             narratorUseCases =
                 NarratorUseCases(

@@ -22,10 +22,11 @@ data class WavResources<EVENT, START_TYPE>(
 )
 
 /**
- * WAV 音声を読み上げるエンジンの共通実装。
+ * WAV 音声とカスタム読み上げを扱うエンジンの共通実装。
  *
  * LMU / GT7 / ACE の各 narrator feature は、[resources] にイベント→WAVファイルパスのマップと
- * 自身の compose resources（`Res::readBytes`）を渡すだけで、このエンジンをそのまま利用できる。
+ * 自身の compose resources（`Res::readBytes`）を渡す。TTS専用イベントは [customSpeakEvents] に
+ * 登録し、[customSpeak] で本文を読み上げる。
  * `domain.engine.TextToSpeechEngine` を実装する型（[EVENT] に `SpeechEvent`、[START_TYPE] に
  * `ReadoutStartSoundType`、[KEY] に `ReadoutItemKey` を割り当てたもの）は、`:core:domain` に依存する
  * 呼び出し側（各 narrator feature）が薄いアダプタとして用意する。core:narrator が `:core:domain` へ
