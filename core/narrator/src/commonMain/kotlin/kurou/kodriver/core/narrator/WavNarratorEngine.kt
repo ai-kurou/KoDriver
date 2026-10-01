@@ -41,13 +41,13 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     startSoundTypeFlow: Flow<START_TYPE> = flowOf(defaultStartSoundType),
     startSoundEnabledStatesFlow: Flow<Map<KEY, Boolean>> = flowOf(emptyMap()),
     /**
-     * [event] を渡し、WAV の代わりにこの関数側で読み上げを行わせたい場合に使うフック。
+     * [event] とアプリの読み上げ音量（0〜100）を渡し、WAV の代わりにこの関数側で読み上げを行わせたい場合に使うフック。
      * `true` を返すと、開始音は通常通り再生した上でWAV本編（[EVENT] に対応する [sounds]）の再生をスキップする。
      * `false`（既定）を返す、またはこのフック自体を渡さない場合は、常にWAVで読み上げる。
      * 再生中・優先度判定・割り込み（[currentKey] / [stop]）は呼び出し元の [play] と同じコルーチン上で
      * 実行されるため、WAVと同じ仕組みでそのまま扱える。
      */
-    private val customSpeak: (suspend (EVENT) -> Boolean)? = null,
+    private val customSpeak: (suspend (EVENT, Int) -> Boolean)? = null,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) {
     @Volatile
@@ -149,7 +149,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
         if (startSoundEnabled) {
             startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         }
-        val spokenByCustomSpeak = customSpeak?.invoke(event) == true
+        val spokenByCustomSpeak = customSpeak?.invoke(event, vol) == true
         if (!spokenByCustomSpeak) {
             soundPlayer.play(mainSound, vol)
         }

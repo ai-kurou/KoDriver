@@ -13,6 +13,7 @@ class FakeWindowsSpeechSynthesizer(
     private val blockUntilInterrupted: Boolean = false,
 ) : WindowsSpeechSynthesizer {
     val spokenTexts = mutableListOf<Pair<String, Boolean>>()
+    val spokenVolumes = mutableListOf<Int>()
     var stopCount = 0
         private set
     var wasInterrupted = false
@@ -32,8 +33,10 @@ class FakeWindowsSpeechSynthesizer(
     override fun speak(
         text: String,
         queue: Boolean,
+        volume: Int,
     ) {
         spokenTexts += text to queue
+        spokenVolumes += volume
         if (!blockUntilInterrupted) return
         speakStarted.countDown()
         try {

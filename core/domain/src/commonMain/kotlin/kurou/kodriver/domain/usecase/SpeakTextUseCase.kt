@@ -11,8 +11,9 @@ class SpeakTextUseCase(
     suspend operator fun invoke(
         text: String,
         queue: Boolean = false,
+        volume: Int = 100,
     ) {
         if (text.isBlank()) return
-        repository.speak(text, queue)
+        repository.speak(text, queue, volume)
     }
 }

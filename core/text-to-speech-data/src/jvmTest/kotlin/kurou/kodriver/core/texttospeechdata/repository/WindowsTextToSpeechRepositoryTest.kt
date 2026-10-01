@@ -77,6 +77,20 @@ class WindowsTextToSpeechRepositoryTest {
             WindowsTextToSpeechRepository(synthesizer).speak("ベストラップ", queue = true)
 
             assertEquals(listOf("ベストラップ" to true), synthesizer.spokenTexts)
+            assertEquals(listOf(100), synthesizer.spokenVolumes)
+        }
+
+    @Test
+    fun `speakは音量を0から100の範囲に丸めて音声合成へ渡す`() =
+        runTest {
+            val synthesizer = FakeWindowsSpeechSynthesizer()
+            val repository = WindowsTextToSpeechRepository(synthesizer)
+
+            repository.speak("ベストラップ", queue = false, volume = 40)
+            repository.speak("ベストラップ", queue = false, volume = -5)
+            repository.speak("ベストラップ", queue = false, volume = 150)
+
+            assertEquals(listOf(40, 0, 100), synthesizer.spokenVolumes)
         }
 
     @Test

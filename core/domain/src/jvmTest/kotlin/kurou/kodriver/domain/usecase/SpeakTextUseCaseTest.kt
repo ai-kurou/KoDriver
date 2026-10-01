@@ -15,7 +15,16 @@ class SpeakTextUseCaseTest {
         runTest {
             SpeakTextUseCase(repository)("ベストラップ")
 
-            coVerify(exactly = 1) { repository.speak("ベストラップ", false) }
+            coVerify(exactly = 1) { repository.speak("ベストラップ", false, 100) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `volumeを指定した場合はそのままRepositoryへ渡す`() =
+        runTest {
+            SpeakTextUseCase(repository)("ベストラップ", volume = 30)
+
+            coVerify(exactly = 1) { repository.speak("ベストラップ", false, 30) }
             confirmVerified(repository)
         }
 
@@ -24,7 +33,7 @@ class SpeakTextUseCaseTest {
         runTest {
             SpeakTextUseCase(repository)("ベストラップ", queue = true)
 
-            coVerify(exactly = 1) { repository.speak("ベストラップ", true) }
+            coVerify(exactly = 1) { repository.speak("ベストラップ", true, 100) }
             confirmVerified(repository)
         }
 
