@@ -107,7 +107,7 @@ private data class FlagChip(
 
 /**
  * [item] の収録音声のチップ一覧。
- * レッドフラッグは音声種別（RedFlag / SessionStop）ごとに2つ、ブルーフラッグは自由文字列のみのため0個、それ以外のフラッグは1つ。
+ * レッドフラッグは音声種別（RedFlag / SessionStop）ごとに2つ、ブルー・イエローフラッグは自由文字列のみのため0個、それ以外のフラッグは1つ。
  */
 @Composable
 private fun flagChips(
@@ -138,7 +138,7 @@ private fun FlagReadoutItem.isSessionStopSelected(voiceType: RedFlagVoiceType): 
 
 /**
  * 収録音声のチップとカスタム文言の入力欄を持つフラッグ項目のカード。
- * [chips] が空の項目（ブルーフラッグ）はチップを表示せず、カスタム文言の入力欄のみを表示する。
+ * [chips] が空の項目（ブルー・イエローフラッグ）はチップを表示せず、カスタム文言の入力欄のみを表示する。
  *
  * 収録音声のチップとカスタム文言の選択状態は排他にして、どちらが使われるかを明示する。
  * 選択状態は保存済みの文言と収録音声の選択設定から決まる（[customTextSelected]）。

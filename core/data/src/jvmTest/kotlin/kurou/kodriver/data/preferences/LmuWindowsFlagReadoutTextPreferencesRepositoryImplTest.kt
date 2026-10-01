@@ -33,9 +33,9 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `sectorYellowFlagText の初期値は空文字`() =
+    fun `sectorYellowFlagText の初期値はイエローフラッグ`() =
         runTest {
-            assertEquals("", repository.observeSectorYellowFlagText().first())
+            assertEquals("イエローフラッグ", repository.observeSectorYellowFlagText().first())
         }
 
     @Test

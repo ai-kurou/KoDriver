@@ -25,3 +25,6 @@ const val READOUT_RECORDED_VOICE_SELECTED_DEFAULT = false
  * 空文字にした場合のみ、収録済みWAVで読み上げる。
  */
 const val LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT = "ブルーフラッグ"
+
+/** LMU のイエローフラッグ読み上げ文言の初期値。空欄の場合は収録済みWAVにフォールバックする。 */
+const val LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT = "イエローフラッグ"

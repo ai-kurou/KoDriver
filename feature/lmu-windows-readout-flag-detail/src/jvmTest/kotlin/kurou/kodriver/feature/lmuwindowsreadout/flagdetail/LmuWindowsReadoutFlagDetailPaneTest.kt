@@ -136,7 +136,11 @@ class LmuWindowsReadoutFlagDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutFlagDetailPaneContent(
-                    uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
+                    uiState =
+                        LmuWindowsReadoutFlagDetailUiState(
+                            flagTexts = mapOf(FlagReadoutItem.SectorYellowFlag to ""),
+                            isTextToSpeechAvailable = true,
+                        ),
                     onFlagEnabledChanged = { _, _ -> },
                     onPreviewClicked = {},
                     onRecordedVoiceSelected = { _, _ -> },
@@ -148,7 +152,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("イエローフラッグ")[2].performTextInput("イエロー、注意")
+        rule.onAllNodesWithText("イエローフラッグ")[1].performTextInput("イエロー、注意")
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performClick()
 
         assertEquals("イエロー、注意", changedText)
@@ -189,7 +193,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
     }
 
     @Test
-    fun `ブルーフラッグは収録音声のチップを表示せず既定の文言が入力欄に表示される`() {
+    fun `ブルーとイエローフラッグはチップを表示せず既定の文言が入力欄に表示される`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutFlagDetailPaneContent(
@@ -207,8 +211,9 @@ class LmuWindowsReadoutFlagDetailPaneTest {
 
         // カードのタイトルと入力欄の既定文言のみ（チップがあれば3つになる）。
         rule.onAllNodesWithText("ブルーフラッグ").assertCountEquals(2)
-        // 他のフラッグはタイトル・チップ・入力欄（プレースホルダー）の3つ。
-        rule.onAllNodesWithText("イエローフラッグ").assertCountEquals(3)
+        rule.onAllNodesWithText("イエローフラッグ").assertCountEquals(2)
+        // フルコースイエローはタイトル・チップ・入力欄（プレースホルダー）の3つ。
+        rule.onAllNodesWithText("フルコースイエロー").assertCountEquals(3)
     }
 
     @Test
@@ -238,7 +243,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState =
                         LmuWindowsReadoutFlagDetailUiState(
-                            flagTexts = mapOf(FlagReadoutItem.SectorYellowFlag to "イエロー、前方注意"),
+                            flagTexts = mapOf(FlagReadoutItem.FullCourseYellow to "イエロー、前方注意"),
                             isTextToSpeechAvailable = true,
                         ),
                     onFlagEnabledChanged = { _, _ -> },
@@ -254,11 +259,11 @@ class LmuWindowsReadoutFlagDetailPaneTest {
 
         rule.onAllNodesWithContentDescription("この文言を読み上げます")[0].assertIsDisplayed()
         rule.onAllNodesWithText("この文言を音声合成で読み上げます（収録音声は使いません）")[0].assertIsDisplayed()
-        rule.onAllNodesWithText("イエローフラッグ")[1].assertIsNotSelected()
+        rule.onAllNodesWithText("フルコースイエロー")[1].assertIsNotSelected()
     }
 
     @Test
-    fun `カスタム文言があるときにイエローフラッグのチップをタップすると文言は消さず収録音声が選ばれる`() {
+    fun `カスタム文言があるときにフルコースイエローのチップをタップすると文言は消さず収録音声が選ばれる`() {
         var changedText: String? = null
         var previewedItem: FlagReadoutItem? = null
         var recordedVoiceItem: FlagReadoutItem? = null
@@ -267,7 +272,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState =
                         LmuWindowsReadoutFlagDetailUiState(
-                            flagTexts = mapOf(FlagReadoutItem.SectorYellowFlag to "イエロー、前方注意"),
+                            flagTexts = mapOf(FlagReadoutItem.FullCourseYellow to "イエロー、前方注意"),
                             isTextToSpeechAvailable = true,
                         ),
                     onFlagEnabledChanged = { _, _ -> },
@@ -284,11 +289,11 @@ class LmuWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("イエローフラッグ")[1].performClick()
+        rule.onAllNodesWithText("フルコースイエロー")[1].performClick()
 
         assertEquals(null, changedText)
-        assertEquals(FlagReadoutItem.SectorYellowFlag, recordedVoiceItem)
-        assertEquals(FlagReadoutItem.SectorYellowFlag, previewedItem)
+        assertEquals(FlagReadoutItem.FullCourseYellow, recordedVoiceItem)
+        assertEquals(FlagReadoutItem.FullCourseYellow, previewedItem)
     }
 
     @Test
@@ -298,8 +303,8 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState =
                         LmuWindowsReadoutFlagDetailUiState(
-                            flagTexts = mapOf(FlagReadoutItem.SectorYellowFlag to "イエロー、前方注意"),
-                            recordedVoiceSelected = mapOf(FlagReadoutItem.SectorYellowFlag to true),
+                            flagTexts = mapOf(FlagReadoutItem.FullCourseYellow to "イエロー、前方注意"),
+                            recordedVoiceSelected = mapOf(FlagReadoutItem.FullCourseYellow to true),
                             isTextToSpeechAvailable = true,
                         ),
                     onFlagEnabledChanged = { _, _ -> },
@@ -313,7 +318,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("イエローフラッグ")[1].assertIsSelected()
+        rule.onAllNodesWithText("フルコースイエロー")[1].assertIsSelected()
         rule
             .onAllNodesWithText("収録音声で読み上げます（入力した文言は保持。編集するとこの文言に切り替わります）")[0]
             .assertIsDisplayed()
@@ -339,10 +344,10 @@ class LmuWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("イエローフラッグ")[2].performTextInput("イ")
+        rule.onAllNodesWithText("フルコースイエロー")[2].performTextInput("イ")
 
         rule.onAllNodesWithContentDescription("この文言を読み上げます")[0].assertIsDisplayed()
-        rule.onAllNodesWithText("イエローフラッグ")[1].assertIsNotSelected()
+        rule.onAllNodesWithText("フルコースイエロー")[1].assertIsNotSelected()
     }
 
     @Test
