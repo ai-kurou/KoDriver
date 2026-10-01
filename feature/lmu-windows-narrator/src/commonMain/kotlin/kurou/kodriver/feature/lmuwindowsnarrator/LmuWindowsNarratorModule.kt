@@ -173,7 +173,6 @@ val lmuWindowsNarratorModule: Module =
                 observeBlueFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeFullCourseYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeRedFlagReadoutText = get(named(Simulator.LmuWindows.id)),
-                observeRecordedVoiceSelected = get(named(Simulator.LmuWindows.id)),
                 checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )

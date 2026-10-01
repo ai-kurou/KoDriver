@@ -615,10 +615,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             previous.gamePhase != SessionPhase.RED_FLAG &&
             raceFlags.gamePhase == SessionPhase.RED_FLAG
         ) {
-            when (settings.redFlagVoiceType) {
-                RedFlagVoiceType.RED_FLAG -> SpeechEvent.RedFlag
-                RedFlagVoiceType.SESSION_STOP -> SpeechEvent.SessionStop
-            }
+            // チップ廃止後は過去の音声種別設定を無視し、WAVへのフォールバックもレッドフラッグに統一する。
+            SpeechEvent.RedFlag
         } else {
             null
         }
