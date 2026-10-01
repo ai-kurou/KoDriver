@@ -17,6 +17,8 @@ GT7 PS5 の燃料残量アナウンス詳細設定を提供する feature モジ
 - `:feature:gt7-ps5-narrator`: 閾値を使った読み上げ判定
 - `:app:shared`: 読み上げ一覧から detail pane へ遷移
 
+一覧・詳細カードの表示名は「燃料残量」に統一しています。「残量閾値」は燃料の残量割合（%）に対する閾値を指します。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

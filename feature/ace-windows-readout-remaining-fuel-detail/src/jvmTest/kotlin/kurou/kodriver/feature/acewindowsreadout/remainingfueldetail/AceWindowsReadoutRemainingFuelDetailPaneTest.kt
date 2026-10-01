@@ -26,10 +26,11 @@ class AceWindowsReadoutRemainingFuelDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("残り燃料が設定した閾値を下回った場合に、音声でお知らせします。").assertIsDisplayed()
-        rule.onNodeWithText("残り燃料警告").assertIsDisplayed()
+        rule.onNodeWithText("燃料残量").assertIsDisplayed()
+        rule.onNodeWithText("燃料残量が設定した閾値以下になった場合に、音声でお知らせします。").assertIsDisplayed()
+        rule.onNodeWithText("燃料残量警告").assertIsDisplayed()
         rule.onNodeWithText("残量閾値").assertIsDisplayed()
-        rule.onNodeWithText("残り燃料が30%以下になると警告を読み上げます。").assertIsDisplayed()
+        rule.onNodeWithText("燃料残量が30%以下になると警告を読み上げます。").assertIsDisplayed()
         rule.onNodeWithText("30%").assertIsDisplayed()
     }
 
@@ -44,7 +45,7 @@ class AceWindowsReadoutRemainingFuelDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("残り燃料警告").performClick()
+        rule.onNodeWithText("燃料残量警告").performClick()
 
         assertEquals(true, previewClicked)
     }
@@ -99,7 +100,7 @@ class AceWindowsReadoutRemainingFuelDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("残り燃料").performClick()
+        rule.onNodeWithText("燃料残量").performClick()
 
         assertEquals(false, changedEnabled)
     }

@@ -11,7 +11,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
- * 残り燃料アナウンス詳細設定（ace-windows-readout-remaining-fuel-detail feature）の Koin モジュール。
+ * 燃料残量アナウンス詳細設定（ace-windows-readout-remaining-fuel-detail feature）の Koin モジュール。
  *
  * 提供: AceWindowsReadoutRemainingFuelDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: AceWindowsRemainingFuelPreferencesRepository・ReadoutPreferencesRepository（:core:data）、
