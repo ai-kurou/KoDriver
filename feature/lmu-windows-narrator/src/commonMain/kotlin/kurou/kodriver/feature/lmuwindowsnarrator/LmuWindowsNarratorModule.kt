@@ -13,7 +13,6 @@ import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
@@ -22,7 +21,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCa
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -72,7 +70,7 @@ import org.koin.dsl.module
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
  *   各フラッグのカスタム文言の Observe UseCase・TextToSpeechEngine）、
  *   および LmuWindowsFlagCustomTextSpeaker（フラッグの実際の読み上げ時に
- *   収録WAVとカスタム文言のOS標準TTSを切り替えるフック。WavNarratorEngine の customSpeak に渡す）。
+ *   自由文字列をOS標準TTSで読み上げるフック。WavNarratorEngine の customSpeak に渡す）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）、unqualified の CheckTextToSpeechAvailableUseCase
  *   （:feature:lmu-windows-readout-flag-detail が登録。TTSが実際に利用可能かどうかは
@@ -102,7 +100,7 @@ val lmuWindowsNarratorModule: Module =
         }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-        factory { NarratorUseCases(get(), get(), get(), get()) }
+        factory { NarratorUseCases(get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
         factory { VehicleDamageUseCases(get(), get()) }
@@ -121,7 +119,6 @@ val lmuWindowsNarratorModule: Module =
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
         factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
-        factory { ObserveLmuWindowsRedFlagVoiceTypeUseCase(get()) }
         factory { ObserveLmuWindowsOverheatVoiceTypeUseCase(get()) }
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
@@ -157,8 +154,8 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.LmuWindows.id))) }
         includes(platformSoundModule(named(Simulator.LmuWindows.id)))
 
-        // フラッグの実際の読み上げ時に、チップ選択（収録WAV）とカスタム文言（OS標準TTS）を
-        // 切り替えるためのフック。unqualified の SpeakTextUseCase / 各フラッグの Observe…ReadoutTextUseCase は
+        // フラッグ本文をOS標準TTSのみで
+        // 読み上げるフック。unqualified の SpeakTextUseCase / 各フラッグの Observe…ReadoutTextUseCase は
         // feature:lmu-windows-readout-flag-detail が試聴用に別途定義しているため、
         // 同じ型を二重定義しないよう named(Simulator.LmuWindows.id) で区別する。
         factory(named(Simulator.LmuWindows.id)) { SpeakTextUseCase(get()) }
@@ -166,7 +163,6 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBlueFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRedFlagReadoutTextUseCase(get()) }
-        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase(get()) }
         factory {
             LmuWindowsFlagCustomTextSpeaker(
                 observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
@@ -195,6 +191,13 @@ val lmuWindowsNarratorModule: Module =
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
                     customSpeak = get<LmuWindowsFlagCustomTextSpeaker>()::invoke,
+                    customSpeakEvents =
+                        setOf(
+                            SpeechEvent.BlueFlag,
+                            SpeechEvent.YellowFlag,
+                            SpeechEvent.FullCourseYellow,
+                            SpeechEvent.RedFlag,
+                        ),
                 ),
             )
         }
@@ -210,11 +213,6 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.KeepRight, "files/keep_right.wav")
         put(SpeechEvent.LeftSustained, "files/left_sustained.wav")
         put(SpeechEvent.RightSustained, "files/right_sustained.wav")
-        put(SpeechEvent.BlueFlag, "files/blue_flag.wav")
-        put(SpeechEvent.YellowFlag, "files/yellow_flag.wav")
-        put(SpeechEvent.FullCourseYellow, "files/full_course_yellow.wav")
-        put(SpeechEvent.SessionStop, "files/session_stopped.wav")
-        put(SpeechEvent.RedFlag, "files/red_flag.wav")
         put(SpeechEvent.Overheating, "files/gp2_gp2.wav")
         put(SpeechEvent.OverheatingStandard, "files/overheat.wav")
         put(SpeechEvent.PartDetached, "files/part_detached.wav")

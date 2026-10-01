@@ -8,7 +8,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
 
-/** フラッグの既定文言と、WAVの読み上げ内容を表す [SpeechEvent.narratedText] の一致を検証する。 */
+/** フラッグの既定文言と、ログ用の既定文言を表す [SpeechEvent.narratedText] の一致を検証する。 */
 class LmuWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
     @get:Rule
     val rule = createComposeRule()
@@ -20,10 +20,6 @@ class LmuWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
                 LmuWindowsReadoutFlagDetailPaneContent(
                     uiState = LmuWindowsReadoutFlagDetailUiState(),
                     onFlagEnabledChanged = { _, _ -> },
-                    onPreviewClicked = {},
-                    onRecordedVoiceSelected = { _, _ -> },
-                    onRedFlagVoiceTypeChanged = {},
-                    onRedFlagPreviewClicked = {},
                     onFlagTextChanged = { _, _ -> },
                     onFlagTextPreviewClicked = { _, _ -> },
                 )

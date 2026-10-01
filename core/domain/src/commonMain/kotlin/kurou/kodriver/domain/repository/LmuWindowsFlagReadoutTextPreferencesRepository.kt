@@ -1,15 +1,8 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
 
-/**
- * LMU のフラッグ読み上げ項目について、ユーザーが指定したカスタム読み上げ文言を永続化する Repository。
- *
- * 空文字は「カスタムしていない」状態を表し、その場合は収録済みWAVで読み上げる。
- * 収録音声が明示的に選ばれている場合（[observeRecordedVoiceSelected]）は、文言が残っていても収録済みWAVで読み上げる。
- */
-@Suppress("TooManyFunctions")
+/** LMU のフラッグごとの自由文字列を永続化する。空白文言では本文を読み上げない。 */
 interface LmuWindowsFlagReadoutTextPreferencesRepository {
     fun observeSectorYellowFlagText(): Flow<String>
 
@@ -26,21 +19,4 @@ interface LmuWindowsFlagReadoutTextPreferencesRepository {
     fun observeRedFlagText(): Flow<String>
 
     suspend fun saveRedFlagText(text: String)
-
-    fun observeRecordedVoiceSelected(target: LmuWindowsFlagReadoutTarget): Flow<Boolean>
-
-    suspend fun saveRecordedVoiceSelected(
-        target: LmuWindowsFlagReadoutTarget,
-        selected: Boolean,
-    )
-
-    /**
-     * [target] のカスタム文言と収録音声の選択状態を1回の更新でまとめて保存する。
-     * 別々に保存すると、間に別の操作の書き込みが割り込んだとき文言と選択状態が食い違うため、必ずこちらを使う。
-     */
-    suspend fun saveTextAndRecordedVoiceSelected(
-        target: LmuWindowsFlagReadoutTarget,
-        text: String,
-        selected: Boolean,
-    )
 }

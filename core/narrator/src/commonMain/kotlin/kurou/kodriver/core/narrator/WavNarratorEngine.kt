@@ -43,11 +43,13 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     /**
      * [event] とアプリの読み上げ音量（0〜100）を渡し、WAV の代わりにこの関数側で読み上げを行わせたい場合に使うフック。
      * `true` を返すと、開始音は通常通り再生した上でWAV本編（[EVENT] に対応する [sounds]）の再生をスキップする。
-     * `false`（既定）を返す、またはこのフック自体を渡さない場合は、常にWAVで読み上げる。
+     * `false`（既定）を返す、またはこのフック自体を渡さない場合は、WAV本文があればWAVで読み上げる。TTS専用イベントは本文を再生しない。
      * 再生中・優先度判定・割り込み（[currentKey] / [stop]）は呼び出し元の [play] と同じコルーチン上で
      * 実行されるため、WAVと同じ仕組みでそのまま扱える。
      */
     private val customSpeak: (suspend (EVENT, Int) -> Boolean)? = null,
+    /** WAV本文を持たず、[customSpeak] のみで処理するイベント。 */
+    private val customSpeakEvents: Set<EVENT> = emptySet(),
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) {
     @Volatile
@@ -116,7 +118,8 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
         event: EVENT,
         queue: Boolean = false,
     ) {
-        val mainSound = sounds[event] ?: return
+        val mainSound = sounds[event]
+        if (mainSound == null && event !in customSpeakEvents) return
         if (queue) {
             // stop() 直後で playbackParent がキャンセル済みのままだと、その配下へ launch した
             // 瞬間に子ジョブごとキャンセルされてしまうため、生存中でなければ差し替える。
@@ -140,7 +143,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
 
     private suspend fun play(
         event: EVENT,
-        mainSound: ByteArray,
+        mainSound: ByteArray?,
     ) {
         val key = eventToKey(event)
         _currentKey = key
@@ -150,7 +153,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
             startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         }
         val spokenByCustomSpeak = customSpeak?.invoke(event, vol) == true
-        if (!spokenByCustomSpeak) {
+        if (!spokenByCustomSpeak && mainSound != null) {
             soundPlayer.play(mainSound, vol)
         }
         _currentKey = null

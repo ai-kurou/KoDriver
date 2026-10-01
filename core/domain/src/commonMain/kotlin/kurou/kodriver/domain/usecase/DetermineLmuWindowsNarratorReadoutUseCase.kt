@@ -17,7 +17,6 @@ import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
-import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -99,7 +98,6 @@ data class LmuWindowsNarratorReadoutSettings(
     @Serializable(with = ReadoutItemKeyMapSerializer::class)
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val myBestLapVoiceType: MyBestLapVoiceType,
-    val redFlagVoiceType: RedFlagVoiceType,
     val overheatVoiceType: OverheatVoiceType,
     val currentLap: Int,
     val skipFirstLap: Boolean,
@@ -615,7 +613,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             previous.gamePhase != SessionPhase.RED_FLAG &&
             raceFlags.gamePhase == SessionPhase.RED_FLAG
         ) {
-            // チップ廃止後は過去の音声種別設定を無視し、WAVへのフォールバックもレッドフラッグに統一する。
+            // 赤旗本文は自由文字列を読み上げる。
             SpeechEvent.RedFlag
         } else {
             null

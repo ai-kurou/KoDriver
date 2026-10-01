@@ -3,45 +3,34 @@ package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagRecordedVoiceSelectedUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal data class FlagSettingsUseCases(
     val observeFlagEnabledStates: ObserveLmuWindowsFlagEnabledStatesUseCase,
-    val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
     val saveFlagEnabledState: SaveLmuWindowsFlagEnabledStateUseCase,
-    val saveRedFlagVoiceType: SaveLmuWindowsRedFlagVoiceTypeUseCase,
     val readoutTexts: FlagReadoutTextUseCases,
 )
 
-/** フラッグごとのカスタム読み上げ文言と収録音声の選択状態の Observe / Save UseCase を [FlagReadoutItem] で引けるようにまとめたもの。 */
+/** フラッグごとのカスタム読み上げ文言の Observe / Save UseCase を [FlagReadoutItem] で引けるようにまとめたもの。 */
 internal data class FlagReadoutTextUseCases(
     val observeSectorYellowFlag: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase,
     val observeBlueFlag: ObserveLmuWindowsBlueFlagReadoutTextUseCase,
@@ -51,28 +40,7 @@ internal data class FlagReadoutTextUseCases(
     val saveBlueFlag: SaveLmuWindowsBlueFlagReadoutTextUseCase,
     val saveFullCourseYellow: SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase,
     val saveRedFlag: SaveLmuWindowsRedFlagReadoutTextUseCase,
-    val observeRecordedVoiceSelected: ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase,
-    val saveRecordedVoiceSelected: SaveLmuWindowsFlagRecordedVoiceSelectedUseCase,
-    val saveTextAndRecordedVoiceSelected: SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase,
 ) {
-    fun observeRecordedVoiceSelected(item: FlagReadoutItem): Flow<Boolean> = observeRecordedVoiceSelected(item.target)
-
-    suspend fun saveRecordedVoiceSelected(
-        item: FlagReadoutItem,
-        selected: Boolean,
-    ) {
-        saveRecordedVoiceSelected(item.target, selected)
-    }
-
-    /** 文言と収録音声の選択状態を1回の更新で保存する（別々に保存すると並行する操作と食い違うため）。 */
-    suspend fun saveTextAndRecordedVoiceSelected(
-        item: FlagReadoutItem,
-        text: String,
-        selected: Boolean,
-    ) {
-        saveTextAndRecordedVoiceSelected(item.target, text, selected)
-    }
-
     fun observe(item: FlagReadoutItem): Flow<String> =
         when (item) {
             FlagReadoutItem.BlueFlag -> observeBlueFlag()
@@ -96,21 +64,17 @@ internal data class FlagReadoutTextUseCases(
 
 internal class LmuWindowsReadoutFlagDetailViewModel(
     private val settingsUseCases: FlagSettingsUseCases,
-    private val playSpeechEvent: PlaySpeechEventUseCase,
     private val speakText: SpeakTextUseCase,
     private val playStartSoundForKey: PlayStartSoundForKeyUseCase,
     checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
 ) : ViewModel() {
-    private val textToSpeechAvailable = MutableStateFlow(false)
-
-    init {
-        viewModelScope.launch { textToSpeechAvailable.value = checkTextToSpeechAvailable() }
-    }
+    private val textToSpeechAvailable =
+        flow { emit(checkTextToSpeechAvailable()) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val uiState: StateFlow<LmuWindowsReadoutFlagDetailUiState> =
         combine(
             settingsUseCases.observeFlagEnabledStates(),
-            settingsUseCases.observeRedFlagVoiceType(),
             combine(
                 FlagReadoutItem.entries.map { item ->
                     settingsUseCases.readoutTexts.observe(item).map { item to it }
@@ -118,20 +82,11 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
             ) {
                 it.toMap()
             },
-            combine(
-                FlagReadoutItem.entries.map { item ->
-                    settingsUseCases.readoutTexts.observeRecordedVoiceSelected(item).map { item to it }
-                },
-            ) {
-                it.toMap()
-            },
             textToSpeechAvailable,
-        ) { enabledStates, redFlagVoiceType, flagTexts, recordedVoiceSelected, isTextToSpeechAvailable ->
+        ) { enabledStates, flagTexts, isTextToSpeechAvailable ->
             LmuWindowsReadoutFlagDetailUiState(
                 enabledStates = enabledStates,
-                redFlagVoiceType = redFlagVoiceType,
                 flagTexts = flagTexts,
-                recordedVoiceSelected = recordedVoiceSelected,
                 isTextToSpeechAvailable = isTextToSpeechAvailable,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutFlagDetailUiState())
@@ -143,75 +98,22 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         viewModelScope.launch { settingsUseCases.saveFlagEnabledState(item.key, enabled) }
     }
 
-    fun onPreviewClicked(item: FlagReadoutItem) {
-        playSpeechEvent(item.previewEvent)
-    }
-
-    fun onRedFlagVoiceTypeChanged(type: RedFlagVoiceType) {
-        viewModelScope.launch { settingsUseCases.saveRedFlagVoiceType(type) }
-    }
-
-    fun onRedFlagPreviewClicked(type: RedFlagVoiceType) {
-        playSpeechEvent(type.speechEvent())
-    }
-
     fun onFlagTextChanged(
         item: FlagReadoutItem,
         text: String,
     ) {
-        viewModelScope.launch {
-            if (text.isEmpty()) {
-                settingsUseCases.readoutTexts.save(item, text)
-            } else {
-                // 文言を入力した時点でカスタム文言を使う意思とみなし、収録音声の明示選択を解除する。
-                // 文言と選択状態は別々に保存すると並行するチップ操作と食い違うため、1回の更新で保存する。
-                settingsUseCases.readoutTexts.saveTextAndRecordedVoiceSelected(item, text, false)
-            }
-        }
+        viewModelScope.launch { settingsUseCases.readoutTexts.save(item, text) }
     }
 
-    /**
-     * 収録音声のチップが選ばれたとき。入力済みのカスタム文言は残したまま、収録音声で読み上げる設定にする。
-     * 試聴の読み上げは保存済みの選択状態を参照するため、保存の完了を待ってから [preview] を呼ぶ。
-     */
-    fun onRecordedVoiceSelected(
-        item: FlagReadoutItem,
-        preview: () -> Unit,
-    ) {
-        viewModelScope.launch {
-            settingsUseCases.readoutTexts.saveRecordedVoiceSelected(item, true)
-            preview()
-        }
-    }
-
-    /**
-     * カスタム文言の試聴。文言が空のときは、実際の読み上げと同じく収録済みWAVを再生する。
-     * レッドフラッグは音声種別（RedFlag / SessionStop）で収録音声が異なるため、選択中の種別のWAVを再生する。
-     */
+    /** 空白文言・TTS利用不可時は試聴しない。本文はOS標準TTSのみで読み上げる。 */
     fun onFlagTextPreviewClicked(
         item: FlagReadoutItem,
         text: String,
     ) {
+        if (text.isBlank() || !textToSpeechAvailable.value) return
         viewModelScope.launch {
-            if (text.isBlank()) {
-                playSpeechEvent(previewEvent(item))
-            } else {
-                playStartSoundForKey(item.key)
-                speakText(text)
-            }
+            playStartSoundForKey(item.key)
+            speakText(text)
         }
     }
-
-    private suspend fun previewEvent(item: FlagReadoutItem): SpeechEvent =
-        if (item == FlagReadoutItem.RedFlag) {
-            settingsUseCases.observeRedFlagVoiceType().first().speechEvent()
-        } else {
-            item.previewEvent
-        }
-
-    private fun RedFlagVoiceType.speechEvent(): SpeechEvent =
-        when (this) {
-            RedFlagVoiceType.RED_FLAG -> SpeechEvent.RedFlag
-            RedFlagVoiceType.SESSION_STOP -> SpeechEvent.SessionStop
-        }
 }

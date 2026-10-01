@@ -25,10 +25,10 @@ class PlaySpeechEventUseCaseTest {
         val useCase = PlaySpeechEventUseCase(engine)
 
         useCase(SpeechEvent.YellowFlag)
-        useCase(SpeechEvent.SessionStop)
+        useCase(SpeechEvent.RedFlag)
 
         verify(exactly = 1) { engine.speak(SpeechEvent.YellowFlag, false) }
-        verify(exactly = 1) { engine.speak(SpeechEvent.SessionStop, false) }
+        verify(exactly = 1) { engine.speak(SpeechEvent.RedFlag, false) }
         confirmVerified(engine)
     }
 

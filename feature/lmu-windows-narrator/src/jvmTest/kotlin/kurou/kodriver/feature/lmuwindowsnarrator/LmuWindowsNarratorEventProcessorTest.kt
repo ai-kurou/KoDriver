@@ -45,7 +45,6 @@ import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
@@ -876,7 +875,6 @@ private fun logContext() =
             LmuWindowsNarratorReadoutSettings(
                 enabledStates = mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
                 myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-                redFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
                 overheatVoiceType = OverheatVoiceType.GP2_GP2,
                 currentLap = 1,
                 skipFirstLap = false,
@@ -957,7 +955,6 @@ private fun pitTimingLogContext() =
             LmuWindowsNarratorReadoutSettings(
                 enabledStates = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
                 myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-                redFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
                 overheatVoiceType = OverheatVoiceType.GP2_GP2,
                 currentLap = 1,
                 skipFirstLap = false,

@@ -615,11 +615,54 @@ class WavNarratorEngineTest {
             assertEquals(true, wasCancelled)
         }
 
+    @Test
+    fun `WAVのないTTS専用イベントも音量と開始音を伴ってキュー再生する`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val calls = mutableListOf<Pair<String, Int>>()
+            val engine =
+                createEngine(
+                    player,
+                    volumeFlow = flowOf(42),
+                    customSpeakEvents = setOf("tts_only"),
+                    customSpeak = { event, volume ->
+                        calls.add(event to volume)
+                        true
+                    },
+                )
+            runCurrent()
+            engine.speak("tts_only")
+            engine.speak("tts_only", queue = true)
+            advanceUntilIdle()
+            assertEquals(listOf("tts_only" to 42, "tts_only" to 42), calls)
+            assertEquals(2, player.playedSounds.size)
+            player.playedSounds.forEach { assertContentEquals(FORMULA_RADIO_SOUND, it) }
+        }
+
+    @Test
+    fun `TTS専用イベントを処理できなくてもWAV本文にフォールバックしない`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine =
+                createEngine(
+                    player,
+                    customSpeakEvents = setOf("tts_only"),
+                    customSpeak = { _, _ -> false },
+                    startSoundEnabledStatesFlow = flowOf(mapOf("tts_only_key" to false)),
+                )
+            runCurrent()
+            engine.speak("tts_only")
+            advanceUntilIdle()
+            assertEquals(0, player.playedSounds.size)
+        }
+
+    @Suppress("LongParameterList")
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
         volumeFlow: Flow<Int> = flowOf(100),
         startSoundTypeFlow: Flow<String> = flowOf(FORMULA_RADIO),
         startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
+        customSpeakEvents: Set<String> = emptySet(),
         customSpeak: (suspend (String, Int) -> Boolean)? = null,
         resourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
@@ -661,6 +704,7 @@ class WavNarratorEngineTest {
             startSoundTypeFlow = startSoundTypeFlow,
             startSoundEnabledStatesFlow = startSoundEnabledStatesFlow,
             customSpeak = customSpeak,
+            customSpeakEvents = customSpeakEvents,
             scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
         )
 
