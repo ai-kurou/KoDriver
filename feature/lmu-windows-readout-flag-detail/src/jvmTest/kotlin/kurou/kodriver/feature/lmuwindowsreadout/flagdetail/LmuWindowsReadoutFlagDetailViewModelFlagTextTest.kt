@@ -396,7 +396,7 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
         }
 
     @Test
-    fun `収録音声の選択状態が UiState に反映され文言があっても収録音声が選ばれていればカスタム文言扱いにならない（ブルーとイエローフラッグを除く）`() =
+    fun `ブルーとイエローは収録音声が選ばれていてもカスタム文言を使う`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
