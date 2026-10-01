@@ -678,6 +678,35 @@ class WavNarratorEngineTest {
             assertEquals(0, player.playedSounds.size)
         }
 
+    @Test
+    fun `TTS発話中にqueue trueのWAVイベントが来ると発話完了まで待ってから再生する`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val speechFinished = CompletableDeferred<Unit>()
+            val engine =
+                createEngine(
+                    player,
+                    customSpeakEvents = setOf(TTS_ONLY),
+                    customSpeak = { _, _ -> speechFinished.await() },
+                )
+            runCurrent()
+
+            engine.speak(TTS_ONLY)
+            engine.speak(CAR_LEFT, queue = true)
+            runCurrent()
+
+            // TTSが発話中のため、再生済みはTTS側の開始音のみでWAV本文はまだ再生されない。
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+
+            speechFinished.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals(3, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[1])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[2])
+        }
+
     @Suppress("LongParameterList")
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
