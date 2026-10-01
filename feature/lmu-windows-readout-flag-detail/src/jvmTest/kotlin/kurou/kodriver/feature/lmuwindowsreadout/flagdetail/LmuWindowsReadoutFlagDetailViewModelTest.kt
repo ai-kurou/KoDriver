@@ -39,6 +39,7 @@ import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagRecordedVoiceSelectedUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
@@ -99,6 +100,8 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                             observeRecordedVoiceSelected =
                                 ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase(textRepository),
                             saveRecordedVoiceSelected = SaveLmuWindowsFlagRecordedVoiceSelectedUseCase(textRepository),
+                            saveTextAndRecordedVoiceSelected =
+                                SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase(textRepository),
                         ),
                 ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),

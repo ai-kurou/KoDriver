@@ -58,7 +58,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     uiState: LmuWindowsReadoutFlagDetailUiState,
     onFlagEnabledChanged: (FlagReadoutItem, Boolean) -> Unit,
     onPreviewClicked: (FlagReadoutItem) -> Unit,
-    onRecordedVoiceSelected: (FlagReadoutItem) -> Unit,
+    onRecordedVoiceSelected: (FlagReadoutItem, () -> Unit) -> Unit,
     onRedFlagVoiceTypeChanged: (RedFlagVoiceType) -> Unit,
     onRedFlagPreviewClicked: (RedFlagVoiceType) -> Unit,
     onFlagTextChanged: (FlagReadoutItem, String) -> Unit,
@@ -91,7 +91,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 selectedChip = chips[if (item.isSessionStopSelected(uiState.redFlagVoiceType)) 1 else 0],
                 isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
-                onRecordedVoiceSelected = { onRecordedVoiceSelected(item) },
+                onRecordedVoiceSelected = { preview -> onRecordedVoiceSelected(item, preview) },
                 onTextChanged = { text -> onFlagTextChanged(item, text) },
                 onTextPreviewClick = { text -> onFlagTextPreviewClicked(item, text) },
             )
@@ -153,7 +153,7 @@ private fun FlagReadoutCard(
     selectedChip: FlagChip,
     isTextToSpeechAvailable: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    onRecordedVoiceSelected: () -> Unit,
+    onRecordedVoiceSelected: (preview: () -> Unit) -> Unit,
     onTextChanged: (String) -> Unit,
     onTextPreviewClick: (String) -> Unit,
 ) {
@@ -169,8 +169,8 @@ private fun FlagReadoutCard(
                 chipEnabled = true,
                 onChipClick = { label ->
                     // 収録音声のチップを選び直す操作。入力済みのカスタム文言は消さず、収録音声を使う設定にする。
-                    onRecordedVoiceSelected()
-                    chips.first { it.label == label }.onClick()
+                    // 試聴は保存済みの選択状態を参照するため、保存の完了後に行う。
+                    onRecordedVoiceSelected { chips.first { it.label == label }.onClick() }
                 },
             )
             DetailPaneCardTextField(
@@ -213,7 +213,7 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
                 ),
             onFlagEnabledChanged = { _, _ -> },
             onPreviewClicked = {},
-            onRecordedVoiceSelected = {},
+            onRecordedVoiceSelected = { _, _ -> },
             onRedFlagVoiceTypeChanged = {},
             onRedFlagPreviewClicked = {},
             onFlagTextChanged = { _, _ -> },

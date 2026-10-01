@@ -43,6 +43,25 @@ internal class LmuWindowsFlagReadoutTextPreferencesRepositoryImpl(
         dataStore.saveProperty(selected) { prefs, value -> prefs.withRecordedVoiceSelected(target, value) }
     }
 
+    override suspend fun saveTextAndRecordedVoiceSelected(
+        target: LmuWindowsFlagReadoutTarget,
+        text: String,
+        selected: Boolean,
+    ) {
+        dataStore.updateData { prefs -> prefs.withText(target, text).withRecordedVoiceSelected(target, selected) }
+    }
+
+    private fun FlagReadoutTextPreferences.withText(
+        target: LmuWindowsFlagReadoutTarget,
+        text: String,
+    ): FlagReadoutTextPreferences =
+        when (target) {
+            LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG -> copy(sectorYellowFlagText = text)
+            LmuWindowsFlagReadoutTarget.BLUE_FLAG -> copy(blueFlagText = text)
+            LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW -> copy(fullCourseYellowFlagText = text)
+            LmuWindowsFlagReadoutTarget.RED_FLAG -> copy(redFlagText = text)
+        }
+
     private fun FlagReadoutTextPreferences.recordedVoiceSelected(target: LmuWindowsFlagReadoutTarget): Boolean =
         when (target) {
             LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG -> sectorYellowFlagRecordedVoiceSelected

@@ -125,4 +125,21 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
                 assertFalse(repository.observeRecordedVoiceSelected(target).first())
             }
         }
+
+    @Test
+    fun `saveTextAndRecordedVoiceSelected は指定フラッグの文言と選択状態を同時に保存し他のフラッグは変更しない`() =
+        runTest {
+            LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+                repository.saveRecordedVoiceSelected(target, true)
+                repository.saveTextAndRecordedVoiceSelected(target, "文言-${target.name}", false)
+            }
+
+            assertEquals("文言-SECTOR_YELLOW_FLAG", repository.observeSectorYellowFlagText().first())
+            assertEquals("文言-BLUE_FLAG", repository.observeBlueFlagText().first())
+            assertEquals("文言-FULL_COURSE_YELLOW", repository.observeFullCourseYellowFlagText().first())
+            assertEquals("文言-RED_FLAG", repository.observeRedFlagText().first())
+            LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+                assertFalse(repository.observeRecordedVoiceSelected(target).first())
+            }
+        }
 }

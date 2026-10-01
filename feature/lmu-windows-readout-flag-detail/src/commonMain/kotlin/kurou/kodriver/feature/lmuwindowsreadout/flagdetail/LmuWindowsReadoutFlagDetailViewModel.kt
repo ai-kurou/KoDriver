@@ -26,6 +26,7 @@ import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagRecordedVoiceSelectedUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
@@ -52,6 +53,7 @@ internal data class FlagReadoutTextUseCases(
     val saveRedFlag: SaveLmuWindowsRedFlagReadoutTextUseCase,
     val observeRecordedVoiceSelected: ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase,
     val saveRecordedVoiceSelected: SaveLmuWindowsFlagRecordedVoiceSelectedUseCase,
+    val saveTextAndRecordedVoiceSelected: SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase,
 ) {
     fun observeRecordedVoiceSelected(item: FlagReadoutItem): Flow<Boolean> = observeRecordedVoiceSelected(item.target)
 
@@ -60,6 +62,15 @@ internal data class FlagReadoutTextUseCases(
         selected: Boolean,
     ) {
         saveRecordedVoiceSelected(item.target, selected)
+    }
+
+    /** 文言と収録音声の選択状態を1回の更新で保存する（別々に保存すると並行する操作と食い違うため）。 */
+    suspend fun saveTextAndRecordedVoiceSelected(
+        item: FlagReadoutItem,
+        text: String,
+        selected: Boolean,
+    ) {
+        saveTextAndRecordedVoiceSelected(item.target, text, selected)
     }
 
     fun observe(item: FlagReadoutItem): Flow<String> =
@@ -149,17 +160,28 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         text: String,
     ) {
         viewModelScope.launch {
-            settingsUseCases.readoutTexts.save(item, text)
-            // 文言を入力した時点でカスタム文言を使う意思とみなし、収録音声の明示選択を解除する。
-            if (text.isNotEmpty()) settingsUseCases.readoutTexts.saveRecordedVoiceSelected(item, false)
+            if (text.isEmpty()) {
+                settingsUseCases.readoutTexts.save(item, text)
+            } else {
+                // 文言を入力した時点でカスタム文言を使う意思とみなし、収録音声の明示選択を解除する。
+                // 文言と選択状態は別々に保存すると並行するチップ操作と食い違うため、1回の更新で保存する。
+                settingsUseCases.readoutTexts.saveTextAndRecordedVoiceSelected(item, text, false)
+            }
         }
     }
 
     /**
      * 収録音声のチップが選ばれたとき。入力済みのカスタム文言は残したまま、収録音声で読み上げる設定にする。
+     * 試聴の読み上げは保存済みの選択状態を参照するため、保存の完了を待ってから [preview] を呼ぶ。
      */
-    fun onRecordedVoiceSelected(item: FlagReadoutItem) {
-        viewModelScope.launch { settingsUseCases.readoutTexts.saveRecordedVoiceSelected(item, true) }
+    fun onRecordedVoiceSelected(
+        item: FlagReadoutItem,
+        preview: () -> Unit,
+    ) {
+        viewModelScope.launch {
+            settingsUseCases.readoutTexts.saveRecordedVoiceSelected(item, true)
+            preview()
+        }
     }
 
     /**

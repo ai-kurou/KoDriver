@@ -33,4 +33,14 @@ interface LmuWindowsFlagReadoutTextPreferencesRepository {
         target: LmuWindowsFlagReadoutTarget,
         selected: Boolean,
     )
+
+    /**
+     * [target] のカスタム文言と収録音声の選択状態を1回の更新でまとめて保存する。
+     * 別々に保存すると、間に別の操作の書き込みが割り込んだとき文言と選択状態が食い違うため、必ずこちらを使う。
+     */
+    suspend fun saveTextAndRecordedVoiceSelected(
+        target: LmuWindowsFlagReadoutTarget,
+        text: String,
+        selected: Boolean,
+    )
 }

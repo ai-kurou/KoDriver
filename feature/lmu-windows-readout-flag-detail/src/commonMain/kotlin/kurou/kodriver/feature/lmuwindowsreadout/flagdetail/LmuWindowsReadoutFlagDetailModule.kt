@@ -12,6 +12,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTex
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagRecordedVoiceSelectedUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
@@ -45,7 +46,7 @@ val lmuWindowsReadoutFlagDetailModule =
         }
 
         factory { FlagSettingsUseCases(get(), get(), get(), get(), get()) }
-        factory { FlagReadoutTextUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        factory { FlagReadoutTextUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
@@ -62,6 +63,7 @@ val lmuWindowsReadoutFlagDetailModule =
         factory { SaveLmuWindowsRedFlagReadoutTextUseCase(get()) }
         factory { ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase(get()) }
         factory { SaveLmuWindowsFlagRecordedVoiceSelectedUseCase(get()) }
+        factory { SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase(get()) }
         factory { SpeakTextUseCase(get()) }
         factory { CheckTextToSpeechAvailableUseCase(get()) }
     }
