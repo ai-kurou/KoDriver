@@ -252,7 +252,8 @@ GT7 Update 1.68 前後で追加。ハートビート `'C'` で取得できる。
 
 `core:gt7-ps5-data` の `Gt7Ps5UdpSource` / `Gt7Ps5Mapper` の実装:
 
-- ハートビートは **`'C'`** を使用し、PS5 の 33739 番へ送信、PC 側は 33740 番で受信する
+- ハートビートは **`'C'`** を使用し、接続先の 33739 番へ送信する
+- Windows / Android の受信ポートはデフォルト **33740**。「その他 → ゲーム機・SimHubへ接続するIPアドレス」で **33741** も選択・保存できる。PS5へ直接接続する場合は33740、SimHubの転送を受ける場合は転送先ポートと同じ値を選ぶ（[接続設定ガイド](gt7-ps5-connection-setup.md)を参照）
 - ハートビートは 100 パケット受信ごと、およびソケットタイムアウト（3秒）時に再送する
 - 復号は Salsa20、XOR 定数 `0xDEADBEEF`、復号後にマジック `0x47375330` を検証する
 - パケットサイズは 0x170（368バイト、C パケット）以上を期待する
@@ -266,6 +267,8 @@ GT7 Update 1.68 前後で追加。ハートビート `'C'` で取得できる。
 | 現在周回数 | lapCount | 0x74 |
 | レース総周回数 | lapsInRace | 0x76 |
 | ベストラップタイム | bestLapTime | 0x78 |
+| タイヤ温度（FL / FR / RL / RR） | tireTemp_FL / tireTemp_FR / tireTemp_RL / tireTemp_RR | 0x60 / 0x64 / 0x68 / 0x6C |
+| 車両カテゴリ | carCategory | 0x16C |
 
 ---
 

@@ -2,7 +2,7 @@
 
 テレメトリログ詳細を表示する Feature モジュール。
 
-現時点では詳細ペイン全体に空の `LazyColumn` を表示し、`TelemetryLogDetailViewModel` が `uiState` を公開する。
+`TelemetryLogDetailViewModel` が選択したログIDをもとに `ObserveTelemetryLogDetailUseCase` を購読し、`uiState` を公開する。`TelemetryLogDetailContent` は `LazyColumn` に選択したログのテレメトリJSONと、一つ前のログがある場合はそのJSONを表示する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
