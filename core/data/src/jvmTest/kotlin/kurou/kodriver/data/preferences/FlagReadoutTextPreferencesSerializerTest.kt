@@ -21,7 +21,11 @@ class FlagReadoutTextPreferencesSerializerTest {
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = FlagReadoutTextPreferences(sectorYellowFlagText = "イエロー、注意")
+            val original =
+                FlagReadoutTextPreferences(
+                    sectorYellowFlagText = "イエロー、注意",
+                    blueFlagRecordedVoiceSelected = true,
+                )
             val output = ByteArrayOutputStream()
             FlagReadoutTextPreferencesSerializer.writeTo(original, output)
 

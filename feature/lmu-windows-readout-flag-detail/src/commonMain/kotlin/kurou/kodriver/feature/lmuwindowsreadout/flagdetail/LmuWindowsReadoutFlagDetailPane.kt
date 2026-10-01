@@ -6,11 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,6 +20,7 @@ import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_kept
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_preview
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_custom_text_selected_icon
@@ -46,6 +43,7 @@ fun LmuWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
         uiState = uiState,
         onFlagEnabledChanged = viewModel::onFlagEnabledChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
+        onRecordedVoiceSelected = viewModel::onRecordedVoiceSelected,
         onRedFlagVoiceTypeChanged = viewModel::onRedFlagVoiceTypeChanged,
         onRedFlagPreviewClicked = viewModel::onRedFlagPreviewClicked,
         onFlagTextChanged = viewModel::onFlagTextChanged,
@@ -60,6 +58,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     uiState: LmuWindowsReadoutFlagDetailUiState,
     onFlagEnabledChanged: (FlagReadoutItem, Boolean) -> Unit,
     onPreviewClicked: (FlagReadoutItem) -> Unit,
+    onRecordedVoiceSelected: (FlagReadoutItem, () -> Unit) -> Unit,
     onRedFlagVoiceTypeChanged: (RedFlagVoiceType) -> Unit,
     onRedFlagPreviewClicked: (RedFlagVoiceType) -> Unit,
     onFlagTextChanged: (FlagReadoutItem, String) -> Unit,
@@ -87,10 +86,12 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 item = item,
                 checked = uiState.enabledStates[item.key] ?: true,
                 text = uiState.flagText(item),
+                customTextSelected = uiState.isCustomTextSelected(item),
                 chips = chips,
                 selectedChip = chips[if (item.isSessionStopSelected(uiState.redFlagVoiceType)) 1 else 0],
                 isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
+                onRecordedVoiceSelected = { preview -> onRecordedVoiceSelected(item, preview) },
                 onTextChanged = { text -> onFlagTextChanged(item, text) },
                 onTextPreviewClick = { text -> onFlagTextPreviewClicked(item, text) },
             )
@@ -99,7 +100,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
 }
 
 /** 収録音声のチップ1つ分の表示ラベルと、タップ時の処理。 */
-private class FlagChip(
+private data class FlagChip(
     val label: String,
     val onClick: () -> Unit,
 )
@@ -138,8 +139,8 @@ private fun FlagReadoutItem.isSessionStopSelected(voiceType: RedFlagVoiceType): 
  * 収録音声のチップとカスタム文言の入力欄を持つフラッグ項目のカード。
  *
  * 収録音声のチップとカスタム文言の選択状態は排他にして、どちらが使われるかを明示する。
- * DetailPaneCardTextField は1文字入力するたびに onValueChangeFinished（= [onTextChanged]）で
- * 即座に確定するため、入力の有無をそのまま選択状態の基準にできる。
+ * 選択状態は保存済みの文言と収録音声の選択設定から決まる（[customTextSelected]）。
+ * チップを選んでも文言は消さず、文言を編集し直すとカスタム文言の選択に戻る。
  */
 @Suppress("LongParameterList", "UnstableCollections")
 @Composable
@@ -147,17 +148,15 @@ private fun FlagReadoutCard(
     item: FlagReadoutItem,
     checked: Boolean,
     text: String,
+    customTextSelected: Boolean,
     chips: List<FlagChip>,
     selectedChip: FlagChip,
     isTextToSpeechAvailable: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    onRecordedVoiceSelected: (preview: () -> Unit) -> Unit,
     onTextChanged: (String) -> Unit,
     onTextPreviewClick: (String) -> Unit,
 ) {
-    var hasText by remember(item) { mutableStateOf(text.isNotEmpty()) }
-    LaunchedEffect(text) {
-        hasText = text.isNotEmpty()
-    }
     DetailPaneCard(
         title = stringResource(item.labelRes),
         checked = checked,
@@ -166,32 +165,27 @@ private fun FlagReadoutCard(
         bottomContent = {
             DetailPaneCardChips(
                 chipLabels = chips.map { it.label },
-                selectedChipLabels = if (hasText) emptySet() else setOf(selectedChip.label),
+                selectedChipLabels = if (customTextSelected) emptySet() else setOf(selectedChip.label),
                 chipEnabled = true,
                 onChipClick = { label ->
-                    // 収録音声のチップを選び直す操作なので、入力済みのカスタム文言はクリアする。
-                    if (hasText) {
-                        hasText = false
-                        onTextChanged("")
-                    }
-                    chips.first { it.label == label }.onClick()
+                    // 収録音声のチップを選び直す操作。入力済みのカスタム文言は消さず、収録音声を使う設定にする。
+                    // 試聴は保存済みの選択状態を参照するため、保存の完了後に行う。
+                    onRecordedVoiceSelected { chips.first { it.label == label }.onClick() }
                 },
             )
             DetailPaneCardTextField(
                 value = text,
                 placeholder = selectedChip.label,
                 maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-                onValueChangeFinished = { newText ->
-                    hasText = newText.isNotEmpty()
-                    onTextChanged(newText)
-                },
+                onValueChangeFinished = onTextChanged,
                 onPreviewClick = onTextPreviewClick,
                 enabled = isTextToSpeechAvailable,
-                selected = hasText,
+                selected = customTextSelected,
                 supportingText =
                     when {
                         !isTextToSpeechAvailable -> stringResource(Res.string.flag_custom_text_unavailable)
-                        hasText -> stringResource(Res.string.flag_custom_text_selected)
+                        customTextSelected -> stringResource(Res.string.flag_custom_text_selected)
+                        text.isNotEmpty() -> stringResource(Res.string.flag_custom_text_kept)
                         else -> stringResource(Res.string.flag_custom_text_supporting)
                     },
                 previewContentDescription = stringResource(Res.string.flag_custom_text_preview),
@@ -219,6 +213,7 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
                 ),
             onFlagEnabledChanged = { _, _ -> },
             onPreviewClicked = {},
+            onRecordedVoiceSelected = { _, _ -> },
             onRedFlagVoiceTypeChanged = {},
             onRedFlagPreviewClicked = {},
             onFlagTextChanged = { _, _ -> },

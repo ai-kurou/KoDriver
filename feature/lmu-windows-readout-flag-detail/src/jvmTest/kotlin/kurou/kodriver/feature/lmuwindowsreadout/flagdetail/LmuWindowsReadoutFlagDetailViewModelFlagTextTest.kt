@@ -22,6 +22,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
@@ -30,6 +31,7 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
@@ -38,6 +40,8 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagRecordedVoiceSelectedUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
@@ -97,6 +101,11 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
                             saveFullCourseYellow =
                                 SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(textRepository),
                             saveRedFlag = SaveLmuWindowsRedFlagReadoutTextUseCase(textRepository),
+                            observeRecordedVoiceSelected =
+                                ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase(textRepository),
+                            saveRecordedVoiceSelected = SaveLmuWindowsFlagRecordedVoiceSelectedUseCase(textRepository),
+                            saveTextAndRecordedVoiceSelected =
+                                SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase(textRepository),
                         ),
                 ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
@@ -104,6 +113,12 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
             playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),
             checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(ttsRepository),
         )
+
+    private fun stubRecordedVoiceSelected(selected: Boolean = false) {
+        LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+            every { textRepository.observeRecordedVoiceSelected(target) } returns MutableStateFlow(selected)
+        }
+    }
 
     private fun stubReadoutTexts(
         sectorYellow: String = "",
@@ -115,6 +130,7 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
         every { textRepository.observeBlueFlagText() } returns MutableStateFlow(blue)
         every { textRepository.observeFullCourseYellowFlagText() } returns MutableStateFlow(fullCourseYellow)
         every { textRepository.observeRedFlagText() } returns MutableStateFlow(red)
+        stubRecordedVoiceSelected()
     }
 
     private fun verifyReadoutTextsObserved() {
@@ -122,6 +138,9 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
         verify(exactly = 1) { textRepository.observeBlueFlagText() }
         verify(exactly = 1) { textRepository.observeFullCourseYellowFlagText() }
         verify(exactly = 1) { textRepository.observeRedFlagText() }
+        LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+            verify(exactly = 1) { textRepository.observeRecordedVoiceSelected(target) }
+        }
     }
 
     @Test
@@ -177,16 +196,35 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
             every { textRepository.observeBlueFlagText() } returns blueFlow
             every { textRepository.observeFullCourseYellowFlagText() } returns fullCourseYellowFlow
             every { textRepository.observeRedFlagText() } returns redFlow
-            coEvery { textRepository.saveSectorYellowFlagText("イエロー、注意") } answers {
-                yellowFlow.update { "イエロー、注意" }
-            }
-            coEvery { textRepository.saveBlueFlagText("ブルー、譲って") } answers {
-                blueFlow.update { "ブルー、譲って" }
-            }
-            coEvery { textRepository.saveFullCourseYellowFlagText("フルコース、減速") } answers {
-                fullCourseYellowFlow.update { "フルコース、減速" }
-            }
-            coEvery { textRepository.saveRedFlagText("赤旗、停止") } answers { redFlow.update { "赤旗、停止" } }
+            stubRecordedVoiceSelected()
+            coEvery {
+                textRepository.saveTextAndRecordedVoiceSelected(
+                    LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG,
+                    "イエロー、注意",
+                    false,
+                )
+            } answers { yellowFlow.update { "イエロー、注意" } }
+            coEvery {
+                textRepository.saveTextAndRecordedVoiceSelected(
+                    LmuWindowsFlagReadoutTarget.BLUE_FLAG,
+                    "ブルー、譲って",
+                    false,
+                )
+            } answers { blueFlow.update { "ブルー、譲って" } }
+            coEvery {
+                textRepository.saveTextAndRecordedVoiceSelected(
+                    LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW,
+                    "フルコース、減速",
+                    false,
+                )
+            } answers { fullCourseYellowFlow.update { "フルコース、減速" } }
+            coEvery {
+                textRepository.saveTextAndRecordedVoiceSelected(
+                    LmuWindowsFlagReadoutTarget.RED_FLAG,
+                    "赤旗、停止",
+                    false,
+                )
+            } answers { redFlow.update { "赤旗、停止" } }
             coEvery { ttsRepository.isAvailable() } returns true
             val viewModel = createViewModel()
 
@@ -200,10 +238,34 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
             assertEquals("ブルー、譲って", state.flagText(FlagReadoutItem.BlueFlag))
             assertEquals("フルコース、減速", state.flagText(FlagReadoutItem.FullCourseYellow))
             assertEquals("赤旗、停止", state.flagText(FlagReadoutItem.RedFlag))
-            coVerify(exactly = 1) { textRepository.saveSectorYellowFlagText("イエロー、注意") }
-            coVerify(exactly = 1) { textRepository.saveBlueFlagText("ブルー、譲って") }
-            coVerify(exactly = 1) { textRepository.saveFullCourseYellowFlagText("フルコース、減速") }
-            coVerify(exactly = 1) { textRepository.saveRedFlagText("赤旗、停止") }
+            coVerify(exactly = 1) {
+                textRepository.saveTextAndRecordedVoiceSelected(
+                    LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG,
+                    "イエロー、注意",
+                    false,
+                )
+            }
+            coVerify(exactly = 1) {
+                textRepository.saveTextAndRecordedVoiceSelected(
+                    LmuWindowsFlagReadoutTarget.BLUE_FLAG,
+                    "ブルー、譲って",
+                    false,
+                )
+            }
+            coVerify(exactly = 1) {
+                textRepository.saveTextAndRecordedVoiceSelected(
+                    LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW,
+                    "フルコース、減速",
+                    false,
+                )
+            }
+            coVerify(exactly = 1) {
+                textRepository.saveTextAndRecordedVoiceSelected(
+                    LmuWindowsFlagReadoutTarget.RED_FLAG,
+                    "赤旗、停止",
+                    false,
+                )
+            }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
             verifyReadoutTextsObserved()
@@ -286,5 +348,75 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
             verifyReadoutTextsObserved()
             coVerify(exactly = 1) { ttsRepository.isAvailable() }
             confirmVerified(repository, redFlagRepository, textRepository, ttsRepository, ttsEngine)
+        }
+
+    @Test
+    fun `空文字を入力しても収録音声の明示選択は解除しない`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
+            stubReadoutTexts()
+            coEvery { ttsRepository.isAvailable() } returns true
+            val viewModel = createViewModel()
+
+            viewModel.onFlagTextChanged(FlagReadoutItem.BlueFlag, "")
+            viewModel.uiState.first()
+
+            coVerify(exactly = 1) { textRepository.saveBlueFlagText("") }
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            verifyReadoutTextsObserved()
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
+        }
+
+    @Test
+    fun `onRecordedVoiceSelected はフラッグごとの収録音声選択を保存してから試聴を呼び文言は変更しない`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
+            stubReadoutTexts()
+            coEvery { ttsRepository.isAvailable() } returns true
+            val viewModel = createViewModel()
+
+            var previewCount = 0
+            FlagReadoutItem.entries.forEach { viewModel.onRecordedVoiceSelected(it) { previewCount++ } }
+            viewModel.uiState.first()
+
+            assertEquals(FlagReadoutItem.entries.size, previewCount)
+
+            FlagReadoutItem.entries.forEach { item ->
+                coVerify(exactly = 1) { textRepository.saveRecordedVoiceSelected(item.target, true) }
+            }
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            verifyReadoutTextsObserved()
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
+        }
+
+    @Test
+    fun `収録音声の選択状態が UiState に反映され文言があっても収録音声が選ばれていればカスタム文言扱いにならない`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
+            stubReadoutTexts(blue = "ブルー、譲って", red = "赤旗、停止")
+            stubRecordedVoiceSelected()
+            every { textRepository.observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) } returns
+                MutableStateFlow(true)
+            coEvery { ttsRepository.isAvailable() } returns true
+            val viewModel = createViewModel()
+
+            val state = viewModel.uiState.first()
+
+            assertTrue(state.isRecordedVoiceSelected(FlagReadoutItem.BlueFlag))
+            assertFalse(state.isCustomTextSelected(FlagReadoutItem.BlueFlag))
+            assertTrue(state.isCustomTextSelected(FlagReadoutItem.RedFlag))
+            assertFalse(state.isCustomTextSelected(FlagReadoutItem.SectorYellowFlag))
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            verifyReadoutTextsObserved()
+            coVerify(exactly = 1) { ttsRepository.isAvailable() }
+            confirmVerified(repository, redFlagRepository, textRepository, ttsRepository)
         }
 }

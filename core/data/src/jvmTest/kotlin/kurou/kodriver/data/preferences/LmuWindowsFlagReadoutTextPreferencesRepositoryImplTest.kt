@@ -6,10 +6,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
@@ -92,5 +95,51 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
             repository.saveRedFlagText("レッドフラッグ、セッション中断")
 
             assertEquals("レッドフラッグ、セッション中断", repository.observeRedFlagText().first())
+        }
+
+    @Test
+    fun `収録音声選択の初期値は全フラッグで未選択`() =
+        runTest {
+            LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+                assertFalse(repository.observeRecordedVoiceSelected(target).first())
+            }
+        }
+
+    @Test
+    fun `収録音声選択はフラッグごとに独立して保存され文言は変わらない`() =
+        runTest {
+            repository.saveBlueFlagText("ブルー、道を譲れ")
+
+            LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+                repository.saveRecordedVoiceSelected(target, true)
+
+                assertTrue(repository.observeRecordedVoiceSelected(target).first())
+                LmuWindowsFlagReadoutTarget.entries.filter { it.ordinal > target.ordinal }.forEach { other ->
+                    assertFalse(repository.observeRecordedVoiceSelected(other).first())
+                }
+            }
+            assertEquals("ブルー、道を譲れ", repository.observeBlueFlagText().first())
+
+            LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+                repository.saveRecordedVoiceSelected(target, false)
+                assertFalse(repository.observeRecordedVoiceSelected(target).first())
+            }
+        }
+
+    @Test
+    fun `saveTextAndRecordedVoiceSelected は指定フラッグの文言と選択状態を同時に保存し他のフラッグは変更しない`() =
+        runTest {
+            LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+                repository.saveRecordedVoiceSelected(target, true)
+                repository.saveTextAndRecordedVoiceSelected(target, "文言-${target.name}", false)
+            }
+
+            assertEquals("文言-SECTOR_YELLOW_FLAG", repository.observeSectorYellowFlagText().first())
+            assertEquals("文言-BLUE_FLAG", repository.observeBlueFlagText().first())
+            assertEquals("文言-FULL_COURSE_YELLOW", repository.observeFullCourseYellowFlagText().first())
+            assertEquals("文言-RED_FLAG", repository.observeRedFlagText().first())
+            LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+                assertFalse(repository.observeRecordedVoiceSelected(target).first())
+            }
         }
 }

@@ -16,6 +16,7 @@ import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
@@ -24,6 +25,8 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagRecordedVoiceSelectedUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
@@ -38,7 +41,7 @@ internal data class FlagSettingsUseCases(
     val readoutTexts: FlagReadoutTextUseCases,
 )
 
-/** フラッグごとのカスタム読み上げ文言の Observe / Save UseCase を [FlagReadoutItem] で引けるようにまとめたもの。 */
+/** フラッグごとのカスタム読み上げ文言と収録音声の選択状態の Observe / Save UseCase を [FlagReadoutItem] で引けるようにまとめたもの。 */
 internal data class FlagReadoutTextUseCases(
     val observeSectorYellowFlag: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase,
     val observeBlueFlag: ObserveLmuWindowsBlueFlagReadoutTextUseCase,
@@ -48,7 +51,28 @@ internal data class FlagReadoutTextUseCases(
     val saveBlueFlag: SaveLmuWindowsBlueFlagReadoutTextUseCase,
     val saveFullCourseYellow: SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase,
     val saveRedFlag: SaveLmuWindowsRedFlagReadoutTextUseCase,
+    val observeRecordedVoiceSelected: ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase,
+    val saveRecordedVoiceSelected: SaveLmuWindowsFlagRecordedVoiceSelectedUseCase,
+    val saveTextAndRecordedVoiceSelected: SaveLmuWindowsFlagTextAndRecordedVoiceSelectedUseCase,
 ) {
+    fun observeRecordedVoiceSelected(item: FlagReadoutItem): Flow<Boolean> = observeRecordedVoiceSelected(item.target)
+
+    suspend fun saveRecordedVoiceSelected(
+        item: FlagReadoutItem,
+        selected: Boolean,
+    ) {
+        saveRecordedVoiceSelected(item.target, selected)
+    }
+
+    /** 文言と収録音声の選択状態を1回の更新で保存する（別々に保存すると並行する操作と食い違うため）。 */
+    suspend fun saveTextAndRecordedVoiceSelected(
+        item: FlagReadoutItem,
+        text: String,
+        selected: Boolean,
+    ) {
+        saveTextAndRecordedVoiceSelected(item.target, text, selected)
+    }
+
     fun observe(item: FlagReadoutItem): Flow<String> =
         when (item) {
             FlagReadoutItem.BlueFlag -> observeBlueFlag()
@@ -94,12 +118,20 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
             ) {
                 it.toMap()
             },
+            combine(
+                FlagReadoutItem.entries.map { item ->
+                    settingsUseCases.readoutTexts.observeRecordedVoiceSelected(item).map { item to it }
+                },
+            ) {
+                it.toMap()
+            },
             textToSpeechAvailable,
-        ) { enabledStates, redFlagVoiceType, flagTexts, isTextToSpeechAvailable ->
+        ) { enabledStates, redFlagVoiceType, flagTexts, recordedVoiceSelected, isTextToSpeechAvailable ->
             LmuWindowsReadoutFlagDetailUiState(
                 enabledStates = enabledStates,
                 redFlagVoiceType = redFlagVoiceType,
                 flagTexts = flagTexts,
+                recordedVoiceSelected = recordedVoiceSelected,
                 isTextToSpeechAvailable = isTextToSpeechAvailable,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutFlagDetailUiState())
@@ -127,7 +159,29 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         item: FlagReadoutItem,
         text: String,
     ) {
-        viewModelScope.launch { settingsUseCases.readoutTexts.save(item, text) }
+        viewModelScope.launch {
+            if (text.isEmpty()) {
+                settingsUseCases.readoutTexts.save(item, text)
+            } else {
+                // 文言を入力した時点でカスタム文言を使う意思とみなし、収録音声の明示選択を解除する。
+                // 文言と選択状態は別々に保存すると並行するチップ操作と食い違うため、1回の更新で保存する。
+                settingsUseCases.readoutTexts.saveTextAndRecordedVoiceSelected(item, text, false)
+            }
+        }
+    }
+
+    /**
+     * 収録音声のチップが選ばれたとき。入力済みのカスタム文言は残したまま、収録音声で読み上げる設定にする。
+     * 試聴の読み上げは保存済みの選択状態を参照するため、保存の完了を待ってから [preview] を呼ぶ。
+     */
+    fun onRecordedVoiceSelected(
+        item: FlagReadoutItem,
+        preview: () -> Unit,
+    ) {
+        viewModelScope.launch {
+            settingsUseCases.readoutTexts.saveRecordedVoiceSelected(item, true)
+            preview()
+        }
     }
 
     /**

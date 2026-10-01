@@ -71,6 +71,7 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                                 ),
                             onFlagEnabledChanged = { _, _ -> },
                             onPreviewClicked = {},
+                            onRecordedVoiceSelected = { _, _ -> },
                             onRedFlagVoiceTypeChanged = {},
                             onRedFlagPreviewClicked = {},
                             onFlagTextChanged = { _, _ -> },
