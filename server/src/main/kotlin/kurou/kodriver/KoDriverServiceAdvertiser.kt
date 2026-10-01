@@ -1,5 +1,6 @@
 package kurou.kodriver
 
+import io.sentry.Sentry
 import kurou.kodriver.domain.MdnsConstants
 import org.slf4j.LoggerFactory
 import java.io.IOException
@@ -33,6 +34,7 @@ class KoDriverServiceAdvertiser(
             jmdns = instance
         } catch (e: IOException) {
             logger.warn("mDNSサービスの登録に失敗しました", e)
+            Sentry.captureException(e)
             jmdns = null
         }
     }

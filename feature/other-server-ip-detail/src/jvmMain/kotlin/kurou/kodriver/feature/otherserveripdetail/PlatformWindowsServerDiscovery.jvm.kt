@@ -23,6 +23,7 @@ internal class JmdnsWindowsServerDiscovery(
                 try {
                     jmdnsFactory()
                 } catch (e: IOException) {
+                    captureOtherServerIpDetailError(e)
                     close()
                     return@callbackFlow
                 }

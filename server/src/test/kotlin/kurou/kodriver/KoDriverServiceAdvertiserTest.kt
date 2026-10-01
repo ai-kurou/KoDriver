@@ -3,7 +3,11 @@ package kurou.kodriver
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
+import io.sentry.Sentry
+import io.sentry.protocol.SentryId
 import java.io.IOException
 import javax.jmdns.JmDNS
 import javax.jmdns.ServiceInfo
@@ -89,13 +93,61 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `startでIOExceptionが発生しても例外を伝播しない`() {
-        val advertiser =
-            KoDriverServiceAdvertiser(
-                jmdnsFactory = { throw IOException("network unavailable") },
-                suffixProvider = { "AB12" },
-            )
+        val exception = IOException("network unavailable")
+        mockkStatic(Sentry::class)
+        every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
+        try {
+            val advertiser =
+                KoDriverServiceAdvertiser(
+                    jmdnsFactory = { throw exception },
+                    suffixProvider = { "AB12" },
+                )
 
-        advertiser.start(port = 8080)
+            advertiser.start(port = 8080)
+            advertiser.stop()
+
+            verify(exactly = 1) { Sentry.captureException(exception) }
+            confirmVerified(Sentry::class)
+        } finally {
+            unmockkStatic(Sentry::class)
+        }
+    }
+
+    @Test
+    fun `サービス登録に失敗した例外を一度だけ報告する`() {
+        val exception = IOException("registration failed")
+        every {
+            jmdns.registerService(
+                match {
+                    it.type == KoDriverServiceAdvertiser.SERVICE_TYPE &&
+                        it.name == "KoDriver-AB12" && it.port == 8080
+                },
+            )
+        } throws exception
+        mockkStatic(Sentry::class)
+        every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
+        try {
+            val advertiser = KoDriverServiceAdvertiser(jmdnsFactory = { jmdns }, suffixProvider = { "AB12" })
+
+            advertiser.start(port = 8080)
+            advertiser.stop()
+
+            verify(exactly = 1) {
+                jmdns.registerService(
+                    withArg<ServiceInfo> {
+                        assert(it.type == KoDriverServiceAdvertiser.SERVICE_TYPE)
+                        assert(it.name == "KoDriver-AB12")
+                        assert(it.port == 8080)
+                    },
+                )
+                Sentry.captureException(exception)
+            }
+            verify(exactly = 0) { jmdns.unregisterAllServices() }
+            verify(exactly = 0) { jmdns.close() }
+            confirmVerified(jmdns, Sentry::class)
+        } finally {
+            unmockkStatic(Sentry::class)
+        }
     }
 
     @Test

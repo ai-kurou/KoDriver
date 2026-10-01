@@ -3,7 +3,14 @@ package kurou.kodriver.domain.usecase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
+import io.sentry.Sentry
+import io.sentry.protocol.SentryId
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
@@ -11,6 +18,8 @@ import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class SendFeedbackUseCaseTest {
@@ -187,16 +196,43 @@ class SendFeedbackUseCaseTest {
         runTest {
             coEvery { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) } returns
                 Result.success(Unit)
-            coEvery {
-                cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L)
-            } throws IllegalStateException("write error")
-            val useCase = createUseCase()
+            val exception = IllegalStateException("write error")
+            mockkStatic(Sentry::class)
+            every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
+            try {
+                coEvery {
+                    cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L)
+                } throws exception
+                val useCase = createUseCase()
 
-            val result = useCase(Feedback(type = FeedbackType.Question, message = "本文"))
+                val result = useCase(Feedback(type = FeedbackType.Question, message = "本文"))
 
-            assertTrue(result.isSuccess)
-            coVerify(exactly = 1) { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) }
-            coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
-            confirmVerified(repository, cooldownRepository)
+                assertTrue(result.isSuccess)
+                coVerify(exactly = 1) { repository.send(Feedback(type = FeedbackType.Question, message = "本文")) }
+                coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+                verify(exactly = 1) { Sentry.captureException(exception) }
+                confirmVerified(repository, cooldownRepository, Sentry::class)
+            } finally {
+                unmockkStatic(Sentry::class)
+            }
+        }
+
+    @Test
+    fun `クールダウン保存のキャンセルは報告せず再スローする`() =
+        runTest {
+            val exception = CancellationException("cancelled")
+            val feedback = Feedback(type = FeedbackType.Question, message = "本文")
+            coEvery { repository.send(feedback) } returns Result.success(Unit)
+            coEvery { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) } throws exception
+            mockkStatic(Sentry::class)
+            try {
+                assertSame(exception, assertFailsWith<CancellationException> { createUseCase()(feedback) })
+                coVerify(exactly = 1) { repository.send(feedback) }
+                coVerify(exactly = 1) { cooldownRepository.saveLastFeedbackSentAtEpochMillis(1_700_000_000_000L) }
+                verify(exactly = 0) { Sentry.captureException(exception) }
+                confirmVerified(repository, cooldownRepository, Sentry::class)
+            } finally {
+                unmockkStatic(Sentry::class)
+            }
         }
 }

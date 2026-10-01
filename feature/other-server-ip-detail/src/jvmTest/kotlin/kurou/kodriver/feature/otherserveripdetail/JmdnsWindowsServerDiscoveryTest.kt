@@ -5,8 +5,12 @@ package kurou.kodriver.feature.otherserveripdetail
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.slot
+import io.mockk.unmockkStatic
 import io.mockk.verify
+import io.sentry.Sentry
+import io.sentry.protocol.SentryId
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
@@ -122,12 +126,20 @@ class JmdnsWindowsServerDiscoveryTest {
     @Test
     fun `JmDNSの生成に失敗しても例外を伝播せず空のフローになる`() =
         runTest(testDispatcher) {
-            val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { throw IOException("network unavailable") })
+            val exception = IOException("network unavailable")
+            mockkStatic(Sentry::class)
+            every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
+            try {
+                val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { throw exception })
+                val results = mutableListOf<List<DiscoveredServer>>()
+                discovery.discover().collect { results += it }
 
-            val results = mutableListOf<List<DiscoveredServer>>()
-            discovery.discover().collect { results += it }
-
-            assertTrue(results.isEmpty())
+                assertTrue(results.isEmpty())
+                verify(exactly = 1) { Sentry.captureException(exception) }
+                confirmVerified(Sentry::class)
+            } finally {
+                unmockkStatic(Sentry::class)
+            }
         }
 
     @Test
