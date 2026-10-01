@@ -53,6 +53,14 @@ kotlin {
             implementation(project.dependencies.platform(libs.kotlinx.serialization.bom))
             implementation(libs.kotlinx.serialization.json)
         }
+        androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.sentry.bom))
+            implementation(libs.sentry)
+        }
+        jvmMain.dependencies {
+            implementation(project.dependencies.platform(libs.sentry.bom))
+            implementation(libs.sentry)
+        }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }

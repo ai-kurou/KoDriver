@@ -7,7 +7,11 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
+import io.sentry.Sentry
+import io.sentry.protocol.SentryId
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -159,78 +163,94 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `送信に失敗したらエラーを表示する`() =
         runTest {
-            coEvery {
-                repository.send(
-                    Feedback(
-                        type = FeedbackType.BugReport,
-                        message = "失敗します",
-                        name = "Kurou",
-                        email = "user@example.com",
-                        includesDiagnostics = true,
-                    ),
-                )
-            } returns Result.failure(IllegalStateException("failed"))
-            val viewModel = createViewModel()
-            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            val exception = IllegalStateException("failed")
+            mockkStatic(Sentry::class)
+            every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
+            try {
+                coEvery {
+                    repository.send(
+                        Feedback(
+                            type = FeedbackType.BugReport,
+                            message = "失敗します",
+                            name = "Kurou",
+                            email = "user@example.com",
+                            includesDiagnostics = true,
+                        ),
+                    )
+                } returns Result.failure(exception)
+                val viewModel = createViewModel()
+                val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
-            viewModel.onMessageChanged("失敗します")
-            viewModel.onNameChanged("Kurou")
-            viewModel.onEmailChanged("user@example.com")
-            viewModel.onSend()
+                viewModel.onMessageChanged("失敗します")
+                viewModel.onNameChanged("Kurou")
+                viewModel.onEmailChanged("user@example.com")
+                viewModel.onSend()
 
-            assertEquals(FeedbackSendStatus.Failed, viewModel.uiState.value.sendStatus)
-            assertEquals("失敗します", viewModel.uiState.value.message)
-            coVerify(exactly = 1) {
-                repository.send(
-                    Feedback(
-                        type = FeedbackType.BugReport,
-                        message = "失敗します",
-                        name = "Kurou",
-                        email = "user@example.com",
-                        includesDiagnostics = true,
-                    ),
-                )
+                assertEquals(FeedbackSendStatus.Failed, viewModel.uiState.value.sendStatus)
+                assertEquals("失敗します", viewModel.uiState.value.message)
+                coVerify(exactly = 1) {
+                    repository.send(
+                        Feedback(
+                            type = FeedbackType.BugReport,
+                            message = "失敗します",
+                            name = "Kurou",
+                            email = "user@example.com",
+                            includesDiagnostics = true,
+                        ),
+                    )
+                }
+                collectionJob.cancel()
+                verify(exactly = 1) { Sentry.captureException(exception) }
+                confirmVerified(repository, Sentry::class)
+            } finally {
+                unmockkStatic(Sentry::class)
             }
-            confirmVerified(repository)
-            collectionJob.cancel()
         }
 
     @Test
     fun `送信中に想定外の例外が発生したらエラーを表示する`() =
         runTest {
-            coEvery {
-                repository.send(
-                    Feedback(
-                        type = FeedbackType.BugReport,
-                        message = "失敗します",
-                        name = "Kurou",
-                        email = "user@example.com",
-                        includesDiagnostics = true,
-                    ),
-                )
-            } throws IllegalStateException("unexpected")
-            val viewModel = createViewModel()
-            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            val exception = IllegalStateException("unexpected")
+            mockkStatic(Sentry::class)
+            every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
+            try {
+                coEvery {
+                    repository.send(
+                        Feedback(
+                            type = FeedbackType.BugReport,
+                            message = "失敗します",
+                            name = "Kurou",
+                            email = "user@example.com",
+                            includesDiagnostics = true,
+                        ),
+                    )
+                } throws exception
+                val viewModel = createViewModel()
+                val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
-            viewModel.onMessageChanged("失敗します")
-            viewModel.onNameChanged("Kurou")
-            viewModel.onEmailChanged("user@example.com")
-            viewModel.onSend()
+                viewModel.onMessageChanged("失敗します")
+                viewModel.onNameChanged("Kurou")
+                viewModel.onEmailChanged("user@example.com")
+                viewModel.onSend()
 
-            assertEquals(FeedbackSendStatus.Failed, viewModel.uiState.value.sendStatus)
-            coVerify(exactly = 1) {
-                repository.send(
-                    Feedback(
-                        type = FeedbackType.BugReport,
-                        message = "失敗します",
-                        name = "Kurou",
-                        email = "user@example.com",
-                        includesDiagnostics = true,
-                    ),
-                )
+                assertEquals(FeedbackSendStatus.Failed, viewModel.uiState.value.sendStatus)
+                coVerify(exactly = 1) {
+                    repository.send(
+                        Feedback(
+                            type = FeedbackType.BugReport,
+                            message = "失敗します",
+                            name = "Kurou",
+                            email = "user@example.com",
+                            includesDiagnostics = true,
+                        ),
+                    )
+                }
+                collectionJob.cancel()
+                verify(exactly = 1) { Sentry.captureException(exception) }
+                confirmVerified(repository, Sentry::class)
+            } finally {
+                unmockkStatic(Sentry::class)
             }
-            confirmVerified(repository)
-            collectionJob.cancel()
         }
 
     @Test

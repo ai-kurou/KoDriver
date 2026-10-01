@@ -47,6 +47,8 @@ dependencies {
     implementation(libs.ktor.serverNetty)
     implementation(libs.ktor.serverWebsockets)
     implementation(libs.jmdns)
+    implementation(platform(libs.sentry.bom))
+    implementation(libs.sentry)
     testImplementation(platform(libs.ktor.bom))
     testImplementation(libs.ktor.clientWebsockets)
     testImplementation(libs.ktor.serverTestHost)

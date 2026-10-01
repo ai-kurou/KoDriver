@@ -125,6 +125,7 @@ internal class OtherFeedbackDetailViewModel(
                             telemetryLogJson = attachedTelemetryLog?.telemetryJson,
                         ),
                     )
+                result.exceptionOrNull()?.let { captureOtherFeedbackDetailError(it) }
                 if (result.isSuccess) {
                     _telemetryLogId.update { null }
                 }
