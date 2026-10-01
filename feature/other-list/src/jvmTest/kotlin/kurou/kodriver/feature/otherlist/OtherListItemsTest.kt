@@ -12,8 +12,8 @@ class OtherListItemsTest {
             listOf(
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
-                OtherListItemType.Voice,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.OverlayTextSize,
