@@ -2,7 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -13,7 +13,7 @@ class FlagReadoutTextPreferencesSerializerTest {
     @Test
     fun `デフォルト値は初期設定を返す`() {
         assertEquals(
-            FlagReadoutTextPreferences(sectorYellowFlagText = READOUT_CUSTOM_TEXT_DEFAULT),
+            FlagReadoutTextPreferences(sectorYellowFlagText = LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT),
             FlagReadoutTextPreferencesSerializer.defaultValue,
         )
     }
