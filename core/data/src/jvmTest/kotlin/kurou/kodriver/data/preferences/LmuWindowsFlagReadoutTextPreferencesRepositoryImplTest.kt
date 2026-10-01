@@ -92,9 +92,9 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `redFlagText の初期値は空文字`() =
+    fun `redFlagText の初期値はレッドフラッグ`() =
         runTest {
-            assertEquals("", repository.observeRedFlagText().first())
+            assertEquals("レッドフラッグ", repository.observeRedFlagText().first())
         }
 
     @Test

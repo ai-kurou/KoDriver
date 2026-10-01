@@ -9,10 +9,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
@@ -26,7 +24,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     private val observeBlue: ObserveLmuWindowsBlueFlagReadoutTextUseCase = mockk()
     private val observeFullCourseYellow: ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase = mockk()
     private val observeRed: ObserveLmuWindowsRedFlagReadoutTextUseCase = mockk()
-    private val observeRecordedVoiceSelected: ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -35,7 +32,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             observeBlue,
             observeFullCourseYellow,
             observeRed,
-            observeRecordedVoiceSelected,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -46,7 +42,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             observeBlue,
             observeFullCourseYellow,
             observeRed,
-            observeRecordedVoiceSelected,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -163,7 +158,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     fun `レッドフラッグとセッション停止は同じカスタム文言を読み上げる`() =
         runTest {
             coEvery { observeRed() } returns flowOf("赤旗、停止")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) } returns flowOf(false)
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("赤旗、停止", volume = VOLUME) } just Runs
 
@@ -171,7 +165,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             assertTrue(speaker(SpeechEvent.SessionStop, VOLUME))
 
             coVerify(exactly = 2) { observeRed() }
-            coVerify(exactly = 2) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 2) { speakText("赤旗、停止", volume = VOLUME) }
             confirmAllMocksVerified()
@@ -193,31 +186,13 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     fun `レッドフラッグのカスタム文言は設定されているがTTSが利用不可のときはfalseを返す`() =
         runTest {
             coEvery { observeRed() } returns flowOf("赤旗、停止")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) } returns flowOf(false)
             coEvery { checkTextToSpeechAvailable() } returns false
 
             val result = speaker(SpeechEvent.RedFlag, VOLUME)
 
             assertFalse(result)
             coVerify(exactly = 1) { observeRed() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `収録音声が明示的に選ばれているときは文言が残っていてもfalseを返しTTSを確認しない`() =
-        runTest {
-            coEvery { observeRed() } returns flowOf("赤旗、停止")
-            coEvery {
-                observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG)
-            } returns flowOf(true)
-
-            val result = speaker(SpeechEvent.RedFlag, VOLUME)
-
-            assertFalse(result)
-            coVerify(exactly = 1) { observeRed() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) }
             confirmAllMocksVerified()
         }
 

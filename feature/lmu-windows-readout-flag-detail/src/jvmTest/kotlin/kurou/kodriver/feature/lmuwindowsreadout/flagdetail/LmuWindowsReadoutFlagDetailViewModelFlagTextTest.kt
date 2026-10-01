@@ -396,7 +396,7 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
         }
 
     @Test
-    fun `レッド以外は収録音声が選ばれていてもカスタム文言を使う`() =
+    fun `全フラッグは収録音声が選ばれていてもカスタム文言を使う`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
@@ -412,6 +412,8 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
                     LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW,
                 )
             } returns
+                MutableStateFlow(true)
+            every { textRepository.observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) } returns
                 MutableStateFlow(true)
             coEvery { ttsRepository.isAvailable() } returns true
             val viewModel = createViewModel()
