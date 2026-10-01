@@ -16,8 +16,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class LmuWindowsFlagCustomTextSpeakerTest {
     private val observeSectorYellow: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase = mockk()
@@ -48,35 +46,30 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     }
 
     @Test
-    fun `フラッグ以外のイベントはfalseを返しカスタム文言を参照しない`() =
+    fun `フラッグ以外のイベントは何も読み上げずカスタム文言を参照しない`() =
         runTest {
-            val result = speaker(SpeechEvent.CarLeft, VOLUME)
+            speaker(SpeechEvent.CarLeft, VOLUME)
 
-            assertFalse(result)
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `セクターイエローのカスタム文言が空のときはfalseを返し本文を読み上げない`() =
+    fun `セクターイエローのカスタム文言が空のときは本文を読み上げない`() =
         runTest {
             coEvery { observeSectorYellow() } returns flowOf("")
 
-            val result = speaker(SpeechEvent.YellowFlag, VOLUME)
-
-            assertFalse(result)
+            speaker(SpeechEvent.YellowFlag, VOLUME)
             coVerify(exactly = 1) { observeSectorYellow() }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `セクターイエローのカスタム文言は設定されているがTTSが利用不可のときはfalseを返し本文を読み上げない`() =
+    fun `セクターイエローのカスタム文言は設定されているがTTSが利用不可のときは本文を読み上げない`() =
         runTest {
             coEvery { observeSectorYellow() } returns flowOf("イエロー、前方注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val result = speaker(SpeechEvent.YellowFlag, VOLUME)
-
-            assertFalse(result)
+            speaker(SpeechEvent.YellowFlag, VOLUME)
             coVerify(exactly = 1) { observeSectorYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
@@ -89,9 +82,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("イエロー、前方注意", volume = VOLUME) } just Runs
 
-            val result = speaker(SpeechEvent.YellowFlag, VOLUME)
-
-            assertTrue(result)
+            speaker(SpeechEvent.YellowFlag, VOLUME)
             coVerify(exactly = 1) { observeSectorYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("イエロー、前方注意", volume = VOLUME) }
@@ -105,9 +96,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("ブルー、譲って", volume = VOLUME) } just Runs
 
-            val result = speaker(SpeechEvent.BlueFlag, VOLUME)
-
-            assertTrue(result)
+            speaker(SpeechEvent.BlueFlag, VOLUME)
             coVerify(exactly = 1) { observeBlue() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("ブルー、譲って", volume = VOLUME) }
@@ -115,13 +104,11 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         }
 
     @Test
-    fun `ブルーフラッグのカスタム文言が空のときはfalseを返す`() =
+    fun `ブルーフラッグのカスタム文言が空のときは読み上げない`() =
         runTest {
             coEvery { observeBlue() } returns flowOf(" ")
 
-            val result = speaker(SpeechEvent.BlueFlag, VOLUME)
-
-            assertFalse(result)
+            speaker(SpeechEvent.BlueFlag, VOLUME)
             coVerify(exactly = 1) { observeBlue() }
             confirmAllMocksVerified()
         }
@@ -133,9 +120,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("フルコースイエロー、減速", volume = VOLUME) } just Runs
 
-            val result = speaker(SpeechEvent.FullCourseYellow, VOLUME)
-
-            assertTrue(result)
+            speaker(SpeechEvent.FullCourseYellow, VOLUME)
             coVerify(exactly = 1) { observeFullCourseYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("フルコースイエロー、減速", volume = VOLUME) }
@@ -143,13 +128,11 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         }
 
     @Test
-    fun `フルコースイエローのカスタム文言が空のときはfalseを返す`() =
+    fun `フルコースイエローのカスタム文言が空のときは読み上げない`() =
         runTest {
             coEvery { observeFullCourseYellow() } returns flowOf("")
 
-            val result = speaker(SpeechEvent.FullCourseYellow, VOLUME)
-
-            assertFalse(result)
+            speaker(SpeechEvent.FullCourseYellow, VOLUME)
             coVerify(exactly = 1) { observeFullCourseYellow() }
             confirmAllMocksVerified()
         }
@@ -161,7 +144,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("赤旗、停止", volume = VOLUME) } just Runs
 
-            assertTrue(speaker(SpeechEvent.RedFlag, VOLUME))
+            speaker(SpeechEvent.RedFlag, VOLUME)
 
             coVerify(exactly = 1) { observeRed() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -170,26 +153,22 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         }
 
     @Test
-    fun `レッドフラッグのカスタム文言が空のときはfalseを返す`() =
+    fun `レッドフラッグのカスタム文言が空のときは読み上げない`() =
         runTest {
             coEvery { observeRed() } returns flowOf("")
 
-            val result = speaker(SpeechEvent.RedFlag, VOLUME)
-
-            assertFalse(result)
+            speaker(SpeechEvent.RedFlag, VOLUME)
             coVerify(exactly = 1) { observeRed() }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `レッドフラッグのカスタム文言は設定されているがTTSが利用不可のときはfalseを返す`() =
+    fun `レッドフラッグのカスタム文言は設定されているがTTSが利用不可のときは読み上げない`() =
         runTest {
             coEvery { observeRed() } returns flowOf("赤旗、停止")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val result = speaker(SpeechEvent.RedFlag, VOLUME)
-
-            assertFalse(result)
+            speaker(SpeechEvent.RedFlag, VOLUME)
             coVerify(exactly = 1) { observeRed() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
@@ -202,9 +181,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("ブルーフラッグ", volume = VOLUME) } just Runs
 
-            val result = speaker(SpeechEvent.BlueFlag, VOLUME)
-
-            assertTrue(result)
+            speaker(SpeechEvent.BlueFlag, VOLUME)
             coVerify(exactly = 1) { observeBlue() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("ブルーフラッグ", volume = VOLUME) }
@@ -218,9 +195,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("イエローフラッグ", volume = VOLUME) } just Runs
 
-            val result = speaker(SpeechEvent.YellowFlag, VOLUME)
-
-            assertTrue(result)
+            speaker(SpeechEvent.YellowFlag, VOLUME)
             coVerify(exactly = 1) { observeSectorYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("イエローフラッグ", volume = VOLUME) }
@@ -234,9 +209,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("フルコースイエロー", volume = VOLUME) } just Runs
 
-            val result = speaker(SpeechEvent.FullCourseYellow, VOLUME)
-
-            assertTrue(result)
+            speaker(SpeechEvent.FullCourseYellow, VOLUME)
             coVerify(exactly = 1) { observeFullCourseYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("フルコースイエロー", volume = VOLUME) }
@@ -249,7 +222,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { observeFullCourseYellow() } returns flowOf("フルコースイエロー")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            assertFalse(speaker(SpeechEvent.FullCourseYellow, VOLUME))
+            speaker(SpeechEvent.FullCourseYellow, VOLUME)
 
             coVerify(exactly = 1) { observeFullCourseYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }

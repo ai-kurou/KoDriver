@@ -31,17 +31,14 @@ internal class LmuWindowsFlagCustomTextSpeaker(
 ) {
     /**
      * @param volume アプリの読み上げ音量（0〜100）。
-     * @return カスタム文言を読み上げた場合 true（呼び出し元はWAVの再生をスキップする）。
-     *   [event] がフラッグ以外、カスタム文言が未設定、またはTTSが利用不可の場合は
-     *   false（フラッグ本文は再生しない）。
+     *   [event] がフラッグ以外、カスタム文言が未設定、またはTTSが利用不可の場合は何も読み上げない。
      */
     suspend operator fun invoke(
         event: SpeechEvent,
         volume: Int,
-    ): Boolean {
-        val text = readoutText(event) ?: return false
+    ) {
+        val text = readoutText(event) ?: return
         speakText(text, volume = volume)
-        return true
     }
 
     /** 現在の発話対象文言。空欄・TTS利用不可・フラッグ以外は null。 */

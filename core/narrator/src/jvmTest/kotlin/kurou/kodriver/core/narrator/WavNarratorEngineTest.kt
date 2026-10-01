@@ -511,32 +511,60 @@ class WavNarratorEngineTest {
         }
 
     @Test
-    fun `customSpeakがtrueを返すとイベント音声を再生せず開始音のみ再生する`() =
+    fun `customSpeakEventsのイベントはWAVを再生せず開始音のみ再生してcustomSpeakで読み上げる`() =
         runTest {
             val player = FakeSoundPlayer()
-            val engine = createEngine(player, customSpeak = { _, _ -> true })
+            var spoken = 0
+            val engine =
+                createEngine(
+                    player,
+                    customSpeakEvents = setOf(TTS_ONLY),
+                    customSpeak = { _, _ -> spoken++ },
+                )
             runCurrent()
 
-            engine.speak(CAR_LEFT)
+            engine.speak(TTS_ONLY)
             runCurrent()
 
+            assertEquals(1, spoken)
             assertEquals(1, player.playedSounds.size)
             assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
         }
 
     @Test
-    fun `customSpeakがfalseを返すとイベント音声をWAVで再生する`() =
+    fun `customSpeakEventsに含まれないイベントはcustomSpeakを呼ばずWAVで再生する`() =
         runTest {
             val player = FakeSoundPlayer()
-            val engine = createEngine(player, customSpeak = { _, _ -> false })
+            var spoken = 0
+            val engine =
+                createEngine(
+                    player,
+                    customSpeakEvents = setOf(TTS_ONLY),
+                    customSpeak = { _, _ -> spoken++ },
+                )
             runCurrent()
 
             engine.speak(CAR_LEFT)
             runCurrent()
 
+            assertEquals(0, spoken)
             assertEquals(2, player.playedSounds.size)
             assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
             assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+        }
+
+    @Test
+    fun `customSpeakEventsのイベントでもcustomSpeakを渡していなければ開始音のみ再生する`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player, customSpeakEvents = setOf(TTS_ONLY))
+            runCurrent()
+
+            engine.speak(TTS_ONLY)
+            runCurrent()
+
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
         }
 
     @Test
@@ -547,17 +575,15 @@ class WavNarratorEngineTest {
             val engine =
                 createEngine(
                     player,
-                    customSpeak = { event, _ ->
-                        receivedEvents += event
-                        false
-                    },
+                    customSpeakEvents = setOf(TTS_ONLY),
+                    customSpeak = { event, _ -> receivedEvents += event },
                 )
             runCurrent()
 
-            engine.speak(CAR_LEFT)
+            engine.speak(TTS_ONLY)
             runCurrent()
 
-            assertEquals(listOf(CAR_LEFT), receivedEvents)
+            assertEquals(listOf(TTS_ONLY), receivedEvents)
         }
 
     @Test
@@ -569,14 +595,12 @@ class WavNarratorEngineTest {
                 createEngine(
                     player,
                     volumeFlow = flowOf(35),
-                    customSpeak = { _, volume ->
-                        receivedVolumes += volume
-                        true
-                    },
+                    customSpeakEvents = setOf(TTS_ONLY),
+                    customSpeak = { _, volume -> receivedVolumes += volume },
                 )
             runCurrent()
 
-            engine.speak(CAR_LEFT)
+            engine.speak(TTS_ONLY)
             runCurrent()
 
             assertEquals(listOf(35), receivedVolumes)
@@ -590,6 +614,7 @@ class WavNarratorEngineTest {
             val engine =
                 createEngine(
                     player,
+                    customSpeakEvents = setOf(TTS_ONLY),
                     customSpeak = { _, _ ->
                         try {
                             awaitCancellation()
@@ -601,12 +626,12 @@ class WavNarratorEngineTest {
                 )
             runCurrent()
 
-            engine.speak(CAR_LEFT)
+            engine.speak(TTS_ONLY)
             runCurrent()
 
             // customSpeakがまだ発話中（suspendしたまま）のため、再生済みは開始音のみ。
             assertEquals(1, player.playedSounds.size)
-            assertEquals(CAR_LEFT_KEY, engine.currentKey)
+            assertEquals(TTS_ONLY_KEY, engine.currentKey)
 
             engine.stop()
             runCurrent()
@@ -624,17 +649,14 @@ class WavNarratorEngineTest {
                 createEngine(
                     player,
                     volumeFlow = flowOf(42),
-                    customSpeakEvents = setOf("tts_only"),
-                    customSpeak = { event, volume ->
-                        calls.add(event to volume)
-                        true
-                    },
+                    customSpeakEvents = setOf(TTS_ONLY),
+                    customSpeak = { event, volume -> calls.add(event to volume) },
                 )
             runCurrent()
-            engine.speak("tts_only")
-            engine.speak("tts_only", queue = true)
+            engine.speak(TTS_ONLY)
+            engine.speak(TTS_ONLY, queue = true)
             advanceUntilIdle()
-            assertEquals(listOf("tts_only" to 42, "tts_only" to 42), calls)
+            assertEquals(listOf(TTS_ONLY to 42, TTS_ONLY to 42), calls)
             assertEquals(2, player.playedSounds.size)
             player.playedSounds.forEach { assertContentEquals(FORMULA_RADIO_SOUND, it) }
         }
@@ -646,12 +668,12 @@ class WavNarratorEngineTest {
             val engine =
                 createEngine(
                     player,
-                    customSpeakEvents = setOf("tts_only"),
-                    customSpeak = { _, _ -> false },
-                    startSoundEnabledStatesFlow = flowOf(mapOf("tts_only_key" to false)),
+                    customSpeakEvents = setOf(TTS_ONLY),
+                    customSpeak = { _, _ -> },
+                    startSoundEnabledStatesFlow = flowOf(mapOf(TTS_ONLY_KEY to false)),
                 )
             runCurrent()
-            engine.speak("tts_only")
+            engine.speak(TTS_ONLY)
             advanceUntilIdle()
             assertEquals(0, player.playedSounds.size)
         }
@@ -663,7 +685,7 @@ class WavNarratorEngineTest {
         startSoundTypeFlow: Flow<String> = flowOf(FORMULA_RADIO),
         startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
         customSpeakEvents: Set<String> = emptySet(),
-        customSpeak: (suspend (String, Int) -> Boolean)? = null,
+        customSpeak: (suspend (String, Int) -> Unit)? = null,
         resourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
                 CAR_LEFT_PATH -> CAR_LEFT_SOUND
@@ -709,6 +731,8 @@ class WavNarratorEngineTest {
         )
 
     private companion object {
+        const val TTS_ONLY = "tts_only"
+        const val TTS_ONLY_KEY = "tts_only_key"
         const val CAR_LEFT = "car_left"
         const val LEFT_APPROACH = "left_approach"
         const val RED_FLAG = "red_flag"
