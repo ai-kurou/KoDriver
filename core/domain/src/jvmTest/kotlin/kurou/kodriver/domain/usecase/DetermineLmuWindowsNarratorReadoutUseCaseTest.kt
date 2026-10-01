@@ -752,7 +752,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `赤旗の変化をSessionStopに変換する`() {
+    fun `赤旗の音声種別がSESSION_STOPでもRedFlagイベントに変換する`() {
         val first =
             useCase.determineRaceFlags(
                 state = LmuWindowsNarratorState(),
@@ -767,7 +767,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.SessionStop), second.events)
+        assertEquals(listOf(SpeechEvent.RedFlag), second.events)
     }
 
     @Test

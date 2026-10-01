@@ -9,10 +9,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
@@ -26,7 +24,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     private val observeBlue: ObserveLmuWindowsBlueFlagReadoutTextUseCase = mockk()
     private val observeFullCourseYellow: ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase = mockk()
     private val observeRed: ObserveLmuWindowsRedFlagReadoutTextUseCase = mockk()
-    private val observeRecordedVoiceSelected: ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -35,7 +32,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             observeBlue,
             observeFullCourseYellow,
             observeRed,
-            observeRecordedVoiceSelected,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -46,7 +42,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             observeBlue,
             observeFullCourseYellow,
             observeRed,
-            observeRecordedVoiceSelected,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -77,15 +72,12 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     fun `セクターイエローのカスタム文言は設定されているがTTSが利用不可のときはfalseを返しWAVでの読み上げに任せる`() =
         runTest {
             coEvery { observeSectorYellow() } returns flowOf("イエロー、前方注意")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG) } returns
-                flowOf(false)
             coEvery { checkTextToSpeechAvailable() } returns false
 
             val result = speaker(SpeechEvent.YellowFlag, VOLUME)
 
             assertFalse(result)
             coVerify(exactly = 1) { observeSectorYellow() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG) }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
         }
@@ -94,8 +86,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     fun `セクターイエローのカスタム文言が設定されておりTTSが利用可能なときはOS標準TTSで読み上げる`() =
         runTest {
             coEvery { observeSectorYellow() } returns flowOf("イエロー、前方注意")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG) } returns
-                flowOf(false)
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("イエロー、前方注意", volume = VOLUME) } just Runs
 
@@ -103,7 +93,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
 
             assertTrue(result)
             coVerify(exactly = 1) { observeSectorYellow() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG) }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("イエロー、前方注意", volume = VOLUME) }
             confirmAllMocksVerified()
@@ -113,7 +102,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     fun `ブルーフラッグのカスタム文言が設定されておりTTSが利用可能なときはOS標準TTSで読み上げる`() =
         runTest {
             coEvery { observeBlue() } returns flowOf("ブルー、譲って")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) } returns flowOf(false)
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("ブルー、譲って", volume = VOLUME) } just Runs
 
@@ -121,7 +109,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
 
             assertTrue(result)
             coVerify(exactly = 1) { observeBlue() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("ブルー、譲って", volume = VOLUME) }
             confirmAllMocksVerified()
@@ -143,8 +130,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     fun `フルコースイエローのカスタム文言が設定されておりTTSが利用可能なときはOS標準TTSで読み上げる`() =
         runTest {
             coEvery { observeFullCourseYellow() } returns flowOf("フルコースイエロー、減速")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW) } returns
-                flowOf(false)
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("フルコースイエロー、減速", volume = VOLUME) } just Runs
 
@@ -152,7 +137,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
 
             assertTrue(result)
             coVerify(exactly = 1) { observeFullCourseYellow() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW) }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("フルコースイエロー、減速", volume = VOLUME) }
             confirmAllMocksVerified()
@@ -174,7 +158,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     fun `レッドフラッグとセッション停止は同じカスタム文言を読み上げる`() =
         runTest {
             coEvery { observeRed() } returns flowOf("赤旗、停止")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) } returns flowOf(false)
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("赤旗、停止", volume = VOLUME) } just Runs
 
@@ -182,7 +165,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             assertTrue(speaker(SpeechEvent.SessionStop, VOLUME))
 
             coVerify(exactly = 2) { observeRed() }
-            coVerify(exactly = 2) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 2) { speakText("赤旗、停止", volume = VOLUME) }
             confirmAllMocksVerified()
@@ -204,29 +186,74 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     fun `レッドフラッグのカスタム文言は設定されているがTTSが利用不可のときはfalseを返す`() =
         runTest {
             coEvery { observeRed() } returns flowOf("赤旗、停止")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) } returns flowOf(false)
             coEvery { checkTextToSpeechAvailable() } returns false
 
             val result = speaker(SpeechEvent.RedFlag, VOLUME)
 
             assertFalse(result)
             coVerify(exactly = 1) { observeRed() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `収録音声が明示的に選ばれているときは文言が残っていてもfalseを返しTTSを確認しない`() =
+    fun `ブルーフラッグは過去に収録音声が選ばれた設定が残っていても無視して文言を読み上げる`() =
         runTest {
-            coEvery { observeBlue() } returns flowOf("ブルー、譲って")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) } returns flowOf(true)
+            coEvery { observeBlue() } returns flowOf("ブルーフラッグ")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("ブルーフラッグ", volume = VOLUME) } just Runs
 
             val result = speaker(SpeechEvent.BlueFlag, VOLUME)
 
-            assertFalse(result)
+            assertTrue(result)
             coVerify(exactly = 1) { observeBlue() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("ブルーフラッグ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `イエローフラッグは過去に収録音声が選ばれた設定が残っていても無視して文言を読み上げる`() =
+        runTest {
+            coEvery { observeSectorYellow() } returns flowOf("イエローフラッグ")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("イエローフラッグ", volume = VOLUME) } just Runs
+
+            val result = speaker(SpeechEvent.YellowFlag, VOLUME)
+
+            assertTrue(result)
+            coVerify(exactly = 1) { observeSectorYellow() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("イエローフラッグ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `フルコースイエローは過去の収録音声選択を無視して読み上げる`() =
+        runTest {
+            coEvery { observeFullCourseYellow() } returns flowOf("フルコースイエロー")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("フルコースイエロー", volume = VOLUME) } just Runs
+
+            val result = speaker(SpeechEvent.FullCourseYellow, VOLUME)
+
+            assertTrue(result)
+            coVerify(exactly = 1) { observeFullCourseYellow() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("フルコースイエロー", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `フルコースイエローはTTSが利用不可ならWAVに任せる`() =
+        runTest {
+            coEvery { observeFullCourseYellow() } returns flowOf("フルコースイエロー")
+            coEvery { checkTextToSpeechAvailable() } returns false
+
+            assertFalse(speaker(SpeechEvent.FullCourseYellow, VOLUME))
+
+            coVerify(exactly = 1) { observeFullCourseYellow() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
         }
 

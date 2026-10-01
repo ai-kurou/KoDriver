@@ -33,9 +33,9 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `sectorYellowFlagText の初期値は空文字`() =
+    fun `sectorYellowFlagText の初期値はイエローフラッグ`() =
         runTest {
-            assertEquals("", repository.observeSectorYellowFlagText().first())
+            assertEquals("イエローフラッグ", repository.observeSectorYellowFlagText().first())
         }
 
     @Test
@@ -56,9 +56,9 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `blueFlagText の初期値は空文字`() =
+    fun `blueFlagText の初期値はブルーフラッグ`() =
         runTest {
-            assertEquals("", repository.observeBlueFlagText().first())
+            assertEquals("ブルーフラッグ", repository.observeBlueFlagText().first())
         }
 
     @Test
@@ -70,9 +70,9 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `fullCourseYellowFlagText の初期値は空文字`() =
+    fun `fullCourseYellowFlagText の初期値はフルコースイエロー`() =
         runTest {
-            assertEquals("", repository.observeFullCourseYellowFlagText().first())
+            assertEquals("フルコースイエロー", repository.observeFullCourseYellowFlagText().first())
         }
 
     @Test
@@ -84,9 +84,17 @@ class LmuWindowsFlagReadoutTextPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `redFlagText の初期値は空文字`() =
+    fun `フルコースイエローの空文字は保存後も空文字のまま取得できる`() =
         runTest {
-            assertEquals("", repository.observeRedFlagText().first())
+            repository.saveFullCourseYellowFlagText("")
+
+            assertEquals("", repository.observeFullCourseYellowFlagText().first())
+        }
+
+    @Test
+    fun `redFlagText の初期値はレッドフラッグ`() =
+        runTest {
+            assertEquals("レッドフラッグ", repository.observeRedFlagText().first())
         }
 
     @Test

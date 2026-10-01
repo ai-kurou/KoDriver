@@ -88,7 +88,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 text = uiState.flagText(item),
                 customTextSelected = uiState.isCustomTextSelected(item),
                 chips = chips,
-                selectedChip = chips[if (item.isSessionStopSelected(uiState.redFlagVoiceType)) 1 else 0],
+                selectedChip = chips.getOrNull(if (item.isSessionStopSelected(uiState.redFlagVoiceType)) 1 else 0),
                 isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
                 onRecordedVoiceSelected = { preview -> onRecordedVoiceSelected(item, preview) },
@@ -107,7 +107,7 @@ private data class FlagChip(
 
 /**
  * [item] の収録音声のチップ一覧。
- * レッドフラッグは音声種別（RedFlag / SessionStop）ごとに2つ、それ以外のフラッグは1つ。
+ * レッドフラッグは音声種別（RedFlag / SessionStop）ごとに2つ、それ以外のフラッグは自由文字列のみのため0個。
  */
 @Composable
 private fun flagChips(
@@ -116,6 +116,7 @@ private fun flagChips(
     onRedFlagVoiceTypeChanged: (RedFlagVoiceType) -> Unit,
     onRedFlagPreviewClicked: (RedFlagVoiceType) -> Unit,
 ): List<FlagChip> {
+    if (!item.recordedVoiceSelectable) return emptyList()
     if (item != FlagReadoutItem.RedFlag) {
         return listOf(FlagChip(stringResource(item.chipLabelRes)) { onPreviewClicked(item) })
     }
@@ -137,6 +138,7 @@ private fun FlagReadoutItem.isSessionStopSelected(voiceType: RedFlagVoiceType): 
 
 /**
  * 収録音声のチップとカスタム文言の入力欄を持つフラッグ項目のカード。
+ * [chips] が空の項目（レッドフラッグ以外）はチップを表示せず、カスタム文言の入力欄のみを表示する。
  *
  * 収録音声のチップとカスタム文言の選択状態は排他にして、どちらが使われるかを明示する。
  * 選択状態は保存済みの文言と収録音声の選択設定から決まる（[customTextSelected]）。
@@ -150,7 +152,7 @@ private fun FlagReadoutCard(
     text: String,
     customTextSelected: Boolean,
     chips: List<FlagChip>,
-    selectedChip: FlagChip,
+    selectedChip: FlagChip?,
     isTextToSpeechAvailable: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onRecordedVoiceSelected: (preview: () -> Unit) -> Unit,
@@ -163,19 +165,21 @@ private fun FlagReadoutCard(
         onCheckedChange = onCheckedChange,
         modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
         bottomContent = {
-            DetailPaneCardChips(
-                chipLabels = chips.map { it.label },
-                selectedChipLabels = if (customTextSelected) emptySet() else setOf(selectedChip.label),
-                chipEnabled = true,
-                onChipClick = { label ->
-                    // 収録音声のチップを選び直す操作。入力済みのカスタム文言は消さず、収録音声を使う設定にする。
-                    // 試聴は保存済みの選択状態を参照するため、保存の完了後に行う。
-                    onRecordedVoiceSelected { chips.first { it.label == label }.onClick() }
-                },
-            )
+            if (selectedChip != null) {
+                DetailPaneCardChips(
+                    chipLabels = chips.map { it.label },
+                    selectedChipLabels = if (customTextSelected) emptySet() else setOf(selectedChip.label),
+                    chipEnabled = true,
+                    onChipClick = { label ->
+                        // 収録音声のチップを選び直す操作。入力済みのカスタム文言は消さず、収録音声を使う設定にする。
+                        // 試聴は保存済みの選択状態を参照するため、保存の完了後に行う。
+                        onRecordedVoiceSelected { chips.first { it.label == label }.onClick() }
+                    },
+                )
+            }
             DetailPaneCardTextField(
                 value = text,
-                placeholder = selectedChip.label,
+                placeholder = selectedChip?.label ?: stringResource(item.labelRes),
                 maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
                 onValueChangeFinished = onTextChanged,
                 onPreviewClick = onTextPreviewClick,

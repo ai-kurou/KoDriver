@@ -17,3 +17,20 @@ const val READOUT_CUSTOM_TEXT_MAX_LENGTH = 30
  * true の場合はカスタム文言が残っていても収録音声で読み上げる。
  */
 const val READOUT_RECORDED_VOICE_SELECTED_DEFAULT = false
+
+/**
+ * LMU のブルーフラッグ読み上げ文言の初期値。
+ *
+ * ブルーフラッグは収録音声のチップを持たず、自由文字列の読み上げのみを提供する。
+ * 空文字にした場合のみ、収録済みWAVで読み上げる。
+ */
+const val LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT = "ブルーフラッグ"
+
+/** LMU のイエローフラッグ読み上げ文言の初期値。空欄の場合は収録済みWAVにフォールバックする。 */
+const val LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT = "イエローフラッグ"
+
+/** LMU のフルコースイエロー読み上げ文言の初期値。空欄の場合は収録済みWAVにフォールバックする。 */
+const val LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT = "フルコースイエロー"
+
+/** LMU のレッドフラッグ読み上げ文言の初期値。空欄の場合は収録済みWAVにフォールバックする。 */
+const val LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT = "レッドフラッグ"

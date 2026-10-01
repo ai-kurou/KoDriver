@@ -2,23 +2,18 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.flow.first
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
- * フラッグが実際に発生した際、収録音声（チップ選択）とカスタム文言（TextField入力）の
- * どちらで読み上げるかを切り替える [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine]
- * 用のフック。detailPane の試聴と同じく、カスタム文言が設定されていて、かつOS標準TTSが実際に
- * 利用可能な場合のみOS標準TTSで読み上げる。空欄（未設定）、収録音声が明示的に選ばれている場合
- * （文言は残っていても使わない）、または現在TTSが利用できない場合は、
- * 収録済みWAVでの読み上げに任せる（TTSが後から使えなくなっても無音・意図しない言語での読み上げに
- * ならないようにするためのフォールバック）。
+ * フラッグの自由文字列をOS標準TTSで読み上げる、
+ * [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine] 用のフック。
+ * 全フラッグで過去の収録音声選択設定を無視する。
+ * 空欄またはTTSが利用できない場合は収録済みWAVへフォールバックする。
  *
  * 対象イベントと文言の対応:
  * - [SpeechEvent.YellowFlag] : セクターイエロー
@@ -31,7 +26,6 @@ internal class LmuWindowsFlagCustomTextSpeaker(
     private val observeBlueFlagReadoutText: ObserveLmuWindowsBlueFlagReadoutTextUseCase,
     private val observeFullCourseYellowFlagReadoutText: ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase,
     private val observeRedFlagReadoutText: ObserveLmuWindowsRedFlagReadoutTextUseCase,
-    private val observeRecordedVoiceSelected: ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -47,19 +41,10 @@ internal class LmuWindowsFlagCustomTextSpeaker(
     ): Boolean {
         val text = customText(event) ?: return false
         if (text.isBlank()) return false
-        if (observeRecordedVoiceSelected(target(event)).first()) return false
         if (!checkTextToSpeechAvailable()) return false
         speakText(text, volume = volume)
         return true
     }
-
-    private fun target(event: SpeechEvent): LmuWindowsFlagReadoutTarget =
-        when (event) {
-            SpeechEvent.YellowFlag -> LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG
-            SpeechEvent.BlueFlag -> LmuWindowsFlagReadoutTarget.BLUE_FLAG
-            SpeechEvent.FullCourseYellow -> LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW
-            else -> LmuWindowsFlagReadoutTarget.RED_FLAG
-        }
 
     private suspend fun customText(event: SpeechEvent): String? =
         when (event) {

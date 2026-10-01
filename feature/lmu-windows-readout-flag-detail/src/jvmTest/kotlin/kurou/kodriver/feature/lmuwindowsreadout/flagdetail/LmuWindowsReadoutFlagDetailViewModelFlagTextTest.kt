@@ -396,13 +396,24 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
         }
 
     @Test
-    fun `収録音声の選択状態が UiState に反映され文言があっても収録音声が選ばれていればカスタム文言扱いにならない`() =
+    fun `全フラッグは収録音声が選ばれていてもカスタム文言を使う`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-            stubReadoutTexts(blue = "ブルー、譲って", red = "赤旗、停止")
+            stubReadoutTexts(sectorYellow = "イエロー、注意", blue = "ブルー、譲って", fullCourseYellow = "減速", red = "赤旗、停止")
             stubRecordedVoiceSelected()
             every { textRepository.observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) } returns
+                MutableStateFlow(true)
+            every {
+                textRepository.observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG)
+            } returns MutableStateFlow(true)
+            every {
+                textRepository.observeRecordedVoiceSelected(
+                    LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW,
+                )
+            } returns
+                MutableStateFlow(true)
+            every { textRepository.observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.RED_FLAG) } returns
                 MutableStateFlow(true)
             coEvery { ttsRepository.isAvailable() } returns true
             val viewModel = createViewModel()
@@ -410,9 +421,10 @@ class LmuWindowsReadoutFlagDetailViewModelFlagTextTest {
             val state = viewModel.uiState.first()
 
             assertTrue(state.isRecordedVoiceSelected(FlagReadoutItem.BlueFlag))
-            assertFalse(state.isCustomTextSelected(FlagReadoutItem.BlueFlag))
+            assertTrue(state.isCustomTextSelected(FlagReadoutItem.BlueFlag))
             assertTrue(state.isCustomTextSelected(FlagReadoutItem.RedFlag))
-            assertFalse(state.isCustomTextSelected(FlagReadoutItem.SectorYellowFlag))
+            assertTrue(state.isCustomTextSelected(FlagReadoutItem.SectorYellowFlag))
+            assertTrue(state.isCustomTextSelected(FlagReadoutItem.FullCourseYellow))
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             verify(exactly = 1) { redFlagRepository.observeVoiceType() }
             verifyReadoutTextsObserved()

@@ -8,16 +8,13 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
 
-/**
- * [SpeechEvent.narratedText] は WAV と同じ内容を Chip 表示文言から複製したものであるため、
- * Chip側の文言変更を検知できるよう実際の表示テキストと突き合わせる（#1527）。
- */
+/** フラッグの既定文言と、WAVの読み上げ内容を表す [SpeechEvent.narratedText] の一致を検証する。 */
 class LmuWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `Chip表示文言がSpeechEventのnarratedTextと一致する`() {
+    fun `フラッグの既定文言がSpeechEventのnarratedTextと一致する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutFlagDetailPaneContent(
@@ -38,7 +35,6 @@ class LmuWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
             SpeechEvent.YellowFlag.narratedText,
             SpeechEvent.FullCourseYellow.narratedText,
             SpeechEvent.RedFlag.narratedText,
-            SpeechEvent.SessionStop.narratedText,
         ).forEach { narratedText ->
             rule.onAllNodesWithText(narratedText)[0].assertTextContains(narratedText, substring = true)
         }

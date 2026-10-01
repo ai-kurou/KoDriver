@@ -1250,7 +1250,7 @@ class LmuWindowsNarratorViewModelTest {
             flagChannel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.BlueFlag, SpeechEvent.SessionStop),
+                listOf<SpeechEvent>(SpeechEvent.BlueFlag, SpeechEvent.RedFlag),
                 spokenTexts,
             )
         }
