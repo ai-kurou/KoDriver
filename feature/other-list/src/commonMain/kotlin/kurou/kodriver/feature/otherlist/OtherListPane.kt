@@ -79,6 +79,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_startup
 import kurou.kodriver.feature.otherlist.generated.resources.item_theme
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_engine_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_language_data_missing
+import kurou.kodriver.feature.otherlist.generated.resources.item_voice
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
@@ -116,6 +117,7 @@ private fun OtherListItemType.section(): OtherListSection =
         -> OtherListSection.ConnectionSettings
 
         OtherListItemType.Volume,
+        OtherListItemType.Voice,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -159,6 +161,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
         }
 
         OtherListItemType.Volume,
+        OtherListItemType.Voice,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -208,6 +211,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
 private fun otherReadoutSettingsItemDisplayName(itemType: OtherListItemType): String =
     when (itemType) {
         OtherListItemType.Volume -> stringResource(Res.string.item_volume)
+        OtherListItemType.Voice -> stringResource(Res.string.item_voice)
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
         OtherListItemType.TtsEngineMissing -> stringResource(Res.string.item_tts_engine_missing)
         OtherListItemType.TtsLanguageDataMissing -> stringResource(Res.string.item_tts_language_data_missing)
@@ -257,6 +261,7 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
 
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
 
+        OtherListItemType.Voice,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.WindowsSpeechUnavailable,
@@ -331,6 +336,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        OtherListItemType.Voice,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.Feedback,
         OtherListItemType.License,
@@ -560,6 +566,7 @@ private fun OtherListItem(
                 OtherListItemType.ServerIp,
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
+                OtherListItemType.Voice,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
@@ -620,6 +627,8 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
+        OtherListItemType.Voice -> {}
+
         OtherListItemType.OverlayVisible -> {
             onOverlayVisibleChange(!uiState.overlayVisible)
         }

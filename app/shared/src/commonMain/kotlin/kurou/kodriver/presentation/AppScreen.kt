@@ -334,6 +334,7 @@ private fun DefaultOtherContent(
                     DebugStateDetailPane(canNavigateBack, onBack)
                 }
 
+                OtherListItemType.Voice,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,

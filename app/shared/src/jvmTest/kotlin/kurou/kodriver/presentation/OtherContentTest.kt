@@ -43,6 +43,31 @@ class OtherContentTest {
         )
 
     @Test
+    fun `読み上げ音声をクリックしても選択や詳細遷移をしない`() {
+        var selectionCount = 0
+        var backEnabled = false
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.Voice)),
+                onItemSelected = { selectionCount++ },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { item, _, _, _, _ -> Text("Detail: ${item.id}") },
+            )
+        }
+
+        rule.onNodeWithText("読み上げ音声").assertExists().performClick()
+        rule.waitForIdle()
+
+        assertEquals(0, selectionCount)
+        assertFalse(backEnabled)
+        rule.onNodeWithText("Detail: voice").assertDoesNotExist()
+    }
+
+    @Test
     fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
         var backEnabled = false
         var githubRepositoryOpened = false

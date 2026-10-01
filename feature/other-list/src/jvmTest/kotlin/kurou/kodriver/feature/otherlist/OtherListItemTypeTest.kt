@@ -8,6 +8,7 @@ class OtherListItemTypeTest {
     @Test
     fun `存在するidを渡すと対応するOtherListItemTypeを返す`() {
         assertEquals(OtherListItemType.Volume, OtherListItemType.fromId("volume"))
+        assertEquals(OtherListItemType.Voice, OtherListItemType.fromId("voice"))
     }
 
     @Test

@@ -11,6 +11,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
@@ -20,6 +22,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
+import io.mockk.confirmVerified
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -35,8 +40,35 @@ private class FakeHapticFeedback : HapticFeedback {
 
 @Suppress("TooManyFunctions")
 class OtherListPaneTest {
+    private val onItemClick: (OtherListItemType) -> Unit = mockk()
+
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `読み上げ音声を表示しクリックしても項目クリックコールバックを呼ばない`() {
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.Voice)),
+                onItemClick = onItemClick,
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule
+            .onNodeWithText("読み上げ音声")
+            .assertIsDisplayed()
+            .assertIsNotSelected()
+            .performClick()
+        rule.onNodeWithText("読み上げ音声").assertIsNotSelected()
+
+        verify(exactly = 0) { onItemClick(OtherListItemType.Voice) }
+        confirmVerified(onItemClick)
+    }
 
     @Test
     fun `通常項目をクリックすると項目クリックコールバックを呼ぶ`() {

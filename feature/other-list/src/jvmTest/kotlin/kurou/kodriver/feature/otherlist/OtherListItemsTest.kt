@@ -13,6 +13,7 @@ class OtherListItemsTest {
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.OverlayTextSize,
