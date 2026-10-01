@@ -86,22 +86,4 @@ class RaceFlagsDataTest {
         assertEquals(PrimaryFlag.UNKNOWN, PrimaryFlag.fromRaw(99))
         assertEquals(PrimaryFlag.UNKNOWN, PrimaryFlag.fromRaw(Int.MIN_VALUE))
     }
-
-    // -------------------------------------------------------------------------
-    // CountLapFlag.fromRaw
-    // -------------------------------------------------------------------------
-
-    @Test
-    fun `CountLapFlag fromRaw - 既知の全値が正しくマッピングされる`() {
-        assertEquals(CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME, CountLapFlag.fromRaw(0))
-        assertEquals(CountLapFlag.COUNT_LAP_BUT_NOT_TIME, CountLapFlag.fromRaw(1))
-        assertEquals(CountLapFlag.COUNT_LAP_AND_TIME, CountLapFlag.fromRaw(2))
-    }
-
-    @Test
-    fun `CountLapFlag fromRaw - 未知の値は UNKNOWN になる`() {
-        assertEquals(CountLapFlag.UNKNOWN, CountLapFlag.fromRaw(3))
-        assertEquals(CountLapFlag.UNKNOWN, CountLapFlag.fromRaw(-1))
-        assertEquals(CountLapFlag.UNKNOWN, CountLapFlag.fromRaw(Int.MIN_VALUE))
-    }
 }

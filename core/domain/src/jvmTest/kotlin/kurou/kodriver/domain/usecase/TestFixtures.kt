@@ -1,7 +1,6 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
@@ -47,11 +46,8 @@ internal fun fakeRaceFlagsData(
     gamePhase = gamePhase,
     yellowFlagState = yellowFlagState,
     sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-    startLight = 0,
-    numRedLights = 0,
     playerFlag = playerFlag,
     playerUnderYellow = false,
-    playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
 )
 
 internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) =

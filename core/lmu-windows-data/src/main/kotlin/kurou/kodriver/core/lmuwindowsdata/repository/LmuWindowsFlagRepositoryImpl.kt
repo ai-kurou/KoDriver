@@ -3,7 +3,6 @@ package kurou.kodriver.core.lmuwindowsdata.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -30,14 +29,8 @@ internal class LmuWindowsFlagRepositoryImpl(
                     SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 1).toInt()),
                     SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 2).toInt()),
                 ),
-            startLight = buffer.get(SCORING_BASE + OFF_START_LIGHT).toInt() and 0xFF,
-            numRedLights = buffer.get(SCORING_BASE + OFF_NUM_RED_LIGHTS).toInt() and 0xFF,
             playerFlag = PrimaryFlag.fromRaw(buffer.get(playerVehicleBase + OFF_PLAYER_FLAG).toInt() and 0xFF),
             playerUnderYellow = buffer.get(playerVehicleBase + OFF_PLAYER_UNDER_YELLOW).toInt() != 0,
-            playerCountLapFlag =
-                CountLapFlag.fromRaw(
-                    buffer.get(playerVehicleBase + OFF_PLAYER_COUNT_LAP_FLAG).toInt() and 0xFF,
-                ),
         )
     }
 
@@ -64,12 +57,9 @@ internal class LmuWindowsFlagRepositoryImpl(
         private const val OFF_GAME_PHASE = 108
         private const val OFF_YELLOW_FLAG_STATE = 109
         private const val OFF_SECTOR_FLAGS = 110
-        private const val OFF_START_LIGHT = 113
-        private const val OFF_NUM_RED_LIGHTS = 114
 
         private const val OFF_IS_PLAYER = 196
         private const val OFF_PLAYER_FLAG = 504
         private const val OFF_PLAYER_UNDER_YELLOW = 505
-        private const val OFF_PLAYER_COUNT_LAP_FLAG = 506
     }
 }

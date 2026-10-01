@@ -27,7 +27,6 @@ import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
@@ -2199,11 +2198,8 @@ private fun sampleRaceFlags(gamePhase: SessionPhase) =
         gamePhase = gamePhase,
         yellowFlagState = SessionYellowFlagState.NONE,
         sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-        startLight = 0,
-        numRedLights = 0,
         playerFlag = PrimaryFlag.GREEN,
         playerUnderYellow = false,
-        playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
     )
 
 private fun sampleVirtualEnergy(session: Int) =

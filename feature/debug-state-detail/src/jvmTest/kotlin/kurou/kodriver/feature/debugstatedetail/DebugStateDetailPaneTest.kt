@@ -11,7 +11,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -244,11 +243,8 @@ class DebugStateDetailPaneTest {
                                             SectorFlagState.CLEAR,
                                             SectorFlagState.CLEAR,
                                         ),
-                                    startLight = 0,
-                                    numRedLights = 0,
                                     playerFlag = PrimaryFlag.GREEN,
                                     playerUnderYellow = false,
-                                    playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
                                 ),
                         ),
                     canNavigateBack = true,
@@ -278,11 +274,8 @@ class DebugStateDetailPaneTest {
                                             SectorFlagState.CLEAR,
                                             SectorFlagState.CLEAR,
                                         ),
-                                    startLight = 0,
-                                    numRedLights = 0,
                                     playerFlag = PrimaryFlag.BLUE,
                                     playerUnderYellow = false,
-                                    playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
                                 ),
                         ),
                     canNavigateBack = true,
@@ -401,10 +394,7 @@ class DebugStateDetailPaneTest {
         gamePhase = gamePhase,
         yellowFlagState = yellowFlagState,
         sectorFlags = sectorFlags,
-        startLight = 0,
-        numRedLights = 0,
         playerFlag = playerFlag,
         playerUnderYellow = playerUnderYellow,
-        playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
     )
 }

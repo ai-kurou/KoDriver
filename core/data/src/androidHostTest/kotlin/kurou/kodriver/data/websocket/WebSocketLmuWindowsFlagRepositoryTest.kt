@@ -190,11 +190,8 @@ private val GREEN_FLAG_JSON =
         "gamePhase": "GREEN_FLAG",
         "yellowFlagState": "NONE",
         "sectorFlags": [],
-        "startLight": 0,
-        "numRedLights": 0,
         "playerFlag": "GREEN",
-        "playerUnderYellow": false,
-        "playerCountLapFlag": "DO_NOT_COUNT_LAP_OR_TIME"
+        "playerUnderYellow": false
     }
     """.trimIndent()
 
@@ -204,10 +201,7 @@ private val RED_FLAG_JSON =
         "gamePhase": "RED_FLAG",
         "yellowFlagState": "NONE",
         "sectorFlags": [],
-        "startLight": 0,
-        "numRedLights": 0,
         "playerFlag": "GREEN",
-        "playerUnderYellow": false,
-        "playerCountLapFlag": "DO_NOT_COUNT_LAP_OR_TIME"
+        "playerUnderYellow": false
     }
     """.trimIndent()

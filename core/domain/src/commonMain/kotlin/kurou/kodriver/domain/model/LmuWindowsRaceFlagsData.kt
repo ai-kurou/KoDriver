@@ -10,16 +10,10 @@ data class LmuWindowsRaceFlagsData(
     val yellowFlagState: SessionYellowFlagState,
     // 各セクターの旗状態。0番目=セクター1、1番目=セクター2、2番目=セクター3。
     val sectorFlags: List<SectorFlagState>,
-    // スタートライトの現在状態。消灯/点灯パターンの判定に使う。
-    val startLight: Int,
-    // 現在点灯している赤ランプの数。スタート手順の進行把握に使う。
-    val numRedLights: Int,
     // プレイヤー車両個別に出ている旗指示。追い越し指示やペナルティ指示など。
     val playerFlag: PrimaryFlag,
     // プレイヤー車両が黄旗制御下にあるかどうか。
     val playerUnderYellow: Boolean,
-    // 今周回を正式ラップとして数えるかどうかを示すフラグ。
-    val playerCountLapFlag: CountLapFlag,
 )
 
 // LMU shared memory の ScoringInfo.mGamePhase に対応する値。
@@ -97,22 +91,5 @@ enum class PrimaryFlag(
 
     companion object {
         fun fromRaw(value: Int): PrimaryFlag = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
-    }
-}
-
-// LMU shared memory の VehicleScoringInfo.mCountLapFlag に対応する値。
-// pyLMUSharedMemory lmu_enum.py の LMUCountLapFlag に基づく。
-@Serializable
-enum class CountLapFlag(
-    val rawValue: Int,
-) {
-    DO_NOT_COUNT_LAP_OR_TIME(0),
-    COUNT_LAP_BUT_NOT_TIME(1),
-    COUNT_LAP_AND_TIME(2),
-    UNKNOWN(Int.MIN_VALUE),
-    ;
-
-    companion object {
-        fun fromRaw(value: Int): CountLapFlag = entries.firstOrNull { it.rawValue == value } ?: UNKNOWN
     }
 }

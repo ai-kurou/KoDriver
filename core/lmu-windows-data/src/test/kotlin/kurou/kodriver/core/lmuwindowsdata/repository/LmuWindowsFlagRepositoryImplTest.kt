@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -42,11 +41,8 @@ class LmuWindowsFlagRepositoryImplTest {
                             gamePhase = 4,
                             yellowFlagState = 2,
                             sectorFlags = listOf(0, 2, 0),
-                            startLight = 3,
-                            numRedLights = 5,
                             playerFlag = 6,
                             playerUnderYellow = true,
-                            playerCountLapFlag = 1,
                         ),
                     ),
                 )
@@ -60,11 +56,8 @@ class LmuWindowsFlagRepositoryImplTest {
                 listOf(SectorFlagState.CLEAR, SectorFlagState.UNKNOWN, SectorFlagState.CLEAR),
                 result.sectorFlags,
             )
-            assertEquals(3, result.startLight)
-            assertEquals(5, result.numRedLights)
             assertEquals(PrimaryFlag.BLUE, result.playerFlag)
             assertTrue(result.playerUnderYellow)
-            assertEquals(CountLapFlag.COUNT_LAP_BUT_NOT_TIME, result.playerCountLapFlag)
         }
 
     @Test
@@ -124,15 +117,12 @@ class LmuWindowsFlagRepositoryImplTest {
         buffer.put(1_632 + 110, config.sectorFlags[0].toByte())
         buffer.put(1_632 + 111, config.sectorFlags[1].toByte())
         buffer.put(1_632 + 112, config.sectorFlags[2].toByte())
-        buffer.put(1_632 + 113, config.startLight.toByte())
-        buffer.put(1_632 + 114, config.numRedLights.toByte())
 
         if (config.hasPlayer) {
             val playerBase = 2_192 + 584
             buffer.put(playerBase + 196, 1.toByte())
             buffer.put(playerBase + 504, config.playerFlag.toByte())
             buffer.put(playerBase + 505, if (config.playerUnderYellow) 1.toByte() else 0.toByte())
-            buffer.put(playerBase + 506, config.playerCountLapFlag.toByte())
         }
 
         return buffer
@@ -144,10 +134,7 @@ class LmuWindowsFlagRepositoryImplTest {
         val gamePhase: Int = 0,
         val yellowFlagState: Int = 0,
         val sectorFlags: List<Int> = listOf(0, 0, 0),
-        val startLight: Int = 0,
-        val numRedLights: Int = 0,
         val playerFlag: Int = 0,
         val playerUnderYellow: Boolean = false,
-        val playerCountLapFlag: Int = 0,
     )
 }

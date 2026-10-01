@@ -3,7 +3,6 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
@@ -2458,11 +2457,8 @@ private fun clearFlags(
     gamePhase = gamePhase,
     yellowFlagState = SessionYellowFlagState.NONE,
     sectorFlags = sectorFlags,
-    startLight = 0,
-    numRedLights = 0,
     playerFlag = playerFlag,
     playerUnderYellow = false,
-    playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
 )
 
 private fun damage(

@@ -13,7 +13,6 @@ import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LateralDistanceMeters
@@ -52,11 +51,8 @@ private val sampleRaceFlags =
         gamePhase = SessionPhase.GREEN_FLAG,
         yellowFlagState = SessionYellowFlagState.NONE,
         sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
-        startLight = 0,
-        numRedLights = 0,
         playerFlag = PrimaryFlag.GREEN,
         playerUnderYellow = false,
-        playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
     )
 
 private val sampleVirtualEnergy =
