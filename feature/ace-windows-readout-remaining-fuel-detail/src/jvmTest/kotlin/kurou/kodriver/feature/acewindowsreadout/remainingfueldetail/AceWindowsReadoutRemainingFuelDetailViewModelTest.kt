@@ -152,7 +152,7 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
         }
 
     @Test
-    fun `onPreviewClickedを呼ぶと残り燃料警告イベントが再生される`() =
+    fun `onPreviewClickedを呼ぶと燃料残量警告イベントが再生される`() =
         runTest {
             every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
             val viewModel = createViewModel()

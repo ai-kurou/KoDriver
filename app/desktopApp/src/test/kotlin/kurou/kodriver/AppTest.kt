@@ -147,7 +147,7 @@ class AppTest {
             "各ラップごとに燃料と走行可能な残り周回数を計算します。現在のベストラップの30秒前にあたるタイミングで判定し、" +
                 "設定した周回数以下になると音声でお知らせします。",
         )
-        clickItemAndVerifyDescription("燃料残量", "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。")
+        clickItemAndVerifyDescription("燃料残量", "燃料残量が設定した閾値以下になった場合に、音声でお知らせします。")
         clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
 
@@ -171,7 +171,7 @@ class AppTest {
         scrollToItem("燃料残量")
         clickItemAndVerifyDescription(
             "燃料残量",
-            "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
+            "燃料残量が設定した閾値以下になった場合に、音声でお知らせします。",
         )
         scrollToItem("燃料残り周回数")
         clickItemAndVerifyDescription(
