@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 
 internal class LmuWindowsFlagReadoutTextPreferencesRepositoryImpl(
@@ -31,4 +32,33 @@ internal class LmuWindowsFlagReadoutTextPreferencesRepositoryImpl(
     override suspend fun saveRedFlagText(text: String) {
         dataStore.saveProperty(text) { prefs, value -> prefs.copy(redFlagText = value) }
     }
+
+    override fun observeRecordedVoiceSelected(target: LmuWindowsFlagReadoutTarget): Flow<Boolean> =
+        dataStore.observeProperty { it.recordedVoiceSelected(target) }
+
+    override suspend fun saveRecordedVoiceSelected(
+        target: LmuWindowsFlagReadoutTarget,
+        selected: Boolean,
+    ) {
+        dataStore.saveProperty(selected) { prefs, value -> prefs.withRecordedVoiceSelected(target, value) }
+    }
+
+    private fun FlagReadoutTextPreferences.recordedVoiceSelected(target: LmuWindowsFlagReadoutTarget): Boolean =
+        when (target) {
+            LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG -> sectorYellowFlagRecordedVoiceSelected
+            LmuWindowsFlagReadoutTarget.BLUE_FLAG -> blueFlagRecordedVoiceSelected
+            LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW -> fullCourseYellowFlagRecordedVoiceSelected
+            LmuWindowsFlagReadoutTarget.RED_FLAG -> redFlagRecordedVoiceSelected
+        }
+
+    private fun FlagReadoutTextPreferences.withRecordedVoiceSelected(
+        target: LmuWindowsFlagReadoutTarget,
+        selected: Boolean,
+    ): FlagReadoutTextPreferences =
+        when (target) {
+            LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG -> copy(sectorYellowFlagRecordedVoiceSelected = selected)
+            LmuWindowsFlagReadoutTarget.BLUE_FLAG -> copy(blueFlagRecordedVoiceSelected = selected)
+            LmuWindowsFlagReadoutTarget.FULL_COURSE_YELLOW -> copy(fullCourseYellowFlagRecordedVoiceSelected = selected)
+            LmuWindowsFlagReadoutTarget.RED_FLAG -> copy(redFlagRecordedVoiceSelected = selected)
+        }
 }

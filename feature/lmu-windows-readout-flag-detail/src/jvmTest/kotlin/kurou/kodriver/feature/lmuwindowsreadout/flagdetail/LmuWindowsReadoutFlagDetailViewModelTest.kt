@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
@@ -28,6 +29,7 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
@@ -36,6 +38,7 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagRecordedVoiceSelectedUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRedFlagVoiceTypeUseCase
@@ -93,6 +96,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                             saveFullCourseYellow =
                                 SaveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(textRepository),
                             saveRedFlag = SaveLmuWindowsRedFlagReadoutTextUseCase(textRepository),
+                            observeRecordedVoiceSelected =
+                                ObserveLmuWindowsFlagRecordedVoiceSelectedUseCase(textRepository),
+                            saveRecordedVoiceSelected = SaveLmuWindowsFlagRecordedVoiceSelectedUseCase(textRepository),
                         ),
                 ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
@@ -100,6 +106,12 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),
             checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(ttsRepository),
         )
+
+    private fun stubRecordedVoiceSelected(selected: Boolean = false) {
+        LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+            every { textRepository.observeRecordedVoiceSelected(target) } returns MutableStateFlow(selected)
+        }
+    }
 
     private fun stubReadoutTexts(
         sectorYellow: String = "",
@@ -111,6 +123,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         every { textRepository.observeBlueFlagText() } returns MutableStateFlow(blue)
         every { textRepository.observeFullCourseYellowFlagText() } returns MutableStateFlow(fullCourseYellow)
         every { textRepository.observeRedFlagText() } returns MutableStateFlow(red)
+        stubRecordedVoiceSelected()
     }
 
     private fun verifyReadoutTextsObserved() {
@@ -118,6 +131,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         verify(exactly = 1) { textRepository.observeBlueFlagText() }
         verify(exactly = 1) { textRepository.observeFullCourseYellowFlagText() }
         verify(exactly = 1) { textRepository.observeRedFlagText() }
+        LmuWindowsFlagReadoutTarget.entries.forEach { target ->
+            verify(exactly = 1) { textRepository.observeRecordedVoiceSelected(target) }
+        }
     }
 
     @Test
