@@ -67,7 +67,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.TyreTemperatureReadoutInput
 import kotlin.time.Clock
@@ -98,7 +98,7 @@ internal data class SimulatorUseCases(
 
 internal data class ReadoutListUseCases(
     val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val observeReadoutOrder: ObserveReadoutOrderUseCase,
+    val observeReadoutOrder: ObserveResolvedReadoutOrderUseCase,
     val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
 )
 
@@ -193,7 +193,7 @@ internal class LmuWindowsNarratorViewModel(
     private val readoutOrder =
         selectedSimulator
             .flatMapLatest { simulator ->
-                readoutListUseCases.observeReadoutOrder(simulator.id)
+                readoutListUseCases.observeReadoutOrder(simulator)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。

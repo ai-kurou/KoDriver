@@ -38,7 +38,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStat
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -81,7 +81,7 @@ internal data class SimulatorUseCases(
 
 internal data class ReadoutListUseCases(
     val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val observeReadoutOrder: ObserveReadoutOrderUseCase,
+    val observeReadoutOrder: ObserveResolvedReadoutOrderUseCase,
     val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
 )
 
@@ -127,7 +127,7 @@ internal class AceWindowsNarratorViewModel(
     private val readoutOrder =
         selectedSimulator
             .flatMapLatest { simulator ->
-                readoutListUseCases.observeReadoutOrder(simulator.id)
+                readoutListUseCases.observeReadoutOrder(simulator)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。

@@ -50,7 +50,9 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -110,7 +112,11 @@ class Gt7Ps5NarratorViewModelTest {
             readoutListUseCases =
                 ReadoutListUseCases(
                     observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
+                    observeReadoutOrder =
+                        ObserveResolvedReadoutOrderUseCase(
+                            ObserveReadoutOrderUseCase(readoutPreferencesRepository),
+                            ResolveReadoutOrderUseCase(),
+                        ),
                     observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
                 ),
             remainingFuelLapsUseCases =
@@ -599,10 +605,11 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(
-                orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+                orderOverride =
+                    listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
@@ -618,6 +625,26 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     @Test
+    fun `読み上げ順序が未保存でもデフォルト順序で優先度の高いアイテム読み上げ中のベストラップを読み上げない`() =
+        runTest(testDispatcher) {
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine =
+                mockPriorityAwareTts(
+                    spokenTexts = spokenTexts,
+                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                )
+            stubReadoutDefaults(orderOverride = emptyList())
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+
+            assertEquals(false, ttsEngine.stopCalled)
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
     fun `優先度制御で読み上げなかったイベントはSKIPPEDとして保存する`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
@@ -625,10 +652,11 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(
-                orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+                orderOverride =
+                    listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
             )
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -667,7 +695,7 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(
                 orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.LmuWindows.Flag.Root),
@@ -689,7 +717,7 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root))
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
@@ -709,10 +737,11 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(
-                orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+                orderOverride =
+                    listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
                 queueEnabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
@@ -725,16 +754,16 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     @Test
-    fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() =
+    fun `保存済み順序に新しい項目がなくても末尾に補完され再生中の読み上げを優先する`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 )
-            stubReadoutDefaults(orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root))
+            stubReadoutDefaults(orderOverride = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root))
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))

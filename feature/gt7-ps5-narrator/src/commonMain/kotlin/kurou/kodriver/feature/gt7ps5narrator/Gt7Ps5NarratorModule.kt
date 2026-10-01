@@ -21,9 +21,11 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.feature.gt7ps5narrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -66,6 +68,8 @@ val gt7Ps5NarratorModule: Module =
         factory { ObserveGt7Ps5MyBestLapVoiceTypeUseCase(get()) }
         factory { ObserveReadoutEnabledStatesUseCase(get()) }
         factory { ObserveReadoutOrderUseCase(get()) }
+        factory { ResolveReadoutOrderUseCase() }
+        factory { ObserveResolvedReadoutOrderUseCase(get(), get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
         factory { ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(get()) }
