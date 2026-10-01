@@ -47,7 +47,8 @@ internal class LmuWindowsFlagCustomTextSpeaker(
     ): Boolean {
         val text = customText(event) ?: return false
         if (text.isBlank()) return false
-        if (observeRecordedVoiceSelected(target(event)).first()) return false
+        // ブルーフラッグは収録音声のチップを持たないため、過去に保存された選択状態は無視する。
+        if (event != SpeechEvent.BlueFlag && observeRecordedVoiceSelected(target(event)).first()) return false
         if (!checkTextToSpeechAvailable()) return false
         speakText(text, volume = volume)
         return true

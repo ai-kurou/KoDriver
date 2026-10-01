@@ -1,7 +1,9 @@
 package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsFlagReadoutTarget
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_blue
@@ -16,6 +18,10 @@ internal enum class FlagReadoutItem(
     val chipLabelRes: StringResource,
     val previewEvent: SpeechEvent,
     val target: LmuWindowsFlagReadoutTarget,
+    /** 収録音声のチップを表示し、収録音声とカスタム文言を切り替えられるか。false の項目は自由文字列の読み上げのみ。 */
+    val recordedVoiceSelectable: Boolean = true,
+    /** カスタム読み上げ文言の初期値。 */
+    val defaultText: String = READOUT_CUSTOM_TEXT_DEFAULT,
 ) {
     BlueFlag(
         key = ReadoutItemKey.LmuWindows.Flag.BlueFlag,
@@ -23,6 +29,8 @@ internal enum class FlagReadoutItem(
         chipLabelRes = Res.string.flag_blue,
         previewEvent = SpeechEvent.BlueFlag,
         target = LmuWindowsFlagReadoutTarget.BLUE_FLAG,
+        recordedVoiceSelectable = false,
+        defaultText = LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT,
     ),
     SectorYellowFlag(
         key = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,

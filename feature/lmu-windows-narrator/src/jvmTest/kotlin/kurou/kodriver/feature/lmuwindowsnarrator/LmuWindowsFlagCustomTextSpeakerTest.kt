@@ -113,7 +113,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     fun `ブルーフラッグのカスタム文言が設定されておりTTSが利用可能なときはOS標準TTSで読み上げる`() =
         runTest {
             coEvery { observeBlue() } returns flowOf("ブルー、譲って")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) } returns flowOf(false)
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("ブルー、譲って", volume = VOLUME) } just Runs
 
@@ -121,7 +120,6 @@ class LmuWindowsFlagCustomTextSpeakerTest {
 
             assertTrue(result)
             coVerify(exactly = 1) { observeBlue() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("ブルー、譲って", volume = VOLUME) }
             confirmAllMocksVerified()
@@ -219,14 +217,32 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     @Test
     fun `収録音声が明示的に選ばれているときは文言が残っていてもfalseを返しTTSを確認しない`() =
         runTest {
-            coEvery { observeBlue() } returns flowOf("ブルー、譲って")
-            coEvery { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) } returns flowOf(true)
+            coEvery { observeSectorYellow() } returns flowOf("イエロー、注意")
+            coEvery {
+                observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG)
+            } returns flowOf(true)
+
+            val result = speaker(SpeechEvent.YellowFlag, VOLUME)
+
+            assertFalse(result)
+            coVerify(exactly = 1) { observeSectorYellow() }
+            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.SECTOR_YELLOW_FLAG) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `ブルーフラッグは過去に収録音声が選ばれた設定が残っていても無視して文言を読み上げる`() =
+        runTest {
+            coEvery { observeBlue() } returns flowOf("ブルーフラッグ")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("ブルーフラッグ", volume = VOLUME) } just Runs
 
             val result = speaker(SpeechEvent.BlueFlag, VOLUME)
 
-            assertFalse(result)
+            assertTrue(result)
             coVerify(exactly = 1) { observeBlue() }
-            coVerify(exactly = 1) { observeRecordedVoiceSelected(LmuWindowsFlagReadoutTarget.BLUE_FLAG) }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("ブルーフラッグ", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
