@@ -1,5 +1,6 @@
 package kurou.kodriver.core.texttospeechdata.repository
 
+import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import kotlinx.coroutines.CancellationException
@@ -36,10 +37,15 @@ import java.util.concurrent.atomic.AtomicReference
  * @param textToSpeechFactory `OnInitListener` を受け取って [TextToSpeech] を生成する。
  *   `Context` への依存をKoinモジュール側に閉じ込め、テストではFakeを渡せるようにするためラムダで受ける。
  * @param locale 読み上げに使う言語。読み上げ文言は日本語のため既定は [Locale.JAPANESE]。
+ * @param volumeParamsFactory 音量（0.0〜1.0）を [TextToSpeech.speak] のparamsへ変換する。
+ *   `Bundle` はJVMホストテストでは動作しないため、テストではFakeを渡せるようにしている。
  */
 internal class AndroidTextToSpeechRepository(
     private val textToSpeechFactory: (TextToSpeech.OnInitListener) -> TextToSpeech,
     private val locale: Locale = Locale.JAPANESE,
+    private val volumeParamsFactory: (Float) -> Bundle = { volume ->
+        Bundle().apply { putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume) }
+    },
 ) : TextToSpeechRepository {
     private val mutex = Mutex()
     private var initialized = false
@@ -66,6 +72,7 @@ internal class AndroidTextToSpeechRepository(
     override suspend fun speak(
         text: String,
         queue: Boolean,
+        volume: Int,
     ) {
         if (text.isBlank()) return
         val engine = ensureInitialized() ?: return
@@ -81,7 +88,7 @@ internal class AndroidTextToSpeechRepository(
             engine.speak(
                 text,
                 if (queue) TextToSpeech.QUEUE_ADD else TextToSpeech.QUEUE_FLUSH,
-                null,
+                volumeParamsFactory(volume.coerceIn(0, 100) / VOLUME_SCALE),
                 utteranceId,
             )
         if (result != TextToSpeech.SUCCESS) {
@@ -192,5 +199,9 @@ internal class AndroidTextToSpeechRepository(
         pendingUtterances.keys
             .filter { it != exceptUtteranceId }
             .forEach { id -> pendingUtterances.remove(id)?.complete(Unit) }
+    }
+
+    private companion object {
+        const val VOLUME_SCALE = 100f
     }
 }

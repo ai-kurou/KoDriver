@@ -50,7 +50,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
     @Test
     fun `フラッグ以外のイベントはfalseを返しカスタム文言を参照しない`() =
         runTest {
-            val result = speaker(SpeechEvent.CarLeft)
+            val result = speaker(SpeechEvent.CarLeft, VOLUME)
 
             assertFalse(result)
             confirmAllMocksVerified()
@@ -61,7 +61,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         runTest {
             coEvery { observeSectorYellow() } returns flowOf("")
 
-            val result = speaker(SpeechEvent.YellowFlag)
+            val result = speaker(SpeechEvent.YellowFlag, VOLUME)
 
             assertFalse(result)
             coVerify(exactly = 1) { observeSectorYellow() }
@@ -74,7 +74,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { observeSectorYellow() } returns flowOf("イエロー、前方注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val result = speaker(SpeechEvent.YellowFlag)
+            val result = speaker(SpeechEvent.YellowFlag, VOLUME)
 
             assertFalse(result)
             coVerify(exactly = 1) { observeSectorYellow() }
@@ -87,14 +87,14 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         runTest {
             coEvery { observeSectorYellow() } returns flowOf("イエロー、前方注意")
             coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("イエロー、前方注意") } just Runs
+            coEvery { speakText("イエロー、前方注意", volume = VOLUME) } just Runs
 
-            val result = speaker(SpeechEvent.YellowFlag)
+            val result = speaker(SpeechEvent.YellowFlag, VOLUME)
 
             assertTrue(result)
             coVerify(exactly = 1) { observeSectorYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("イエロー、前方注意") }
+            coVerify(exactly = 1) { speakText("イエロー、前方注意", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
@@ -103,14 +103,14 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         runTest {
             coEvery { observeBlue() } returns flowOf("ブルー、譲って")
             coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("ブルー、譲って") } just Runs
+            coEvery { speakText("ブルー、譲って", volume = VOLUME) } just Runs
 
-            val result = speaker(SpeechEvent.BlueFlag)
+            val result = speaker(SpeechEvent.BlueFlag, VOLUME)
 
             assertTrue(result)
             coVerify(exactly = 1) { observeBlue() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("ブルー、譲って") }
+            coVerify(exactly = 1) { speakText("ブルー、譲って", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
@@ -119,7 +119,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         runTest {
             coEvery { observeBlue() } returns flowOf(" ")
 
-            val result = speaker(SpeechEvent.BlueFlag)
+            val result = speaker(SpeechEvent.BlueFlag, VOLUME)
 
             assertFalse(result)
             coVerify(exactly = 1) { observeBlue() }
@@ -131,14 +131,14 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         runTest {
             coEvery { observeFullCourseYellow() } returns flowOf("フルコースイエロー、減速")
             coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("フルコースイエロー、減速") } just Runs
+            coEvery { speakText("フルコースイエロー、減速", volume = VOLUME) } just Runs
 
-            val result = speaker(SpeechEvent.FullCourseYellow)
+            val result = speaker(SpeechEvent.FullCourseYellow, VOLUME)
 
             assertTrue(result)
             coVerify(exactly = 1) { observeFullCourseYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("フルコースイエロー、減速") }
+            coVerify(exactly = 1) { speakText("フルコースイエロー、減速", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
@@ -147,7 +147,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         runTest {
             coEvery { observeFullCourseYellow() } returns flowOf("")
 
-            val result = speaker(SpeechEvent.FullCourseYellow)
+            val result = speaker(SpeechEvent.FullCourseYellow, VOLUME)
 
             assertFalse(result)
             coVerify(exactly = 1) { observeFullCourseYellow() }
@@ -159,14 +159,14 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         runTest {
             coEvery { observeRed() } returns flowOf("赤旗、停止")
             coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("赤旗、停止") } just Runs
+            coEvery { speakText("赤旗、停止", volume = VOLUME) } just Runs
 
-            assertTrue(speaker(SpeechEvent.RedFlag))
-            assertTrue(speaker(SpeechEvent.SessionStop))
+            assertTrue(speaker(SpeechEvent.RedFlag, VOLUME))
+            assertTrue(speaker(SpeechEvent.SessionStop, VOLUME))
 
             coVerify(exactly = 2) { observeRed() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 2) { speakText("赤旗、停止") }
+            coVerify(exactly = 2) { speakText("赤旗、停止", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
@@ -175,7 +175,7 @@ class LmuWindowsFlagCustomTextSpeakerTest {
         runTest {
             coEvery { observeRed() } returns flowOf("")
 
-            val result = speaker(SpeechEvent.RedFlag)
+            val result = speaker(SpeechEvent.RedFlag, VOLUME)
 
             assertFalse(result)
             coVerify(exactly = 1) { observeRed() }
@@ -188,11 +188,15 @@ class LmuWindowsFlagCustomTextSpeakerTest {
             coEvery { observeRed() } returns flowOf("赤旗、停止")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val result = speaker(SpeechEvent.RedFlag)
+            val result = speaker(SpeechEvent.RedFlag, VOLUME)
 
             assertFalse(result)
             coVerify(exactly = 1) { observeRed() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
         }
+
+    private companion object {
+        const val VOLUME = 40
+    }
 }

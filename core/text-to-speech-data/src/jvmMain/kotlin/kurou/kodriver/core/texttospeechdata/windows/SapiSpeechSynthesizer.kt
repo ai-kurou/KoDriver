@@ -63,6 +63,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     override fun speak(
         text: String,
         queue: Boolean,
+        volume: Int,
     ) {
         if (!IS_WINDOWS) return
         val token = synchronized(lock) { ++requestToken }
@@ -76,7 +77,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
                 // 待機中に別スレッドの新しい呼び出しへ追い越されていたら、今さら発話を開始しない。
                 if (token != requestToken) return
                 val newProcess =
-                    ProcessBuilder(POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", buildScript(text))
+                    ProcessBuilder(POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", buildScript(text, volume))
                         .redirectErrorStream(true)
                         .start()
                 process = newProcess
@@ -110,10 +111,14 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     }
 
     /** PowerShellの単一引用符文字列へ埋め込むため、テキスト中の`'`を`''`へエスケープする。 */
-    private fun buildScript(text: String): String {
+    private fun buildScript(
+        text: String,
+        volume: Int,
+    ): String {
         val escaped = text.replace("'", "''")
         return "Add-Type -AssemblyName System.Speech; " +
             "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
+            "\$s.Volume = $volume; " +
             "\$s.SelectVoiceByHints(" +
             "[System.Speech.Synthesis.VoiceGender]::NotSet, " +
             "[System.Speech.Synthesis.VoiceAge]::NotSet, 0, " +
