@@ -71,7 +71,7 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                                 ),
                             onFlagEnabledChanged = { _, _ -> },
                             onFlagTextChanged = { _, _ -> },
-                            onFlagTextPreviewClicked = { _, _ -> },
+                            onFlagTextPreviewClicked = {},
                         )
                     }
                 }
