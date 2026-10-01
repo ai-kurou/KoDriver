@@ -100,7 +100,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
 }
 
 /** 収録音声のチップ1つ分の表示ラベルと、タップ時の処理。 */
-private class FlagChip(
+private data class FlagChip(
     val label: String,
     val onClick: () -> Unit,
 )
