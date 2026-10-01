@@ -42,12 +42,12 @@ internal class LmuWindowsFlagTextSpeaker(
 
     /** 現在の読み上げ文言。空欄・TTS利用不可・フラッグ以外は null。 */
     suspend fun readoutText(event: SpeechEvent): String? {
-        val text = customText(event) ?: return null
+        val text = flagText(event) ?: return null
         if (text.isBlank() || !checkTextToSpeechAvailable()) return null
         return text
     }
 
-    private suspend fun customText(event: SpeechEvent): String? =
+    private suspend fun flagText(event: SpeechEvent): String? =
         when (event) {
             SpeechEvent.YellowFlag -> observeSectorYellowFlagReadoutText().first()
             SpeechEvent.BlueFlag -> observeBlueFlagReadoutText().first()

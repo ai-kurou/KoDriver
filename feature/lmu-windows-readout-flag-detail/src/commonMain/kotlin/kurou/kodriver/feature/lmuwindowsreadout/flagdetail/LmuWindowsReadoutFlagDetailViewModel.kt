@@ -32,7 +32,7 @@ internal data class FlagSettingsUseCases(
     val readoutTexts: FlagReadoutTextUseCases,
 )
 
-/** フラッグごとのカスタム読み上げ文言の Observe / Save UseCase を [FlagReadoutItem] で引けるようにまとめたもの。 */
+/** フラッグごとの読み上げ文言の Observe / Save UseCase を [FlagReadoutItem] で引けるようにまとめたもの。 */
 internal data class FlagReadoutTextUseCases(
     val observeSectorYellowFlag: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase,
     val observeBlueFlag: ObserveLmuWindowsBlueFlagReadoutTextUseCase,
