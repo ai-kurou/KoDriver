@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
@@ -138,16 +139,17 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         }
 
     @Test
-    fun `全フラッグの試聴は開始音の後に自由文字列を読み上げる`() =
+    fun `試聴は開始音の後に自由文字列を読み上げる`() =
         runTest {
             coEvery { tts.isAvailable() } returns true
-            FlagReadoutItem.entries.forEach { coEvery { engine.playStartSound(it.key) } returns Unit }
+            coEvery { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } returns Unit
             coEvery { tts.speak("注意", false, 42) } returns Unit
             stubReadouts()
             val vm = createViewModel()
-            FlagReadoutItem.entries.forEach { vm.onFlagTextPreviewClicked(it, "注意") }
-            FlagReadoutItem.entries.forEach { coVerify(exactly = 1) { engine.playStartSound(it.key) } }
-            coVerify(exactly = 4) { tts.speak("注意", false, 42) }
+            vm.onFlagTextPreviewClicked("注意")
+            // 開始音の有効設定は個別フラッグではなくトップレベルの Flag.Root に保存される。
+            coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
+            coVerify(exactly = 1) { tts.speak("注意", false, 42) }
             coVerify(exactly = 1) { tts.isAvailable() }
             confirmVerified(engine, tts)
         }
@@ -158,9 +160,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coEvery { tts.isAvailable() } returns true
             stubReadouts()
             val vm = createViewModel(volume = 0)
-            FlagReadoutItem.entries.forEach { vm.onFlagTextPreviewClicked(it, "注意") }
+            vm.onFlagTextPreviewClicked("注意")
             coVerify(exactly = 1) { tts.isAvailable() }
-            verify(exactly = 4) { volumes.volume() }
+            verify(exactly = 1) { volumes.volume() }
             confirmVerified(tts, engine, volumes)
         }
 
@@ -170,10 +172,8 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coEvery { tts.isAvailable() } returns true
             stubReadouts()
             val vm = createViewModel()
-            FlagReadoutItem.entries.forEach {
-                vm.onFlagTextPreviewClicked(it, "")
-                vm.onFlagTextPreviewClicked(it, "  ")
-            }
+            vm.onFlagTextPreviewClicked("")
+            vm.onFlagTextPreviewClicked("  ")
             coVerify(exactly = 1) { tts.isAvailable() }
             confirmVerified(tts, engine)
         }
@@ -184,7 +184,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coEvery { tts.isAvailable() } returns false
             stubReadouts()
             val vm = createViewModel()
-            FlagReadoutItem.entries.forEach { vm.onFlagTextPreviewClicked(it, "注意") }
+            vm.onFlagTextPreviewClicked("注意")
             coVerify(exactly = 1) { tts.isAvailable() }
             confirmVerified(tts, engine)
         }

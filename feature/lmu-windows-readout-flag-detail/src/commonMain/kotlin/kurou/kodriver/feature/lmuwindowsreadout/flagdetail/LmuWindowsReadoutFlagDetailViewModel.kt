@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
@@ -108,16 +109,17 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         viewModelScope.launch { settingsUseCases.readoutTexts.save(item, text) }
     }
 
-    /** 空白文言・TTS利用不可時は試聴しない。本文はOS標準TTSのみで読み上げる。 */
-    fun onFlagTextPreviewClicked(
-        item: FlagReadoutItem,
-        text: String,
-    ) {
+    /**
+     * 空白文言・TTS利用不可時は試聴しない。本文はOS標準TTSのみで読み上げる。
+     * 開始音の有効設定は読み上げ一覧のトップレベル項目 [ReadoutItemKey.LmuWindows.Flag.Root] に保存され、
+     * 実際の読み上げもそのキーで判定するため、試聴でも個別フラッグのキーではなくそれを渡す。
+     */
+    fun onFlagTextPreviewClicked(text: String) {
         if (text.isBlank() || !textToSpeechAvailable.value) return
         viewModelScope.launch {
             val volume = observeSoundVolume().first()
             if (volume <= 0) return@launch
-            playStartSoundForKey(item.key)
+            playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.Root)
             speakText(text, volume = volume)
         }
     }

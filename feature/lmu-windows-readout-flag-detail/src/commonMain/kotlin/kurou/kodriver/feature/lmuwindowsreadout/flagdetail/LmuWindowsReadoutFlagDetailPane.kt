@@ -48,7 +48,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     uiState: LmuWindowsReadoutFlagDetailUiState,
     onFlagEnabledChanged: (FlagReadoutItem, Boolean) -> Unit,
     onFlagTextChanged: (FlagReadoutItem, String) -> Unit,
-    onFlagTextPreviewClicked: (FlagReadoutItem, String) -> Unit,
+    onFlagTextPreviewClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -69,7 +69,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
                 onTextChanged = { text -> onFlagTextChanged(item, text) },
-                onTextPreviewClick = { text -> onFlagTextPreviewClicked(item, text) },
+                onTextPreviewClick = onFlagTextPreviewClicked,
             )
         }
     }
@@ -132,7 +132,7 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
                 ),
             onFlagEnabledChanged = { _, _ -> },
             onFlagTextChanged = { _, _ -> },
-            onFlagTextPreviewClicked = { _, _ -> },
+            onFlagTextPreviewClicked = {},
         )
     }
 }
