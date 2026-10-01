@@ -514,7 +514,7 @@ class WavNarratorEngineTest {
     fun `customSpeakがtrueを返すとイベント音声を再生せず開始音のみ再生する`() =
         runTest {
             val player = FakeSoundPlayer()
-            val engine = createEngine(player, customSpeak = { true })
+            val engine = createEngine(player, customSpeak = { _, _ -> true })
             runCurrent()
 
             engine.speak(CAR_LEFT)
@@ -528,7 +528,7 @@ class WavNarratorEngineTest {
     fun `customSpeakがfalseを返すとイベント音声をWAVで再生する`() =
         runTest {
             val player = FakeSoundPlayer()
-            val engine = createEngine(player, customSpeak = { false })
+            val engine = createEngine(player, customSpeak = { _, _ -> false })
             runCurrent()
 
             engine.speak(CAR_LEFT)
@@ -547,7 +547,7 @@ class WavNarratorEngineTest {
             val engine =
                 createEngine(
                     player,
-                    customSpeak = { event ->
+                    customSpeak = { event, _ ->
                         receivedEvents += event
                         false
                     },
@@ -561,6 +561,28 @@ class WavNarratorEngineTest {
         }
 
     @Test
+    fun `customSpeakには現在の読み上げ音量が渡される`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val receivedVolumes = mutableListOf<Int>()
+            val engine =
+                createEngine(
+                    player,
+                    volumeFlow = flowOf(35),
+                    customSpeak = { _, volume ->
+                        receivedVolumes += volume
+                        true
+                    },
+                )
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            assertEquals(listOf(35), receivedVolumes)
+        }
+
+    @Test
     fun `customSpeakが発話完了まで実際にsuspendする場合stopで中断するまでcurrentKeyを保持し中断をcustomSpeakへ伝える`() =
         runTest {
             val player = FakeSoundPlayer()
@@ -568,7 +590,7 @@ class WavNarratorEngineTest {
             val engine =
                 createEngine(
                     player,
-                    customSpeak = {
+                    customSpeak = { _, _ ->
                         try {
                             awaitCancellation()
                         } catch (e: CancellationException) {
@@ -598,7 +620,7 @@ class WavNarratorEngineTest {
         volumeFlow: Flow<Int> = flowOf(100),
         startSoundTypeFlow: Flow<String> = flowOf(FORMULA_RADIO),
         startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
-        customSpeak: (suspend (String) -> Boolean)? = null,
+        customSpeak: (suspend (String, Int) -> Boolean)? = null,
         resourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
                 CAR_LEFT_PATH -> CAR_LEFT_SOUND
