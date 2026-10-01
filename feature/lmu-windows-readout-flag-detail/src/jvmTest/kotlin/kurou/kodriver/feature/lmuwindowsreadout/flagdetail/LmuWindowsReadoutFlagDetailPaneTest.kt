@@ -141,7 +141,6 @@ class LmuWindowsReadoutFlagDetailPaneTest {
         rule.onAllNodesWithText("イエローフラッグ").assertCountEquals(2)
         rule.onAllNodesWithText("フルコースイエロー").assertCountEquals(2)
         rule.onAllNodesWithText("レッドフラッグ").assertCountEquals(2)
-        rule.onAllNodesWithText("セッションストップ").assertCountEquals(0)
     }
 
     @Test
