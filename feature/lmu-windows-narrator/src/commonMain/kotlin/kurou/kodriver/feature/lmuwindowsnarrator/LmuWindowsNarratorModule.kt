@@ -69,7 +69,7 @@ import org.koin.dsl.module
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
  *   各フラッグのカスタム文言の Observe UseCase・TextToSpeechEngine）、
- *   および LmuWindowsFlagCustomTextSpeaker（フラッグの実際の読み上げ時に
+ *   および LmuWindowsFlagTextSpeaker（フラッグの実際の読み上げ時に
  *   自由文字列をOS標準TTSで読み上げるフック。WavNarratorEngine の customSpeak に渡す）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）、unqualified の CheckTextToSpeechAvailableUseCase
@@ -116,7 +116,7 @@ val lmuWindowsNarratorModule: Module =
             LmuWindowsNarratorEventProcessor(
                 get(named(Simulator.LmuWindows.id)),
                 get(),
-                get<LmuWindowsFlagCustomTextSpeaker>()::readoutText,
+                get<LmuWindowsFlagTextSpeaker>()::readoutText,
             )
         }
 
@@ -160,8 +160,7 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.LmuWindows.id))) }
         includes(platformSoundModule(named(Simulator.LmuWindows.id)))
 
-        // フラッグ本文をOS標準TTSのみで
-        // 読み上げるフック。unqualified の SpeakTextUseCase / 各フラッグの Observe…ReadoutTextUseCase は
+        // フラッグ本文をOS標準TTSのみで読み上げるフック。unqualified の SpeakTextUseCase / 各フラッグの Observe…ReadoutTextUseCase は
         // feature:lmu-windows-readout-flag-detail が試聴用に別途定義しているため、
         // 同じ型を二重定義しないよう named(Simulator.LmuWindows.id) で区別する。
         factory(named(Simulator.LmuWindows.id)) { SpeakTextUseCase(get()) }
@@ -170,7 +169,7 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRedFlagReadoutTextUseCase(get()) }
         factory {
-            LmuWindowsFlagCustomTextSpeaker(
+            LmuWindowsFlagTextSpeaker(
                 observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeBlueFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeFullCourseYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
@@ -196,7 +195,7 @@ val lmuWindowsNarratorModule: Module =
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
-                    customSpeak = get<LmuWindowsFlagCustomTextSpeaker>()::invoke,
+                    customSpeak = get<LmuWindowsFlagTextSpeaker>()::invoke,
                     customSpeakEvents =
                         setOf(
                             SpeechEvent.BlueFlag,
