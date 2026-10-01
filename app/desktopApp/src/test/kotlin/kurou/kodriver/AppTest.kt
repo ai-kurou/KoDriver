@@ -31,6 +31,7 @@ import kurou.kodriver.feature.otherconsoleipdetail.fakeOtherConsoleIpDetailModul
 import kurou.kodriver.feature.otherlist.fakeOtherListModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.fakeOtherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherthemedetail.fakeOtherThemeDetailModule
+import kurou.kodriver.feature.othervoicedetail.fakeOtherVoiceDetailModule
 import kurou.kodriver.feature.othervolumedetail.fakeOtherVolumeDetailModule
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
@@ -73,6 +74,7 @@ class AppTest {
                             fakeOtherReadoutStartSoundDetailModule,
                             fakeOtherConsoleIpDetailModule,
                             fakeOtherVolumeDetailModule,
+                            fakeOtherVoiceDetailModule,
                             fakeOtherListModule,
                         ),
                 )
