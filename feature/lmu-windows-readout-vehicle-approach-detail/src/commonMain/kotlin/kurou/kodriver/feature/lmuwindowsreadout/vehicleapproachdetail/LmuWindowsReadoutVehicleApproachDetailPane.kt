@@ -55,7 +55,6 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_sustained_readout_switch_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_sustained_text_unavailable
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_preview
-import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_selected
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_selected_icon
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_supporting
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_unavailable
@@ -285,7 +284,7 @@ private fun ReadoutTextField(
             supportingText =
                 when {
                     !isTextToSpeechAvailable -> unavailableText
-                    text.isNotBlank() -> stringResource(Res.string.vehicle_approach_text_selected)
+                    text.isNotBlank() -> null
                     else -> stringResource(Res.string.vehicle_approach_text_supporting)
                 },
             previewContentDescription = stringResource(Res.string.vehicle_approach_text_preview),

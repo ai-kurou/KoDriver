@@ -7,6 +7,5 @@
     <string name="flag_text_supporting">空欄のままなら読み上げません</string>
     <string name="flag_text_unavailable">この端末では音声合成を利用できないため、フラッグは読み上げません</string>
     <string name="flag_text_preview">入力した文言を再生</string>
-    <string name="flag_text_selected">この文言を音声合成で読み上げます</string>
     <string name="flag_text_selected_icon">この文言を読み上げます</string>
 </resources>

@@ -387,4 +387,24 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
             .onAllNodes(hasText("この端末では音声合成を利用できないため、接近継続時は読み上げません"))
             .assertCountEquals(2)
     }
+
+    @Test
+    fun `文言が入力されている場合は音声合成で読み上げる案内を表示しない`() {
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutVehicleApproachDetailUiState(
+                            startLeftText = "左注意",
+                            startRightText = "右注意",
+                            sustainedLeftText = "左継続",
+                            sustainedRightText = "右継続",
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+
+        rule.onNode(hasText("この文言を音声合成で読み上げます")).assertDoesNotExist()
+    }
 }

@@ -57,7 +57,7 @@ class DetailPaneCardTextFieldScreenshotTest {
                                     selected = selected,
                                     supportingText =
                                         if (selected) {
-                                            "この文言を音声合成で読み上げます（収録音声は使いません）"
+                                            null
                                         } else {
                                             "空欄のままなら収録音声で読み上げます"
                                         },

@@ -10,6 +10,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
@@ -207,5 +208,25 @@ class LmuWindowsReadoutFlagDetailPaneTest {
 
         assertEquals(listOf(FlagReadoutItem.RedFlag to "赤旗、停止"), changes)
         assertEquals(listOf("赤旗、停止"), previews)
+    }
+
+    @Test
+    fun `文言が入力されている場合は音声合成で読み上げる案内を表示しない`() {
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutFlagDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutFlagDetailUiState(
+                            flagTexts = mapOf(FlagReadoutItem.BlueFlag to "譲って"),
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onFlagTextChanged = { _, _ -> },
+                    onFlagTextPreviewClicked = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("この文言を音声合成で読み上げます").assertDoesNotExist()
     }
 }
