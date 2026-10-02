@@ -1,5 +1,6 @@
 package kurou.kodriver.core.texttospeechdata.windows
 
+import io.sentry.Sentry
 import kurou.kodriver.domain.model.TTS_CULTURE_NAME
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import java.nio.file.Files
@@ -74,7 +75,9 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
             } finally {
                 Files.deleteIfExists(output)
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            // 取得失敗は音声が一つも表示されない原因になるため、握り潰さずSentryへ報告する。
+            Sentry.captureException(e)
             emptyList()
         }
     }
@@ -94,13 +97,10 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
             if (!process.waitFor(AVAILABILITY_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                 // 出力ファイルを掴んだまま残ると呼び出し元の削除に失敗するため、終了を待ってから戻る。
                 process.destroyForcibly().waitFor(DESTROY_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                return emptyList()
+                error("音声一覧の取得がタイムアウトしました")
             }
-            return if (process.exitValue() == 0) {
-                parseVoiceList(Files.readString(output, Charsets.UTF_8))
-            } else {
-                emptyList()
-            }
+            check(process.exitValue() == 0) { "音声一覧の取得に失敗しました（終了コード: ${process.exitValue()}）" }
+            return parseVoiceList(Files.readString(output, Charsets.UTF_8))
         } finally {
             process.destroy()
         }
