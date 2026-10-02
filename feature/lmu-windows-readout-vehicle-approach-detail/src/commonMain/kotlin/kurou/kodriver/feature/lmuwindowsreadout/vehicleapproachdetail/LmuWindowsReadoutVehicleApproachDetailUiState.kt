@@ -15,6 +15,8 @@ internal data class LmuWindowsReadoutVehicleApproachDetailUiState(
     val startReadoutEnabled: Boolean = true,
     val startLeftText: String = LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT,
     val startRightText: String = LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT,
+    /** OS標準のTTSを利用できない場合は開始文言の入力を受け付けない。 */
+    val isTextToSpeechAvailable: Boolean = false,
     val sustainedReadoutEnabled: Boolean = false,
     val sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
 )

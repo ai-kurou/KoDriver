@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
@@ -37,6 +38,7 @@ import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach
@@ -50,9 +52,16 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_longitudinal_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_subtitle
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_switch_content_description
+import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_start_left_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_start_readout_switch_label
+import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_start_right_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_sustained_duration_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_sustained_readout_switch_label
+import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_selected
+import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_selected_icon
+import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_supporting
+import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_unavailable
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_reset_to_default
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
 import org.jetbrains.compose.resources.painterResource
@@ -79,6 +88,10 @@ fun LmuWindowsReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
         onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
         onSustainedReadoutEnabledChanged = viewModel::onSustainedReadoutEnabledChanged,
         onSustainedReadoutTypeChanged = viewModel::onSustainedReadoutTypeChanged,
+        onStartLeftTextChanged = viewModel::onStartLeftTextChanged,
+        onStartRightTextChanged = viewModel::onStartRightTextChanged,
+        onStartLeftTextPreviewClicked = viewModel::onStartLeftTextPreviewClicked,
+        onStartRightTextPreviewClicked = viewModel::onStartRightTextPreviewClicked,
         modifier = modifier,
     )
 }
@@ -87,6 +100,7 @@ fun LmuWindowsReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
 @Composable
 internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     uiState: LmuWindowsReadoutVehicleApproachDetailUiState,
+    modifier: Modifier = Modifier,
     onLongitudinalThresholdChanged: (Double) -> Unit = {},
     onLateralThresholdChanged: (Double) -> Unit = {},
     onResetLongitudinalThreshold: () -> Unit = {},
@@ -97,7 +111,10 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
     onSustainedReadoutEnabledChanged: (Boolean) -> Unit = {},
     onSustainedReadoutTypeChanged: (VehicleApproachSustainedReadoutType) -> Unit = {},
-    modifier: Modifier = Modifier,
+    onStartLeftTextChanged: (String) -> Unit = {},
+    onStartRightTextChanged: (String) -> Unit = {},
+    onStartLeftTextPreviewClicked: (String) -> Unit = {},
+    onStartRightTextPreviewClicked: (String) -> Unit = {},
 ) {
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
     val lateralLabel = stringResource(Res.string.vehicle_approach_lateral_label)
@@ -176,10 +193,22 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             onCheckedChange = onStartReadoutEnabledChanged,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
-                Text(
-                    text = "${uiState.startLeftText}・${uiState.startRightText}",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                Column {
+                    StartReadoutTextField(
+                        label = stringResource(Res.string.vehicle_approach_start_left_label),
+                        text = uiState.startLeftText,
+                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
+                        onTextChanged = onStartLeftTextChanged,
+                        onPreviewClick = onStartLeftTextPreviewClicked,
+                    )
+                    StartReadoutTextField(
+                        label = stringResource(Res.string.vehicle_approach_start_right_label),
+                        text = uiState.startRightText,
+                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
+                        onTextChanged = onStartRightTextChanged,
+                        onPreviewClick = onStartRightTextPreviewClicked,
+                    )
+                }
             },
         )
         val keepLeftRightChipLabel = stringResource(Res.string.vehicle_approach_keep_left_right_chip_label)
@@ -230,26 +259,59 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     }
 }
 
+/** 左右それぞれの開始文言の入力と試聴を提供する。空白の場合は読み上げない。 */
 @Composable
-internal fun VehicleApproachHelpSheetContent(modifier: Modifier = Modifier) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
-    ) {
-        Text(
-            text = stringResource(Res.string.vehicle_approach_help_description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(1f),
-        )
-        Image(
-            painter = painterResource(Res.drawable.vehicle_approach),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth(0.3f).padding(start = KoDriverSpacing.large),
+private fun StartReadoutTextField(
+    label: String,
+    text: String,
+    isTextToSpeechAvailable: Boolean,
+    onTextChanged: (String) -> Unit,
+    onPreviewClick: (String) -> Unit,
+) {
+    Column {
+        Text(text = label, style = MaterialTheme.typography.bodyMedium)
+        DetailPaneCardTextField(
+            value = text,
+            placeholder = label,
+            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+            onValueChangeFinished = onTextChanged,
+            onPreviewClick = onPreviewClick,
+            enabled = isTextToSpeechAvailable,
+            selected = text.isNotBlank(),
+            supportingText =
+                when {
+                    !isTextToSpeechAvailable -> stringResource(Res.string.vehicle_approach_text_unavailable)
+                    text.isNotBlank() -> stringResource(Res.string.vehicle_approach_text_selected)
+                    else -> stringResource(Res.string.vehicle_approach_text_supporting)
+                },
+            previewContentDescription = stringResource(Res.string.vehicle_approach_text_preview),
+            selectedContentDescription = stringResource(Res.string.vehicle_approach_text_selected_icon),
         )
     }
-    Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
+}
+
+@Composable
+internal fun VehicleApproachHelpSheetContent(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = stringResource(Res.string.vehicle_approach_help_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            Image(
+                painter = painterResource(Res.drawable.vehicle_approach),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.fillMaxWidth(0.3f).padding(start = KoDriverSpacing.large),
+            )
+        }
+        Spacer(modifier = Modifier.height(KoDriverSpacing.extraLarge))
+    }
 }
 
 @Preview(showBackground = true)

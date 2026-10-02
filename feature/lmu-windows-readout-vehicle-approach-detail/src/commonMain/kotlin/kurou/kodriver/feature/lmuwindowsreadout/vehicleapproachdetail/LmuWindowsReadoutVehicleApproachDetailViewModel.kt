@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -14,12 +15,27 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THR
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
+
+/** 開始文言の保存とOS標準TTSでの試聴に使うUseCaseをまとめたもの。 */
+internal data class StartReadoutUseCases(
+    val speakText: SpeakTextUseCase,
+    val playStartSoundForKey: PlayStartSoundForKeyUseCase,
+    val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
+    val saveLeftText: SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase,
+    val saveRightText: SaveLmuWindowsVehicleApproachStartRightReadoutTextUseCase,
+)
 
 internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private val thresholds: LmuWindowsVehicleApproachThresholdsUseCases,
@@ -27,8 +43,12 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private val observeEnabledStates: ObserveLmuWindowsVehicleApproachEnabledStatesUseCase,
     private val saveEnabledState: SaveLmuWindowsVehicleApproachEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
-    private val speakText: SpeakTextUseCase,
+    private val startReadout: StartReadoutUseCases,
 ) : ViewModel() {
+    private val textToSpeechAvailable =
+        flow { emit(startReadout.checkTextToSpeechAvailable()) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val uiState: StateFlow<LmuWindowsReadoutVehicleApproachDetailUiState> =
         combine(
             combine(
@@ -56,6 +76,8 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
                 sustainedReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained),
                 sustainedReadoutType = sustainedReadoutType,
             )
+        }.combine(textToSpeechAvailable) { state, available ->
+            state.copy(isTextToSpeechAvailable = available)
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
@@ -117,12 +139,30 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         playSustainedReadoutPreview(type)
     }
 
-    fun onStartReadoutPreviewClicked() {
+    fun onStartLeftTextChanged(text: String) {
+        viewModelScope.launch { startReadout.saveLeftText(text) }
+    }
+
+    fun onStartRightTextChanged(text: String) {
+        viewModelScope.launch { startReadout.saveRightText(text) }
+    }
+
+    fun onStartLeftTextPreviewClicked(text: String) {
+        playStartReadoutPreview(text)
+    }
+
+    fun onStartRightTextPreviewClicked(text: String) {
+        playStartReadoutPreview(text)
+    }
+
+    /** 空白文言・TTS利用不可・音量ゼロでは試聴せず、実際の読み上げと同じRootキーで開始音を鳴らす。 */
+    private fun playStartReadoutPreview(text: String) {
+        if (text.isBlank() || !textToSpeechAvailable.value) return
         viewModelScope.launch {
-            val left = vehicleApproachPreferences.observeStartLeftReadoutText().first()
-            val right = vehicleApproachPreferences.observeStartRightReadoutText().first()
-            speakText(left)
-            speakText(right, queue = left.isNotBlank())
+            val volume = startReadout.observeSoundVolume().first()
+            if (volume <= 0) return@launch
+            startReadout.playStartSoundForKey(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            startReadout.speakText(text, volume = volume)
         }
     }
 

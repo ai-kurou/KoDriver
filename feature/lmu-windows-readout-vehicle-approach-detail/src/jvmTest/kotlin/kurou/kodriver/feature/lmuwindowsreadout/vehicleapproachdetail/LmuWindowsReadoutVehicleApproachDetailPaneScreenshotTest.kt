@@ -20,7 +20,49 @@ class LmuWindowsReadoutVehicleApproachDetailPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             LmuWindowsReadoutVehicleApproachDetailPaneContent(
-                                uiState = LmuWindowsReadoutVehicleApproachDetailUiState(),
+                                uiState = LmuWindowsReadoutVehicleApproachDetailUiState(isTextToSpeechAvailable = true),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `カスタム文言と空欄`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutVehicleApproachDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                        startLeftText = "左注意",
+                                        startRightText = "",
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `TTS利用不可`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutVehicleApproachDetailUiState(
+                                        isTextToSpeechAvailable = false,
+                                    ),
                             )
                         }
                     }
