@@ -3,7 +3,7 @@ package kurou.kodriver.feature.otherlist
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
-import kurou.kodriver.domain.repository.SpeechSettingsRepository
+import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import org.koin.dsl.module
@@ -17,14 +17,14 @@ import org.koin.dsl.module
  */
 val fakeTextToSpeechRepository = FakeTextToSpeechRepository()
 
-val fakeSpeechSettingsRepository = FakeSpeechSettingsRepository()
+val fakeSpeechSettingsSenderRepository = FakeSpeechSettingsSenderRepository()
 
 val fakeOtherListModule =
     module {
         single<StartupEnabledRepository> { FakeStartupEnabledRepository() }
         single<HapticFeedbackAvailabilityRepository> { FakeHapticFeedbackAvailabilityRepository() }
         single<AccessLocalNetworkPermissionRepository> { FakeAccessLocalNetworkPermissionRepository() }
-        single<SpeechSettingsRepository> { fakeSpeechSettingsRepository }
+        single<SpeechSettingsSenderRepository> { fakeSpeechSettingsSenderRepository }
         single<TextToSpeechRepository> { fakeTextToSpeechRepository }
     }
 
@@ -67,7 +67,7 @@ class FakeAccessLocalNetworkPermissionRepository : AccessLocalNetworkPermissionR
     override fun isGranted(): Boolean = granted
 }
 
-class FakeSpeechSettingsRepository : SpeechSettingsRepository {
+class FakeSpeechSettingsSenderRepository : SpeechSettingsSenderRepository {
     var openWindowsSpeechSettingsCallCount = 0
 
     override fun openWindowsSpeechSettings() {

@@ -1,9 +1,9 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.repository.SpeechSettingsRepository
+import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 
 class OpenWindowsSpeechSettingsUseCase(
-    private val repository: SpeechSettingsRepository,
+    private val repository: SpeechSettingsSenderRepository,
 ) {
     operator fun invoke() = repository.openWindowsSpeechSettings()
 }

@@ -2,10 +2,10 @@ package kurou.kodriver.core.texttospeechdata
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
-import kurou.kodriver.core.texttospeechdata.repository.AndroidSpeechSettingsRepository
+import kurou.kodriver.core.texttospeechdata.repository.AndroidSpeechSettingsSenderRepository
 import kurou.kodriver.core.texttospeechdata.repository.AndroidTextToSpeechRepository
 import kurou.kodriver.core.texttospeechdata.repository.AndroidVoiceListRepository
-import kurou.kodriver.domain.repository.SpeechSettingsRepository
+import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.repository.VoiceListRepository
 import org.koin.dsl.bind
@@ -19,7 +19,7 @@ import org.koin.dsl.module
  */
 val textToSpeechDataModule =
     module {
-        single<SpeechSettingsRepository> { AndroidSpeechSettingsRepository() }
+        single<SpeechSettingsSenderRepository> { AndroidSpeechSettingsSenderRepository() }
         single {
             val context = get<Context>()
             AndroidTextToSpeechRepository(

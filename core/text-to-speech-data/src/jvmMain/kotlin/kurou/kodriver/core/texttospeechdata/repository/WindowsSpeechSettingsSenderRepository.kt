@@ -1,7 +1,7 @@
 package kurou.kodriver.core.texttospeechdata.repository
 
 import io.sentry.Sentry
-import kurou.kodriver.domain.repository.SpeechSettingsRepository
+import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import java.io.IOException
 
 private const val WINDOWS_SPEECH_SETTINGS_URI = "ms-settings:speech"
@@ -12,11 +12,11 @@ private const val WINDOWS_SPEECH_SETTINGS_URI = "ms-settings:speech"
  * `Desktop.browse` は環境によって `ms-settings:` を扱えず例外になるため、`rundll32` 経由で開く。
  * 起動に失敗してもアプリを落とさず、原因調査のためSentryへ記録する。
  */
-internal class WindowsSpeechSettingsRepository(
+internal class WindowsSpeechSettingsSenderRepository(
     private val isWindows: Boolean = System.getProperty("os.name").startsWith("Windows", ignoreCase = true),
     private val startProcess: (List<String>) -> Unit = { command -> ProcessBuilder(command).start() },
     private val captureException: (Throwable) -> Unit = Sentry::captureException,
-) : SpeechSettingsRepository {
+) : SpeechSettingsSenderRepository {
     override fun openWindowsSpeechSettings() {
         if (!isWindows) return
         try {

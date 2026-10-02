@@ -25,7 +25,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
-import kurou.kodriver.domain.repository.SpeechSettingsRepository
+import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
@@ -84,7 +84,7 @@ class OtherListViewModelTest {
 
     private val textToSpeechRepository: TextToSpeechRepository = mockk()
 
-    private val speechSettingsRepository: SpeechSettingsRepository = mockk()
+    private val speechSettingsRepository: SpeechSettingsSenderRepository = mockk()
 
     private val voiceRepository: VoicePreferencesRepository = mockk()
     private val voiceFlow = MutableStateFlow("")

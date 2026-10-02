@@ -6,12 +6,15 @@ import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class WindowsSpeechSettingsRepositoryTest {
+class WindowsSpeechSettingsSenderRepositoryTest {
     @Test
     fun `Windowsではms-settingsの音声設定をrundll32で開く`() {
         val commands = mutableListOf<List<String>>()
 
-        WindowsSpeechSettingsRepository(isWindows = true, startProcess = { commands += it }).openWindowsSpeechSettings()
+        WindowsSpeechSettingsSenderRepository(
+            isWindows = true,
+            startProcess = { commands += it },
+        ).openWindowsSpeechSettings()
 
         assertEquals(
             listOf(listOf("rundll32", "url.dll,FileProtocolHandler", "ms-settings:speech")),
@@ -23,7 +26,7 @@ class WindowsSpeechSettingsRepositoryTest {
     fun `Windows以外では何も起動しない`() {
         val commands = mutableListOf<List<String>>()
 
-        WindowsSpeechSettingsRepository(
+        WindowsSpeechSettingsSenderRepository(
             isWindows = false,
             startProcess = { commands += it },
         ).openWindowsSpeechSettings()
@@ -36,7 +39,7 @@ class WindowsSpeechSettingsRepositoryTest {
         val error = IOException("failed")
         val captured = mutableListOf<Throwable>()
 
-        WindowsSpeechSettingsRepository(
+        WindowsSpeechSettingsSenderRepository(
             isWindows = true,
             startProcess = { throw error },
             captureException = { captured += it },
@@ -50,7 +53,7 @@ class WindowsSpeechSettingsRepositoryTest {
         val error = SecurityException("denied")
         val captured = mutableListOf<Throwable>()
 
-        WindowsSpeechSettingsRepository(
+        WindowsSpeechSettingsSenderRepository(
             isWindows = true,
             startProcess = { throw error },
             captureException = { captured += it },
@@ -63,7 +66,7 @@ class WindowsSpeechSettingsRepositoryTest {
     fun `Windows以外では例外を記録しない`() {
         val captured = mutableListOf<Throwable>()
 
-        WindowsSpeechSettingsRepository(
+        WindowsSpeechSettingsSenderRepository(
             isWindows = false,
             startProcess = {},
             captureException = { captured += it },

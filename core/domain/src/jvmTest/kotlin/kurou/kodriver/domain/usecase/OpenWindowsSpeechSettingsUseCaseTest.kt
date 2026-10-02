@@ -4,11 +4,11 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kurou.kodriver.domain.repository.SpeechSettingsRepository
+import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kotlin.test.Test
 
 class OpenWindowsSpeechSettingsUseCaseTest {
-    private val repository: SpeechSettingsRepository = mockk()
+    private val repository: SpeechSettingsSenderRepository = mockk()
 
     @Test
     fun `Windowsの音声設定を開く処理をRepositoryへ委譲する`() {
