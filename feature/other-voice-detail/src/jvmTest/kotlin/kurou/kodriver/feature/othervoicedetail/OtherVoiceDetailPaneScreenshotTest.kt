@@ -64,6 +64,17 @@ class OtherVoiceDetailPaneScreenshotTest {
             darkTheme = true,
         )
 
+    @Test
+    fun `試聴中の音声カード`() =
+        screenshot(
+            OtherVoiceDetailUiState(
+                voices = listOf(voice),
+                selectedVoiceId = voice.id,
+                isLoading = false,
+                previewingVoiceId = voice.id,
+            ),
+        )
+
     private fun screenshot(
         uiState: OtherVoiceDetailUiState,
         width: Dp = 1560.dp,
@@ -83,6 +94,11 @@ class OtherVoiceDetailPaneScreenshotTest {
             onNode(hasContentDescription("システム既定を試聴")).assertDoesNotExist()
         } else {
             onNode(hasContentDescription("システム既定を試聴")).assertIsEnabled()
+        }
+        if (uiState.previewingVoiceId == voice.id) {
+            onNode(hasContentDescription("音声Aの試聴を停止")).assertIsEnabled()
+            mainClock.autoAdvance = false
+            mainClock.advanceTimeBy(200)
         }
         onRoot().captureRoboImage()
     }

@@ -13,4 +13,5 @@
     <string name="voice_preview_description">%1$sを試聴</string>
     <string name="voice_system_default_description">端末の設定に従う</string>
     <string name="voice_preview_sample">これは読み上げ音声の試聴です。</string>
+    <string name="voice_preview_stop_description">%1$sの試聴を停止</string>
 </resources>

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,9 @@ internal class OtherVoiceDetailViewModel(
     private val speakText: SpeakTextUseCase,
     private val observeSoundVolume: ObserveSoundVolumeUseCase,
 ) : ViewModel() {
+    private val previewingVoiceId = MutableStateFlow<String?>(null)
+    private var previewJob: Job? = null
+    private var previewRequest = 0
     private val refreshTrigger = MutableStateFlow(0)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -41,9 +45,11 @@ internal class OtherVoiceDetailViewModel(
                 }
             },
             observeVoice(),
-        ) { state, voiceId ->
+            previewingVoiceId,
+        ) { state, voiceId, previewingId ->
             state.copy(
                 selectedVoiceId = voiceId,
+                previewingVoiceId = previewingId,
                 savedVoiceMissing =
                     !state.isLoading && voiceId != VOICE_ID_UNSPECIFIED && state.voices.none { it.id == voiceId },
             )
@@ -67,17 +73,26 @@ internal class OtherVoiceDetailViewModel(
         voiceId: String,
         text: String,
     ) {
-        viewModelScope.launch {
-            try {
-                val volume = observeSoundVolume().first()
-                if (volume <= 0) return@launch
-                speakText(text, volume = volume, voiceId = voiceId)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
-                // 試聴に失敗しても画面の操作を続けられるようにする。
+        val stopPreview = previewingVoiceId.value == voiceId
+        val request = ++previewRequest
+        previewJob?.cancel()
+        previewingVoiceId.update { null }
+        if (stopPreview) return
+        previewJob =
+            viewModelScope.launch {
+                try {
+                    val volume = observeSoundVolume().first()
+                    if (volume <= 0) return@launch
+                    previewingVoiceId.update { voiceId }
+                    speakText(text, volume = volume, voiceId = voiceId)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    // 試聴に失敗しても画面の操作を続けられるようにする。
+                } finally {
+                    if (previewRequest == request) previewingVoiceId.update { null }
+                }
             }
-        }
     }
 
     fun onRetryClicked() {

@@ -9,4 +9,5 @@ data class OtherVoiceDetailUiState(
     val selectedVoiceId: String = VOICE_ID_UNSPECIFIED,
     val isLoading: Boolean = true,
     val savedVoiceMissing: Boolean = false,
+    val previewingVoiceId: String? = null,
 )
