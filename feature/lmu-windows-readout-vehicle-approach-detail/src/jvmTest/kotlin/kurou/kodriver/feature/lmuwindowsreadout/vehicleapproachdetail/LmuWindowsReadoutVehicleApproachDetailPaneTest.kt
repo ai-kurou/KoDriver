@@ -11,7 +11,6 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import org.junit.Rule
 import org.junit.Test
@@ -37,24 +36,20 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
     }
 
     @Test
-    fun `左接近・右接近チップをタップするとonStartReadoutTypeChangedが呼ばれる`() {
-        var changedType: VehicleApproachStartReadoutType? = null
+    fun `接近開始時は設定された左右文言を表示する`() {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 LmuWindowsReadoutVehicleApproachDetailPaneContent(
                     uiState =
                         LmuWindowsReadoutVehicleApproachDetailUiState(
-                            startReadoutEnabled = true,
-                            startReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
+                            startLeftText = "左注意",
+                            startRightText = "右注意",
                         ),
-                    onStartReadoutTypeChanged = { changedType = it },
                 )
             }
         }
 
-        rule.onNode(hasText("左接近・右接近")).performClick()
-
-        assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, changedType)
+        rule.onNode(hasText("左注意・右注意")).assertExists()
     }
 
     @Test

@@ -18,7 +18,7 @@ import org.koin.dsl.module
  *   ObserveLmuWindowsVehicleApproachEnabledStatesUseCase / SaveLmuWindowsVehicleApproachEnabledStateUseCase）。
  * 消費（get で解決）: LmuWindowsVehicleApproachThresholdsPreferencesRepository・
  *   LmuWindowsVehicleApproachPreferencesRepository（:core:data）、試聴用の named(Simulator.LmuWindows.id) の
- *   TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
+ *   PlaySpeechEventUseCase・SpeakTextUseCase（:feature:lmu-windows-narrator で登録）。
  */
 val lmuWindowsReadoutVehicleApproachDetailModule =
     module {
@@ -29,6 +29,7 @@ val lmuWindowsReadoutVehicleApproachDetailModule =
                 get(),
                 get(),
                 get(),
+                get(named(Simulator.LmuWindows.id)),
                 get(named(Simulator.LmuWindows.id)),
             )
         }

@@ -52,7 +52,6 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
@@ -102,7 +101,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
@@ -222,7 +220,6 @@ class LmuWindowsNarratorViewModelTest {
         overheatVoiceType: OverheatVoiceType,
         skipFirstLap: Boolean,
         startReadoutEnabled: Boolean,
-        startReadoutType: VehicleApproachStartReadoutType,
         sustainedReadoutEnabled: Boolean,
         sustainedReadoutType: VehicleApproachSustainedReadoutType,
         sustainedApproachDurationSeconds: Int,
@@ -250,8 +247,6 @@ class LmuWindowsNarratorViewModelTest {
                     ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to sustainedReadoutEnabled,
                 ),
             )
-        every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
-            MutableStateFlow(startReadoutType)
         every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
             MutableStateFlow(sustainedReadoutType)
         every { vehicleApproachThresholdsPreferencesRepository.observeSustainedApproachDurationSeconds() } returns
@@ -334,7 +329,6 @@ class LmuWindowsNarratorViewModelTest {
         overheatVoiceType: OverheatVoiceType = OverheatVoiceType.GP2_GP2,
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
-        startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
         sustainedReadoutEnabled: Boolean = true,
         sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
         sustainedApproachDurationSeconds: Int = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
@@ -371,7 +365,6 @@ class LmuWindowsNarratorViewModelTest {
             overheatVoiceType = overheatVoiceType,
             skipFirstLap = skipFirstLap,
             startReadoutEnabled = startReadoutEnabled,
-            startReadoutType = startReadoutType,
             sustainedReadoutEnabled = sustainedReadoutEnabled,
             sustainedReadoutType = sustainedReadoutType,
             sustainedApproachDurationSeconds = sustainedApproachDurationSeconds,
@@ -401,10 +394,6 @@ class LmuWindowsNarratorViewModelTest {
                         ),
                     observeEnabledStates =
                         ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(
-                            vehicleApproachPreferencesRepository,
-                        ),
-                    observeStartReadoutType =
-                        ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(
                             vehicleApproachPreferencesRepository,
                         ),
                     observeSustainedApproachDuration =
@@ -506,7 +495,7 @@ class LmuWindowsNarratorViewModelTest {
                 LmuWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-                    flagReadoutText = { it.narratedText },
+                    readoutText = { it.narratedText },
                 ),
             narratorUseCases =
                 NarratorUseCases(

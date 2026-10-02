@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -12,13 +13,13 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOL
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private val thresholds: LmuWindowsVehicleApproachThresholdsUseCases,
@@ -26,6 +27,7 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private val observeEnabledStates: ObserveLmuWindowsVehicleApproachEnabledStatesUseCase,
     private val saveEnabledState: SaveLmuWindowsVehicleApproachEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
+    private val speakText: SpeakTextUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<LmuWindowsReadoutVehicleApproachDetailUiState> =
         combine(
@@ -36,9 +38,12 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
             ) { lateral, longitudinal, sustainedDuration -> Triple(lateral, longitudinal, sustainedDuration) },
             vehicleApproachPreferences.observeSkipFirstLap(),
             observeEnabledStates(),
-            vehicleApproachPreferences.observeStartReadoutType(),
+            combine(
+                vehicleApproachPreferences.observeStartLeftReadoutText(),
+                vehicleApproachPreferences.observeStartRightReadoutText(),
+            ) { left, right -> left to right },
             vehicleApproachPreferences.observeSustainedReadoutType(),
-        ) { thresholdValues, skipFirstLap, enabledStates, startReadoutType, sustainedReadoutType ->
+        ) { thresholdValues, skipFirstLap, enabledStates, startTexts, sustainedReadoutType ->
             val (lateral, longitudinal, sustainedDuration) = thresholdValues
             LmuWindowsReadoutVehicleApproachDetailUiState(
                 lateralThresholdMeters = lateral,
@@ -46,7 +51,8 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
                 sustainedApproachDurationSeconds = sustainedDuration,
                 skipFirstLap = skipFirstLap,
                 startReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout),
-                startReadoutType = startReadoutType,
+                startLeftText = startTexts.first,
+                startRightText = startTexts.second,
                 sustainedReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained),
                 sustainedReadoutType = sustainedReadoutType,
             )
@@ -106,34 +112,18 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         }
     }
 
-    fun onStartReadoutTypeChanged(type: VehicleApproachStartReadoutType) {
-        viewModelScope.launch { vehicleApproachPreferences.saveStartReadoutType(type) }
-        playStartReadoutPreview(type)
-    }
-
     fun onSustainedReadoutTypeChanged(type: VehicleApproachSustainedReadoutType) {
         viewModelScope.launch { vehicleApproachPreferences.saveSustainedReadoutType(type) }
         playSustainedReadoutPreview(type)
     }
 
     fun onStartReadoutPreviewClicked() {
-        playStartReadoutPreview(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
-    }
-
-    private fun playStartReadoutPreview(type: VehicleApproachStartReadoutType) {
-        val events =
-            when (type) {
-                VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> {
-                    SpeechEvent.CarLeft to SpeechEvent.CarRight
-                }
-
-                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> {
-                    SpeechEvent.LeftApproach to
-                        SpeechEvent.RightApproach
-                }
-            }
-        playSpeechEvent(events.first)
-        playSpeechEvent(events.second, queue = true)
+        viewModelScope.launch {
+            val left = vehicleApproachPreferences.observeStartLeftReadoutText().first()
+            val right = vehicleApproachPreferences.observeStartRightReadoutText().first()
+            speakText(left)
+            speakText(right, queue = left.isNotBlank())
+        }
     }
 
     private fun playSustainedReadoutPreview(type: VehicleApproachSustainedReadoutType) {

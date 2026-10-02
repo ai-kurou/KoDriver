@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -21,7 +23,6 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -87,7 +88,10 @@ class FakeLmuWindowsRepository : LmuWindowsRepository {
 
 class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleApproachPreferencesRepository {
     private val skipFirstLapFlow = MutableStateFlow(true)
-    private val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+    private val startLeftReadoutTextFlow =
+        MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT)
+    private val startRightReadoutTextFlow =
+        MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT)
     private val sustainedReadoutTypeFlow = MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
@@ -97,10 +101,16 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
         skipFirstLapFlow.update { skip }
     }
 
-    override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> = startReadoutTypeFlow
+    override fun observeStartLeftReadoutText(): Flow<String> = startLeftReadoutTextFlow
 
-    override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
-        startReadoutTypeFlow.update { type }
+    override suspend fun saveStartLeftReadoutText(text: String) {
+        startLeftReadoutTextFlow.update { text }
+    }
+
+    override fun observeStartRightReadoutText(): Flow<String> = startRightReadoutTextFlow
+
+    override suspend fun saveStartRightReadoutText(text: String) {
+        startRightReadoutTextFlow.update { text }
     }
 
     override fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> = sustainedReadoutTypeFlow

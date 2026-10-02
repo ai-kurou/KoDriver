@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -53,35 +52,23 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `startReadoutType の初期値は CAR_LEFT_RIGHT`() =
+    fun `開始Left文言の初期値と保存値を取得できる`() =
         runTest {
-            assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
+            assertEquals("カーレフト", repository.observeStartLeftReadoutText().first())
+            repository.saveStartLeftReadoutText("注意")
+            assertEquals("注意", repository.observeStartLeftReadoutText().first())
+            repository.saveStartLeftReadoutText("")
+            assertEquals("", repository.observeStartLeftReadoutText().first())
         }
 
     @Test
-    fun `saveStartReadoutType で保存した値を observeStartReadoutType で取得できる`() =
+    fun `開始Right文言の初期値と保存値を取得できる`() =
         runTest {
-            repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
-            assertEquals(
-                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
-                repository.observeStartReadoutType().first(),
-            )
-        }
-
-    @Test
-    fun `saveStartReadoutType を複数回呼ぶと最後の値で上書きされる`() =
-        runTest {
-            repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
-            repository.saveStartReadoutType(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
-            assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
-        }
-
-    @Test
-    fun `startReadoutType が未知の ID のとき CAR_LEFT_RIGHT を返す`() =
-        runTest {
-            dataStore.updateData { it.copy(startReadoutType = "unknown") }
-
-            assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
+            assertEquals("カーライト", repository.observeStartRightReadoutText().first())
+            repository.saveStartRightReadoutText("注意")
+            assertEquals("注意", repository.observeStartRightReadoutText().first())
+            repository.saveStartRightReadoutText("")
+            assertEquals("", repository.observeStartRightReadoutText().first())
         }
 
     @Test
