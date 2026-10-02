@@ -1,5 +1,7 @@
 package kurou.kodriver.core.texttospeechdata.windows
 
+import kurou.kodriver.domain.model.TextToSpeechVoice
+
 /**
  * Windowsの音声合成エンジンへテキストを渡して読み上げさせる。
  *
@@ -9,6 +11,9 @@ package kurou.kodriver.core.texttospeechdata.windows
 interface WindowsSpeechSynthesizer {
     /** 実行環境がWindowsで、音声合成を利用できるかどうか。 */
     fun isAvailable(): Boolean
+
+    /** 有効なインストール済み音声を返す。非Windows・取得失敗・タイムアウト時は空の一覧を返す。 */
+    fun listVoices(): List<TextToSpeechVoice>
 
     /**
      * [text] を読み上げる。[queue] が `true` なら再生中の読み上げの完了を待ってから読み上げ、
