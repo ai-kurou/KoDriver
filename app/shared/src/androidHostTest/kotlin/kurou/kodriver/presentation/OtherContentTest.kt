@@ -49,13 +49,13 @@ class OtherContentTest {
         )
 
     @Test
-    fun `読み上げ音声をクリックしても選択や詳細遷移をしない`() {
+    fun `Androidの一覧には読み上げ音声を表示しない`() {
         var selectionCount = 0
         var backEnabled = false
 
         rule.setContent {
             OtherContent(
-                uiState = OtherListUiState(items = listOf(OtherListItemType.Voice)),
+                uiState = OtherListUiState(),
                 onItemSelected = { selectionCount++ },
                 onClearSelectedItem = {},
                 scaffoldDirective = singlePaneDirective,
@@ -65,7 +65,7 @@ class OtherContentTest {
             )
         }
 
-        rule.onNodeWithText("読み上げ音声").assertExists().performClick()
+        rule.onNodeWithText("読み上げ音声").assertDoesNotExist()
         rule.waitForIdle()
 
         assertEquals(0, selectionCount)

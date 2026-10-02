@@ -1,10 +1,52 @@
 package kurou.kodriver.feature.othervoicedetail
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
+import kurou.kodriver.domain.usecase.GetAvailableVoicesUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
+import kurou.kodriver.domain.usecase.SaveVoiceUseCase
 
-internal class OtherVoiceDetailViewModel : ViewModel() {
-    val uiState: StateFlow<OtherVoiceDetailUiState> = MutableStateFlow(OtherVoiceDetailUiState).asStateFlow()
+internal class OtherVoiceDetailViewModel(
+    private val getAvailableVoices: GetAvailableVoicesUseCase,
+    observeVoice: ObserveVoiceUseCase,
+    private val saveVoice: SaveVoiceUseCase,
+) : ViewModel() {
+    private val refreshTrigger = MutableStateFlow(0)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<OtherVoiceDetailUiState> =
+        combine(
+            refreshTrigger.flatMapLatest {
+                flow {
+                    emit(OtherVoiceDetailUiState())
+                    emit(OtherVoiceDetailUiState(voices = getAvailableVoices(), isLoading = false))
+                }
+            },
+            observeVoice(),
+        ) { state, voiceId ->
+            state.copy(
+                selectedVoiceId = voiceId,
+                savedVoiceMissing =
+                    !state.isLoading && voiceId != VOICE_ID_UNSPECIFIED && state.voices.none { it.id == voiceId },
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVoiceDetailUiState())
+
+    fun onVoiceSelected(id: String) {
+        viewModelScope.launch { saveVoice(id) }
+    }
+
+    fun onRetryClicked() {
+        refreshTrigger.update { it + 1 }
+    }
 }

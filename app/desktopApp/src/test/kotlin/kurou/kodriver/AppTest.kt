@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
@@ -221,6 +224,12 @@ class AppTest {
         clickItem("ゲーム機・SimHubへ接続するIPアドレス")
         clickItem("音量")
         clickItem("読み上げ音声")
+        waitUntilDisplayed("テスト音声")
+        clickItem("テスト音声")
+        rule
+            .onNode(hasText("システム既定") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
+            .performClick()
+        rule.waitForIdle()
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
         // 「テレメトリ受信中は画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。

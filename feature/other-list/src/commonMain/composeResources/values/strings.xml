@@ -27,4 +27,5 @@
     <string name="section_overlay_settings">オーバーレイ設定</string>
     <string name="section_app_settings">アプリ設定</string>
     <string name="section_information">情報</string>
+    <string name="voice_system_default">システム既定</string>
 </resources>

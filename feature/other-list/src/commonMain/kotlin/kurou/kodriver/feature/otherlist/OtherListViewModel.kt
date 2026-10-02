@@ -18,6 +18,7 @@ import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
@@ -41,6 +42,7 @@ data class OtherListSettingsUseCases(
     val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
     val observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
     val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
+    val observeVoice: ObserveVoiceUseCase,
 )
 
 /**
@@ -85,6 +87,8 @@ class OtherListViewModel(
                 dynamicColorEnabled = dynamicColorEnabled,
                 hapticFeedbackEnabled = hapticFeedbackEnabled,
             )
+        }.combine(settingsUseCases.observeVoice()) { state, voiceId ->
+            state.copy(voiceId = voiceId)
         }.combine(textToSpeechUnavailableReason) { state, ttsUnavailableReason ->
             state.copy(items = state.items.withTtsGuidance(ttsUnavailableReason))
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
