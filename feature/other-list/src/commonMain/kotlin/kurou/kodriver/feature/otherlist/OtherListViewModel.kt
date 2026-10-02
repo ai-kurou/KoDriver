@@ -19,6 +19,7 @@ import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
+import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
@@ -55,6 +56,7 @@ class OtherListViewModel(
     checkHapticFeedbackAvailable: CheckHapticFeedbackAvailableUseCase,
     private val checkAccessLocalNetworkPermissionGranted: CheckAccessLocalNetworkPermissionGrantedUseCase,
     private val checkTextToSpeechUnavailableReason: CheckTextToSpeechUnavailableReasonUseCase,
+    private val openWindowsSpeechSettings: OpenWindowsSpeechSettingsUseCase,
     private val startupRegistration: StartupRegistrationUseCases,
     appVersionInfo: OtherListAppVersionInfo,
 ) : ViewModel() {
@@ -104,6 +106,10 @@ class OtherListViewModel(
     fun checkAccessLocalNetworkPermission() {
         val granted = checkAccessLocalNetworkPermissionGranted()
         _uiState.update { it.copy(accessLocalNetworkPermissionGranted = granted) }
+    }
+
+    fun openWindowsSpeechSettings() {
+        openWindowsSpeechSettings.invoke()
     }
 
     fun checkStartupEnabled() {
