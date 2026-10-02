@@ -6,10 +6,14 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kurou.kodriver.core.texttospeechdata.windows.SapiSpeechSynthesizer
 import kurou.kodriver.core.texttospeechdata.windows.WindowsSpeechSynthesizer
+import kurou.kodriver.domain.model.TTS_CULTURE_NAME
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.repository.VoiceListRepository
 
-/** Windowsの音声一覧を排他的に取得し、非空の結果を保持する。空の場合は次回の呼び出しで再取得する。 */
+/**
+ * Windowsの音声一覧を排他的に取得し、表示対象の言語（[TTS_CULTURE_NAME]）の音声を含む結果だけを保持する。
+ * 含まない場合（失敗・音声未導入・他言語のみ）は、後から音声が導入されても検出できるよう次回の呼び出しで再取得する。
+ */
 internal class WindowsVoiceListRepository(
     private val synthesizer: WindowsSpeechSynthesizer = SapiSpeechSynthesizer(),
 ) : VoiceListRepository {
@@ -19,7 +23,9 @@ internal class WindowsVoiceListRepository(
     override suspend fun availableVoices(): List<TextToSpeechVoice> =
         mutex.withLock {
             if (cachedVoices.isEmpty()) {
-                cachedVoices = withContext(Dispatchers.IO) { synthesizer.listVoices() }
+                val voices = withContext(Dispatchers.IO) { synthesizer.listVoices() }
+                if (voices.any { it.cultureName == TTS_CULTURE_NAME }) cachedVoices = voices
+                return@withLock voices
             }
             cachedVoices
         }

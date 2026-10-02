@@ -45,6 +45,21 @@ class WindowsVoiceListRepositoryTest {
         }
 
     @Test
+    fun `対象言語の音声を含まない一覧は返すが保持せず次回再取得する`() =
+        runTest {
+            val english = listOf(TextToSpeechVoice("Zira", "English voice", "en-US"))
+            val synthesizer = FakeWindowsSpeechSynthesizer(voices = english)
+            val repository = WindowsVoiceListRepository(synthesizer)
+
+            assertEquals(english, repository.availableVoices())
+            synthesizer.voices = english + voices
+            assertEquals(english + voices, repository.availableVoices())
+            synthesizer.voices = emptyList()
+            assertEquals(english + voices, repository.availableVoices())
+            assertEquals(2, synthesizer.listVoicesCallCount)
+        }
+
+    @Test
     fun `同時の呼び出しは一覧取得を一度だけ行う`() =
         runTest {
             val release = CountDownLatch(1)

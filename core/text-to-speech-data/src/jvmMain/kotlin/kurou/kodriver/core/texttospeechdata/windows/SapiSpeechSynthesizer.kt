@@ -97,7 +97,8 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
                 .start()
         try {
             if (!process.waitFor(AVAILABILITY_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                process.destroyForcibly()
+                // 出力ファイルを掴んだまま残ると呼び出し元の削除に失敗するため、終了を待ってから戻る。
+                process.destroyForcibly().waitFor(DESTROY_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 return emptyList()
             }
             return if (process.exitValue() == 0) {
@@ -181,6 +182,9 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
 
         /** 初回の`Add-Type`は低スペック環境やウイルス対策ソフトの影響で遅くなるため、誤検知を避けて余裕を持たせる。 */
         const val AVAILABILITY_CHECK_TIMEOUT_SECONDS = 15L
+
+        /** タイムアウトで強制終了したプロセスの終了を待つ上限。 */
+        const val DESTROY_WAIT_TIMEOUT_SECONDS = 5L
         val IS_WINDOWS = System.getProperty("os.name").lowercase().startsWith("windows")
     }
 }
