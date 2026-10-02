@@ -143,11 +143,27 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         viewModelScope.launch { startReadout.saveRightText(text) }
     }
 
+    fun onSustainedLeftTextChanged(text: String) {
+        viewModelScope.launch { vehicleApproachPreferences.saveSustainedLeftReadoutText(text) }
+    }
+
+    fun onSustainedRightTextChanged(text: String) {
+        viewModelScope.launch { vehicleApproachPreferences.saveSustainedRightReadoutText(text) }
+    }
+
     fun onStartLeftTextPreviewClicked(text: String) {
         playStartReadoutPreview(text)
     }
 
     fun onStartRightTextPreviewClicked(text: String) {
+        playStartReadoutPreview(text)
+    }
+
+    fun onSustainedLeftTextPreviewClicked(text: String) {
+        playStartReadoutPreview(text)
+    }
+
+    fun onSustainedRightTextPreviewClicked(text: String) {
         playStartReadoutPreview(text)
     }
 

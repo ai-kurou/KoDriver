@@ -193,7 +193,8 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
                 )
             }
         }
-        rule.onNode(hasText("左継続・右継続")).performScrollTo().assertIsDisplayed()
+        rule.onNode(hasText("左継続")).performScrollTo().assertIsDisplayed()
+        rule.onNode(hasText("右継続")).performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -264,7 +265,7 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
                 )
             }
         }
-        rule.onAllNodes(hasSetTextAction()).assertCountEquals(2)
+        rule.onAllNodes(hasSetTextAction()).assertCountEquals(4)
         rule
             .onAllNodes(hasSetTextAction())[0]
             .performScrollTo()
@@ -329,6 +330,61 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
         rule.onAllNodes(hasContentDescription("入力した文言を再生"))[1].assertIsNotEnabled()
         rule
             .onAllNodes(hasText("この端末では音声合成を利用できないため、接近開始時は読み上げません"))
+            .assertCountEquals(2)
+    }
+
+    @Test
+    fun `継続時の左右入力は編集と個別試聴ができる`() {
+        val sustainedLeftChanged = mutableListOf<String>()
+        val sustainedRightChanged = mutableListOf<String>()
+        val sustainedLeftPreview = mutableListOf<String>()
+        val sustainedRightPreview = mutableListOf<String>()
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(isTextToSpeechAvailable = true),
+                    onSustainedLeftTextChanged = { sustainedLeftChanged += it },
+                    onSustainedRightTextChanged = { sustainedRightChanged += it },
+                    onSustainedLeftTextPreviewClicked = { sustainedLeftPreview += it },
+                    onSustainedRightTextPreviewClicked = { sustainedRightPreview += it },
+                )
+            }
+        }
+        rule
+            .onAllNodes(hasSetTextAction())[2]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performTextReplacement("継続左")
+        rule.onAllNodes(hasContentDescription("入力した文言を再生"))[2].performScrollTo().performClick()
+        rule
+            .onAllNodes(hasSetTextAction())[3]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performTextReplacement("継続右")
+        rule.onAllNodes(hasContentDescription("入力した文言を再生"))[3].performScrollTo().performClick()
+        assertEquals(listOf("継続左"), sustainedLeftChanged)
+        assertEquals(listOf("継続右"), sustainedRightChanged)
+        assertEquals(listOf("継続左"), sustainedLeftPreview)
+        assertEquals(listOf("継続右"), sustainedRightPreview)
+        assertEquals(emptyList(), leftChangedTexts)
+        assertEquals(emptyList(), rightChangedTexts)
+    }
+
+    @Test
+    fun `TTS利用不可では継続時の入力を無効にし継続用の案内を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(isTextToSpeechAvailable = false),
+                )
+            }
+        }
+        rule.onNode(hasText("キープライト") and isNotEnabled()).assertExists()
+        rule.onNode(hasText("キープレフト") and isNotEnabled()).assertExists()
+        rule.onAllNodes(hasContentDescription("入力した文言を再生"))[2].assertIsNotEnabled()
+        rule.onAllNodes(hasContentDescription("入力した文言を再生"))[3].assertIsNotEnabled()
+        rule
+            .onAllNodes(hasText("この端末では音声合成を利用できないため、接近継続時は読み上げません"))
             .assertCountEquals(2)
     }
 }

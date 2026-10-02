@@ -397,4 +397,49 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
             confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
         }
+
+    @Test
+    fun `継続時の左右文言の変更を保存しUiStateへ反映する`() =
+        runTest {
+            every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
+            every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+            val left = MutableStateFlow("キープライト")
+            val right = MutableStateFlow("キープレフト")
+            every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
+            every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
+            every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
+                MutableStateFlow(
+                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                )
+            every { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() } returns
+                MutableStateFlow("カーレフト")
+            every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns
+                MutableStateFlow("カーライト")
+            every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns left
+            every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns right
+            coEvery { textToSpeechRepository.isAvailable() } returns true
+            coEvery { vehicleApproachPreferencesRepository.saveSustainedLeftReadoutText("左注意") } answers
+                { left.update { "左注意" } }
+            coEvery { vehicleApproachPreferencesRepository.saveSustainedRightReadoutText("") } answers
+                { right.update { "" } }
+            val viewModel = createViewModel()
+            viewModel.onSustainedLeftTextChanged("左注意")
+            viewModel.onSustainedRightTextChanged("")
+            assertEquals("左注意", viewModel.uiState.first().sustainedLeftText)
+            assertEquals("", viewModel.uiState.first().sustainedRightText)
+            assertEquals(true, viewModel.uiState.first().isTextToSpeechAvailable)
+            coVerify(exactly = 1) { vehicleApproachPreferencesRepository.saveSustainedLeftReadoutText("左注意") }
+            coVerify(exactly = 1) { vehicleApproachPreferencesRepository.saveSustainedRightReadoutText("") }
+            verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+            verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+            verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
+            coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
+            confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
+        }
 }

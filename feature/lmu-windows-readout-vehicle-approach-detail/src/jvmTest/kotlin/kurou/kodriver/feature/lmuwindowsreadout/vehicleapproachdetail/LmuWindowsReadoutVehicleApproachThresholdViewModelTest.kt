@@ -529,4 +529,55 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             vehicleApproachPreferencesRepository,
         )
     }
+
+    @Test
+    fun `継続文言も開始音の後に指定音量で左右を試聴する`() {
+        every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
+        every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
+        every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
+        every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
+            MutableStateFlow(
+                mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+            )
+        every { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() } returns MutableStateFlow("カーレフト")
+        every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns MutableStateFlow("カーライト")
+        every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+            MutableStateFlow("キープライト")
+        every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+            MutableStateFlow("キープレフト")
+        coEvery { textToSpeechRepository.isAvailable() } returns true
+        every { volumes.volume() } returns MutableStateFlow(60)
+        coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) } returns Unit
+        coEvery { textToSpeechRepository.speak("注意", false, 60) } returns Unit
+        val viewModel = createViewModel()
+        viewModel.onSustainedLeftTextPreviewClicked("注意")
+        viewModel.onSustainedRightTextPreviewClicked("注意")
+        coVerify(exactly = 2) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
+        coVerify(exactly = 2) { textToSpeechRepository.speak("注意", false, 60) }
+        verify(exactly = 2) { volumes.volume() }
+        coVerifyOrder {
+            ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            textToSpeechRepository.speak("注意", false, 60)
+            ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            textToSpeechRepository.speak("注意", false, 60)
+        }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
+        coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
+        confirmVerified(
+            textToSpeechRepository,
+            ttsEngine,
+            volumes,
+            thresholdsRepository,
+            vehicleApproachPreferencesRepository,
+        )
+    }
 }
