@@ -5,9 +5,10 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
@@ -22,7 +23,18 @@ class OtherVoiceDetailPaneScreenshotTest {
     fun `デフォルト`() = screenshot(OtherVoiceDetailUiState(voices = listOf(voice), isLoading = false))
 
     @Test
-    fun `声あり`() = screenshot(OtherVoiceDetailUiState(listOf(voice), voice.id, isLoading = false))
+    fun `声あり`() =
+        screenshot(
+            OtherVoiceDetailUiState(
+                listOf(
+                    voice,
+                    TextToSpeechVoice("voice-b", "音声B", "ja-jp-x-jac-local"),
+                    TextToSpeechVoice("voice-c", "音声C", "ja-JP"),
+                ),
+                voice.id,
+                isLoading = false,
+            ),
+        )
 
     @Test
     fun `取得中`() = screenshot(OtherVoiceDetailUiState(isLoading = true))
@@ -34,22 +46,44 @@ class OtherVoiceDetailPaneScreenshotTest {
     fun `保存済み不在`() =
         screenshot(OtherVoiceDetailUiState(listOf(voice), "missing", isLoading = false, savedVoiceMissing = true))
 
-    private fun screenshot(uiState: OtherVoiceDetailUiState) =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            OtherVoiceDetailPaneContent(uiState = uiState)
-                        }
+    @Test
+    fun `狭いペインの音声カード`() =
+        screenshot(
+            OtherVoiceDetailUiState(listOf(voice, TextToSpeechVoice("voice-b", "音声B", "ja-JP")), voice.id, false),
+            width = 360.dp,
+        )
+
+    @Test
+    fun `ダークテーマの音声カード`() =
+        screenshot(
+            OtherVoiceDetailUiState(
+                listOf(voice, TextToSpeechVoice("voice-b", "長い名前の日本語音声B", "ja-jp-x-jac-local")),
+                voice.id,
+                false,
+            ),
+            darkTheme = true,
+        )
+
+    private fun screenshot(
+        uiState: OtherVoiceDetailUiState,
+        width: Dp = 1560.dp,
+        darkTheme: Boolean = false,
+    ) = composeScreenshotTest {
+        setContent {
+            KoDriverTheme(darkTheme = darkTheme) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(width, 1080.dp)) {
+                        OtherVoiceDetailPaneContent(uiState = uiState)
                     }
                 }
             }
-            if (uiState.isLoading) {
-                onNodeWithText("試聴").assertIsNotEnabled()
-            } else {
-                onNodeWithText("試聴").assertIsEnabled()
-            }
-            onRoot().captureRoboImage()
         }
+        if (uiState.isLoading) {
+            onNodeWithText("読み込み中…").assertExists()
+            onNode(hasContentDescription("システム既定を試聴")).assertDoesNotExist()
+        } else {
+            onNode(hasContentDescription("システム既定を試聴")).assertIsEnabled()
+        }
+        onRoot().captureRoboImage()
+    }
 }

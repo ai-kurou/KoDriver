@@ -1,15 +1,31 @@
 package kurou.kodriver.feature.othervoicedetail
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.RadioButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -20,6 +36,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneDescription
@@ -27,18 +44,23 @@ import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.koDriverMonospaceTextStyle
+import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.othervoicedetail.generated.resources.Res
 import kurou.kodriver.feature.othervoicedetail.generated.resources.navigate_back
+import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_count
+import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_default_section
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_description
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_empty
+import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_japanese_section
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_loading
-import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_preview
+import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_preview_description
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_preview_sample
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_retry
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_saved_missing
-import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_subtitle
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_system_default
+import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_system_default_description
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -74,11 +96,10 @@ fun OtherVoiceDetailPaneContent(
     modifier: Modifier = Modifier,
     onVoiceSelected: (String) -> Unit = {},
     onRetryClicked: () -> Unit = {},
-    onPreviewClicked: (String) -> Unit = {},
+    onPreviewClicked: (String, String) -> Unit = { _, _ -> },
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
 ) {
-    val haptic = LocalHapticFeedback.current
     val previewSample = stringResource(Res.string.voice_preview_sample)
     val selectedId = if (uiState.savedVoiceMissing) VOICE_ID_UNSPECIFIED else uiState.selectedVoiceId
     DetailPaneScaffold(
@@ -90,53 +111,204 @@ fun OtherVoiceDetailPaneContent(
     ) {
         Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
             DetailPaneDescription(text = stringResource(Res.string.voice_description))
-            DetailPaneSubtitle(
-                text = stringResource(Res.string.voice_subtitle),
-                modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
-            )
-            Column(modifier = Modifier.selectableGroup().padding(horizontal = KoDriverSpacing.large)) {
-                val options =
-                    listOf(VOICE_ID_UNSPECIFIED to stringResource(Res.string.voice_system_default)) +
-                        uiState.voices.map { it.id to it.displayName }
-                options.forEach { (id, label) ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .selectable(
-                                    selected = selectedId == id,
-                                    role = Role.RadioButton,
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                        onVoiceSelected(id)
-                                    },
-                                ).padding(vertical = KoDriverSpacing.small),
-                    ) {
-                        RadioButton(selected = selectedId == id, onClick = null)
-                        Text(label)
-                    }
-                }
+            Column(
+                modifier = Modifier.selectableGroup().padding(horizontal = KoDriverSpacing.large),
+            ) {
                 if (uiState.isLoading) {
                     DetailPaneBodyText(text = stringResource(Res.string.voice_loading))
-                } else if (uiState.voices.isEmpty()) {
-                    DetailPaneBodyText(text = stringResource(Res.string.voice_empty))
-                    TextButton(onClick = onRetryClicked) {
-                        Text(stringResource(Res.string.voice_retry))
+                } else {
+                    DetailPaneSubtitle(text = stringResource(Res.string.voice_default_section))
+                    VoiceCards(
+                        voices =
+                            listOf(
+                                TextToSpeechVoice(
+                                    VOICE_ID_UNSPECIFIED,
+                                    stringResource(Res.string.voice_system_default),
+                                    stringResource(Res.string.voice_system_default_description),
+                                ),
+                            ),
+                        selectedId = selectedId,
+                        onVoiceSelected = onVoiceSelected,
+                        onPreviewClicked = { onPreviewClicked(it, previewSample) },
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        DetailPaneSubtitle(
+                            text = stringResource(Res.string.voice_japanese_section),
+                            modifier = Modifier.weight(1f),
+                        )
+                        Text(
+                            text = stringResource(Res.string.voice_count, uiState.voices.size),
+                            style = koDriverMonospaceTextStyle(),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    VoiceCards(
+                        voices = uiState.voices,
+                        selectedId = selectedId,
+                        onVoiceSelected = onVoiceSelected,
+                        onPreviewClicked = { onPreviewClicked(it, previewSample) },
+                    )
+                    if (uiState.voices.isEmpty()) {
+                        DetailPaneBodyText(text = stringResource(Res.string.voice_empty))
+                        TextButton(onClick = onRetryClicked) {
+                            Text(stringResource(Res.string.voice_retry))
+                        }
                     }
                 }
-                TextButton(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                        onPreviewClicked(previewSample)
-                    },
-                    enabled = !uiState.isLoading,
-                ) {
-                    Text(stringResource(Res.string.voice_preview))
-                }
                 if (uiState.savedVoiceMissing) {
-                    DetailPaneBodyText(text = stringResource(Res.string.voice_saved_missing))
+                    Surface(
+                        shape = MaterialTheme.shapes.large,
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        modifier = Modifier.fillMaxWidth().padding(vertical = KoDriverSpacing.large),
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+                            modifier = Modifier.padding(KoDriverSpacing.large),
+                        ) {
+                            Icon(Icons.Default.Warning, contentDescription = null)
+                            Text(
+                                stringResource(Res.string.voice_saved_missing),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    }
                 }
+            }
+        }
+    }
+}
+
+/** 狭いペインでは1列、広いペインでは2列で音声カードを配置する。 */
+@Suppress("UnstableCollections")
+@Composable
+private fun VoiceCards(
+    voices: List<TextToSpeechVoice>,
+    selectedId: String,
+    onVoiceSelected: (String) -> Unit,
+    onPreviewClicked: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val cardWidth =
+            if (maxWidth >= 640.dp + KoDriverSpacing.medium) {
+                (maxWidth - KoDriverSpacing.medium) / 2
+            } else {
+                maxWidth
+            }
+        FlowRow(
+            maxItemsInEachRow = 2,
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+            verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+        ) {
+            voices.forEach { voice ->
+                VoiceCard(
+                    voice = voice,
+                    selected = selectedId == voice.id,
+                    onSelect = { onVoiceSelected(voice.id) },
+                    onPreview = { onPreviewClicked(voice.id) },
+                    modifier = Modifier.width(cardWidth),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun VoiceCard(
+    voice: TextToSpeechVoice,
+    selected: Boolean,
+    onSelect: () -> Unit,
+    onPreview: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val haptic = LocalHapticFeedback.current
+    val colors = MaterialTheme.colorScheme
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = if (selected) colors.primaryContainer else colors.surfaceContainerLow,
+        contentColor = if (selected) colors.onPrimaryContainer else colors.onSurface,
+        border = BorderStroke(1.dp, if (selected) colors.primary else colors.outlineVariant),
+        modifier =
+            modifier.selectable(
+                selected = selected,
+                role = Role.RadioButton,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onSelect()
+                },
+            ),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+            modifier = Modifier.padding(KoDriverSpacing.medium),
+        ) {
+            VoiceAvatar(voice = voice, selected = selected)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(voice.displayName, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    voice.cultureName,
+                    style = koDriverMonospaceTextStyle(),
+                    color = if (selected) colors.onPrimaryContainer else colors.onSurfaceVariant,
+                )
+            }
+            FilledTonalIconButton(
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    onPreview()
+                },
+                shape = MaterialTheme.shapes.extraLarge,
+                colors =
+                    IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = if (selected) colors.primary else colors.surfaceContainerHighest,
+                        contentColor = if (selected) colors.onPrimary else colors.primary,
+                    ),
+            ) {
+                Icon(
+                    Icons.Default.PlayArrow,
+                    contentDescription = stringResource(Res.string.voice_preview_description, voice.displayName),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun VoiceAvatar(
+    voice: TextToSpeechVoice,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val colors = MaterialTheme.colorScheme
+    Box(modifier = modifier.size(48.dp)) {
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            color = if (selected) colors.primary else colors.surfaceContainerHighest,
+            contentColor = if (selected) colors.onPrimary else colors.onSurfaceVariant,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                if (voice.id == VOICE_ID_UNSPECIFIED) {
+                    Icon(Icons.Default.Settings, contentDescription = null)
+                } else {
+                    Text(voice.displayName.take(1), style = MaterialTheme.typography.titleMedium)
+                }
+            }
+        }
+        if (selected) {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = colors.onPrimaryContainer,
+                contentColor = colors.primaryContainer,
+                modifier = Modifier.size(18.dp).align(Alignment.BottomEnd),
+            ) {
+                Icon(
+                    Icons.Default.Check,
+                    contentDescription = null,
+                    modifier =
+                        Modifier.padding(KoDriverSpacing.extraSmall / 2),
+                )
             }
         }
     }

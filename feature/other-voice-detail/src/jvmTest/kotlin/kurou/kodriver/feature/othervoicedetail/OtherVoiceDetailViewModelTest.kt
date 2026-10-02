@@ -204,15 +204,15 @@ class OtherVoiceDetailViewModelTest {
         runTest {
             every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
             every { observeSoundVolume() } returns flowOf(42)
-            coEvery { speakText("試聴", volume = 42) } returns Unit
+            coEvery { speakText("試聴", volume = 42, voiceId = voice.id) } returns Unit
             val viewModel = createViewModel()
 
-            viewModel.onPreviewClicked("試聴")
+            viewModel.onPreviewClicked(voice.id, "試聴")
             runCurrent()
 
             verify(exactly = 1) { voicePreferencesRepository.voiceId() }
             verify(exactly = 1) { observeSoundVolume() }
-            coVerify(exactly = 1) { speakText("試聴", volume = 42) }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42, voiceId = voice.id) }
             confirmVerified(voicePreferencesRepository, observeSoundVolume, speakText)
         }
 
@@ -221,15 +221,15 @@ class OtherVoiceDetailViewModelTest {
         runTest {
             every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
             every { observeSoundVolume() } returns flowOf(42)
-            coEvery { speakText("試聴", volume = 42) } throws IllegalStateException("試聴失敗")
+            coEvery { speakText("試聴", volume = 42, voiceId = voice.id) } throws IllegalStateException("試聴失敗")
             val viewModel = createViewModel()
 
-            viewModel.onPreviewClicked("試聴")
+            viewModel.onPreviewClicked(voice.id, "試聴")
             runCurrent()
 
             verify(exactly = 1) { voicePreferencesRepository.voiceId() }
             verify(exactly = 1) { observeSoundVolume() }
-            coVerify(exactly = 1) { speakText("試聴", volume = 42) }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42, voiceId = voice.id) }
             confirmVerified(voicePreferencesRepository, observeSoundVolume, speakText)
         }
 
@@ -240,19 +240,19 @@ class OtherVoiceDetailViewModelTest {
             every { observeSoundVolume() } returns flowOf(42)
             val cancellation = CancellationException("キャンセル")
             var completionCause: Throwable? = null
-            coEvery { speakText("試聴", volume = 42) } coAnswers {
+            coEvery { speakText("試聴", volume = 42, voiceId = voice.id) } coAnswers {
                 currentCoroutineContext()[Job]!!.invokeOnCompletion { completionCause = it }
                 throw cancellation
             }
             val viewModel = createViewModel()
 
-            viewModel.onPreviewClicked("試聴")
+            viewModel.onPreviewClicked(voice.id, "試聴")
             runCurrent()
 
             assertSame(cancellation, completionCause)
             verify(exactly = 1) { voicePreferencesRepository.voiceId() }
             verify(exactly = 1) { observeSoundVolume() }
-            coVerify(exactly = 1) { speakText("試聴", volume = 42) }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42, voiceId = voice.id) }
             confirmVerified(voicePreferencesRepository, observeSoundVolume, speakText)
         }
 
@@ -263,15 +263,15 @@ class OtherVoiceDetailViewModelTest {
             every { observeSoundVolume() } returns flowOf(0)
             val viewModel = createViewModel()
 
-            viewModel.onPreviewClicked("試聴")
+            viewModel.onPreviewClicked(voice.id, "試聴")
             runCurrent()
             every { observeSoundVolume() } returns flowOf(-1)
-            viewModel.onPreviewClicked("試聴")
+            viewModel.onPreviewClicked(voice.id, "試聴")
             runCurrent()
 
             verify(exactly = 1) { voicePreferencesRepository.voiceId() }
             verify(exactly = 2) { observeSoundVolume() }
-            coVerify(exactly = 0) { speakText("試聴", volume = 0) }
+            coVerify(exactly = 0) { speakText("試聴", volume = 0, voiceId = voice.id) }
             confirmVerified(voicePreferencesRepository, observeSoundVolume, speakText)
         }
 }

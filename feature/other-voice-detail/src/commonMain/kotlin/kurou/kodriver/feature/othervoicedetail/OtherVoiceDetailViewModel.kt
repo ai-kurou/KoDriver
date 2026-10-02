@@ -63,12 +63,15 @@ internal class OtherVoiceDetailViewModel(
         viewModelScope.launch { saveVoice(id) }
     }
 
-    fun onPreviewClicked(text: String) {
+    fun onPreviewClicked(
+        voiceId: String,
+        text: String,
+    ) {
         viewModelScope.launch {
             try {
                 val volume = observeSoundVolume().first()
                 if (volume <= 0) return@launch
-                speakText(text, volume = volume)
+                speakText(text, volume = volume, voiceId = voiceId)
             } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {

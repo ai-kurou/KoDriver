@@ -5,6 +5,7 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
 
 /**
  * OS標準のTTSでテキストを読み上げる。空文字・空白のみのテキストは読み上げない。
+ * [invoke] の音声IDが未指定なら保存済み設定を使い、指定時はその音声で読み上げる。
  */
 class SpeakTextUseCase(
     private val repository: TextToSpeechRepository,
@@ -14,9 +15,9 @@ class SpeakTextUseCase(
         text: String,
         queue: Boolean = false,
         volume: Int = 100,
+        voiceId: String? = null,
     ) {
         if (text.isBlank()) return
-        val voiceId = observeVoice().first()
-        repository.speak(text, queue, volume, voiceId)
+        repository.speak(text, queue, volume, voiceId ?: observeVoice().first())
     }
 }
