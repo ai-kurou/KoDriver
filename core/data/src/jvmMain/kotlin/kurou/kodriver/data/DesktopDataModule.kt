@@ -43,6 +43,7 @@ import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesReposit
 import kurou.kodriver.data.preferences.createSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
 import kurou.kodriver.data.preferences.createThemePreferencesRepository
+import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
@@ -90,6 +91,7 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
+import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import org.koin.dsl.module
 
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
@@ -143,6 +145,9 @@ val desktopDataModule =
         }
         single<SoundVolumePreferencesRepository> {
             createSoundVolumePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<VoicePreferencesRepository> {
+            createVoicePreferencesRepository(directory = kodriverDirectory)
         }
         single<ReadoutStartSoundPreferencesRepository> {
             createReadoutStartSoundPreferencesRepository(directory = kodriverDirectory)
