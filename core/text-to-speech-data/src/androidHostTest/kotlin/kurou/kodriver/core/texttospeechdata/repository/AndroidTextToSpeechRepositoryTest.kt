@@ -729,4 +729,38 @@ class AndroidTextToSpeechRepositoryTest {
             verify(exactly = 1) { textToSpeech.shutdown() }
             confirmVerified(textToSpeech)
         }
+
+    @Test
+    fun `engineOrNullは再試行指定なしでは初期化失敗後に再初期化しない`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_NOT_SUPPORTED
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            assertNull(repository.engineOrNull())
+            assertNull(repository.engineOrNull())
+
+            assertEquals(1, factoryCallCount)
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.shutdown() }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `engineOrNullは再試行指定ありで初期化失敗後に再初期化して成功すればエンジンを返す`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returnsMany
+                listOf(TextToSpeech.LANG_NOT_SUPPORTED, TextToSpeech.LANG_AVAILABLE)
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            assertNull(repository.engineOrNull(retryIfUnavailable = true))
+            assertTrue(textToSpeech === repository.engineOrNull(retryIfUnavailable = true))
+            assertTrue(textToSpeech === repository.engineOrNull(retryIfUnavailable = true))
+
+            assertEquals(2, factoryCallCount)
+            verify(exactly = 2) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.shutdown() }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            confirmVerified(textToSpeech)
+        }
 }
