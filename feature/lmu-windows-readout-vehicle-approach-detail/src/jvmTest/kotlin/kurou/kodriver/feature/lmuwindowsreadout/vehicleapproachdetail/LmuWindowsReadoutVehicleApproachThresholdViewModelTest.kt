@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -23,6 +24,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOL
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
@@ -34,6 +36,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStat
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
@@ -55,6 +58,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
     private val volumes: SoundVolumePreferencesRepository = mockk()
     private val ttsEngine: TextToSpeechEngine = mockk()
     private val textToSpeechRepository: TextToSpeechRepository = mockk()
+    private val observeVoice: ObserveVoiceUseCase = mockk()
 
     @BeforeTest
     fun setUp() {
@@ -84,7 +88,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
                 ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(vehicleApproachPreferencesRepository),
             startReadout =
                 StartReadoutUseCases(
-                    speakText = SpeakTextUseCase(textToSpeechRepository),
+                    speakText = SpeakTextUseCase(textToSpeechRepository, observeVoice),
                     playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),
                     checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(textToSpeechRepository),
                     observeSoundVolume = ObserveSoundVolumeUseCase(volumes),
@@ -139,7 +143,12 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
-            confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
+            confirmVerified(
+                observeVoice,
+                textToSpeechRepository,
+                thresholdsRepository,
+                vehicleApproachPreferencesRepository,
+            )
         }
 
     @Test
@@ -182,7 +191,12 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
-            confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
+            confirmVerified(
+                observeVoice,
+                textToSpeechRepository,
+                thresholdsRepository,
+                vehicleApproachPreferencesRepository,
+            )
         }
 
     @Test
@@ -238,7 +252,12 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
-            confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
+            confirmVerified(
+                observeVoice,
+                textToSpeechRepository,
+                thresholdsRepository,
+                vehicleApproachPreferencesRepository,
+            )
         }
 
     @Test
@@ -294,7 +313,12 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
-            confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
+            confirmVerified(
+                observeVoice,
+                textToSpeechRepository,
+                thresholdsRepository,
+                vehicleApproachPreferencesRepository,
+            )
         }
 
     @Test
@@ -337,7 +361,12 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
-            confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
+            confirmVerified(
+                observeVoice,
+                textToSpeechRepository,
+                thresholdsRepository,
+                vehicleApproachPreferencesRepository,
+            )
         }
 
     @Test
@@ -391,7 +420,12 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
-            confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
+            confirmVerified(
+                observeVoice,
+                textToSpeechRepository,
+                thresholdsRepository,
+                vehicleApproachPreferencesRepository,
+            )
         }
 
     @Test
@@ -415,7 +449,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         viewModel.onStartLeftTextPreviewClicked(" ")
         viewModel.onStartRightTextPreviewClicked(" ")
         coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
-        coVerify(exactly = 0) { textToSpeechRepository.speak(" ", false, 60) }
+        coVerify(exactly = 0) { textToSpeechRepository.speak(" ", false, 60, VOICE_ID_UNSPECIFIED) }
         verify(exactly = 0) { volumes.volume() }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
         verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
@@ -428,6 +462,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
         coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
         confirmVerified(
+            observeVoice,
             textToSpeechRepository,
             ttsEngine,
             volumes,
@@ -458,7 +493,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         viewModel.onStartLeftTextPreviewClicked("注意")
         viewModel.onStartRightTextPreviewClicked("注意")
         coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
-        coVerify(exactly = 0) { textToSpeechRepository.speak("注意", false, 0) }
+        coVerify(exactly = 0) { textToSpeechRepository.speak("注意", false, 0, VOICE_ID_UNSPECIFIED) }
         verify(exactly = 2) { volumes.volume() }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
         verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
@@ -471,6 +506,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
         coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
         confirmVerified(
+            observeVoice,
             textToSpeechRepository,
             ttsEngine,
             volumes,
@@ -498,18 +534,20 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         coEvery { textToSpeechRepository.isAvailable() } returns true
         every { volumes.volume() } returns MutableStateFlow(60)
         coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) } returns Unit
-        coEvery { textToSpeechRepository.speak("注意", false, 60) } returns Unit
+        every { observeVoice() } returns flowOf("voice-a")
+        coEvery { textToSpeechRepository.speak("注意", false, 60, "voice-a") } returns Unit
         val viewModel = createViewModel()
         viewModel.onStartLeftTextPreviewClicked("注意")
         viewModel.onStartRightTextPreviewClicked("注意")
         coVerify(exactly = 2) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
-        coVerify(exactly = 2) { textToSpeechRepository.speak("注意", false, 60) }
+        verify(exactly = 2) { observeVoice() }
+        coVerify(exactly = 2) { textToSpeechRepository.speak("注意", false, 60, "voice-a") }
         verify(exactly = 2) { volumes.volume() }
         coVerifyOrder {
             ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-            textToSpeechRepository.speak("注意", false, 60)
+            textToSpeechRepository.speak("注意", false, 60, "voice-a")
             ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-            textToSpeechRepository.speak("注意", false, 60)
+            textToSpeechRepository.speak("注意", false, 60, "voice-a")
         }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
         verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
@@ -522,6 +560,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
         coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
         confirmVerified(
+            observeVoice,
             textToSpeechRepository,
             ttsEngine,
             volumes,
@@ -549,18 +588,20 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         coEvery { textToSpeechRepository.isAvailable() } returns true
         every { volumes.volume() } returns MutableStateFlow(60)
         coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) } returns Unit
-        coEvery { textToSpeechRepository.speak("注意", false, 60) } returns Unit
+        every { observeVoice() } returns flowOf(VOICE_ID_UNSPECIFIED)
+        coEvery { textToSpeechRepository.speak("注意", false, 60, VOICE_ID_UNSPECIFIED) } returns Unit
         val viewModel = createViewModel()
         viewModel.onSustainedLeftTextPreviewClicked("注意")
         viewModel.onSustainedRightTextPreviewClicked("注意")
         coVerify(exactly = 2) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
-        coVerify(exactly = 2) { textToSpeechRepository.speak("注意", false, 60) }
+        verify(exactly = 2) { observeVoice() }
+        coVerify(exactly = 2) { textToSpeechRepository.speak("注意", false, 60, VOICE_ID_UNSPECIFIED) }
         verify(exactly = 2) { volumes.volume() }
         coVerifyOrder {
             ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-            textToSpeechRepository.speak("注意", false, 60)
+            textToSpeechRepository.speak("注意", false, 60, VOICE_ID_UNSPECIFIED)
             ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-            textToSpeechRepository.speak("注意", false, 60)
+            textToSpeechRepository.speak("注意", false, 60, VOICE_ID_UNSPECIFIED)
         }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
         verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
@@ -573,6 +614,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
         coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
         confirmVerified(
+            observeVoice,
             textToSpeechRepository,
             ttsEngine,
             volumes,
