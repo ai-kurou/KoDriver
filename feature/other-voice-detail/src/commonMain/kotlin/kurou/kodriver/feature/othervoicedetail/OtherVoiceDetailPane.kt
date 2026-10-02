@@ -9,7 +9,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,6 +32,7 @@ import kurou.kodriver.feature.othervoicedetail.generated.resources.Res
 import kurou.kodriver.feature.othervoicedetail.generated.resources.navigate_back
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_description
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_empty
+import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_loading
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_retry
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_saved_missing
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_subtitle
@@ -97,21 +97,23 @@ fun OtherVoiceDetailPaneContent(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier =
-                            Modifier.fillMaxWidth().selectable(
-                                selected = selectedId == id,
-                                role = Role.RadioButton,
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                    onVoiceSelected(id)
-                                },
-                            ),
+                            Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = selectedId == id,
+                                    role = Role.RadioButton,
+                                    onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                        onVoiceSelected(id)
+                                    },
+                                ).padding(vertical = KoDriverSpacing.small),
                     ) {
                         RadioButton(selected = selectedId == id, onClick = null)
                         Text(label)
                     }
                 }
                 if (uiState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.padding(KoDriverSpacing.large))
+                    DetailPaneBodyText(text = stringResource(Res.string.voice_loading))
                 } else if (uiState.voices.isEmpty()) {
                     DetailPaneBodyText(text = stringResource(Res.string.voice_empty))
                     TextButton(onClick = onRetryClicked) {

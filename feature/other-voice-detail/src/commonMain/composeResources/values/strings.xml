@@ -5,6 +5,7 @@
     <string name="voice_subtitle">音声</string>
     <string name="voice_system_default">システム既定</string>
     <string name="voice_empty">日本語の音声が見つかりません。Windowsの設定で日本語の音声を追加してください。</string>
+    <string name="voice_loading">読み込み中…</string>
     <string name="voice_retry">再読み込み</string>
     <string name="voice_saved_missing">保存済みの音声が見つからないため、システム既定で読み上げます。</string>
 </resources>

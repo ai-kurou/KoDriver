@@ -5,11 +5,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -95,10 +93,10 @@ class OtherVoiceDetailPaneTest {
     }
 
     @Test
-    fun `取得中はスピナーを表示し空の案内と再読み込みを表示しない`() {
+    fun `取得中は読み込み中の文言を表示し空の案内と再読み込みを表示しない`() {
         rule.setContent { MaterialTheme { OtherVoiceDetailPaneContent(OtherVoiceDetailUiState()) } }
 
-        rule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertExists()
+        rule.onNodeWithText("読み込み中…").assertExists()
         rule.onNodeWithText("システム既定").assertIsSelected()
         rule.onNodeWithText("再読み込み").assertDoesNotExist()
         rule
@@ -118,7 +116,7 @@ class OtherVoiceDetailPaneTest {
             }
         }
 
-        rule.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertDoesNotExist()
+        rule.onNodeWithText("読み込み中…").assertDoesNotExist()
         rule
             .onNodeWithText("日本語の音声が見つかりません。Windowsの設定で日本語の音声を追加してください。")
             .assertExists()

@@ -153,4 +153,28 @@ class OtherVoiceDetailViewModelTest {
             confirmVerified(voiceListRepository)
             job.cancel()
         }
+
+    @Test
+    fun `一覧の取得に失敗しても取得完了の空の一覧になり再読み込みで復帰できる`() =
+        runTest {
+            every { voicePreferencesRepository.voiceId() } returns MutableStateFlow(VOICE_ID_UNSPECIFIED)
+            var calls = 0
+            coEvery { voiceListRepository.availableVoices() } coAnswers {
+                if (calls++ == 0) throw IllegalStateException("取得失敗") else listOf(voice)
+            }
+            val viewModel = createViewModel()
+            val job = viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+
+            val failed = viewModel.uiState.first { !it.isLoading }
+            assertEquals(emptyList(), failed.voices)
+
+            viewModel.onRetryClicked()
+            runCurrent()
+
+            assertEquals(listOf(voice), viewModel.uiState.first { !it.isLoading && it.voices.isNotEmpty() }.voices)
+            coVerify(exactly = 2) { voiceListRepository.availableVoices() }
+            confirmVerified(voiceListRepository)
+            job.cancel()
+        }
 }
