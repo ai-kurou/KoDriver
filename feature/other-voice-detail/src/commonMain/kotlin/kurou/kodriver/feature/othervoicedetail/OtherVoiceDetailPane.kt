@@ -33,6 +33,8 @@ import kurou.kodriver.feature.othervoicedetail.generated.resources.navigate_back
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_description
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_empty
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_loading
+import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_preview
+import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_preview_sample
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_retry
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_saved_missing
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_subtitle
@@ -56,6 +58,7 @@ fun OtherVoiceDetailPane(
         uiState = uiState,
         onVoiceSelected = viewModel::onVoiceSelected,
         onRetryClicked = viewModel::onRetryClicked,
+        onPreviewClicked = viewModel::onPreviewClicked,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -71,10 +74,12 @@ fun OtherVoiceDetailPaneContent(
     modifier: Modifier = Modifier,
     onVoiceSelected: (String) -> Unit = {},
     onRetryClicked: () -> Unit = {},
+    onPreviewClicked: (String) -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
 ) {
     val haptic = LocalHapticFeedback.current
+    val previewSample = stringResource(Res.string.voice_preview_sample)
     val selectedId = if (uiState.savedVoiceMissing) VOICE_ID_UNSPECIFIED else uiState.selectedVoiceId
     DetailPaneScaffold(
         title = stringResource(Res.string.voice_title),
@@ -119,6 +124,15 @@ fun OtherVoiceDetailPaneContent(
                     TextButton(onClick = onRetryClicked) {
                         Text(stringResource(Res.string.voice_retry))
                     }
+                }
+                TextButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onPreviewClicked(previewSample)
+                    },
+                    enabled = !uiState.isLoading,
+                ) {
+                    Text(stringResource(Res.string.voice_preview))
                 }
                 if (uiState.savedVoiceMissing) {
                     DetailPaneBodyText(text = stringResource(Res.string.voice_saved_missing))

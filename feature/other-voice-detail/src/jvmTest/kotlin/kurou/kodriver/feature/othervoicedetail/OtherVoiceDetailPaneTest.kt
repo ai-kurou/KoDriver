@@ -5,6 +5,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
@@ -27,6 +29,7 @@ class OtherVoiceDetailPaneTest {
 
     private val haptic: HapticFeedback = mockk()
     private val onVoiceSelected: (String) -> Unit = mockk()
+    private val onPreviewClicked: (String) -> Unit = mockk()
     private val onRetryClicked: () -> Unit = mockk()
     private val voice = TextToSpeechVoice("voice-a", "音声A", "ja-JP")
 
@@ -97,6 +100,7 @@ class OtherVoiceDetailPaneTest {
         rule.setContent { MaterialTheme { OtherVoiceDetailPaneContent(OtherVoiceDetailUiState()) } }
 
         rule.onNodeWithText("読み込み中…").assertExists()
+        rule.onNodeWithText("試聴").assertIsNotEnabled()
         rule.onNodeWithText("システム既定").assertIsSelected()
         rule.onNodeWithText("再読み込み").assertDoesNotExist()
         rule
@@ -140,5 +144,27 @@ class OtherVoiceDetailPaneTest {
             .assertExists()
         rule.onNodeWithText("システム既定").assertIsSelected()
         rule.onNodeWithText("音声A").assertIsNotSelected()
+    }
+
+    @Test
+    fun `試聴ボタンはサンプル文と振動を通知する`() {
+        every { onPreviewClicked("これは読み上げ音声の試聴です。") } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme {
+                    OtherVoiceDetailPaneContent(
+                        uiState = OtherVoiceDetailUiState(listOf(voice), voice.id, isLoading = false),
+                        onPreviewClicked = onPreviewClicked,
+                    )
+                }
+            }
+        }
+
+        rule.onNodeWithText("試聴").assertIsEnabled().performClick()
+
+        verify(exactly = 1) { onPreviewClicked("これは読み上げ音声の試聴です。") }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onPreviewClicked, haptic)
     }
 }

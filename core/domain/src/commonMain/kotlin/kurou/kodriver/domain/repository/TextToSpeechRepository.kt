@@ -1,6 +1,7 @@
 package kurou.kodriver.domain.repository
 
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
+import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 
 /**
  * OS標準の音声合成（TTS）で任意のテキストを読み上げるRepository。
@@ -32,12 +33,15 @@ interface TextToSpeechRepository {
      *
      * @param queue `true` なら再生中の読み上げの後ろへ追加し、`false` なら再生中の読み上げを
      *   打ち切って即座に読み上げる（`:core:narrator` の `speak(queue)` と同じ意味）。
+     * @param voiceId Windows専用の音声ID。空ならシステム既定、見つからなければ日本語音声へ
+     *   フォールバックする。Androidでは無視する。
      * @param volume 読み上げ音量（0〜100）。アプリの読み上げ音量設定に合わせる。0なら発話しない。
      */
     suspend fun speak(
         text: String,
         queue: Boolean = false,
         volume: Int = 100,
+        voiceId: String = VOICE_ID_UNSPECIFIED,
     )
 
     /** 再生中・キュー待ちの読み上げをすべて停止する。 */

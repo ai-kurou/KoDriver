@@ -22,6 +22,11 @@ OS標準の音声合成（TTS）で任意のテキストを読み上げるReposi
 いずれも`core:domain`の`TextToSpeechRepository`を実装し、`SpeakTextUseCase` / `StopSpeakingUseCase` /
 `CheckTextToSpeechAvailableUseCase`から利用されます。
 
+Windowsの読み上げは保存済みの`voiceId`を`SelectVoice`へ渡します。未指定なら従来どおり日本語（`ja-JP`）音声を
+選び、指定音声が見つからない場合も`SelectVoiceByHints`で日本語音声へフォールバックします。
+Androidは`voiceId`を無視し、既定の日本語音声を使います。
+スクリプト生成は純粋関数`buildSpeakScript`として切り出し、音声選択・フォールバック・エスケープをテストします。
+
 Windows専用の`WindowsVoiceListRepository`は、有効なSAPI音声のID（`VoiceInfo.Name`）、表示名
 （`VoiceInfo.Description`）、言語を取得します。取得はIOスレッド上で排他し、`ja-JP`の音声を含む一覧だけを保持して以降は
 再取得しません。非Windows・失敗・15秒のタイムアウト・音声未導入・他言語のみで`ja-JP`の音声を含まない場合は保持せず、

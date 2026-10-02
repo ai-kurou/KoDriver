@@ -8,4 +8,6 @@
     <string name="voice_loading">読み込み中…</string>
     <string name="voice_retry">再読み込み</string>
     <string name="voice_saved_missing">保存済みの音声が見つからないため、システム既定で読み上げます。</string>
+    <string name="voice_preview">試聴</string>
+    <string name="voice_preview_sample">これは読み上げ音声の試聴です。</string>
 </resources>

@@ -8,11 +8,15 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -25,13 +29,16 @@ import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.repository.VoiceListRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.usecase.GetAvailableVoicesUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveVoiceUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,6 +46,8 @@ class OtherVoiceDetailViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val voiceListRepository: VoiceListRepository = mockk()
     private val voicePreferencesRepository: VoicePreferencesRepository = mockk()
+    private val speakText: SpeakTextUseCase = mockk()
+    private val observeSoundVolume: ObserveSoundVolumeUseCase = mockk()
     private val voice = TextToSpeechVoice("voice-a", "音声A", "ja-JP")
 
     @BeforeTest
@@ -56,6 +65,8 @@ class OtherVoiceDetailViewModelTest {
             GetAvailableVoicesUseCase(voiceListRepository),
             ObserveVoiceUseCase(voicePreferencesRepository),
             SaveVoiceUseCase(voicePreferencesRepository),
+            speakText,
+            observeSoundVolume,
         )
 
     @Test
@@ -79,6 +90,9 @@ class OtherVoiceDetailViewModelTest {
                 viewModel.uiState.first { !it.isLoading },
             )
             job.cancel()
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
+            confirmVerified(voicePreferencesRepository, voiceListRepository)
         }
 
     @Test
@@ -93,7 +107,8 @@ class OtherVoiceDetailViewModelTest {
             assertTrue(state.savedVoiceMissing)
             coVerify(exactly = 0) { voicePreferencesRepository.saveVoiceId(VOICE_ID_UNSPECIFIED) }
             verify(exactly = 1) { voicePreferencesRepository.voiceId() }
-            confirmVerified(voicePreferencesRepository)
+            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
+            confirmVerified(voicePreferencesRepository, voiceListRepository)
         }
 
     @Test
@@ -104,6 +119,9 @@ class OtherVoiceDetailViewModelTest {
             val state = createViewModel().uiState.first { !it.isLoading }
 
             assertEquals(OtherVoiceDetailUiState(isLoading = false), state)
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
+            confirmVerified(voicePreferencesRepository, voiceListRepository)
         }
 
     @Test
@@ -123,8 +141,9 @@ class OtherVoiceDetailViewModelTest {
             assertEquals(voice.id, viewModel.uiState.first().selectedVoiceId)
             coVerify(exactly = 1) { voicePreferencesRepository.saveVoiceId(voice.id) }
             verify(exactly = 1) { voicePreferencesRepository.voiceId() }
-            confirmVerified(voicePreferencesRepository)
+            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
             job.cancel()
+            confirmVerified(voicePreferencesRepository, voiceListRepository)
         }
 
     @Test
@@ -150,8 +169,9 @@ class OtherVoiceDetailViewModelTest {
             assertEquals(listOf(voice), viewModel.uiState.first { !it.isLoading }.voices)
             assertFalse(viewModel.uiState.first().savedVoiceMissing)
             coVerify(exactly = 2) { voiceListRepository.availableVoices() }
-            confirmVerified(voiceListRepository)
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
             job.cancel()
+            confirmVerified(voiceListRepository, voicePreferencesRepository)
         }
 
     @Test
@@ -174,7 +194,84 @@ class OtherVoiceDetailViewModelTest {
 
             assertEquals(listOf(voice), viewModel.uiState.first { !it.isLoading && it.voices.isNotEmpty() }.voices)
             coVerify(exactly = 2) { voiceListRepository.availableVoices() }
-            confirmVerified(voiceListRepository)
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
             job.cancel()
+            confirmVerified(voiceListRepository, voicePreferencesRepository)
+        }
+
+    @Test
+    fun `音量が正なら試聴する`() =
+        runTest {
+            every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            every { observeSoundVolume() } returns flowOf(42)
+            coEvery { speakText("試聴", volume = 42) } returns Unit
+            val viewModel = createViewModel()
+
+            viewModel.onPreviewClicked("試聴")
+            runCurrent()
+
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            verify(exactly = 1) { observeSoundVolume() }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42) }
+            confirmVerified(voicePreferencesRepository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `試聴の失敗は画面をクラッシュさせない`() =
+        runTest {
+            every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            every { observeSoundVolume() } returns flowOf(42)
+            coEvery { speakText("試聴", volume = 42) } throws IllegalStateException("試聴失敗")
+            val viewModel = createViewModel()
+
+            viewModel.onPreviewClicked("試聴")
+            runCurrent()
+
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            verify(exactly = 1) { observeSoundVolume() }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42) }
+            confirmVerified(voicePreferencesRepository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `試聴のキャンセルは通常の失敗として扱わない`() =
+        runTest {
+            every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            every { observeSoundVolume() } returns flowOf(42)
+            val cancellation = CancellationException("キャンセル")
+            var completionCause: Throwable? = null
+            coEvery { speakText("試聴", volume = 42) } coAnswers {
+                currentCoroutineContext()[Job]!!.invokeOnCompletion { completionCause = it }
+                throw cancellation
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onPreviewClicked("試聴")
+            runCurrent()
+
+            assertSame(cancellation, completionCause)
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            verify(exactly = 1) { observeSoundVolume() }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42) }
+            confirmVerified(voicePreferencesRepository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `音量が0以下なら試聴しない`() =
+        runTest {
+            every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            every { observeSoundVolume() } returns flowOf(0)
+            val viewModel = createViewModel()
+
+            viewModel.onPreviewClicked("試聴")
+            runCurrent()
+            every { observeSoundVolume() } returns flowOf(-1)
+            viewModel.onPreviewClicked("試聴")
+            runCurrent()
+
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            verify(exactly = 2) { observeSoundVolume() }
+            coVerify(exactly = 0) { speakText("試聴", volume = 0) }
+            confirmVerified(voicePreferencesRepository, observeSoundVolume, speakText)
         }
 }

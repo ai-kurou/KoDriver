@@ -115,6 +115,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
         text: String,
         queue: Boolean,
         volume: Int,
+        voiceId: String,
     ) {
         if (!IS_WINDOWS) return
         val token = synchronized(lock) { ++requestToken }
@@ -127,8 +128,9 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
             synchronized(lock) {
                 // 待機中に別スレッドの新しい呼び出しへ追い越されていたら、今さら発話を開始しない。
                 if (token != requestToken) return
+                val script = buildSpeakScript(text, volume, voiceId)
                 val newProcess =
-                    ProcessBuilder(POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", buildScript(text, volume))
+                    ProcessBuilder(POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", script)
                         .redirectErrorStream(true)
                         .start()
                 process = newProcess
@@ -159,22 +161,6 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     private fun destroyProcess() {
         process?.destroy()
         process = null
-    }
-
-    /** PowerShellの単一引用符文字列へ埋め込むため、テキスト中の`'`を`''`へエスケープする。 */
-    private fun buildScript(
-        text: String,
-        volume: Int,
-    ): String {
-        val escaped = text.replace("'", "''")
-        return "Add-Type -AssemblyName System.Speech; " +
-            "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
-            "\$s.Volume = $volume; " +
-            "\$s.SelectVoiceByHints(" +
-            "[System.Speech.Synthesis.VoiceGender]::NotSet, " +
-            "[System.Speech.Synthesis.VoiceAge]::NotSet, 0, " +
-            "[System.Globalization.CultureInfo]::GetCultureInfo('$TTS_CULTURE_NAME')); " +
-            "\$s.Speak('$escaped')"
     }
 
     private companion object {

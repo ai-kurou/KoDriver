@@ -69,10 +69,12 @@ internal class AndroidTextToSpeechRepository(
         return unavailableReason
     }
 
+    /** Windows専用の [voiceId] は無視し、Androidの既定の日本語音声を使う。 */
     override suspend fun speak(
         text: String,
         queue: Boolean,
         volume: Int,
+        voiceId: String,
     ) {
         if (text.isBlank()) return
         val engine = ensureInitialized() ?: return
