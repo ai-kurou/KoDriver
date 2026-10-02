@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
@@ -16,13 +17,17 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.usecase.GetAvailableVoicesUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveVoiceUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal class OtherVoiceDetailViewModel(
     private val getAvailableVoices: GetAvailableVoicesUseCase,
     observeVoice: ObserveVoiceUseCase,
     private val saveVoice: SaveVoiceUseCase,
+    private val speakText: SpeakTextUseCase,
+    private val observeSoundVolume: ObserveSoundVolumeUseCase,
 ) : ViewModel() {
     private val refreshTrigger = MutableStateFlow(0)
 
@@ -56,6 +61,20 @@ internal class OtherVoiceDetailViewModel(
 
     fun onVoiceSelected(id: String) {
         viewModelScope.launch { saveVoice(id) }
+    }
+
+    fun onPreviewClicked(text: String) {
+        viewModelScope.launch {
+            try {
+                val volume = observeSoundVolume().first()
+                if (volume <= 0) return@launch
+                speakText(text, volume = volume)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // 試聴に失敗しても画面の操作を続けられるようにする。
+            }
+        }
     }
 
     fun onRetryClicked() {

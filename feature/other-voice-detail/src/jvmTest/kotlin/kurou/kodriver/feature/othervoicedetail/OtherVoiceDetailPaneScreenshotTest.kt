@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
@@ -41,6 +44,11 @@ class OtherVoiceDetailPaneScreenshotTest {
                         }
                     }
                 }
+            }
+            if (uiState.isLoading) {
+                onNodeWithText("試聴").assertIsNotEnabled()
+            } else {
+                onNodeWithText("試聴").assertIsEnabled()
             }
             onRoot().captureRoboImage()
         }

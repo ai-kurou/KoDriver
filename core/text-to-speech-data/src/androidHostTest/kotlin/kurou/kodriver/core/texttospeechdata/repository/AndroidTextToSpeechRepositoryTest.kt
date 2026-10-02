@@ -85,7 +85,7 @@ class AndroidTextToSpeechRepositoryTest {
 
             val job =
                 launch {
-                    repository.speak("ベストラップ", queue = false)
+                    repository.speak("ベストラップ", queue = false, voiceId = "Windows音声")
                     completed = true
                 }
             runCurrent()

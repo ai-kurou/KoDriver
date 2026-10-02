@@ -51,9 +51,10 @@ internal class WindowsTextToSpeechRepository(
         text: String,
         queue: Boolean,
         volume: Int,
+        voiceId: String,
     ) {
         if (text.isBlank()) return
-        runInterruptible(Dispatchers.IO) { synthesizer.speak(text, queue, volume.coerceIn(0, 100)) }
+        runInterruptible(Dispatchers.IO) { synthesizer.speak(text, queue, volume.coerceIn(0, 100), voiceId) }
     }
 
     override suspend fun stop() {
