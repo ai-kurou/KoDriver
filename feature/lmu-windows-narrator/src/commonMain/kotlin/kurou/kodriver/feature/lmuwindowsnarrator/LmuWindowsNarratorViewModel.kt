@@ -20,7 +20,6 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOL
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOUT_TYPE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
@@ -55,7 +54,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
@@ -77,7 +75,6 @@ internal data class VehicleApproachUseCases(
     val observeSkipFirstLap: ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase,
     val observeEnabledStates: ObserveLmuWindowsVehicleApproachEnabledStatesUseCase,
     val observeSustainedApproachDuration: ObserveLmuWindowsVehicleApproachSustainedDurationUseCase,
-    val observeSustainedReadoutType: ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase,
 )
 
 internal data class VehicleDamageUseCases(
@@ -314,15 +311,6 @@ internal class LmuWindowsNarratorViewModel(
                 viewModelScope,
                 SharingStarted.Eagerly,
                 LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
-            )
-
-    private val sustainedReadoutType =
-        vehicleApproachUseCases
-            .observeSustainedReadoutType()
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOUT_TYPE_DEFAULT,
             )
 
     @Suppress("UnusedPrivateProperty")
@@ -695,7 +683,6 @@ internal class LmuWindowsNarratorViewModel(
                 currentLap = currentLap.value,
                 skipFirstLap = skipFirstLap.value,
                 vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds.value,
-                vehicleApproachSustainedReadoutType = sustainedReadoutType.value,
                 tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
                 tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
                 tyreWearThresholdPercentage = tyreWearThresholdPercentage.value,

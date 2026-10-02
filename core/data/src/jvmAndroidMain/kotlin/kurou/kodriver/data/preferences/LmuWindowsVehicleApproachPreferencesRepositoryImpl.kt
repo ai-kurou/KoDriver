@@ -3,7 +3,6 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
 internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
@@ -27,11 +26,18 @@ internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
         dataStore.saveProperty(text) { prefs, value -> prefs.copy(startRightReadoutText = value) }
     }
 
-    override fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> =
-        dataStore.observeProperty { VehicleApproachSustainedReadoutType.fromId(it.sustainedReadoutType) }
+    override fun observeSustainedLeftReadoutText(): Flow<String> =
+        dataStore.observeProperty { it.sustainedLeftReadoutText }
 
-    override suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) {
-        dataStore.saveProperty(type.id) { prefs, value -> prefs.copy(sustainedReadoutType = value) }
+    override suspend fun saveSustainedLeftReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(sustainedLeftReadoutText = value) }
+    }
+
+    override fun observeSustainedRightReadoutText(): Flow<String> =
+        dataStore.observeProperty { it.sustainedRightReadoutText }
+
+    override suspend fun saveSustainedRightReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(sustainedRightReadoutText = value) }
     }
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =

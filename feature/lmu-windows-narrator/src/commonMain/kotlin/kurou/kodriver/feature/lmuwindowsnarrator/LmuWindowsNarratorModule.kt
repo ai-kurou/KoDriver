@@ -34,7 +34,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLa
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
@@ -106,7 +107,7 @@ val lmuWindowsNarratorModule: Module =
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { NarratorUseCases(get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
-        factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get()) }
+        factory { VehicleApproachUseCases(get(), get(), get(), get(), get()) }
         factory { VehicleDamageUseCases(get(), get()) }
         factory { TyreDetachedUseCases(get()) }
         factory { SimulatorUseCases(get()) }
@@ -141,7 +142,6 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(get()) }
-        factory { ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase(get()) }
         factory { ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(get()) }
         factory { ObserveLmuWindowsVehicleDamageUseCase(get()) }
         factory { ObserveLmuWindowsTyreDetachedUseCase(get()) }
@@ -174,7 +174,13 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRedFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) {
+            ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(get())
+        }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) {
+            ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(get())
+        }
         factory {
             LmuWindowsReadoutTextSpeaker(
                 observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
@@ -182,7 +188,9 @@ val lmuWindowsNarratorModule: Module =
                 observeFullCourseYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeRedFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeStartLeftReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeSustainedLeftReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeStartRightReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeSustainedRightReadoutText = get(named(Simulator.LmuWindows.id)),
                 checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )
@@ -208,7 +216,9 @@ val lmuWindowsNarratorModule: Module =
                     customSpeakEvents =
                         setOf(
                             SpeechEvent.CarLeft,
+                            SpeechEvent.CarLeftSustained,
                             SpeechEvent.CarRight,
+                            SpeechEvent.CarRightSustained,
                             SpeechEvent.BlueFlag,
                             SpeechEvent.YellowFlag,
                             SpeechEvent.FullCourseYellow,
@@ -221,10 +231,6 @@ val lmuWindowsNarratorModule: Module =
 
 private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
     buildMap {
-        put(SpeechEvent.KeepLeft, "files/keep_left.wav")
-        put(SpeechEvent.KeepRight, "files/keep_right.wav")
-        put(SpeechEvent.LeftSustained, "files/left_sustained.wav")
-        put(SpeechEvent.RightSustained, "files/right_sustained.wav")
         put(SpeechEvent.Overheating, "files/gp2_gp2.wav")
         put(SpeechEvent.OverheatingStandard, "files/overheat.wav")
         put(SpeechEvent.PartDetached, "files/part_detached.wav")

@@ -9,7 +9,6 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -63,28 +62,32 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
         }
 
     @Test
-    fun `SustainedReadoutTypeの設定を取得し保存する`() =
+    fun `SustainedLeftReadoutTextの設定を取得し保存する`() =
         runTest {
-            every { repository.observeSustainedReadoutType() } returns
-                flowOf(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
-            coEvery {
-                repository.saveSustainedReadoutType(
-                    VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
-                )
-            } returns
-                Unit
+            every { repository.observeSustainedLeftReadoutText() } returns flowOf("左注意")
+            coEvery { repository.saveSustainedLeftReadoutText("左注意") } returns Unit
             val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
-            assertEquals(
-                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
-                useCases.observeSustainedReadoutType().first(),
-            )
-            useCases.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
+            assertEquals("左注意", useCases.observeSustainedLeftReadoutText().first())
+            useCases.saveSustainedLeftReadoutText("左注意")
 
-            verify(exactly = 1) { repository.observeSustainedReadoutType() }
-            coVerify(
-                exactly = 1,
-            ) { repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED) }
+            verify(exactly = 1) { repository.observeSustainedLeftReadoutText() }
+            coVerify(exactly = 1) { repository.saveSustainedLeftReadoutText("左注意") }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `SustainedRightReadoutTextの設定を取得し保存する`() =
+        runTest {
+            every { repository.observeSustainedRightReadoutText() } returns flowOf("右注意")
+            coEvery { repository.saveSustainedRightReadoutText("右注意") } returns Unit
+            val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
+
+            assertEquals("右注意", useCases.observeSustainedRightReadoutText().first())
+            useCases.saveSustainedRightReadoutText("右注意")
+
+            verify(exactly = 1) { repository.observeSustainedRightReadoutText() }
+            coVerify(exactly = 1) { repository.saveSustainedRightReadoutText("右注意") }
             confirmVerified(repository)
         }
 }

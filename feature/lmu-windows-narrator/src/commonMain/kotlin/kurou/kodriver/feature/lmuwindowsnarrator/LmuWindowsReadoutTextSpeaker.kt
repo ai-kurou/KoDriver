@@ -9,10 +9,12 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
- * フラッグ・車両接近開始時の自由文字列をOS標準TTSで読み上げる、
+ * フラッグ・車両接近開始時・継続時の自由文字列をOS標準TTSで読み上げる、
  * [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine] 用のフック。
  * 空欄またはTTSが利用できない場合は本文を読み上げない。
  * イベントごとの文言取得とTTSの依存を明示する。
@@ -24,6 +26,8 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [SpeechEvent.RedFlag] : レッド
  * - [SpeechEvent.CarLeft] : 左車両接近開始
  * - [SpeechEvent.CarRight] : 右車両接近開始
+ * - [SpeechEvent.CarLeftSustained] : 左車両接近継続
+ * - [SpeechEvent.CarRightSustained] : 右車両接近継続
  */
 @Suppress("LongParameterList")
 internal class LmuWindowsReadoutTextSpeaker(
@@ -33,6 +37,8 @@ internal class LmuWindowsReadoutTextSpeaker(
     private val observeRedFlagReadoutText: ObserveLmuWindowsRedFlagReadoutTextUseCase,
     private val observeStartLeftReadoutText: ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase,
     private val observeStartRightReadoutText: ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase,
+    private val observeSustainedLeftReadoutText: ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase,
+    private val observeSustainedRightReadoutText: ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -61,7 +67,9 @@ internal class LmuWindowsReadoutTextSpeaker(
             SpeechEvent.FullCourseYellow -> observeFullCourseYellowFlagReadoutText().first()
             SpeechEvent.RedFlag -> observeRedFlagReadoutText().first()
             SpeechEvent.CarLeft -> observeStartLeftReadoutText().first()
+            SpeechEvent.CarLeftSustained -> observeSustainedLeftReadoutText().first()
             SpeechEvent.CarRight -> observeStartRightReadoutText().first()
+            SpeechEvent.CarRightSustained -> observeSustainedRightReadoutText().first()
             else -> null
         }
 }

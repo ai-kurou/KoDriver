@@ -5,15 +5,13 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
 
 /**
- * 開始時の既定文言と継続時のWAV文言が表示されることを確認する。
+ * 開始時・継続時の既定文言が表示されることを確認する。
  * [SpeechEvent.narratedText] を実際の表示テキストと突き合わせる（#1527）。
- * 継続時のチップは左右2種の文言を連結して表示するため、部分一致で検証する。
  */
 class LmuWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
     @get:Rule
@@ -33,14 +31,10 @@ class LmuWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
             rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText)
         }
         listOf(
-            SpeechEvent.KeepLeft.narratedText,
-            SpeechEvent.KeepRight.narratedText,
-            SpeechEvent.LeftSustained.narratedText,
-            SpeechEvent.RightSustained.narratedText,
+            SpeechEvent.CarRightSustained.narratedText,
+            SpeechEvent.CarLeftSustained.narratedText,
         ).forEach { narratedText ->
-            rule
-                .onAllNodesWithText(narratedText, substring = true)[0]
-                .assertTextContains(narratedText, substring = true)
+            rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText)
         }
     }
 }

@@ -23,7 +23,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRi
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.Test
 
-class LmuWindowsReadoutTextSpeakerTest {
+class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
     private val observeSectorYellow: ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase = mockk()
     private val observeBlue: ObserveLmuWindowsBlueFlagReadoutTextUseCase = mockk()
     private val observeFullCourseYellow: ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase = mockk()
@@ -64,143 +64,157 @@ class LmuWindowsReadoutTextSpeakerTest {
     }
 
     @Test
-    fun `対象外のイベントは何も読み上げずカスタム文言を参照しない`() =
+    fun `Leftの文言はTTSで読み上げる`() =
         runTest {
-            speaker(SpeechEvent.Overheating, VOLUME)
+            every { observeLeft() } returns flowOf("左注意")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("左注意", volume = VOLUME) } just Runs
 
+            speaker(SpeechEvent.CarLeft, VOLUME)
+
+            verify(exactly = 1) { observeLeft() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("左注意", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `セクターイエローのカスタム文言が空のときは本文を読み上げない`() =
+    fun `Leftの文言は空白なら読み上げない`() =
         runTest {
-            every { observeSectorYellow() } returns flowOf("")
+            every { observeLeft() } returns flowOf("  ")
 
-            speaker(SpeechEvent.YellowFlag, VOLUME)
-            verify(exactly = 1) { observeSectorYellow() }
+            speaker(SpeechEvent.CarLeft, VOLUME)
+
+            verify(exactly = 1) { observeLeft() }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `セクターイエローのカスタム文言は設定されているがTTSが利用不可のときは本文を読み上げない`() =
+    fun `Leftの文言はTTS不可なら読み上げない`() =
         runTest {
-            every { observeSectorYellow() } returns flowOf("イエロー、前方注意")
+            every { observeLeft() } returns flowOf("左注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.YellowFlag, VOLUME)
-            verify(exactly = 1) { observeSectorYellow() }
+            speaker(SpeechEvent.CarLeft, VOLUME)
+
+            verify(exactly = 1) { observeLeft() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `セクターイエローのカスタム文言が設定されておりTTSが利用可能なときはOS標準TTSで読み上げる`() =
+    fun `Rightの文言はTTSで読み上げる`() =
         runTest {
-            every { observeSectorYellow() } returns flowOf("イエロー、前方注意")
+            every { observeRight() } returns flowOf("右注意")
             coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("イエロー、前方注意", volume = VOLUME) } just Runs
+            coEvery { speakText("右注意", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.YellowFlag, VOLUME)
-            verify(exactly = 1) { observeSectorYellow() }
+            speaker(SpeechEvent.CarRight, VOLUME)
+
+            verify(exactly = 1) { observeRight() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("イエロー、前方注意", volume = VOLUME) }
+            coVerify(exactly = 1) { speakText("右注意", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `ブルーフラッグのカスタム文言が設定されておりTTSが利用可能なときはOS標準TTSで読み上げる`() =
+    fun `Rightの文言は空白なら読み上げない`() =
         runTest {
-            every { observeBlue() } returns flowOf("ブルー、譲って")
-            coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("ブルー、譲って", volume = VOLUME) } just Runs
+            every { observeRight() } returns flowOf("  ")
 
-            speaker(SpeechEvent.BlueFlag, VOLUME)
-            verify(exactly = 1) { observeBlue() }
-            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("ブルー、譲って", volume = VOLUME) }
+            speaker(SpeechEvent.CarRight, VOLUME)
+
+            verify(exactly = 1) { observeRight() }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `ブルーフラッグのカスタム文言が空のときは読み上げない`() =
+    fun `Rightの文言はTTS不可なら読み上げない`() =
         runTest {
-            every { observeBlue() } returns flowOf(" ")
-
-            speaker(SpeechEvent.BlueFlag, VOLUME)
-            verify(exactly = 1) { observeBlue() }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `フルコースイエローのカスタム文言が設定されておりTTSが利用可能なときはOS標準TTSで読み上げる`() =
-        runTest {
-            every { observeFullCourseYellow() } returns flowOf("フルコースイエロー、減速")
-            coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("フルコースイエロー、減速", volume = VOLUME) } just Runs
-
-            speaker(SpeechEvent.FullCourseYellow, VOLUME)
-            verify(exactly = 1) { observeFullCourseYellow() }
-            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("フルコースイエロー、減速", volume = VOLUME) }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `フルコースイエローのカスタム文言が空のときは読み上げない`() =
-        runTest {
-            every { observeFullCourseYellow() } returns flowOf("")
-
-            speaker(SpeechEvent.FullCourseYellow, VOLUME)
-            verify(exactly = 1) { observeFullCourseYellow() }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `レッドフラッグの自由文字列を読み上げる`() =
-        runTest {
-            every { observeRed() } returns flowOf("赤旗、停止")
-            coEvery { checkTextToSpeechAvailable() } returns true
-            coEvery { speakText("赤旗、停止", volume = VOLUME) } just Runs
-
-            speaker(SpeechEvent.RedFlag, VOLUME)
-
-            verify(exactly = 1) { observeRed() }
-            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
-            coVerify(exactly = 1) { speakText("赤旗、停止", volume = VOLUME) }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `レッドフラッグのカスタム文言が空のときは読み上げない`() =
-        runTest {
-            every { observeRed() } returns flowOf("")
-
-            speaker(SpeechEvent.RedFlag, VOLUME)
-            verify(exactly = 1) { observeRed() }
-            confirmAllMocksVerified()
-        }
-
-    @Test
-    fun `レッドフラッグのカスタム文言は設定されているがTTSが利用不可のときは読み上げない`() =
-        runTest {
-            every { observeRed() } returns flowOf("赤旗、停止")
+            every { observeRight() } returns flowOf("右注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.RedFlag, VOLUME)
-            verify(exactly = 1) { observeRed() }
+            speaker(SpeechEvent.CarRight, VOLUME)
+
+            verify(exactly = 1) { observeRight() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
         }
 
     @Test
-    fun `フルコースイエローはTTSが利用不可なら本文を読み上げない`() =
+    fun `継続Leftの文言はTTSで読み上げる`() =
         runTest {
-            every { observeFullCourseYellow() } returns flowOf("フルコースイエロー")
+            every { observeSustainedLeft() } returns flowOf("左注意")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("左注意", volume = VOLUME) } just Runs
+
+            speaker(SpeechEvent.CarLeftSustained, VOLUME)
+
+            verify(exactly = 1) { observeSustainedLeft() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("左注意", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `継続Leftの文言は空白なら読み上げない`() =
+        runTest {
+            every { observeSustainedLeft() } returns flowOf("  ")
+
+            speaker(SpeechEvent.CarLeftSustained, VOLUME)
+
+            verify(exactly = 1) { observeSustainedLeft() }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `継続Leftの文言はTTS不可なら読み上げない`() =
+        runTest {
+            every { observeSustainedLeft() } returns flowOf("左注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.FullCourseYellow, VOLUME)
+            speaker(SpeechEvent.CarLeftSustained, VOLUME)
 
-            verify(exactly = 1) { observeFullCourseYellow() }
+            verify(exactly = 1) { observeSustainedLeft() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `継続Rightの文言はTTSで読み上げる`() =
+        runTest {
+            every { observeSustainedRight() } returns flowOf("右注意")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("右注意", volume = VOLUME) } just Runs
+
+            speaker(SpeechEvent.CarRightSustained, VOLUME)
+
+            verify(exactly = 1) { observeSustainedRight() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("右注意", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `継続Rightの文言は空白なら読み上げない`() =
+        runTest {
+            every { observeSustainedRight() } returns flowOf("  ")
+
+            speaker(SpeechEvent.CarRightSustained, VOLUME)
+
+            verify(exactly = 1) { observeSustainedRight() }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `継続Rightの文言はTTS不可なら読み上げない`() =
+        runTest {
+            every { observeSustainedRight() } returns flowOf("右注意")
+            coEvery { checkTextToSpeechAvailable() } returns false
+
+            speaker(SpeechEvent.CarRightSustained, VOLUME)
+
+            verify(exactly = 1) { observeSustainedRight() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
         }

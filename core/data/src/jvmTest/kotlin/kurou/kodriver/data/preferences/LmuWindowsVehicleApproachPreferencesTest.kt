@@ -17,8 +17,9 @@ class LmuWindowsVehicleApproachPreferencesTest {
     }
 
     @Test
-    fun `デフォルト値は sustainedReadoutType が keep_left_right`() {
-        assertEquals("keep_left_right", LmuWindowsVehicleApproachPreferences().sustainedReadoutType)
+    fun `左右の継続文言は既定値を返す`() {
+        assertEquals("キープライト", LmuWindowsVehicleApproachPreferences().sustainedLeftReadoutText)
+        assertEquals("キープレフト", LmuWindowsVehicleApproachPreferences().sustainedRightReadoutText)
     }
 
     @Test

@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -72,47 +71,6 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `sustainedReadoutType の初期値は KEEP_LEFT_RIGHT`() =
-        runTest {
-            assertEquals(
-                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
-                repository.observeSustainedReadoutType().first(),
-            )
-        }
-
-    @Test
-    fun `saveSustainedReadoutType で保存した値を observeSustainedReadoutType で取得できる`() =
-        runTest {
-            repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
-            assertEquals(
-                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
-                repository.observeSustainedReadoutType().first(),
-            )
-        }
-
-    @Test
-    fun `saveSustainedReadoutType を複数回呼ぶと最後の値で上書きされる`() =
-        runTest {
-            repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
-            repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
-            assertEquals(
-                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
-                repository.observeSustainedReadoutType().first(),
-            )
-        }
-
-    @Test
-    fun `sustainedReadoutType が未知の ID のとき KEEP_LEFT_RIGHT を返す`() =
-        runTest {
-            dataStore.updateData { it.copy(sustainedReadoutType = "unknown") }
-
-            assertEquals(
-                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
-                repository.observeSustainedReadoutType().first(),
-            )
-        }
-
-    @Test
     fun `enabledStates の初期値は空Map`() =
         runTest {
             assertEquals(emptyMap(), repository.observeEnabledStates().first())
@@ -154,5 +112,25 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
                 ),
                 repository.observeEnabledStates().first(),
             )
+        }
+
+    @Test
+    fun `継続Left文言の初期値と保存値を取得できる`() =
+        runTest {
+            assertEquals("キープライト", repository.observeSustainedLeftReadoutText().first())
+            repository.saveSustainedLeftReadoutText("注意")
+            assertEquals("注意", repository.observeSustainedLeftReadoutText().first())
+            repository.saveSustainedLeftReadoutText("")
+            assertEquals("", repository.observeSustainedLeftReadoutText().first())
+        }
+
+    @Test
+    fun `継続Right文言の初期値と保存値を取得できる`() =
+        runTest {
+            assertEquals("キープレフト", repository.observeSustainedRightReadoutText().first())
+            repository.saveSustainedRightReadoutText("注意")
+            assertEquals("注意", repository.observeSustainedRightReadoutText().first())
+            repository.saveSustainedRightReadoutText("")
+            assertEquals("", repository.observeSustainedRightReadoutText().first())
         }
 }

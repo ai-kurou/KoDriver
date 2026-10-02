@@ -8,6 +8,8 @@ import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -23,7 +25,6 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -92,7 +93,10 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
         MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT)
     private val startRightReadoutTextFlow =
         MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT)
-    private val sustainedReadoutTypeFlow = MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+    private val sustainedLeftReadoutTextFlow =
+        MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT)
+    private val sustainedRightReadoutTextFlow =
+        MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
@@ -113,10 +117,16 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
         startRightReadoutTextFlow.update { text }
     }
 
-    override fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> = sustainedReadoutTypeFlow
+    override fun observeSustainedLeftReadoutText(): Flow<String> = sustainedLeftReadoutTextFlow
 
-    override suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) {
-        sustainedReadoutTypeFlow.update { type }
+    override suspend fun saveSustainedLeftReadoutText(text: String) {
+        sustainedLeftReadoutTextFlow.update { text }
+    }
+
+    override fun observeSustainedRightReadoutText(): Flow<String> = sustainedRightReadoutTextFlow
+
+    override suspend fun saveSustainedRightReadoutText(text: String) {
+        sustainedRightReadoutTextFlow.update { text }
     }
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
