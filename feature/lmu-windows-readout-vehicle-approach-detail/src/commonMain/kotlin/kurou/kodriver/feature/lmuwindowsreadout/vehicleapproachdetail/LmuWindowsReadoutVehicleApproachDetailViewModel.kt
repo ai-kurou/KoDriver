@@ -9,18 +9,17 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
@@ -42,7 +41,8 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private val vehicleApproachPreferences: LmuWindowsVehicleApproachPreferencesUseCases,
     private val observeEnabledStates: ObserveLmuWindowsVehicleApproachEnabledStatesUseCase,
     private val saveEnabledState: SaveLmuWindowsVehicleApproachEnabledStateUseCase,
-    private val playSpeechEvent: PlaySpeechEventUseCase,
+    private val observeSustainedLeftText: ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase,
+    private val observeSustainedRightText: ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase,
     private val startReadout: StartReadoutUseCases,
 ) : ViewModel() {
     private val textToSpeechAvailable =
@@ -62,8 +62,8 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
                 vehicleApproachPreferences.observeStartLeftReadoutText(),
                 vehicleApproachPreferences.observeStartRightReadoutText(),
             ) { left, right -> left to right },
-            vehicleApproachPreferences.observeSustainedReadoutType(),
-        ) { thresholdValues, skipFirstLap, enabledStates, startTexts, sustainedReadoutType ->
+            combine(observeSustainedLeftText(), observeSustainedRightText()) { left, right -> left to right },
+        ) { thresholdValues, skipFirstLap, enabledStates, startTexts, sustainedTexts ->
             val (lateral, longitudinal, sustainedDuration) = thresholdValues
             LmuWindowsReadoutVehicleApproachDetailUiState(
                 lateralThresholdMeters = lateral,
@@ -74,7 +74,8 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
                 startLeftText = startTexts.first,
                 startRightText = startTexts.second,
                 sustainedReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained),
-                sustainedReadoutType = sustainedReadoutType,
+                sustainedLeftText = sustainedTexts.first,
+                sustainedRightText = sustainedTexts.second,
             )
         }.combine(textToSpeechAvailable) { state, available ->
             state.copy(isTextToSpeechAvailable = available)
@@ -134,11 +135,6 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         }
     }
 
-    fun onSustainedReadoutTypeChanged(type: VehicleApproachSustainedReadoutType) {
-        viewModelScope.launch { vehicleApproachPreferences.saveSustainedReadoutType(type) }
-        playSustainedReadoutPreview(type)
-    }
-
     fun onStartLeftTextChanged(text: String) {
         viewModelScope.launch { startReadout.saveLeftText(text) }
     }
@@ -164,20 +160,5 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
             startReadout.playStartSoundForKey(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
             startReadout.speakText(text, volume = volume)
         }
-    }
-
-    private fun playSustainedReadoutPreview(type: VehicleApproachSustainedReadoutType) {
-        val events =
-            when (type) {
-                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> {
-                    SpeechEvent.KeepLeft to SpeechEvent.KeepRight
-                }
-
-                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> {
-                    SpeechEvent.LeftSustained to SpeechEvent.RightSustained
-                }
-            }
-        playSpeechEvent(events.first)
-        playSpeechEvent(events.second, queue = true)
     }
 }

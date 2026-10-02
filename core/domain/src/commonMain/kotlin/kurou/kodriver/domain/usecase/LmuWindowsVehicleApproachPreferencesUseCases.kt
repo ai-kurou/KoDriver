@@ -1,7 +1,6 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
 class LmuWindowsVehicleApproachPreferencesUseCases(
@@ -21,9 +20,13 @@ class LmuWindowsVehicleApproachPreferencesUseCases(
     suspend fun saveStartRightReadoutText(text: String) =
         SaveLmuWindowsVehicleApproachStartRightReadoutTextUseCase(repository)(text)
 
-    fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> =
-        repository.observeSustainedReadoutType()
+    fun observeSustainedLeftReadoutText(): Flow<String> = repository.observeSustainedLeftReadoutText()
 
-    suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) =
-        repository.saveSustainedReadoutType(type)
+    suspend fun saveSustainedLeftReadoutText(text: String) =
+        SaveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(repository)(text)
+
+    fun observeSustainedRightReadoutText(): Flow<String> = repository.observeSustainedRightReadoutText()
+
+    suspend fun saveSustainedRightReadoutText(text: String) =
+        SaveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(repository)(text)
 }

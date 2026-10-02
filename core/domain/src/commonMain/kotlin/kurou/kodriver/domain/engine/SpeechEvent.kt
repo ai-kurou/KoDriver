@@ -5,6 +5,8 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_T
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 
@@ -37,24 +39,14 @@ sealed interface SpeechEvent {
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
     }
 
-    data object KeepLeft : SpeechEvent {
+    data object CarLeftSustained : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "キープレフト"
+        override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
     }
 
-    data object KeepRight : SpeechEvent {
+    data object CarRightSustained : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "キープライト"
-    }
-
-    data object LeftSustained : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "左側維持"
-    }
-
-    data object RightSustained : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "右側維持"
+        override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
     }
 
     data object BlueFlag : SpeechEvent {

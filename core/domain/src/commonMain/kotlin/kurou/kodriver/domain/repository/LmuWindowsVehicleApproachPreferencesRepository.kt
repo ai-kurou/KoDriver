@@ -2,7 +2,6 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 
 // 車両接近の設定を同じDataStoreで扱うため、左右の文言もこのRepositoryにまとめる。
 @Suppress("TooManyFunctions")
@@ -19,9 +18,13 @@ interface LmuWindowsVehicleApproachPreferencesRepository {
 
     suspend fun saveStartRightReadoutText(text: String)
 
-    fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType>
+    fun observeSustainedLeftReadoutText(): Flow<String>
 
-    suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType)
+    suspend fun saveSustainedLeftReadoutText(text: String)
+
+    fun observeSustainedRightReadoutText(): Flow<String>
+
+    suspend fun saveSustainedRightReadoutText(text: String)
 
     fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 

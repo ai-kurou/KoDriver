@@ -29,7 +29,8 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
                     startLeftReadoutText = "左注意",
                     startRightReadoutText = "",
                     enabledStates = mapOf("lmu_windows_vehicle_approach_sustained" to false),
-                    sustainedReadoutType = "left_right_sustained",
+                    sustainedLeftReadoutText = "左継続",
+                    sustainedRightReadoutText = "",
                 )
             val output = ByteArrayOutputStream()
             LmuWindowsVehicleApproachPreferencesSerializer.writeTo(original, output)
@@ -43,7 +44,7 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
         }
 
     @Test
-    fun `廃止したProtoNumber 3を含む旧設定では開始文言が既定値になる`() =
+    fun `廃止したProtoNumber 3・5を含む旧設定では開始・継続文言が既定値になる`() =
         runTest {
             // field 1: false、廃止したfield 3: "left_right_approach"、field 5: "left_right_sustained"。
             val oldType = "left_right_approach".encodeToByteArray()
@@ -57,7 +58,8 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
             assertEquals("カーレフト", restored.startLeftReadoutText)
             assertEquals("カーライト", restored.startRightReadoutText)
             assertEquals(false, restored.skipFirstLap)
-            assertEquals("left_right_sustained", restored.sustainedReadoutType)
+            assertEquals("キープライト", restored.sustainedLeftReadoutText)
+            assertEquals("キープレフト", restored.sustainedRightReadoutText)
         }
 
     @Test

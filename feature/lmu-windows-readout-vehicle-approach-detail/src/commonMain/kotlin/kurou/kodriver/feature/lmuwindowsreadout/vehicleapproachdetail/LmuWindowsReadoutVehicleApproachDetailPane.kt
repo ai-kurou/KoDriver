@@ -26,7 +26,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
@@ -39,16 +38,13 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOL
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_description
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_first_lap_subtitle
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_help_description
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_help_icon_content_description
-import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_keep_left_right_chip_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_lateral_label
-import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_left_right_sustained_chip_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_longitudinal_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_subtitle
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_switch_content_description
@@ -87,7 +83,6 @@ fun LmuWindowsReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
         onSkipFirstLapChanged = viewModel::onSkipFirstLapChanged,
         onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
         onSustainedReadoutEnabledChanged = viewModel::onSustainedReadoutEnabledChanged,
-        onSustainedReadoutTypeChanged = viewModel::onSustainedReadoutTypeChanged,
         onStartLeftTextChanged = viewModel::onStartLeftTextChanged,
         onStartRightTextChanged = viewModel::onStartRightTextChanged,
         onStartLeftTextPreviewClicked = viewModel::onStartLeftTextPreviewClicked,
@@ -110,7 +105,6 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     onSkipFirstLapChanged: (Boolean) -> Unit = {},
     onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
     onSustainedReadoutEnabledChanged: (Boolean) -> Unit = {},
-    onSustainedReadoutTypeChanged: (VehicleApproachSustainedReadoutType) -> Unit = {},
     onStartLeftTextChanged: (String) -> Unit = {},
     onStartRightTextChanged: (String) -> Unit = {},
     onStartLeftTextPreviewClicked: (String) -> Unit = {},
@@ -211,13 +205,6 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                 }
             },
         )
-        val keepLeftRightChipLabel = stringResource(Res.string.vehicle_approach_keep_left_right_chip_label)
-        val leftRightSustainedChipLabel = stringResource(Res.string.vehicle_approach_left_right_sustained_chip_label)
-        val sustainedReadoutTypeLabels =
-            mapOf(
-                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT to keepLeftRightChipLabel,
-                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED to leftRightSustainedChipLabel,
-            )
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_approach_sustained_readout_switch_label),
             checked = uiState.sustainedReadoutEnabled,
@@ -225,16 +212,9 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    DetailPaneCardChips(
-                        chipLabels = sustainedReadoutTypeLabels.values.toList(),
-                        selectedChipLabels = setOfNotNull(sustainedReadoutTypeLabels[uiState.sustainedReadoutType]),
-                        chipEnabled = uiState.sustainedReadoutEnabled,
-                        onChipClick = { label ->
-                            sustainedReadoutTypeLabels
-                                .entries
-                                .firstOrNull { it.value == label }
-                                ?.let { onSustainedReadoutTypeChanged(it.key) }
-                        },
+                    Text(
+                        text = "${uiState.sustainedLeftText}・${uiState.sustainedRightText}",
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                     HorizontalDivider(
                         modifier =

@@ -7,3 +7,5 @@
 
 ![Module Graph](../../docs/graphs/feature-lmu-windows-readout-vehicle-approach-detail.svg)
 <!-- MODULE-GRAPH-END -->
+
+継続時の読み上げ文言は、左側車両・右側車両の順で暫定表示する。編集・試聴UIは別PRで追加する。

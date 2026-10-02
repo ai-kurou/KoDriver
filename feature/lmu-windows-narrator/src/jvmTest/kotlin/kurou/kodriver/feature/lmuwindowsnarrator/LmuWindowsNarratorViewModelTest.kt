@@ -52,7 +52,6 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
@@ -102,7 +101,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
@@ -221,7 +219,6 @@ class LmuWindowsNarratorViewModelTest {
         skipFirstLap: Boolean,
         startReadoutEnabled: Boolean,
         sustainedReadoutEnabled: Boolean,
-        sustainedReadoutType: VehicleApproachSustainedReadoutType,
         sustainedApproachDurationSeconds: Int,
         tyreTemperatureHighThreshold: Int,
         vehicleClass: LmuWindowsVehicleClassData,
@@ -247,8 +244,6 @@ class LmuWindowsNarratorViewModelTest {
                     ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to sustainedReadoutEnabled,
                 ),
             )
-        every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-            MutableStateFlow(sustainedReadoutType)
         every { vehicleApproachThresholdsPreferencesRepository.observeSustainedApproachDurationSeconds() } returns
             MutableStateFlow(sustainedApproachDurationSeconds)
         every { vehicleDamageRepository.vehicleDamageStream() } returns damageChannel.receiveAsFlow()
@@ -330,7 +325,6 @@ class LmuWindowsNarratorViewModelTest {
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         sustainedReadoutEnabled: Boolean = true,
-        sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
         sustainedApproachDurationSeconds: Int = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
         tyreTemperatureHighThreshold: Int = 90,
         vehicleClass: LmuWindowsVehicleClassData = LmuWindowsVehicleClassData.Hypercar,
@@ -366,7 +360,6 @@ class LmuWindowsNarratorViewModelTest {
             skipFirstLap = skipFirstLap,
             startReadoutEnabled = startReadoutEnabled,
             sustainedReadoutEnabled = sustainedReadoutEnabled,
-            sustainedReadoutType = sustainedReadoutType,
             sustainedApproachDurationSeconds = sustainedApproachDurationSeconds,
             tyreTemperatureHighThreshold = tyreTemperatureHighThreshold,
             vehicleClass = vehicleClass,
@@ -399,10 +392,6 @@ class LmuWindowsNarratorViewModelTest {
                     observeSustainedApproachDuration =
                         ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(
                             vehicleApproachThresholdsPreferencesRepository,
-                        ),
-                    observeSustainedReadoutType =
-                        ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase(
-                            vehicleApproachPreferencesRepository,
                         ),
                 ),
             vehicleDamageUseCases =
@@ -748,7 +737,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `左接近が閾値秒数継続するとKeepRightを読み上げる`() =
+    fun `左接近が閾値秒数継続するとCarLeftSustainedを読み上げる`() =
         runTest(testDispatcher) {
             var fakeTime = 0L
             val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
@@ -766,7 +755,7 @@ class LmuWindowsNarratorViewModelTest {
             fakeTime = 7_000L
             channel.send(leftVehicleApproach(vehicleId = 1))
 
-            assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.KeepRight), spokenTexts)
+            assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.CarLeftSustained), spokenTexts)
         }
 
     @Test

@@ -23,7 +23,6 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOL
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
@@ -32,8 +31,9 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
@@ -78,7 +78,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
                     vehicleApproachPreferencesRepository,
                 ),
             saveEnabledState = SaveLmuWindowsVehicleApproachEnabledStateUseCase(vehicleApproachPreferencesRepository),
-            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+            observeSustainedLeftText =
+                ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(vehicleApproachPreferencesRepository),
+            observeSustainedRightText =
+                ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(vehicleApproachPreferencesRepository),
             startReadout =
                 StartReadoutUseCases(
                     speakText = SpeakTextUseCase(textToSpeechRepository),
@@ -112,8 +115,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
                 MutableStateFlow("カーレフト")
             every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns
                 MutableStateFlow("カーライト")
-            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-                MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+            every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+                MutableStateFlow("キープライト")
+            every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+                MutableStateFlow("キープレフト")
             coEvery { thresholdsRepository.saveLateralThresholdMeters(3.5) } answers {
                 lateralFlow.update { 3.5 }
             }
@@ -131,7 +136,8 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
-            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
             confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
         }
@@ -152,8 +158,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
                 MutableStateFlow("カーレフト")
             every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns
                 MutableStateFlow("カーライト")
-            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-                MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+            every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+                MutableStateFlow("キープライト")
+            every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+                MutableStateFlow("キープレフト")
             coEvery { thresholdsRepository.saveLongitudinalThresholdMeters(15.0) } answers {
                 longitudinalFlow.update { 15.0 }
             }
@@ -171,7 +179,8 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
-            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
             confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
         }
@@ -192,8 +201,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
                 MutableStateFlow("カーレフト")
             every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns
                 MutableStateFlow("カーライト")
-            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-                MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+            every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+                MutableStateFlow("キープライト")
+            every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+                MutableStateFlow("キープレフト")
             coEvery {
                 thresholdsRepository.saveLongitudinalThresholdMeters(
                     LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
@@ -224,7 +235,8 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
-            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
             confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
         }
@@ -245,8 +257,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
                 MutableStateFlow("カーレフト")
             every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns
                 MutableStateFlow("カーライト")
-            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-                MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+            every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+                MutableStateFlow("キープライト")
+            every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+                MutableStateFlow("キープレフト")
             coEvery {
                 thresholdsRepository.saveLateralThresholdMeters(
                     LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
@@ -277,7 +291,8 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
-            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
             confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
         }
@@ -298,8 +313,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
                 MutableStateFlow("カーレフト")
             every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns
                 MutableStateFlow("カーライト")
-            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-                MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+            every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+                MutableStateFlow("キープライト")
+            every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+                MutableStateFlow("キープレフト")
             coEvery { thresholdsRepository.saveSustainedApproachDurationSeconds(8) } answers {
                 sustainedDurationFlow.update { 8 }
             }
@@ -317,7 +334,8 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
-            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
             confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
         }
@@ -338,8 +356,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
                 MutableStateFlow("カーレフト")
             every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns
                 MutableStateFlow("カーライト")
-            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-                MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+            every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+                MutableStateFlow("キープライト")
+            every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+                MutableStateFlow("キープレフト")
             coEvery {
                 thresholdsRepository.saveSustainedApproachDurationSeconds(
                     LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
@@ -368,7 +388,8 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
             verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
-            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+            verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
             coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
             confirmVerified(textToSpeechRepository, thresholdsRepository, vehicleApproachPreferencesRepository)
         }
@@ -385,8 +406,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             )
         every { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() } returns MutableStateFlow("カーレフト")
         every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns MutableStateFlow("カーライト")
-        every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-            MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+        every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+            MutableStateFlow("キープライト")
+        every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+            MutableStateFlow("キープレフト")
         coEvery { textToSpeechRepository.isAvailable() } returns true
         val viewModel = createViewModel()
         viewModel.onStartLeftTextPreviewClicked(" ")
@@ -401,7 +424,8 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
-        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
         coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
         confirmVerified(
             textToSpeechRepository,
@@ -424,8 +448,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             )
         every { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() } returns MutableStateFlow("カーレフト")
         every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns MutableStateFlow("カーライト")
-        every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-            MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+        every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+            MutableStateFlow("キープライト")
+        every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+            MutableStateFlow("キープレフト")
         coEvery { textToSpeechRepository.isAvailable() } returns true
         every { volumes.volume() } returns MutableStateFlow(0)
         val viewModel = createViewModel()
@@ -441,7 +467,8 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
-        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
         coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
         confirmVerified(
             textToSpeechRepository,
@@ -464,8 +491,10 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             )
         every { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() } returns MutableStateFlow("カーレフト")
         every { vehicleApproachPreferencesRepository.observeStartRightReadoutText() } returns MutableStateFlow("カーライト")
-        every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
-            MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+        every { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() } returns
+            MutableStateFlow("キープライト")
+        every { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() } returns
+            MutableStateFlow("キープレフト")
         coEvery { textToSpeechRepository.isAvailable() } returns true
         every { volumes.volume() } returns MutableStateFlow(60)
         coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) } returns Unit
@@ -489,7 +518,8 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartLeftReadoutText() }
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartRightReadoutText() }
-        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedLeftReadoutText() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedRightReadoutText() }
         coVerify(exactly = 1) { textToSpeechRepository.isAvailable() }
         confirmVerified(
             textToSpeechRepository,

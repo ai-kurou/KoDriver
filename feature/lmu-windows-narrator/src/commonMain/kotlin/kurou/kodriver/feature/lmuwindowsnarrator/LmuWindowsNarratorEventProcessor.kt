@@ -105,12 +105,7 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousVehicleApproach
         events.forEach { event ->
-            // 継続時の収録WAVは自由文言の設定に依存しない。
-            val text =
-                when (event) {
-                    SpeechEvent.CarLeft, SpeechEvent.CarRight -> readoutText(event)
-                    else -> event.narratedText
-                }
+            val text = readoutText(event)
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED
