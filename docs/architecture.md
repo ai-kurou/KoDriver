@@ -38,6 +38,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-overlay-text-size-detail` | その他画面のオーバーレイ文字サイズ設定詳細 | [図](graphs/feature-other-overlay-text-size-detail.svg) |
 | `:feature:other-overlay-background-opacity-detail` | その他画面のオーバーレイ背景透明度設定詳細 | [図](graphs/feature-other-overlay-background-opacity-detail.svg) |
 | `:feature:other-volume-detail` | その他画面の読み上げ音量設定詳細 | [図](graphs/feature-other-volume-detail.svg) |
+| `:feature:other-voice-detail` | その他画面の読み上げ音声設定詳細 | [図](graphs/feature-other-voice-detail.svg) |
 | `:feature:other-feedback-detail` | その他画面のフィードバック送信詳細 | [図](graphs/feature-other-feedback-detail.svg) |
 | `:feature:readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-readout-list.svg) |
 | `:feature:lmu-windows-readout-flag-detail` | フラグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-flag-detail.svg) |
