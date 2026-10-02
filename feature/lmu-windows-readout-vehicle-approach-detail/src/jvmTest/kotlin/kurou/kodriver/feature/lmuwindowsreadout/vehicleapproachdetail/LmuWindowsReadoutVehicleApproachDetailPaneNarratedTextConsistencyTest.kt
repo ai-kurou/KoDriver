@@ -2,6 +2,8 @@ package kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -11,8 +13,7 @@ import org.junit.Test
 /**
  * 開始時の既定文言と継続時のWAV文言が表示されることを確認する。
  * [SpeechEvent.narratedText] を実際の表示テキストと突き合わせる（#1527）。
- * このモジュールの文言は「カーレフト・カーライト」のように左右2種のnarratedTextを
- * 1つの文言に連結して表示するため、完全一致ではなく部分一致で検証する。
+ * 継続時のチップは左右2種の文言を連結して表示するため、部分一致で検証する。
  */
 class LmuWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
     @get:Rule
@@ -23,14 +24,15 @@ class LmuWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutVehicleApproachDetailPaneContent(
-                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(),
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(isTextToSpeechAvailable = true),
                 )
             }
         }
 
+        listOf(SpeechEvent.CarLeft.narratedText, SpeechEvent.CarRight.narratedText).forEach { narratedText ->
+            rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText)
+        }
         listOf(
-            SpeechEvent.CarLeft.narratedText,
-            SpeechEvent.CarRight.narratedText,
             SpeechEvent.KeepLeft.narratedText,
             SpeechEvent.KeepRight.narratedText,
             SpeechEvent.LeftSustained.narratedText,
