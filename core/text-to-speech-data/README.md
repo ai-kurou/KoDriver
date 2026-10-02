@@ -42,6 +42,12 @@ Androidの`AndroidVoiceListRepository`も登録し、`ja`言語・オフライ�
 `SapiSpeechSynthesizer`はWindows専用の外部プロセスを起動するためユニットテストの対象外とし、読み上げ制御の
 ロジックは差し替え可能な`WindowsSpeechSynthesizer`を介して`WindowsTextToSpeechRepository`側で検証します。
 
+Windowsの音声設定の起動は、jvmMainの`WindowsSpeechSettingsRepository`が担当します。
+`rundll32`経由で`ms-settings:speech`を開き、非Windowsでは何もしません。起動時のIOException・
+SecurityExceptionはSentryへ記録します。androidMainには、Windowsの音声設定を開けないため
+何もしない`AndroidSpeechSettingsRepository`を登録します。どちらも`core:domain`の
+`SpeechSettingsRepository`を実装し、`OpenWindowsSpeechSettingsUseCase`から利用されます。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

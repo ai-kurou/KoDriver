@@ -1,17 +1,17 @@
 @file:Suppress("FunctionNaming")
 
-package kurou.kodriver.presentation
+package kurou.kodriver.core.texttospeechdata.repository
 
 import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class OpenWindowsSpeechSettingsTest {
+class WindowsSpeechSettingsRepositoryTest {
     @Test
     fun `Windowsではms-settingsの音声設定をrundll32で開く`() {
         val commands = mutableListOf<List<String>>()
 
-        openWindowsSpeechSettings(isWindows = true, startProcess = { commands += it })
+        WindowsSpeechSettingsRepository(isWindows = true, startProcess = { commands += it }).openWindowsSpeechSettings()
 
         assertEquals(
             listOf(listOf("rundll32", "url.dll,FileProtocolHandler", "ms-settings:speech")),
@@ -23,7 +23,10 @@ class OpenWindowsSpeechSettingsTest {
     fun `Windows以外では何も起動しない`() {
         val commands = mutableListOf<List<String>>()
 
-        openWindowsSpeechSettings(isWindows = false, startProcess = { commands += it })
+        WindowsSpeechSettingsRepository(
+            isWindows = false,
+            startProcess = { commands += it },
+        ).openWindowsSpeechSettings()
 
         assertEquals(emptyList(), commands)
     }
@@ -33,11 +36,11 @@ class OpenWindowsSpeechSettingsTest {
         val error = IOException("failed")
         val captured = mutableListOf<Throwable>()
 
-        openWindowsSpeechSettings(
+        WindowsSpeechSettingsRepository(
             isWindows = true,
             startProcess = { throw error },
             captureException = { captured += it },
-        )
+        ).openWindowsSpeechSettings()
 
         assertEquals(listOf<Throwable>(error), captured)
     }
@@ -47,11 +50,11 @@ class OpenWindowsSpeechSettingsTest {
         val error = SecurityException("denied")
         val captured = mutableListOf<Throwable>()
 
-        openWindowsSpeechSettings(
+        WindowsSpeechSettingsRepository(
             isWindows = true,
             startProcess = { throw error },
             captureException = { captured += it },
-        )
+        ).openWindowsSpeechSettings()
 
         assertEquals(listOf<Throwable>(error), captured)
     }
@@ -60,7 +63,11 @@ class OpenWindowsSpeechSettingsTest {
     fun `Windows以外では例外を記録しない`() {
         val captured = mutableListOf<Throwable>()
 
-        openWindowsSpeechSettings(isWindows = false, startProcess = {}, captureException = { captured += it })
+        WindowsSpeechSettingsRepository(
+            isWindows = false,
+            startProcess = {},
+            captureException = { captured += it },
+        ).openWindowsSpeechSettings()
 
         assertEquals(emptyList(), captured)
     }

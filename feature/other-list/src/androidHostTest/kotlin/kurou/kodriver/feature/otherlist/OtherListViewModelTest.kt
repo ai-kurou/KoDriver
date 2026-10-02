@@ -25,6 +25,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
+import kurou.kodriver.domain.repository.SpeechSettingsRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
@@ -37,6 +38,7 @@ import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
+import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
@@ -82,6 +84,8 @@ class OtherListViewModelTest {
 
     private val textToSpeechRepository: TextToSpeechRepository = mockk()
 
+    private val speechSettingsRepository: SpeechSettingsRepository = mockk()
+
     private val voiceRepository: VoicePreferencesRepository = mockk()
     private val voiceFlow = MutableStateFlow("")
 
@@ -121,6 +125,7 @@ class OtherListViewModelTest {
             checkAccessLocalNetworkPermissionGranted =
                 CheckAccessLocalNetworkPermissionGrantedUseCase(accessLocalNetworkPermissionRepository),
             checkTextToSpeechUnavailableReason = CheckTextToSpeechUnavailableReasonUseCase(textToSpeechRepository),
+            openWindowsSpeechSettings = OpenWindowsSpeechSettingsUseCase(speechSettingsRepository),
             startupRegistration = StartupRegistrationUseCases(startupRegistrationRepository),
             appVersionInfo =
                 OtherListAppVersionInfo(
@@ -128,6 +133,22 @@ class OtherListViewModelTest {
                     appVersionLabel = "Androidアプリバージョン",
                 ),
         )
+    }
+
+    @Test
+    fun `Windowsの音声設定を開く処理をUseCase経由でRepositoryへ委譲する`() {
+        every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+        every { voiceRepository.voiceId() } returns voiceFlow
+        every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+        every { speechSettingsRepository.openWindowsSpeechSettings() } returns Unit
+        val viewModel = createViewModel(hapticFeedbackAvailable = true)
+
+        viewModel.openWindowsSpeechSettings()
+
+        verify(exactly = 1) { speechSettingsRepository.openWindowsSpeechSettings() }
+        confirmVerified(speechSettingsRepository)
     }
 
     @Test
