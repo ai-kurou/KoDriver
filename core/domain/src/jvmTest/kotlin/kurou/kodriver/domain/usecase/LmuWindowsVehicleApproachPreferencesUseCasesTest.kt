@@ -6,142 +6,85 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private fun createLmuWindowsVehicleApproachPreferencesRepository(
-    repository: LmuWindowsVehicleApproachPreferencesRepository,
-    initialSkipFirstLap: Boolean = true,
-    initialStartReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
-    initialSustainedReadoutType: VehicleApproachSustainedReadoutType =
-        VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
-): LmuWindowsVehicleApproachPreferencesRepository {
-    val skipFirstLap = MutableStateFlow(initialSkipFirstLap)
-    val startReadoutType = MutableStateFlow(initialStartReadoutType)
-    val sustainedReadoutType = MutableStateFlow(initialSustainedReadoutType)
-    every { repository.observeSkipFirstLap() } returns skipFirstLap
-    coEvery { repository.saveSkipFirstLap(false) } answers { skipFirstLap.update { false } }
-    every { repository.observeStartReadoutType() } returns startReadoutType
-    coEvery { repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH) } answers {
-        startReadoutType.update { VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH }
-    }
-    every { repository.observeSustainedReadoutType() } returns sustainedReadoutType
-    coEvery { repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED) } answers {
-        sustainedReadoutType.update { VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED }
-    }
-    return repository
-}
-
 class LmuWindowsVehicleApproachPreferencesUseCasesTest {
     private val repository: LmuWindowsVehicleApproachPreferencesRepository = mockk()
 
     @Test
-    fun `observeSkipFirstLap はリポジトリの設定を返す`() =
+    fun `SkipFirstLapの設定を取得し保存する`() =
         runTest {
-            val repository =
-                createLmuWindowsVehicleApproachPreferencesRepository(
-                    repository,
-                    initialSkipFirstLap = false,
-                )
+            every { repository.observeSkipFirstLap() } returns flowOf(false)
+            coEvery { repository.saveSkipFirstLap(false) } returns Unit
             val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
             assertEquals(false, useCases.observeSkipFirstLap().first())
-            verify(exactly = 1) { repository.observeSkipFirstLap() }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `saveSkipFirstLap はスキップ設定を保存する`() =
-        runTest {
-            val repository = createLmuWindowsVehicleApproachPreferencesRepository(repository)
-            val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
-
             useCases.saveSkipFirstLap(false)
 
-            assertEquals(false, useCases.observeSkipFirstLap().first())
-            coVerify(exactly = 1) { repository.saveSkipFirstLap(false) }
             verify(exactly = 1) { repository.observeSkipFirstLap() }
+            coVerify(exactly = 1) { repository.saveSkipFirstLap(false) }
             confirmVerified(repository)
         }
 
     @Test
-    fun `observeStartReadoutType はリポジトリの設定を返す`() =
+    fun `StartLeftReadoutTextの設定を取得し保存する`() =
         runTest {
-            val repository =
-                createLmuWindowsVehicleApproachPreferencesRepository(
-                    repository,
-                    initialStartReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
-                )
+            every { repository.observeStartLeftReadoutText() } returns flowOf("左注意")
+            coEvery { repository.saveStartLeftReadoutText("左注意") } returns Unit
             val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
-            assertEquals(
-                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
-                useCases.observeStartReadoutType().first(),
-            )
-            verify(exactly = 1) { repository.observeStartReadoutType() }
+            assertEquals("左注意", useCases.observeStartLeftReadoutText().first())
+            useCases.saveStartLeftReadoutText("左注意")
+
+            verify(exactly = 1) { repository.observeStartLeftReadoutText() }
+            coVerify(exactly = 1) { repository.saveStartLeftReadoutText("左注意") }
             confirmVerified(repository)
         }
 
     @Test
-    fun `saveStartReadoutType は接近開始時読み上げ種別を保存する`() =
+    fun `StartRightReadoutTextの設定を取得し保存する`() =
         runTest {
-            val repository = createLmuWindowsVehicleApproachPreferencesRepository(repository)
+            every { repository.observeStartRightReadoutText() } returns flowOf("右注意")
+            coEvery { repository.saveStartRightReadoutText("右注意") } returns Unit
             val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
-            useCases.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
+            assertEquals("右注意", useCases.observeStartRightReadoutText().first())
+            useCases.saveStartRightReadoutText("右注意")
 
-            assertEquals(
-                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
-                useCases.observeStartReadoutType().first(),
-            )
-            coVerify(exactly = 1) {
-                repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
-            }
-            verify(exactly = 1) { repository.observeStartReadoutType() }
+            verify(exactly = 1) { repository.observeStartRightReadoutText() }
+            coVerify(exactly = 1) { repository.saveStartRightReadoutText("右注意") }
             confirmVerified(repository)
         }
 
     @Test
-    fun `observeSustainedReadoutType はリポジトリの設定を返す`() =
+    fun `SustainedReadoutTypeの設定を取得し保存する`() =
         runTest {
-            val repository =
-                createLmuWindowsVehicleApproachPreferencesRepository(
-                    repository,
-                    initialSustainedReadoutType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
+            every { repository.observeSustainedReadoutType() } returns
+                flowOf(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
+            coEvery {
+                repository.saveSustainedReadoutType(
+                    VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
                 )
+            } returns
+                Unit
             val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
             assertEquals(
                 VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
                 useCases.observeSustainedReadoutType().first(),
             )
-            verify(exactly = 1) { repository.observeSustainedReadoutType() }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `saveSustainedReadoutType は接近継続時読み上げ種別を保存する`() =
-        runTest {
-            val repository = createLmuWindowsVehicleApproachPreferencesRepository(repository)
-            val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
-
             useCases.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
 
-            assertEquals(
-                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
-                useCases.observeSustainedReadoutType().first(),
-            )
-            coVerify(exactly = 1) {
-                repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
-            }
             verify(exactly = 1) { repository.observeSustainedReadoutType() }
+            coVerify(
+                exactly = 1,
+            ) { repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED) }
             confirmVerified(repository)
         }
 }

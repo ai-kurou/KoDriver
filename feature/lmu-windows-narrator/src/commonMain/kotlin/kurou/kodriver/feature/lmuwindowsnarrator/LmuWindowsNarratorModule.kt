@@ -31,7 +31,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
@@ -66,12 +67,13 @@ import org.koin.dsl.module
  *
  * 提供: LmuWindowsNarratorViewModel、LmuWindowsNarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
  *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases / TyreDetachedUseCases /
- *   SimulatorUseCases / ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases / RemainingVirtualEnergyUseCases /
- *   PitTimingUseCases）、
+ *   SimulatorUseCases / ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases /
+ *   RemainingVirtualEnergyUseCases / PitTimingUseCases）、
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
- *   各フラッグの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
- *   および LmuWindowsFlagTextSpeaker（フラッグの実際の読み上げ時に
+ *   各フラッグ・車両接近開始時の読み上げ文言の Observe UseCase・TextToSpeechEngine）、
+ *   および LmuWindowsReadoutTextSpeaker
+ *   （フラッグ・車両接近開始時の実際の読み上げ時に
  *   自由文字列をOS標準TTSで読み上げるフック。WavNarratorEngine の customSpeak に渡す）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）、unqualified の CheckTextToSpeechAvailableUseCase
@@ -104,7 +106,7 @@ val lmuWindowsNarratorModule: Module =
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { NarratorUseCases(get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
-        factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
+        factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get()) }
         factory { VehicleDamageUseCases(get(), get()) }
         factory { TyreDetachedUseCases(get()) }
         factory { SimulatorUseCases(get()) }
@@ -118,7 +120,7 @@ val lmuWindowsNarratorModule: Module =
             LmuWindowsNarratorEventProcessor(
                 get(named(Simulator.LmuWindows.id)),
                 get(),
-                get<LmuWindowsFlagTextSpeaker>()::readoutText,
+                get<LmuWindowsReadoutTextSpeaker>()::readoutText,
             )
         }
 
@@ -138,7 +140,6 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
-        factory { ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase(get()) }
         factory { ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(get()) }
@@ -164,7 +165,7 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.LmuWindows.id))) }
         includes(platformSoundModule(named(Simulator.LmuWindows.id)))
 
-        // フラッグ本文をOS標準TTSのみで読み上げるフック。unqualified の SpeakTextUseCase / 各フラッグの Observe…ReadoutTextUseCase は
+        // フラッグ・車両接近開始時の本文をOS標準TTSのみで読み上げるフック。unqualified の SpeakTextUseCase / 各フラッグの Observe…ReadoutTextUseCase は
         // feature:lmu-windows-readout-flag-detail が試聴用に別途定義しているため、
         // 同じ型を二重定義しないよう named(Simulator.LmuWindows.id) で区別する。
         factory(named(Simulator.LmuWindows.id)) { SpeakTextUseCase(get()) }
@@ -172,12 +173,16 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBlueFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRedFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase(get()) }
         factory {
-            LmuWindowsFlagTextSpeaker(
+            LmuWindowsReadoutTextSpeaker(
                 observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeBlueFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeFullCourseYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeRedFlagReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeStartLeftReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeStartRightReadoutText = get(named(Simulator.LmuWindows.id)),
                 checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )
@@ -199,9 +204,11 @@ val lmuWindowsNarratorModule: Module =
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
-                    customSpeak = get<LmuWindowsFlagTextSpeaker>()::invoke,
+                    customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
                     customSpeakEvents =
                         setOf(
+                            SpeechEvent.CarLeft,
+                            SpeechEvent.CarRight,
                             SpeechEvent.BlueFlag,
                             SpeechEvent.YellowFlag,
                             SpeechEvent.FullCourseYellow,
@@ -214,10 +221,6 @@ val lmuWindowsNarratorModule: Module =
 
 private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
     buildMap {
-        put(SpeechEvent.CarLeft, "files/car_left.wav")
-        put(SpeechEvent.CarRight, "files/car_right.wav")
-        put(SpeechEvent.LeftApproach, "files/left_approach.wav")
-        put(SpeechEvent.RightApproach, "files/right_approach.wav")
         put(SpeechEvent.KeepLeft, "files/keep_left.wav")
         put(SpeechEvent.KeepRight, "files/keep_right.wav")
         put(SpeechEvent.LeftSustained, "files/left_sustained.wav")

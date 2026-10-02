@@ -11,8 +11,9 @@ class LmuWindowsVehicleApproachPreferencesTest {
     }
 
     @Test
-    fun `デフォルト値は startReadoutType が car_left_right`() {
-        assertEquals("car_left_right", LmuWindowsVehicleApproachPreferences().startReadoutType)
+    fun `左右の開始文言は既定値を返す`() {
+        assertEquals("カーレフト", LmuWindowsVehicleApproachPreferences().startLeftReadoutText)
+        assertEquals("カーライト", LmuWindowsVehicleApproachPreferences().startRightReadoutText)
     }
 
     @Test

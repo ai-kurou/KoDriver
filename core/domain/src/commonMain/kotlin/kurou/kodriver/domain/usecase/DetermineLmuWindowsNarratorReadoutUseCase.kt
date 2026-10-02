@@ -19,7 +19,6 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.readoutEnabled
 
@@ -101,7 +100,6 @@ data class LmuWindowsNarratorReadoutSettings(
     val overheatVoiceType: OverheatVoiceType,
     val currentLap: Int,
     val skipFirstLap: Boolean,
-    val vehicleApproachStartReadoutType: VehicleApproachStartReadoutType,
     val vehicleApproachSustainedApproachDurationSeconds: Int,
     val vehicleApproachSustainedReadoutType: VehicleApproachSustainedReadoutType,
     val tyreTemperatureHighThresholdCelsius: Celsius,
@@ -629,8 +627,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
         if (settings.skipFirstLap && settings.currentLap <= 0) return null
         return when {
-            leftAnnounce && !rightAnnounce -> ApproachSide.LEFT.toSpeechEvent(settings.vehicleApproachStartReadoutType)
-            rightAnnounce && !leftAnnounce -> ApproachSide.RIGHT.toSpeechEvent(settings.vehicleApproachStartReadoutType)
+            leftAnnounce && !rightAnnounce -> ApproachSide.LEFT.toSpeechEvent()
+            rightAnnounce && !leftAnnounce -> ApproachSide.RIGHT.toSpeechEvent()
             else -> null
         }
     }
@@ -813,21 +811,10 @@ private enum class ApproachSide {
     RIGHT,
     ;
 
-    fun toSpeechEvent(readoutType: VehicleApproachStartReadoutType): SpeechEvent =
+    fun toSpeechEvent(): SpeechEvent =
         when (this) {
-            LEFT -> {
-                when (readoutType) {
-                    VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarLeft
-                    VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.LeftApproach
-                }
-            }
-
-            RIGHT -> {
-                when (readoutType) {
-                    VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarRight
-                    VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.RightApproach
-                }
-            }
+            LEFT -> SpeechEvent.CarLeft
+            RIGHT -> SpeechEvent.CarRight
         }
 
     fun toSustainedSpeechEvent(readoutType: VehicleApproachSustainedReadoutType): SpeechEvent =

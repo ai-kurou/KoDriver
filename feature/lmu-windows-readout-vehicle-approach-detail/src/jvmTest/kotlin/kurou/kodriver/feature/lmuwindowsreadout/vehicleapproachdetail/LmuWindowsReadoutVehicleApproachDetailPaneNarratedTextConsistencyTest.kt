@@ -9,9 +9,9 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * [SpeechEvent.narratedText] は WAV と同じ内容を Chip 表示文言から複製したものであるため、
- * Chip側の文言変更を検知できるよう実際の表示テキストと突き合わせる（#1527）。
- * このモジュールのChipは「カーレフト・カーライト」のように左右2種のnarratedTextを
+ * 開始時の既定文言と継続時のWAV文言が表示されることを確認する。
+ * [SpeechEvent.narratedText] を実際の表示テキストと突き合わせる（#1527）。
+ * このモジュールの文言は「カーレフト・カーライト」のように左右2種のnarratedTextを
  * 1つの文言に連結して表示するため、完全一致ではなく部分一致で検証する。
  */
 class LmuWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
@@ -19,7 +19,7 @@ class LmuWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
     val rule = createComposeRule()
 
     @Test
-    fun `Chip表示文言がSpeechEventのnarratedTextを含む`() {
+    fun `表示文言がSpeechEventのnarratedTextを含む`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutVehicleApproachDetailPaneContent(
@@ -31,8 +31,6 @@ class LmuWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
         listOf(
             SpeechEvent.CarLeft.narratedText,
             SpeechEvent.CarRight.narratedText,
-            SpeechEvent.LeftApproach.narratedText,
-            SpeechEvent.RightApproach.narratedText,
             SpeechEvent.KeepLeft.narratedText,
             SpeechEvent.KeepRight.narratedText,
             SpeechEvent.LeftSustained.narratedText,
