@@ -48,6 +48,8 @@ internal class AndroidTextToSpeechRepository(
     },
 ) : TextToSpeechRepository {
     private val mutex = Mutex()
+    private val voiceLock = Any()
+    private var appliedVoiceId: String? = null
     private var initialized = false
     private var textToSpeech: TextToSpeech? = null
     private var unavailableReason: TextToSpeechUnavailableReason? = null
@@ -69,7 +71,10 @@ internal class AndroidTextToSpeechRepository(
         return unavailableReason
     }
 
-    /** Windows専用の [voiceId] は無視し、Androidの既定の日本語音声を使う。 */
+    /** 一覧取得と読み上げで同じエンジンを共有する。初期化に失敗した場合は `null` を返す。 */
+    internal suspend fun engineOrNull(): TextToSpeech? = ensureInitialized()
+
+    /** [voiceId] に対応する音声を使い、未指定・見つからない場合は既定の日本語音声を使う。 */
     override suspend fun speak(
         text: String,
         queue: Boolean,
@@ -87,12 +92,15 @@ internal class AndroidTextToSpeechRepository(
             completePendingUtterancesExcept(utteranceId)
         }
         val result =
-            engine.speak(
-                text,
-                if (queue) TextToSpeech.QUEUE_ADD else TextToSpeech.QUEUE_FLUSH,
-                volumeParamsFactory(volume.coerceIn(0, 100) / VOLUME_SCALE),
-                utteranceId,
-            )
+            synchronized(voiceLock) {
+                applyVoice(engine, voiceId)
+                engine.speak(
+                    text,
+                    if (queue) TextToSpeech.QUEUE_ADD else TextToSpeech.QUEUE_FLUSH,
+                    volumeParamsFactory(volume.coerceIn(0, 100) / VOLUME_SCALE),
+                    utteranceId,
+                )
+            }
         if (result != TextToSpeech.SUCCESS) {
             // 発話要求自体が失敗した場合、onDone/onError/onStopのいずれも呼ばれないため
             // completed.await()がハングしてしまう。要求前に諦めて即座に返す。
@@ -112,6 +120,35 @@ internal class AndroidTextToSpeechRepository(
         } finally {
             pendingUtterances.remove(utteranceId)
         }
+    }
+
+    /**
+     * setVoiceはエンジン全体に残る設定のため最後に適用したIDを覚えて変更時のみ呼ぶ。
+     * QUEUE_ADDで待機中の発話にも新しい声が適用される可能性があるが、設定変更は稀なので許容する。
+     * 適用値とエンジンへの設定を排他し、発話完了を待つsuspendポイントではロックを保持しない。
+     */
+    private fun applyVoice(
+        engine: TextToSpeech,
+        voiceId: String,
+    ) {
+        if (appliedVoiceId == voiceId) return
+        if (voiceId.isNotEmpty()) {
+            val voice =
+                try {
+                    engine.voices?.firstOrNull { it.name == voiceId }
+                } catch (_: Exception) {
+                    null
+                }
+            if (voice == null || engine.setVoice(voice) != TextToSpeech.SUCCESS) {
+                // 後から音声が導入された場合に適用できるよう、フォールバックした要求は適用済みとして覚えない。
+                appliedVoiceId = null
+                engine.setLanguage(locale)
+                return
+            }
+        } else if (appliedVoiceId != null) {
+            engine.setLanguage(locale)
+        }
+        appliedVoiceId = voiceId
     }
 
     override suspend fun stop() {
@@ -141,6 +178,8 @@ internal class AndroidTextToSpeechRepository(
             unavailableReason = null
             val initStatus = CompletableDeferred<Int>()
             val engine = textToSpeechFactory { status -> initStatus.complete(status) }
+            // 再初期化したエンジンには前の声が引き継がれないため、適用済みのIDを破棄する。
+            synchronized(voiceLock) { appliedVoiceId = null }
             if (initStatus.await() != TextToSpeech.SUCCESS) {
                 unavailableReason = TextToSpeechUnavailableReason.EngineMissing
                 engine.shutdown()
