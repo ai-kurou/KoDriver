@@ -1,5 +1,9 @@
 package kurou.kodriver.core.texttospeechdata.windows
 
+import kurou.kodriver.domain.model.TTS_CULTURE_NAME
+import kurou.kodriver.domain.model.TextToSpeechVoice
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 
 /**
@@ -42,7 +46,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
                         "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
                         "\$voices = \$s.GetInstalledVoices(); " +
                         "if (-not (\$voices | Where-Object { " +
-                        "\$_.Enabled -and \$_.VoiceInfo.Culture.Name -eq 'ja-JP' })) { exit 1 }",
+                        "\$_.Enabled -and \$_.VoiceInfo.Culture.Name -eq '$TTS_CULTURE_NAME' })) { exit 1 }",
                 ).redirectErrorStream(true)
                     .redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     .start()
@@ -57,6 +61,53 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
             }
         } catch (_: Exception) {
             false
+        }
+    }
+
+    override fun listVoices(): List<TextToSpeechVoice> {
+        if (!IS_WINDOWS) return emptyList()
+        return try {
+            // 終了待ち中に標準出力のバッファが満杯になるのを避けるため、一時ファイルへ出力する。
+            val output = Files.createTempFile("kodriver-voices-", ".txt")
+            try {
+                readVoices(output)
+            } finally {
+                Files.deleteIfExists(output)
+            }
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun readVoices(output: Path): List<TextToSpeechVoice> {
+        val process =
+            ProcessBuilder(
+                POWERSHELL,
+                "-NoProfile",
+                "-NonInteractive",
+                "-Command",
+                "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; " +
+                    "Add-Type -AssemblyName System.Speech; " +
+                    "(New-Object System.Speech.Synthesis.SpeechSynthesizer).GetInstalledVoices() | " +
+                    "Where-Object { \$_.Enabled } | ForEach-Object { " +
+                    "\$v = \$_.VoiceInfo; " +
+                    "[Console]::WriteLine(\$v.Name + \"`t\" + \$v.Description + \"`t\" + \$v.Culture.Name) }",
+            ).redirectError(ProcessBuilder.Redirect.DISCARD)
+                .redirectOutput(output.toFile())
+                .start()
+        try {
+            if (!process.waitFor(AVAILABILITY_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                // 出力ファイルを掴んだまま残ると呼び出し元の削除に失敗するため、終了を待ってから戻る。
+                process.destroyForcibly().waitFor(DESTROY_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                return emptyList()
+            }
+            return if (process.exitValue() == 0) {
+                parseVoiceList(Files.readString(output, Charsets.UTF_8))
+            } else {
+                emptyList()
+            }
+        } finally {
+            process.destroy()
         }
     }
 
@@ -122,7 +173,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
             "\$s.SelectVoiceByHints(" +
             "[System.Speech.Synthesis.VoiceGender]::NotSet, " +
             "[System.Speech.Synthesis.VoiceAge]::NotSet, 0, " +
-            "[System.Globalization.CultureInfo]::GetCultureInfo('ja-JP')); " +
+            "[System.Globalization.CultureInfo]::GetCultureInfo('$TTS_CULTURE_NAME')); " +
             "\$s.Speak('$escaped')"
     }
 
@@ -131,6 +182,9 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
 
         /** 初回の`Add-Type`は低スペック環境やウイルス対策ソフトの影響で遅くなるため、誤検知を避けて余裕を持たせる。 */
         const val AVAILABILITY_CHECK_TIMEOUT_SECONDS = 15L
+
+        /** タイムアウトで強制終了したプロセスの終了を待つ上限。 */
+        const val DESTROY_WAIT_TIMEOUT_SECONDS = 5L
         val IS_WINDOWS = System.getProperty("os.name").lowercase().startsWith("windows")
     }
 }

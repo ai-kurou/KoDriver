@@ -1,7 +1,9 @@
 package kurou.kodriver.core.texttospeechdata.repository
 
 import kurou.kodriver.core.texttospeechdata.windows.WindowsSpeechSynthesizer
+import kurou.kodriver.domain.model.TextToSpeechVoice
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /**
  * @param blockUntilInterrupted `true` の場合、[speak] は割り込み（[Thread.interrupt]）が来るまで
@@ -11,6 +13,8 @@ import java.util.concurrent.CountDownLatch
 class FakeWindowsSpeechSynthesizer(
     private val available: Boolean = true,
     private val blockUntilInterrupted: Boolean = false,
+    var voices: List<TextToSpeechVoice> = emptyList(),
+    private val listVoicesRelease: CountDownLatch? = null,
 ) : WindowsSpeechSynthesizer {
     val spokenTexts = mutableListOf<Pair<String, Boolean>>()
     val spokenVolumes = mutableListOf<Int>()
@@ -24,6 +28,20 @@ class FakeWindowsSpeechSynthesizer(
 
     var isAvailableCallCount = 0
         private set
+
+    var listVoicesCallCount = 0
+        private set
+    var listVoicesThread: Thread? = null
+        private set
+    val listVoicesStarted = CountDownLatch(1)
+
+    override fun listVoices(): List<TextToSpeechVoice> {
+        listVoicesCallCount++
+        listVoicesThread = Thread.currentThread()
+        listVoicesStarted.countDown()
+        check(listVoicesRelease?.await(5, TimeUnit.SECONDS) != false)
+        return voices
+    }
 
     override fun isAvailable(): Boolean {
         isAvailableCallCount++
