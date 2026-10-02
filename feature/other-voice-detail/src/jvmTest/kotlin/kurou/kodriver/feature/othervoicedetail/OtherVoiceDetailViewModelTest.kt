@@ -340,7 +340,7 @@ class OtherVoiceDetailViewModelTest {
             assertEquals(voice.id, viewModel.uiState.first().previewingVoiceId)
             viewModel.onPreviewClicked(VOICE_ID_UNSPECIFIED, "試聴")
             runCurrent()
-            assertTrue(oldJob!!.isCancelled)
+            assertTrue(requireNotNull(oldJob).isCancelled)
             assertEquals(VOICE_ID_UNSPECIFIED, viewModel.uiState.first().previewingVoiceId)
             oldFinish.complete(Unit)
             runCurrent()
@@ -348,7 +348,7 @@ class OtherVoiceDetailViewModelTest {
             viewModel.onPreviewClicked(VOICE_ID_UNSPECIFIED, "試聴")
             runCurrent()
             assertNull(viewModel.uiState.first().previewingVoiceId)
-            assertTrue(newJob!!.isCancelled)
+            assertTrue(requireNotNull(newJob).isCancelled)
             subscription.cancel()
             verify(exactly = 1) { voicePreferencesRepository.voiceId() }
             coVerify(exactly = 1) { voiceListRepository.availableVoices() }
