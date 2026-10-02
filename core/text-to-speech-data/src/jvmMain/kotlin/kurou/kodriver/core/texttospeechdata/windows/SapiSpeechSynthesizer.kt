@@ -86,12 +86,7 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
                 "-NoProfile",
                 "-NonInteractive",
                 "-Command",
-                "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; " +
-                    "Add-Type -AssemblyName System.Speech; " +
-                    "(New-Object System.Speech.Synthesis.SpeechSynthesizer).GetInstalledVoices() | " +
-                    "Where-Object { \$_.Enabled } | ForEach-Object { " +
-                    "\$v = \$_.VoiceInfo; " +
-                    "[Console]::WriteLine(\$v.Name + \"`t\" + \$v.Description + \"`t\" + \$v.Culture.Name) }",
+                buildListVoicesScript(),
             ).redirectError(ProcessBuilder.Redirect.DISCARD)
                 .redirectOutput(output.toFile())
                 .start()
