@@ -1,10 +1,11 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "TooManyFunctions")
 
 package kurou.kodriver.core.texttospeechdata.repository
 
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
+import android.speech.tts.Voice
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -24,6 +25,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidTextToSpeechRepositoryTest {
+    private val voice: Voice = mockk()
     private val textToSpeech: TextToSpeech = mockk(relaxUnitFun = true)
     private var factoryCallCount = 0
     private val listenerSlot = slot<UtteranceProgressListener>()
@@ -85,7 +87,7 @@ class AndroidTextToSpeechRepositoryTest {
 
             val job =
                 launch {
-                    repository.speak("ベストラップ", queue = false, voiceId = "Windows音声")
+                    repository.speak("ベストラップ", queue = false)
                     completed = true
                 }
             runCurrent()
@@ -481,6 +483,249 @@ class AndroidTextToSpeechRepositoryTest {
 
             assertEquals(1, factoryCallCount)
             verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.shutdown() }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `音声IDが一致すると指定音声を適用する`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.voices } returns setOf(voice)
+            every { voice.name } returns "ja-jp-x-jab-local"
+            every { textToSpeech.setVoice(voice) } returns TextToSpeech.SUCCESS
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            } returns TextToSpeech.ERROR
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voices }
+            verify(exactly = 1) { voice.name }
+            verify(exactly = 1) { textToSpeech.setVoice(voice) }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            }
+            confirmVerified(textToSpeech, voice)
+        }
+
+    @Test
+    fun `音声IDが見つからないと日本語へ戻す`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.voices } returns emptySet()
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            } returns TextToSpeech.ERROR
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+
+            verify(exactly = 2) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voices }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `音声の適用が失敗すると日本語へ戻す`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.voices } returns setOf(voice)
+            every { voice.name } returns "ja-jp-x-jab-local"
+            every { textToSpeech.setVoice(voice) } returns TextToSpeech.ERROR
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            } returns TextToSpeech.ERROR
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+
+            verify(exactly = 2) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voices }
+            verify(exactly = 1) { voice.name }
+            verify(exactly = 1) { textToSpeech.setVoice(voice) }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            }
+            confirmVerified(textToSpeech, voice)
+        }
+
+    @Test
+    fun `同じ音声IDは重複して適用しない`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.voices } returns setOf(voice)
+            every { voice.name } returns "ja-jp-x-jab-local"
+            every { textToSpeech.setVoice(voice) } returns TextToSpeech.SUCCESS
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            } returns TextToSpeech.ERROR
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_2")
+            } returns TextToSpeech.ERROR
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voices }
+            verify(exactly = 1) { voice.name }
+            verify(exactly = 1) { textToSpeech.setVoice(voice) }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_2")
+            }
+            confirmVerified(textToSpeech, voice)
+        }
+
+    @Test
+    fun `指定音声から空に戻すと日本語を再適用する`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.voices } returns setOf(voice)
+            every { voice.name } returns "ja-jp-x-jab-local"
+            every { textToSpeech.setVoice(voice) } returns TextToSpeech.SUCCESS
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            } returns TextToSpeech.ERROR
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_2")
+            } returns TextToSpeech.ERROR
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+            repository.speak("読み上げ", queue = true, voiceId = "")
+
+            verify(exactly = 2) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voices }
+            verify(exactly = 1) { voice.name }
+            verify(exactly = 1) { textToSpeech.setVoice(voice) }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_2")
+            }
+            confirmVerified(textToSpeech, voice)
+        }
+
+    @Test
+    fun `音声一覧がnullなら日本語へ戻す`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.voices } returns null
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            } returns TextToSpeech.ERROR
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+
+            verify(exactly = 2) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voices }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `音声一覧の取得例外なら日本語へ戻す`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.voices } throws IllegalStateException("voices")
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            } returns TextToSpeech.ERROR
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+
+            verify(exactly = 2) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voices }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `別の音声名だけなら日本語へ戻し同じIDでは再適用しない`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            every { textToSpeech.voices } returns setOf(voice)
+            every { voice.name } returns "別の音声"
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            } returns TextToSpeech.ERROR
+            every {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_2")
+            } returns TextToSpeech.ERROR
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+            repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
+
+            verify(exactly = 2) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            verify(exactly = 1) { textToSpeech.voices }
+            verify(exactly = 1) { voice.name }
+            verify(exactly = 0) { textToSpeech.setVoice(voice) }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
+            }
+            verify(exactly = 1) {
+                textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_2")
+            }
+            confirmVerified(textToSpeech, voice)
+        }
+
+    @Test
+    fun `engineOrNullは初期化成功時に同じエンジンを返す`() =
+        runTest {
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            val repository = createRepository(TextToSpeech.SUCCESS)
+
+            assertTrue(textToSpeech === repository.engineOrNull())
+            assertTrue(textToSpeech === repository.engineOrNull())
+            assertEquals(1, factoryCallCount)
+
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `engineOrNullは初期化失敗時にnullを返す`() =
+        runTest {
+            val repository = createRepository(TextToSpeech.ERROR)
+
+            assertNull(repository.engineOrNull())
+
             verify(exactly = 1) { textToSpeech.shutdown() }
             confirmVerified(textToSpeech)
         }
