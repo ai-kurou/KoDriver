@@ -14,17 +14,17 @@ import kotlin.test.assertTrue
 @Config(sdk = [36])
 class OtherListItemsTest {
     @Test
-    fun `AndroidではAndroid向けTTS案内だけが一覧に含まれる`() {
+    fun `AndroidではAndroid向けTTS案内と読み上げ音声が一覧に含まれる`() {
         val items = buildOtherListItems()
 
         assertTrue(items.contains(OtherListItemType.TtsEngineMissing))
         assertTrue(items.contains(OtherListItemType.TtsLanguageDataMissing))
         assertFalse(items.contains(OtherListItemType.WindowsSpeechUnavailable))
-        assertFalse(items.contains(OtherListItemType.Voice))
+        assertTrue(items.contains(OtherListItemType.Voice))
     }
 
     @Test
-    fun `Android16以上ではVoiceとオーバーレイ設定項目とStartupとDebugStateを除いた全項目を定義順で返す`() {
+    fun `Android16以上ではオーバーレイ設定項目とStartupとDebugStateを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()
 
         assertEquals(
@@ -37,6 +37,7 @@ class OtherListItemsTest {
                 OtherListItemType.TtsLanguageDataMissing,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
@@ -54,7 +55,7 @@ class OtherListItemsTest {
 @Config(sdk = [35])
 class OtherListItemsAndroid15Test {
     @Test
-    fun `Android16未満ではAccessLocalNetworkPermissionとVoiceとオーバーレイ設定項目とStartupとDebugStateを除いた全項目を定義順で返す`() {
+    fun `Android16未満ではAccessLocalNetworkPermissionとオーバーレイ設定項目とStartupとDebugStateを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()
 
         assertEquals(
@@ -66,6 +67,7 @@ class OtherListItemsAndroid15Test {
                 OtherListItemType.TtsLanguageDataMissing,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
@@ -83,7 +85,7 @@ class OtherListItemsAndroid15Test {
 @Config(sdk = [30])
 class OtherListItemsAndroid11Test {
     @Test
-    fun `Android12未満ではDynamicColorとAccessLocalNetworkPermissionとVoiceとオーバーレイ設定項目とStartupとDebugStateを除いた全項目を定義順で返す`() {
+    fun `Android12未満ではDynamicColorとAccessLocalNetworkPermissionとオーバーレイ設定項目とStartupとDebugStateを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()
 
         assertEquals(
@@ -95,6 +97,7 @@ class OtherListItemsAndroid11Test {
                 OtherListItemType.TtsLanguageDataMissing,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
                 OtherListItemType.Theme,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.GitHubRepository,

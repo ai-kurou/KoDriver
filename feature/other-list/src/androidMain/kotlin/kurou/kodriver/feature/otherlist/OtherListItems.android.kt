@@ -6,7 +6,7 @@ import android.os.Build
  * buildOtherListItems のこのプラットフォーム向け実装。
  */
 actual fun buildOtherListItems(): List<OtherListItemType> {
-    val windowsOnlyItems = setOf(OtherListItemType.WindowsSpeechUnavailable, OtherListItemType.Voice)
+    val windowsOnlyItems = setOf(OtherListItemType.WindowsSpeechUnavailable)
     val items =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             OtherListItemType.entries.filter {

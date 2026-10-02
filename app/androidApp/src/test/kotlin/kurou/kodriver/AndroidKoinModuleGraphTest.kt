@@ -7,7 +7,7 @@ import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.androidDataModule
-import kurou.kodriver.presentation.androidFeatureModules
+import kurou.kodriver.presentation.featureModules
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.qualifier.named
@@ -17,7 +17,7 @@ import org.robolectric.RobolectricTestRunner
 
 /**
  * KoDriverApplication.kt の composition root（androidDataModule + gt7Ps5DataModule +
- * deviceVolumeDataModule + windowsStartupDataModule + androidFeatureModules + appVersion 定数）と
+ * deviceVolumeDataModule + windowsStartupDataModule + featureModules + appVersion 定数）と
  * 同一のモジュール構成を、Koin の `checkKoinModules()` で実際に解決してみることで検証する。
  *
  * 登録漏れ・型不一致・依存解決不能な構成があっても、これまでは実際にその画面/機能を操作するまで
@@ -27,7 +27,6 @@ import org.robolectric.RobolectricTestRunner
  * Android 版は LMU/ACE 系の実データを Windows 共有メモリではなく KoDriver サーバーへの
  * WebSocket 経由で取得するため（`lmuWindowsDataModule`/`aceWindowsDataModule` を含まない）、
  * `DesktopKoinModuleGraphTest` と異なりダミー実装での置き換えは不要。
- * Windows専用の音声選択モジュールは、Androidでは一覧から到達しないため検証対象から除外する。
  */
 @RunWith(RobolectricTestRunner::class)
 class AndroidKoinModuleGraphTest {
@@ -43,8 +42,7 @@ class AndroidKoinModuleGraphTest {
                 textToSpeechDataModule,
                 windowsStartupDataModule,
             ) +
-                // 音声選択はWindows専用で、VoiceListRepositoryはAndroidに登録されない。
-                androidFeatureModules +
+                featureModules +
                 listOf(module { single(named("appVersion")) { "test" } }),
         )
     }
