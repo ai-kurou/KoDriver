@@ -233,4 +233,46 @@ class OtherVoiceDetailPaneTest {
         verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
         confirmVerified(onPreviewClicked, onVoiceSelected, haptic)
     }
+
+    @Test
+    fun `試聴中のカードだけ停止の説明を表示し同じ音声IDを通知する`() {
+        every { onPreviewClicked(voice.id, "これは読み上げ音声の試聴です。") } returns Unit
+        every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                MaterialTheme {
+                    OtherVoiceDetailPaneContent(
+                        uiState =
+                            OtherVoiceDetailUiState(
+                                voices = listOf(voice),
+                                isLoading = false,
+                                previewingVoiceId = voice.id,
+                            ),
+                        onPreviewClicked = onPreviewClicked,
+                    )
+                }
+            }
+        }
+        rule.onNode(hasContentDescription("音声Aの試聴を停止")).assertIsEnabled().performClick()
+        rule.onNode(hasContentDescription("音声Aを試聴")).assertDoesNotExist()
+        rule.onNode(hasContentDescription("システム既定を試聴")).assertIsEnabled()
+        rule.onNodeWithText("音声A").assertIsNotSelected()
+        verify(exactly = 1) { onPreviewClicked(voice.id, "これは読み上げ音声の試聴です。") }
+        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onPreviewClicked, haptic)
+    }
+
+    @Test
+    fun `システム既定の試聴中も停止の説明を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherVoiceDetailPaneContent(
+                    OtherVoiceDetailUiState(isLoading = false, previewingVoiceId = VOICE_ID_UNSPECIFIED),
+                )
+            }
+        }
+        rule.onNode(hasContentDescription("システム既定の試聴を停止")).assertIsEnabled()
+        rule.onNode(hasContentDescription("システム既定を試聴")).assertDoesNotExist()
+        rule.onNodeWithText("システム既定").assertIsSelected()
+    }
 }

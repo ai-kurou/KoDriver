@@ -13,17 +13,20 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.repository.VoiceListRepository
@@ -38,6 +41,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
@@ -273,5 +277,131 @@ class OtherVoiceDetailViewModelTest {
             verify(exactly = 2) { observeSoundVolume() }
             coVerify(exactly = 0) { speakText("試聴", volume = 0, voiceId = voice.id) }
             confirmVerified(voicePreferencesRepository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `試聴の開始と完了と失敗を状態に反映する`() =
+        runTest {
+            every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            coEvery { voiceListRepository.availableVoices() } returns listOf(voice)
+            every { observeSoundVolume() } returns flowOf(42)
+            val finish = CompletableDeferred<Unit>()
+            coEvery { speakText("試聴", volume = 42, voiceId = voice.id) } coAnswers { finish.await() }
+            val viewModel = createViewModel()
+            val subscription = viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+
+            viewModel.onPreviewClicked(voice.id, "試聴")
+            runCurrent()
+            assertEquals(voice.id, viewModel.uiState.first().previewingVoiceId)
+            finish.complete(Unit)
+            runCurrent()
+            assertNull(viewModel.uiState.first().previewingVoiceId)
+
+            coEvery { speakText("試聴", volume = 42, voiceId = voice.id) } throws IllegalStateException("試聴失敗")
+            viewModel.onPreviewClicked(voice.id, "試聴")
+            runCurrent()
+            assertNull(viewModel.uiState.first().previewingVoiceId)
+            subscription.cancel()
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
+            verify(exactly = 2) { observeSoundVolume() }
+            coVerify(exactly = 2) { speakText("試聴", volume = 42, voiceId = voice.id) }
+            confirmVerified(voicePreferencesRepository, voiceListRepository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `再タップで停止し切り替え後は古い終了処理で新しい試聴を消さない`() =
+        runTest {
+            every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            coEvery { voiceListRepository.availableVoices() } returns listOf(voice)
+            every { observeSoundVolume() } returns flowOf(42)
+            val oldFinish = CompletableDeferred<Unit>()
+            val newFinish = CompletableDeferred<Unit>()
+            var oldJob: Job? = null
+            var newJob: Job? = null
+            coEvery { speakText("試聴", volume = 42, voiceId = voice.id) } coAnswers {
+                oldJob = currentCoroutineContext()[Job]
+                try {
+                    CompletableDeferred<Unit>().await()
+                } finally {
+                    withContext(NonCancellable) { oldFinish.await() }
+                }
+            }
+            coEvery { speakText("試聴", volume = 42, voiceId = VOICE_ID_UNSPECIFIED) } coAnswers {
+                newJob = currentCoroutineContext()[Job]
+                newFinish.await()
+            }
+            val viewModel = createViewModel()
+            val subscription = viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+            viewModel.onPreviewClicked(voice.id, "試聴")
+            runCurrent()
+            assertEquals(voice.id, viewModel.uiState.first().previewingVoiceId)
+            viewModel.onPreviewClicked(VOICE_ID_UNSPECIFIED, "試聴")
+            runCurrent()
+            assertTrue(oldJob!!.isCancelled)
+            assertEquals(VOICE_ID_UNSPECIFIED, viewModel.uiState.first().previewingVoiceId)
+            oldFinish.complete(Unit)
+            runCurrent()
+            assertEquals(VOICE_ID_UNSPECIFIED, viewModel.uiState.first().previewingVoiceId)
+            viewModel.onPreviewClicked(VOICE_ID_UNSPECIFIED, "試聴")
+            runCurrent()
+            assertNull(viewModel.uiState.first().previewingVoiceId)
+            assertTrue(newJob!!.isCancelled)
+            subscription.cancel()
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
+            verify(exactly = 2) { observeSoundVolume() }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42, voiceId = voice.id) }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42, voiceId = VOICE_ID_UNSPECIFIED) }
+            confirmVerified(voicePreferencesRepository, voiceListRepository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `音量0では試聴中の状態を一度も通知しない`() =
+        runTest {
+            every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            coEvery { voiceListRepository.availableVoices() } returns listOf(voice)
+            every { observeSoundVolume() } returns flowOf(0)
+            val viewModel = createViewModel()
+            val states = mutableListOf<OtherVoiceDetailUiState>()
+            val subscription = viewModel.uiState.onEach { states.add(it) }.launchIn(backgroundScope)
+            runCurrent()
+            viewModel.onPreviewClicked(voice.id, "試聴")
+            runCurrent()
+            assertTrue(states.isNotEmpty())
+            assertTrue(states.all { it.previewingVoiceId == null })
+            subscription.cancel()
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
+            verify(exactly = 1) { observeSoundVolume() }
+            coVerify(exactly = 0) { speakText("試聴", volume = 0, voiceId = voice.id) }
+            confirmVerified(voicePreferencesRepository, voiceListRepository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `一覧の取得キャンセルは空の一覧として扱わない`() =
+        runTest {
+            every { voicePreferencesRepository.voiceId() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            val result = CompletableDeferred<List<TextToSpeechVoice>>()
+            var completionCause: Throwable? = null
+            coEvery { voiceListRepository.availableVoices() } coAnswers {
+                currentCoroutineContext()[Job]!!.invokeOnCompletion { completionCause = it }
+                result.await()
+            }
+            val viewModel = createViewModel()
+            val subscription = viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+            val cancellation = CancellationException("取得キャンセル")
+            result.cancel(cancellation)
+            runCurrent()
+            assertTrue(viewModel.uiState.first().isLoading)
+            assertTrue(completionCause is CancellationException)
+            assertEquals(cancellation.message, completionCause?.message)
+            subscription.cancel()
+            verify(exactly = 1) { voicePreferencesRepository.voiceId() }
+            coVerify(exactly = 1) { voiceListRepository.availableVoices() }
+            confirmVerified(voicePreferencesRepository, voiceListRepository)
         }
 }
