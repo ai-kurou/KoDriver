@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherlist
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class OtherListItemsTest {
     @Test
@@ -13,6 +14,7 @@ class OtherListItemsTest {
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.OverlayTextSize,
@@ -25,5 +27,10 @@ class OtherListItemsTest {
             ),
             items,
         )
+    }
+
+    @Test
+    fun `デスクトップでは読み上げ音声を一覧に含める`() {
+        assertTrue(buildOtherListItems().contains(OtherListItemType.Voice))
     }
 }

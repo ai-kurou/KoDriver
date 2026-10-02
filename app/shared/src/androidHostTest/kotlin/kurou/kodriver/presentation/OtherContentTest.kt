@@ -25,6 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -46,6 +47,32 @@ class OtherContentTest {
             defaultPanePreferredWidth = 360.dp,
             excludedBounds = emptyList(),
         )
+
+    @Test
+    fun `Androidの一覧には読み上げ音声を表示する`() {
+        var selectionCount = 0
+        var backEnabled = false
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(),
+                onItemSelected = { selectionCount++ },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { item, _, _, _, _ -> Text("Detail: ${item.id}") },
+            )
+        }
+
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("読み上げ音声"))
+        rule.onNodeWithText("読み上げ音声").assertExists()
+        rule.waitForIdle()
+
+        assertEquals(0, selectionCount)
+        assertFalse(backEnabled)
+        rule.onNodeWithText("Detail: voice").assertDoesNotExist()
+    }
 
     @Test
     fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {

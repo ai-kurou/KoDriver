@@ -14,12 +14,13 @@ import kotlin.test.assertTrue
 @Config(sdk = [36])
 class OtherListItemsTest {
     @Test
-    fun `AndroidではAndroid向けTTS案内だけが一覧に含まれる`() {
+    fun `AndroidではAndroid向けTTS案内と読み上げ音声が一覧に含まれる`() {
         val items = buildOtherListItems()
 
         assertTrue(items.contains(OtherListItemType.TtsEngineMissing))
         assertTrue(items.contains(OtherListItemType.TtsLanguageDataMissing))
         assertFalse(items.contains(OtherListItemType.WindowsSpeechUnavailable))
+        assertTrue(items.contains(OtherListItemType.Voice))
     }
 
     @Test
@@ -36,6 +37,7 @@ class OtherListItemsTest {
                 OtherListItemType.TtsLanguageDataMissing,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
@@ -65,6 +67,7 @@ class OtherListItemsAndroid15Test {
                 OtherListItemType.TtsLanguageDataMissing,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
@@ -94,6 +97,7 @@ class OtherListItemsAndroid11Test {
                 OtherListItemType.TtsLanguageDataMissing,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Voice,
                 OtherListItemType.Theme,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.GitHubRepository,

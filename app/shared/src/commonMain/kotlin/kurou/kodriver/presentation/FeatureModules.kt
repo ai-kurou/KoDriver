@@ -37,6 +37,7 @@ import kurou.kodriver.feature.otheroverlaytextsizedetail.otherOverlayTextSizeDet
 import kurou.kodriver.feature.otherreadoutstartsounddetail.otherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
 import kurou.kodriver.feature.otherthemedetail.otherThemeDetailModule
+import kurou.kodriver.feature.othervoicedetail.otherVoiceDetailModule
 import kurou.kodriver.feature.othervolumedetail.otherVolumeDetailModule
 import kurou.kodriver.feature.readoutlist.readoutListModule
 import kurou.kodriver.feature.serverconnection.serverConnectionModule
@@ -72,6 +73,7 @@ val featureModules: List<Module> =
         otherServerIpDetailModule,
         otherConsoleIpDetailModule,
         otherVolumeDetailModule,
+        otherVoiceDetailModule,
         readoutListModule,
         telemetryLogListModule,
         telemetryLogDetailModule,

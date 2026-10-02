@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.usecase
 
+import kotlinx.coroutines.flow.first
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 
 /**
@@ -7,6 +8,7 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
  */
 class SpeakTextUseCase(
     private val repository: TextToSpeechRepository,
+    private val observeVoice: ObserveVoiceUseCase,
 ) {
     suspend operator fun invoke(
         text: String,
@@ -14,6 +16,7 @@ class SpeakTextUseCase(
         volume: Int = 100,
     ) {
         if (text.isBlank()) return
-        repository.speak(text, queue, volume)
+        val voiceId = observeVoice().first()
+        repository.speak(text, queue, volume, voiceId)
     }
 }

@@ -27,6 +27,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadou
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
@@ -47,6 +48,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     private val texts: LmuWindowsFlagReadoutTextPreferencesRepository = mockk()
     private val tts: TextToSpeechRepository = mockk()
     private val engine: TextToSpeechEngine = mockk()
+    private val observeVoice: ObserveVoiceUseCase = mockk()
     private val volumes: SoundVolumePreferencesRepository = mockk()
 
     @BeforeTest
@@ -84,7 +86,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                     SaveLmuWindowsRedFlagReadoutTextUseCase(texts),
                 ),
             ),
-            SpeakTextUseCase(tts),
+            SpeakTextUseCase(tts, observeVoice),
             PlayStartSoundForKeyUseCase(engine),
             CheckTextToSpeechAvailableUseCase(tts),
             ObserveSoundVolumeUseCase(volumes),
@@ -143,15 +145,17 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         runTest {
             coEvery { tts.isAvailable() } returns true
             coEvery { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } returns Unit
-            coEvery { tts.speak("注意", false, 42) } returns Unit
+            every { observeVoice() } returns flowOf("voice-a")
+            coEvery { tts.speak("注意", false, 42, "voice-a") } returns Unit
             stubReadouts()
             val vm = createViewModel()
             vm.onFlagTextPreviewClicked("注意")
             // 開始音の有効設定は個別フラッグではなくトップレベルの Flag.Root に保存される。
             coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
-            coVerify(exactly = 1) { tts.speak("注意", false, 42) }
+            coVerify(exactly = 1) { tts.speak("注意", false, 42, "voice-a") }
             coVerify(exactly = 1) { tts.isAvailable() }
-            confirmVerified(engine, tts)
+            verify(exactly = 1) { observeVoice() }
+            confirmVerified(engine, tts, observeVoice)
         }
 
     @Test

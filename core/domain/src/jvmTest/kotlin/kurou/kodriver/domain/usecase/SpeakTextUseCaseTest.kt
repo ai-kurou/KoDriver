@@ -1,47 +1,57 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kotlin.test.Test
 
 class SpeakTextUseCaseTest {
-    private val repository: TextToSpeechRepository = mockk(relaxUnitFun = true)
+    private val repository: TextToSpeechRepository = mockk()
+    private val observeVoice: ObserveVoiceUseCase = mockk()
 
     @Test
-    fun `テキストをそのままRepositoryへ渡す`() =
+    fun `保存済み音声とテキストとqueueと音量をRepositoryへ渡す`() =
         runTest {
-            SpeakTextUseCase(repository)("ベストラップ")
+            every { observeVoice() } returns flowOf("voice-a")
+            coEvery { repository.speak("ベストラップ", true, 30, "voice-a") } returns Unit
 
-            coVerify(exactly = 1) { repository.speak("ベストラップ", false, 100) }
-            confirmVerified(repository)
+            SpeakTextUseCase(repository, observeVoice)("ベストラップ", queue = true, volume = 30)
+
+            verify(exactly = 1) { observeVoice() }
+            coVerify(exactly = 1) { repository.speak("ベストラップ", true, 30, "voice-a") }
+            confirmVerified(repository, observeVoice)
         }
 
     @Test
-    fun `volumeを指定した場合はそのままRepositoryへ渡す`() =
+    fun `音声未指定の場合も既定の引数と音声IDをRepositoryへ渡す`() =
         runTest {
-            SpeakTextUseCase(repository)("ベストラップ", volume = 30)
+            every { observeVoice() } returns flowOf(VOICE_ID_UNSPECIFIED)
+            coEvery { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED) } returns Unit
 
-            coVerify(exactly = 1) { repository.speak("ベストラップ", false, 30) }
-            confirmVerified(repository)
+            SpeakTextUseCase(repository, observeVoice)("ベストラップ")
+
+            verify(exactly = 1) { observeVoice() }
+            coVerify(exactly = 1) { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED) }
+            confirmVerified(repository, observeVoice)
         }
 
     @Test
-    fun `queueを指定した場合はそのままRepositoryへ渡す`() =
+    fun `空文字と空白のみのテキストは音声設定を取得せず読み上げない`() =
         runTest {
-            SpeakTextUseCase(repository)("ベストラップ", queue = true)
+            val speakText = SpeakTextUseCase(repository, observeVoice)
+            speakText("")
+            speakText("  ")
 
-            coVerify(exactly = 1) { repository.speak("ベストラップ", true, 100) }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `空白のみのテキストは読み上げない`() =
-        runTest {
-            SpeakTextUseCase(repository)("  ")
-
-            confirmVerified(repository)
+            verify(exactly = 0) { observeVoice() }
+            coVerify(exactly = 0) { repository.speak("", false, 100, VOICE_ID_UNSPECIFIED) }
+            coVerify(exactly = 0) { repository.speak("  ", false, 100, VOICE_ID_UNSPECIFIED) }
+            confirmVerified(repository, observeVoice)
         }
 }

@@ -58,6 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
@@ -79,6 +80,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_startup
 import kurou.kodriver.feature.otherlist.generated.resources.item_theme
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_engine_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_language_data_missing
+import kurou.kodriver.feature.otherlist.generated.resources.item_voice
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
@@ -86,6 +88,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.section_connection_s
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
 import kurou.kodriver.feature.otherlist.generated.resources.section_overlay_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_readout_settings
+import kurou.kodriver.feature.otherlist.generated.resources.voice_system_default
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark
@@ -116,6 +119,7 @@ private fun OtherListItemType.section(): OtherListSection =
         -> OtherListSection.ConnectionSettings
 
         OtherListItemType.Volume,
+        OtherListItemType.Voice,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -159,6 +163,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
         }
 
         OtherListItemType.Volume,
+        OtherListItemType.Voice,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -208,6 +213,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
 private fun otherReadoutSettingsItemDisplayName(itemType: OtherListItemType): String =
     when (itemType) {
         OtherListItemType.Volume -> stringResource(Res.string.item_volume)
+        OtherListItemType.Voice -> stringResource(Res.string.item_voice)
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
         OtherListItemType.TtsEngineMissing -> stringResource(Res.string.item_tts_engine_missing)
         OtherListItemType.TtsLanguageDataMissing -> stringResource(Res.string.item_tts_language_data_missing)
@@ -257,6 +263,7 @@ private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVe
 
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
 
+        OtherListItemType.Voice,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.WindowsSpeechUnavailable,
@@ -331,6 +338,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        OtherListItemType.Voice,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.Feedback,
         OtherListItemType.License,
@@ -371,8 +379,8 @@ fun OtherListPane(
     onDynamicColorEnabledChange: (Boolean) -> Unit,
     onHapticFeedbackEnabledChange: (Boolean) -> Unit,
     onStartupEnabledChange: (Boolean) -> Unit,
-    onAppVersionTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
+    onAppVersionTapped: () -> Unit = {},
     scrollToTopRequest: Int = 0,
 ) {
     val listState = rememberLazyListState()
@@ -513,6 +521,16 @@ private fun OtherListItem(
         supportingContent =
             if (item == OtherListItemType.GitHubRepository) {
                 { Text(stringResource(Res.string.item_github_repository_star_request)) }
+            } else if (item == OtherListItemType.Voice) {
+                {
+                    Text(
+                        if (uiState.voiceId == VOICE_ID_UNSPECIFIED) {
+                            stringResource(Res.string.voice_system_default)
+                        } else {
+                            uiState.voiceId
+                        },
+                    )
+                }
             } else {
                 null
             },
@@ -560,6 +578,7 @@ private fun OtherListItem(
                 OtherListItemType.ServerIp,
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
+                OtherListItemType.Voice,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
@@ -655,6 +674,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        OtherListItemType.Voice,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.Theme,

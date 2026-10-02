@@ -49,6 +49,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
@@ -73,6 +74,7 @@ import org.koin.dsl.module
  *   各フラッグの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
  *   および LmuWindowsFlagTextSpeaker（フラッグの実際の読み上げ時に
  *   自由文字列をOS標準TTSで読み上げるフック。WavNarratorEngine の customSpeak に渡す）。
+ * 音声設定監視用の ObserveVoiceUseCase を提供し、VoicePreferencesRepository（:core:data）を消費する。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）、unqualified の CheckTextToSpeechAvailableUseCase
  *   （:feature:lmu-windows-readout-flag-detail が登録。TTSが実際に利用可能かどうかは
@@ -102,6 +104,7 @@ val lmuWindowsNarratorModule: Module =
         }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
+        factory { ObserveVoiceUseCase(get()) }
         factory { NarratorUseCases(get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
@@ -167,7 +170,7 @@ val lmuWindowsNarratorModule: Module =
         // フラッグ本文をOS標準TTSのみで読み上げるフック。unqualified の SpeakTextUseCase / 各フラッグの Observe…ReadoutTextUseCase は
         // feature:lmu-windows-readout-flag-detail が試聴用に別途定義しているため、
         // 同じ型を二重定義しないよう named(Simulator.LmuWindows.id) で区別する。
-        factory(named(Simulator.LmuWindows.id)) { SpeakTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { SpeakTextUseCase(get(), get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBlueFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase(get()) }

@@ -1,0 +1,13 @@
+<resources>
+    <string name="navigate_back">戻る</string>
+    <string name="voice_title">読み上げ音声</string>
+    <string name="voice_description">インストールされた日本語の読み上げ音声を選択します。</string>
+    <string name="voice_subtitle">音声</string>
+    <string name="voice_system_default">システム既定</string>
+    <string name="voice_empty">日本語の音声が見つかりません。端末の設定で日本語の音声を追加してください。</string>
+    <string name="voice_loading">読み込み中…</string>
+    <string name="voice_retry">再読み込み</string>
+    <string name="voice_saved_missing">保存済みの音声が見つからないため、システム既定で読み上げます。</string>
+    <string name="voice_preview">試聴</string>
+    <string name="voice_preview_sample">これは読み上げ音声の試聴です。</string>
+</resources>

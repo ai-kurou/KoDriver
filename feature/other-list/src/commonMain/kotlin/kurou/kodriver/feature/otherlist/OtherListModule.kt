@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherlist
 
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 import org.koin.core.module.dsl.viewModel
@@ -32,13 +33,14 @@ val otherListModule =
             )
         }
 
-        factory { OtherListSettingsUseCases(get(), get(), get(), get(), get(), get(), get(), get()) }
+        factory { OtherListSettingsUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:windows-startup-data の Repository を解決）
         factory { StartupRegistrationUseCases(get()) }
 
         // オーバーレイ表示ON/OFF（:core:domain。get() は :core:data の Repository を解決）
         factory { ObserveOverlayVisibleUseCase(get()) }
+        factory { ObserveVoiceUseCase(get()) }
         factory { SaveOverlayVisibleUseCase(get()) }
 
         // TTS利用不可理由の判定（:core:domain。get() は :core:text-to-speech-data の Repository を解決）

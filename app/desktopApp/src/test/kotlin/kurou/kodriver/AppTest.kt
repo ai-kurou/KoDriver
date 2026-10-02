@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
@@ -31,6 +34,7 @@ import kurou.kodriver.feature.otherconsoleipdetail.fakeOtherConsoleIpDetailModul
 import kurou.kodriver.feature.otherlist.fakeOtherListModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.fakeOtherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherthemedetail.fakeOtherThemeDetailModule
+import kurou.kodriver.feature.othervoicedetail.fakeOtherVoiceDetailModule
 import kurou.kodriver.feature.othervolumedetail.fakeOtherVolumeDetailModule
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
@@ -73,6 +77,7 @@ class AppTest {
                             fakeOtherReadoutStartSoundDetailModule,
                             fakeOtherConsoleIpDetailModule,
                             fakeOtherVolumeDetailModule,
+                            fakeOtherVoiceDetailModule,
                             fakeOtherListModule,
                         ),
                 )
@@ -218,14 +223,25 @@ class AppTest {
         clickItem("その他")
         clickItem("ゲーム機・SimHubへ接続するIPアドレス")
         clickItem("音量")
+        clickItem("読み上げ音声")
+        waitUntilDisplayed("テスト音声")
+        clickItem("テスト音声")
+        rule
+            .onNode(hasText("システム既定") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
+            .performClick()
+        rule.waitForIdle()
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
         // 「テレメトリ受信中は画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
+        scrollToItem("テーマ")
         clickItem("テーマ")
         clickItem("キャンセル")
+        scrollToItem("オーバーレイを表示")
         clickItem("オーバーレイを表示")
+        scrollToItem("文字サイズ")
         clickItem("文字サイズ")
         clickItem("キャンセル")
+        scrollToItem("背景の透明度")
         clickItem("背景の透明度")
         scrollToItem("Windowsの日本語音声を設定")
         clickItem("Windowsの日本語音声を設定")

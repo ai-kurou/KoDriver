@@ -76,6 +76,7 @@ kotlin {
             implementation(projects.feature.otherOverlayTextSizeDetail)
             implementation(projects.feature.otherOverlayBackgroundOpacityDetail)
             implementation(projects.feature.otherVolumeDetail)
+            implementation(projects.feature.otherVoiceDetail)
             implementation(projects.feature.telemetryLogList)
             implementation(projects.feature.telemetryLogDetail)
             implementation(projects.feature.readoutList)
@@ -173,6 +174,7 @@ dependencies {
     add("jvmTestImplementation", testFixtures(projects.feature.otherReadoutStartSoundDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherConsoleIpDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherVolumeDetail))
+    add("jvmTestImplementation", testFixtures(projects.feature.otherVoiceDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherList))
     add("androidHostTestImplementation", testFixtures(projects.feature.otherThemeDetail))
     testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))
@@ -184,6 +186,7 @@ dependencies {
     testFixturesApi(testFixtures(projects.feature.otherReadoutStartSoundDetail))
     testFixturesApi(testFixtures(projects.feature.otherConsoleIpDetail))
     testFixturesApi(testFixtures(projects.feature.otherVolumeDetail))
+    testFixturesApi(testFixtures(projects.feature.otherVoiceDetail))
     testFixturesApi(testFixtures(projects.feature.otherList))
 }
 

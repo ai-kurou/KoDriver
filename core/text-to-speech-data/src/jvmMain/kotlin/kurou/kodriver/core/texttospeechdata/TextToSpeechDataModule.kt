@@ -1,7 +1,9 @@
 package kurou.kodriver.core.texttospeechdata
 
 import kurou.kodriver.core.texttospeechdata.repository.WindowsTextToSpeechRepository
+import kurou.kodriver.core.texttospeechdata.repository.WindowsVoiceListRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.repository.VoiceListRepository
 import org.koin.dsl.module
 
 /**
@@ -14,4 +16,5 @@ import org.koin.dsl.module
 val textToSpeechDataModule =
     module {
         single<TextToSpeechRepository> { WindowsTextToSpeechRepository() }
+        single<VoiceListRepository> { WindowsVoiceListRepository() }
     }

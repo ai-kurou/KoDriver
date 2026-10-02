@@ -78,6 +78,7 @@ class WindowsTextToSpeechRepositoryTest {
 
             assertEquals(listOf("ベストラップ" to true), synthesizer.spokenTexts)
             assertEquals(listOf(100), synthesizer.spokenVolumes)
+            assertEquals(listOf(""), synthesizer.spokenVoiceIds)
         }
 
     @Test
@@ -125,5 +126,15 @@ class WindowsTextToSpeechRepositoryTest {
             job.join()
 
             assertTrue(synthesizer.wasInterrupted)
+        }
+
+    @Test
+    fun `speakは保存済み音声IDを音声合成へ渡す`() =
+        runTest {
+            val synthesizer = FakeWindowsSpeechSynthesizer()
+
+            WindowsTextToSpeechRepository(synthesizer).speak("試聴", voiceId = "voice-a")
+
+            assertEquals(listOf("voice-a"), synthesizer.spokenVoiceIds)
         }
 }

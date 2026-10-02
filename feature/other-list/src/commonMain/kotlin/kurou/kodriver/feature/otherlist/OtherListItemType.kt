@@ -15,6 +15,7 @@ enum class OtherListItemType(
     WindowsSpeechUnavailable("windows_speech_unavailable"),
     KeepScreenOn("keep_screen_on"),
     ReadoutStartSound("readout_start_sound"),
+    Voice("voice"),
     Theme("theme"),
     OverlayVisible("overlay_visible"),
     OverlayTextSize("overlay_text_size"),
