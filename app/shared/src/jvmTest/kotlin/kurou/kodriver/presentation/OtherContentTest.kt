@@ -43,14 +43,14 @@ class OtherContentTest {
         )
 
     @Test
-    fun `読み上げ音声をクリックしても選択や詳細遷移をしない`() {
-        var selectionCount = 0
+    fun `読み上げ音声をクリックすると選択し詳細へ遷移する`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false
 
         rule.setContent {
             OtherContent(
-                uiState = OtherListUiState(items = listOf(OtherListItemType.Voice)),
-                onItemSelected = { selectionCount++ },
+                uiState = OtherListUiState(items = listOf(OtherListItemType.Voice), selectedItem = selectedItem),
+                onItemSelected = { selectedItem = it },
                 onClearSelectedItem = {},
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
@@ -62,9 +62,9 @@ class OtherContentTest {
         rule.onNodeWithText("読み上げ音声").assertExists().performClick()
         rule.waitForIdle()
 
-        assertEquals(0, selectionCount)
-        assertFalse(backEnabled)
-        rule.onNodeWithText("Detail: voice").assertDoesNotExist()
+        assertEquals(OtherListItemType.Voice, selectedItem)
+        assertTrue(backEnabled)
+        rule.onNodeWithText("Detail: voice").assertExists()
     }
 
     @Test

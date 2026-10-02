@@ -10,7 +10,7 @@ import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.androidDataModule
-import kurou.kodriver.presentation.featureModules
+import kurou.kodriver.presentation.androidFeatureModules
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -36,7 +36,7 @@ class KoDriverApplication : Application() {
         )
         startKoin {
             // composition root: データ層モジュール（:core:*data）＋ 全 feature の Koin モジュール
-            // （featureModules）＋ アプリバージョン定数（named("appVersion")。server-connection 等が get で解決）を束ねる。
+            // （androidFeatureModules）＋ アプリバージョン定数（named("appVersion")。server-connection 等が get で解決）を束ねる。
             modules(
                 listOf(
                     androidDataModule(this@KoDriverApplication),
@@ -45,7 +45,7 @@ class KoDriverApplication : Application() {
                     textToSpeechDataModule,
                     windowsStartupDataModule,
                 ) +
-                    featureModules +
+                    androidFeatureModules +
                     listOf(module { single(named("appVersion")) { BuildConfig.VERSION_NAME } }),
             )
         }

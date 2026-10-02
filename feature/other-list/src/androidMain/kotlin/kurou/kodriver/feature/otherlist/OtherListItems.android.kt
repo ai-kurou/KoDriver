@@ -6,11 +6,12 @@ import android.os.Build
  * buildOtherListItems のこのプラットフォーム向け実装。
  */
 actual fun buildOtherListItems(): List<OtherListItemType> {
+    val windowsOnlyItems = setOf(OtherListItemType.WindowsSpeechUnavailable, OtherListItemType.Voice)
     val items =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             OtherListItemType.entries.filter {
                 it != OtherListItemType.DebugState &&
-                    it != OtherListItemType.WindowsSpeechUnavailable &&
+                    it !in windowsOnlyItems &&
                     it != OtherListItemType.Startup &&
                     it != OtherListItemType.OverlayVisible &&
                     it != OtherListItemType.OverlayTextSize &&
@@ -20,7 +21,7 @@ actual fun buildOtherListItems(): List<OtherListItemType> {
             OtherListItemType.entries.filter {
                 it != OtherListItemType.DynamicColor &&
                     it != OtherListItemType.DebugState &&
-                    it != OtherListItemType.WindowsSpeechUnavailable &&
+                    it !in windowsOnlyItems &&
                     it != OtherListItemType.Startup &&
                     it != OtherListItemType.OverlayVisible &&
                     it != OtherListItemType.OverlayTextSize &&

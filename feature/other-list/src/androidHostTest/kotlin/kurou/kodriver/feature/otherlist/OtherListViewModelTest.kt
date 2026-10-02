@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -26,6 +27,7 @@ import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
@@ -34,6 +36,7 @@ import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
@@ -79,6 +82,9 @@ class OtherListViewModelTest {
 
     private val textToSpeechRepository: TextToSpeechRepository = mockk()
 
+    private val voiceRepository: VoicePreferencesRepository = mockk()
+    private val voiceFlow = MutableStateFlow("")
+
     private val overlayVisibleFlow = MutableStateFlow(true)
     private val keepScreenOnFlow = MutableStateFlow(true)
     private val dynamicColorFlow = MutableStateFlow(false)
@@ -109,6 +115,7 @@ class OtherListViewModelTest {
                     saveDynamicColorEnabled = SaveDynamicColorEnabledUseCase(dynamicColorRepository),
                     observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
                     saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
+                    observeVoice = ObserveVoiceUseCase(voiceRepository),
                 ),
             checkHapticFeedbackAvailable = CheckHapticFeedbackAvailableUseCase(hapticFeedbackAvailabilityRepository),
             checkAccessLocalNetworkPermissionGranted =
@@ -129,6 +136,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(hapticFeedbackAvailable = true)
 
@@ -159,6 +167,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(hapticFeedbackAvailable = false)
 
@@ -189,6 +198,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(hapticFeedbackAvailable = true)
 
@@ -216,6 +226,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery {
                 textToSpeechRepository.unavailableReason()
@@ -251,6 +262,7 @@ class OtherListViewModelTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery {
                 textToSpeechRepository.unavailableReason()
@@ -277,5 +289,21 @@ class OtherListViewModelTest {
                 hapticFeedbackAvailabilityRepository,
                 textToSpeechRepository,
             )
+        }
+
+    @Test
+    fun `音声IDはシステム既定から保存済みIDの変更を反映する`() =
+        runTest {
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            assertEquals("", viewModel.uiState.first().voiceId)
+
+            voiceFlow.update { "saved-voice" }
+
+            assertEquals("saved-voice", viewModel.uiState.first { it.voiceId == "saved-voice" }.voiceId)
         }
 }

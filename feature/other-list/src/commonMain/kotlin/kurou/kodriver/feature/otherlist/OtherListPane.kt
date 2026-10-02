@@ -58,6 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
@@ -87,6 +88,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.section_connection_s
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
 import kurou.kodriver.feature.otherlist.generated.resources.section_overlay_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_readout_settings
+import kurou.kodriver.feature.otherlist.generated.resources.voice_system_default
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark
@@ -377,8 +379,8 @@ fun OtherListPane(
     onDynamicColorEnabledChange: (Boolean) -> Unit,
     onHapticFeedbackEnabledChange: (Boolean) -> Unit,
     onStartupEnabledChange: (Boolean) -> Unit,
-    onAppVersionTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
+    onAppVersionTapped: () -> Unit = {},
     scrollToTopRequest: Int = 0,
 ) {
     val listState = rememberLazyListState()
@@ -519,6 +521,16 @@ private fun OtherListItem(
         supportingContent =
             if (item == OtherListItemType.GitHubRepository) {
                 { Text(stringResource(Res.string.item_github_repository_star_request)) }
+            } else if (item == OtherListItemType.Voice) {
+                {
+                    Text(
+                        if (uiState.voiceId == VOICE_ID_UNSPECIFIED) {
+                            stringResource(Res.string.voice_system_default)
+                        } else {
+                            uiState.voiceId
+                        },
+                    )
+                }
             } else {
                 null
             },
@@ -627,8 +639,6 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
-        OtherListItemType.Voice -> {}
-
         OtherListItemType.OverlayVisible -> {
             onOverlayVisibleChange(!uiState.overlayVisible)
         }
@@ -664,6 +674,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        OtherListItemType.Voice,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.Theme,
