@@ -39,4 +39,14 @@ class SpeakScriptTest {
             buildSpeakScript("It's a lap", 0, "voice'a"),
         )
     }
+
+    @Test
+    fun `タイポグラフィ引用符も二重化して文字列から抜け出せないようにする`() {
+        assertEquals(
+            prefix + "\$s.Volume = 50; " +
+                "try { \$s.SelectVoice('a\u2019\u2019); x') } catch { $fallback }; " +
+                "\$s.Speak('\u2018\u2018\u201A\u201A\u201B\u201B')",
+            buildSpeakScript("\u2018\u201A\u201B", 50, "a\u2019); x"),
+        )
+    }
 }

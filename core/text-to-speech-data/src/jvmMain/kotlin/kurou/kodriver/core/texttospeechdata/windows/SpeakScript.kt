@@ -17,11 +17,19 @@ internal fun buildSpeakScript(
         if (voiceId.isEmpty()) {
             "$fallback; "
         } else {
-            "try { \$s.SelectVoice('${voiceId.replace("'", "''")}') } catch { $fallback }; "
+            "try { \$s.SelectVoice('${escapeSingleQuoted(voiceId)}') } catch { $fallback }; "
         }
     return "Add-Type -AssemblyName System.Speech; " +
         "\$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
         "\$s.Volume = $volume; " +
         selection +
-        "\$s.Speak('${text.replace("'", "''")}')"
+        "\$s.Speak('${escapeSingleQuoted(text)}')"
 }
+
+/**
+ * PowerShellの単一引用符文字列へ埋め込むため、引用符として扱われる文字を二重化する。
+ * PowerShellは`'`だけでなく、タイポグラフィ引用符（U+2018〜U+201B）も単一引用符とみなす。
+ */
+private fun escapeSingleQuoted(value: String): String = SINGLE_QUOTE_REGEX.replace(value) { it.value + it.value }
+
+private val SINGLE_QUOTE_REGEX = Regex("['\u2018\u2019\u201A\u201B]")
