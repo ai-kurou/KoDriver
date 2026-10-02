@@ -49,7 +49,7 @@ class OtherContentTest {
         )
 
     @Test
-    fun `Androidの一覧には読み上げ音声を表示しない`() {
+    fun `Androidの一覧には読み上げ音声を表示する`() {
         var selectionCount = 0
         var backEnabled = false
 
@@ -65,7 +65,8 @@ class OtherContentTest {
             )
         }
 
-        rule.onNodeWithText("読み上げ音声").assertDoesNotExist()
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("読み上げ音声"))
+        rule.onNodeWithText("読み上げ音声").assertExists()
         rule.waitForIdle()
 
         assertEquals(0, selectionCount)

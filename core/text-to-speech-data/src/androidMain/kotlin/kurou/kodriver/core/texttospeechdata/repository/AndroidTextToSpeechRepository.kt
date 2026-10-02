@@ -71,8 +71,14 @@ internal class AndroidTextToSpeechRepository(
         return unavailableReason
     }
 
-    /** 一覧取得と読み上げで同じエンジンを共有する。初期化に失敗した場合は `null` を返す。 */
-    internal suspend fun engineOrNull(): TextToSpeech? = ensureInitialized()
+    /**
+     * 一覧取得と読み上げで同じエンジンを共有する。初期化に失敗した場合は `null` を返す。
+     *
+     * [retryIfUnavailable] が `true` の場合、前回の初期化が失敗していれば再初期化を試みる。
+     * 音声一覧の再読み込みで、後から導入した日本語データを反映するために使う。
+     */
+    internal suspend fun engineOrNull(retryIfUnavailable: Boolean = false): TextToSpeech? =
+        ensureInitialized(retryIfUnavailable = retryIfUnavailable)
 
     /** [voiceId] に対応する音声を使い、未指定・見つからない場合は既定の日本語音声を使う。 */
     override suspend fun speak(

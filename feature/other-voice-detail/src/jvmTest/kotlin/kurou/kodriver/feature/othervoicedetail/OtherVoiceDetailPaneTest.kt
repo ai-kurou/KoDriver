@@ -104,7 +104,7 @@ class OtherVoiceDetailPaneTest {
         rule.onNodeWithText("システム既定").assertIsSelected()
         rule.onNodeWithText("再読み込み").assertDoesNotExist()
         rule
-            .onNodeWithText("日本語の音声が見つかりません。Windowsの設定で日本語の音声を追加してください。")
+            .onNodeWithText("日本語の音声が見つかりません。端末の設定で日本語の音声を追加してください。")
             .assertDoesNotExist()
     }
 
@@ -122,7 +122,7 @@ class OtherVoiceDetailPaneTest {
 
         rule.onNodeWithText("読み込み中…").assertDoesNotExist()
         rule
-            .onNodeWithText("日本語の音声が見つかりません。Windowsの設定で日本語の音声を追加してください。")
+            .onNodeWithText("日本語の音声が見つかりません。端末の設定で日本語の音声を追加してください。")
             .assertExists()
         rule.onNodeWithText("再読み込み").performClick()
         verify(exactly = 1) { onRetryClicked() }

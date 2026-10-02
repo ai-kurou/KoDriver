@@ -99,6 +99,3 @@ val featureModules: List<Module> =
         debugStateDetailModule,
         narratorOverlayModule,
     )
-
-/** Androidの一覧から到達しないWindows専用の音声選択モジュールを除外する。 */
-val androidFeatureModules: List<Module> = featureModules.filterNot { it === otherVoiceDetailModule }
