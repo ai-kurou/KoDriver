@@ -6,6 +6,10 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -21,8 +25,6 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -87,8 +89,14 @@ class FakeLmuWindowsRepository : LmuWindowsRepository {
 
 class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleApproachPreferencesRepository {
     private val skipFirstLapFlow = MutableStateFlow(true)
-    private val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
-    private val sustainedReadoutTypeFlow = MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+    private val startLeftReadoutTextFlow =
+        MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT)
+    private val startRightReadoutTextFlow =
+        MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT)
+    private val sustainedLeftReadoutTextFlow =
+        MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT)
+    private val sustainedRightReadoutTextFlow =
+        MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
@@ -97,16 +105,28 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
         skipFirstLapFlow.update { skip }
     }
 
-    override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> = startReadoutTypeFlow
+    override fun observeStartLeftReadoutText(): Flow<String> = startLeftReadoutTextFlow
 
-    override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
-        startReadoutTypeFlow.update { type }
+    override suspend fun saveStartLeftReadoutText(text: String) {
+        startLeftReadoutTextFlow.update { text }
     }
 
-    override fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> = sustainedReadoutTypeFlow
+    override fun observeStartRightReadoutText(): Flow<String> = startRightReadoutTextFlow
 
-    override suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) {
-        sustainedReadoutTypeFlow.update { type }
+    override suspend fun saveStartRightReadoutText(text: String) {
+        startRightReadoutTextFlow.update { text }
+    }
+
+    override fun observeSustainedLeftReadoutText(): Flow<String> = sustainedLeftReadoutTextFlow
+
+    override suspend fun saveSustainedLeftReadoutText(text: String) {
+        sustainedLeftReadoutTextFlow.update { text }
+    }
+
+    override fun observeSustainedRightReadoutText(): Flow<String> = sustainedRightReadoutTextFlow
+
+    override suspend fun saveSustainedRightReadoutText(text: String) {
+        sustainedRightReadoutTextFlow.update { text }
     }
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow

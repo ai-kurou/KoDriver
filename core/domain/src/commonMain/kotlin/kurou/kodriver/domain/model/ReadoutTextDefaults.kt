@@ -19,3 +19,15 @@ const val LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT = "フルコ�
 
 /** LMU のレッドフラッグ読み上げ文言の初期値。空白文言の場合は読み上げない。 */
 const val LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT = "レッドフラッグ"
+
+/** LMU の左車両接近開始時の読み上げ文言の初期値。空白文言の場合は読み上げない。 */
+const val LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT = "カーレフト"
+
+/** LMU の右車両接近開始時の読み上げ文言の初期値。空白文言の場合は読み上げない。 */
+const val LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT = "カーライト"
+
+/** LMU の左車両接近継続時の読み上げ文言の初期値。空白文言の場合は読み上げない。 */
+const val LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT = "キープライト"
+
+/** LMU の右車両接近継続時の読み上げ文言の初期値。空白文言の場合は読み上げない。 */
+const val LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT = "キープレフト"

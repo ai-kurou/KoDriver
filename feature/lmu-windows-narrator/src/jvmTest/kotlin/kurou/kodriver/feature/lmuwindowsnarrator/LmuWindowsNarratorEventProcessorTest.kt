@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "TooManyFunctions")
 
 package kurou.kodriver.feature.lmuwindowsnarrator
 
@@ -47,8 +47,6 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
@@ -934,11 +932,233 @@ class LmuWindowsNarratorEventProcessorTest {
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
-    private fun createProcessor(flagReadoutText: suspend (SpeechEvent) -> String? = { it.narratedText }) =
+    @Test
+    fun `車両接近開始時の自由文字列をログに保存する`() =
+        runTest {
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.CarRight, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "後続に譲ってください",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { "後続に譲ってください" }.processVehicleApproach(
+                vehicleApproach = leftVehicleApproach(distance = 3.0),
+                events = listOf(SpeechEvent.CarRight),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarRight, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "後続に譲ってください",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `本文を読み上げられない車両接近開始時はスキップとして記録する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { null }.processVehicleApproach(
+                vehicleApproach = leftVehicleApproach(distance = 3.0),
+                events = listOf(SpeechEvent.CarRight),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `車両接近継続時Leftの自由文字列をログに保存する`() =
+        runTest {
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.CarLeftSustained, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "後続に譲ってください",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { "後続に譲ってください" }.processVehicleApproach(
+                vehicleApproach = leftVehicleApproach(distance = 3.0),
+                events = listOf(SpeechEvent.CarLeftSustained),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeftSustained, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "後続に譲ってください",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `本文を読み上げられない車両接近継続時Leftはスキップとして記録する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { null }.processVehicleApproach(
+                vehicleApproach = leftVehicleApproach(distance = 3.0),
+                events = listOf(SpeechEvent.CarLeftSustained),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `車両接近継続時Rightの自由文字列をログに保存する`() =
+        runTest {
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.CarRightSustained, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "後続に譲ってください",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { "後続に譲ってください" }.processVehicleApproach(
+                vehicleApproach = leftVehicleApproach(distance = 3.0),
+                events = listOf(SpeechEvent.CarRightSustained),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarRightSustained, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "後続に譲ってください",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `本文を読み上げられない車両接近継続時Rightはスキップとして記録する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { null }.processVehicleApproach(
+                vehicleApproach = leftVehicleApproach(distance = 3.0),
+                events = listOf(SpeechEvent.CarRightSustained),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    private fun createProcessor(readoutText: suspend (SpeechEvent) -> String? = { it.narratedText }) =
         LmuWindowsNarratorEventProcessor(
             ttsEngine = ttsEngine,
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-            flagReadoutText = flagReadoutText,
+            readoutText = readoutText,
         )
 }
 
@@ -952,9 +1172,7 @@ private fun logContext() =
                 overheatVoiceType = OverheatVoiceType.GP2_GP2,
                 currentLap = 1,
                 skipFirstLap = false,
-                vehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
                 vehicleApproachSustainedApproachDurationSeconds = 7,
-                vehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
                 tyreTemperatureHighThresholdCelsius = Celsius(95),
                 tyreTemperatureLowWarningPhases = emptySet(),
                 tyreWearThresholdPercentage = 50,
@@ -1029,9 +1247,7 @@ private fun pitTimingLogContext() =
                 overheatVoiceType = OverheatVoiceType.GP2_GP2,
                 currentLap = 1,
                 skipFirstLap = false,
-                vehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
                 vehicleApproachSustainedApproachDurationSeconds = 7,
-                vehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
                 tyreTemperatureHighThresholdCelsius = Celsius(95),
                 tyreTemperatureLowWarningPhases = emptySet(),
                 tyreWearThresholdPercentage = 50,

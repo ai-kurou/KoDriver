@@ -1,8 +1,6 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
 class LmuWindowsVehicleApproachPreferencesUseCases(
@@ -12,13 +10,23 @@ class LmuWindowsVehicleApproachPreferencesUseCases(
 
     suspend fun saveSkipFirstLap(skip: Boolean) = repository.saveSkipFirstLap(skip)
 
-    fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> = repository.observeStartReadoutType()
+    fun observeStartLeftReadoutText(): Flow<String> = repository.observeStartLeftReadoutText()
 
-    suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) = repository.saveStartReadoutType(type)
+    suspend fun saveStartLeftReadoutText(text: String) =
+        SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase(repository)(text)
 
-    fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> =
-        repository.observeSustainedReadoutType()
+    fun observeStartRightReadoutText(): Flow<String> = repository.observeStartRightReadoutText()
 
-    suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) =
-        repository.saveSustainedReadoutType(type)
+    suspend fun saveStartRightReadoutText(text: String) =
+        SaveLmuWindowsVehicleApproachStartRightReadoutTextUseCase(repository)(text)
+
+    fun observeSustainedLeftReadoutText(): Flow<String> = repository.observeSustainedLeftReadoutText()
+
+    suspend fun saveSustainedLeftReadoutText(text: String) =
+        SaveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(repository)(text)
+
+    fun observeSustainedRightReadoutText(): Flow<String> = repository.observeSustainedRightReadoutText()
+
+    suspend fun saveSustainedRightReadoutText(text: String) =
+        SaveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(repository)(text)
 }

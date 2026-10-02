@@ -54,7 +54,7 @@ internal data class LmuWindowsPitTimingSnapshot(
 internal class LmuWindowsNarratorEventProcessor(
     private val ttsEngine: TextToSpeechEngine,
     private val saveTelemetryLog: SaveTelemetryLogUseCase,
-    private val flagReadoutText: suspend (SpeechEvent) -> String?,
+    private val readoutText: suspend (SpeechEvent) -> String?,
 ) {
     private var previousTelemetry: LmuWindowsTelemetryData? = null
     private var previousVehicleApproach: LmuWindowsVehicleApproachData? = null
@@ -105,11 +105,17 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousVehicleApproach
         events.forEach { event ->
-            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            val text = readoutText(event)
+            val narrationOutcome =
+                if (text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    speakWithPriority(event, readoutOrder, queueEnabledStates)
+                }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
-                narratedText = event.narratedText,
+                narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
                 telemetryJson =
                     buildTelemetryLogJson(
@@ -195,7 +201,7 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousRaceFlags
         events.forEach { event ->
-            val text = flagReadoutText(event)
+            val text = readoutText(event)
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED

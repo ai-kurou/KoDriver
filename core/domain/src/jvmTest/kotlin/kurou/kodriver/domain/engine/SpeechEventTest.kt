@@ -6,15 +6,11 @@ import kotlin.test.assertEquals
 
 class SpeechEventTest {
     @Test
-    fun `LMU車両接近系のnarratedTextはChipと同じ文言を返す`() {
+    fun `LMU車両接近系のnarratedTextは既定文言を返す`() {
         assertEquals("カーレフト", SpeechEvent.CarLeft.narratedText)
         assertEquals("カーライト", SpeechEvent.CarRight.narratedText)
-        assertEquals("左接近", SpeechEvent.LeftApproach.narratedText)
-        assertEquals("右接近", SpeechEvent.RightApproach.narratedText)
-        assertEquals("キープレフト", SpeechEvent.KeepLeft.narratedText)
-        assertEquals("キープライト", SpeechEvent.KeepRight.narratedText)
-        assertEquals("左側維持", SpeechEvent.LeftSustained.narratedText)
-        assertEquals("右側維持", SpeechEvent.RightSustained.narratedText)
+        assertEquals("キープレフト", SpeechEvent.CarRightSustained.narratedText)
+        assertEquals("キープライト", SpeechEvent.CarLeftSustained.narratedText)
     }
 
     @Test

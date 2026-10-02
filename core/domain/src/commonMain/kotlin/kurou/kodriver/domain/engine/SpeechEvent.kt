@@ -3,6 +3,10 @@ package kurou.kodriver.domain.engine
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 
@@ -19,50 +23,30 @@ sealed interface SpeechEvent {
 
     /**
      * テレメトリログに記録するイベントの既定文言。
-     * WAVイベントでは収録音声・チップ表示と一致する。LMUフラッグは自由文字列を読み上げるため、
-     * 実際の本文ではなく既定文言の定数（`LMU_WINDOWS_*_FLAG_READOUT_TEXT_DEFAULT`）を参照する。
+     * WAVイベントでは収録音声・チップ表示と一致する。LMUフラッグ・車両接近(開始時・継続時)は自由文字列を読み上げるため、
+     * 実際の本文ではなく既定文言の定数（`LMU_WINDOWS_*_READOUT_TEXT_DEFAULT`）を参照する。
      * ドメイン層はCompose Resourcesに依存しないため、表示文言の変更時はここも更新する。
      */
     val narratedText: String
 
     data object CarLeft : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "カーレフト"
+        override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
     }
 
     data object CarRight : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "カーライト"
+        override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
     }
 
-    data object LeftApproach : SpeechEvent {
+    data object CarLeftSustained : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "左接近"
+        override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
     }
 
-    data object RightApproach : SpeechEvent {
+    data object CarRightSustained : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "右接近"
-    }
-
-    data object KeepLeft : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "キープレフト"
-    }
-
-    data object KeepRight : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "キープライト"
-    }
-
-    data object LeftSustained : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "左側維持"
-    }
-
-    data object RightSustained : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        override val narratedText = "右側維持"
+        override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
     }
 
     data object BlueFlag : SpeechEvent {

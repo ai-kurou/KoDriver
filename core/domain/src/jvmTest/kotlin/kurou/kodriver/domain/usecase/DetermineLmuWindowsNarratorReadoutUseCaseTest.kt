@@ -29,8 +29,6 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -333,12 +331,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `右接近の読み上げ種別を変更するとRightApproachを返す`() {
+    fun `右接近の開始時はCarRightを返す`() {
         val first =
             useCase.determineVehicleApproach(
                 state = LmuWindowsNarratorState(),
                 vehicleApproach = rightVehicleApproach(vehicleId = 1),
-                settings = settings(startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH),
+                settings = settings(),
                 observedAtMs = 0L,
             )
 
@@ -346,20 +344,20 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             useCase.determineVehicleApproach(
                 state = first.state,
                 vehicleApproach = rightVehicleApproach(vehicleId = 1),
-                settings = settings(startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH),
+                settings = settings(),
                 observedAtMs = 50L,
             )
 
-        assertEquals(listOf(SpeechEvent.RightApproach), second.events)
+        assertEquals(listOf(SpeechEvent.CarRight), second.events)
     }
 
     @Test
-    fun `左接近の読み上げ種別を変更するとLeftApproachを返す`() {
+    fun `左接近の開始時はCarLeftを返す`() {
         val first =
             useCase.determineVehicleApproach(
                 state = LmuWindowsNarratorState(),
                 vehicleApproach = leftVehicleApproach(vehicleId = 1),
-                settings = settings(startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH),
+                settings = settings(),
                 observedAtMs = 0L,
             )
 
@@ -367,11 +365,11 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             useCase.determineVehicleApproach(
                 state = first.state,
                 vehicleApproach = leftVehicleApproach(vehicleId = 1),
-                settings = settings(startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH),
+                settings = settings(),
                 observedAtMs = 50L,
             )
 
-        assertEquals(listOf(SpeechEvent.LeftApproach), second.events)
+        assertEquals(listOf(SpeechEvent.CarLeft), second.events)
     }
 
     @Test
@@ -488,7 +486,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `左接近が閾値秒数継続するとKeepRightを返す`() {
+    fun `左接近が閾値秒数継続するとCarLeftSustainedを返す`() {
         val first =
             useCase.determineVehicleApproach(
                 state = LmuWindowsNarratorState(),
@@ -505,11 +503,11 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 7_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.KeepRight), second.events)
+        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.CarLeftSustained), second.events)
     }
 
     @Test
-    fun `右接近が閾値秒数継続するとKeepLeftを返す`() {
+    fun `右接近が閾値秒数継続するとCarRightSustainedを返す`() {
         val first =
             useCase.determineVehicleApproach(
                 state = LmuWindowsNarratorState(),
@@ -526,36 +524,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 7_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.CarRight, SpeechEvent.KeepLeft), second.events)
-    }
-
-    @Test
-    fun `左接近の継続読み上げ種別を変更するとRightSustainedを返す`() {
-        val first =
-            useCase.determineVehicleApproach(
-                state = LmuWindowsNarratorState(),
-                vehicleApproach = leftVehicleApproach(vehicleId = 1),
-                settings =
-                    settings(
-                        sustainedApproachDurationSeconds = 7,
-                        sustainedReadoutType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
-                    ),
-                observedAtMs = 0L,
-            )
-
-        val second =
-            useCase.determineVehicleApproach(
-                state = first.state,
-                vehicleApproach = leftVehicleApproach(vehicleId = 1),
-                settings =
-                    settings(
-                        sustainedApproachDurationSeconds = 7,
-                        sustainedReadoutType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
-                    ),
-                observedAtMs = 7_000L,
-            )
-
-        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.RightSustained), second.events)
+        assertEquals(listOf(SpeechEvent.CarRight, SpeechEvent.CarRightSustained), second.events)
     }
 
     @Test
@@ -577,35 +546,6 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(emptyList<SpeechEvent>(), second.events)
-    }
-
-    @Test
-    fun `右接近の継続読み上げ種別を変更するとLeftSustainedを返す`() {
-        val first =
-            useCase.determineVehicleApproach(
-                state = LmuWindowsNarratorState(),
-                vehicleApproach = rightVehicleApproach(vehicleId = 1),
-                settings =
-                    settings(
-                        sustainedApproachDurationSeconds = 7,
-                        sustainedReadoutType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
-                    ),
-                observedAtMs = 0L,
-            )
-
-        val second =
-            useCase.determineVehicleApproach(
-                state = first.state,
-                vehicleApproach = rightVehicleApproach(vehicleId = 1),
-                settings =
-                    settings(
-                        sustainedApproachDurationSeconds = 7,
-                        sustainedReadoutType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
-                    ),
-                observedAtMs = 7_000L,
-            )
-
-        assertEquals(listOf(SpeechEvent.CarRight, SpeechEvent.LeftSustained), second.events)
     }
 
     @Test
@@ -2334,9 +2274,7 @@ private fun settings(
     overheatVoiceType: OverheatVoiceType = OverheatVoiceType.GP2_GP2,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,
-    startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
     sustainedApproachDurationSeconds: Int = 7,
-    sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
     tyreTemperatureHighThresholdCelsius: Int = 90,
     tyreWearThresholdPercentage: Int = 50,
     brakeTemperatureHighThresholdCelsius: Int = 700,
@@ -2349,9 +2287,7 @@ private fun settings(
     overheatVoiceType = overheatVoiceType,
     currentLap = currentLap,
     skipFirstLap = skipFirstLap,
-    vehicleApproachStartReadoutType = startReadoutType,
     vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds,
-    vehicleApproachSustainedReadoutType = sustainedReadoutType,
     tyreTemperatureHighThresholdCelsius = Celsius(tyreTemperatureHighThresholdCelsius),
     tyreTemperatureLowWarningPhases =
         setOf(

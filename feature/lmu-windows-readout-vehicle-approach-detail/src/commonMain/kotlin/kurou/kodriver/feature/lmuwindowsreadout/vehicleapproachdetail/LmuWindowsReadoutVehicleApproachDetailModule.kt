@@ -1,10 +1,16 @@
 package kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail
 
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -17,8 +23,9 @@ import org.koin.dsl.module
  *   LmuWindowsVehicleApproachPreferencesUseCases、ReadoutItemKeyベースのスイッチ状態を扱う
  *   ObserveLmuWindowsVehicleApproachEnabledStatesUseCase / SaveLmuWindowsVehicleApproachEnabledStateUseCase）。
  * 消費（get で解決）: LmuWindowsVehicleApproachThresholdsPreferencesRepository・
- *   LmuWindowsVehicleApproachPreferencesRepository（:core:data）、試聴用の named(Simulator.LmuWindows.id) の
- *   TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
+ *   LmuWindowsVehicleApproachPreferencesRepository・SoundVolumePreferencesRepository（:core:data）、
+ *   TextToSpeechRepository（:core:text-to-speech-data）、試聴用の named(Simulator.LmuWindows.id) の
+ *   PlayStartSoundForKeyUseCase・SpeakTextUseCase（:feature:lmu-windows-narrator で登録）。
  */
 val lmuWindowsReadoutVehicleApproachDetailModule =
     module {
@@ -29,7 +36,20 @@ val lmuWindowsReadoutVehicleApproachDetailModule =
                 get(),
                 get(),
                 get(),
+                get(),
+                get(),
+                get(),
+            )
+        }
+
+        factory {
+            StartReadoutUseCases(
                 get(named(Simulator.LmuWindows.id)),
+                get(named(Simulator.LmuWindows.id)),
+                get(),
+                get(),
+                get(),
+                get(),
             )
         }
 
@@ -37,5 +57,11 @@ val lmuWindowsReadoutVehicleApproachDetailModule =
         factory { LmuWindowsVehicleApproachThresholdsUseCases(get()) }
         factory { LmuWindowsVehicleApproachPreferencesUseCases(get()) }
         factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
+        factory { CheckTextToSpeechAvailableUseCase(get()) }
+        factory { ObserveSoundVolumeUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(get()) }
+        factory { SaveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase(get()) }
+        factory { SaveLmuWindowsVehicleApproachStartRightReadoutTextUseCase(get()) }
         factory { SaveLmuWindowsVehicleApproachEnabledStateUseCase(get()) }
     }

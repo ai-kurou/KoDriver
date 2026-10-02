@@ -3,7 +3,6 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -16,7 +15,6 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
         assertEquals(
             LmuWindowsVehicleApproachPreferences(
                 skipFirstLap = LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT,
-                startReadoutType = LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT.id,
             ),
             LmuWindowsVehicleApproachPreferencesSerializer.defaultValue,
         )
@@ -28,9 +26,11 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
             val original =
                 LmuWindowsVehicleApproachPreferences(
                     skipFirstLap = true,
-                    startReadoutType = "left_right_approach",
+                    startLeftReadoutText = "左注意",
+                    startRightReadoutText = "",
                     enabledStates = mapOf("lmu_windows_vehicle_approach_sustained" to false),
-                    sustainedReadoutType = "left_right_sustained",
+                    sustainedLeftReadoutText = "左継続",
+                    sustainedRightReadoutText = "",
                 )
             val output = ByteArrayOutputStream()
             LmuWindowsVehicleApproachPreferencesSerializer.writeTo(original, output)
@@ -41,6 +41,25 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
                 )
 
             assertEquals(original, restored)
+        }
+
+    @Test
+    fun `廃止したProtoNumber 3・5を含む旧設定では開始・継続文言が既定値になる`() =
+        runTest {
+            // field 1: false、廃止したfield 3: "left_right_approach"、field 5: "left_right_sustained"。
+            val oldType = "left_right_approach".encodeToByteArray()
+            val sustained = "left_right_sustained".encodeToByteArray()
+            val legacy =
+                byteArrayOf(0x08, 0, 0x1a, oldType.size.toByte()) + oldType +
+                    byteArrayOf(0x2a, sustained.size.toByte()) + sustained
+
+            val restored = LmuWindowsVehicleApproachPreferencesSerializer.readFrom(ByteArrayInputStream(legacy))
+
+            assertEquals("カーレフト", restored.startLeftReadoutText)
+            assertEquals("カーライト", restored.startRightReadoutText)
+            assertEquals(false, restored.skipFirstLap)
+            assertEquals("キープライト", restored.sustainedLeftReadoutText)
+            assertEquals("キープレフト", restored.sustainedRightReadoutText)
         }
 
     @Test
