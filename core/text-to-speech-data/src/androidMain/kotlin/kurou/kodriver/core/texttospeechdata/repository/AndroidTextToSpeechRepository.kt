@@ -140,7 +140,10 @@ internal class AndroidTextToSpeechRepository(
                     null
                 }
             if (voice == null || engine.setVoice(voice) != TextToSpeech.SUCCESS) {
+                // 後から音声が導入された場合に適用できるよう、フォールバックした要求は適用済みとして覚えない。
+                appliedVoiceId = null
                 engine.setLanguage(locale)
+                return
             }
         } else if (appliedVoiceId != null) {
             engine.setLanguage(locale)

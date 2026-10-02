@@ -672,7 +672,7 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
-    fun `別の音声名だけなら日本語へ戻し同じIDでは再適用しない`() =
+    fun `音声が見つからない場合は日本語へ戻し次の要求で再検索する`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
             every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
@@ -689,10 +689,10 @@ class AndroidTextToSpeechRepositoryTest {
             repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
             repository.speak("読み上げ", queue = true, voiceId = "ja-jp-x-jab-local")
 
-            verify(exactly = 2) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 3) { textToSpeech.setLanguage(Locale.JAPANESE) }
             verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
-            verify(exactly = 1) { textToSpeech.voices }
-            verify(exactly = 1) { voice.name }
+            verify(exactly = 2) { textToSpeech.voices }
+            verify(exactly = 2) { voice.name }
             verify(exactly = 0) { textToSpeech.setVoice(voice) }
             verify(exactly = 1) {
                 textToSpeech.speak("読み上げ", TextToSpeech.QUEUE_ADD, params, "kodriver_tts_1")
