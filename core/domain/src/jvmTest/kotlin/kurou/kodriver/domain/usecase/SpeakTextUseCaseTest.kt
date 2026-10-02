@@ -17,6 +17,22 @@ class SpeakTextUseCaseTest {
     private val observeVoice: ObserveVoiceUseCase = mockk()
 
     @Test
+    fun `明示した音声は保存済み設定を取得せずRepositoryへ渡す`() =
+        runTest {
+            coEvery { repository.speak("試聴", false, 42, "voice-b") } returns Unit
+            coEvery { repository.speak("試聴", false, 42, VOICE_ID_UNSPECIFIED) } returns Unit
+
+            val speakText = SpeakTextUseCase(repository, observeVoice)
+            speakText("試聴", volume = 42, voiceId = "voice-b")
+            speakText("試聴", volume = 42, voiceId = VOICE_ID_UNSPECIFIED)
+
+            verify(exactly = 0) { observeVoice() }
+            coVerify(exactly = 1) { repository.speak("試聴", false, 42, "voice-b") }
+            coVerify(exactly = 1) { repository.speak("試聴", false, 42, VOICE_ID_UNSPECIFIED) }
+            confirmVerified(repository, observeVoice)
+        }
+
+    @Test
     fun `保存済み音声とテキストとqueueと音量をRepositoryへ渡す`() =
         runTest {
             every { observeVoice() } returns flowOf("voice-a")

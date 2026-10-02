@@ -1,12 +1,14 @@
 package kurou.kodriver.feature.othervoicedetail
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
@@ -14,6 +16,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -22,6 +25,8 @@ import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class OtherVoiceDetailPaneTest {
     @get:Rule
@@ -29,11 +34,60 @@ class OtherVoiceDetailPaneTest {
 
     private val haptic: HapticFeedback = mockk()
     private val onVoiceSelected: (String) -> Unit = mockk()
-    private val onPreviewClicked: (String) -> Unit = mockk()
+    private val onPreviewClicked: (String, String) -> Unit = mockk()
     private val onRetryClicked: () -> Unit = mockk()
     private val voice = TextToSpeechVoice("voice-a", "音声A", "ja-JP")
 
     private val onBack: () -> Unit = mockk()
+
+    @Test
+    fun `広いペインは2列で3件目を次の行に配置する`() {
+        rule.setContent {
+            MaterialTheme {
+                Box(Modifier.requiredSize(1560.dp, 1080.dp)) {
+                    OtherVoiceDetailPaneContent(
+                        OtherVoiceDetailUiState(
+                            voices =
+                                listOf(
+                                    voice,
+                                    TextToSpeechVoice("voice-b", "音声B", "ja-JP"),
+                                    TextToSpeechVoice("voice-c", "音声C", "ja-JP"),
+                                ),
+                            isLoading = false,
+                        ),
+                    )
+                }
+            }
+        }
+        val first = rule.onNodeWithText("音声A").fetchSemanticsNode().boundsInRoot
+        val second = rule.onNodeWithText("音声B").fetchSemanticsNode().boundsInRoot
+        val third = rule.onNodeWithText("音声C").fetchSemanticsNode().boundsInRoot
+        assertEquals(first.top, second.top)
+        assertTrue(second.left > first.right)
+        assertEquals(first.left, third.left)
+        assertTrue(third.top > first.bottom)
+        rule.onNodeWithText("3 件").assertExists()
+    }
+
+    @Test
+    fun `狭いペインは音声カードを1列で配置する`() {
+        rule.setContent {
+            MaterialTheme {
+                Box(Modifier.requiredSize(360.dp, 1080.dp)) {
+                    OtherVoiceDetailPaneContent(
+                        OtherVoiceDetailUiState(
+                            voices = listOf(voice, TextToSpeechVoice("voice-b", "音声B", "ja-JP")),
+                            isLoading = false,
+                        ),
+                    )
+                }
+            }
+        }
+        val first = rule.onNodeWithText("音声A").fetchSemanticsNode().boundsInRoot
+        val second = rule.onNodeWithText("音声B").fetchSemanticsNode().boundsInRoot
+        assertEquals(first.left, second.left)
+        assertTrue(second.top > first.bottom)
+    }
 
     @Test
     fun `戻るボタンをタップするとonBackが呼ばれる`() {
@@ -86,6 +140,11 @@ class OtherVoiceDetailPaneTest {
             }
         }
 
+        rule.onNodeWithText("既定").assertExists()
+        rule.onNodeWithText("日本語の音声").assertExists()
+        rule.onNodeWithText("1 件").assertExists()
+        rule.onNodeWithText("ja-JP", useUnmergedTree = true).assertExists()
+        rule.onNodeWithText("端末の設定に従う", useUnmergedTree = true).assertExists()
         rule.onNodeWithText("音声A").assertIsSelected().performClick()
         rule.onNodeWithText("システム既定").assertIsNotSelected().performClick()
         rule.onNodeWithText("再読み込み").assertDoesNotExist()
@@ -100,8 +159,8 @@ class OtherVoiceDetailPaneTest {
         rule.setContent { MaterialTheme { OtherVoiceDetailPaneContent(OtherVoiceDetailUiState()) } }
 
         rule.onNodeWithText("読み込み中…").assertExists()
-        rule.onNodeWithText("試聴").assertIsNotEnabled()
-        rule.onNodeWithText("システム既定").assertIsSelected()
+        rule.onNode(hasContentDescription("システム既定を試聴")).assertDoesNotExist()
+        rule.onNodeWithText("システム既定").assertDoesNotExist()
         rule.onNodeWithText("再読み込み").assertDoesNotExist()
         rule
             .onNodeWithText("日本語の音声が見つかりません。端末の設定で日本語の音声を追加してください。")
@@ -147,24 +206,31 @@ class OtherVoiceDetailPaneTest {
     }
 
     @Test
-    fun `試聴ボタンはサンプル文と振動を通知する`() {
-        every { onPreviewClicked("これは読み上げ音声の試聴です。") } returns Unit
+    fun `各カードの試聴は音声IDとサンプル文と振動を通知し選択を変更しない`() {
+        every { onPreviewClicked(voice.id, "これは読み上げ音声の試聴です。") } returns Unit
+        every { onPreviewClicked(VOICE_ID_UNSPECIFIED, "これは読み上げ音声の試聴です。") } returns Unit
         every { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) } returns Unit
         rule.setContent {
             CompositionLocalProvider(LocalHapticFeedback provides haptic) {
                 MaterialTheme {
                     OtherVoiceDetailPaneContent(
                         uiState = OtherVoiceDetailUiState(listOf(voice), voice.id, isLoading = false),
+                        onVoiceSelected = onVoiceSelected,
                         onPreviewClicked = onPreviewClicked,
                     )
                 }
             }
         }
 
-        rule.onNodeWithText("試聴").assertIsEnabled().performClick()
+        rule.onNode(hasContentDescription("音声Aを試聴")).assertIsEnabled().performClick()
+        rule.onNode(hasContentDescription("システム既定を試聴")).assertIsEnabled().performClick()
+        rule.onNodeWithText("音声A").assertIsSelected()
 
-        verify(exactly = 1) { onPreviewClicked("これは読み上げ音声の試聴です。") }
-        verify(exactly = 1) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
-        confirmVerified(onPreviewClicked, haptic)
+        verify(exactly = 1) { onPreviewClicked(voice.id, "これは読み上げ音声の試聴です。") }
+        verify(exactly = 1) { onPreviewClicked(VOICE_ID_UNSPECIFIED, "これは読み上げ音声の試聴です。") }
+        verify(exactly = 0) { onVoiceSelected(voice.id) }
+        verify(exactly = 0) { onVoiceSelected(VOICE_ID_UNSPECIFIED) }
+        verify(exactly = 2) { haptic.performHapticFeedback(HapticFeedbackType.ContextClick) }
+        confirmVerified(onPreviewClicked, onVoiceSelected, haptic)
     }
 }
