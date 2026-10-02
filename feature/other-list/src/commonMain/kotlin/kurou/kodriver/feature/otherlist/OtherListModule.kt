@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherlist
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
+import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.StartupRegistrationUseCases
 import org.koin.core.module.dsl.viewModel
@@ -11,15 +12,16 @@ import org.koin.dsl.module
 /**
  * その他一覧画面（other-list feature）の Koin モジュール。
  *
- * 提供: OtherListViewModel と、それが使う StartupEnabledRepository 関連 UseCase。
+ * 提供: OtherListViewModel と、それが使う設定・TTS関連 UseCase。
  * 消費（get で解決）: OtherListViewModel が使う UseCase 群（:core:domain。実体の Repository は
- *   :core:data / :core:windows-startup-data で登録）。アプリバージョンはビルド生成値を直接渡す。
+ *   :core:data / :core:windows-startup-data / :core:text-to-speech-data で登録）。アプリバージョンはビルド生成値を直接渡す。
  */
 val otherListModule =
     module {
         // ViewModel
         viewModel {
             OtherListViewModel(
+                get(),
                 get(),
                 get(),
                 get(),
@@ -43,6 +45,7 @@ val otherListModule =
         factory { ObserveVoiceUseCase(get()) }
         factory { SaveOverlayVisibleUseCase(get()) }
 
-        // TTS利用不可理由の判定（:core:domain。get() は :core:text-to-speech-data の Repository を解決）
+        // TTS利用不可理由の判定と音声設定の起動（:core:domain。get() は :core:text-to-speech-data の Repository を解決）
         factory { CheckTextToSpeechUnavailableReasonUseCase(get()) }
+        factory { OpenWindowsSpeechSettingsUseCase(get()) }
     }

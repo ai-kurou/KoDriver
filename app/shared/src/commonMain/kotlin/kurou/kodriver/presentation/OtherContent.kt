@@ -75,6 +75,7 @@ fun OtherContent(
         onItemSelected = viewModel::onItemSelected,
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
+        onOpenWindowsSpeechSettings = viewModel::openWindowsSpeechSettings,
         onOpenTtsEngineInPlayStore = { uriHandler.openUri(TTS_ENGINE_PLAY_STORE_URL) },
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onOpenThemeDialog = onOpenThemeDialog,
@@ -104,6 +105,7 @@ private fun handleOtherItemClick(
     onOpenReadoutStartSoundDialog: () -> Unit,
     onOpenThemeDialog: () -> Unit,
     onOpenOverlayTextSizeDialog: () -> Unit,
+    onOpenWindowsSpeechSettings: () -> Unit,
     onOpenTtsEngineInPlayStore: () -> Unit,
 ) {
     when (itemType) {
@@ -119,7 +121,7 @@ private fun handleOtherItemClick(
 
         OtherListItemType.TtsEngineMissing -> onOpenTtsEngineInPlayStore()
 
-        OtherListItemType.WindowsSpeechUnavailable -> openWindowsSpeechSettings()
+        OtherListItemType.WindowsSpeechUnavailable -> onOpenWindowsSpeechSettings()
 
         OtherListItemType.AccessLocalNetworkPermission,
         OtherListItemType.ServerIp,
@@ -151,6 +153,7 @@ internal fun OtherContent(
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
     onOpenOverlayTextSizeDialog: () -> Unit = {},
+    onOpenWindowsSpeechSettings: () -> Unit = {},
     onOpenTtsEngineInPlayStore: () -> Unit = {},
     onOverlayVisibleChange: (Boolean) -> Unit = {},
     onKeepScreenOnChange: (Boolean) -> Unit = {},
@@ -266,6 +269,7 @@ internal fun OtherContent(
                         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
                         onOpenThemeDialog = onOpenThemeDialog,
                         onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
+                        onOpenWindowsSpeechSettings = onOpenWindowsSpeechSettings,
                         onOpenTtsEngineInPlayStore = onOpenTtsEngineInPlayStore,
                     )
                 },
