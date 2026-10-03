@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -48,5 +49,22 @@ class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImplTest {
             repository.saveThresholdPercentage(80)
             repository.saveThresholdPercentage(50)
             assertEquals(50, repository.observeThresholdPercentage().first())
+        }
+
+    @Test
+    fun `文言の既定値と保存した空文字や文言を取得できる`() =
+        runTest {
+            assertEquals(
+                LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
+                repository.observeReadoutText().first(),
+            )
+            repository.saveThresholdPercentage(50)
+            listOf("残量{percent}%", "", " ", "エナジー警告").forEach { text ->
+                repository.saveReadoutText(text)
+                assertEquals(text, repository.observeReadoutText().first())
+                assertEquals(50, repository.observeThresholdPercentage().first())
+            }
+            repository.saveThresholdPercentage(80)
+            assertEquals("エナジー警告", repository.observeReadoutText().first())
         }
 }
