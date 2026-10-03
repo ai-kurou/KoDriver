@@ -2,9 +2,15 @@ package kurou.kodriver.feature.otherlist
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,22 +45,28 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
@@ -517,7 +529,7 @@ private fun OtherListItem(
         label = "otherListItemIconColor",
     )
 
-    ListItem(
+    CenteredListItem(
         headlineContent = { Text(otherItemDisplayName(item)) },
         supportingContent =
             if (item == OtherListItemType.GitHubRepository) {
@@ -599,13 +611,9 @@ private fun OtherListItem(
                 }
             }
         },
-        colors =
-            ListItemDefaults.colors(
-                containerColor = containerColor,
-                headlineColor = headlineColor,
-                leadingIconColor = iconColor,
-                trailingIconColor = iconColor,
-            ),
+        containerColor = containerColor,
+        headlineColor = headlineColor,
+        iconColor = iconColor,
         modifier =
             Modifier
                 .fillMaxWidth()
@@ -765,5 +773,58 @@ private fun OtherListPanePreview() {
             onHapticFeedbackEnabledChange = {},
             onStartupEnabledChange = {},
         )
+    }
+}
+
+private val centeredListItemMinHeight = 56.dp
+private val centeredListItemHorizontalPadding = 16.dp
+private val centeredListItemVerticalPadding = 8.dp
+private val centeredListItemContentSpacing = 16.dp
+
+/**
+ * M3 の ListItem 相当の見た目で、先頭・末尾のアイコンを常に縦中央に揃える一覧項目。
+ *
+ * M3 の ListItem は副テキストが折り返して3行になると先頭・末尾の要素を上揃えにするため、
+ * 狭いペインで音量の副テキストが折り返したときにアイコンが行の中央から外れる。それを避けるため自前で組む。
+ */
+@Composable
+private fun CenteredListItem(
+    headlineContent: @Composable () -> Unit,
+    leadingContent: @Composable () -> Unit,
+    trailingContent: @Composable () -> Unit,
+    containerColor: Color,
+    headlineColor: Color,
+    iconColor: Color,
+    modifier: Modifier = Modifier,
+    supportingContent: (@Composable () -> Unit)? = null,
+) {
+    Row(
+        modifier =
+            modifier
+                .background(containerColor)
+                .heightIn(min = centeredListItemMinHeight)
+                .padding(
+                    horizontal = centeredListItemHorizontalPadding,
+                    vertical = centeredListItemVerticalPadding,
+                ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(centeredListItemContentSpacing),
+    ) {
+        CompositionLocalProvider(LocalContentColor provides iconColor) {
+            Box { leadingContent() }
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            CompositionLocalProvider(LocalContentColor provides headlineColor) {
+                ProvideTextStyle(MaterialTheme.typography.bodyLarge, content = headlineContent)
+            }
+            if (supportingContent != null) {
+                CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+                    ProvideTextStyle(MaterialTheme.typography.bodyMedium, content = supportingContent)
+                }
+            }
+        }
+        CompositionLocalProvider(LocalContentColor provides iconColor) {
+            Box { trailingContent() }
+        }
     }
 }
