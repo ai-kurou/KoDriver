@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first

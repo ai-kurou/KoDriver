@@ -75,7 +75,6 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
 }
 
 /** 自由文字列の入力と試聴を提供するフラッグ項目のカード。 */
-@Suppress("LongParameterList")
 @Composable
 private fun FlagReadoutCard(
     item: FlagReadoutItem,

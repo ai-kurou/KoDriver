@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.otherthemedetail
 
 import androidx.compose.foundation.layout.Box

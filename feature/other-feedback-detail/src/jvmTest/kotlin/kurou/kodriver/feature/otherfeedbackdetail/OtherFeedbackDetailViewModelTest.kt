@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.otherfeedbackdetail
 
 import io.mockk.coEvery

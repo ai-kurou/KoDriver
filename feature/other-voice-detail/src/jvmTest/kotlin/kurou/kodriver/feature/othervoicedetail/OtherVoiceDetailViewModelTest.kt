@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.othervoicedetail
 
 import io.mockk.coEvery

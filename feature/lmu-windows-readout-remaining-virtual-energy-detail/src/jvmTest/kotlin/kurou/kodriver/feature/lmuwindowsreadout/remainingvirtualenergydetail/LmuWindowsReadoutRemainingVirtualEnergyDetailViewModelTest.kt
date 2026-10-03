@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail
 
 import io.mockk.coEvery

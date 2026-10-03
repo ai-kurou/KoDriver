@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Box

@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.core.texttospeechdata.repository
 
 import java.io.IOException

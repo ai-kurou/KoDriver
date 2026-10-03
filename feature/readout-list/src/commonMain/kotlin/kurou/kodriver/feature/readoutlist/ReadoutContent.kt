@@ -67,7 +67,6 @@ fun ReadoutContent(
     )
 }
 
-@Suppress("LongParameterList")
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 internal fun ReadoutContent(
