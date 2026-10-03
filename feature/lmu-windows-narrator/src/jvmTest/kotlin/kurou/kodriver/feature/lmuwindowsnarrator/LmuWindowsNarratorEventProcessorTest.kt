@@ -22,6 +22,7 @@ import kotlinx.serialization.json.long
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -30,6 +31,7 @@ import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
@@ -53,6 +55,7 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.TyreTemperatureReadoutInput
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -1333,6 +1336,218 @@ class LmuWindowsNarratorEventProcessorTest {
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `過熱警告は自由文言を読み上げてログに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.TyreOverheat, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "タイヤを冷やして",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val context = logContext()
+            createProcessor { "タイヤを冷やして" }.processTyreTemperature(
+                input =
+                    TyreTemperatureReadoutInput(
+                        tyreCarcassTemperature =
+                            LmuWindowsTyreCarcassTemperatureData(
+                                wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(100f)),
+                            ),
+                        raceFlags = raceFlags(PrimaryFlag.GREEN),
+                    ),
+                events = listOf(SpeechEvent.TyreOverheat),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext =
+                    LmuWindowsTyreTemperatureLogContext(
+                        context.state,
+                        context.settings,
+                        context.state,
+                        context.finalState,
+                    ),
+            )
+            assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreOverheat, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "タイヤを冷やして",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `過熱警告の空白文言では読み上げずSKIPPEDを記録する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val context = logContext()
+            createProcessor { null }.processTyreTemperature(
+                input =
+                    TyreTemperatureReadoutInput(
+                        tyreCarcassTemperature =
+                            LmuWindowsTyreCarcassTemperatureData(
+                                wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(100f)),
+                            ),
+                        raceFlags = raceFlags(PrimaryFlag.GREEN),
+                    ),
+                events = listOf(SpeechEvent.TyreOverheat),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext =
+                    LmuWindowsTyreTemperatureLogContext(
+                        context.state,
+                        context.settings,
+                        context.state,
+                        context.finalState,
+                    ),
+            )
+            assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreOverheat, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `過熱警告のTTS利用不可では読み上げずSKIPPEDを記録する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val context = logContext()
+            createProcessor { null }.processTyreTemperature(
+                input =
+                    TyreTemperatureReadoutInput(
+                        tyreCarcassTemperature =
+                            LmuWindowsTyreCarcassTemperatureData(
+                                wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(100f)),
+                            ),
+                        raceFlags = raceFlags(PrimaryFlag.GREEN),
+                    ),
+                events = listOf(SpeechEvent.TyreOverheat),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext =
+                    LmuWindowsTyreTemperatureLogContext(
+                        context.state,
+                        context.settings,
+                        context.state,
+                        context.finalState,
+                    ),
+            )
+            assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreOverheat, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `低温警告はカスタム文言がなくても従来のWAV経路を使用する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.TyreCold, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "タイヤ低温警告",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val context = logContext()
+            createProcessor { null }.processTyreTemperature(
+                input =
+                    TyreTemperatureReadoutInput(
+                        tyreCarcassTemperature =
+                            LmuWindowsTyreCarcassTemperatureData(
+                                wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(100f)),
+                            ),
+                        raceFlags = raceFlags(PrimaryFlag.GREEN),
+                    ),
+                events = listOf(SpeechEvent.TyreCold),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext =
+                    LmuWindowsTyreTemperatureLogContext(
+                        context.state,
+                        context.settings,
+                        context.state,
+                        context.finalState,
+                    ),
+            )
+            assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreCold, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "タイヤ低温警告",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = telemetryJsonSlot.captured,
                 )
             }
             confirmVerified(ttsEngine, telemetryLogRepository)
