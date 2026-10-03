@@ -154,11 +154,7 @@ private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore("hapt
  * UseCase が get() で解決する Repository 実装を提供する。デスクトップ版（DesktopDataModule）との違いは、
  * LMU の走行データを Windows 共有メモリではなく **KoDriver サーバーへの WebSocket** から取得する点。
  * 大半は DataStore バインドで、ServerVersion/AppUpdate はネットワーク、TelemetryLog は Room DB。
- *
- * Repository バインドを列挙するだけの Koin モジュールで、分割しても可読性が上がらないため
- * LongMethod の閾値超過は抑制する。
  */
-@Suppress("LongMethod")
 fun androidDataModule(context: Context) =
     module {
         single<Context> { context }
