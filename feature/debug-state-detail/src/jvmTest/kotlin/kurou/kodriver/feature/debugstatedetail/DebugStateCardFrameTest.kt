@@ -29,7 +29,8 @@ class DebugStateCardFrameTest(
         }
 
         rule.onNodeWithText(cardKey.name).assertIsDisplayed()
-        rule.onNodeWithText(debugStateCardSymbol(cardKey)).assertIsDisplayed()
+        // 装飾アイコンはスクリーンリーダーの読み上げ対象に含めない。
+        rule.onNodeWithText(debugStateCardSymbol(cardKey)).assertDoesNotExist()
         rule.onNodeWithText("カード内容").assertIsDisplayed()
     }
 

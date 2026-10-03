@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
-import androidx.compose.ui.graphics.Color
+import kurou.kodriver.domain.model.Simulator
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -38,10 +38,12 @@ class HeatLevelTest {
     }
 
     @Test
-    fun `ヒートレベルは承認された固定色に対応する`() {
-        assertEquals(Color(0xFF4A8FD0), heatColor(HeatLevel.COOL))
-        assertEquals(Color(0xFF5A9A2A), heatColor(HeatLevel.OK))
-        assertEquals(Color(0xFFE0A020), heatColor(HeatLevel.WARM))
-        assertEquals(Color(0xFFD9482B), heatColor(HeatLevel.HOT))
+    fun `タイヤ内部温度の警告境界はACEが90度でLMUとGT7が95度`() {
+        assertEquals(HeatLevel.OK, tyreTemperatureHeatLevel(89.9, Simulator.AceWindows))
+        assertEquals(HeatLevel.WARM, tyreTemperatureHeatLevel(90.0, Simulator.AceWindows))
+        assertEquals(HeatLevel.OK, tyreTemperatureHeatLevel(94.9, Simulator.LmuWindows))
+        assertEquals(HeatLevel.WARM, tyreTemperatureHeatLevel(95.0, Simulator.LmuWindows))
+        assertEquals(HeatLevel.OK, tyreTemperatureHeatLevel(94.9, Simulator.Gt7Ps5))
+        assertEquals(HeatLevel.WARM, tyreTemperatureHeatLevel(95.0, Simulator.Gt7Ps5))
     }
 }

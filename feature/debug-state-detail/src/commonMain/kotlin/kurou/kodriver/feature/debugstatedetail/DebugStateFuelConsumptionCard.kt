@@ -53,7 +53,7 @@ private fun LmuWindowsFuelContent(
                     Res.string.debug_state_fuel_consumption_remaining_percent,
                     formatOneDecimal(remainingPercent),
                 ),
-            style = koDriverNumericTextStyle().copy(fontSize = MaterialTheme.typography.headlineMedium.fontSize),
+            style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
         )
         if (consumption != null) {
             Text(
@@ -91,7 +91,7 @@ private fun Gt7Ps5FuelContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
                     Res.string.debug_state_fuel_consumption_remaining_percent,
                     formatOneDecimal(remainingPercent),
                 ),
-            style = koDriverNumericTextStyle().copy(fontSize = MaterialTheme.typography.headlineMedium.fontSize),
+            style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
         )
         if (fuelConsumption != null) {
             Text(
@@ -132,7 +132,7 @@ private fun AceWindowsFuelContent(
                     Res.string.debug_state_fuel_consumption_remaining_percent,
                     formatOneDecimal(aceWindowsFuel.remainingPercent.value),
                 ),
-            style = koDriverNumericTextStyle().copy(fontSize = MaterialTheme.typography.headlineMedium.fontSize),
+            style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
         )
         if (remainingLaps != null) {
             Text(

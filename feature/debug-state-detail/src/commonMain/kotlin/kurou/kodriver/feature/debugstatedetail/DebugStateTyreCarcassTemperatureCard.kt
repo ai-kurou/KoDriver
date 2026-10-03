@@ -38,12 +38,14 @@ internal fun TyreCarcassTemperatureContent(
     Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
         Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
             WheelCarcassTemperatureText(
+                selectedSimulator,
                 wheels,
                 WheelIndex.FRONT_LEFT,
                 Res.string.debug_state_tyre_carcass_temperature_fl,
                 Modifier.weight(1f),
             )
             WheelCarcassTemperatureText(
+                selectedSimulator,
                 wheels,
                 WheelIndex.FRONT_RIGHT,
                 Res.string.debug_state_tyre_carcass_temperature_fr,
@@ -52,12 +54,14 @@ internal fun TyreCarcassTemperatureContent(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
             WheelCarcassTemperatureText(
+                selectedSimulator,
                 wheels,
                 WheelIndex.REAR_LEFT,
                 Res.string.debug_state_tyre_carcass_temperature_rl,
                 Modifier.weight(1f),
             )
             WheelCarcassTemperatureText(
+                selectedSimulator,
                 wheels,
                 WheelIndex.REAR_RIGHT,
                 Res.string.debug_state_tyre_carcass_temperature_rr,
@@ -71,6 +75,7 @@ internal fun TyreCarcassTemperatureContent(
 @Suppress("UnstableCollections")
 @Composable
 private fun WheelCarcassTemperatureText(
+    selectedSimulator: Simulator,
     wheels: Map<WheelIndex, CelsiusReading>,
     wheelIndex: WheelIndex,
     labelRes: StringResource,
@@ -80,5 +85,6 @@ private fun WheelCarcassTemperatureText(
         text = stringResource(labelRes, wheelCarcassTemperatureText(wheels, wheelIndex)),
         celsius = wheels[wheelIndex]?.value?.toDouble(),
         modifier = modifier,
+        heatLevel = wheels[wheelIndex]?.value?.toDouble()?.let { tyreTemperatureHeatLevel(it, selectedSimulator) },
     )
 }

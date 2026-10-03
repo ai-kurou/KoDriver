@@ -28,7 +28,7 @@ internal fun BestLapContent(
     } else {
         Text(
             text = displayText,
-            style = koDriverNumericTextStyle().copy(fontSize = MaterialTheme.typography.headlineMedium.fontSize),
+            style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
         )
     }
 }

@@ -53,6 +53,19 @@ internal fun determineActiveRaceFlags(raceFlags: LmuWindowsRaceFlagsData): List<
         if (raceFlags.gamePhase == SessionPhase.RED_FLAG) add(ActiveRaceFlag.RED)
     }
 
+// 表示するフラグが変わらないテレメトリの更新ではフェードし直さないよう、表示内容だけをキーにする。
+internal fun flagInfoContentKey(
+    selectedSimulator: Simulator,
+    raceFlags: LmuWindowsRaceFlagsData?,
+    aceWindowsFlag: AceWindowsFlagData?,
+): Pair<Simulator, Any?> =
+    selectedSimulator to
+        when (selectedSimulator) {
+            is Simulator.LmuWindows -> raceFlags?.let { determineActiveRaceFlags(it) }
+            is Simulator.AceWindows -> aceWindowsFlag?.flag
+            is Simulator.Gt7Ps5 -> null
+        }
+
 @Composable
 internal fun FlagInfoContent(
     selectedSimulator: Simulator,
@@ -62,6 +75,7 @@ internal fun FlagInfoContent(
     AnimatedContent(
         targetState = Triple(selectedSimulator, raceFlags, aceWindowsFlag),
         transitionSpec = { fadeIn() togetherWith fadeOut() },
+        contentKey = { (simulator, lmuFlags, aceFlag) -> flagInfoContentKey(simulator, lmuFlags, aceFlag) },
     ) { (simulator, lmuFlags, aceFlag) ->
         FlagInfoStaticContent(simulator, lmuFlags, aceFlag)
     }

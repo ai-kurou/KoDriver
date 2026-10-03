@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -72,13 +73,18 @@ internal fun DebugStateCardFrame(
                     modifier = Modifier.size(28.dp).background(accent.copy(alpha = 0.14f), MaterialTheme.shapes.small),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(text = debugStateCardSymbol(cardKey), color = accent)
+                    // タイトルと重複する装飾のため、スクリーンリーダーの読み上げ対象から外す。
+                    Text(
+                        text = debugStateCardSymbol(cardKey),
+                        modifier = Modifier.clearAndSetSemantics {},
+                        color = accent,
+                    )
                 }
                 Text(
                     text = title,
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = colors.onSurfaceVariant,
+                    color = colors.onSurface,
                 )
                 Canvas(Modifier.size(16.dp, 24.dp)) {
                     repeat(2) { column ->

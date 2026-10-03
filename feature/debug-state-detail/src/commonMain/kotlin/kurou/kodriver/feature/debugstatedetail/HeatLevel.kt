@@ -1,9 +1,13 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import kurou.kodriver.core.designsystem.KoDriverExtendedColors
+import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKNOWN_DEFAULT
+import kurou.kodriver.domain.model.Simulator
 
 internal enum class HeatLevel {
     COOL,
@@ -31,6 +35,24 @@ internal fun temperatureHeatLevel(
         else -> HeatLevel.HOT
     }
 
+// タイヤ内部温度の警告温度は読み上げ判定と同じく、シミュレーターごとの既定値を使う。
+internal fun tyreTemperatureHeatLevel(
+    celsius: Double,
+    simulator: Simulator,
+): HeatLevel =
+    when (simulator) {
+        is Simulator.AceWindows -> {
+            temperatureHeatLevel(
+                celsius = celsius,
+                warmThreshold = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value.toDouble(),
+            )
+        }
+
+        is Simulator.LmuWindows, is Simulator.Gt7Ps5 -> {
+            temperatureHeatLevel(celsius)
+        }
+    }
+
 internal fun brakeTemperatureHeatLevel(celsius: Double): HeatLevel =
     temperatureHeatLevel(
         celsius = celsius,
@@ -47,11 +69,13 @@ internal fun wearHeatLevel(remainingPercent: Double): HeatLevel =
         else -> HeatLevel.OK
     }
 
-// モックで承認された温度・残溝のヒートマップはテーマに依存しない固定色を使用する。
-internal fun heatColor(level: HeatLevel): Color =
-    when (level) {
-        HeatLevel.COOL -> Color(0xFF4A8FD0)
-        HeatLevel.OK -> Color(0xFF5A9A2A)
-        HeatLevel.WARM -> Color(0xFFE0A020)
-        HeatLevel.HOT -> Color(0xFFD9482B)
+@Composable
+internal fun heatColor(level: HeatLevel): Color {
+    val colors = KoDriverExtendedColors.current
+    return when (level) {
+        HeatLevel.COOL -> colors.heatCool
+        HeatLevel.OK -> colors.heatOk
+        HeatLevel.WARM -> colors.heatWarm
+        HeatLevel.HOT -> colors.heatHot
     }
+}

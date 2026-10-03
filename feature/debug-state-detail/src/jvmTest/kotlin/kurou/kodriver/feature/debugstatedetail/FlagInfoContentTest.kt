@@ -15,6 +15,8 @@ import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class FlagInfoContentTest {
     @get:Rule
@@ -165,4 +167,43 @@ class FlagInfoContentTest {
             playerFlag = playerFlag,
             playerUnderYellow = false,
         )
+
+    @Test
+    fun `表示するフラグが同じならyellowFlagStateが変わってもコンテンツキーは変わらない`() {
+        val before = sampleRaceFlags(PrimaryFlag.GREEN)
+        val after = before.copy(yellowFlagState = SessionYellowFlagState.PENDING)
+
+        assertEquals(
+            flagInfoContentKey(Simulator.LmuWindows, before, null),
+            flagInfoContentKey(Simulator.LmuWindows, after, null),
+        )
+    }
+
+    @Test
+    fun `表示するフラグが変わるとコンテンツキーも変わる`() {
+        assertNotEquals(
+            flagInfoContentKey(Simulator.LmuWindows, sampleRaceFlags(PrimaryFlag.GREEN), null),
+            flagInfoContentKey(Simulator.LmuWindows, sampleRaceFlags(PrimaryFlag.BLUE), null),
+        )
+        assertNotEquals(
+            flagInfoContentKey(Simulator.LmuWindows, null, null),
+            flagInfoContentKey(Simulator.LmuWindows, sampleRaceFlags(PrimaryFlag.GREEN), null),
+        )
+    }
+
+    @Test
+    fun `ACEはフラグの種類だけでコンテンツキーが決まりGT7は常に同じキーになる`() {
+        assertEquals(
+            flagInfoContentKey(Simulator.AceWindows, null, AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG)),
+            flagInfoContentKey(Simulator.AceWindows, null, AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG)),
+        )
+        assertNotEquals(
+            flagInfoContentKey(Simulator.AceWindows, null, AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG)),
+            flagInfoContentKey(Simulator.AceWindows, null, AceWindowsFlagData(flag = AceWindowsFlagType.RED_FLAG)),
+        )
+        assertEquals(
+            flagInfoContentKey(Simulator.Gt7Ps5, sampleRaceFlags(PrimaryFlag.BLUE), null),
+            flagInfoContentKey(Simulator.Gt7Ps5, null, null),
+        )
+    }
 }

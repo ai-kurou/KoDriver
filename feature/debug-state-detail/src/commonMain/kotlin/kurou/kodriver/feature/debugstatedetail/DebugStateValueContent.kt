@@ -29,7 +29,7 @@ internal fun DebugStateHeatTile(
             modifier
                 .background(color.copy(alpha = 0.22f), MaterialTheme.shapes.medium)
                 .padding(KoDriverSpacing.small),
-        style = koDriverNumericTextStyle().copy(fontSize = MaterialTheme.typography.titleLarge.fontSize),
+        style = koDriverNumericTextStyle(MaterialTheme.typography.titleLarge),
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.onSurface,
     )
@@ -43,12 +43,15 @@ internal fun DebugStateWearMeter(
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
         Text(text = text, style = koDriverNumericTextStyle())
-        LinearProgressIndicator(
-            progress = { ((remainingPercent ?: 0.0) / 100.0).coerceIn(0.0, 1.0).toFloat() },
-            modifier = Modifier.fillMaxWidth(),
-            color = remainingPercent?.let { heatColor(wearHeatLevel(it)) } ?: MaterialTheme.colorScheme.outlineVariant,
-            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-        )
+        // 欠損(未取得)を 0% として公開しないよう、値があるときだけメーターを出す。
+        if (remainingPercent != null) {
+            LinearProgressIndicator(
+                progress = { (remainingPercent / 100.0).coerceIn(0.0, 1.0).toFloat() },
+                modifier = Modifier.fillMaxWidth(),
+                color = heatColor(wearHeatLevel(remainingPercent)),
+                trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            )
+        }
     }
 }
 

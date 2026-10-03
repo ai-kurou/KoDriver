@@ -44,6 +44,14 @@ class TypographyTest {
     }
 
     @Test
+    fun `koDriverNumericTextStyleは渡したベーススタイルを維持してtabular figuresを有効にする`() {
+        val actual = koDriverNumericTextStyle(TextStyle(fontSize = 28.sp))
+
+        assertEquals(28.sp, actual.fontSize)
+        assertEquals("tnum", actual.fontFeatureSettings)
+    }
+
+    @Test
     fun `koDriverMonospaceTextStyleはフォントファミリーをMonospaceにする`() {
         var actual: TextStyle? = null
         composeRule.setContent {
