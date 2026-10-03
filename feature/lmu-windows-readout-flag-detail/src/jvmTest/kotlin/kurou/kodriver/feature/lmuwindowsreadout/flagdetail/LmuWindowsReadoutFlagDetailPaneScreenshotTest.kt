@@ -53,6 +53,16 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
             )
         }
 
+    @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            captureLmuWindowsReadoutFlagDetailPane(
+                enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+                flagTexts = FlagReadoutItem.entries.associateWith { "編集済みの読み上げ文言" },
+                isTextToSpeechAvailable = true,
+            )
+        }
+
     private fun DesktopComposeUiTest.captureLmuWindowsReadoutFlagDetailPane(
         enabledStates: Map<ReadoutItemKey, Boolean>,
         flagTexts: Map<FlagReadoutItem, String> = emptyMap(),
@@ -71,6 +81,7 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                                 ),
                             onFlagEnabledChanged = { _, _ -> },
                             onFlagTextChanged = { _, _ -> },
+                            onFlagTextReset = {},
                             onFlagTextPreviewClicked = {},
                         )
                     }

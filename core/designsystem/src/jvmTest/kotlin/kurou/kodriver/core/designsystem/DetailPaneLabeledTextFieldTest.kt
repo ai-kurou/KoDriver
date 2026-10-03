@@ -84,4 +84,26 @@ class DetailPaneLabeledTextFieldTest {
         assertEquals("左", finishedText)
         assertEquals("左", previewText)
     }
+
+    @Test
+    fun `リセットの引数がDetailPaneCardTextFieldに委譲される`() {
+        var resetCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneLabeledTextField(
+                    label = "読み上げ",
+                    value = "注意",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                    defaultValue = "イエローフラッグ",
+                    onResetToDefault = { resetCount++ },
+                    resetContentDescription = "デフォルトに戻す",
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("デフォルトに戻す").performClick()
+        assertEquals(1, resetCount)
+    }
 }

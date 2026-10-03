@@ -141,6 +141,30 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         }
 
     @Test
+    fun `リセットすると全4種それぞれの既定文言を保存する`() =
+        runTest {
+            coEvery { tts.isAvailable() } returns true
+            coEvery { texts.saveBlueFlagText("ブルーフラッグ") } returns Unit
+            coEvery { texts.saveSectorYellowFlagText("イエローフラッグ") } returns Unit
+            coEvery { texts.saveFullCourseYellowFlagText("フルコースイエロー") } returns Unit
+            coEvery { texts.saveRedFlagText("レッドフラッグ") } returns Unit
+            stubReadouts()
+            val vm = createViewModel()
+
+            FlagReadoutItem.entries.forEach { vm.onFlagTextReset(it) }
+
+            coVerify(exactly = 1) { texts.saveBlueFlagText("ブルーフラッグ") }
+            coVerify(exactly = 1) { texts.saveSectorYellowFlagText("イエローフラッグ") }
+            coVerify(exactly = 1) { texts.saveFullCourseYellowFlagText("フルコースイエロー") }
+            coVerify(exactly = 1) { texts.saveRedFlagText("レッドフラッグ") }
+            verify(exactly = 1) { texts.observeBlueFlagText() }
+            verify(exactly = 1) { texts.observeSectorYellowFlagText() }
+            verify(exactly = 1) { texts.observeFullCourseYellowFlagText() }
+            verify(exactly = 1) { texts.observeRedFlagText() }
+            confirmVerified(texts)
+        }
+
+    @Test
     fun `試聴は開始音の後に自由文字列を読み上げる`() =
         runTest {
             coEvery { tts.isAvailable() } returns true

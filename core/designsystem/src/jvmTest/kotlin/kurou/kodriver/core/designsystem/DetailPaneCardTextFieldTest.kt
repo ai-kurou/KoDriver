@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -15,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import org.junit.Rule
@@ -233,6 +235,98 @@ class DetailPaneCardTextFieldTest {
     @Test
     fun `長い補足文言でも文字数カウンターの領域を確保して右端に表示される`() {
         assertCounterIsRightAligned(supportingText = "空欄のままなら収録音声で読み上げます".repeat(5))
+    }
+
+    @Test
+    fun `編集中の文言が既定値と異なるときだけリセットできる`() {
+        var resetCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "イエローフラッグ",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                    defaultValue = "イエローフラッグ",
+                    onResetToDefault = { resetCount++ },
+                    resetContentDescription = "デフォルトに戻す",
+                )
+            }
+        }
+
+        val reset = rule.onNodeWithContentDescription("デフォルトに戻す")
+        reset.assertIsNotEnabled().performClick()
+        assertEquals(0, resetCount)
+        rule.onNodeWithText("イエローフラッグ").performTextReplacement("注意")
+        reset.assertIsEnabled().assertIsDisplayed().performClick()
+        assertEquals(1, resetCount)
+        rule.onNodeWithText("注意").performTextReplacement("イエローフラッグ")
+        reset.assertIsNotEnabled().performClick()
+        assertEquals(1, resetCount)
+    }
+
+    @Test
+    fun `enabledがfalseのときは既定値と異なってもリセットできない`() {
+        var resetCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "注意",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                    enabled = false,
+                    defaultValue = "イエローフラッグ",
+                    onResetToDefault = { resetCount++ },
+                    resetContentDescription = "デフォルトに戻す",
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("デフォルトに戻す").assertIsNotEnabled().performClick()
+        assertEquals(0, resetCount)
+    }
+
+    @Test
+    fun `既定値がnullのときはリセットできない`() {
+        var resetCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "注意",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                    onResetToDefault = { resetCount++ },
+                    resetContentDescription = "デフォルトに戻す",
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("デフォルトに戻す").assertIsNotEnabled().performClick()
+        assertEquals(0, resetCount)
+    }
+
+    @Test
+    fun `リセットコールバックがないときはボタンを表示しない`() {
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "注意",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                    defaultValue = "イエローフラッグ",
+                    resetContentDescription = "デフォルトに戻す",
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("デフォルトに戻す").assertDoesNotExist()
     }
 
     private fun assertCounterIsRightAligned(supportingText: String?) {

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -34,6 +35,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         changedEnabled = enabled
                     },
                     onFlagTextChanged = { _, _ -> },
+                    onFlagTextReset = {},
                     onFlagTextPreviewClicked = {},
                 )
             }
@@ -58,6 +60,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         changedEnabled = enabled
                     },
                     onFlagTextChanged = { _, _ -> },
+                    onFlagTextReset = {},
                     onFlagTextPreviewClicked = {},
                 )
             }
@@ -82,6 +85,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         ),
                     onFlagEnabledChanged = { _, _ -> },
                     onFlagTextChanged = { _, text -> changedText = text },
+                    onFlagTextReset = {},
                     onFlagTextPreviewClicked = {},
                 )
             }
@@ -107,6 +111,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         ),
                     onFlagEnabledChanged = { _, _ -> },
                     onFlagTextChanged = { item, text -> changes += item to text },
+                    onFlagTextReset = {},
                     onFlagTextPreviewClicked = { text -> previews += text },
                 )
             }
@@ -128,6 +133,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                     uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
                     onFlagEnabledChanged = { _, _ -> },
                     onFlagTextChanged = { _, _ -> },
+                    onFlagTextReset = {},
                     onFlagTextPreviewClicked = {},
                 )
             }
@@ -148,6 +154,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                     uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = false),
                     onFlagEnabledChanged = { _, _ -> },
                     onFlagTextChanged = { _, _ -> },
+                    onFlagTextReset = {},
                     onFlagTextPreviewClicked = {},
                 )
             }
@@ -172,6 +179,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                     onFlagTextChanged = { item, text ->
                         uiState = uiState.copy(flagTexts = mapOf(item to text))
                     },
+                    onFlagTextReset = {},
                     onFlagTextPreviewClicked = {},
                 )
             }
@@ -197,6 +205,7 @@ class LmuWindowsReadoutFlagDetailPaneTest {
                         ),
                     onFlagEnabledChanged = { _, _ -> },
                     onFlagTextChanged = { item, text -> changes += item to text },
+                    onFlagTextReset = {},
                     onFlagTextPreviewClicked = { text -> previews += text },
                 )
             }
@@ -207,5 +216,59 @@ class LmuWindowsReadoutFlagDetailPaneTest {
 
         assertEquals(listOf(FlagReadoutItem.RedFlag to "赤旗、停止"), changes)
         assertEquals(listOf("赤旗、停止"), previews)
+    }
+
+    @Test
+    fun `編集済みの全フラッグをリセットすると対応する項目が通知される`() {
+        val resets = mutableListOf<FlagReadoutItem>()
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutFlagDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutFlagDetailUiState(
+                            flagTexts = FlagReadoutItem.entries.associateWith { "編集済み" },
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onFlagTextChanged = { _, _ -> },
+                    onFlagTextReset = { resets += it },
+                    onFlagTextPreviewClicked = {},
+                )
+            }
+        }
+
+        FlagReadoutItem.entries.forEachIndexed { index, _ ->
+            rule
+                .onAllNodesWithContentDescription("デフォルトに戻す")[index]
+                .performScrollTo()
+                .assertIsEnabled()
+                .performClick()
+        }
+        assertEquals(FlagReadoutItem.entries.toList(), resets)
+    }
+
+    @Test
+    fun `既定文言の全フラッグはリセットできない`() {
+        val resets = mutableListOf<FlagReadoutItem>()
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutFlagDetailPaneContent(
+                    uiState = LmuWindowsReadoutFlagDetailUiState(isTextToSpeechAvailable = true),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onFlagTextChanged = { _, _ -> },
+                    onFlagTextReset = { resets += it },
+                    onFlagTextPreviewClicked = {},
+                )
+            }
+        }
+
+        FlagReadoutItem.entries.forEachIndexed { index, _ ->
+            rule
+                .onAllNodesWithContentDescription("デフォルトに戻す")[index]
+                .performScrollTo()
+                .assertIsNotEnabled()
+                .performClick()
+        }
+        assertEquals(emptyList(), resets)
     }
 }
