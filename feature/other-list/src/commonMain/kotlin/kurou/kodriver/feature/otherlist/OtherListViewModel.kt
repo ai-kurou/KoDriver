@@ -25,6 +25,7 @@ import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
@@ -53,6 +54,7 @@ data class OtherListSettingsUseCases(
     val observeVoice: ObserveVoiceUseCase,
     val observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
     val observeSoundVolume: ObserveSoundVolumeUseCase,
+    val observeThemeMode: ObserveThemeModeUseCase,
 )
 
 /**
@@ -122,6 +124,8 @@ class OtherListViewModel(
                 dynamicColorEnabled = dynamicColorEnabled,
                 hapticFeedbackEnabled = hapticFeedbackEnabled,
             )
+        }.combine(settingsUseCases.observeThemeMode()) { state, themeMode ->
+            state.copy(themeMode = themeMode)
         }.combine(settingsUseCases.observeVoice()) { state, voiceId ->
             state.copy(voiceId = voiceId)
         }.combine(settingsUseCases.observeReadoutStartSoundType()) { state, type ->
