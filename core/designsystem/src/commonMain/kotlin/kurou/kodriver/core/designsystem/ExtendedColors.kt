@@ -12,18 +12,30 @@ import androidx.compose.ui.graphics.Color
 data class ExtendedColorScheme(
     val warningContainer: Color,
     val onWarningContainer: Color,
+    val heatCool: Color,
+    val heatOk: Color,
+    val heatWarm: Color,
+    val heatHot: Color,
 )
 
 internal val LightExtendedColorScheme =
     ExtendedColorScheme(
         warningContainer = Color(0xFFFFF9C4),
         onWarningContainer = Color(0xFF5F4B00),
+        heatCool = Color(0xFF4A8FD0),
+        heatOk = Color(0xFF5A9A2A),
+        heatWarm = Color(0xFFE0A020),
+        heatHot = Color(0xFFD9482B),
     )
 
 internal val DarkExtendedColorScheme =
     ExtendedColorScheme(
         warningContainer = Color(0xFF5C4700),
         onWarningContainer = Color(0xFFFFE8A3),
+        heatCool = Color(0xFF7DB4E6),
+        heatOk = Color(0xFF8CC85A),
+        heatWarm = Color(0xFFF0C050),
+        heatHot = Color(0xFFF08060),
     )
 
 internal val LocalExtendedColorScheme = staticCompositionLocalOf { LightExtendedColorScheme }

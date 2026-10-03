@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
@@ -11,7 +12,6 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_per_lap_liters
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_per_lap_ratio
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_remaining_laps
@@ -42,7 +42,7 @@ private fun LmuWindowsFuelContent(
 ) {
     val remainingPercent = calculateLmuVirtualEnergyRemainingPercent(virtualEnergy)
     if (remainingPercent == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        DebugStateUnavailableContent()
         return
     }
     val consumption = calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry)
@@ -53,7 +53,7 @@ private fun LmuWindowsFuelContent(
                     Res.string.debug_state_fuel_consumption_remaining_percent,
                     formatOneDecimal(remainingPercent),
                 ),
-            style = koDriverNumericTextStyle(),
+            style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
         )
         if (consumption != null) {
             Text(
@@ -80,7 +80,7 @@ private fun LmuWindowsFuelContent(
 private fun Gt7Ps5FuelContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
     val remainingPercent = calculateGt7FuelRemainingPercent(gt7Ps5Telemetry)
     if (remainingPercent == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        DebugStateUnavailableContent()
         return
     }
     val fuelConsumption = calculateGt7FuelConsumption(gt7Ps5Telemetry)
@@ -91,7 +91,7 @@ private fun Gt7Ps5FuelContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
                     Res.string.debug_state_fuel_consumption_remaining_percent,
                     formatOneDecimal(remainingPercent),
                 ),
-            style = koDriverNumericTextStyle(),
+            style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
         )
         if (fuelConsumption != null) {
             Text(
@@ -120,7 +120,7 @@ private fun AceWindowsFuelContent(
     aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData?,
 ) {
     if (aceWindowsFuel == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        DebugStateUnavailableContent()
         return
     }
     // ACE は消費実績がない間 remainingLaps が 0 のため、正の有限値のときだけ残り周数を表示する。
@@ -132,7 +132,7 @@ private fun AceWindowsFuelContent(
                     Res.string.debug_state_fuel_consumption_remaining_percent,
                     formatOneDecimal(aceWindowsFuel.remainingPercent.value),
                 ),
-            style = koDriverNumericTextStyle(),
+            style = koDriverNumericTextStyle(MaterialTheme.typography.headlineMedium),
         )
         if (remainingLaps != null) {
             Text(

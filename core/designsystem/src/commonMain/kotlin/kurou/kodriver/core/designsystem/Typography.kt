@@ -35,6 +35,14 @@ fun koDriverNumericTextStyle(): TextStyle =
     LocalTextStyle.current.merge(TextStyle(fontFeatureSettings = TABULAR_FIGURES_FONT_FEATURE_SETTINGS))
 
 /**
+ * [baseStyle]（例: `MaterialTheme.typography.headlineMedium`）に tabular figures だけをマージする。
+ *
+ * 数値を大きく見せたいときに、`fontSize` を直接指定せずテーマのタイポグラフィをそのまま使うための関数。
+ */
+fun koDriverNumericTextStyle(baseStyle: TextStyle): TextStyle =
+    baseStyle.merge(TextStyle(fontFeatureSettings = TABULAR_FIGURES_FONT_FEATURE_SETTINGS))
+
+/**
  * JSON・コード等、桁揃えではなく等幅フォントそのものが必要な表示に適用するスタイル。
  *
  * [koDriverNumericTextStyle] が既存スタイルへ tabular figures だけをマージするのに対し、

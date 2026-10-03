@@ -4,6 +4,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class ExtendedColorsTest {
     @get:Rule
@@ -21,6 +22,17 @@ class ExtendedColorsTest {
         val extendedColorScheme = captureExtendedColorScheme(darkTheme = true)
 
         assertEquals(DarkExtendedColorScheme, extendedColorScheme)
+    }
+
+    @Test
+    fun `ヒート色はライトとダークで別の値を持ち温度段階ごとに異なる`() {
+        listOf(LightExtendedColorScheme, DarkExtendedColorScheme).forEach { scheme ->
+            assertEquals(
+                4,
+                setOf(scheme.heatCool, scheme.heatOk, scheme.heatWarm, scheme.heatHot).size,
+            )
+        }
+        assertNotEquals(LightExtendedColorScheme.heatHot, DarkExtendedColorScheme.heatHot)
     }
 
     private fun captureExtendedColorScheme(darkTheme: Boolean): ExtendedColorScheme {

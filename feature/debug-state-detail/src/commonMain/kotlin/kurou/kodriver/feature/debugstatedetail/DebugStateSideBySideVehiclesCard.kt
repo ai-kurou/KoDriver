@@ -12,7 +12,6 @@ import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicle_distance
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_none
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by_side_left
@@ -42,14 +41,14 @@ internal fun SideBySideVehiclesContent(
     when (selectedSimulator) {
         is Simulator.LmuWindows -> LmuWindowsSideBySideVehiclesContent(vehicleApproach)
         is Simulator.AceWindows -> AceWindowsNearbyVehiclesContent(aceWindowsVehicleApproach)
-        is Simulator.Gt7Ps5 -> Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        is Simulator.Gt7Ps5 -> DebugStateUnavailableContent()
     }
 }
 
 @Composable
 private fun AceWindowsNearbyVehiclesContent(vehicleApproach: AceWindowsVehicleApproachData?) {
     if (vehicleApproach == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        DebugStateUnavailableContent()
         return
     }
     if (vehicleApproach.nearbyVehicles.isEmpty()) {
@@ -72,7 +71,7 @@ private fun AceWindowsNearbyVehiclesContent(vehicleApproach: AceWindowsVehicleAp
 @Composable
 private fun LmuWindowsSideBySideVehiclesContent(vehicleApproach: LmuWindowsVehicleApproachData?) {
     if (vehicleApproach == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        DebugStateUnavailableContent()
         return
     }
     if (!vehicleApproach.isSideBySideLeft && !vehicleApproach.isSideBySideRight) {
