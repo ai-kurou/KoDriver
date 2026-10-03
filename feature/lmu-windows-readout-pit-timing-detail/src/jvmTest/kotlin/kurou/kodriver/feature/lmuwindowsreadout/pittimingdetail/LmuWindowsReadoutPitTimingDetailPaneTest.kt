@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail
 
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -20,6 +21,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
@@ -70,6 +72,44 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
         val hintBounds = hint.fetchSemanticsNode().boundsInRoot
         assertTrue(hintBounds.left > chipBounds.right)
         assertEquals(chipBounds.center.y, hintBounds.center.y, absoluteTolerance = 1f)
+    }
+
+    @Test
+    fun `両カードでチップ行と必須文言の間にグループ余白を確保する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutPitTimingDetailUiState(
+                            virtualEnergyText = "通常エナジー",
+                            virtualEnergyImminentText = "必須エナジー",
+                            tyreWearText = "通常タイヤ",
+                            tyreWearImminentText = "必須タイヤ",
+                            isTextToSpeechAvailable = true,
+                        ),
+                    modifier = Modifier.requiredSize(360.dp, 4000.dp),
+                )
+            }
+        }
+
+        val groupSpacing = with(rule.density) { KoDriverSpacing.large.toPx() }
+        val labelSpacing = with(rule.density) { KoDriverSpacing.extraSmall.toPx() }
+        val fields = rule.onAllNodes(hasSetTextAction())
+        repeat(2) { index ->
+            val imminentLabel = rule.onAllNodesWithText("ピットイン必須（残り1周未満）")[index]
+            val imminentBounds = imminentLabel.fetchSemanticsNode().boundsInRoot
+            val chipBounds = rule.onAllNodesWithText("{laps}を挿入")[index].fetchSemanticsNode().boundsInRoot
+            val hintBounds =
+                rule
+                    .onAllNodesWithText("{laps} は予想残り周回数に置き換わります")[index]
+                    .fetchSemanticsNode()
+                    .boundsInRoot
+            assertTrue(imminentBounds.top - maxOf(chipBounds.bottom, hintBounds.bottom) >= groupSpacing)
+            val normalBounds = fields[index * 2].fetchSemanticsNode().boundsInRoot
+            val imminentFieldBounds = fields[index * 2 + 1].fetchSemanticsNode().boundsInRoot
+            assertTrue(imminentFieldBounds.top - normalBounds.bottom >= groupSpacing)
+            assertEquals(labelSpacing, imminentFieldBounds.top - imminentBounds.bottom, absoluteTolerance = 1f)
+        }
     }
 
     @Test

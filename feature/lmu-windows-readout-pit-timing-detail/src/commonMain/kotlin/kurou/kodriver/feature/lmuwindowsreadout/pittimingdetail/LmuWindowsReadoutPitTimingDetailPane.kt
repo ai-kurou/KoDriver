@@ -147,7 +147,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         modifier =
                             Modifier.padding(
                                 horizontal = KoDriverSpacing.small,
-                                vertical = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.medium,
                             ),
                     )
                     DetailPaneSubtitle(
@@ -194,7 +194,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         modifier =
                             Modifier.padding(
                                 horizontal = KoDriverSpacing.small,
-                                vertical = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.medium,
                             ),
                     )
                     DetailPaneSubtitle(
@@ -240,46 +240,50 @@ private fun PitTimingReadoutFields(
         currentText = it
         onTextChanged(it)
     }
-    ReadoutTextField(
-        label = stringResource(Res.string.pit_timing_text_label),
-        text = currentText,
-        isTextToSpeechAvailable = available,
-        onTextChanged = changeText,
-        onPreviewClick = onPreviewClick,
-        unknownPlaceholders =
-            findUnknownLmuWindowsPitTimingReadoutPlaceholders(currentText)
-                .joinToString("、"),
-    )
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-    ) {
-        AssistChip(
-            onClick = {
-                changeText(
-                    currentText + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
+    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.large)) {
+        Column {
+            ReadoutTextField(
+                label = stringResource(Res.string.pit_timing_text_label),
+                text = currentText,
+                isTextToSpeechAvailable = available,
+                onTextChanged = changeText,
+                onPreviewClick = onPreviewClick,
+                unknownPlaceholders =
+                    findUnknownLmuWindowsPitTimingReadoutPlaceholders(currentText)
+                        .joinToString("、"),
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+            ) {
+                AssistChip(
+                    onClick = {
+                        changeText(
+                            currentText + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
+                        )
+                    },
+                    label = { Text(stringResource(Res.string.pit_timing_laps_insert)) },
+                    enabled =
+                        available &&
+                            currentText.length + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER.length <=
+                            READOUT_CUSTOM_TEXT_MAX_LENGTH,
                 )
-            },
-            label = { Text(stringResource(Res.string.pit_timing_laps_insert)) },
-            enabled =
-                available &&
-                    currentText.length + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER.length <=
-                    READOUT_CUSTOM_TEXT_MAX_LENGTH,
-        )
-        Text(
-            text = stringResource(Res.string.pit_timing_laps_placeholder_hint),
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                Text(
+                    text = stringResource(Res.string.pit_timing_laps_placeholder_hint),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        ReadoutTextField(
+            label = stringResource(Res.string.pit_timing_imminent_text_label),
+            text = imminentText,
+            isTextToSpeechAvailable = available,
+            onTextChanged = onImminentTextChanged,
+            onPreviewClick = onImminentPreviewClick,
         )
     }
-    ReadoutTextField(
-        label = stringResource(Res.string.pit_timing_imminent_text_label),
-        text = imminentText,
-        isTextToSpeechAvailable = available,
-        onTextChanged = onImminentTextChanged,
-        onPreviewClick = onImminentPreviewClick,
-    )
 }
 
 /** 通常・切迫時の文言入力と試聴を提供する。未知トークンの警告は通常文言だけに使う。 */
@@ -293,7 +297,7 @@ private fun ReadoutTextField(
     onPreviewClick: (String) -> Unit,
     unknownPlaceholders: String = "",
 ) {
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
         Text(text = label, style = MaterialTheme.typography.bodyMedium)
         DetailPaneCardTextField(
             value = text,
