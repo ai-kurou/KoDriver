@@ -5,6 +5,7 @@ import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
@@ -40,7 +41,20 @@ val otherListModule =
         }
 
         factory {
-            OtherListSettingsUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+            OtherListSettingsUseCases(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+            )
         }
 
         // ドメイン UseCase（:core:domain。get() は :core:windows-startup-data の Repository を解決）
@@ -52,6 +66,9 @@ val otherListModule =
         factory { ObserveReadoutStartSoundTypeUseCase(get()) }
         factory { ObserveSoundVolumeUseCase(get()) }
         factory { SaveOverlayVisibleUseCase(get()) }
+
+        // other-theme-detail と同じfactory定義なので、どちらが後から登録されても同じ依存を解決する。
+        factory { ObserveThemeModeUseCase(get()) }
 
         // 端末のマスター音量（:core:device-volume-data の Repository を解決）。
         // other-volume-detail と同じfactory定義なので、どちらが後から登録されても同じ依存を解決する。

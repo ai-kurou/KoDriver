@@ -11,6 +11,9 @@
     <string name="item_overlay_text_size">文字サイズ</string>
     <string name="item_overlay_background_opacity">背景の透明度</string>
     <string name="item_theme">テーマ</string>
+    <string name="theme_system">システムに従う</string>
+    <string name="theme_light">ライト</string>
+    <string name="theme_dark">ダーク</string>
     <string name="item_dynamic_color">ダイナミックカラー</string>
     <string name="item_haptic_feedback">ハプティックフィードバック</string>
     <string name="item_startup">PC起動時に自動起動</string>

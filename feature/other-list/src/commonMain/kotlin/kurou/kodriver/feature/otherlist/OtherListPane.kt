@@ -71,6 +71,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
@@ -104,6 +105,9 @@ import kurou.kodriver.feature.otherlist.generated.resources.section_connection_s
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
 import kurou.kodriver.feature.otherlist.generated.resources.section_overlay_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_readout_settings
+import kurou.kodriver.feature.otherlist.generated.resources.theme_dark
+import kurou.kodriver.feature.otherlist.generated.resources.theme_light
+import kurou.kodriver.feature.otherlist.generated.resources.theme_system
 import kurou.kodriver.feature.otherlist.generated.resources.voice_system_default
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.seconds
@@ -488,6 +492,18 @@ private fun otherListItemSupportingContent(
                         uiState.voiceId
                     },
                 )
+            }
+        }
+
+        OtherListItemType.Theme -> {
+            {
+                val label =
+                    when (uiState.themeMode) {
+                        ThemeMode.SYSTEM -> Res.string.theme_system
+                        ThemeMode.LIGHT -> Res.string.theme_light
+                        ThemeMode.DARK -> Res.string.theme_dark
+                    }
+                Text(stringResource(label))
             }
         }
 

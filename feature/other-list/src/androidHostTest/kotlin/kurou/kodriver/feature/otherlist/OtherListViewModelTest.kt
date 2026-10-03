@@ -22,7 +22,9 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
+import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
+import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
@@ -36,6 +38,7 @@ import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
@@ -48,6 +51,7 @@ import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
@@ -100,6 +104,9 @@ class OtherListViewModelTest {
     private val readoutStartSoundRepository: ReadoutStartSoundPreferencesRepository = mockk()
     private val readoutStartSoundFlow = MutableStateFlow(READOUT_START_SOUND_TYPE_DEFAULT)
 
+    private val themeRepository: ThemePreferencesRepository = mockk()
+    private val themeModeFlow = MutableStateFlow(THEME_MODE_DEFAULT)
+
     private val voiceRepository: VoicePreferencesRepository = mockk()
     private val soundVolumeRepository: SoundVolumePreferencesRepository = mockk()
     private val deviceVolumeRepository: DeviceVolumeRepository = mockk()
@@ -140,6 +147,7 @@ class OtherListViewModelTest {
                     observeVoice = ObserveVoiceUseCase(voiceRepository),
                     observeReadoutStartSoundType = ObserveReadoutStartSoundTypeUseCase(readoutStartSoundRepository),
                     observeSoundVolume = ObserveSoundVolumeUseCase(soundVolumeRepository),
+                    observeThemeMode = ObserveThemeModeUseCase(themeRepository),
                 ),
             checkHapticFeedbackAvailable = CheckHapticFeedbackAvailableUseCase(hapticFeedbackAvailabilityRepository),
             checkAccessLocalNetworkPermissionGranted =
@@ -165,6 +173,7 @@ class OtherListViewModelTest {
         coEvery { deviceVolumeRepository.getVolume() } returns 60
         every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
         every { voiceRepository.voiceId() } returns voiceFlow
+        every { themeRepository.observeThemeMode() } returns themeModeFlow
         every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
         every { speechSettingsRepository.openWindowsSpeechSettings() } returns Unit
         val viewModel = createViewModel(hapticFeedbackAvailable = true)
@@ -185,6 +194,7 @@ class OtherListViewModelTest {
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
             every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(hapticFeedbackAvailable = true)
 
@@ -219,6 +229,7 @@ class OtherListViewModelTest {
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
             every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(hapticFeedbackAvailable = false)
 
@@ -253,6 +264,7 @@ class OtherListViewModelTest {
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
             every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(hapticFeedbackAvailable = true)
 
@@ -284,6 +296,7 @@ class OtherListViewModelTest {
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
             every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery {
                 textToSpeechRepository.unavailableReason()
@@ -325,6 +338,7 @@ class OtherListViewModelTest {
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
             every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery {
                 textToSpeechRepository.unavailableReason()
@@ -362,6 +376,7 @@ class OtherListViewModelTest {
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
             every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -382,6 +397,7 @@ class OtherListViewModelTest {
             coEvery { deviceVolumeRepository.getVolume() } answers { deviceVolume }
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
             every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -432,6 +448,7 @@ class OtherListViewModelTest {
             }
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
             every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -454,5 +471,31 @@ class OtherListViewModelTest {
             subscription.cancel()
             coVerify(atLeast = 3) { deviceVolumeRepository.getVolume() }
             confirmVerified(deviceVolumeRepository)
+        }
+
+    @Test
+    fun `テーマは保存済み設定とその変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            themeModeFlow.update { ThemeMode.DARK }
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            assertEquals(THEME_MODE_DEFAULT, viewModel.uiState.value.themeMode)
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first { it.themeMode == ThemeMode.DARK }.themeMode)
+
+            themeModeFlow.update { ThemeMode.LIGHT }
+            assertEquals(ThemeMode.LIGHT, viewModel.uiState.first { it.themeMode == ThemeMode.LIGHT }.themeMode)
+
+            themeModeFlow.update { ThemeMode.SYSTEM }
+            assertEquals(ThemeMode.SYSTEM, viewModel.uiState.first { it.themeMode == ThemeMode.SYSTEM }.themeMode)
+            verify(exactly = 1) { themeRepository.observeThemeMode() }
+            confirmVerified(themeRepository)
         }
 }
