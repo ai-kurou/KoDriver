@@ -1,7 +1,7 @@
 # GitHub Actions ワークフロー詳細
 
 - `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行（`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行）。同一 PR に新しいコミットが追加された場合は、実行中の古い CI をキャンセルする。`desktop-screenshot-test-verify` / `android-screenshot-test-verify`（`_screenshot-test-verify.yml` を呼び出す）は、まず verify を実行し、失敗した場合のみ golden 画像を再記録してコミット・プッシュしたうえでジョブを失敗させる
-- `record-golden-images.yml`: スクリーンショットテストのゴールデン画像を手動で記録するワークフロー。`workflow_dispatch` での手動実行、または PR に `record-golden-images` ラベルを付けたときに起動し、Desktop（`recordRoborazziJvmTests`）と Android（`recordRoborazziAndroidHostTests`）の画像を記録する。記録に失敗したモジュールがあっても、記録できたモジュール分の画像はアップロード・コミットする（ただし Desktop・Android のどちらか一方で画像が1枚も生成されない場合は、artifact が作られず `commit` ジョブのダウンロードが失敗するため、成功した側もコミットされない）
+- `record-golden-images.yml`: スクリーンショットテストのゴールデン画像を手動で記録するワークフロー。`workflow_dispatch` での手動実行、または PR に `record-golden-images` ラベルを付けたときに起動し、Desktop（`recordRoborazziJvmTests`）と Android（`recordRoborazziAndroidHostTests`）の画像を記録する。記録に失敗したモジュールがあっても、記録できたモジュール分の画像はアップロード・コミットする
 - `on-main-merge.yml`: main へのマージ時に実行。`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行する。`dokka-pages` ジョブは Dokka（`./gradlew :dokkaGenerate`）で API ドキュメントを生成し、GitHub Pages（`github-pages` environment）へ自動デプロイする。ドキュメント本体（`docs/api/`）はコミットせず、CI 実行のたびに再生成する
 - `_build-android-release.yml`: 署名付き Android APK をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。ファイル名・表示名を `_` で始め、Actions の実行一覧では手動起動対象として表示されないようにしている。`ref` 入力でビルド対象のブランチ・タグ・コミットを指定する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
 - `_build-windows-msi.yml`: Windows MSI をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。`_build-android-release.yml` と同様に `ref` 入力でビルド対象を指定し、`gradle.properties` の `appVersion` を出力する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
