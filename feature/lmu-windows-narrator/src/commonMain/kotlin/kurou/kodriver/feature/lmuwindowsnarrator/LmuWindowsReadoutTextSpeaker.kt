@@ -93,10 +93,11 @@ internal class LmuWindowsReadoutTextSpeaker(
         }
 
     private suspend fun remainingVirtualEnergyText(event: SpeechEvent.RemainingVirtualEnergyWarning): String =
-        formatLmuWindowsRemainingVirtualEnergyReadoutText(
-            observeRemainingVirtualEnergyReadoutText().first(),
-            event.percentage,
-        )
+        event.resolvedText
+            ?: formatLmuWindowsRemainingVirtualEnergyReadoutText(
+                observeRemainingVirtualEnergyReadoutText().first(),
+                event.percentage,
+            )
 
     private suspend fun pitTimingText(event: SpeechEvent.PitTimingWarning): String? {
         if (event.source == PitTimingSource.TyreWear) {

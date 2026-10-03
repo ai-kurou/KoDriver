@@ -13,6 +13,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -145,9 +146,18 @@ private fun RemainingVirtualEnergyReadoutField(
     onTextChanged: (String) -> Unit,
     onPreviewClick: (String) -> Unit,
 ) {
-    var currentText by remember(text) { mutableStateOf(text) }
+    var currentText by remember { mutableStateOf(text) }
+    // 保存が非同期のため、入力中の最新の値と一致するまでは保存済みの古い値で入力欄を巻き戻さない
+    var pendingText by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(text) {
+        if (pendingText == null || pendingText == text) {
+            currentText = text
+            pendingText = null
+        }
+    }
     val changeText: (String) -> Unit = {
         currentText = it
+        pendingText = it
         onTextChanged(it)
     }
     ReadoutTextField(

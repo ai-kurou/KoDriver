@@ -302,7 +302,7 @@ internal class LmuWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    speakWithPriority(event, readoutOrder, queueEnabledStates)
+                    speakWithPriority(event.withResolvedText(text), readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -385,6 +385,10 @@ internal class LmuWindowsNarratorEventProcessor(
             )
         }
     }
+
+    /** 判定時に解決した文言を残量警告に持たせ、キュー待機中に設定が変わっても発話とログを一致させる。 */
+    private fun SpeechEvent.withResolvedText(text: String): SpeechEvent =
+        if (this is SpeechEvent.RemainingVirtualEnergyWarning) copy(resolvedText = text) else this
 
     /**
      * 読み上げの処理結果を返す。キュー追加・通常再生・割り込み再生・優先度負けによる読み上げなしの4種を

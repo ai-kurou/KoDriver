@@ -234,7 +234,9 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50), queue = false) } just Runs
+            every {
+                ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50, resolvedText = "閾値50%です"), queue = false)
+            } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -279,7 +281,9 @@ class LmuWindowsNarratorEventProcessorTest {
             assertEquals(0.3, root["remainingVirtualEnergy"]!!.jsonObject["remainingRatio"]!!.jsonPrimitive.double)
             assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50), false) }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50, resolvedText = "閾値50%です"), false)
+            }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,

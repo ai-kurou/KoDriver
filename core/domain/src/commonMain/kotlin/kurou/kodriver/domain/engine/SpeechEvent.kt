@@ -113,9 +113,13 @@ sealed interface SpeechEvent {
         override val narratedText = "ブレーキ過熱警告"
     }
 
-    /** バーチャルエナジー残量警告。[percentage] は実際の残量ではなく設定した閾値（%）。 */
+    /**
+     * バーチャルエナジー残量警告。[percentage] は実際の残量ではなく設定した閾値（%）。
+     * [resolvedText] は判定時に解決済みの読み上げ文言。キュー待機中に設定が変わっても、ログと発話内容を一致させるために使う。
+     */
     data class RemainingVirtualEnergyWarning(
         val percentage: Int,
+        val resolvedText: String? = null,
     ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root
         override val narratedText =

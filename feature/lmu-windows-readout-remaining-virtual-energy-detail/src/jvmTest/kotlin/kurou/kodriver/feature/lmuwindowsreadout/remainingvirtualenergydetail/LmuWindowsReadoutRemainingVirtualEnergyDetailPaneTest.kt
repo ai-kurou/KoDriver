@@ -1,9 +1,13 @@
 package kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -67,6 +71,32 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneTest {
         rule.onNodeWithContentDescription("入力した文言を再生").performClick()
         assertEquals(listOf("あ".repeat(30)), changed)
         assertEquals(changed, previews)
+    }
+
+    @Test
+    fun `保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(
+                            readoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onReadoutTextChanged = {},
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).performTextReplacement("あい")
+        savedText = "あ"
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
+        savedText = "あい"
+        rule.waitForIdle()
+        savedText = "う"
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
     }
 
     @Test

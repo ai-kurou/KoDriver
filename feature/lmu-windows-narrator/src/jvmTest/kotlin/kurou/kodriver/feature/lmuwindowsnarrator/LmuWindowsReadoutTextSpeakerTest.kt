@@ -83,6 +83,18 @@ class LmuWindowsReadoutTextSpeakerTest {
         }
 
     @Test
+    fun `残量警告は解決済みの文言があれば設定を再取得せずその文言を読み上げる`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("解決済み", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.RemainingVirtualEnergyWarning(50, resolvedText = "解決済み"), VOLUME)
+            verify(exactly = 0) { observeRemainingText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
     fun `残量警告の空白文言ではTTSを確認せず読み上げない`() =
         runTest {
             every { observeRemainingText() } returns flowOf(" ")
