@@ -25,10 +25,17 @@ class DetailPaneCardTextFieldScreenshotTest {
     @Test
     fun `カスタム文言あり ダークテーマ`() = composeScreenshotTest { captureCard("イエロー、前方注意", darkTheme = true) }
 
+    @Test
+    fun `編集済み文言のリセットボタン表示`() = composeScreenshotTest { captureCard(value = "イエロー、前方注意", showReset = true) }
+
+    @Test
+    fun `既定文言のリセットボタンは透明`() = composeScreenshotTest { captureCard(value = "イエローフラッグ", showReset = true) }
+
     private fun DesktopComposeUiTest.captureCard(
         value: String,
         enabled: Boolean = true,
         darkTheme: Boolean = false,
+        showReset: Boolean = false,
     ) {
         val selected = value.isNotEmpty()
         setContent {
@@ -49,6 +56,14 @@ class DetailPaneCardTextFieldScreenshotTest {
                                 )
                                 DetailPaneCardTextField(
                                     value = value,
+                                    defaultValue = "イエローフラッグ",
+                                    onResetToDefault =
+                                        if (showReset) {
+                                            {}
+                                        } else {
+                                            null
+                                        },
+                                    resetContentDescription = "デフォルトに戻す",
                                     placeholder = "イエローフラッグ",
                                     maxLength = 30,
                                     onValueChangeFinished = {},

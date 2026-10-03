@@ -21,6 +21,7 @@ class LmuWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
                     uiState = LmuWindowsReadoutFlagDetailUiState(),
                     onFlagEnabledChanged = { _, _ -> },
                     onFlagTextChanged = { _, _ -> },
+                    onFlagTextReset = {},
                     onFlagTextPreviewClicked = {},
                 )
             }
