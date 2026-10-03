@@ -11,7 +11,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
@@ -36,6 +40,7 @@ internal data class StartReadoutUseCases(
     val saveRightText: SaveLmuWindowsVehicleApproachStartRightReadoutTextUseCase,
 )
 
+@Suppress("TooManyFunctions")
 internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private val thresholds: LmuWindowsVehicleApproachThresholdsUseCases,
     private val vehicleApproachPreferences: LmuWindowsVehicleApproachPreferencesUseCases,
@@ -149,6 +154,34 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
 
     fun onSustainedRightTextChanged(text: String) {
         viewModelScope.launch { vehicleApproachPreferences.saveSustainedRightReadoutText(text) }
+    }
+
+    fun onStartLeftTextReset() {
+        viewModelScope.launch {
+            startReadout.saveLeftText(LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT)
+        }
+    }
+
+    fun onStartRightTextReset() {
+        viewModelScope.launch {
+            startReadout.saveRightText(LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT)
+        }
+    }
+
+    fun onSustainedLeftTextReset() {
+        viewModelScope.launch {
+            vehicleApproachPreferences.saveSustainedLeftReadoutText(
+                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT,
+            )
+        }
+    }
+
+    fun onSustainedRightTextReset() {
+        viewModelScope.launch {
+            vehicleApproachPreferences.saveSustainedRightReadoutText(
+                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT,
+            )
+        }
     }
 
     fun onStartLeftTextPreviewClicked(text: String) {
