@@ -55,7 +55,9 @@ class LmuWindowsReadoutPitTimingDetailPaneScreenshotTest {
                                 uiState =
                                     LmuWindowsReadoutPitTimingDetailUiState(
                                         virtualEnergyText = "残り{laps}周です",
+                                        tyreWearText = "残り{laps}周です",
                                         virtualEnergyImminentText = "今すぐピットへ",
+                                        tyreWearImminentText = "今すぐピットへ",
                                         isTextToSpeechAvailable = true,
                                     ),
                             )
@@ -77,7 +79,9 @@ class LmuWindowsReadoutPitTimingDetailPaneScreenshotTest {
                                 uiState =
                                     LmuWindowsReadoutPitTimingDetailUiState(
                                         virtualEnergyText = "",
+                                        tyreWearText = "",
                                         virtualEnergyImminentText = "",
+                                        tyreWearImminentText = "",
                                         isTextToSpeechAvailable = true,
                                     ),
                             )
@@ -99,6 +103,7 @@ class LmuWindowsReadoutPitTimingDetailPaneScreenshotTest {
                                 uiState =
                                     LmuWindowsReadoutPitTimingDetailUiState(
                                         virtualEnergyText = "{lap}周{x}",
+                                        tyreWearText = "{lap}周{x}",
                                         isTextToSpeechAvailable = true,
                                     ),
                             )

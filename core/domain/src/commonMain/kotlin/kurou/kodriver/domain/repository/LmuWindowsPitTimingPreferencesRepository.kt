@@ -21,6 +21,14 @@ interface LmuWindowsPitTimingPreferencesRepository {
 
     suspend fun saveVirtualEnergyImminentReadoutText(text: String)
 
+    fun observeTyreWearReadoutText(): Flow<String>
+
+    suspend fun saveTyreWearReadoutText(text: String)
+
+    fun observeTyreWearImminentReadoutText(): Flow<String>
+
+    suspend fun saveTyreWearImminentReadoutText(text: String)
+
     fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
     suspend fun saveEnabledState(

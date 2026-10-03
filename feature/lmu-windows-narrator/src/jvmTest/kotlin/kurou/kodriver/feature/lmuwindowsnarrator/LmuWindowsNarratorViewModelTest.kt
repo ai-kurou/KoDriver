@@ -485,7 +485,13 @@ class LmuWindowsNarratorViewModelTest {
                 LmuWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-                    readoutText = { it.narratedText },
+                    readoutText = {
+                        if (it is SpeechEvent.PitTimingWarning && it.source == PitTimingSource.TyreWear) {
+                            "タイヤ交換へ"
+                        } else {
+                            it.narratedText
+                        }
+                    },
                 ),
             narratorUseCases =
                 NarratorUseCases(
@@ -1937,6 +1943,7 @@ class LmuWindowsNarratorViewModelTest {
             val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
             val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
             val tts = mockTts(spokenTexts)
             var currentTime = 0L
             createViewModel(
@@ -1948,6 +1955,8 @@ class LmuWindowsNarratorViewModelTest {
                 enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
                 currentTimeMs = { currentTime },
             )
+
+            stubTelemetryLogSave(logs, createdAt = 150_000L, ReadoutItemKey.LmuWindows.PitTiming.Root)
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear(fl = 1.0))
@@ -1964,6 +1973,7 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear)),
                 spokenTexts,
             )
+            assertEquals("タイヤ交換へ", logs.single().narratedText)
         }
 
     @Test

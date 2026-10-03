@@ -9,21 +9,22 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.formatLmuWindowsPitTimingVirtualEnergyReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingTyreWearLapsUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
@@ -47,6 +48,10 @@ internal data class PitTimingReadoutUseCases(
     val observeImminentText: ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase,
     val saveText: SaveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase,
     val saveImminentText: SaveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase,
+    val observeTyreWearText: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase,
+    val observeTyreWearImminentText: ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
+    val saveTyreWearText: SaveLmuWindowsPitTimingTyreWearReadoutTextUseCase,
+    val saveTyreWearImminentText: SaveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
     val speakText: SpeakTextUseCase,
     val playStartSoundForKey: PlayStartSoundForKeyUseCase,
     val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
@@ -55,7 +60,6 @@ internal data class PitTimingReadoutUseCases(
 
 internal class LmuWindowsReadoutPitTimingDetailViewModel(
     private val pitTimingUseCases: PitTimingUseCases,
-    private val playSpeechEvent: PlaySpeechEventUseCase,
     private val readout: PitTimingReadoutUseCases,
 ) : ViewModel() {
     private val textToSpeechAvailable =
@@ -67,17 +71,24 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
             pitTimingUseCases.observeVirtualEnergyLaps(),
             pitTimingUseCases.observeTyreWearLaps(),
             pitTimingUseCases.observeEnabledStates(),
-            combine(readout.observeText(), readout.observeImminentText()) { text, imminent -> text to imminent },
+            combine(
+                combine(readout.observeText(), readout.observeImminentText()) { text, imminent -> text to imminent },
+                combine(readout.observeTyreWearText(), readout.observeTyreWearImminentText()) { text, imminent ->
+                    text to imminent
+                },
+            ) { virtualEnergy, tyreWear -> virtualEnergy to tyreWear },
             textToSpeechAvailable,
         ) { virtualEnergyLaps, tyreWearLaps, enabledStates, texts, available ->
             LmuWindowsReadoutPitTimingDetailUiState(
                 virtualEnergyEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy),
                 virtualEnergyLaps = virtualEnergyLaps,
-                virtualEnergyText = texts.first,
-                virtualEnergyImminentText = texts.second,
+                virtualEnergyText = texts.first.first,
+                virtualEnergyImminentText = texts.first.second,
                 isTextToSpeechAvailable = available,
                 tyreWearEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.TyreWear),
                 tyreWearLaps = tyreWearLaps,
+                tyreWearText = texts.second.first,
+                tyreWearImminentText = texts.second.second,
             )
         }.stateIn(
             viewModelScope,
@@ -118,10 +129,26 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
     }
 
     fun onVirtualEnergyTextPreviewClicked(text: String) {
-        playReadoutPreview(formatLmuWindowsPitTimingVirtualEnergyReadoutText(text, PIT_TIMING_PREVIEW_LAPS))
+        playReadoutPreview(formatLmuWindowsPitTimingReadoutText(text, PIT_TIMING_PREVIEW_LAPS))
     }
 
     fun onVirtualEnergyImminentTextPreviewClicked(text: String) {
+        playReadoutPreview(text)
+    }
+
+    fun onTyreWearTextChanged(text: String) {
+        viewModelScope.launch { readout.saveTyreWearText(text) }
+    }
+
+    fun onTyreWearImminentTextChanged(text: String) {
+        viewModelScope.launch { readout.saveTyreWearImminentText(text) }
+    }
+
+    fun onTyreWearTextPreviewClicked(text: String) {
+        playReadoutPreview(formatLmuWindowsPitTimingReadoutText(text, PIT_TIMING_PREVIEW_LAPS))
+    }
+
+    fun onTyreWearImminentTextPreviewClicked(text: String) {
         playReadoutPreview(text)
     }
 
@@ -134,10 +161,5 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
             readout.playStartSoundForKey(ReadoutItemKey.LmuWindows.PitTiming.Root)
             readout.speakText(text, volume = volume)
         }
-    }
-
-    fun onPreviewClicked() {
-        playSpeechEvent(SpeechEvent.PitTimingWarning(PIT_TIMING_PREVIEW_LAPS, source = PitTimingSource.TyreWear))
-        playSpeechEvent(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear), queue = true)
     }
 }

@@ -6,8 +6,6 @@ import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MAX
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
@@ -18,7 +16,9 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadou
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
@@ -187,6 +187,8 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) {
             ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(get())
         }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) {
             ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase(get())
@@ -201,6 +203,8 @@ val lmuWindowsNarratorModule: Module =
                 observeSustainedLeftReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeStartRightReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeSustainedRightReadoutText = get(named(Simulator.LmuWindows.id)),
+                observePitTimingTyreWearReadoutText = get(named(Simulator.LmuWindows.id)),
+                observePitTimingTyreWearImminentReadoutText = get(named(Simulator.LmuWindows.id)),
                 observePitTimingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
                 observePitTimingVirtualEnergyImminentReadoutText = get(named(Simulator.LmuWindows.id)),
                 checkTextToSpeechAvailable = get(),
@@ -226,7 +230,7 @@ val lmuWindowsNarratorModule: Module =
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
                     customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning && it.source == PitTimingSource.VirtualEnergy
+                        it is SpeechEvent.PitTimingWarning
                     },
                     customSpeakEvents =
                         setOf(
@@ -257,12 +261,6 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
         put(SpeechEvent.BrakeOverheat, "files/brake_overheat.wav")
-        for (laps in 0..LMU_WINDOWS_PIT_TIMING_LAPS_MAX) {
-            put(
-                SpeechEvent.PitTimingWarning(laps, source = PitTimingSource.TyreWear),
-                "files/pit_timing_laps_$laps.wav",
-            )
-        }
     }
 
 private val lmuWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
