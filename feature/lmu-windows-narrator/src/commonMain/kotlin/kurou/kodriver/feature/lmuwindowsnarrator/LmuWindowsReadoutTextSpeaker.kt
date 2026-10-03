@@ -2,9 +2,13 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.flow.first
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.PitTimingSource
+import kurou.kodriver.domain.model.formatLmuWindowsPitTimingVirtualEnergyReadoutText
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
@@ -14,7 +18,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRi
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
- * フラッグ・車両接近開始時・継続時の自由文字列をOS標準TTSで読み上げる、
+ * フラッグ・車両接近・VEピットタイミングの自由文字列をOS標準TTSで読み上げる、
  * [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine] 用のフック。
  * 空欄またはTTSが利用できない場合は本文を読み上げない。
  * イベントごとの文言取得とTTSの依存を明示する。
@@ -28,6 +32,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [SpeechEvent.CarRight] : 右車両接近開始
  * - [SpeechEvent.CarLeftSustained] : 左車両接近継続
  * - [SpeechEvent.CarRightSustained] : 右車両接近継続
+ * - [SpeechEvent.PitTimingWarning] : バーチャルエナジー由来のピットタイミング
  */
 @Suppress("LongParameterList")
 internal class LmuWindowsReadoutTextSpeaker(
@@ -39,6 +44,9 @@ internal class LmuWindowsReadoutTextSpeaker(
     private val observeStartRightReadoutText: ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase,
     private val observeSustainedLeftReadoutText: ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase,
     private val observeSustainedRightReadoutText: ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase,
+    private val observePitTimingVirtualEnergyReadoutText: ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase,
+    private val observePitTimingVirtualEnergyImminentReadoutText:
+        ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -70,6 +78,19 @@ internal class LmuWindowsReadoutTextSpeaker(
             SpeechEvent.CarLeftSustained -> observeSustainedLeftReadoutText().first()
             SpeechEvent.CarRight -> observeStartRightReadoutText().first()
             SpeechEvent.CarRightSustained -> observeSustainedRightReadoutText().first()
+            is SpeechEvent.PitTimingWarning -> pitTimingText(event)
             else -> null
         }
+
+    private suspend fun pitTimingText(event: SpeechEvent.PitTimingWarning): String? {
+        if (event.source == PitTimingSource.TyreWear) return null
+        return if (event.laps <= 0) {
+            observePitTimingVirtualEnergyImminentReadoutText().first()
+        } else {
+            formatLmuWindowsPitTimingVirtualEnergyReadoutText(
+                observePitTimingVirtualEnergyReadoutText().first(),
+                event.laps,
+            )
+        }
+    }
 }

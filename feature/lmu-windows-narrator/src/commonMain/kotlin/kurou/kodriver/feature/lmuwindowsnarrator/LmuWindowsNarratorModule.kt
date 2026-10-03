@@ -7,6 +7,7 @@ import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MAX
+import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
@@ -18,7 +19,9 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
@@ -73,9 +76,9 @@ import org.koin.dsl.module
  *   RemainingVirtualEnergyUseCases / PitTimingUseCases）、
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
- *   各フラッグ・車両接近開始時の読み上げ文言の Observe UseCase・TextToSpeechEngine）、
+ *   各フラッグ・車両接近・VEピットタイミングの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
  *   および LmuWindowsReadoutTextSpeaker
- *   （フラッグ・車両接近開始時の実際の読み上げ時に
+ *   （フラッグ・車両接近・VEピットタイミングの実際の読み上げ時に
  *   自由文字列をOS標準TTSで読み上げるフック。WavNarratorEngine の customSpeak に渡す）。
  * 音声設定監視用の ObserveVoiceUseCase を提供し、VoicePreferencesRepository（:core:data）を消費する。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
@@ -184,6 +187,10 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) {
             ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase(get())
         }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) {
+            ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase(get())
+        }
         factory {
             LmuWindowsReadoutTextSpeaker(
                 observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
@@ -194,6 +201,8 @@ val lmuWindowsNarratorModule: Module =
                 observeSustainedLeftReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeStartRightReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeSustainedRightReadoutText = get(named(Simulator.LmuWindows.id)),
+                observePitTimingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
+                observePitTimingVirtualEnergyImminentReadoutText = get(named(Simulator.LmuWindows.id)),
                 checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )
@@ -216,6 +225,9 @@ val lmuWindowsNarratorModule: Module =
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
                     customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
+                    isCustomSpeakEvent = {
+                        it is SpeechEvent.PitTimingWarning && it.source == PitTimingSource.VirtualEnergy
+                    },
                     customSpeakEvents =
                         setOf(
                             SpeechEvent.CarLeft,
@@ -246,7 +258,10 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
         put(SpeechEvent.BrakeOverheat, "files/brake_overheat.wav")
         for (laps in 0..LMU_WINDOWS_PIT_TIMING_LAPS_MAX) {
-            put(SpeechEvent.PitTimingWarning(laps), "files/pit_timing_laps_$laps.wav")
+            put(
+                SpeechEvent.PitTimingWarning(laps, source = PitTimingSource.TyreWear),
+                "files/pit_timing_laps_$laps.wav",
+            )
         }
     }
 

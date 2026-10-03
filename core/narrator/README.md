@@ -25,6 +25,8 @@ feature 自身の compose resources `Res::readBytes`）・イベントからキ�
 `stop()` → `speak()` の連続呼び出しに対しても、直前にキャンセルした再生ジョブの停止処理が完了するまで新しい再生を
 始めないよう `lastCancelledPlayback` で待ち合わせます。
 
+`WavNarratorEngine` の `customSpeakEvents` または `isCustomSpeakEvent` で指定したイベントは、開始音の後に `customSpeak` へ本文と音量を渡す。フックがない場合や本文を読み上げない場合もWAV本文へのフォールバックは行わない。
+
 `platformSoundModule(qualifier)` は `SoundPlayer` のプラットフォーム実装を、呼び出し側が指定した Koin の named
 修飾子付きでバインドする expect/actual です。3つの narrator feature は同一の Koin コンテナに同時にロードされるため、
 `named("lmu_windows")` / `named("gt7_ps5")` / `named("ace_windows")` のように feature ごとに異なる修飾子を渡すことで、

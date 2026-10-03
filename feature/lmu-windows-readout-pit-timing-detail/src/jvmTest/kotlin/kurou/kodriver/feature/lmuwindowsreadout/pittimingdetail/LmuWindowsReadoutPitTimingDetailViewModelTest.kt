@@ -19,6 +19,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
@@ -175,8 +176,9 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
     @Test
     fun `onPreviewClickedを呼ぶと5周と0周のPitTimingWarningイベントが再生される`() {
         stubRepository()
-        every { ttsEngine.speak(SpeechEvent.PitTimingWarning(5), false) } returns Unit
-        every { ttsEngine.speak(SpeechEvent.PitTimingWarning(0), true) } returns Unit
+        every { ttsEngine.speak(SpeechEvent.PitTimingWarning(5, source = PitTimingSource.TyreWear), false) } returns
+            Unit
+        every { ttsEngine.speak(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear), true) } returns Unit
         val viewModel = createViewModel()
 
         viewModel.onPreviewClicked()
@@ -184,8 +186,12 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
         verify(exactly = 1) { repository.observeTyreWearLaps() }
         verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(5), false) }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(0), true) }
+        verify(
+            exactly = 1,
+        ) { ttsEngine.speak(SpeechEvent.PitTimingWarning(5, source = PitTimingSource.TyreWear), false) }
+        verify(
+            exactly = 1,
+        ) { ttsEngine.speak(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear), true) }
         confirmVerified(repository, ttsEngine)
     }
 }

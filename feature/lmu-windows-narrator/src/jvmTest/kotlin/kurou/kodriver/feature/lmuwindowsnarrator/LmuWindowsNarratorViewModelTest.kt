@@ -45,6 +45,7 @@ import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.OverheatVoiceType
+import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
@@ -1822,7 +1823,10 @@ class LmuWindowsNarratorViewModelTest {
             currentTime = 150_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0)), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -1956,7 +1960,10 @@ class LmuWindowsNarratorViewModelTest {
             currentTime = 150_000L
             tyreWearChannel.send(tyreWear(fl = 0.05))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0)), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear)),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -2005,8 +2012,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(0),
-                    SpeechEvent.PitTimingWarning(0),
+                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy),
+                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy),
                 ),
                 spokenTexts,
             )
@@ -2059,8 +2066,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(0),
-                    SpeechEvent.PitTimingWarning(0),
+                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear),
+                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear),
                 ),
                 spokenTexts,
             )
@@ -2102,7 +2109,51 @@ class LmuWindowsNarratorViewModelTest {
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
             tyreWearChannel.send(tyreWear(fl = 0.25))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0)), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `タイヤ摩耗の予想残り周回数が低い場合は算出元を維持して読み上げる`() =
+        runTest(testDispatcher) {
+            val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            var currentTime = 0L
+            createViewModel(
+                telemetryChannel = telemetryChannel,
+                remainingVirtualEnergyChannel = virtualEnergyChannel,
+                tyreWearChannel = tyreWearChannel,
+                ttsEngine = tts,
+                pitTimingVirtualEnergyLapsThreshold = 3,
+                pitTimingTyreWearLapsThreshold = 3,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+                currentTimeMs = { currentTime },
+            )
+
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyreWearChannel.send(tyreWear(fl = 1.0))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            currentTime = 45_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
+            tyreWearChannel.send(tyreWear(fl = 0.9))
+            currentTime = 90_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            tyreWearChannel.send(tyreWear(fl = 0.8))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            currentTime = 150_000L
+            // タイヤ摩耗予想残り0周を先に通知し、VE予想残り1周は同一ラップのゲートで抑止する。
+            tyreWearChannel.send(tyreWear(fl = 0.05))
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.25))
+
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear)),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -2139,7 +2190,10 @@ class LmuWindowsNarratorViewModelTest {
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
             tyreWearChannel.send(tyreWear(fl = 0.05))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0)), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
+                spokenTexts,
+            )
         }
 
     @Test

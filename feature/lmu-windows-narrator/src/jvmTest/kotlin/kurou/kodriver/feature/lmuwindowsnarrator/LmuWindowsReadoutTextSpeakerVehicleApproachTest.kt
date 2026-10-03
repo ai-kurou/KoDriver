@@ -14,6 +14,8 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
@@ -32,6 +34,10 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
     private val observeRight: ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase = mockk()
     private val observeSustainedLeft: ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase = mockk()
     private val observeSustainedRight: ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase = mockk()
+    private val observePitTimingVirtualEnergyReadoutText: ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase =
+        mockk()
+    private val observePitTimingVirtualEnergyImminentReadoutText:
+        ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -44,6 +50,8 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observeRight,
             observeSustainedLeft,
             observeSustainedRight,
+            observePitTimingVirtualEnergyReadoutText,
+            observePitTimingVirtualEnergyImminentReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -58,6 +66,8 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observeRight,
             observeSustainedLeft,
             observeSustainedRight,
+            observePitTimingVirtualEnergyReadoutText,
+            observePitTimingVirtualEnergyImminentReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
