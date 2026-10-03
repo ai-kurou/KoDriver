@@ -381,7 +381,7 @@ class OtherListViewModelTest {
             soundVolumeFlow.update { 100 }
             assertEquals(100, viewModel.uiState.first { it.soundVolume == 100 }.soundVolume)
             deviceVolume = 0
-            advanceTimeBy(499)
+            advanceTimeBy(1_999)
             assertEquals(60, viewModel.uiState.first().deviceVolume)
             advanceTimeBy(1)
             runCurrent()
@@ -391,11 +391,48 @@ class OtherListViewModelTest {
             runCurrent()
             advanceTimeBy(5_000)
             runCurrent()
-            // 購読中の2回と、購読終了後の5秒の猶予中の9回。猶予が終了すると停止する。
-            coVerify(exactly = 11) { deviceVolumeRepository.getVolume() }
+            // 購読中の2回と、購読終了後の5秒の猶予中の2回。猶予が終了すると停止する。
+            coVerify(exactly = 4) { deviceVolumeRepository.getVolume() }
             advanceTimeBy(1_000)
             runCurrent()
-            coVerify(exactly = 11) { deviceVolumeRepository.getVolume() }
+            coVerify(exactly = 4) { deviceVolumeRepository.getVolume() }
+            confirmVerified(deviceVolumeRepository)
+        }
+
+    @Test
+    fun `端末音量の取得に失敗しても直前の値を維持して取得を続ける`() =
+        runTest(dispatcher) {
+            every { soundVolumeRepository.volume() } returns MutableStateFlow(80)
+            var attempt = 0
+            coEvery { deviceVolumeRepository.getVolume() } answers {
+                when (attempt++) {
+                    0 -> throw IllegalStateException("no audio endpoint")
+                    1 -> 60
+                    else -> throw IllegalStateException("device removed")
+                }
+            }
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            val subscription =
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                    viewModel.uiState.collect()
+                }
+            runCurrent()
+
+            assertEquals(0, viewModel.uiState.first { it.soundVolume == 80 }.deviceVolume)
+            advanceTimeBy(2_000)
+            runCurrent()
+            assertEquals(60, viewModel.uiState.first { it.deviceVolume == 60 }.deviceVolume)
+            advanceTimeBy(2_000)
+            runCurrent()
+            assertEquals(60, viewModel.uiState.first().deviceVolume)
+
+            subscription.cancel()
+            coVerify(atLeast = 3) { deviceVolumeRepository.getVolume() }
             confirmVerified(deviceVolumeRepository)
         }
 }

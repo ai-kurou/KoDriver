@@ -2,17 +2,17 @@ package kurou.kodriver.feature.otherlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
@@ -83,15 +83,29 @@ class OtherListViewModel(
                 accessLocalNetworkPermissionGranted = checkAccessLocalNetworkPermissionGranted(),
             ),
         )
-    private val deviceVolumePollingTicker =
+
+    // 端末のマスター音量はOSへの問い合わせが必要なため、購読中だけ一定間隔で取得する。
+    // 既定の出力デバイスがない場合などで取得に失敗しても一覧全体を止めないよう、
+    // 失敗時は直前の値（初回は最小値）を維持する。
+    private val deviceVolumePolling =
         flow {
+            var latest = DEVICE_VOLUME_MIN
             while (true) {
-                emit(Unit)
+                latest =
+                    try {
+                        getDeviceVolume()
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (
+                        @Suppress("TooGenericExceptionCaught") e: Exception,
+                    ) {
+                        latest
+                    }
+                emit(latest)
                 delay(DEVICE_VOLUME_POLLING_INTERVAL_MS)
             }
         }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<OtherListUiState> =
         combine(
             _uiState,
@@ -110,7 +124,7 @@ class OtherListViewModel(
             state.copy(voiceId = voiceId)
         }.combine(settingsUseCases.observeSoundVolume()) { state, soundVolume ->
             state.copy(soundVolume = soundVolume)
-        }.combine(deviceVolumePollingTicker.mapLatest { getDeviceVolume() }) { state, deviceVolume ->
+        }.combine(deviceVolumePolling) { state, deviceVolume ->
             state.copy(deviceVolume = deviceVolume)
         }.combine(textToSpeechUnavailableReason) { state, ttsUnavailableReason ->
             state.copy(items = state.items.withTtsGuidance(ttsUnavailableReason))
@@ -204,7 +218,7 @@ class OtherListViewModel(
     }
 
     private companion object {
-        const val DEVICE_VOLUME_POLLING_INTERVAL_MS = 500L
+        const val DEVICE_VOLUME_POLLING_INTERVAL_MS = 2_000L
     }
 }
 
