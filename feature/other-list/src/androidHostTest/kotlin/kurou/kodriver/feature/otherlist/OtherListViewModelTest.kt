@@ -281,7 +281,7 @@ class OtherListViewModelTest {
             viewModel.checkTextToSpeechAvailability()
 
             val state = viewModel.uiState.first()
-            assertEquals(TextToSpeechUnavailableReason.EngineMissing, state.ttsUnavailableReason)
+            assertEquals(TtsUnavailableGuidance.EngineMissing, state.ttsUnavailableGuidance)
             val items = state.items
             assertTrue(items.contains(OtherListItemType.TtsEngineMissing))
             assertEquals(items.sortedBy { it.ordinal }, items)
@@ -321,7 +321,7 @@ class OtherListViewModelTest {
             viewModel.checkTextToSpeechAvailability()
 
             val state = viewModel.uiState.first()
-            assertEquals(TextToSpeechUnavailableReason.LanguageDataMissing, state.ttsUnavailableReason)
+            assertEquals(TtsUnavailableGuidance.LanguageDataMissing, state.ttsUnavailableGuidance)
             val items = state.items
             assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
             assertTrue(items.contains(OtherListItemType.TtsLanguageDataMissing))

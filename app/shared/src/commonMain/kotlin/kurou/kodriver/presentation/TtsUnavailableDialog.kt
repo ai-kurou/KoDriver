@@ -24,26 +24,26 @@ import kurou.kodriver.app.shared.generated.resources.tts_windows_action
 import kurou.kodriver.app.shared.generated.resources.tts_windows_body
 import kurou.kodriver.app.shared.generated.resources.tts_windows_restart
 import kurou.kodriver.app.shared.generated.resources.tts_windows_title
-import kurou.kodriver.feature.otherlist.TextToSpeechUnavailableReason
+import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TtsUnavailableDialog(
-    reason: TextToSpeechUnavailableReason,
+    reason: TtsUnavailableGuidance,
     onPrimaryClick: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val (title, body, action) =
         when (reason) {
-            TextToSpeechUnavailableReason.EngineMissing -> {
+            TtsUnavailableGuidance.EngineMissing -> {
                 Triple(Res.string.tts_engine_title, Res.string.tts_engine_body, Res.string.tts_engine_action)
             }
 
-            TextToSpeechUnavailableReason.LanguageDataMissing -> {
+            TtsUnavailableGuidance.LanguageDataMissing -> {
                 Triple(Res.string.tts_language_title, Res.string.tts_language_body, Res.string.tts_language_action)
             }
 
-            TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> {
+            TtsUnavailableGuidance.WindowsSpeechUnavailable -> {
                 Triple(Res.string.tts_windows_title, Res.string.tts_windows_body, Res.string.tts_windows_action)
             }
         }
@@ -53,7 +53,7 @@ internal fun TtsUnavailableDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.medium)) {
                 Text(stringResource(body), style = MaterialTheme.typography.bodyMedium)
-                if (reason == TextToSpeechUnavailableReason.WindowsSpeechUnavailable) {
+                if (reason == TtsUnavailableGuidance.WindowsSpeechUnavailable) {
                     Text(stringResource(Res.string.tts_windows_restart), style = MaterialTheme.typography.bodyMedium)
                 }
             }
@@ -66,7 +66,7 @@ internal fun TtsUnavailableDialog(
 /** 閉じた案内はこの起動中には再表示せず、設定への移動では閉じない。 */
 @Composable
 internal fun TtsUnavailableDialogHost(
-    reason: TextToSpeechUnavailableReason?,
+    reason: TtsUnavailableGuidance?,
     onInstallEngine: () -> Unit,
     onOpenLanguageSettings: () -> Unit,
     onOpenWindowsSpeechSettings: () -> Unit,
@@ -77,9 +77,9 @@ internal fun TtsUnavailableDialogHost(
             reason = reason,
             onPrimaryClick =
                 when (reason) {
-                    TextToSpeechUnavailableReason.EngineMissing -> onInstallEngine
-                    TextToSpeechUnavailableReason.LanguageDataMissing -> onOpenLanguageSettings
-                    TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> onOpenWindowsSpeechSettings
+                    TtsUnavailableGuidance.EngineMissing -> onInstallEngine
+                    TtsUnavailableGuidance.LanguageDataMissing -> onOpenLanguageSettings
+                    TtsUnavailableGuidance.WindowsSpeechUnavailable -> onOpenWindowsSpeechSettings
                 },
             onDismiss = { dismissed = true },
         )

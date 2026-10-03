@@ -437,7 +437,7 @@ fun AppScreen(
     val openTtsSettings = rememberOpenTtsSettings()
     AppTheme(darkTheme = darkTheme, dynamicColor = uiState.dynamicColorEnabled) {
         TtsUnavailableDialogHost(
-            reason = otherListUiState.ttsUnavailableReason,
+            reason = otherListUiState.ttsUnavailableGuidance,
             onInstallEngine = { uriHandler.openUri(TTS_ENGINE_PLAY_STORE_URL) },
             onOpenLanguageSettings = openTtsSettings,
             onOpenWindowsSpeechSettings = otherListViewModel::openWindowsSpeechSettings,

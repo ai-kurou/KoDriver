@@ -9,48 +9,48 @@ import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
-import kurou.kodriver.feature.otherlist.TextToSpeechUnavailableReason
+import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import org.junit.Test
 
 class TtsUnavailableDialogScreenshotTest {
     @Test
     fun `エンジン不足 ライトテーマ`() =
         composeScreenshotTest {
-            capture(TextToSpeechUnavailableReason.EngineMissing, darkTheme = false)
+            capture(TtsUnavailableGuidance.EngineMissing, darkTheme = false)
         }
 
     @Test
     fun `エンジン不足 ダークテーマ`() =
         composeScreenshotTest {
-            capture(TextToSpeechUnavailableReason.EngineMissing, darkTheme = true)
+            capture(TtsUnavailableGuidance.EngineMissing, darkTheme = true)
         }
 
     @Test
     fun `日本語データ不足 ライトテーマ`() =
         composeScreenshotTest {
-            capture(TextToSpeechUnavailableReason.LanguageDataMissing, darkTheme = false)
+            capture(TtsUnavailableGuidance.LanguageDataMissing, darkTheme = false)
         }
 
     @Test
     fun `日本語データ不足 ダークテーマ`() =
         composeScreenshotTest {
-            capture(TextToSpeechUnavailableReason.LanguageDataMissing, darkTheme = true)
+            capture(TtsUnavailableGuidance.LanguageDataMissing, darkTheme = true)
         }
 
     @Test
     fun `Windows音声不足 ライトテーマ`() =
         composeScreenshotTest {
-            capture(TextToSpeechUnavailableReason.WindowsSpeechUnavailable, darkTheme = false)
+            capture(TtsUnavailableGuidance.WindowsSpeechUnavailable, darkTheme = false)
         }
 
     @Test
     fun `Windows音声不足 ダークテーマ`() =
         composeScreenshotTest {
-            capture(TextToSpeechUnavailableReason.WindowsSpeechUnavailable, darkTheme = true)
+            capture(TtsUnavailableGuidance.WindowsSpeechUnavailable, darkTheme = true)
         }
 
     private fun DesktopComposeUiTest.capture(
-        reason: TextToSpeechUnavailableReason,
+        reason: TtsUnavailableGuidance,
         darkTheme: Boolean,
     ) {
         setContent {

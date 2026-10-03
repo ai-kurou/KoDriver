@@ -179,7 +179,7 @@ class OtherListViewModelTest {
             assertEquals("Windows版KoDriverバージョン", viewModel.uiState.first().appVersionLabel)
             assertEquals("0.5.0", viewModel.uiState.first().appVersion)
             assertNull(viewModel.uiState.first().selectedItem)
-            assertNull(viewModel.uiState.first().ttsUnavailableReason)
+            assertNull(viewModel.uiState.first().ttsUnavailableGuidance)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
@@ -979,7 +979,7 @@ class OtherListViewModelTest {
             viewModel.checkTextToSpeechAvailability()
 
             val state = viewModel.uiState.first()
-            assertEquals(null, state.ttsUnavailableReason)
+            assertEquals(null, state.ttsUnavailableGuidance)
             val items = state.items
             assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
             assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
@@ -1018,7 +1018,7 @@ class OtherListViewModelTest {
             viewModel.checkTextToSpeechAvailability()
 
             val state = viewModel.uiState.first()
-            assertEquals(TextToSpeechUnavailableReason.WindowsSpeechUnavailable, state.ttsUnavailableReason)
+            assertEquals(TtsUnavailableGuidance.WindowsSpeechUnavailable, state.ttsUnavailableGuidance)
             val items = state.items
             assertTrue(items.contains(OtherListItemType.WindowsSpeechUnavailable))
             assertEquals(items.sortedBy { it.ordinal }, items)
@@ -1058,7 +1058,7 @@ class OtherListViewModelTest {
             viewModel.checkTextToSpeechAvailability()
 
             val state = viewModel.uiState.first()
-            assertEquals(TextToSpeechUnavailableReason.EngineMissing, state.ttsUnavailableReason)
+            assertEquals(TtsUnavailableGuidance.EngineMissing, state.ttsUnavailableGuidance)
             val items = state.items
             assertTrue(items.contains(OtherListItemType.TtsEngineMissing))
             assertEquals(items.sortedBy { it.ordinal }, items)
@@ -1098,7 +1098,7 @@ class OtherListViewModelTest {
             viewModel.checkTextToSpeechAvailability()
 
             val state = viewModel.uiState.first()
-            assertEquals(TextToSpeechUnavailableReason.LanguageDataMissing, state.ttsUnavailableReason)
+            assertEquals(TtsUnavailableGuidance.LanguageDataMissing, state.ttsUnavailableGuidance)
             val items = state.items
             assertTrue(items.contains(OtherListItemType.TtsLanguageDataMissing))
             assertEquals(items.sortedBy { it.ordinal }, items)

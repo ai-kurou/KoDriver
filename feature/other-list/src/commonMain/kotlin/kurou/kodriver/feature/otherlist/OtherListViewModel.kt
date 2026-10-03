@@ -129,7 +129,7 @@ class OtherListViewModel(
         }.combine(textToSpeechUnavailableReason) { state, ttsUnavailableReason ->
             state.copy(
                 items = state.items.withTtsGuidance(ttsUnavailableReason),
-                ttsUnavailableReason = ttsUnavailableReason,
+                ttsUnavailableGuidance = ttsUnavailableReason?.toGuidance(),
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
@@ -246,3 +246,10 @@ private fun List<OtherListItemType>.withTtsGuidance(reason: TextToSpeechUnavaila
         } + listOfNotNull(guidance)
     ).sortedBy { it.ordinal }
 }
+
+private fun TextToSpeechUnavailableReason.toGuidance(): TtsUnavailableGuidance =
+    when (this) {
+        TextToSpeechUnavailableReason.EngineMissing -> TtsUnavailableGuidance.EngineMissing
+        TextToSpeechUnavailableReason.LanguageDataMissing -> TtsUnavailableGuidance.LanguageDataMissing
+        TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> TtsUnavailableGuidance.WindowsSpeechUnavailable
+    }
