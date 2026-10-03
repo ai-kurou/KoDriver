@@ -66,7 +66,6 @@ fun OtherContent(
 
     LifecycleResumeEffect(Unit) {
         viewModel.checkAccessLocalNetworkPermission()
-        viewModel.checkTextToSpeechAvailability()
         onPauseOrDispose {}
     }
 
