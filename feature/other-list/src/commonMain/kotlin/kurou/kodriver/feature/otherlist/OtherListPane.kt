@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
@@ -96,6 +97,8 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_voice
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
+import kurou.kodriver.feature.otherlist.generated.resources.readout_start_sound_electronic_noise
+import kurou.kodriver.feature.otherlist.generated.resources.readout_start_sound_formula_radio
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
@@ -463,6 +466,47 @@ private fun OtherListSectionHeader(section: OtherListSection) {
     )
 }
 
+private fun otherListItemSupportingContent(
+    item: OtherListItemType,
+    uiState: OtherListUiState,
+): (@Composable () -> Unit)? =
+    when (item) {
+        OtherListItemType.GitHubRepository -> {
+            { Text(stringResource(Res.string.item_github_repository_star_request)) }
+        }
+
+        OtherListItemType.Volume -> {
+            { Text(stringResource(Res.string.item_volume_summary, uiState.soundVolume, uiState.deviceVolume)) }
+        }
+
+        OtherListItemType.Voice -> {
+            {
+                Text(
+                    if (uiState.voiceId == VOICE_ID_UNSPECIFIED) {
+                        stringResource(Res.string.voice_system_default)
+                    } else {
+                        uiState.voiceId
+                    },
+                )
+            }
+        }
+
+        OtherListItemType.ReadoutStartSound -> {
+            {
+                val label =
+                    when (uiState.readoutStartSoundType) {
+                        ReadoutStartSoundType.FORMULA_RADIO -> Res.string.readout_start_sound_formula_radio
+                        ReadoutStartSoundType.ELECTRONIC_NOISE -> Res.string.readout_start_sound_electronic_noise
+                    }
+                Text(stringResource(label))
+            }
+        }
+
+        else -> {
+            null
+        }
+    }
+
 @Composable
 private fun OtherListItem(
     item: OtherListItemType,
@@ -531,24 +575,7 @@ private fun OtherListItem(
 
     CenteredListItem(
         headlineContent = { Text(otherItemDisplayName(item)) },
-        supportingContent =
-            if (item == OtherListItemType.GitHubRepository) {
-                { Text(stringResource(Res.string.item_github_repository_star_request)) }
-            } else if (item == OtherListItemType.Volume) {
-                { Text(stringResource(Res.string.item_volume_summary, uiState.soundVolume, uiState.deviceVolume)) }
-            } else if (item == OtherListItemType.Voice) {
-                {
-                    Text(
-                        if (uiState.voiceId == VOICE_ID_UNSPECIFIED) {
-                            stringResource(Res.string.voice_system_default)
-                        } else {
-                            uiState.voiceId
-                        },
-                    )
-                }
-            } else {
-                null
-            },
+        supportingContent = otherListItemSupportingContent(item, uiState),
         leadingContent = {
             OtherListItemLeadingIcon(item, uiState.hasAppUpdate, uiState.accessLocalNetworkPermissionGranted)
         },

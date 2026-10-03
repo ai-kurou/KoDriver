@@ -5,6 +5,8 @@ import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_VISIBLE_DEFAULT
+import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.SOUND_VOLUME_DEFAULT
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 
@@ -26,6 +28,7 @@ data class OtherListUiState(
     val hapticFeedbackEnabled: Boolean = HAPTIC_FEEDBACK_ENABLED_DEFAULT,
     val soundVolume: Int = SOUND_VOLUME_DEFAULT,
     val deviceVolume: Int = DEVICE_VOLUME_MIN,
+    val readoutStartSoundType: ReadoutStartSoundType = READOUT_START_SOUND_TYPE_DEFAULT,
     val voiceId: String = VOICE_ID_UNSPECIFIED,
     val ttsUnavailableGuidance: TtsUnavailableGuidance? = null,
     val startupEnabled: Boolean = false,
