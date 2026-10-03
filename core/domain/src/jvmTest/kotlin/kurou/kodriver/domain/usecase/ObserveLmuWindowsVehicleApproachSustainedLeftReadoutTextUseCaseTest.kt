@@ -7,12 +7,12 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCaseTest {
-    private val repository: LmuWindowsVehicleApproachPreferencesRepository = mockk()
+    private val repository: LmuWindowsVehicleApproachReadoutTextPreferencesRepository = mockk()
 
     @Test
     fun `Repositoryの値をそのまま流す`() =

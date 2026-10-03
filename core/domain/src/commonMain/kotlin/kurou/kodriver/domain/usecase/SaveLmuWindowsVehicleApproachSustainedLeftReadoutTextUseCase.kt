@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 
 /**
  * カスタム読み上げ文言を保存する。
@@ -10,7 +10,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
  * UI 側でも入力を制限するが、保存値の上限は仕様値として [READOUT_CUSTOM_TEXT_MAX_LENGTH] で切り詰める。
  */
 class SaveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase(
-    private val repository: LmuWindowsVehicleApproachPreferencesRepository,
+    private val repository: LmuWindowsVehicleApproachReadoutTextPreferencesRepository,
 ) {
     suspend operator fun invoke(text: String) {
         repository.saveSustainedLeftReadoutText(text.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH))
