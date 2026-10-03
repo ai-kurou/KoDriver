@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
  *
  * 末尾の再生ボタンは、入力中の文言（空欄なら既定の文言）の試聴に使う。
  * [onResetToDefault] を渡すと、その左に既定値へ戻すボタンを配置する。
- * [defaultValue] が null または入力中の文言と同じときは無効・透明にし、異なるときは有効にして表示する。
+ * [enabled] が false、[defaultValue] が null、または入力中の文言と同じときは無効・透明にし、それ以外は有効にして表示する。
  * 透明度はアニメーションし、押下時はハプティクスとコールバックを実行する。
  *
  * [selected] が true のときは、同じ [DetailPaneCard] 内に並ぶ [DetailPaneCardChips] の選択済みチップと同じく
@@ -72,8 +72,8 @@ fun DetailPaneCardTextField(
 ) {
     val haptic = LocalHapticFeedback.current
     var text by remember(value) { mutableStateOf(value) }
-    val isDifferentFromDefault = defaultValue != null && text != defaultValue
-    val resetButtonAlpha by animateFloatAsState(targetValue = if (isDifferentFromDefault) 1f else 0f)
+    val isResettable = enabled && defaultValue != null && text != defaultValue
+    val resetButtonAlpha by animateFloatAsState(targetValue = if (isResettable) 1f else 0f)
 
     TextField(
         value = text,
@@ -127,7 +127,7 @@ fun DetailPaneCardTextField(
                             haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             onResetToDefault()
                         },
-                        enabled = isDifferentFromDefault,
+                        enabled = isResettable,
                         modifier = Modifier.size(32.dp).graphicsLayer { alpha = resetButtonAlpha },
                     ) {
                         Icon(

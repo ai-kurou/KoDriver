@@ -267,6 +267,29 @@ class DetailPaneCardTextFieldTest {
     }
 
     @Test
+    fun `enabledがfalseのときは既定値と異なってもリセットできない`() {
+        var resetCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                DetailPaneCardTextField(
+                    value = "注意",
+                    placeholder = "イエローフラッグ",
+                    maxLength = 30,
+                    onValueChangeFinished = {},
+                    onPreviewClick = {},
+                    enabled = false,
+                    defaultValue = "イエローフラッグ",
+                    onResetToDefault = { resetCount++ },
+                    resetContentDescription = "デフォルトに戻す",
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("デフォルトに戻す").assertIsNotEnabled().performClick()
+        assertEquals(0, resetCount)
+    }
+
+    @Test
     fun `既定値がnullのときはリセットできない`() {
         var resetCount = 0
         rule.setContent {
