@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming", "TooManyFunctions", "LargeClass")
+@file:Suppress("TooManyFunctions", "LargeClass")
 
 package kurou.kodriver.feature.lmuwindowsnarrator
 

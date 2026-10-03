@@ -48,7 +48,6 @@ fun LmuWindowsReadoutVehicleDamageDetailPane(modifier: Modifier = Modifier) {
     )
 }
 
-@Suppress("LongParameterList")
 @Composable
 internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
     uiState: LmuWindowsReadoutVehicleDamageDetailUiState,

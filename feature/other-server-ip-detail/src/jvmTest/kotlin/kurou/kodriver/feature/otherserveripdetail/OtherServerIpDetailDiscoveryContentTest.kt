@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.otherserveripdetail
 
 import androidx.compose.ui.test.assertIsDisplayed

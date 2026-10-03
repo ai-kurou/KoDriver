@@ -25,7 +25,6 @@ internal class AndroidReadoutPreferencesRepository(
         dataStore.data.fallbackOnReadError(emptyPreferences()).map { prefs ->
             val prefix = "${simulator}_"
             val suffix = "_enabled"
-            @Suppress("UNCHECKED_CAST")
             prefs
                 .asMap()
                 .filterKeys { it.name.startsWith(prefix) && it.name.endsWith(suffix) }

@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException

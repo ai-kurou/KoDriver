@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.core.lmuwindowsdata.repository
 
 import kotlinx.coroutines.CoroutineScope

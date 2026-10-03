@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.gt7ps5connection
 
 import kotlin.test.Test

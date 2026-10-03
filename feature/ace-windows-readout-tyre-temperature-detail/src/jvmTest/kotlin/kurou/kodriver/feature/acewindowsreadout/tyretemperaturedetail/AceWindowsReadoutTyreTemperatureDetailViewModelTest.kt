@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail
 
 import io.mockk.coEvery

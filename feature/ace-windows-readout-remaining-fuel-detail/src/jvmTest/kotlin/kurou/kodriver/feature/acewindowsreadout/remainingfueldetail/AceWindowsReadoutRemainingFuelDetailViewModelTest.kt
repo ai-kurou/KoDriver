@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.acewindowsreadout.remainingfueldetail
 
 import io.mockk.coEvery
