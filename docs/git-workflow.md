@@ -4,6 +4,10 @@
 - **`main` ブランチへの直接コミット・プッシュは、実行前に必ずユーザーに確認すること。** これは feature ブランチの自動化ルールの例外として維持する。
 - **作業用ワークツリーは、必ずこのリポジトリの `.claude/worktrees/` 配下に作成すること。** リポジトリ外やその他のディレクトリに作成してはならない。
   - 例: `git worktree add .claude/worktrees/<worktree-name> -b <branch-name>`
+- **ワークツリーを作成したら、リポジトリルートの `local.properties` から `sdk.dir` の行だけをワークツリーへコピーすること。** `local.properties` はマシン固有で git 管理外のため新規ワークツリーには存在せず、コピーしないと `./gradlew preSubmitChecks` が「SDK location not found」で失敗する。一方、同ファイルには `app/androidApp/build.gradle.kts` が読む署名鍵の秘匿情報（`STORE_PASSWORD` 等）も含まれるため、ファイルごとは複製しない（Claude・Codex からワークツリー内で読めてしまうため）。
+  - 例: `grep '^sdk\.dir=' <リポジトリルート>/local.properties > .claude/worktrees/<worktree-name>/local.properties`
+  - `scripts/nightly-implement-local.sh` も同じ方針でコピーしている。
+  - リポジトリルートに `local.properties` がない場合はコピーしない（`ANDROID_HOME` 等で SDK を解決している環境）。
 - **ワークツリーの削除は、自分のセッションで作成したものだけに限定すること。** 複数の Claude セッションが並行してワークツリーを使用している場合があるため、他のワークツリーは削除してはならない。
 - **マージ済み PR のワークツリー・ブランチを片付ける際は、ローカルブランチだけでなくリモートブランチ（`origin/<ブランチ名>`）も削除すること。** 既にリモートブランチが存在しない（GitHub 側の自動削除等）場合はエラーを無視してよい。
 - **PR のタイトルと説明は日本語で書くこと。**

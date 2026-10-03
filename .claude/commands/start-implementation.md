@@ -19,6 +19,7 @@ description: 実装内容とベースブランチを指定して、専用ワー�
 4. `.claude/worktrees/<ワークツリー名>` にワークツリーを作成する。ワークツリー名はブランチ名から `feature/` 等のprefixを除いたものを使う。
    - `git worktree add .claude/worktrees/<ワークツリー名> -b <ブランチ名> <ベースブランチ>`
    - 既に同名のワークツリーやブランチが存在する場合は、上書き・削除せずユーザーに報告して終了する。
+   - `local.properties` はマシン固有でgit管理外のため新規ワークツリーには存在せず、そのままだと `preSubmitChecks` が「SDK location not found」で失敗する。ただし署名鍵の秘匿情報（`STORE_PASSWORD` 等）も含まれるため丸ごとは複製せず、リポジトリルートに存在する場合のみ `sdk.dir` の行だけを複製する（`scripts/nightly-implement-local.sh` と同じ方針）: `grep '^sdk\.dir=' <リポジトリルート>/local.properties > .claude/worktrees/<ワークツリー名>/local.properties`
 5. 作成したワークツリーに移動し、CLAUDE.md の「実装前」チェックリストに従う。
    - 既存実装を確認する（対象モジュールの README・近い責務の既存コードを `rg` 等で調査）。
    - 実装対象のモジュール・依存方向が妥当かを確認する。
@@ -28,10 +29,11 @@ description: 実装内容とベースブランチを指定して、専用ワー�
    - スクリーンショット画像・モジュール図はステージングしない。
    - **Codexへの委任（第四引数が `codex` の場合のみ）**:
      1. 手順5の調査結果をもとにClaudeが実装計画を立て、その計画をそのまま、作成したワークツリーを作業ディレクトリとして `codex:codex-rescue` に渡す（計画書の固定フォーマットは不要）。`codex:codex-rescue` は待機モードを明示しないと複雑なタスクをバックグラウンドで実行するため、必ず `--wait` を指定して完了まで待つ。Codexの完了結果を取得し、書き込みが終わったことを確認するまで手順7以降へ進まない。
-     2. 計画の末尾に次の定型文を付ける: 「実装前に CLAUDE.md と、計画で挙げた近い責務の既存コードを必ず確認すること。テストは実装と同時に書き、CLAUDE.md・`docs/testing-guidelines.md` の方針（`any()` は原則禁止で `docs/testing-guidelines.md` 記載の例外のみ許可、`verify`/`coVerify` には `exactly = N`、`confirmVerified` 等）に従うこと。`moduleGraphAssert` は変更しないこと。コミット・プッシュ・PR作成は行わないこと。」
-     3. Codexは既存コードを自分では参照しないため、戻ってきた変更はコミット前にClaudeが `git diff` で確認し、類似モジュールの実装と差分比較して、命名・構成・テストパターンの不整合を修正する。
-     4. 手順7以降（`preSubmitChecks`・コミット・PR作成）はClaudeが行う。
-7. CLAUDE.md の「完了前」チェックリストに従い、`./gradlew preSubmitChecks` を実行して問題を解消する。ベースブランチが `main` 以外の場合や、ユーザーが別途「コミットしない」「PRだけ作る」等の条件を指定している場合は、その指示を優先する。
+     2. 計画の末尾に次の定型文を付ける: 「実装前に CLAUDE.md と、計画で挙げた近い責務の既存コードを必ず確認すること。テストは実装と同時に書き、CLAUDE.md・`docs/testing-guidelines.md` の方針（`any()` は原則禁止で `docs/testing-guidelines.md` 記載の例外のみ許可、`verify`/`coVerify` には `exactly = N`、`confirmVerified` 等）に従うこと。`moduleGraphAssert` は変更しないこと。実装とテストが書けたら、作業ディレクトリで `./gradlew preSubmitChecks` を実行し、失敗（detekt・ktlint・テスト・カバレッジ・ビルド等）があれば原因を修正して再実行を繰り返し、成功してから結果を返すこと。`local.properties` は `sdk.dir` のみを意図的に置いているため、署名鍵などの値を追加・読み取りしようとしないこと。成功の根拠として実行したコマンドと最終結果を報告すること。環境上の理由で実行できない場合は、成功扱いにせず理由を報告すること。コミット・プッシュ・PR作成は行わないこと。」
+     3. Codexが「`preSubmitChecks` 成功」を報告するまでは完了とみなさない。失敗や実行不能の報告が返った場合は、その内容を確認し、再度 `codex:codex-rescue --wait` へ修正を依頼するか、Claudeが修正する。
+     4. Codexは既存コードを自分では参照しないため、成功報告後も、戻ってきた変更はコミット前にClaudeが `git diff` で確認し、類似モジュールの実装と差分比較して、命名・構成・テストパターンの不整合を修正する。
+     5. 手順4でClaudeが修正した場合のみ、修正後の `preSubmitChecks` をClaudeが再実行する（手順7）。修正がなければ再実行は不要。コミット・PR作成はClaudeが行う。
+7. CLAUDE.md の「完了前」チェックリストに従い、`./gradlew preSubmitChecks` を実行して問題を解消する。**第四引数が `codex` の場合は、Codexが成功を報告済みのため、Claudeが差分レビューで変更を加えたときのみ実行する。**ベースブランチが `main` 以外の場合や、ユーザーが別途「コミットしない」「PRだけ作る」等の条件を指定している場合は、その指示を優先する。
 8. 今回実装した内容に該当する改善案のGitHub Issueが既に存在しないか `gh issue list --search "<キーワード>"` 等で確認する。該当するIssueがあれば、対応済みとしてクローズする（クローズ理由に関連PR番号を含める）。
 
 ## コミット・PR作成フェーズ
