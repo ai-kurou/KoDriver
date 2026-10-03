@@ -410,7 +410,14 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(remainingVirtualEnergyWarned = isLow),
-            events = if (shouldAnnounce) listOf(SpeechEvent.RemainingVirtualEnergyWarning) else emptyList(),
+            events =
+                if (shouldAnnounce) {
+                    listOf(
+                        SpeechEvent.RemainingVirtualEnergyWarning(settings.remainingVirtualEnergyThresholdPercentage),
+                    )
+                } else {
+                    emptyList()
+                },
         )
     }
 

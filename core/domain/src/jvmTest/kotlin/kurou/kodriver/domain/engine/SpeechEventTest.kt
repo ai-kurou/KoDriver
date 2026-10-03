@@ -39,7 +39,7 @@ class SpeechEventTest {
         assertEquals("タイヤ過熱警告", SpeechEvent.TyreOverheat.narratedText)
         assertEquals("タイヤ低温警告", SpeechEvent.TyreCold.narratedText)
         assertEquals("タイヤ摩耗警告", SpeechEvent.TyreWearWarning.narratedText)
-        assertEquals("バーチャルエナジー残量警告", SpeechEvent.RemainingVirtualEnergyWarning.narratedText)
+        assertEquals("バーチャルエナジー残量50%以下", SpeechEvent.RemainingVirtualEnergyWarning(50).narratedText)
     }
 
     @Test
