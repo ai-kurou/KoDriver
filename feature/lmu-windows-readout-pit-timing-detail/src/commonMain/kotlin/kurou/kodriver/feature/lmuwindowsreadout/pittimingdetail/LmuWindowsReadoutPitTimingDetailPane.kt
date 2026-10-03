@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -247,23 +250,29 @@ private fun PitTimingReadoutFields(
             findUnknownLmuWindowsPitTimingReadoutPlaceholders(currentText)
                 .joinToString("、"),
     )
-    AssistChip(
-        onClick = {
-            changeText(
-                currentText + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
-            )
-        },
-        label = { Text(stringResource(Res.string.pit_timing_laps_insert)) },
-        enabled =
-            available &&
-                currentText.length + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER.length <=
-                READOUT_CUSTOM_TEXT_MAX_LENGTH,
-    )
-    Text(
-        text = stringResource(Res.string.pit_timing_laps_placeholder_hint),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+    ) {
+        AssistChip(
+            onClick = {
+                changeText(
+                    currentText + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
+                )
+            },
+            label = { Text(stringResource(Res.string.pit_timing_laps_insert)) },
+            enabled =
+                available &&
+                    currentText.length + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER.length <=
+                    READOUT_CUSTOM_TEXT_MAX_LENGTH,
+        )
+        Text(
+            text = stringResource(Res.string.pit_timing_laps_placeholder_hint),
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
     ReadoutTextField(
         label = stringResource(Res.string.pit_timing_imminent_text_label),
         text = imminentText,

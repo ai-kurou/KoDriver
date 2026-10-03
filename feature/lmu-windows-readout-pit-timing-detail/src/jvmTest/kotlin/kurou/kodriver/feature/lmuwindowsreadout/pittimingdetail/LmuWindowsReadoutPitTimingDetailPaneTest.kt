@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail
 
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
@@ -17,10 +19,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class LmuWindowsReadoutPitTimingDetailPaneTest {
     @get:Rule
@@ -46,6 +50,26 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
         rule.onNodeWithText("バーチャルエナジー予想残り周回数").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗予想残り周回数").performScrollTo().assertIsDisplayed()
         rule.onAllNodesWithText("残り約: 3 周").assertCountEquals(2)
+        rule.onAllNodesWithText("通常（残り1周以上）").assertCountEquals(2)
+        rule.onAllNodesWithText("ピットイン必須（残り1周未満）").assertCountEquals(2)
+    }
+
+    @Test
+    fun `狭い幅でも挿入チップの右側にヒントを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(modifier = Modifier.width(360.dp))
+            }
+        }
+
+        val chip = rule.onAllNodesWithText("{laps}を挿入")[0]
+        chip.performScrollTo().assertIsDisplayed()
+        val hint = rule.onAllNodesWithText("{laps} は予想残り周回数に置き換わります")[0]
+        hint.assertIsDisplayed()
+        val chipBounds = chip.fetchSemanticsNode().boundsInRoot
+        val hintBounds = hint.fetchSemanticsNode().boundsInRoot
+        assertTrue(hintBounds.left > chipBounds.right)
+        assertEquals(chipBounds.center.y, hintBounds.center.y, absoluteTolerance = 1f)
     }
 
     @Test

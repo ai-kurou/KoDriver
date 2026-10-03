@@ -10,8 +10,8 @@
     <string name="pit_timing_laps_slider_label">残り約: %1$d 周</string>
     <string name="pit_timing_laps_reset_to_default">デフォルトに戻す</string>
     <string name="pit_timing_laps_help_description">直近1周分の消費量をもとに、現在の残量から走行可能な周回数を算出します。給油やタイヤ交換をした直後は、その後のラップの消費量に基づいて再計算されます。</string>
-    <string name="pit_timing_text_label">通常</string>
-    <string name="pit_timing_imminent_text_label">必ず（残り0周）</string>
+    <string name="pit_timing_text_label">通常（残り1周以上）</string>
+    <string name="pit_timing_imminent_text_label">ピットイン必須（残り1周未満）</string>
     <string name="pit_timing_laps_insert">{laps}を挿入</string>
     <string name="pit_timing_laps_placeholder_hint">{laps} は予想残り周回数に置き換わります</string>
     <string name="pit_timing_text_supporting">空欄のままなら読み上げません</string>
