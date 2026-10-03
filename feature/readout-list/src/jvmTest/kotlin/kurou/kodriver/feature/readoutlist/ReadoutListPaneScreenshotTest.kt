@@ -195,6 +195,78 @@ class ReadoutListPaneScreenshotTest {
             onRoot().captureRoboImage()
         }
 
+    @Test
+    fun `ライトテーマでONとOFFと選択枠を表示する`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme(darkTheme = false) {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            ReadoutListPane(
+                                uiState =
+                                    ReadoutListUiState(
+                                        selectedSimulator = Simulator.LmuWindows,
+                                        items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                        selectedItem = ReadoutListItemType.LmuWindows.Flag,
+                                        readoutEnabledStates =
+                                            mapOf(
+                                                ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
+                                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                                            ),
+                                        startSoundEnabledStates =
+                                            mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                                        queueEnabledStates =
+                                            mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
+                                    ),
+                                onMove = { _, _ -> },
+                                onReadoutEnabledChanged = { _, _ -> },
+                                onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
+                                onItemClick = { _ -> },
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `ダークテーマでONとOFFと選択枠を表示する`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme(darkTheme = true) {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            ReadoutListPane(
+                                uiState =
+                                    ReadoutListUiState(
+                                        selectedSimulator = Simulator.LmuWindows,
+                                        items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                        selectedItem = ReadoutListItemType.LmuWindows.Flag,
+                                        readoutEnabledStates =
+                                            mapOf(
+                                                ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
+                                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                                            ),
+                                        startSoundEnabledStates =
+                                            mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                                        queueEnabledStates =
+                                            mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
+                                    ),
+                                onMove = { _, _ -> },
+                                onReadoutEnabledChanged = { _, _ -> },
+                                onQueueEnabledChanged = { _, _ -> },
+                                onStartSoundEnabledChanged = { _, _ -> },
+                                onItemClick = { _ -> },
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
     private fun observeReadoutEnabledStates(simulator: String): Map<ReadoutItemKey, Boolean> =
         runBlocking { ObserveReadoutEnabledStatesUseCase(repository)(simulator).first() }
 }
