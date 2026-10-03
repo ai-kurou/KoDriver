@@ -9,7 +9,7 @@ description: 実装内容とベースブランチを指定して、専用ワー�
 - 第一引数（実装内容）が空の場合は、何もせず実装内容を確認するようユーザーに促して終了する。
 - 第二引数（ベースブランチ）が空の場合は `main` をデフォルトとして扱う。
 - 第三引数（CodeRabbitへのレビュー依頼有無）は省略可能。`true` を指定した場合のみ、コミット・PR作成フェーズでCodeRabbitへの手動レビュー依頼を行う。`false` または省略時はレビュー依頼を行わない（CodeRabbitの`auto_review`はデフォルトで無効化されているため、明示的な依頼がない限りCodeRabbitはレビューを行わない）。`true`/`false` 以外の値が指定された場合は、実装を進めずユーザーに正しい値（`true` または `false`）を確認する。
-- 第四引数（実装の委任先）は省略可能。`codex` を指定した場合のみ、実装フェーズの手順6をClaude自身ではなく Codex（`codex:codex-rescue` エージェント）に委任する。省略時はClaudeが自分で実装する。`codex` 以外の値が指定された場合は、実装を進めずユーザーに正しい値（`codex` または省略）を確認する。
+- 第四引数（実装の委任先）は省略可能。`codex` を指定した場合のみ、実装フェーズの手順6をClaude自身ではなく Codex（`codex:codex-rescue` エージェント）に委任する。省略時はClaudeが自分で実装する。この引数は Claude Code から実行した場合のみ有効で、Codex から実行している場合（`$start-implementation`）は無視して自分で実装する（Codex自身が `codex:codex-rescue` へ再委任しない）。`codex` 以外の値が指定された場合は、実装を進めずユーザーに正しい値（`codex` または省略）を確認する。
 
 ## 実装フェーズ
 
@@ -27,8 +27,8 @@ description: 実装内容とベースブランチを指定して、専用ワー�
    - `moduleGraphAssert` ブロックは変更しない。
    - スクリーンショット画像・モジュール図はステージングしない。
    - **Codexへの委任（第四引数が `codex` の場合のみ）**:
-     1. 手順5の調査結果をもとにClaudeが実装計画を立て、その計画をそのまま、作成したワークツリーを作業ディレクトリとして `codex:codex-rescue` に渡す（計画書の固定フォーマットは不要）。
-     2. 計画の末尾に次の定型文を付ける: 「実装前に CLAUDE.md と、計画で挙げた近い責務の既存コードを必ず確認すること。テストは実装と同時に書き、CLAUDE.md・`docs/testing-guidelines.md` の方針（`any()` 禁止、`verify`/`coVerify` には `exactly = N`、`confirmVerified` 等）に従うこと。`moduleGraphAssert` は変更しないこと。コミット・プッシュ・PR作成は行わないこと。」
+     1. 手順5の調査結果をもとにClaudeが実装計画を立て、その計画をそのまま、作成したワークツリーを作業ディレクトリとして `codex:codex-rescue` に渡す（計画書の固定フォーマットは不要）。`codex:codex-rescue` は待機モードを明示しないと複雑なタスクをバックグラウンドで実行するため、必ず `--wait` を指定して完了まで待つ。Codexの完了結果を取得し、書き込みが終わったことを確認するまで手順7以降へ進まない。
+     2. 計画の末尾に次の定型文を付ける: 「実装前に CLAUDE.md と、計画で挙げた近い責務の既存コードを必ず確認すること。テストは実装と同時に書き、CLAUDE.md・`docs/testing-guidelines.md` の方針（`any()` は原則禁止で `docs/testing-guidelines.md` 記載の例外のみ許可、`verify`/`coVerify` には `exactly = N`、`confirmVerified` 等）に従うこと。`moduleGraphAssert` は変更しないこと。コミット・プッシュ・PR作成は行わないこと。」
      3. Codexは既存コードを自分では参照しないため、戻ってきた変更はコミット前にClaudeが `git diff` で確認し、類似モジュールの実装と差分比較して、命名・構成・テストパターンの不整合を修正する。
      4. 手順7以降（`preSubmitChecks`・コミット・PR作成）はClaudeが行う。
 7. CLAUDE.md の「完了前」チェックリストに従い、`./gradlew preSubmitChecks` を実行して問題を解消する。ベースブランチが `main` 以外の場合や、ユーザーが別途「コミットしない」「PRだけ作る」等の条件を指定している場合は、その指示を優先する。
