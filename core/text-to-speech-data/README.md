@@ -33,6 +33,8 @@ Windows専用の`WindowsVoiceListRepository`は、有効なSAPI音声のID（`Vo
 （`VoiceInfo.Description`）、言語を取得します。取得はIOスレッド上で排他し、`ja-JP`の音声を含む一覧だけを保持して以降は
 再取得しません。非Windows・失敗・15秒のタイムアウト・音声未導入・他言語のみで`ja-JP`の音声を含まない場合は保持せず、
 後から音声が導入されても検出できるよう次回に再取得します。
+一覧取得スクリプトは純粋関数`buildListVoicesScript`で生成し、Windowsのコマンドライン引数では二重引用符が
+欠落するため、文字列の引用には単一引用符のみを使い、タブ区切りは`[char]9`で指定します。
 `GetAvailableVoicesUseCase`が`ja-JP`の音声だけに絞り込み、表示名の昇順に並べます。
 Androidの`AndroidVoiceListRepository`も登録し、`ja`言語・オフライン可・インストール済みの音声だけを返します。
 `engineOrNull`で読み上げ用の`TextToSpeech`を1インスタンス共有し、一覧は再読み込みで導入状態を反映できるよう
@@ -41,6 +43,12 @@ Androidの`AndroidVoiceListRepository`も登録し、`ja`言語・オフライ�
 
 `SapiSpeechSynthesizer`はWindows専用の外部プロセスを起動するためユニットテストの対象外とし、読み上げ制御の
 ロジックは差し替え可能な`WindowsSpeechSynthesizer`を介して`WindowsTextToSpeechRepository`側で検証します。
+
+Windowsの音声設定の起動は、jvmMainの`WindowsSpeechSettingsSenderRepository`が担当します。
+`rundll32`経由で`ms-settings:speech`を開き、非Windowsでは何もしません。起動時のIOException・
+SecurityExceptionはSentryへ記録します。androidMainには、Windowsの音声設定を開けないため
+何もしない`AndroidSpeechSettingsSenderRepository`を登録します。どちらも`core:domain`の
+`SpeechSettingsSenderRepository`を実装し、`OpenWindowsSpeechSettingsUseCase`から利用されます。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

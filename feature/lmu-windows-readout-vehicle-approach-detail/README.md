@@ -9,3 +9,5 @@
 <!-- MODULE-GRAPH-END -->
 
 継続時の読み上げ文言も開始時と同じ入力欄（上限30文字、空白は読み上げない）で左右別に編集・試聴できる。TTS不可の案内文のみ継続用の文言を使う。
+
+車両接近の動作設定は `LmuWindowsVehicleApproachPreferencesRepository`、開始・継続の左右の読み上げ文言は `LmuWindowsVehicleApproachReadoutTextPreferencesRepository` を使用する。両者は既存の同じ DataStore を共有する。

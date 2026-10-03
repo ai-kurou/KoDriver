@@ -34,6 +34,10 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }
+        jvmMain.dependencies {
+            implementation(project.dependencies.platform(libs.sentry.bom))
+            implementation(libs.sentry)
+        }
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)

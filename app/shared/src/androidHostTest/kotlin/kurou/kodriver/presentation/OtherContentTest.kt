@@ -49,6 +49,27 @@ class OtherContentTest {
         )
 
     @Test
+    fun `Windows音声設定の案内をクリックするとコールバックを呼ぶ`() {
+        var opened = 0
+        var selected = false
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.WindowsSpeechUnavailable)),
+                onItemSelected = { selected = true },
+                onClearSelectedItem = {},
+                onOpenWindowsSpeechSettings = { opened++ },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+
+        rule.onNodeWithText("Windowsの日本語音声を設定").performClick()
+
+        assertEquals(1, opened)
+        assertFalse(selected)
+    }
+
+    @Test
     fun `Androidの一覧には読み上げ音声を表示する`() {
         var selectionCount = 0
         var backEnabled = false

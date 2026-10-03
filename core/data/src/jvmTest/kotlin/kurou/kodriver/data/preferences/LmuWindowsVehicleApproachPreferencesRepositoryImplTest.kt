@@ -51,26 +51,6 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `開始Left文言の初期値と保存値を取得できる`() =
-        runTest {
-            assertEquals("カーレフト", repository.observeStartLeftReadoutText().first())
-            repository.saveStartLeftReadoutText("注意")
-            assertEquals("注意", repository.observeStartLeftReadoutText().first())
-            repository.saveStartLeftReadoutText("")
-            assertEquals("", repository.observeStartLeftReadoutText().first())
-        }
-
-    @Test
-    fun `開始Right文言の初期値と保存値を取得できる`() =
-        runTest {
-            assertEquals("カーライト", repository.observeStartRightReadoutText().first())
-            repository.saveStartRightReadoutText("注意")
-            assertEquals("注意", repository.observeStartRightReadoutText().first())
-            repository.saveStartRightReadoutText("")
-            assertEquals("", repository.observeStartRightReadoutText().first())
-        }
-
-    @Test
     fun `enabledStates の初期値は空Map`() =
         runTest {
             assertEquals(emptyMap(), repository.observeEnabledStates().first())
@@ -112,25 +92,5 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
                 ),
                 repository.observeEnabledStates().first(),
             )
-        }
-
-    @Test
-    fun `継続Left文言の初期値と保存値を取得できる`() =
-        runTest {
-            assertEquals("キープライト", repository.observeSustainedLeftReadoutText().first())
-            repository.saveSustainedLeftReadoutText("注意")
-            assertEquals("注意", repository.observeSustainedLeftReadoutText().first())
-            repository.saveSustainedLeftReadoutText("")
-            assertEquals("", repository.observeSustainedLeftReadoutText().first())
-        }
-
-    @Test
-    fun `継続Right文言の初期値と保存値を取得できる`() =
-        runTest {
-            assertEquals("キープレフト", repository.observeSustainedRightReadoutText().first())
-            repository.saveSustainedRightReadoutText("注意")
-            assertEquals("注意", repository.observeSustainedRightReadoutText().first())
-            repository.saveSustainedRightReadoutText("")
-            assertEquals("", repository.observeSustainedRightReadoutText().first())
         }
 }

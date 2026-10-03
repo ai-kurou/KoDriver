@@ -23,7 +23,8 @@ import org.koin.dsl.module
  *   LmuWindowsVehicleApproachPreferencesUseCases、ReadoutItemKeyベースのスイッチ状態を扱う
  *   ObserveLmuWindowsVehicleApproachEnabledStatesUseCase / SaveLmuWindowsVehicleApproachEnabledStateUseCase）。
  * 消費（get で解決）: LmuWindowsVehicleApproachThresholdsPreferencesRepository・
- *   LmuWindowsVehicleApproachPreferencesRepository・SoundVolumePreferencesRepository（:core:data）、
+ *   LmuWindowsVehicleApproachPreferencesRepository・
+ *   LmuWindowsVehicleApproachReadoutTextPreferencesRepository・SoundVolumePreferencesRepository（:core:data）、
  *   TextToSpeechRepository（:core:text-to-speech-data）、試聴用の named(Simulator.LmuWindows.id) の
  *   PlayStartSoundForKeyUseCase・SpeakTextUseCase（:feature:lmu-windows-narrator で登録）。
  */
@@ -55,7 +56,7 @@ val lmuWindowsReadoutVehicleApproachDetailModule =
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { LmuWindowsVehicleApproachThresholdsUseCases(get()) }
-        factory { LmuWindowsVehicleApproachPreferencesUseCases(get()) }
+        factory { LmuWindowsVehicleApproachPreferencesUseCases(get(), get()) }
         factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
         factory { CheckTextToSpeechAvailableUseCase(get()) }
         factory { ObserveSoundVolumeUseCase(get()) }
