@@ -6,6 +6,7 @@ import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
+import kurou.kodriver.data.preferences.LmuWindowsVehicleApproachPreferencesRepositories
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelLapsPreferencesRepository
@@ -75,6 +76,7 @@ import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferen
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
@@ -137,8 +139,14 @@ val desktopDataModule =
         single<LmuWindowsFlagPreferencesRepository> {
             createLmuWindowsFlagPreferencesRepository(directory = kodriverDirectory)
         }
-        single<LmuWindowsVehicleApproachPreferencesRepository> {
+        single {
             createLmuWindowsVehicleApproachPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsVehicleApproachPreferencesRepository> {
+            get<LmuWindowsVehicleApproachPreferencesRepositories>().preferences
+        }
+        single<LmuWindowsVehicleApproachReadoutTextPreferencesRepository> {
+            get<LmuWindowsVehicleApproachPreferencesRepositories>().readoutText
         }
         single<LmuWindowsVehicleDamagePreferencesRepository> {
             createLmuWindowsVehicleDamagePreferencesRepository(directory = kodriverDirectory)

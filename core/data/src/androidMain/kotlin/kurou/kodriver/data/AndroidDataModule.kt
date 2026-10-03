@@ -12,6 +12,7 @@ import kurou.kodriver.data.preferences.AndroidKeepScreenOnEnabledRepository
 import kurou.kodriver.data.preferences.AndroidReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
+import kurou.kodriver.data.preferences.LmuWindowsVehicleApproachPreferencesRepositories
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelLapsPreferencesRepository
@@ -113,6 +114,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
@@ -232,8 +234,14 @@ private fun androidDataModuleMisc(context: Context) =
         single<LmuWindowsFlagPreferencesRepository> {
             createLmuWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
         }
-        single<LmuWindowsVehicleApproachPreferencesRepository> {
+        single {
             createLmuWindowsVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsVehicleApproachPreferencesRepository> {
+            get<LmuWindowsVehicleApproachPreferencesRepositories>().preferences
+        }
+        single<LmuWindowsVehicleApproachReadoutTextPreferencesRepository> {
+            get<LmuWindowsVehicleApproachPreferencesRepositories>().readoutText
         }
         single<LmuWindowsVehicleDamagePreferencesRepository> {
             createLmuWindowsVehicleDamagePreferencesRepository(context.filesDir.absolutePath)

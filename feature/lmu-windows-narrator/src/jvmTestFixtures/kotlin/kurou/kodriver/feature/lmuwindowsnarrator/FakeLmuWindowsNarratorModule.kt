@@ -36,6 +36,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
@@ -54,7 +55,13 @@ val fakeLmuWindowsNarratorModule =
         single<LmuWindowsVehicleApproachRepository> { FakeLmuWindowsVehicleApproachRepository() }
         single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
         single<LmuWindowsRepository> { FakeLmuWindowsRepository() }
-        single<LmuWindowsVehicleApproachPreferencesRepository> { FakeLmuWindowsVehicleApproachPreferencesRepository() }
+        single { FakeLmuWindowsVehicleApproachPreferencesRepository() }
+        single<LmuWindowsVehicleApproachPreferencesRepository> {
+            get<FakeLmuWindowsVehicleApproachPreferencesRepository>()
+        }
+        single<LmuWindowsVehicleApproachReadoutTextPreferencesRepository> {
+            get<FakeLmuWindowsVehicleApproachPreferencesRepository>()
+        }
         single<LmuWindowsVehicleDamagePreferencesRepository> { FakeLmuWindowsVehicleDamagePreferencesRepository() }
         single<LmuWindowsVehicleDamageRepository> { FakeLmuWindowsVehicleDamageRepository() }
         single<LmuWindowsTyreDetachedRepository> { FakeLmuWindowsTyreDetachedRepository() }
@@ -87,7 +94,9 @@ class FakeLmuWindowsRepository : LmuWindowsRepository {
     override suspend fun disconnect() = Unit
 }
 
-class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleApproachPreferencesRepository {
+class FakeLmuWindowsVehicleApproachPreferencesRepository :
+    LmuWindowsVehicleApproachPreferencesRepository,
+    LmuWindowsVehicleApproachReadoutTextPreferencesRepository {
     private val skipFirstLapFlow = MutableStateFlow(true)
     private val startLeftReadoutTextFlow =
         MutableStateFlow(LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT)

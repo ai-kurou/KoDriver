@@ -1,13 +1,15 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
-
 /**
- * LmuWindowsVehicleApproachPreferences Repository の永続化実装を生成する。
+ * 車両接近の設定・文言 Repository の永続化実装を生成する。
+ * 同一ファイルに DataStore を複数作れないため、1つの DataStore を両 Repository で共有する。
  */
 fun createLmuWindowsVehicleApproachPreferencesRepository(
     directory: String,
-): LmuWindowsVehicleApproachPreferencesRepository =
-    LmuWindowsVehicleApproachPreferencesRepositoryImpl(
-        createLmuWindowsVehicleApproachPreferencesDataStore(directory),
+): LmuWindowsVehicleApproachPreferencesRepositories {
+    val dataStore = createLmuWindowsVehicleApproachPreferencesDataStore(directory)
+    return LmuWindowsVehicleApproachPreferencesRepositories(
+        preferences = LmuWindowsVehicleApproachPreferencesRepositoryImpl(dataStore),
+        readoutText = LmuWindowsVehicleApproachReadoutTextPreferencesRepositoryImpl(dataStore),
     )
+}

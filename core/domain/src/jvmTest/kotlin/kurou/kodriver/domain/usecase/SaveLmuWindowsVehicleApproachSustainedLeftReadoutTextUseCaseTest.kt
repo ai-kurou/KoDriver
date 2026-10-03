@@ -5,11 +5,11 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCaseTest {
-    private val repository: LmuWindowsVehicleApproachPreferencesRepository = mockk(relaxUnitFun = true)
+    private val repository: LmuWindowsVehicleApproachReadoutTextPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `前後の空白を除去して保存する`() =
