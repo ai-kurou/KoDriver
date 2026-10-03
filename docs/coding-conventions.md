@@ -24,7 +24,7 @@ ListPane・DetailPane の見出しは、画面の階層（見出し → セク�
 
 ページ見出しを `titleLarge` / `headlineSmall` にすると ListPane 上部の余白が大きくなり、スマホでの一覧表示件数が減るため `titleMedium` にとどめる。
 
-- DataStore のキーには **ASCII の内部 ID を使うこと**。日本語などのマルチバイト文字をキーに使うと、表示名の変更でデータが孤立する。内部 ID（例: `"vehicle_approach"`）と表示名（例: `"車両接近"`）は `XxxViewModel` 内の `xxxDisplayNames: Map<String, String>` で分離する。
+- DataStore のキーには **ASCII の内部 ID を使うこと**。日本語などのマルチバイト文字をキーに使うと、表示名の変更でデータが孤立する。内部 ID（例: `"vehicle_approach"`）と表示名（例: `"車両接近"`）は分離し、`ReadoutItemKey` の値から表示名への変換は `:core:designsystem` の `readoutItemDisplayName(value)` に集約する。
 
 ## コメント・KDoc の言語
 
