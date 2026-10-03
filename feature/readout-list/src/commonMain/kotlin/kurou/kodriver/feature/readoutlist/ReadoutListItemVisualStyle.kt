@@ -23,7 +23,7 @@ internal fun readoutListItemVisualStyle(
         )
     } else {
         ReadoutListItemVisualStyle(
-            rankColor = colors.onSurfaceVariant.copy(alpha = 0.5f),
+            rankColor = colors.onSurfaceVariant,
             accentAlpha = 0f,
             tileColor = colors.surfaceContainerHighest,
             tileContentColor = colors.onSurfaceVariant,

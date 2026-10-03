@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -51,6 +50,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
@@ -59,6 +59,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,7 +80,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -90,6 +90,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
@@ -423,16 +424,14 @@ private fun ReadoutListItemCard(
                 modifier = Modifier.widthIn(min = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = "${index + 1}",
-                    style =
-                        MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontFeatureSettings = "tnum",
-                        ),
-                    color = rankColor,
-                    textAlign = TextAlign.Center,
-                )
+                CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleLarge) {
+                    Text(
+                        text = "${index + 1}",
+                        style = koDriverNumericTextStyle(),
+                        color = rankColor,
+                        textAlign = TextAlign.Center,
+                    )
+                }
                 Icon(
                     imageVector = Icons.Filled.DragIndicator,
                     contentDescription = stringResource(Res.string.drag_handle),
@@ -470,7 +469,7 @@ private fun ReadoutListItemCard(
                         modifier =
                             Modifier
                                 .size(40.dp)
-                                .background(tileColor, RoundedCornerShape(12.dp)),
+                                .background(tileColor, MaterialTheme.shapes.medium),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(

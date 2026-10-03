@@ -19,11 +19,11 @@ class ReadoutListItemVisualStyleTest {
     }
 
     @Test
-    fun `OFFは順位を薄く表示して帯を隠しタイルを無効色で表示する`() {
+    fun `OFFは順位を通常の補助色で表示して帯を隠しタイルを無効色で表示する`() {
         for (colors in listOf(lightColorScheme(), darkColorScheme())) {
             val style = readoutListItemVisualStyle(false, colors)
 
-            assertEquals(colors.onSurfaceVariant.copy(alpha = 0.5f), style.rankColor)
+            assertEquals(colors.onSurfaceVariant, style.rankColor)
             assertEquals(0f, style.accentAlpha)
             assertEquals(colors.surfaceContainerHighest, style.tileColor)
             assertEquals(colors.onSurfaceVariant, style.tileContentColor)
