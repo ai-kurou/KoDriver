@@ -82,6 +82,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_tts_engine_miss
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_language_data_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
+import kurou.kodriver.feature.otherlist.generated.resources.item_volume_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_connection_settings
@@ -521,6 +522,8 @@ private fun OtherListItem(
         supportingContent =
             if (item == OtherListItemType.GitHubRepository) {
                 { Text(stringResource(Res.string.item_github_repository_star_request)) }
+            } else if (item == OtherListItemType.Volume) {
+                { Text(stringResource(Res.string.item_volume_summary, uiState.soundVolume, uiState.deviceVolume)) }
             } else if (item == OtherListItemType.Voice) {
                 {
                     Text(

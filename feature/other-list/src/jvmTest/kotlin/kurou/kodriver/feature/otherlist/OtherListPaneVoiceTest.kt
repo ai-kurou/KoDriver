@@ -71,4 +71,29 @@ class OtherListPaneVoiceTest {
         rule.onNode(hasText("音量") and hasText("saved-voice")).assertDoesNotExist()
         rule.onNodeWithText("システム既定").assertDoesNotExist()
     }
+
+    @Test
+    fun `音量項目だけにアプリと端末の音量を表示する`() {
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.Volume, OtherListItemType.Voice),
+                        soundVolume = 80,
+                        deviceVolume = 60,
+                    ),
+                onItemClick = {},
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        val summary = "アプリの音量: 80%　端末のマスター音量: 60%"
+        rule.onAllNodesWithText(summary).assertCountEquals(1)
+        rule.onNode(hasText("音量") and hasText(summary)).assertIsDisplayed()
+        rule.onNode(hasText("読み上げ音声") and hasText(summary)).assertDoesNotExist()
+    }
 }

@@ -2,10 +2,14 @@ package kurou.kodriver.feature.otherlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -14,10 +18,12 @@ import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUse
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
+import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
@@ -44,6 +50,7 @@ data class OtherListSettingsUseCases(
     val observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
     val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
     val observeVoice: ObserveVoiceUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
 
 /**
@@ -59,6 +66,7 @@ class OtherListViewModel(
     private val openWindowsSpeechSettings: OpenWindowsSpeechSettingsUseCase,
     private val startupRegistration: StartupRegistrationUseCases,
     appVersionInfo: OtherListAppVersionInfo,
+    private val getDeviceVolume: GetDeviceVolumeUseCase,
 ) : ViewModel() {
     private val currentVersion = appVersionInfo.currentVersion
     private val hapticFeedbackAvailable = checkHapticFeedbackAvailable()
@@ -75,6 +83,15 @@ class OtherListViewModel(
                 accessLocalNetworkPermissionGranted = checkAccessLocalNetworkPermissionGranted(),
             ),
         )
+    private val deviceVolumePollingTicker =
+        flow {
+            while (true) {
+                emit(Unit)
+                delay(DEVICE_VOLUME_POLLING_INTERVAL_MS)
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<OtherListUiState> =
         combine(
             _uiState,
@@ -91,6 +108,10 @@ class OtherListViewModel(
             )
         }.combine(settingsUseCases.observeVoice()) { state, voiceId ->
             state.copy(voiceId = voiceId)
+        }.combine(settingsUseCases.observeSoundVolume()) { state, soundVolume ->
+            state.copy(soundVolume = soundVolume)
+        }.combine(deviceVolumePollingTicker.mapLatest { getDeviceVolume() }) { state, deviceVolume ->
+            state.copy(deviceVolume = deviceVolume)
         }.combine(textToSpeechUnavailableReason) { state, ttsUnavailableReason ->
             state.copy(items = state.items.withTtsGuidance(ttsUnavailableReason))
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
@@ -180,6 +201,10 @@ class OtherListViewModel(
 
     fun onHapticFeedbackEnabledChange(enabled: Boolean) {
         viewModelScope.launch { settingsUseCases.saveHapticFeedbackEnabled(enabled) }
+    }
+
+    private companion object {
+        const val DEVICE_VOLUME_POLLING_INTERVAL_MS = 500L
     }
 }
 
