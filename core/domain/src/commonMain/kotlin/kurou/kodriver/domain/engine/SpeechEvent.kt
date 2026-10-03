@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READ
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 /**
@@ -155,6 +156,7 @@ sealed interface SpeechEvent {
     /** LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。 */
     data class PitTimingWarning(
         val laps: Int,
+        val source: PitTimingSource,
     ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root
         override val narratedText = if (laps <= 0) "必ずピットイン" else "残り約${laps}周でピットイン"

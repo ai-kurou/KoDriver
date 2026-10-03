@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.OverheatVoiceType
+import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
@@ -469,7 +470,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             )
         return LmuWindowsNarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedPitTimingVirtualEnergyLaps = remainingLaps),
-            events = listOf(SpeechEvent.PitTimingWarning(remainingLaps)),
+            events = listOf(SpeechEvent.PitTimingWarning(remainingLaps, source = PitTimingSource.VirtualEnergy)),
         )
     }
 
@@ -532,7 +533,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             )
         return LmuWindowsNarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedPitTimingTyreWearLaps = remainingLaps),
-            events = listOf(SpeechEvent.PitTimingWarning(remainingLaps)),
+            events = listOf(SpeechEvent.PitTimingWarning(remainingLaps, source = PitTimingSource.TyreWear)),
         )
     }
 

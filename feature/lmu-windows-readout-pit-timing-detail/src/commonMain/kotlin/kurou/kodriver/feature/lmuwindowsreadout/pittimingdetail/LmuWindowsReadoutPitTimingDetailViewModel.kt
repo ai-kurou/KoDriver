@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
@@ -75,7 +76,7 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
     }
 
     fun onPreviewClicked() {
-        playSpeechEvent(SpeechEvent.PitTimingWarning(PIT_TIMING_PREVIEW_LAPS))
-        playSpeechEvent(SpeechEvent.PitTimingWarning(0), queue = true)
+        playSpeechEvent(SpeechEvent.PitTimingWarning(PIT_TIMING_PREVIEW_LAPS, source = PitTimingSource.TyreWear))
+        playSpeechEvent(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear), queue = true)
     }
 }

@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.engine
 
+import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -66,13 +67,20 @@ class SpeechEventTest {
 
     @Test
     fun `PitTimingWarningはlapsが1以上のとき残り周回数の文言を返す`() {
-        assertEquals("残り約2周でピットイン", SpeechEvent.PitTimingWarning(laps = 2).narratedText)
+        PitTimingSource.entries.forEach { source ->
+            assertEquals(
+                "残り約2周でピットイン",
+                SpeechEvent.PitTimingWarning(laps = 2, source = source).narratedText,
+            )
+        }
     }
 
     @Test
     fun `PitTimingWarningはlapsが0以下のとき必ずピットインの文言を返す`() {
-        assertEquals("必ずピットイン", SpeechEvent.PitTimingWarning(laps = 0).narratedText)
-        assertEquals("必ずピットイン", SpeechEvent.PitTimingWarning(laps = -1).narratedText)
+        PitTimingSource.entries.forEach { source ->
+            assertEquals("必ずピットイン", SpeechEvent.PitTimingWarning(laps = 0, source = source).narratedText)
+            assertEquals("必ずピットイン", SpeechEvent.PitTimingWarning(laps = -1, source = source).narratedText)
+        }
     }
 
     @Test

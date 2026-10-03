@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -99,5 +101,31 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
                 ),
                 repository.observeEnabledStates().first(),
             )
+        }
+
+    @Test
+    fun `VirtualEnergyReadoutTextの既定値と保存した空文字や文言を取得できる`() =
+        runTest {
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
+                repository.observeVirtualEnergyReadoutText().first(),
+            )
+            listOf("", " ", "残り{laps}周").forEach { text ->
+                repository.saveVirtualEnergyReadoutText(text)
+                assertEquals(text, repository.observeVirtualEnergyReadoutText().first())
+            }
+        }
+
+    @Test
+    fun `VirtualEnergyImminentReadoutTextの既定値と保存した空文字や文言を取得できる`() =
+        runTest {
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
+                repository.observeVirtualEnergyImminentReadoutText().first(),
+            )
+            listOf("", " ", "残り{laps}周").forEach { text ->
+                repository.saveVirtualEnergyImminentReadoutText(text)
+                assertEquals(text, repository.observeVirtualEnergyImminentReadoutText().first())
+            }
         }
 }

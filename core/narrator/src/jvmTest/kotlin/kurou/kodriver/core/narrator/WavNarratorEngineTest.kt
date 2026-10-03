@@ -532,6 +532,41 @@ class WavNarratorEngineTest {
         }
 
     @Test
+    fun `述語がtrueならWAV本文を再生せずcustomSpeakで読み上げる`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            var spoken = 0
+            val engine =
+                createEngine(
+                    player,
+                    isCustomSpeakEvent = { it == CAR_LEFT },
+                    customSpeak = { _, _ -> spoken++ },
+                )
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            assertEquals(1, spoken)
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
+        }
+
+    @Test
+    fun `述語がtrueでもフックがなければWAV本文へフォールバックしない`() =
+        runTest {
+            val player = FakeSoundPlayer()
+            val engine = createEngine(player, isCustomSpeakEvent = { it == CAR_LEFT })
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
+        }
+
+    @Test
     fun `customSpeakEventsに含まれないイベントはcustomSpeakを呼ばずWAVで再生する`() =
         runTest {
             val player = FakeSoundPlayer()
@@ -747,6 +782,7 @@ class WavNarratorEngineTest {
         startSoundTypeFlow: Flow<String> = flowOf(FORMULA_RADIO),
         startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
         customSpeakEvents: Set<String> = emptySet(),
+        isCustomSpeakEvent: (String) -> Boolean = { false },
         customSpeak: (suspend (String, Int) -> Unit)? = null,
         resourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
@@ -789,6 +825,7 @@ class WavNarratorEngineTest {
             startSoundEnabledStatesFlow = startSoundEnabledStatesFlow,
             customSpeak = customSpeak,
             customSpeakEvents = customSpeakEvents,
+            isCustomSpeakEvent = isCustomSpeakEvent,
             scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
         )
 
