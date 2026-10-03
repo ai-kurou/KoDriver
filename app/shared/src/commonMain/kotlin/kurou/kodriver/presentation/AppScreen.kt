@@ -60,6 +60,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_log
@@ -403,7 +404,7 @@ fun AppScreen(
     val uiState by viewModel.uiState.collectAsState()
     val readoutListUiState by readoutListViewModel.uiState.collectAsState()
     val telemetryLogListUiState by telemetryLogListViewModel.uiState.collectAsState()
-    val otherListUiState by otherListViewModel.uiState.collectAsState()
+    val otherListUiState by otherListViewModel.uiState.collectAsStateWithLifecycle()
     var readoutListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
     var telemetryLogListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }
     var otherListScrollToTopRequest by rememberSaveable { mutableIntStateOf(0) }

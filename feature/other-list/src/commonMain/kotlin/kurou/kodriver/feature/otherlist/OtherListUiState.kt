@@ -1,9 +1,11 @@
 package kurou.kodriver.feature.otherlist
 
+import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_VISIBLE_DEFAULT
+import kurou.kodriver.domain.model.SOUND_VOLUME_DEFAULT
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 
 /**
@@ -22,6 +24,8 @@ data class OtherListUiState(
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
     val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,
     val hapticFeedbackEnabled: Boolean = HAPTIC_FEEDBACK_ENABLED_DEFAULT,
+    val soundVolume: Int = SOUND_VOLUME_DEFAULT,
+    val deviceVolume: Int = DEVICE_VOLUME_MIN,
     val voiceId: String = VOICE_ID_UNSPECIFIED,
     val startupEnabled: Boolean = false,
     val appVersionLabel: String = "",
