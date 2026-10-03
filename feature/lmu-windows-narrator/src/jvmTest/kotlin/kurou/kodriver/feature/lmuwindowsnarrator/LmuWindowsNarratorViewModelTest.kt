@@ -4,10 +4,13 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -334,6 +337,7 @@ class LmuWindowsNarratorViewModelTest {
         startReadoutEnabled: Boolean = true,
         sustainedReadoutEnabled: Boolean = true,
         sustainedApproachDurationSeconds: Int = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
+        tyreOverheatReadoutText: String? = "タイヤを冷やして",
         tyreTemperatureHighThreshold: Int = 90,
         vehicleClass: LmuWindowsVehicleClassData = LmuWindowsVehicleClassData.Hypercar,
         tyreTemperatureHighThresholdByVehicleClass: Map<LmuWindowsVehicleClassData, Int>? = null,
@@ -493,7 +497,9 @@ class LmuWindowsNarratorViewModelTest {
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
                     readoutText = {
-                        if (it is SpeechEvent.PitTimingWarning && it.source == PitTimingSource.TyreWear) {
+                        if (it == SpeechEvent.TyreOverheat) {
+                            tyreOverheatReadoutText
+                        } else if (it is SpeechEvent.PitTimingWarning && it.source == PitTimingSource.TyreWear) {
                             "タイヤ交換へ"
                         } else {
                             it.narratedText
@@ -1452,6 +1458,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(1, logs.size)
             val log = logs.first()
+            assertEquals("タイヤを冷やして", log.narratedText)
+            assertEquals(NarrationOutcome.QUEUED, log.narrationOutcome)
             assertEquals(123L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root, log.readoutItemKey)
@@ -1465,6 +1473,61 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"overheatState":{""")
             assertContains(log.telemetryJson, """"finalState":{""")
+        }
+
+    @Test
+    fun `過熱文言が空白またはTTS不可なら読み上げずSKIPPEDを保存する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+            val logs = mutableListOf<TelemetryLog>()
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                tyreTemperatureChannel = channel,
+                flagChannel = flagChannel,
+                ttsEngine = tts,
+                tyreTemperatureHighThreshold = 90,
+                tyreOverheatReadoutText = null,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+                currentTimeMs = { 123L },
+            )
+            stubTelemetryLogSave(logs, createdAt = 123L, ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            flagChannel.send(clearFlags())
+
+            channel.send(tyreTemperature(fl = 95.0))
+
+            assertEquals(1, logs.size)
+            val log = logs.first()
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            assertEquals("", log.narratedText)
+            assertEquals(NarrationOutcome.SKIPPED, log.narrationOutcome)
+            assertEquals(123L, log.createdAt)
+            assertEquals(Simulator.LmuWindows, log.simulator)
+            assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root, log.readoutItemKey)
+            assertContains(log.telemetryJson, """"state":{""")
+            assertContains(
+                log.telemetryJson,
+                """"input":{"tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":95.0,"FRONT_RIGHT":20.0,""" +
+                    """"REAR_LEFT":20.0,"REAR_RIGHT":20.0}},"raceFlags":{""",
+            )
+            assertContains(log.telemetryJson, """"settings":{""")
+            assertContains(log.telemetryJson, """"observedAtMs":123""")
+            assertContains(log.telemetryJson, """"overheatState":{""")
+            assertContains(log.telemetryJson, """"finalState":{""")
+            verify(exactly = 0) { tts.speak(SpeechEvent.TyreOverheat, queue = false) }
+            verify(exactly = 0) { tts.currentReadoutItemKey }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 123L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = log.telemetryJson,
+                )
+            }
+            confirmVerified(tts, telemetryLogRepository)
         }
 
     // --- タイヤ摩耗 ---

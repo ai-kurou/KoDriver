@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.performScrollTo
 import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
@@ -27,10 +28,14 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.TyreOverheat.narratedText,
             SpeechEvent.TyreCold.narratedText,
         ).forEach { narratedText ->
-            rule.onAllNodesWithText(narratedText)[0].assertTextContains(narratedText, substring = true)
+            rule
+                .onAllNodesWithText(
+                    narratedText,
+                )[0]
+                .performScrollTo()
+                .assertTextContains(narratedText, substring = true)
         }
     }
 }

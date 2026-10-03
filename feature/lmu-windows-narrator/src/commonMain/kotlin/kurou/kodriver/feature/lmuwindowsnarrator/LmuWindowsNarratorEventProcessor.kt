@@ -332,11 +332,18 @@ internal class LmuWindowsNarratorEventProcessor(
         logContext: LmuWindowsTyreTemperatureLogContext,
     ) {
         events.forEach { event ->
-            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            val isCustomSpeakEvent = event == SpeechEvent.TyreOverheat
+            val text = if (isCustomSpeakEvent) readoutText(event) else event.narratedText
+            val narrationOutcome =
+                if (isCustomSpeakEvent && text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    speakWithPriority(event, readoutOrder, queueEnabledStates)
+                }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
-                narratedText = event.narratedText,
+                narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
                 telemetryJson =
                     buildTelemetryLogJson(
