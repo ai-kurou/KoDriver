@@ -301,7 +301,8 @@ private fun TyreTemperatureOverheatReadoutField(
     onPreviewClick: (String) -> Unit,
 ) {
     var currentText by remember { mutableStateOf(text) }
-    // 保存が非同期のため、入力中の最新の値と一致するまでは保存済みの古い値で入力欄を巻き戻さない
+    // 保存が非同期のため、入力中の最新の値と一致するまでは保存済みの古い値で入力欄を巻き戻さない。
+    // 保存時に前後の空白が除去されるため、比較する値も同じ正規化をかける
     var pendingText by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(text) {
         if (pendingText == null || pendingText == text) {
@@ -311,7 +312,7 @@ private fun TyreTemperatureOverheatReadoutField(
     }
     val changeText: (String) -> Unit = {
         currentText = it
-        pendingText = it
+        pendingText = it.trim()
         onTextChanged(it)
     }
     Column {

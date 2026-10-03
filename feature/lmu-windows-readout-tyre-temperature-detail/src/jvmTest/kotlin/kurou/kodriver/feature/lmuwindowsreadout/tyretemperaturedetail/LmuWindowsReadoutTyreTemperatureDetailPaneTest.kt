@@ -301,6 +301,29 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
+    fun `前後に空白がある入力も保存済みの正規化後の文言と一致したら同期する`() {
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onOverheatReadoutTextChanged = {},
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).performTextReplacement(" あい ")
+        savedText = "あい"
+        rule.waitForIdle()
+        savedText = "う"
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
+    }
+
+    @Test
     fun `空欄では読み上げない案内を表示する`() {
         rule.setContent {
             KoDriverTheme {
