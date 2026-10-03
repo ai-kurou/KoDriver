@@ -42,6 +42,7 @@ import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.OverheatVoiceType
+import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
@@ -600,22 +601,27 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.PitTimingWarning(laps = 2), queue = false) } just Runs
+            every {
+                ttsEngine.speak(
+                    SpeechEvent.PitTimingWarning(laps = 2, source = PitTimingSource.TyreWear),
+                    queue = false,
+                )
+            } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    narratedText = "残り約2周でピットイン",
+                    narratedText = "タイヤ交換まであと2周",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
-            val processor = createProcessor()
+            val processor = createProcessor { "タイヤ交換まであと2周" }
 
             processor.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
-                events = listOf(SpeechEvent.PitTimingWarning(laps = 2)),
+                events = listOf(SpeechEvent.PitTimingWarning(laps = 2, source = PitTimingSource.TyreWear)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -633,18 +639,153 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertEquals(0.5, root["virtualEnergy"]!!.jsonObject["remainingRatio"]!!.jsonPrimitive.double)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(laps = 2), false) }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.PitTimingWarning(laps = 2, source = PitTimingSource.TyreWear), false)
+            }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    narratedText = "残り約2周でピットイン",
+                    narratedText = "タイヤ交換まであと2周",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
                 )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `VEの自由文言で読み上げて本文をログに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every {
+                ttsEngine.speak(
+                    SpeechEvent.PitTimingWarning(laps = 2, source = PitTimingSource.VirtualEnergy),
+                    queue = false,
+                )
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    narratedText = "あと2周でピットへ",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor { "あと2周でピットへ" }
+
+            processor.processPitTiming(
+                snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
+                events = listOf(SpeechEvent.PitTimingWarning(laps = 2, source = PitTimingSource.VirtualEnergy)),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = pitTimingLogContext(),
+            )
+
+            val telemetryJson = telemetryJsonSlot.captured
+            val root = Json.parseToJsonElement(telemetryJson).jsonObject
+            assertWheelValues(
+                root["tyreWear"]!!.jsonObject["wheels"]!!.jsonObject,
+                frontLeft = 0.3,
+                frontRight = 0.9,
+                rearLeft = 0.9,
+                rearRight = 0.9,
+            )
+            assertEquals(0.5, root["virtualEnergy"]!!.jsonObject["remainingRatio"]!!.jsonPrimitive.double)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.PitTimingWarning(laps = 2, source = PitTimingSource.VirtualEnergy), false)
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    narratedText = "あと2周でピットへ",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = telemetryJson,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `VE本文がnullなら開始音と本文を要求せずスキップを記録する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+
+            createProcessor { null }.processPitTiming(
+                snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
+                events = listOf(SpeechEvent.PitTimingWarning(0, PitTimingSource.VirtualEnergy)),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = pitTimingLogContext(),
+            )
+
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `タイヤ摩耗のVE本文がnullなら開始音と本文を要求せずスキップを記録する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+
+            createProcessor { null }.processPitTiming(
+                snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
+                events = listOf(SpeechEvent.PitTimingWarning(0, PitTimingSource.TyreWear)),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = pitTimingLogContext(),
+            )
+
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
     @Test

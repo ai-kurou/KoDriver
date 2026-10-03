@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.OverheatVoiceType
+import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
@@ -1852,7 +1853,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             lapStartDecision.state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
             1e-9,
         )
-        assertEquals(listOf(SpeechEvent.PitTimingWarning(0)), decision.events)
+        assertEquals(listOf(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy)), decision.events)
         assertEquals(2, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
         assertEquals(0, decision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
     }
@@ -2008,7 +2009,10 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             lap2StartDecision.state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
             1e-9,
         )
-        assertEquals(listOf(SpeechEvent.PitTimingWarning(0)), firstWarningDecision.events)
+        assertEquals(
+            listOf(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
+            firstWarningDecision.events,
+        )
         assertEquals(emptyList<SpeechEvent>(), refilledDecision.events)
         assertEquals(-1, refilledDecision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
         assertEquals(true, refilledDecision.state.pitTimingVirtualEnergyTrackingState.currentLapHasRefilled)
@@ -2149,7 +2153,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 150_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.PitTimingWarning(0)), decision.events)
+        assertEquals(listOf(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear)), decision.events)
         assertEquals(2, decision.state.lastPitTimingTyreWearEvaluationLap)
         assertEquals(0, decision.state.lastAnnouncedPitTimingTyreWearLaps)
     }
@@ -2229,7 +2233,10 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 175_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.PitTimingWarning(0)), firstWarningDecision.events)
+        assertEquals(
+            listOf(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear)),
+            firstWarningDecision.events,
+        )
         assertEquals(emptyList<SpeechEvent>(), tyreChangedDecision.events)
         assertEquals(-1, tyreChangedDecision.state.lastAnnouncedPitTimingTyreWearLaps)
         assertEquals(true, tyreChangedDecision.state.pitTimingTyreWearTrackingState.currentLapHasRefilled)

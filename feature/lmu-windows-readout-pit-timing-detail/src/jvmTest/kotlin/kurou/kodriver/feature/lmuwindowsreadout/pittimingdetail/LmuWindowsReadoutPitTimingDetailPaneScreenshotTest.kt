@@ -19,7 +19,9 @@ class LmuWindowsReadoutPitTimingDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            LmuWindowsReadoutPitTimingDetailPaneContent()
+                            LmuWindowsReadoutPitTimingDetailPaneContent(
+                                uiState = LmuWindowsReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                            )
                         }
                     }
                 }
@@ -35,6 +37,93 @@ class LmuWindowsReadoutPitTimingDetailPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             PitTimingLapsHelpSheetContent()
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `通常入力あり`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutPitTimingDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutPitTimingDetailUiState(
+                                        virtualEnergyText = "残り{laps}周です",
+                                        tyreWearText = "残り{laps}周です",
+                                        virtualEnergyImminentText = "今すぐピットへ",
+                                        tyreWearImminentText = "今すぐピットへ",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `空欄`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutPitTimingDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutPitTimingDetailUiState(
+                                        virtualEnergyText = "",
+                                        tyreWearText = "",
+                                        virtualEnergyImminentText = "",
+                                        tyreWearImminentText = "",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `未知トークン警告`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutPitTimingDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutPitTimingDetailUiState(
+                                        virtualEnergyText = "{lap}周{x}",
+                                        tyreWearText = "{lap}周{x}",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `TTS利用不可`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutPitTimingDetailPaneContent(
+                                uiState = LmuWindowsReadoutPitTimingDetailUiState(isTextToSpeechAvailable = false),
+                            )
                         }
                     }
                 }

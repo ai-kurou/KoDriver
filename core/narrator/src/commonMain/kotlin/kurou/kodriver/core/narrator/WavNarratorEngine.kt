@@ -26,7 +26,7 @@ data class WavResources<EVENT, START_TYPE>(
  *
  * LMU / GT7 / ACE の各 narrator feature は、[resources] にイベント→WAVファイルパスのマップと
  * 自身の compose resources（`Res::readBytes`）を渡す。TTS専用イベントは [customSpeakEvents] に
- * 登録し、[customSpeak] で本文を読み上げる。
+ * 登録するか [isCustomSpeakEvent] で判定し、[customSpeak] で本文を読み上げる。
  * `domain.engine.TextToSpeechEngine` を実装する型（[EVENT] に `SpeechEvent`、[START_TYPE] に
  * `ReadoutStartSoundType`、[KEY] に `ReadoutItemKey` を割り当てたもの）は、`:core:domain` に依存する
  * 呼び出し側（各 narrator feature）が薄いアダプタとして用意する。core:narrator が `:core:domain` へ
@@ -42,15 +42,17 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     startSoundTypeFlow: Flow<START_TYPE> = flowOf(defaultStartSoundType),
     startSoundEnabledStatesFlow: Flow<Map<KEY, Boolean>> = flowOf(emptyMap()),
     /**
-     * [customSpeakEvents] のイベントについて、WAV の代わりに本文を読み上げるフック。
+     * [customSpeakEvents] または [isCustomSpeakEvent] で指定したイベントについて、WAV の代わりに本文を読み上げるフック。
      * [event] とアプリの読み上げ音量（0〜100）を渡す。開始音は通常通り再生した上でこの関数を呼び、
      * 読み上げなかった場合（本文が空など）でもWAVへはフォールバックしない。
      * 再生中・優先度判定・割り込み（[currentKey] / [stop]）は呼び出し元の [play] と同じコルーチン上で
      * 実行されるため、WAVと同じ仕組みでそのまま扱える。
      */
     private val customSpeak: (suspend (EVENT, Int) -> Unit)? = null,
-    /** WAV本文を持たず、[customSpeak] のみで処理するイベント。これ以外のイベントでは [customSpeak] を呼ばない。 */
+    /** WAV本文を持たず、[customSpeak] のみで処理するイベント。[isCustomSpeakEvent] でも対象を指定できる。 */
     private val customSpeakEvents: Set<EVENT> = emptySet(),
+    /** 値を持つイベントなど、[customSpeakEvents] に列挙できないTTS本文の判定。 */
+    private val isCustomSpeakEvent: (EVENT) -> Boolean = { false },
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) {
     @Volatile
@@ -142,11 +144,11 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     }
 
     /**
-     * [event] の本編（開始音の後に再生するもの）。[customSpeakEvents] は [customSpeak] による読み上げ、
+     * [event] の本編（開始音の後に再生するもの）。[customSpeakEvents] または [isCustomSpeakEvent] の対象は [customSpeak] による読み上げ、
      * それ以外は対応するWAV。どちらも無いイベントは再生対象外として null を返す。引数は読み上げ音量（0〜100）。
      */
     private fun playbackBody(event: EVENT): (suspend (Int) -> Unit)? {
-        if (event in customSpeakEvents) {
+        if (event in customSpeakEvents || isCustomSpeakEvent(event)) {
             return { volume -> customSpeak?.invoke(event, volume) }
         }
         val sound = sounds[event] ?: return null

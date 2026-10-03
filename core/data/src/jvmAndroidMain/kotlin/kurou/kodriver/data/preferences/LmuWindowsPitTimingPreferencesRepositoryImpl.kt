@@ -20,6 +20,37 @@ internal class LmuWindowsPitTimingPreferencesRepositoryImpl(
         dataStore.saveProperty(laps) { prefs, value -> prefs.copy(tyreWearLaps = value) }
     }
 
+    override fun observeVirtualEnergyReadoutText(): Flow<String> =
+        dataStore.observeProperty { it.virtualEnergyReadoutText }
+
+    override suspend fun saveVirtualEnergyReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(virtualEnergyReadoutText = value) }
+    }
+
+    override fun observeVirtualEnergyImminentReadoutText(): Flow<String> =
+        dataStore.observeProperty {
+            it.virtualEnergyImminentReadoutText
+        }
+
+    override suspend fun saveVirtualEnergyImminentReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(virtualEnergyImminentReadoutText = value) }
+    }
+
+    override fun observeTyreWearReadoutText(): Flow<String> = dataStore.observeProperty { it.tyreWearReadoutText }
+
+    override suspend fun saveTyreWearReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(tyreWearReadoutText = value) }
+    }
+
+    override fun observeTyreWearImminentReadoutText(): Flow<String> =
+        dataStore.observeProperty {
+            it.tyreWearImminentReadoutText
+        }
+
+    override suspend fun saveTyreWearImminentReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(tyreWearImminentReadoutText = value) }
+    }
+
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.observeProperty { prefs ->
             prefs.enabledStates
