@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
@@ -193,6 +194,7 @@ class FakeLmuWindowsBrakeTemperatureRepository : LmuWindowsBrakeTemperatureRepos
 }
 
 class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTemperaturePreferencesRepository {
+    private val overheatReadoutTextFlow = MutableStateFlow(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT)
     private val flow = MutableStateFlow(Celsius(90))
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     private val lowWarningPhasesFlow = MutableStateFlow<Map<SessionPhase, Boolean>>(emptyMap())
@@ -216,6 +218,12 @@ class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTempera
 
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
         lowWarningPhasesFlow.update { phases.associateWith { true } }
+    }
+
+    override fun observeOverheatReadoutText(): Flow<String> = overheatReadoutTextFlow
+
+    override suspend fun saveOverheatReadoutText(text: String) {
+        overheatReadoutTextFlow.update { text }
     }
 }
 

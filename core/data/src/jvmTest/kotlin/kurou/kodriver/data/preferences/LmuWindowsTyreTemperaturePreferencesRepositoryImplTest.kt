@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import java.nio.file.Files
@@ -167,5 +168,30 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
                 ),
                 repository.observeLowWarningPhases().first(),
             )
+        }
+
+    @Test
+    fun `過熱警告文言の既定値と保存した空文字や文言を取得できる`() =
+        runTest {
+            assertEquals(
+                LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                repository.observeOverheatReadoutText().first(),
+            )
+            repository.saveHighThresholdCelsius(Celsius(100))
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+            repository.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
+            val enabledStates = repository.observeEnabledStates().first()
+            val lowWarningPhases = repository.observeLowWarningPhases().first()
+            listOf("タイヤが過熱しています", "", " ", "タイヤ過熱注意").forEach { text ->
+                repository.saveOverheatReadoutText(text)
+                assertEquals(text, repository.observeOverheatReadoutText().first())
+                assertEquals(Celsius(100), repository.observeHighThresholdCelsius().first())
+                assertEquals(enabledStates, repository.observeEnabledStates().first())
+                assertEquals(lowWarningPhases, repository.observeLowWarningPhases().first())
+            }
+            repository.saveHighThresholdCelsius(Celsius(110))
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
+            repository.saveLowWarningPhases(emptySet())
+            assertEquals("タイヤ過熱注意", repository.observeOverheatReadoutText().first())
         }
 }
