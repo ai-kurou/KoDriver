@@ -20,4 +20,8 @@ interface LmuWindowsTyreTemperaturePreferencesRepository {
     fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>>
 
     suspend fun saveLowWarningPhases(phases: Set<SessionPhase>)
+
+    fun observeOverheatReadoutText(): Flow<String>
+
+    suspend fun saveOverheatReadoutText(text: String)
 }
