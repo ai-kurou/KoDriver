@@ -153,7 +153,7 @@ sealed interface SpeechEvent {
         override val narratedText = "タイヤ過熱警告"
     }
 
-    /** LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。 */
+    /** LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。読み上げ文言はソースごとの設定値から取得する。 */
     data class PitTimingWarning(
         val laps: Int,
         val source: PitTimingSource,

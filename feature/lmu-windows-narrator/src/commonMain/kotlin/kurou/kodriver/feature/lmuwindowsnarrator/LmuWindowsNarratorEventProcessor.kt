@@ -19,7 +19,6 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
@@ -355,12 +354,7 @@ internal class LmuWindowsNarratorEventProcessor(
         logContext: LmuWindowsPitTimingLogContext,
     ) {
         events.forEach { event ->
-            val text =
-                if (event is SpeechEvent.PitTimingWarning && event.source == PitTimingSource.VirtualEnergy) {
-                    readoutText(event)
-                } else {
-                    event.narratedText
-                }
+            val text = readoutText(event)
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED

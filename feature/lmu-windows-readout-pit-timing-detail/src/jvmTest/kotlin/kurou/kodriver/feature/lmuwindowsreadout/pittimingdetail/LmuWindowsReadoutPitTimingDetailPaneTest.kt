@@ -39,30 +39,13 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
                 "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
                     "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、" +
                     "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。\n" +
-                    "バーチャルエナジーは入力した文言を音声合成で、タイヤ摩耗は収録音声で読み上げます。",
+                    "読み上げる文言は、バーチャルエナジー・タイヤ摩耗それぞれ下の欄で設定できます。",
             ).assertIsDisplayed()
         rule.onNodeWithText("バーチャルエナジー").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("バーチャルエナジー予想残り周回数").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗予想残り周回数").performScrollTo().assertIsDisplayed()
-        rule.onAllNodesWithText("N周以内にピットイン・必ずピットイン").assertCountEquals(1)
         rule.onAllNodesWithText("残り約: 3 周").assertCountEquals(2)
-    }
-
-    @Test
-    fun `チップをタップするとコールバックが呼ばれる`() {
-        var previewClicked = false
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsReadoutPitTimingDetailPaneContent(
-                    onPreviewClicked = { previewClicked = true },
-                )
-            }
-        }
-
-        rule.onAllNodesWithText("N周以内にピットイン・必ずピットイン")[0].performScrollTo().performClick()
-
-        assert(previewClicked)
     }
 
     @Test
@@ -209,12 +192,12 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
         val text = "あ".repeat(24)
         rule.onAllNodes(hasSetTextAction())[0].performScrollTo().performTextReplacement(text)
         rule
-            .onNodeWithText("{laps}を挿入")
+            .onAllNodesWithText("{laps}を挿入")[0]
             .performScrollTo()
             .assertIsEnabled()
             .performClick()
         assertEquals(listOf(text, text + "{laps}"), changed)
-        rule.onNodeWithText("{laps}を挿入").assertIsNotEnabled()
+        rule.onAllNodesWithText("{laps}を挿入")[0].assertIsNotEnabled()
     }
 
     @Test
@@ -230,7 +213,7 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("{laps}を挿入").assertIsNotEnabled()
+        rule.onAllNodesWithText("{laps}を挿入")[0].assertIsNotEnabled()
     }
 
     @Test
@@ -252,6 +235,97 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
     }
 
     @Test
+    fun `タイヤ摩耗のスイッチOFFでも通常と切迫時の文言を編集し入力中の文言を試聴できる`() {
+        val changed = mutableListOf<String>()
+        val imminentChanged = mutableListOf<String>()
+        val previews = mutableListOf<String>()
+        val imminentPreviews = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutPitTimingDetailUiState(
+                            tyreWearEnabled = false,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onTyreWearTextChanged = { changed += it },
+                    onTyreWearImminentTextChanged = { imminentChanged += it },
+                    onTyreWearTextPreviewClicked = { previews += it },
+                    onTyreWearImminentTextPreviewClicked = { imminentPreviews += it },
+                )
+            }
+        }
+        rule
+            .onAllNodes(hasSetTextAction())[2]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performTextReplacement("あ".repeat(31))
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[2].performScrollTo().performClick()
+        rule.onAllNodes(hasSetTextAction())[3].performScrollTo().performTextReplacement("必ず{laps}")
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[3].performScrollTo().performClick()
+        assertEquals(listOf("あ".repeat(30)), changed)
+        assertEquals(changed, previews)
+        assertEquals(listOf("必ず{laps}"), imminentChanged)
+        assertEquals(imminentChanged, imminentPreviews)
+    }
+
+    @Test
+    fun `タイヤ摩耗の入力直後の文言にlapsを挿入し上限ちょうどで無効になる`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                    onTyreWearTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "あ".repeat(24)
+        rule.onAllNodes(hasSetTextAction())[2].performScrollTo().performTextReplacement(text)
+        rule
+            .onAllNodesWithText("{laps}を挿入")[1]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performClick()
+        assertEquals(listOf(text, text + "{laps}"), changed)
+        rule.onAllNodesWithText("{laps}を挿入")[1].assertIsNotEnabled()
+    }
+
+    @Test
+    fun `タイヤ摩耗の挿入で上限を超える場合は無効にする`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutPitTimingDetailUiState(
+                            tyreWearText = "あ".repeat(25),
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        rule.onAllNodesWithText("{laps}を挿入")[1].assertIsNotEnabled()
+    }
+
+    @Test
+    fun `タイヤ摩耗の未知トークン警告は通常文言だけに表示し空欄なら読み上げない案内を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutPitTimingDetailUiState(
+                            tyreWearText = "{lap}{x}{lap}",
+                            tyreWearImminentText = "",
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        rule.onNodeWithText("{lap}、{x} は置き換えられません。{laps} を使用してください").assertExists()
+        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
+    }
+
+    @Test
     fun `TTS不可では警告より利用不可案内を優先し入力と試聴と挿入を無効にする`() {
         rule.setContent {
             KoDriverTheme {
@@ -260,12 +334,15 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("{laps}を挿入").assertIsNotEnabled()
+        rule.onAllNodesWithText("{laps}を挿入")[0].assertIsNotEnabled()
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].assertIsNotEnabled()
         rule.onAllNodesWithContentDescription("入力した文言を再生")[1].assertIsNotEnabled()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[2].assertIsNotEnabled()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[3].assertIsNotEnabled()
+        rule.onAllNodesWithText("{laps}を挿入")[1].assertIsNotEnabled()
         rule.onNodeWithText("{lap}").assertIsNotEnabled()
         rule
-            .onAllNodesWithText("この端末では音声合成を利用できないため、バーチャルエナジーは読み上げません")
-            .assertCountEquals(2)
+            .onAllNodesWithText("この端末では音声合成を利用できないため、読み上げません")
+            .assertCountEquals(4)
     }
 }

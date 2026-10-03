@@ -14,6 +14,8 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
@@ -38,6 +40,9 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
         mockk()
     private val observePitTimingVirtualEnergyImminentReadoutText:
         ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase = mockk()
+    private val observePitTimingTyreWearReadoutText: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase = mockk()
+    private val observePitTimingTyreWearImminentReadoutText:
+        ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -52,6 +57,8 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observeSustainedRight,
             observePitTimingVirtualEnergyReadoutText,
             observePitTimingVirtualEnergyImminentReadoutText,
+            observePitTimingTyreWearReadoutText,
+            observePitTimingTyreWearImminentReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -68,6 +75,8 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observeSustainedRight,
             observePitTimingVirtualEnergyReadoutText,
             observePitTimingVirtualEnergyImminentReadoutText,
+            observePitTimingTyreWearReadoutText,
+            observePitTimingTyreWearImminentReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )

@@ -2,7 +2,9 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
@@ -31,6 +33,8 @@ class LmuWindowsPitTimingPreferencesSerializerTest {
                 LmuWindowsPitTimingPreferences(
                     virtualEnergyLaps = 5,
                     tyreWearLaps = 1,
+                    tyreWearReadoutText = "タイヤ残り{laps}周",
+                    tyreWearImminentReadoutText = "タイヤ交換へ",
                     virtualEnergyReadoutText = "残り{laps}周",
                     virtualEnergyImminentReadoutText = "今すぐピットイン",
                 )
@@ -63,12 +67,47 @@ class LmuWindowsPitTimingPreferencesSerializerTest {
                     ByteArrayInputStream(byteArrayOf(0x08, 0x05, 0x10, 0x01)),
                 )
 
+            assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT, restored.tyreWearReadoutText)
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
+                restored.tyreWearImminentReadoutText,
+            )
             assertEquals(5, restored.virtualEnergyLaps)
             assertEquals(1, restored.tyreWearLaps)
             assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT, restored.virtualEnergyReadoutText)
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
                 restored.virtualEnergyImminentReadoutText,
+            )
+        }
+
+    @Test
+    fun `VE文言を持つ旧データでもタイヤ摩耗の既定文言を使用する`() =
+        runTest {
+            val restored =
+                LmuWindowsPitTimingPreferencesSerializer.readFrom(
+                    ByteArrayInputStream(byteArrayOf(0x22, 0x02, 0x56, 0x45, 0x2A, 0x00)),
+                )
+
+            assertEquals("VE", restored.virtualEnergyReadoutText)
+            assertEquals("", restored.virtualEnergyImminentReadoutText)
+            assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT, restored.tyreWearReadoutText)
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
+                restored.tyreWearImminentReadoutText,
+            )
+        }
+
+    @Test
+    fun `保存した空欄文言は読み出しても既定値に戻らない`() =
+        runTest {
+            val original = LmuWindowsPitTimingPreferences(tyreWearReadoutText = "", tyreWearImminentReadoutText = "")
+            val output = ByteArrayOutputStream()
+            LmuWindowsPitTimingPreferencesSerializer.writeTo(original, output)
+
+            assertEquals(
+                original,
+                LmuWindowsPitTimingPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())),
             )
         }
 }

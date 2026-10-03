@@ -36,6 +36,21 @@ internal class LmuWindowsPitTimingPreferencesRepositoryImpl(
         dataStore.saveProperty(text) { prefs, value -> prefs.copy(virtualEnergyImminentReadoutText = value) }
     }
 
+    override fun observeTyreWearReadoutText(): Flow<String> = dataStore.observeProperty { it.tyreWearReadoutText }
+
+    override suspend fun saveTyreWearReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(tyreWearReadoutText = value) }
+    }
+
+    override fun observeTyreWearImminentReadoutText(): Flow<String> =
+        dataStore.observeProperty {
+            it.tyreWearImminentReadoutText
+        }
+
+    override suspend fun saveTyreWearImminentReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(tyreWearImminentReadoutText = value) }
+    }
+
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.observeProperty { prefs ->
             prefs.enabledStates
