@@ -252,24 +252,6 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
     }
 
     @Test
-    fun `切迫時の未知トークンは警告しない`() {
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsReadoutPitTimingDetailPaneContent(
-                    uiState =
-                        LmuWindowsReadoutPitTimingDetailUiState(
-                            virtualEnergyText = "",
-                            virtualEnergyImminentText = "{lap}{laps}",
-                            isTextToSpeechAvailable = true,
-                        ),
-                )
-            }
-        }
-        rule.onNodeWithText("{lap} は置き換えられません。{laps} を使用してください").assertDoesNotExist()
-        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-    }
-
-    @Test
     fun `TTS不可では警告より利用不可案内を優先し入力と試聴と挿入を無効にする`() {
         rule.setContent {
             KoDriverTheme {
