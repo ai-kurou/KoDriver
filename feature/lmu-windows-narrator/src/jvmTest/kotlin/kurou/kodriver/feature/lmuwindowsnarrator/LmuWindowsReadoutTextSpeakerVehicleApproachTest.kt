@@ -19,6 +19,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
@@ -43,6 +44,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
     private val observePitTimingTyreWearReadoutText: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase = mockk()
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
+    private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -59,6 +61,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observePitTimingVirtualEnergyImminentReadoutText,
             observePitTimingTyreWearReadoutText,
             observePitTimingTyreWearImminentReadoutText,
+            observeRemainingText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -77,6 +80,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observePitTimingVirtualEnergyImminentReadoutText,
             observePitTimingTyreWearReadoutText,
             observePitTimingTyreWearImminentReadoutText,
+            observeRemainingText,
             checkTextToSpeechAvailable,
             speakText,
         )

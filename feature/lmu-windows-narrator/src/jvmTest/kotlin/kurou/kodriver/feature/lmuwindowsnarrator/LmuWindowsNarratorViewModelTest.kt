@@ -1700,7 +1700,7 @@ class LmuWindowsNarratorViewModelTest {
 
             channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyWarning), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyWarning(50)), spokenTexts)
         }
 
     @Test
@@ -1719,7 +1719,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
             channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyWarning), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyWarning(50)), spokenTexts)
         }
 
     @Test
@@ -1741,8 +1741,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.RemainingVirtualEnergyWarning,
-                    SpeechEvent.RemainingVirtualEnergyWarning,
+                    SpeechEvent.RemainingVirtualEnergyWarning(50),
+                    SpeechEvent.RemainingVirtualEnergyWarning(50),
                 ),
                 spokenTexts,
             )

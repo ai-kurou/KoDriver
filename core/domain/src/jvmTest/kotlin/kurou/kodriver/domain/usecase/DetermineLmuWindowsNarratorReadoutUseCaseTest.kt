@@ -1527,7 +1527,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
             )
 
-        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyWarning), decision.events)
+        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyWarning(50)), decision.events)
         assertEquals(true, decision.state.remainingVirtualEnergyWarned)
     }
 
@@ -1571,7 +1571,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, recoveredState.remainingVirtualEnergyWarned)
-        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyWarning), rewarnedDecision.events)
+        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyWarning(50)), rewarnedDecision.events)
     }
 
     @Test

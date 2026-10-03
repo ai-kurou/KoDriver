@@ -3,6 +3,7 @@ package kurou.kodriver.domain.engine
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
@@ -11,6 +12,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 
 /**
  * 音声エンジンへ渡す読み上げイベント。
@@ -111,9 +113,16 @@ sealed interface SpeechEvent {
         override val narratedText = "ブレーキ過熱警告"
     }
 
-    data object RemainingVirtualEnergyWarning : SpeechEvent {
+    /** バーチャルエナジー残量警告。[percentage] は実際の残量ではなく設定した閾値（%）。 */
+    data class RemainingVirtualEnergyWarning(
+        val percentage: Int,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root
-        override val narratedText = "バーチャルエナジー残量警告"
+        override val narratedText =
+            formatLmuWindowsRemainingVirtualEnergyReadoutText(
+                LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
+                percentage,
+            )
     }
 
     data object LmuWindowsMyBestLapFormal : SpeechEvent {

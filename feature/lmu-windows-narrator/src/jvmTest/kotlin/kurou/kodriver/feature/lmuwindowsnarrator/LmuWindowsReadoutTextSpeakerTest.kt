@@ -20,6 +20,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
@@ -46,6 +47,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     private val observePitTimingTyreWearReadoutText: ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase = mockk()
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
+    private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -62,9 +64,48 @@ class LmuWindowsReadoutTextSpeakerTest {
             observePitTimingVirtualEnergyImminentReadoutText,
             observePitTimingTyreWearReadoutText,
             observePitTimingTyreWearImminentReadoutText,
+            observeRemainingText,
             checkTextToSpeechAvailable,
             speakText,
         )
+
+    @Test
+    fun `残量警告はイベントの設定閾値を文言に置換して読み上げる`() =
+        runTest {
+            every { observeRemainingText() } returns flowOf("閾値{percent}%、{percent}")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("閾値50%、50", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.RemainingVirtualEnergyWarning(50), VOLUME)
+            verify(exactly = 1) { observeRemainingText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("閾値50%、50", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `残量警告の空白文言ではTTSを確認せず読み上げない`() =
+        runTest {
+            every { observeRemainingText() } returns flowOf(" ")
+            assertNull(speaker.readoutText(SpeechEvent.RemainingVirtualEnergyWarning(30)))
+            speaker(SpeechEvent.RemainingVirtualEnergyWarning(30), VOLUME)
+            verify(exactly = 2) { observeRemainingText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `残量警告のTTS利用不可では読み上げ文言を返さず読み上げない`() =
+        runTest {
+            every { observeRemainingText() } returns flowOf("残り{percent}%")
+            coEvery { checkTextToSpeechAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.RemainingVirtualEnergyWarning(70)))
+            speaker(SpeechEvent.RemainingVirtualEnergyWarning(70), VOLUME)
+            verify(exactly = 2) { observeRemainingText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText("残り70%", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
 
     private fun confirmAllMocksVerified() {
         confirmVerified(
@@ -80,6 +121,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             observePitTimingVirtualEnergyImminentReadoutText,
             observePitTimingTyreWearReadoutText,
             observePitTimingTyreWearImminentReadoutText,
+            observeRemainingText,
             checkTextToSpeechAvailable,
             speakText,
         )

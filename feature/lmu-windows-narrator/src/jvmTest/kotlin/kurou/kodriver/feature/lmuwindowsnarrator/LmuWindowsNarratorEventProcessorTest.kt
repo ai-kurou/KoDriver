@@ -234,18 +234,18 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    narratedText = "バーチャルエナジー残量警告",
+                    narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
-            val processor = createProcessor()
+            val processor = createProcessor { "閾値50%です" }
 
             processor.processRemainingVirtualEnergy(
                 remainingVirtualEnergy =
@@ -263,7 +263,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     LmuWindowsVirtualEnergyData(
                         remainingRatio = LmuWindowsVirtualEnergyRatio(0.3),
                     ),
-                events = listOf(SpeechEvent.RemainingVirtualEnergyWarning),
+                events = listOf(SpeechEvent.RemainingVirtualEnergyWarning(50)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -279,13 +279,13 @@ class LmuWindowsNarratorEventProcessorTest {
             assertEquals(0.3, root["remainingVirtualEnergy"]!!.jsonObject["remainingRatio"]!!.jsonPrimitive.double)
             assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    narratedText = "バーチャルエナジー残量警告",
+                    narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
                 )
@@ -395,13 +395,13 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    narratedText = "バーチャルエナジー残量警告",
+                    narratedText = "バーチャルエナジー残量50%以下",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
@@ -409,7 +409,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             createProcessor().processTelemetry(
                 telemetry = fakeTelemetryData(),
-                events = listOf(SpeechEvent.RemainingVirtualEnergyWarning),
+                events = listOf(SpeechEvent.RemainingVirtualEnergyWarning(50)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -418,13 +418,13 @@ class LmuWindowsNarratorEventProcessorTest {
 
             assertContains(telemetryJsonSlot.captured, "\"previousTelemetry\":null")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    narratedText = "バーチャルエナジー残量警告",
+                    narratedText = "バーチャルエナジー残量50%以下",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
@@ -1287,6 +1287,45 @@ class LmuWindowsNarratorEventProcessorTest {
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `残量警告の文言がnullなら読み上げず空文言でSKIPPEDを保存する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { null }.processRemainingVirtualEnergy(
+                remainingVirtualEnergy =
+                    LmuWindowsVirtualEnergyData(
+                        remainingRatio = LmuWindowsVirtualEnergyRatio(0.3),
+                    ),
+                events = listOf(SpeechEvent.RemainingVirtualEnergyWarning(50)),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
