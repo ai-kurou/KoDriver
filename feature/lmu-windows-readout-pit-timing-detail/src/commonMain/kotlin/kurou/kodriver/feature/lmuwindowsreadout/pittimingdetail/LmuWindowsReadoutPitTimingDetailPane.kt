@@ -25,8 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -297,38 +297,35 @@ private fun ReadoutTextField(
     onPreviewClick: (String) -> Unit,
     unknownPlaceholders: String = "",
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        DetailPaneCardTextField(
-            value = text,
-            placeholder = label,
-            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            onValueChangeFinished = onTextChanged,
-            onPreviewClick = onPreviewClick,
-            enabled = isTextToSpeechAvailable,
-            selected = text.isNotBlank(),
-            supportingText =
-                when {
-                    !isTextToSpeechAvailable -> {
-                        stringResource(Res.string.pit_timing_text_unavailable)
-                    }
+    DetailPaneLabeledTextField(
+        label = label,
+        value = text,
+        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+        onValueChangeFinished = onTextChanged,
+        onPreviewClick = onPreviewClick,
+        enabled = isTextToSpeechAvailable,
+        selected = text.isNotBlank(),
+        supportingText =
+            when {
+                !isTextToSpeechAvailable -> {
+                    stringResource(Res.string.pit_timing_text_unavailable)
+                }
 
-                    unknownPlaceholders.isNotEmpty() -> {
-                        stringResource(Res.string.pit_timing_text_unknown_placeholders, unknownPlaceholders)
-                    }
+                unknownPlaceholders.isNotEmpty() -> {
+                    stringResource(Res.string.pit_timing_text_unknown_placeholders, unknownPlaceholders)
+                }
 
-                    text.isNotBlank() -> {
-                        null
-                    }
+                text.isNotBlank() -> {
+                    null
+                }
 
-                    else -> {
-                        stringResource(Res.string.pit_timing_text_supporting)
-                    }
-                },
-            previewContentDescription = stringResource(Res.string.pit_timing_text_preview),
-            selectedContentDescription = stringResource(Res.string.pit_timing_text_selected_icon),
-        )
-    }
+                else -> {
+                    stringResource(Res.string.pit_timing_text_supporting)
+                }
+            },
+        previewContentDescription = stringResource(Res.string.pit_timing_text_preview),
+        selectedContentDescription = stringResource(Res.string.pit_timing_text_selected_icon),
+    )
 }
 
 @Composable
