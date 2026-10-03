@@ -23,6 +23,7 @@ import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
@@ -50,6 +51,7 @@ data class OtherListSettingsUseCases(
     val observeHapticFeedbackEnabled: ObserveHapticFeedbackEnabledUseCase,
     val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
     val observeVoice: ObserveVoiceUseCase,
+    val observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
     val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
 
@@ -122,6 +124,8 @@ class OtherListViewModel(
             )
         }.combine(settingsUseCases.observeVoice()) { state, voiceId ->
             state.copy(voiceId = voiceId)
+        }.combine(settingsUseCases.observeReadoutStartSoundType()) { state, type ->
+            state.copy(readoutStartSoundType = type)
         }.combine(settingsUseCases.observeSoundVolume()) { state, soundVolume ->
             state.copy(soundVolume = soundVolume)
         }.combine(deviceVolumePolling) { state, deviceVolume ->

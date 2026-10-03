@@ -1,8 +1,13 @@
 package kurou.kodriver.feature.otherlist
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
@@ -21,6 +26,7 @@ val fakeSpeechSettingsSenderRepository = FakeSpeechSettingsSenderRepository()
 
 val fakeOtherListModule =
     module {
+        single<ReadoutStartSoundPreferencesRepository> { FakeReadoutStartSoundPreferencesRepository() }
         single<StartupEnabledRepository> { FakeStartupEnabledRepository() }
         single<HapticFeedbackAvailabilityRepository> { FakeHapticFeedbackAvailabilityRepository() }
         single<AccessLocalNetworkPermissionRepository> { FakeAccessLocalNetworkPermissionRepository() }
@@ -72,5 +78,15 @@ class FakeSpeechSettingsSenderRepository : SpeechSettingsSenderRepository {
 
     override fun openWindowsSpeechSettings() {
         openWindowsSpeechSettingsCallCount++
+    }
+}
+
+class FakeReadoutStartSoundPreferencesRepository : ReadoutStartSoundPreferencesRepository {
+    private val type = MutableStateFlow(READOUT_START_SOUND_TYPE_DEFAULT)
+
+    override fun observeType() = type
+
+    override suspend fun saveType(type: ReadoutStartSoundType) {
+        this.type.update { type }
     }
 }
