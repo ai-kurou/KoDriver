@@ -20,7 +20,6 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_preview
-import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_selected
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_selected_icon
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_supporting
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_unavailable
@@ -105,7 +104,7 @@ private fun FlagReadoutCard(
                 supportingText =
                     when {
                         !isTextToSpeechAvailable -> stringResource(Res.string.flag_text_unavailable)
-                        hasReadoutText -> stringResource(Res.string.flag_text_selected)
+                        hasReadoutText -> null
                         else -> stringResource(Res.string.flag_text_supporting)
                     },
                 previewContentDescription = stringResource(Res.string.flag_text_preview),

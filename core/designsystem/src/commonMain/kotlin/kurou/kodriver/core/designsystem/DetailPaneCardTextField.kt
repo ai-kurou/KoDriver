@@ -172,7 +172,6 @@ private fun DetailPaneCardTextFieldPreview() {
                         onValueChangeFinished = {},
                         onPreviewClick = {},
                         selected = true,
-                        supportingText = "この文言を音声合成で読み上げます（収録音声は使いません）",
                     )
                 },
             )
