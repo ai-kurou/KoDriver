@@ -68,7 +68,9 @@ class LmuWindowsRemainingVirtualEnergyPreferencesSerializerTest {
 
             assertEquals(
                 original,
-                LmuWindowsRemainingVirtualEnergyPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())),
+                LmuWindowsRemainingVirtualEnergyPreferencesSerializer.readFrom(
+                    ByteArrayInputStream(output.toByteArray()),
+                ),
             )
         }
 }

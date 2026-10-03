@@ -24,7 +24,7 @@ class LmuWindowsRemainingVirtualEnergyReadoutTextTest {
     fun `閾値の境界値を単純に置換する`() {
         listOf(Int.MIN_VALUE, -1, 0, 1, Int.MAX_VALUE).forEach { percentage ->
             assertEquals(
-                "残り${percentage}%",
+                "残り$percentage%",
                 formatLmuWindowsRemainingVirtualEnergyReadoutText("残り{percent}%", percentage),
             )
         }
