@@ -16,7 +16,6 @@
     <string name="pit_timing_virtual_energy_laps_insert">{laps}を挿入</string>
     <string name="pit_timing_virtual_energy_laps_placeholder_hint">{laps} は予想残り周回数に置き換わります</string>
     <string name="pit_timing_text_supporting">空欄のままなら読み上げません</string>
-    <string name="pit_timing_text_selected">この文言を音声合成で読み上げます</string>
     <string name="pit_timing_text_unavailable">この端末では音声合成を利用できないため、バーチャルエナジーは読み上げません</string>
     <string name="pit_timing_text_preview">入力した文言を再生</string>
     <string name="pit_timing_text_selected_icon">この文言を読み上げます</string>

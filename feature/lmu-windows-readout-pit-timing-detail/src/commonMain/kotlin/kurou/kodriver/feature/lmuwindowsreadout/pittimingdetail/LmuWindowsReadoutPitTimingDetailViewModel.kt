@@ -131,7 +131,7 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
         viewModelScope.launch {
             val volume = readout.observeSoundVolume().first()
             if (volume <= 0) return@launch
-            readout.playStartSoundForKey(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy)
+            readout.playStartSoundForKey(ReadoutItemKey.LmuWindows.PitTiming.Root)
             readout.speakText(text, volume = volume)
         }
     }

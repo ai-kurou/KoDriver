@@ -252,7 +252,7 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
     }
 
     @Test
-    fun `切迫時の未知トークンは警告せず読み上げる案内を表示する`() {
+    fun `切迫時の未知トークンは警告しない`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutPitTimingDetailPaneContent(
@@ -265,7 +265,7 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
                 )
             }
         }
-        rule.onNodeWithText("この文言を音声合成で読み上げます").assertExists()
+        rule.onNodeWithText("{lap} は置き換えられません。{laps} を使用してください").assertDoesNotExist()
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
     }
 

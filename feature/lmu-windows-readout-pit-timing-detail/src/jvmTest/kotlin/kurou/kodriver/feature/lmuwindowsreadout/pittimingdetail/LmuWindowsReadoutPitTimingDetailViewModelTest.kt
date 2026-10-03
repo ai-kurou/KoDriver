@@ -266,19 +266,19 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         runTest {
             stubRepository()
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy) } returns Unit
+            coEvery { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) } returns Unit
             coEvery { speakText("残り5周", volume = 60) } returns Unit
             coEvery { speakText("必ず{laps}", volume = 60) } returns Unit
             val viewModel = createViewModel()
             viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
             viewModel.onVirtualEnergyImminentTextPreviewClicked("必ず{laps}")
-            coVerify(exactly = 2) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy) }
+            coVerify(exactly = 2) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
             coVerify(exactly = 1) { speakText("残り5周", volume = 60) }
             coVerify(exactly = 1) { speakText("必ず{laps}", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy)
+                playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root)
                 speakText("残り5周", volume = 60)
-                playStartSound(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy)
+                playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root)
                 speakText("必ず{laps}", volume = 60)
             }
             verify(exactly = 2) { observeVolume() }
@@ -293,7 +293,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             viewModel.onVirtualEnergyTextPreviewClicked(" ")
             viewModel.onVirtualEnergyImminentTextPreviewClicked("")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy) }
+            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -307,7 +307,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             viewModel.onVirtualEnergyTextPreviewClicked("注意")
             viewModel.onVirtualEnergyImminentTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy) }
+            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -323,7 +323,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             volume.update { -1 }
             viewModel.onVirtualEnergyImminentTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy) }
+            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }

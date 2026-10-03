@@ -44,7 +44,6 @@ import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resour
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_laps_reset_to_default
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_laps_slider_label
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_preview
-import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_selected
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_selected_icon
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_supporting
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_unavailable
@@ -278,7 +277,7 @@ private fun ReadoutTextField(
                     }
 
                     text.isNotBlank() -> {
-                        stringResource(Res.string.pit_timing_text_selected)
+                        null
                     }
 
                     else -> {
