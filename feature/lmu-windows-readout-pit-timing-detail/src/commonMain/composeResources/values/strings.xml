@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pit_timing_description">ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。</string>
+    <string name="pit_timing_description">ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。\nバーチャルエナジーは入力した文言を音声合成で、タイヤ摩耗は収録音声で読み上げます。</string>
     <string name="pit_timing_virtual_energy_title">バーチャルエナジー</string>
     <string name="pit_timing_tyre_wear_title">タイヤ摩耗</string>
     <string name="pit_timing_voice_type">N周以内にピットイン・必ずピットイン</string>
@@ -11,4 +11,13 @@
     <string name="pit_timing_laps_slider_label">残り約: %1$d 周</string>
     <string name="pit_timing_laps_reset_to_default">デフォルトに戻す</string>
     <string name="pit_timing_laps_help_description">直近1周分の消費量をもとに、現在の残量から走行可能な周回数を算出します。給油やタイヤ交換をした直後は、その後のラップの消費量に基づいて再計算されます。</string>
+    <string name="pit_timing_virtual_energy_text_label">通常</string>
+    <string name="pit_timing_virtual_energy_imminent_text_label">必ず（残り0周）</string>
+    <string name="pit_timing_virtual_energy_laps_insert">{laps}を挿入</string>
+    <string name="pit_timing_virtual_energy_laps_placeholder_hint">{laps} は予想残り周回数に置き換わります</string>
+    <string name="pit_timing_text_supporting">空欄のままなら読み上げません</string>
+    <string name="pit_timing_text_unavailable">この端末では音声合成を利用できないため、バーチャルエナジーは読み上げません</string>
+    <string name="pit_timing_text_preview">入力した文言を再生</string>
+    <string name="pit_timing_text_selected_icon">この文言を読み上げます</string>
+    <string name="pit_timing_text_unknown_placeholders">%1$s は置き換えられません。{laps} を使用してください</string>
 </resources>

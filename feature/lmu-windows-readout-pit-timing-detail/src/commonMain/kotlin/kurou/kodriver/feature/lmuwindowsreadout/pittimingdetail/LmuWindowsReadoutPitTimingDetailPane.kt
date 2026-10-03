@@ -8,17 +8,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
@@ -28,18 +33,30 @@ import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MAX
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MIN
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.findUnknownLmuWindowsPitTimingReadoutPlaceholders
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_description
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_laps_help_description
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_laps_reset_to_default
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_laps_slider_label
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_selected_icon
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_supporting
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_unavailable
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_unknown_placeholders
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_laps_help_icon_content_description
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_laps_subtitle
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_title
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_imminent_text_label
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_help_icon_content_description
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_insert
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_placeholder_hint
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_subtitle
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_text_label
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_title
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_voice_type
 import org.jetbrains.compose.resources.stringResource
@@ -63,10 +80,15 @@ fun LmuWindowsReadoutPitTimingDetailPane(modifier: Modifier = Modifier) {
         onTyreWearEnabledChanged = viewModel::onTyreWearEnabledChanged,
         onTyreWearLapsChanged = viewModel::onTyreWearLapsChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
+        onVirtualEnergyTextChanged = viewModel::onVirtualEnergyTextChanged,
+        onVirtualEnergyImminentTextChanged = viewModel::onVirtualEnergyImminentTextChanged,
+        onVirtualEnergyTextPreviewClicked = viewModel::onVirtualEnergyTextPreviewClicked,
+        onVirtualEnergyImminentTextPreviewClicked = viewModel::onVirtualEnergyImminentTextPreviewClicked,
         modifier = modifier,
     )
 }
 
+@Suppress("LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
@@ -76,8 +98,17 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
     onTyreWearEnabledChanged: (Boolean) -> Unit = {},
     onTyreWearLapsChanged: (Int) -> Unit = {},
     onPreviewClicked: () -> Unit = {},
+    onVirtualEnergyTextChanged: (String) -> Unit = {},
+    onVirtualEnergyImminentTextChanged: (String) -> Unit = {},
+    onVirtualEnergyTextPreviewClicked: (String) -> Unit = {},
+    onVirtualEnergyImminentTextPreviewClicked: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    var virtualEnergyText by remember(uiState.virtualEnergyText) { mutableStateOf(uiState.virtualEnergyText) }
+    val changeVirtualEnergyText: (String) -> Unit = {
+        virtualEnergyText = it
+        onVirtualEnergyTextChanged(it)
+    }
     val sliderLabel = stringResource(Res.string.pit_timing_laps_slider_label)
     val resetToDefaultLabel = stringResource(Res.string.pit_timing_laps_reset_to_default)
     val voiceTypeLabel = stringResource(Res.string.pit_timing_voice_type)
@@ -102,11 +133,39 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    DetailPaneCardChips(
-                        chipLabels = listOf(voiceTypeLabel),
-                        selectedChipLabels = setOf(voiceTypeLabel),
-                        chipEnabled = uiState.virtualEnergyEnabled,
-                        onChipClick = { onPreviewClicked() },
+                    ReadoutTextField(
+                        label = stringResource(Res.string.pit_timing_virtual_energy_text_label),
+                        text = virtualEnergyText,
+                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
+                        onTextChanged = changeVirtualEnergyText,
+                        onPreviewClick = onVirtualEnergyTextPreviewClicked,
+                        unknownPlaceholders =
+                            findUnknownLmuWindowsPitTimingReadoutPlaceholders(virtualEnergyText)
+                                .joinToString("、"),
+                    )
+                    AssistChip(
+                        onClick = {
+                            changeVirtualEnergyText(
+                                virtualEnergyText + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
+                            )
+                        },
+                        label = { Text(stringResource(Res.string.pit_timing_virtual_energy_laps_insert)) },
+                        enabled =
+                            uiState.isTextToSpeechAvailable &&
+                                virtualEnergyText.length + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER.length <=
+                                READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                    )
+                    Text(
+                        text = stringResource(Res.string.pit_timing_virtual_energy_laps_placeholder_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    ReadoutTextField(
+                        label = stringResource(Res.string.pit_timing_virtual_energy_imminent_text_label),
+                        text = uiState.virtualEnergyImminentText,
+                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
+                        onTextChanged = onVirtualEnergyImminentTextChanged,
+                        onPreviewClick = onVirtualEnergyImminentTextPreviewClicked,
                     )
                     HorizontalDivider(
                         modifier =
@@ -182,6 +241,51 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                     )
                 }
             },
+        )
+    }
+}
+
+/** 通常・切迫時の文言入力と試聴を提供する。未知トークンの警告は通常文言だけに使う。 */
+@Suppress("LongParameterList")
+@Composable
+private fun ReadoutTextField(
+    label: String,
+    text: String,
+    isTextToSpeechAvailable: Boolean,
+    onTextChanged: (String) -> Unit,
+    onPreviewClick: (String) -> Unit,
+    unknownPlaceholders: String = "",
+) {
+    Column {
+        Text(text = label, style = MaterialTheme.typography.bodyMedium)
+        DetailPaneCardTextField(
+            value = text,
+            placeholder = label,
+            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+            onValueChangeFinished = onTextChanged,
+            onPreviewClick = onPreviewClick,
+            enabled = isTextToSpeechAvailable,
+            selected = text.isNotBlank(),
+            supportingText =
+                when {
+                    !isTextToSpeechAvailable -> {
+                        stringResource(Res.string.pit_timing_text_unavailable)
+                    }
+
+                    unknownPlaceholders.isNotEmpty() -> {
+                        stringResource(Res.string.pit_timing_text_unknown_placeholders, unknownPlaceholders)
+                    }
+
+                    text.isNotBlank() -> {
+                        null
+                    }
+
+                    else -> {
+                        stringResource(Res.string.pit_timing_text_supporting)
+                    }
+                },
+            previewContentDescription = stringResource(Res.string.pit_timing_text_preview),
+            selectedContentDescription = stringResource(Res.string.pit_timing_text_selected_icon),
         )
     }
 }
