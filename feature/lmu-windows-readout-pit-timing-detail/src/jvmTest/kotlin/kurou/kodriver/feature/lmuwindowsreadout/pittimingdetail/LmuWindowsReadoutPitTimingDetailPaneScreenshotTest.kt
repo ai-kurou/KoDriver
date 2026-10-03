@@ -69,6 +69,30 @@ class LmuWindowsReadoutPitTimingDetailPaneScreenshotTest {
         }
 
     @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutPitTimingDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutPitTimingDetailUiState(
+                                        virtualEnergyText = "編集済みの通常文言",
+                                        tyreWearText = "編集済みの通常文言",
+                                        virtualEnergyImminentText = "編集済みの必須文言",
+                                        tyreWearImminentText = "編集済みの必須文言",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
     fun `空欄`() =
         composeScreenshotTest {
             setContent {

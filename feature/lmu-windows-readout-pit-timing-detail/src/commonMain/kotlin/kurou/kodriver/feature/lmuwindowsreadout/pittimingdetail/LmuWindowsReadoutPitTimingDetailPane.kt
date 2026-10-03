@@ -36,8 +36,12 @@ import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MAX
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MIN
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.findUnknownLmuWindowsPitTimingReadoutPlaceholders
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.Res
@@ -50,6 +54,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resour
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_laps_slider_label
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_label
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_reset_to_default
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_selected_icon
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_supporting
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_text_unavailable
@@ -136,7 +141,9 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     PitTimingReadoutFields(
                         text = uiState.virtualEnergyText,
+                        defaultText = LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
                         imminentText = uiState.virtualEnergyImminentText,
+                        imminentDefaultText = LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
                         available = uiState.isTextToSpeechAvailable,
                         onTextChanged = onVirtualEnergyTextChanged,
                         onImminentTextChanged = onVirtualEnergyImminentTextChanged,
@@ -183,7 +190,9 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     PitTimingReadoutFields(
                         text = uiState.tyreWearText,
+                        defaultText = LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT,
                         imminentText = uiState.tyreWearImminentText,
+                        imminentDefaultText = LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
                         available = uiState.isTextToSpeechAvailable,
                         onTextChanged = onTyreWearTextChanged,
                         onImminentTextChanged = onTyreWearImminentTextChanged,
@@ -228,7 +237,9 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
 @Composable
 private fun PitTimingReadoutFields(
     text: String,
+    defaultText: String,
     imminentText: String,
+    imminentDefaultText: String,
     available: Boolean,
     onTextChanged: (String) -> Unit,
     onImminentTextChanged: (String) -> Unit,
@@ -245,6 +256,7 @@ private fun PitTimingReadoutFields(
             ReadoutTextField(
                 label = stringResource(Res.string.pit_timing_text_label),
                 text = currentText,
+                defaultText = defaultText,
                 isTextToSpeechAvailable = available,
                 onTextChanged = changeText,
                 onPreviewClick = onPreviewClick,
@@ -279,6 +291,7 @@ private fun PitTimingReadoutFields(
         ReadoutTextField(
             label = stringResource(Res.string.pit_timing_imminent_text_label),
             text = imminentText,
+            defaultText = imminentDefaultText,
             isTextToSpeechAvailable = available,
             onTextChanged = onImminentTextChanged,
             onPreviewClick = onImminentPreviewClick,
@@ -292,6 +305,7 @@ private fun PitTimingReadoutFields(
 private fun ReadoutTextField(
     label: String,
     text: String,
+    defaultText: String,
     isTextToSpeechAvailable: Boolean,
     onTextChanged: (String) -> Unit,
     onPreviewClick: (String) -> Unit,
@@ -300,6 +314,9 @@ private fun ReadoutTextField(
     DetailPaneLabeledTextField(
         label = label,
         value = text,
+        defaultValue = defaultText,
+        onResetToDefault = { onTextChanged(defaultText) },
+        resetContentDescription = stringResource(Res.string.pit_timing_text_reset_to_default),
         maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
         onValueChangeFinished = onTextChanged,
         onPreviewClick = onPreviewClick,
