@@ -10,6 +10,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
 
 /**
  * 音声エンジンへ渡す読み上げイベント。
@@ -24,7 +25,7 @@ sealed interface SpeechEvent {
 
     /**
      * テレメトリログに記録するイベントの既定文言。
-     * WAVイベントでは収録音声・チップ表示と一致する。LMUフラッグ・車両接近(開始時・継続時)は自由文字列を読み上げるため、
+     * WAVイベントでは収録音声・チップ表示と一致する。LMUフラッグ・車両接近(開始時・継続時)・ピットタイミングは自由文字列を読み上げるため、
      * 実際の本文ではなく既定文言の定数（`LMU_WINDOWS_*_READOUT_TEXT_DEFAULT`）を参照する。
      * ドメイン層はCompose Resourcesに依存しないため、表示文言の変更時はここも更新する。
      */
@@ -153,13 +154,16 @@ sealed interface SpeechEvent {
         override val narratedText = "タイヤ過熱警告"
     }
 
-    /** LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。読み上げ文言はソースごとの設定値から取得する。 */
+    /**
+     * LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。
+     * [narratedText] はログ用の既定文言。実際の読み上げ文言はソースごとの設定値から取得する。
+     */
     data class PitTimingWarning(
         val laps: Int,
         val source: PitTimingSource,
     ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root
-        override val narratedText = if (laps <= 0) "必ずピットイン" else "残り約${laps}周でピットイン"
+        override val narratedText = defaultLmuWindowsPitTimingReadoutText(source, laps)
     }
 
     /** ACE の残燃料で走行可能な周回数を読み上げるイベント。文言・WAV は GT7 の [RemainingFuelLapsWarning] と共通。 */
