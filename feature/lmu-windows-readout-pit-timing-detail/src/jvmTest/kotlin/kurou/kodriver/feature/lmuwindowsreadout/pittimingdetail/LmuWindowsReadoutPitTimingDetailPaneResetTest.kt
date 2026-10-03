@@ -30,6 +30,7 @@ class LmuWindowsReadoutPitTimingDetailPaneResetTest {
     @get:Rule
     val rule = createComposeRule()
 
+    @Test
     fun `全4文言は編集するとリセットでき既定文言を表示して保存を通知する`() {
         val changes = mutableListOf<Pair<Int, String>>()
         setResetTestContent(changes = changes)
