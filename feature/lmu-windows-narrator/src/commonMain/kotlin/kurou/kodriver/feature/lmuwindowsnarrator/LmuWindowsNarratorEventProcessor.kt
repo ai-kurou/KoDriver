@@ -354,12 +354,7 @@ internal class LmuWindowsNarratorEventProcessor(
         logContext: LmuWindowsPitTimingLogContext,
     ) {
         events.forEach { event ->
-            val text =
-                if (event is SpeechEvent.PitTimingWarning) {
-                    readoutText(event)
-                } else {
-                    event.narratedText
-                }
+            val text = readoutText(event)
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED
