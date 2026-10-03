@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.acewindowsconnection
 
 import kotlin.test.Test

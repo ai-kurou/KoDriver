@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.lmuwindowsconnection
 
 import kotlin.test.Test

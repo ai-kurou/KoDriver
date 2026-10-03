@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.gt7ps5readout.mybestlapdetail
 
 import io.mockk.coEvery

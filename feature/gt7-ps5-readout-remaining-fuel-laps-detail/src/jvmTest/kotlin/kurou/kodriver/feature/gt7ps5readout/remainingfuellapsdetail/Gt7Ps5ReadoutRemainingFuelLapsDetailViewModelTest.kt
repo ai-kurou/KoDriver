@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail
 
 import io.mockk.coEvery

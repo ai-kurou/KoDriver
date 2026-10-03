@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.otherconsoleipdetail
 
 import androidx.compose.ui.semantics.SemanticsActions

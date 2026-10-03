@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.domain.usecase
 
 import io.mockk.coEvery

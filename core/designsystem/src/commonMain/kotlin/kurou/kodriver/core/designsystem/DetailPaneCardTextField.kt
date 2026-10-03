@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
  * [supportingText] の右側に、入力中の文字数と [maxLength] を「12/30」の形式で常に表示する。
  * [supportingText] がない場合も、文字数カウンターは右端に配置する。
  */
-@Suppress("LongParameterList")
 @Composable
 fun DetailPaneCardTextField(
     value: String,

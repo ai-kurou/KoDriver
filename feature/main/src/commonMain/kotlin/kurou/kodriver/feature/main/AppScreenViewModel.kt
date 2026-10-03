@@ -29,7 +29,6 @@ data class AppScreenSettingsUseCases(
 /**
  * AppScreen 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-@Suppress("LongParameterList")
 class AppScreenViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,

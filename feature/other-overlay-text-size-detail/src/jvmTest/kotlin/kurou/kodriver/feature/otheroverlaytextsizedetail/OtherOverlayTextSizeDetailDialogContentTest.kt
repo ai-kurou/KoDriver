@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.otheroverlaytextsizedetail
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule

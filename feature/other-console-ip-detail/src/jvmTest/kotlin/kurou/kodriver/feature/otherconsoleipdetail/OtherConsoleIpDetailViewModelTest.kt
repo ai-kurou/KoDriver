@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.feature.otherconsoleipdetail
 
 import kotlinx.coroutines.Dispatchers
