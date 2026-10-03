@@ -7,7 +7,6 @@ import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_damage_overheating
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_damage_part_detached
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_damage_tyre_detached_fl
@@ -33,7 +32,7 @@ internal fun VehicleDamageContent(
     tyreDetached: LmuWindowsTyreDetachedData?,
 ) {
     if (vehicleDamage == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        DebugStateUnavailableContent()
         return
     }
     Column {

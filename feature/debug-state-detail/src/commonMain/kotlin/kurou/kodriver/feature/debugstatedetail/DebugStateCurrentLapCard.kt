@@ -1,14 +1,12 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CurrentLapContent(
@@ -22,8 +20,13 @@ internal fun CurrentLapContent(
             is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.lapCount
             is Simulator.AceWindows -> null
         }
-    Text(
-        text = currentLap?.let { it.toString() } ?: stringResource(Res.string.debug_state_flag_info_unavailable),
-        style = koDriverNumericTextStyle(),
-    )
+    val displayText = currentLap?.let { it.toString() }
+    if (displayText == null) {
+        DebugStateUnavailableContent()
+    } else {
+        Text(
+            text = displayText,
+            style = koDriverNumericTextStyle().copy(fontSize = MaterialTheme.typography.headlineMedium.fontSize),
+        )
+    }
 }

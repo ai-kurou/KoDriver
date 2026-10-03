@@ -4,7 +4,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_session_practice
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_session_qualifying
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_session_race
@@ -27,7 +26,7 @@ private fun sessionDisplayName(session: Int): String =
 @Composable
 internal fun SessionContent(virtualEnergy: LmuWindowsVirtualEnergyData?) {
     if (virtualEnergy == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        DebugStateUnavailableContent()
         return
     }
     Text(text = sessionDisplayName(virtualEnergy.session))
