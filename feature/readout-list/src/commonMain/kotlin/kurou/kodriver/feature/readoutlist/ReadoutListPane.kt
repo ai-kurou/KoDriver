@@ -2,6 +2,7 @@ package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -46,8 +47,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
@@ -56,6 +59,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,6 +69,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -83,12 +90,14 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
 import kurou.kodriver.feature.readoutlist.generated.resources.drag_handle
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_label
+import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_order
 import kurou.kodriver.feature.readoutlist.generated.resources.queue_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.queue_toggle_description
 import kurou.kodriver.feature.readoutlist.generated.resources.scroll_to_top
@@ -178,6 +187,15 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.outlineVariant,
+        )
+        Text(
+            text = stringResource(Res.string.priority_hint_order),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -295,6 +313,7 @@ internal fun ReadoutListPane(
                         queueEnabled = uiState.queueEnabledStates[item] ?: false,
                         startSoundEnabled = uiState.startSoundEnabledStates[item] ?: true,
                         containerColor = cardContainerColor,
+                        isSelected = isSelected,
                         onItemClick = onItemClick,
                         onQueueEnabledChanged = onQueueEnabledChanged,
                         onReadoutEnabledChanged = onReadoutEnabledChanged,
@@ -341,6 +360,7 @@ private fun ReadoutListItemCard(
     queueEnabled: Boolean,
     startSoundEnabled: Boolean,
     containerColor: Color,
+    isSelected: Boolean,
     onItemClick: (ReadoutItemKey) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
@@ -354,18 +374,43 @@ private fun ReadoutListItemCard(
         haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
         onItemClick(item)
     }
+    val visualStyle = readoutListItemVisualStyle(readoutEnabled, MaterialTheme.colorScheme)
+    val rankColor by animateColorAsState(visualStyle.rankColor, label = "rankColor")
+    val accentAlpha by animateFloatAsState(visualStyle.accentAlpha, label = "accentAlpha")
+    val tileColor by animateColorAsState(visualStyle.tileColor, label = "tileColor")
+    val tileContentColor by animateColorAsState(visualStyle.tileContentColor, label = "tileContentColor")
+    val primary = MaterialTheme.colorScheme.primary
+    val cardShape = CardDefaults.elevatedShape
+    val selectionModifier =
+        if (isSelected) {
+            Modifier
+                .shadow(
+                    elevation = 8.dp,
+                    shape = cardShape,
+                    ambientColor = primary,
+                    spotColor = primary,
+                ).border(1.dp, primary, cardShape)
+        } else {
+            Modifier
+        }
     ElevatedCard(
         modifier =
             modifier
                 .padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .then(selectionModifier),
         colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .indication(itemInteractionSource, ripple())
+                    .drawBehind {
+                        drawRect(
+                            color = primary.copy(alpha = accentAlpha),
+                            size = Size(KoDriverSpacing.extraSmall.toPx(), size.height),
+                        )
+                    }.indication(itemInteractionSource, ripple())
                     .padding(
                         start = KoDriverSpacing.small,
                         end = KoDriverSpacing.large,
@@ -379,11 +424,14 @@ private fun ReadoutListItemCard(
                 modifier = Modifier.widthIn(min = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = "${index + 1}",
-                    style = MaterialTheme.typography.labelLarge,
-                    textAlign = TextAlign.Center,
-                )
+                CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleLarge) {
+                    Text(
+                        text = "${index + 1}",
+                        style = koDriverNumericTextStyle(),
+                        color = rankColor,
+                        textAlign = TextAlign.Center,
+                    )
+                }
                 Icon(
                     imageVector = Icons.Filled.DragIndicator,
                     contentDescription = stringResource(Res.string.drag_handle),
@@ -417,11 +465,19 @@ private fun ReadoutListItemCard(
                                     MaterialTheme.colorScheme.onSurfaceVariant
                                 },
                         )
-                    Icon(
-                        imageVector = itemIcon(item),
-                        contentDescription = null,
-                        tint = itemContentColor,
-                    )
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(40.dp)
+                                .background(tileColor, MaterialTheme.shapes.medium),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = itemIcon(item),
+                            contentDescription = null,
+                            tint = tileContentColor,
+                        )
+                    }
                     Text(
                         text = itemName,
                         color = itemContentColor,
@@ -534,7 +590,8 @@ private fun ReadoutListBottomChip(
                     onCheckedChange(!checked)
                 }.padding(horizontal = KoDriverSpacing.small),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp, alignment = Alignment.CenterHorizontally),
+        horizontalArrangement =
+            Arrangement.spacedBy(KoDriverSpacing.extraSmall, alignment = Alignment.CenterHorizontally),
     ) {
         Icon(
             imageVector = icon,
