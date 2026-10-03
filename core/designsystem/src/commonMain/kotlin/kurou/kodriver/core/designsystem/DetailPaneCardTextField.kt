@@ -1,8 +1,8 @@
 package kurou.kodriver.core.designsystem
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
  * [selected] の判定は [onValueChangeFinished] で通知される文字列に基づかせる想定（1文字入力するたびに更新される）。
  *
  * [supportingText] の右側に、入力中の文字数と [maxLength] を「12/30」の形式で常に表示する。
+ * [supportingText] がない場合も、文字数カウンターは右端に配置する。
  */
 @Suppress("LongParameterList")
 @Composable
@@ -75,9 +76,12 @@ fun DetailPaneCardTextField(
         supportingText = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                supportingText?.let { Text(text = it, modifier = Modifier.weight(1f, fill = false)) }
+                if (supportingText != null) {
+                    Text(text = supportingText, modifier = Modifier.weight(1f))
+                } else {
+                    Spacer(Modifier.weight(1f))
+                }
                 Text(text = "${text.length}/$maxLength")
             }
         },

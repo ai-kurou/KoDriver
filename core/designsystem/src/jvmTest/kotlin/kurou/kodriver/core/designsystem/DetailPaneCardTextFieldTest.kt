@@ -1,16 +1,27 @@
 package kurou.kodriver.core.designsystem
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class DetailPaneCardTextFieldTest {
     @get:Rule
@@ -212,5 +223,48 @@ class DetailPaneCardTextFieldTest {
         }
 
         rule.onNodeWithContentDescription("この文言を読み上げます").assertDoesNotExist()
+    }
+
+    @Test
+    fun `補足文言がなくても文字数カウンターは右端に表示される`() {
+        assertCounterIsRightAligned(supportingText = null)
+    }
+
+    @Test
+    fun `長い補足文言でも文字数カウンターの領域を確保して右端に表示される`() {
+        assertCounterIsRightAligned(supportingText = "空欄のままなら収録音声で読み上げます".repeat(5))
+    }
+
+    private fun assertCounterIsRightAligned(supportingText: String?) {
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.width(360.dp)) {
+                    DetailPaneCardTextField(
+                        value = "",
+                        placeholder = "イエローフラッグ",
+                        maxLength = 30,
+                        onValueChangeFinished = {},
+                        onPreviewClick = {},
+                        supportingText = supportingText,
+                        modifier = Modifier.testTag("textField"),
+                    )
+                }
+            }
+        }
+
+        val counter = rule.onNodeWithText("0/30", useUnmergedTree = true)
+        counter.assertIsDisplayed()
+        val layoutResults = mutableListOf<TextLayoutResult>()
+        counter.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layoutResults) }
+        assertEquals(1, layoutResults.single().lineCount)
+        val counterBounds = counter.getUnclippedBoundsInRoot()
+        val fieldBounds = rule.onNodeWithTag("textField").getUnclippedBoundsInRoot()
+        assertEquals(fieldBounds.right - 16.dp, counterBounds.right)
+        if (supportingText != null) {
+            val supportingBounds =
+                rule.onNodeWithText(supportingText, useUnmergedTree = true).getUnclippedBoundsInRoot()
+            assertTrue(supportingBounds.right <= counterBounds.left)
+            assertTrue(supportingBounds.bottom - supportingBounds.top > counterBounds.bottom - counterBounds.top)
+        }
     }
 }
