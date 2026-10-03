@@ -548,7 +548,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 
 ## KoDriver での実装済みフィールド一覧
 
-`LmuWindowsMapper` および各 Repository 実装（`LmuWindowsFlagRepositoryImpl`, `LmuWindowsVehicleDamageRepositoryImpl`, `LmuWindowsVehicleApproachRepositoryImpl`）が読み取っているフィールド。`vehicleBase = 128464 + 4 + playerVehicleIdx × 1888`、`wheelBase = vehicleBase + 848 + wheelIdx × 260`、`scoringVehicleBase = 2192 + n × 584`（`mIsPlayer` で線形探索）。
+`LmuWindowsMapper` および各 Repository 実装（`LmuWindowsFlagRepositoryImpl`, `LmuWindowsVehicleDamageRepositoryImpl`, `LmuWindowsVehicleApproachRepositoryImpl`, `LmuWindowsPitStatusRepositoryImpl`, `LmuWindowsVehicleClassRepositoryImpl`, `LmuWindowsVirtualEnergyRepositoryImpl` など `core/lmu-windows-data/.../repository/` 配下）が読み取っているフィールド。`vehicleBase = 128464 + 4 + playerVehicleIdx × 1888`、`wheelBase = vehicleBase + 848 + wheelIdx × 260`、`scoringVehicleBase = 2192 + n × 584`（`mIsPlayer` で線形探索）。
 
 | 機能 | フィールド | オフセット |
 |---|---|---|
@@ -572,6 +572,9 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | ラップ開始時刻 | `mLapStartET` | scoringVehicleBase+256 |
 | ベストラップ S1/S2 | `mBestLapSector1`/`mBestLapSector2` | scoringVehicleBase+576/580 |
 | プレイヤー判定 | `mIsPlayer` | scoringVehicleBase+196 |
+| ピットレーン走行中 | `mInPits` | scoringVehicleBase+198 |
+| 車両クラス名 | `mVehicleClass[32]` | scoringVehicleBase+200 |
+| ピット状態 | `mPitState` | scoringVehicleBase+457 |
 | ブレーキ温度 | `mBrakeTemp` | wheelBase+24 |
 | タイヤ空気圧 | `mPressure` | wheelBase+120 |
 | タイヤ表面温度（中央） | `mTemperature[1]` | wheelBase+136 |
@@ -581,14 +584,13 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | ゲームフェーズ | `mGamePhase` | 1632+108 |
 | イエローフラッグ状態 | `mYellowFlagState` | 1632+109 |
 | セクターフラッグ | `mSectorFlag[3]` | 1632+110 |
-| スタートライト / 赤ライト数 | `mStartLight` / `mNumRedLights` | 1632+113 / 1632+114 |
 | 提示フラッグ | `mFlag` | scoringVehicleBase+504 |
 | FCY 下判定 | `mUnderYellow` | scoringVehicleBase+505 |
-| ラップカウント種別 | `mCountLapFlag` | scoringVehicleBase+506 |
 | オーバーヒート | `mOverheating` | vehicleBase+541 |
 | パーツ脱落 | `mDetached` | vehicleBase+542 |
 | 最終衝突強度 | `mLastImpactMagnitude` | vehicleBase+560 |
 | 姿勢行列（第2行 X/Z） | `mOri[2]` | vehicleBase+280/296 |
+| バーチャルエナジー残量 | `mVirtualEnergy` | vehicleBase+776 |
 
 ---
 

@@ -28,7 +28,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-connection` | LMU との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-lmu-windows-connection.svg) |
 | `:feature:main` | アプリ全体のメイン画面状態管理 | [図](graphs/feature-main.svg) |
 | `:feature:server-connection` | KoDriver サーバー（Ktor）への接続状態確認を担当する | [図](graphs/feature-server-connection.svg) |
-| `:feature:lmu-windows-narrator` | フラッグ本文と車両接近(開始時・継続時)の自由文字列のOS標準TTS読み上げ・その他のWAV音声再生とアナウンス制御を担当する | [図](graphs/feature-lmu-windows-narrator.svg) |
+| `:feature:lmu-windows-narrator` | フラッグ本文・車両接近(開始時・継続時)・ピットタイミングの自由文字列のOS標準TTS読み上げ・その他のWAV音声再生とアナウンス制御を担当する | [図](graphs/feature-lmu-windows-narrator.svg) |
 | `:feature:other-license-detail` | その他画面のライセンス詳細表示 | [図](graphs/feature-other-license-detail.svg) |
 | `:feature:other-list` | その他画面の一覧表示・選択状態管理 | [図](graphs/feature-other-list.svg) |
 | `:feature:other-readout-start-sound-detail` | その他画面の読み上げ開始音設定詳細 | [図](graphs/feature-other-readout-start-sound-detail.svg) |
