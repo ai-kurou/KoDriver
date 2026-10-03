@@ -25,8 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -147,7 +147,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         modifier =
                             Modifier.padding(
                                 horizontal = KoDriverSpacing.small,
-                                vertical = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.medium,
                             ),
                     )
                     DetailPaneSubtitle(
@@ -194,7 +194,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         modifier =
                             Modifier.padding(
                                 horizontal = KoDriverSpacing.small,
-                                vertical = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.medium,
                             ),
                     )
                     DetailPaneSubtitle(
@@ -240,46 +240,50 @@ private fun PitTimingReadoutFields(
         currentText = it
         onTextChanged(it)
     }
-    ReadoutTextField(
-        label = stringResource(Res.string.pit_timing_text_label),
-        text = currentText,
-        isTextToSpeechAvailable = available,
-        onTextChanged = changeText,
-        onPreviewClick = onPreviewClick,
-        unknownPlaceholders =
-            findUnknownLmuWindowsPitTimingReadoutPlaceholders(currentText)
-                .joinToString("、"),
-    )
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-    ) {
-        AssistChip(
-            onClick = {
-                changeText(
-                    currentText + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
+    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.large)) {
+        Column {
+            ReadoutTextField(
+                label = stringResource(Res.string.pit_timing_text_label),
+                text = currentText,
+                isTextToSpeechAvailable = available,
+                onTextChanged = changeText,
+                onPreviewClick = onPreviewClick,
+                unknownPlaceholders =
+                    findUnknownLmuWindowsPitTimingReadoutPlaceholders(currentText)
+                        .joinToString("、"),
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+            ) {
+                AssistChip(
+                    onClick = {
+                        changeText(
+                            currentText + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER,
+                        )
+                    },
+                    label = { Text(stringResource(Res.string.pit_timing_laps_insert)) },
+                    enabled =
+                        available &&
+                            currentText.length + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER.length <=
+                            READOUT_CUSTOM_TEXT_MAX_LENGTH,
                 )
-            },
-            label = { Text(stringResource(Res.string.pit_timing_laps_insert)) },
-            enabled =
-                available &&
-                    currentText.length + LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER.length <=
-                    READOUT_CUSTOM_TEXT_MAX_LENGTH,
-        )
-        Text(
-            text = stringResource(Res.string.pit_timing_laps_placeholder_hint),
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                Text(
+                    text = stringResource(Res.string.pit_timing_laps_placeholder_hint),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        ReadoutTextField(
+            label = stringResource(Res.string.pit_timing_imminent_text_label),
+            text = imminentText,
+            isTextToSpeechAvailable = available,
+            onTextChanged = onImminentTextChanged,
+            onPreviewClick = onImminentPreviewClick,
         )
     }
-    ReadoutTextField(
-        label = stringResource(Res.string.pit_timing_imminent_text_label),
-        text = imminentText,
-        isTextToSpeechAvailable = available,
-        onTextChanged = onImminentTextChanged,
-        onPreviewClick = onImminentPreviewClick,
-    )
 }
 
 /** 通常・切迫時の文言入力と試聴を提供する。未知トークンの警告は通常文言だけに使う。 */
@@ -293,38 +297,35 @@ private fun ReadoutTextField(
     onPreviewClick: (String) -> Unit,
     unknownPlaceholders: String = "",
 ) {
-    Column {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        DetailPaneCardTextField(
-            value = text,
-            placeholder = label,
-            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            onValueChangeFinished = onTextChanged,
-            onPreviewClick = onPreviewClick,
-            enabled = isTextToSpeechAvailable,
-            selected = text.isNotBlank(),
-            supportingText =
-                when {
-                    !isTextToSpeechAvailable -> {
-                        stringResource(Res.string.pit_timing_text_unavailable)
-                    }
+    DetailPaneLabeledTextField(
+        label = label,
+        value = text,
+        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+        onValueChangeFinished = onTextChanged,
+        onPreviewClick = onPreviewClick,
+        enabled = isTextToSpeechAvailable,
+        selected = text.isNotBlank(),
+        supportingText =
+            when {
+                !isTextToSpeechAvailable -> {
+                    stringResource(Res.string.pit_timing_text_unavailable)
+                }
 
-                    unknownPlaceholders.isNotEmpty() -> {
-                        stringResource(Res.string.pit_timing_text_unknown_placeholders, unknownPlaceholders)
-                    }
+                unknownPlaceholders.isNotEmpty() -> {
+                    stringResource(Res.string.pit_timing_text_unknown_placeholders, unknownPlaceholders)
+                }
 
-                    text.isNotBlank() -> {
-                        null
-                    }
+                text.isNotBlank() -> {
+                    null
+                }
 
-                    else -> {
-                        stringResource(Res.string.pit_timing_text_supporting)
-                    }
-                },
-            previewContentDescription = stringResource(Res.string.pit_timing_text_preview),
-            selectedContentDescription = stringResource(Res.string.pit_timing_text_selected_icon),
-        )
-    }
+                else -> {
+                    stringResource(Res.string.pit_timing_text_supporting)
+                }
+            },
+        previewContentDescription = stringResource(Res.string.pit_timing_text_preview),
+        selectedContentDescription = stringResource(Res.string.pit_timing_text_selected_icon),
+    )
 }
 
 @Composable

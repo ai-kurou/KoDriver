@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,8 +27,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -195,7 +196,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             onCheckedChange = onStartReadoutEnabledChanged,
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
-                Column {
+                Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.large)) {
                     ReadoutTextField(
                         label = stringResource(Res.string.vehicle_approach_start_left_label),
                         text = uiState.startLeftText,
@@ -222,27 +223,29 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    ReadoutTextField(
-                        label = stringResource(Res.string.vehicle_approach_start_left_label),
-                        text = uiState.sustainedLeftText,
-                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
-                        unavailableText = stringResource(Res.string.vehicle_approach_sustained_text_unavailable),
-                        onTextChanged = onSustainedLeftTextChanged,
-                        onPreviewClick = onSustainedLeftTextPreviewClicked,
-                    )
-                    ReadoutTextField(
-                        label = stringResource(Res.string.vehicle_approach_start_right_label),
-                        text = uiState.sustainedRightText,
-                        isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
-                        unavailableText = stringResource(Res.string.vehicle_approach_sustained_text_unavailable),
-                        onTextChanged = onSustainedRightTextChanged,
-                        onPreviewClick = onSustainedRightTextPreviewClicked,
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.large)) {
+                        ReadoutTextField(
+                            label = stringResource(Res.string.vehicle_approach_start_left_label),
+                            text = uiState.sustainedLeftText,
+                            isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
+                            unavailableText = stringResource(Res.string.vehicle_approach_sustained_text_unavailable),
+                            onTextChanged = onSustainedLeftTextChanged,
+                            onPreviewClick = onSustainedLeftTextPreviewClicked,
+                        )
+                        ReadoutTextField(
+                            label = stringResource(Res.string.vehicle_approach_start_right_label),
+                            text = uiState.sustainedRightText,
+                            isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
+                            unavailableText = stringResource(Res.string.vehicle_approach_sustained_text_unavailable),
+                            onTextChanged = onSustainedRightTextChanged,
+                            onPreviewClick = onSustainedRightTextPreviewClicked,
+                        )
+                    }
                     HorizontalDivider(
                         modifier =
                             Modifier.padding(
                                 horizontal = KoDriverSpacing.small,
-                                vertical = KoDriverSpacing.small,
+                                vertical = KoDriverSpacing.medium,
                             ),
                     )
                     ThresholdSlider(
@@ -271,26 +274,23 @@ private fun ReadoutTextField(
     onTextChanged: (String) -> Unit,
     onPreviewClick: (String) -> Unit,
 ) {
-    Column {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        DetailPaneCardTextField(
-            value = text,
-            placeholder = label,
-            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            onValueChangeFinished = onTextChanged,
-            onPreviewClick = onPreviewClick,
-            enabled = isTextToSpeechAvailable,
-            selected = text.isNotBlank(),
-            supportingText =
-                when {
-                    !isTextToSpeechAvailable -> unavailableText
-                    text.isNotBlank() -> null
-                    else -> stringResource(Res.string.vehicle_approach_text_supporting)
-                },
-            previewContentDescription = stringResource(Res.string.vehicle_approach_text_preview),
-            selectedContentDescription = stringResource(Res.string.vehicle_approach_text_selected_icon),
-        )
-    }
+    DetailPaneLabeledTextField(
+        label = label,
+        value = text,
+        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+        onValueChangeFinished = onTextChanged,
+        onPreviewClick = onPreviewClick,
+        enabled = isTextToSpeechAvailable,
+        selected = text.isNotBlank(),
+        supportingText =
+            when {
+                !isTextToSpeechAvailable -> unavailableText
+                text.isNotBlank() -> null
+                else -> stringResource(Res.string.vehicle_approach_text_supporting)
+            },
+        previewContentDescription = stringResource(Res.string.vehicle_approach_text_preview),
+        selectedContentDescription = stringResource(Res.string.vehicle_approach_text_selected_icon),
+    )
 }
 
 @Composable
