@@ -56,6 +56,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -94,6 +95,7 @@ import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListViewModel
+import kurou.kodriver.feature.otherlist.rememberOpenTtsSettings
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPane
 import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
@@ -429,6 +431,18 @@ fun AppScreen(
     )
 
     AppNarratorEffects()
+
+    AppTtsAvailabilityEffect(otherListViewModel::checkTextToSpeechAvailability)
+    val uriHandler = LocalUriHandler.current
+    val openTtsSettings = rememberOpenTtsSettings()
+    AppTheme(darkTheme = darkTheme, dynamicColor = uiState.dynamicColorEnabled) {
+        TtsUnavailableDialogHost(
+            reason = otherListUiState.ttsUnavailableReason,
+            onInstallEngine = { uriHandler.openUri(TTS_ENGINE_PLAY_STORE_URL) },
+            onOpenLanguageSettings = openTtsSettings,
+            onOpenWindowsSpeechSettings = otherListViewModel::openWindowsSpeechSettings,
+        )
+    }
 
     LifecycleResumeEffect(Unit) {
         viewModel.checkAccessLocalNetworkPermission()

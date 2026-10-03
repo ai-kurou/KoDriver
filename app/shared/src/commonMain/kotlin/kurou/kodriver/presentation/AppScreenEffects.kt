@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import kurou.kodriver.feature.acewindowsnarrator.AceWindowsNarratorEffect
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
@@ -65,4 +66,14 @@ internal fun AppNarratorEffects() {
     Gt7Ps5NarratorEffect()
     AceWindowsNarratorEffect()
     VersionMismatchBottomSheetEffect()
+}
+
+/** 起動時と設定画面から復帰したときにTTSの利用可否を再確認する。 */
+@Composable
+internal fun AppTtsAvailabilityEffect(checkTtsAvailability: () -> Unit) {
+    val currentCheckTtsAvailability = rememberUpdatedState(checkTtsAvailability)
+    LifecycleResumeEffect(Unit) {
+        currentCheckTtsAvailability.value()
+        onPauseOrDispose {}
+    }
 }

@@ -27,6 +27,7 @@ data class OtherListUiState(
     val soundVolume: Int = SOUND_VOLUME_DEFAULT,
     val deviceVolume: Int = DEVICE_VOLUME_MIN,
     val voiceId: String = VOICE_ID_UNSPECIFIED,
+    val ttsUnavailableReason: TextToSpeechUnavailableReason? = null,
     val startupEnabled: Boolean = false,
     val appVersionLabel: String = "",
     val appVersion: String = "",

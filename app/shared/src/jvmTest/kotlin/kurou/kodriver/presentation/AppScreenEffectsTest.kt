@@ -1,7 +1,13 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import org.junit.Rule
 import org.junit.Test
@@ -11,6 +17,30 @@ import kotlin.test.assertNull
 class AppScreenEffectsTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `起動と復帰でTTS利用可否を再判定し再描画では再判定しない`() {
+        var checkCount = 0
+        val owner =
+            object : LifecycleOwner {
+                val registry = LifecycleRegistry.createUnsafe(this)
+                override val lifecycle: Lifecycle = registry
+            }
+        val redraw = mutableStateOf(false)
+        owner.registry.currentState = Lifecycle.State.RESUMED
+        rule.setContent {
+            CompositionLocalProvider(LocalLifecycleOwner provides owner) {
+                Text(redraw.value.toString())
+                AppTtsAvailabilityEffect { checkCount++ }
+            }
+        }
+        rule.waitForIdle()
+        rule.runOnIdle { redraw.value = true }
+        rule.runOnIdle { owner.registry.currentState = Lifecycle.State.STARTED }
+        rule.runOnIdle { owner.registry.currentState = Lifecycle.State.RESUMED }
+        rule.waitForIdle()
+        assertEquals(2, checkCount)
+    }
 
     @Test
     fun `タブ再選択時に選択中の項目がある場合は選択を解除する`() {

@@ -21,4 +21,15 @@
     <string name="version_mismatch_update_app">Androidアプリを最新バージョンに更新してください。</string>
     <string name="version_mismatch_update_windows">Windows版KoDriverを最新バージョンに更新してください。</string>
     <string name="version_mismatch_close">閉じる</string>
+    <string name="tts_engine_title">音声読み上げを利用できません</string>
+    <string name="tts_engine_body">この端末に音声合成アプリがありません。インストールすると、KoDriverが音声で案内できるようになります。</string>
+    <string name="tts_engine_action">インストール</string>
+    <string name="tts_language_title">日本語の音声データがありません</string>
+    <string name="tts_language_body">音声合成アプリに日本語の音声データがありません。設定からダウンロードすると、KoDriverが音声で案内できるようになります。</string>
+    <string name="tts_language_action">設定を開く</string>
+    <string name="tts_windows_title">Windowsで日本語音声を利用できません</string>
+    <string name="tts_windows_body">Windowsの日本語音声が見つかりません。音声ページを開き、「音声の追加」から日本語の音声を追加してください。</string>
+    <string name="tts_windows_restart">追加した後は、KoDriverを再起動してください。</string>
+    <string name="tts_windows_action">Windowsの設定を開く</string>
+    <string name="tts_continue">このまま使う</string>
 </resources>

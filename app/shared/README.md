@@ -9,6 +9,7 @@ Android / Desktop / Web の各 `app` から共通利用される、アプリ全�
 - `OtherContent.kt` / `OtherNavigationState.kt`: 「その他」タブの list/detail 画面。`ReadoutContent.kt`（`feature:readout-list`）と同様に `Material3 Adaptive` の `ListDetailPaneScaffold` と Navigation 3 の `NavBackStack` を組み合わせるパターンを使う（詳細は `docs/list-detail-navigation-pattern.md` を参照）。
 - `FeatureModules.kt`: `:feature:*` 各モジュールの Koin モジュールを束ねた `featureModules` リスト。新しい feature モジュールを追加した際はここに追記する。
 - `ConnectionBanner.kt` / `ConnectionBannerContent.kt` / `ConnectionBannerNavigation.kt` / `ConnectionBannerSnackbarMessage.kt`: シミュレーター接続状態を示すバナーの表示・タップ時の遷移先解決・Snackbarメッセージ。
+- `TtsUnavailableDialog.kt`: 起動・復帰時のTTS利用不可案内。「その他」と同じインストール先・設定を開く。設定から戻ると再判定し、「このまま使う」で閉じた場合は次回起動まで再表示しない。
 - `VersionMismatchBottomSheet.kt` / `VersionMismatchBottomSheetContent.kt`: アプリとサーバーのバージョン不一致時に表示するボトムシート。
 - `AppTheme.kt` / `AppThemeMode.kt`: アプリ全体のテーマ（ダイナミックカラー等）適用。プラットフォームごとの実装は `AppTheme.android.kt` 等の expect/actual で分離。
 - `DesktopSplashHost.kt`: デスクトップアプリのスプラッシュ画面ホスト。

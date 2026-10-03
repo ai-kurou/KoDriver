@@ -127,7 +127,10 @@ class OtherListViewModel(
         }.combine(deviceVolumePolling) { state, deviceVolume ->
             state.copy(deviceVolume = deviceVolume)
         }.combine(textToSpeechUnavailableReason) { state, ttsUnavailableReason ->
-            state.copy(items = state.items.withTtsGuidance(ttsUnavailableReason))
+            state.copy(
+                items = state.items.withTtsGuidance(ttsUnavailableReason),
+                ttsUnavailableReason = ttsUnavailableReason,
+            )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun checkUpdate() {
@@ -156,7 +159,8 @@ class OtherListViewModel(
 
     fun checkTextToSpeechAvailability() {
         viewModelScope.launch {
-            textToSpeechUnavailableReason.value = checkTextToSpeechUnavailableReason()
+            val reason = checkTextToSpeechUnavailableReason()
+            textToSpeechUnavailableReason.update { reason }
         }
     }
 
