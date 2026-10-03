@@ -126,6 +126,13 @@ import kotlin.test.assertEquals
 class LmuWindowsNarratorViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
+    /** 判定時に解決済みの文言を持つ状態で TTS エンジンへ渡される残量警告。 */
+    private val resolvedWarning =
+        SpeechEvent.RemainingVirtualEnergyWarning(
+            percentage = 50,
+            resolvedText = SpeechEvent.RemainingVirtualEnergyWarning(50).narratedText,
+        )
+
     private val vehicleApproachRepository: LmuWindowsVehicleApproachRepository = mockk(relaxUnitFun = true)
 
     private val lmuWindowsRepository: LmuWindowsRepository = mockk(relaxUnitFun = true)
@@ -1700,7 +1707,7 @@ class LmuWindowsNarratorViewModelTest {
 
             channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyWarning), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(resolvedWarning), spokenTexts)
         }
 
     @Test
@@ -1719,7 +1726,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
             channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyWarning), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(resolvedWarning), spokenTexts)
         }
 
     @Test
@@ -1741,8 +1748,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.RemainingVirtualEnergyWarning,
-                    SpeechEvent.RemainingVirtualEnergyWarning,
+                    resolvedWarning,
+                    resolvedWarning,
                 ),
                 spokenTexts,
             )

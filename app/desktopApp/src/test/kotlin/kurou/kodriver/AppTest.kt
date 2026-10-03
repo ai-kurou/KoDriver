@@ -127,7 +127,8 @@ class AppTest {
         scrollToItem("バーチャルエナジー残量")
         clickItemAndVerifyDescription(
             "バーチャルエナジー残量",
-            "バーチャルエナジー残量が設定した閾値以下になった場合に音声でお知らせします。",
+            "バーチャルエナジー残量が設定した閾値以下になった場合に音声でお知らせします。\n" +
+                "読み上げる文言は下の欄で設定できます。",
         )
         scrollToItem("タイヤ摩耗")
         clickItemAndVerifyDescription(
