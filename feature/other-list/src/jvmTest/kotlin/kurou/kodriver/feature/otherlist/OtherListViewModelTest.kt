@@ -179,6 +179,7 @@ class OtherListViewModelTest {
             assertEquals("Windows版KoDriverバージョン", viewModel.uiState.first().appVersionLabel)
             assertEquals("0.5.0", viewModel.uiState.first().appVersion)
             assertNull(viewModel.uiState.first().selectedItem)
+            assertNull(viewModel.uiState.first().ttsUnavailableGuidance)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
@@ -977,7 +978,9 @@ class OtherListViewModelTest {
 
             viewModel.checkTextToSpeechAvailability()
 
-            val items = viewModel.uiState.first().items
+            val state = viewModel.uiState.first()
+            assertEquals(null, state.ttsUnavailableGuidance)
+            val items = state.items
             assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
             assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
             assertFalse(items.contains(OtherListItemType.WindowsSpeechUnavailable))
@@ -1014,11 +1017,93 @@ class OtherListViewModelTest {
 
             viewModel.checkTextToSpeechAvailability()
 
-            val items = viewModel.uiState.first().items
+            val state = viewModel.uiState.first()
+            assertEquals(TtsUnavailableGuidance.WindowsSpeechUnavailable, state.ttsUnavailableGuidance)
+            val items = state.items
             assertTrue(items.contains(OtherListItemType.WindowsSpeechUnavailable))
             assertEquals(items.sortedBy { it.ordinal }, items)
             assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
             assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
+            coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                overlayVisibleRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+                textToSpeechRepository,
+            )
+        }
+
+    @Test
+    fun `checkTextToSpeechAvailabilityでEngineMissingをUiStateに公開する`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            coEvery { textToSpeechRepository.unavailableReason() } returns
+                TextToSpeechUnavailableReason.EngineMissing
+            val viewModel = createViewModel()
+
+            viewModel.checkTextToSpeechAvailability()
+
+            val state = viewModel.uiState.first()
+            assertEquals(TtsUnavailableGuidance.EngineMissing, state.ttsUnavailableGuidance)
+            val items = state.items
+            assertTrue(items.contains(OtherListItemType.TtsEngineMissing))
+            assertEquals(items.sortedBy { it.ordinal }, items)
+            assertFalse(items.contains(OtherListItemType.WindowsSpeechUnavailable))
+            assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
+            coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            verify(exactly = 1) { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() }
+            verify(exactly = 1) { overlayVisibleRepository.observeOverlayVisible() }
+            verify(exactly = 1) { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() }
+            confirmVerified(
+                appUpdateRepository,
+                overlayVisibleRepository,
+                keepScreenOnRepository,
+                dynamicColorRepository,
+                hapticFeedbackEnabledRepository,
+                hapticFeedbackAvailabilityRepository,
+                textToSpeechRepository,
+            )
+        }
+
+    @Test
+    fun `checkTextToSpeechAvailabilityでLanguageDataMissingをUiStateに公開する`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            coEvery { textToSpeechRepository.unavailableReason() } returns
+                TextToSpeechUnavailableReason.LanguageDataMissing
+            val viewModel = createViewModel()
+
+            viewModel.checkTextToSpeechAvailability()
+
+            val state = viewModel.uiState.first()
+            assertEquals(TtsUnavailableGuidance.LanguageDataMissing, state.ttsUnavailableGuidance)
+            val items = state.items
+            assertTrue(items.contains(OtherListItemType.TtsLanguageDataMissing))
+            assertEquals(items.sortedBy { it.ordinal }, items)
+            assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
+            assertFalse(items.contains(OtherListItemType.WindowsSpeechUnavailable))
             coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }

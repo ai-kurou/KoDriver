@@ -117,6 +117,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         jvmTest.dependencies {
+            implementation(libs.mockk)
             implementation(libs.compose.uiTest)
             implementation(libs.compose.uiTestJunit4)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))

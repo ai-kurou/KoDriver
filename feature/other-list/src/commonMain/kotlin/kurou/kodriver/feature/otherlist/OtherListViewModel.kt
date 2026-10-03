@@ -127,7 +127,10 @@ class OtherListViewModel(
         }.combine(deviceVolumePolling) { state, deviceVolume ->
             state.copy(deviceVolume = deviceVolume)
         }.combine(textToSpeechUnavailableReason) { state, ttsUnavailableReason ->
-            state.copy(items = state.items.withTtsGuidance(ttsUnavailableReason))
+            state.copy(
+                items = state.items.withTtsGuidance(ttsUnavailableReason),
+                ttsUnavailableGuidance = ttsUnavailableReason?.toGuidance(),
+            )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun checkUpdate() {
@@ -156,7 +159,8 @@ class OtherListViewModel(
 
     fun checkTextToSpeechAvailability() {
         viewModelScope.launch {
-            textToSpeechUnavailableReason.value = checkTextToSpeechUnavailableReason()
+            val reason = checkTextToSpeechUnavailableReason()
+            textToSpeechUnavailableReason.update { reason }
         }
     }
 
@@ -242,3 +246,10 @@ private fun List<OtherListItemType>.withTtsGuidance(reason: TextToSpeechUnavaila
         } + listOfNotNull(guidance)
     ).sortedBy { it.ordinal }
 }
+
+private fun TextToSpeechUnavailableReason.toGuidance(): TtsUnavailableGuidance =
+    when (this) {
+        TextToSpeechUnavailableReason.EngineMissing -> TtsUnavailableGuidance.EngineMissing
+        TextToSpeechUnavailableReason.LanguageDataMissing -> TtsUnavailableGuidance.LanguageDataMissing
+        TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> TtsUnavailableGuidance.WindowsSpeechUnavailable
+    }

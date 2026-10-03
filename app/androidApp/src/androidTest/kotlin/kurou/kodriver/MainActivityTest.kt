@@ -286,6 +286,14 @@ class MainActivityTest {
     private fun launchActivity() {
         scenario = ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitForIdle()
+        val title =
+            when (fakeTextToSpeechRepository.unavailableReason) {
+                TextToSpeechUnavailableReason.EngineMissing -> "音声読み上げを利用できません"
+                TextToSpeechUnavailableReason.LanguageDataMissing -> "日本語の音声データがありません"
+                TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> "Windowsで日本語音声を利用できません"
+            }
+        waitUntilDisplayed(title)
+        clickItem("このまま使う")
     }
 
     private fun selectSimulator(simulatorName: String) {

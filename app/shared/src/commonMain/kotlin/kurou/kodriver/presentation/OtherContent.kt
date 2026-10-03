@@ -37,7 +37,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val GITHUB_REPOSITORY_URL = "https://github.com/ai-kurou/KoDriver"
 private const val RELEASE_PAGE_URL = "$GITHUB_REPOSITORY_URL/releases"
-private const val TTS_ENGINE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.google.android.tts"
+internal const val TTS_ENGINE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.google.android.tts"
 
 /**
  * Other のコンテンツを表示する Composable。
@@ -66,7 +66,6 @@ fun OtherContent(
 
     LifecycleResumeEffect(Unit) {
         viewModel.checkAccessLocalNetworkPermission()
-        viewModel.checkTextToSpeechAvailability()
         onPauseOrDispose {}
     }
 

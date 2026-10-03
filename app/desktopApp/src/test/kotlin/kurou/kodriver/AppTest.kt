@@ -398,6 +398,9 @@ class AppTest {
                 AppScreen()
             }
         }
+        waitUntilDisplayed("Windowsで日本語音声を利用できません")
+        clickItem("このまま使う")
+        waitUntilNotDisplayed("このまま使う")
     }
 
     private fun waitUntilDisplayed(text: String) {

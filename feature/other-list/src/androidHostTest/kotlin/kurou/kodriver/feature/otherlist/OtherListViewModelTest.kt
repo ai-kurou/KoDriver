@@ -280,7 +280,9 @@ class OtherListViewModelTest {
 
             viewModel.checkTextToSpeechAvailability()
 
-            val items = viewModel.uiState.first().items
+            val state = viewModel.uiState.first()
+            assertEquals(TtsUnavailableGuidance.EngineMissing, state.ttsUnavailableGuidance)
+            val items = state.items
             assertTrue(items.contains(OtherListItemType.TtsEngineMissing))
             assertEquals(items.sortedBy { it.ordinal }, items)
             assertFalse(items.contains(OtherListItemType.TtsLanguageDataMissing))
@@ -318,7 +320,9 @@ class OtherListViewModelTest {
 
             viewModel.checkTextToSpeechAvailability()
 
-            val items = viewModel.uiState.first().items
+            val state = viewModel.uiState.first()
+            assertEquals(TtsUnavailableGuidance.LanguageDataMissing, state.ttsUnavailableGuidance)
+            val items = state.items
             assertFalse(items.contains(OtherListItemType.TtsEngineMissing))
             assertTrue(items.contains(OtherListItemType.TtsLanguageDataMissing))
             coVerify(exactly = 1) { textToSpeechRepository.unavailableReason() }
