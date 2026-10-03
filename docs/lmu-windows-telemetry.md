@@ -575,6 +575,7 @@ n 台目の車両先頭（`vehicleBase`）= `128464 + 4 + n × 1888`。
 | ピットレーン走行中 | `mInPits` | scoringVehicleBase+198 |
 | 車両クラス名 | `mVehicleClass[32]` | scoringVehicleBase+200 |
 | ピット状態 | `mPitState` | scoringVehicleBase+457 |
+| ガレージストール内 | `mInGarageStall` | scoringVehicleBase+507 |
 | ブレーキ温度 | `mBrakeTemp` | wheelBase+24 |
 | タイヤ空気圧 | `mPressure` | wheelBase+120 |
 | タイヤ表面温度（中央） | `mTemperature[1]` | wheelBase+136 |
