@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
@@ -19,6 +20,7 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
                 enabledStates = emptyMap(),
                 lowWarningPhases = emptyMap(),
                 overheatReadoutText = LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                coldReadoutText = LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT,
             ),
             LmuWindowsTyreTemperaturePreferencesSerializer.defaultValue,
         )
@@ -33,6 +35,7 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
                     enabledStates = mapOf("lmu_windows_tyre_temperature_overheat_warning" to false),
                     lowWarningPhases = mapOf(5 to true),
                     overheatReadoutText = "タイヤが過熱しています",
+                    coldReadoutText = "タイヤが冷えています",
                 )
             val output = ByteArrayOutputStream()
             LmuWindowsTyreTemperaturePreferencesSerializer.writeTo(original, output)
@@ -67,6 +70,7 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
             assertEquals(emptyMap(), restored.enabledStates)
             assertEquals(emptyMap(), restored.lowWarningPhases)
             assertEquals(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, restored.overheatReadoutText)
+            assertEquals(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT, restored.coldReadoutText)
         }
 
     @Test
@@ -82,5 +86,43 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
                     ByteArrayInputStream(output.toByteArray()),
                 ),
             )
+        }
+
+    @Test
+    fun `保存した空欄の低温警告文言は読み出しても既定値に戻らない`() =
+        runTest {
+            val original =
+                LmuWindowsTyreTemperaturePreferences(
+                    highThresholdCelsius = 110,
+                    enabledStates = mapOf("lmu_windows_tyre_temperature_overheat_warning" to false),
+                    lowWarningPhases = mapOf(5 to true),
+                    overheatReadoutText = "タイヤが過熱しています",
+                    coldReadoutText = "",
+                )
+            val output = ByteArrayOutputStream()
+            LmuWindowsTyreTemperaturePreferencesSerializer.writeTo(original, output)
+
+            assertEquals(
+                original,
+                LmuWindowsTyreTemperaturePreferencesSerializer.readFrom(
+                    ByteArrayInputStream(output.toByteArray()),
+                ),
+            )
+        }
+
+    @Test
+    fun `文言フィールド5がない過熱警告文言付き旧データは低温警告の既定文言を使用する`() =
+        runTest {
+            val overheatText = "タイヤが過熱しています".encodeToByteArray()
+            val restored =
+                LmuWindowsTyreTemperaturePreferencesSerializer.readFrom(
+                    ByteArrayInputStream(byteArrayOf(0x08, 0x6E, 0x22, overheatText.size.toByte()) + overheatText),
+                )
+
+            assertEquals(110, restored.highThresholdCelsius)
+            assertEquals(emptyMap(), restored.enabledStates)
+            assertEquals(emptyMap(), restored.lowWarningPhases)
+            assertEquals("タイヤが過熱しています", restored.overheatReadoutText)
+            assertEquals(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT, restored.coldReadoutText)
         }
 }
