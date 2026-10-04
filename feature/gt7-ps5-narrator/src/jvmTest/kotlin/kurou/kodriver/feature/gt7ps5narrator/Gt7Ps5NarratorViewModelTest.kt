@@ -60,6 +60,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class Gt7Ps5NarratorViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -99,6 +100,7 @@ class Gt7Ps5NarratorViewModelTest {
         telemetryChannel: Channel<Gt7Ps5TelemetryData>,
         ttsEngine: TextToSpeechEngine,
         currentTimeMs: () -> Long = { 0L },
+        readoutText: suspend (SpeechEvent) -> String? = { it.narratedText },
     ): Gt7Ps5NarratorViewModel {
         every { telemetryRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
         return Gt7Ps5NarratorViewModel(
@@ -140,7 +142,7 @@ class Gt7Ps5NarratorViewModelTest {
                 Gt7Ps5NarratorEventProcessor(
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-                    readoutText = { it.narratedText },
+                    readoutText = readoutText,
                 ),
             currentTimeMs = currentTimeMs,
         )
@@ -468,7 +470,7 @@ class Gt7Ps5NarratorViewModelTest {
                 ),
             )
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat(95, "タイヤ過熱 95度")), spokenTexts)
         }
 
     @Test
@@ -561,7 +563,7 @@ class Gt7Ps5NarratorViewModelTest {
                     123_456L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
-                    "タイヤ過熱警告",
+                    "タイヤ過熱 95度",
                     any(),
                     capture(telemetryJsons),
                 )
@@ -591,7 +593,7 @@ class Gt7Ps5NarratorViewModelTest {
                 ),
             )
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat(95, "タイヤ過熱 95度")), spokenTexts)
             assertEquals(1, telemetryJsons.size)
             assertEquals(true, telemetryJsons.single().contains("tyreOverheating=false"))
             assertEquals(true, telemetryJsons.single().contains("tyreOverheating=true"))
@@ -600,7 +602,7 @@ class Gt7Ps5NarratorViewModelTest {
                     123_456L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
-                    "タイヤ過熱警告",
+                    "タイヤ過熱 95度",
                     any(),
                     telemetryJsons.single(),
                 )
@@ -936,7 +938,7 @@ class Gt7Ps5NarratorViewModelTest {
                 any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
-                "タイヤ過熱警告",
+                "タイヤ過熱 95度",
                 any(),
                 capture(telemetryJsons),
             )
@@ -969,6 +971,111 @@ class Gt7Ps5NarratorViewModelTest {
     private interface PriorityAwareTts : TextToSpeechEngine {
         val stopCalled: Boolean
     }
+
+    @Test
+    fun `タイヤ過熱は最高温度と解決文言をイベントとログに渡す`() =
+        runTest(testDispatcher) {
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val key = ReadoutItemKey.Gt7Ps5.TyreTemperature.Root
+            val jsons = mutableListOf<String>()
+            val event = SpeechEvent.Gt7Ps5TyreOverheat(108, "温度108度")
+            stubReadoutDefaults(orderOverride = listOf(key))
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "温度108度",
+                    any(),
+                    capture(jsons),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            createViewModel(channel, ttsEngine, currentTimeMs = { 10L }, readoutText = {
+                resolvedEvents += it
+                "温度108度"
+            })
+            channel.send(gt7Telemetry(bestLapTimeMs = 30_000))
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(0f),
+                            CelsiusReading(95f),
+                            CelsiusReading(107.5f),
+                            CelsiusReading(98f),
+                        ),
+                ),
+            )
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat(108)), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(event, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "温度108度",
+                    any(),
+                    jsons.single(),
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `タイヤ過熱の文言を取得できなければ発話せずSKIPPEDを記録する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val key = ReadoutItemKey.Gt7Ps5.TyreTemperature.Root
+            val jsons = mutableListOf<String>()
+            val event = SpeechEvent.Gt7Ps5TyreOverheat(108, null)
+            stubReadoutDefaults(orderOverride = listOf(key))
+
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(jsons),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            createViewModel(channel, ttsEngine, currentTimeMs = { 10L }, readoutText = {
+                resolvedEvents += it
+                null
+            })
+            channel.send(gt7Telemetry(bestLapTimeMs = 30_000))
+            channel.send(
+                gt7Telemetry(
+                    tyreTemperature =
+                        Gt7Ps5TyreTemperatureData(
+                            CelsiusReading(0f),
+                            CelsiusReading(95f),
+                            CelsiusReading(107.5f),
+                            CelsiusReading(98f),
+                        ),
+                ),
+            )
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat(108)), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    jsons.single(),
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
 }
 
 private fun gt7Telemetry(bestLapTimeMs: Int) =

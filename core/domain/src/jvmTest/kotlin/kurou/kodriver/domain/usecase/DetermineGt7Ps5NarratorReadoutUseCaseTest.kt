@@ -900,7 +900,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat), decision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat(95)), decision.events)
         assertEquals(true, decision.state.tyreOverheating)
     }
 
@@ -1015,7 +1015,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, cooledState.tyreOverheating)
-        assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat), decision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat(95)), decision.events)
     }
 
     @Test
@@ -1122,4 +1122,23 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         gasCapacity = Gt7Ps5FuelUnit(gasCapacity),
         tyreTemperature = tyreTemperature,
     )
+
+    @Test
+    fun `全輪の最高温度を整数に丸めて過熱イベントに渡す`() {
+        for ((temperature, rounded) in listOf(95.4f to 95, 107.5f to 108)) {
+            for (hotWheel in 0..3) {
+                val wheels = List(4) { CelsiusReading(if (it == hotWheel) temperature else 0f) }
+                val decision =
+                    useCase.determineTyreTemperature(
+                        state = Gt7Ps5NarratorState(),
+                        telemetry =
+                            telemetry(
+                                tyreTemperature = Gt7Ps5TyreTemperatureData(wheels[0], wheels[1], wheels[2], wheels[3]),
+                            ),
+                        settings = settings(),
+                    )
+                assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat(rounded)), decision.events)
+            }
+        }
+    }
 }

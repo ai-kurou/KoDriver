@@ -15,4 +15,8 @@ interface Gt7Ps5TyreTemperaturePreferencesRepository {
         key: ReadoutItemKey,
         enabled: Boolean,
     )
+
+    fun observeOverheatReadoutText(): Flow<String>
+
+    suspend fun saveOverheatReadoutText(text: String)
 }
