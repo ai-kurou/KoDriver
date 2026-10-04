@@ -24,6 +24,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneScreenshotTest {
                             LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
                                 uiState =
                                     LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
                                         vehicleClassHighThresholdCelsius =
                                             lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
                                                 lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(
@@ -47,6 +48,27 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             BrakeTemperatureThresholdHelpSheetContent()
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                                        readoutText = "ブレーキ温度{celsius}℃以上です",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
                         }
                     }
                 }

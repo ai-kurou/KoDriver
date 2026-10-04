@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFA
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
@@ -22,6 +23,7 @@ import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5TyreTemperatureReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
@@ -153,9 +155,20 @@ sealed interface SpeechEvent {
             )
     }
 
-    data object BrakeOverheat : SpeechEvent {
+    /**
+     * ブレーキ過熱警告。[celsius] は実測ではなく設定した閾値（℃）。
+     * [resolvedText] は判定時に解決済みの文言。キュー待機中もログと発話を一致させる。
+     */
+    data class BrakeOverheat(
+        val celsius: Int,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root
-        override val narratedText = "ブレーキ過熱警告"
+        override val narratedText =
+            formatLmuWindowsBrakeTemperatureReadoutText(
+                LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT,
+                celsius,
+            )
     }
 
     /**

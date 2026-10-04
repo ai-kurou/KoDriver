@@ -1,9 +1,13 @@
 package kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail
 
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
@@ -18,8 +22,9 @@ import org.koin.dsl.module
  * 提供: LmuWindowsReadoutBrakeTemperatureDetailViewModel、この feature 内で定義した
  *   UseCase 集約 data class（BrakeTemperatureUseCases）、それが束ねる各ドメイン UseCase。
  * 消費（get で解決）: LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository・
- *   ReadoutPreferencesRepository（:core:data）、試聴用の named(Simulator.LmuWindows.id) の
- *   TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
+ *   ReadoutPreferencesRepository・TextToSpeechRepository・SoundVolumePreferencesRepository（:core:data）、
+ *   試聴用の named(Simulator.LmuWindows.id) の
+ *   PlaySpeechEventUseCase（:feature:lmu-windows-narrator で登録）。
  */
 val lmuWindowsReadoutBrakeTemperatureDetailModule =
     module {
@@ -28,14 +33,21 @@ val lmuWindowsReadoutBrakeTemperatureDetailModule =
                 get(),
                 get(),
                 get(),
-                get(named(Simulator.LmuWindows.id)),
+                get(),
             )
         }
 
         factory {
-            BrakeTemperatureUseCases(get(), get(), get(), get())
+            BrakeTemperatureUseCases(get(), get(), get(), get(), get(), get())
         }
 
+        factory {
+            BrakeTemperatureReadoutUseCases(get(named(Simulator.LmuWindows.id)), get(), get())
+        }
+        factoryOf(::ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase)
+        factoryOf(::SaveLmuWindowsBrakeTemperatureReadoutTextUseCase)
+        factoryOf(::CheckTextToSpeechAvailableUseCase)
+        factoryOf(::ObserveSoundVolumeUseCase)
         factoryOf(::ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase)
         factoryOf(::ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase)
         factoryOf(::SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase)

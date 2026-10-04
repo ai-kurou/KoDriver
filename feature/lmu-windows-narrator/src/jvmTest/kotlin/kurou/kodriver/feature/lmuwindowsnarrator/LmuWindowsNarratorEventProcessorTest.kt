@@ -26,6 +26,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -58,6 +59,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
@@ -101,6 +103,7 @@ class LmuWindowsNarratorEventProcessorTest {
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
+    private val observeBrakeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase = mockk()
     private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase = mockk()
@@ -121,6 +124,7 @@ class LmuWindowsNarratorEventProcessorTest {
             observePitTimingTyreWearReadoutText,
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
+            observeBrakeText,
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
@@ -290,6 +294,75 @@ class LmuWindowsNarratorEventProcessorTest {
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
                     narratedText = "閾値50%です",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = telemetryJson,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `読み上げたブレーキ温度イベントを直前と現在のブレーキ温度データとともに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every {
+                ttsEngine.speak(SpeechEvent.BrakeOverheat(700, resolvedText = "閾値700℃です"), queue = false)
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    narratedText = "閾値700℃です",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor { "閾値700℃です" }
+
+            processor.processBrakeTemperature(
+                brakeTemperature = brakeTemperature(frontLeft = 600.0),
+                events = emptyList(),
+                readoutOrder = emptyList(),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+                logContext = logContext(),
+            )
+            processor.processBrakeTemperature(
+                brakeTemperature = brakeTemperature(frontLeft = 950.0),
+                events = listOf(SpeechEvent.BrakeOverheat(700)),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            val telemetryJson = telemetryJsonSlot.captured
+            val root = Json.parseToJsonElement(telemetryJson).jsonObject
+            assertWheelValues(
+                root["previousBrakeTemperature"]!!.jsonObject["wheels"]!!.jsonObject,
+                frontLeft = 600.0,
+                frontRight = 600.0,
+                rearLeft = 600.0,
+                rearRight = 600.0,
+            )
+            assertWheelValues(
+                root["brakeTemperature"]!!.jsonObject["wheels"]!!.jsonObject,
+                frontLeft = 950.0,
+                frontRight = 600.0,
+                rearLeft = 600.0,
+                rearRight = 600.0,
+            )
+            assertContains(telemetryJson, """"observedAtMs":200""")
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BrakeOverheat(700, resolvedText = "閾値700℃です"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    narratedText = "閾値700℃です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
                 )
@@ -1443,6 +1516,42 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `ブレーキ過熱警告の文言がnullなら読み上げず空文言でSKIPPEDを保存する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { null }.processBrakeTemperature(
+                brakeTemperature = brakeTemperature(frontLeft = 950.0),
+                events = listOf(SpeechEvent.BrakeOverheat(700)),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.BrakeOverheat(700), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `過熱警告は自由文言を読み上げてログに保存する`() =
         runTest {
             val telemetryJsonSlot = slot<String>()
@@ -1978,5 +2087,16 @@ private fun fakeTelemetryData() =
                 positionX = 0.0,
                 positionY = 0.0,
                 positionZ = 0.0,
+            ),
+    )
+
+private fun brakeTemperature(frontLeft: Double) =
+    LmuWindowsBrakeTemperatureData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to CelsiusReading(frontLeft.toFloat()),
+                WheelIndex.FRONT_RIGHT to CelsiusReading(600f),
+                WheelIndex.REAR_LEFT to CelsiusReading(600f),
+                WheelIndex.REAR_RIGHT to CelsiusReading(600f),
             ),
     )
