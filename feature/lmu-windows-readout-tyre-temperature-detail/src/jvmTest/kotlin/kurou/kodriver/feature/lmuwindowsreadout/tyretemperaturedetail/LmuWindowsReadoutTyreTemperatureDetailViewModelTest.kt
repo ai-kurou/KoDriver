@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -23,6 +24,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -415,23 +417,76 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `代表温度を置換して未知のトークンを維持し開始音の後に試聴する`() =
+    fun `選択中クラスの設定温度を置換して未知のトークンを維持し開始音の後に試聴する`() =
         runTest {
             stubSettings()
+            val thresholds = MutableStateFlow<Map<LmuWindowsVehicleClassData, Celsius>>(emptyMap())
+            every { vehicleClassRepository.observeHighThresholdCelsius() } returns thresholds
+            coEvery {
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, Celsius(107))
+            } answers { thresholds.update { mapOf(LmuWindowsVehicleClassData.Gt3 to Celsius(107)) } }
+            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
+                MutableStateFlow(LmuWindowsVehicleClassData.Gt3)
             stubReadout(available = true)
             every { observeVolume() } returns flowOf(60)
             coEvery { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) } returns Unit
-            coEvery { speakText("注意100℃{unknown}", volume = 60) } returns Unit
+            coEvery { speakText("注意107℃{unknown}", volume = 60) } returns Unit
             val viewModel = createViewModel()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+            viewModel.onVehicleClassHighThresholdChanged(LmuWindowsVehicleClassData.Gt3, 107)
+            assertEquals(LmuWindowsVehicleClassData.Gt3, viewModel.uiState.first().selectedVehicleClass)
+            assertEquals(Celsius(107), viewModel.uiState.first().selectedVehicleClassHighThresholdCelsius)
             viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}")
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
-            coVerify(exactly = 1) { speakText("注意100℃{unknown}", volume = 60) }
+            coVerify(exactly = 1) { speakText("注意107℃{unknown}", volume = 60) }
             coVerifyOrder {
                 playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
-                speakText("注意100℃{unknown}", volume = 60)
+                speakText("注意107℃{unknown}", volume = 60)
             }
-            confirmVerified(observeVolume, playStartSound, speakText)
+            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            coVerify(exactly = 1) {
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, Celsius(107))
+            }
+            confirmVerified(vehicleClassRepository, observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `閾値マップが空なら全クラスの選択を反映して既定閾値で試聴する`() =
+        runTest {
+            stubSettings()
+            val selectedClass = MutableStateFlow<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Hypercar)
+            every { vehicleClassRepository.observeSelectedVehicleClass() } returns selectedClass
+            stubReadout(available = true)
+            every { observeVolume() } returns flowOf(60)
+            coEvery { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) } returns Unit
+            val viewModel = createViewModel()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+            tyreTemperatureVehicleClasses.forEach { vehicleClass ->
+                coEvery { vehicleClassRepository.saveSelectedVehicleClass(vehicleClass) } answers {
+                    selectedClass.update { vehicleClass }
+                }
+                val threshold = lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClass)
+                val expectedText = "${vehicleClass.name}注意${threshold.value}℃"
+                coEvery { speakText(expectedText, volume = 60) } returns Unit
+
+                viewModel.onVehicleClassSelected(vehicleClass)
+                assertEquals(vehicleClass, viewModel.uiState.first().selectedVehicleClass)
+                assertEquals(emptyMap(), viewModel.uiState.first().vehicleClassHighThresholdCelsius)
+                assertEquals(threshold, viewModel.uiState.first().selectedVehicleClassHighThresholdCelsius)
+                viewModel.onOverheatReadoutTextPreviewClicked("${vehicleClass.name}注意{celsius}℃")
+
+                coVerify(exactly = 1) { vehicleClassRepository.saveSelectedVehicleClass(vehicleClass) }
+                coVerify(exactly = 1) { speakText(expectedText, volume = 60) }
+            }
+            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            verify(exactly = tyreTemperatureVehicleClasses.size) { observeVolume() }
+            coVerify(exactly = tyreTemperatureVehicleClasses.size) {
+                playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            }
+            confirmVerified(vehicleClassRepository, observeVolume, playStartSound, speakText)
         }
 
     @Test

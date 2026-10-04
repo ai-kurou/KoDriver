@@ -104,7 +104,8 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
 
     /** 空白文言・TTS利用不可・音量ゼロでは再生しない。 */
     fun onOverheatReadoutTextPreviewClicked(text: String) {
-        previewReadoutText(formatLmuWindowsTyreTemperatureReadoutText(text, OVERHEAT_PREVIEW_CELSIUS))
+        val celsius = uiState.value.selectedVehicleClassHighThresholdCelsius.value
+        previewReadoutText(formatLmuWindowsTyreTemperatureReadoutText(text, celsius))
     }
 
     private fun previewReadoutText(text: String) {
@@ -160,9 +161,6 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
         viewModelScope.launch { tyreTemperatureUseCases.saveVehicleClassSelection(vehicleClass) }
     }
 }
-
-/** 過熱文言の試聴専用の代表温度。実際の警告判定には使用しない。 */
-private const val OVERHEAT_PREVIEW_CELSIUS = 100
 
 /** 低温文言の試聴専用の代表温度。実際の警告判定には使用しない。 */
 private const val COLD_PREVIEW_CELSIUS = 60
