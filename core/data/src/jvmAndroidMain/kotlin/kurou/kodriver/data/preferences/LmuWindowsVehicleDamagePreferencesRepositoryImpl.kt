@@ -26,4 +26,24 @@ internal class LmuWindowsVehicleDamagePreferencesRepositoryImpl(
             )
         }
     }
+
+    override fun observeOverheatReadoutText(): Flow<String> = dataStore.observeProperty { it.overheatReadoutText }
+
+    override suspend fun saveOverheatReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(overheatReadoutText = value) }
+    }
+
+    override fun observePartDetachedReadoutText(): Flow<String> =
+        dataStore.observeProperty { it.partDetachedReadoutText }
+
+    override suspend fun savePartDetachedReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(partDetachedReadoutText = value) }
+    }
+
+    override fun observeTyreDetachedReadoutText(): Flow<String> =
+        dataStore.observeProperty { it.tyreDetachedReadoutText }
+
+    override suspend fun saveTyreDetachedReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(tyreDetachedReadoutText = value) }
+    }
 }

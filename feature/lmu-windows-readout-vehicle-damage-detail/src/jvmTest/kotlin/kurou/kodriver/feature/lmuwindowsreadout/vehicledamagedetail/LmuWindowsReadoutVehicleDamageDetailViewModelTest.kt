@@ -16,34 +16,40 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
-    private val testDispatcher = UnconfinedTestDispatcher()
-
+    private val dispatcher = UnconfinedTestDispatcher()
     private val repository: LmuWindowsVehicleDamagePreferencesRepository = mockk()
-
-    private val overheatRepository: LmuWindowsOverheatPreferencesRepository = mockk()
-
-    private val ttsEngine: TextToSpeechEngine = mockk()
+    private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
+    private val observeVolume: ObserveSoundVolumeUseCase = mockk()
+    private val playSpeechEvent: PlaySpeechEventUseCase = mockk()
+    private val enabledStates = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+    private val overheatText = MutableStateFlow("オーバーヒート")
+    private val partDetachedText = MutableStateFlow("部品脱落")
+    private val tyreDetachedText = MutableStateFlow("タイヤ脱落")
 
     @BeforeTest
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
+        Dispatchers.setMain(dispatcher)
     }
 
     @AfterTest
@@ -53,245 +59,277 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutVehicleDamageDetailViewModel(
-            vehicleDamageUseCases =
-                VehicleDamageUseCases(
-                    observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repository),
-                    observeOverheatVoiceType = ObserveLmuWindowsOverheatVoiceTypeUseCase(overheatRepository),
-                    saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository),
-                    saveOverheatVoiceType = SaveLmuWindowsOverheatVoiceTypeUseCase(overheatRepository),
-                ),
-            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+            VehicleDamageUseCases(
+                observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repository),
+                saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository),
+                observeOverheatReadoutText = ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase(repository),
+                saveOverheatReadoutText = SaveLmuWindowsVehicleDamageOverheatReadoutTextUseCase(repository),
+                observePartDetachedReadoutText =
+                    ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase(
+                        repository,
+                    ),
+                savePartDetachedReadoutText = SaveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase(repository),
+                observeTyreDetachedReadoutText =
+                    ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase(
+                        repository,
+                    ),
+                saveTyreDetachedReadoutText = SaveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase(repository),
+            ),
+            VehicleDamageReadoutUseCases(playSpeechEvent, checkAvailable, observeVolume),
         )
 
+    private fun stubSettings(available: Boolean = true) {
+        every { repository.observeEnabledStates() } returns enabledStates
+        every { repository.observeOverheatReadoutText() } returns overheatText
+        every { repository.observePartDetachedReadoutText() } returns partDetachedText
+        every { repository.observeTyreDetachedReadoutText() } returns tyreDetachedText
+        coEvery { checkAvailable() } returns available
+    }
+
+    private fun verifySettings() {
+        verify(exactly = 1) { repository.observeEnabledStates() }
+        verify(exactly = 1) { repository.observeOverheatReadoutText() }
+        verify(exactly = 1) { repository.observePartDetachedReadoutText() }
+        verify(exactly = 1) { repository.observeTyreDetachedReadoutText() }
+        coVerify(exactly = 1) { checkAvailable() }
+    }
+
     @Test
-    fun `初期状態はリポジトリが空のとき overheatEnabled がデフォルト値 true の UiState を返す`() =
+    fun `初期状態と保存済みの文言および有効状態を反映する`() =
         runTest {
-            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
+            stubSettings()
             val viewModel = createViewModel()
-
-            assertEquals(LmuWindowsReadoutVehicleDamageDetailUiState(overheatEnabled = true), viewModel.uiState.first())
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { overheatRepository.observeVoiceType() }
-            confirmVerified(repository, overheatRepository)
-        }
-
-    @Test
-    fun `リポジトリに overheat=false が保存済みのとき overheatEnabled が false の UiState を返す`() =
-        runTest {
-            every { repository.observeEnabledStates() } returns
-                MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false))
-            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
-            val viewModel = createViewModel()
-
             assertEquals(
-                LmuWindowsReadoutVehicleDamageDetailUiState(overheatEnabled = false),
+                LmuWindowsReadoutVehicleDamageDetailUiState(isTextToSpeechAvailable = true),
                 viewModel.uiState.first(),
             )
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { overheatRepository.observeVoiceType() }
-            confirmVerified(repository, overheatRepository)
+            enabledStates.update {
+                mapOf(
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false,
+                )
+            }
+            overheatText.update { "エンジン" }
+            partDetachedText.update { "パーツ" }
+            tyreDetachedText.update { "ホイール" }
+            assertEquals(
+                LmuWindowsReadoutVehicleDamageDetailUiState(
+                    overheatEnabled = false,
+                    partDetachedEnabled = false,
+                    tyreDetachedEnabled = false,
+                    overheatReadoutText = "エンジン",
+                    partDetachedReadoutText = "パーツ",
+                    tyreDetachedReadoutText = "ホイール",
+                    isTextToSpeechAvailable = true,
+                ),
+                viewModel.uiState.first(),
+            )
+            verifySettings()
+            confirmVerified(repository, checkAvailable)
         }
 
     @Test
-    fun `onOverheatEnabledChanged を呼ぶと UiState の overheatEnabled が更新される`() =
+    fun `オーバーヒートスイッチを保存する`() =
         runTest {
-            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-            every { repository.observeEnabledStates() } returns enabledStatesFlow
-            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
-            coEvery {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
-            } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false) }
+            stubSettings()
+            coEvery { repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false) } answers {
+                enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false) }
             }
             val viewModel = createViewModel()
-
             viewModel.onOverheatEnabledChanged(false)
-
             assertEquals(false, viewModel.uiState.first().overheatEnabled)
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { overheatRepository.observeVoiceType() }
+            verifySettings()
             coVerify(exactly = 1) {
                 repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
             }
-            confirmVerified(repository, overheatRepository)
+            confirmVerified(repository, checkAvailable)
         }
 
     @Test
-    fun `リポジトリに STANDARD が保存済みのとき overheatVoiceType が STANDARD の UiState を返す`() =
+    fun `オーバーヒート文言は正規化して保存し反映する`() =
         runTest {
-            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.STANDARD)
+            stubSettings()
+            coEvery { repository.saveOverheatReadoutText("自由文言") } answers { overheatText.update { "自由文言" } }
             val viewModel = createViewModel()
-
-            assertEquals(
-                LmuWindowsReadoutVehicleDamageDetailUiState(overheatVoiceType = OverheatVoiceType.STANDARD),
-                viewModel.uiState.first(),
-            )
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { overheatRepository.observeVoiceType() }
-            confirmVerified(repository, overheatRepository)
+            viewModel.onOverheatReadoutTextChanged(" 自由文言 ")
+            assertEquals("自由文言", viewModel.uiState.first().overheatReadoutText)
+            verifySettings()
+            coVerify(exactly = 1) { repository.saveOverheatReadoutText("自由文言") }
+            confirmVerified(repository, checkAvailable)
         }
 
     @Test
-    fun `onOverheatVoiceTypeChanged を呼ぶと UiState の overheatVoiceType が更新される`() =
+    fun `オーバーヒート試聴はスイッチOFFでも入力中の文言を解決済みイベントで再生する`() =
         runTest {
-            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-            val voiceTypeFlow = MutableStateFlow(OverheatVoiceType.GP2_GP2)
-            every { overheatRepository.observeVoiceType() } returns voiceTypeFlow
-            coEvery { overheatRepository.saveVoiceType(OverheatVoiceType.STANDARD) } answers {
-                voiceTypeFlow.update { OverheatVoiceType.STANDARD }
-            }
+            stubSettings()
+            enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false) }
+            every { observeVolume() } returns MutableStateFlow(40)
+            every { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "編集中")) } returns Unit
             val viewModel = createViewModel()
-
-            viewModel.onOverheatVoiceTypeChanged(OverheatVoiceType.STANDARD)
-
-            assertEquals(OverheatVoiceType.STANDARD, viewModel.uiState.first().overheatVoiceType)
-            coVerify(exactly = 1) { overheatRepository.saveVoiceType(OverheatVoiceType.STANDARD) }
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { overheatRepository.observeVoiceType() }
-            confirmVerified(repository, overheatRepository)
+            viewModel.onOverheatReadoutTextPreviewClicked("編集中")
+            verifySettings()
+            verify(exactly = 1) { observeVolume() }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "編集中")) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
         }
 
     @Test
-    fun `onPreviewClicked に GP2_GP2 を渡すと Overheating イベントが再生される`() {
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
-        every { ttsEngine.speak(SpeechEvent.Overheating, false) } returns Unit
-        val viewModel = createViewModel()
-
-        viewModel.onPreviewClicked(OverheatVoiceType.GP2_GP2)
-
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { overheatRepository.observeVoiceType() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Overheating, false) }
-        confirmVerified(repository, overheatRepository, ttsEngine)
-    }
-
-    @Test
-    fun `onPreviewClicked に STANDARD を渡すと OverheatingStandard イベントが再生される`() {
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
-        every { ttsEngine.speak(SpeechEvent.OverheatingStandard, false) } returns Unit
-        val viewModel = createViewModel()
-
-        viewModel.onPreviewClicked(OverheatVoiceType.STANDARD)
-
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { overheatRepository.observeVoiceType() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.OverheatingStandard, false) }
-        confirmVerified(repository, overheatRepository, ttsEngine)
-    }
-
-    @Test
-    fun `リポジトリに partDetached=false が保存済みのとき partDetachedEnabled が false の UiState を返す`() =
+    fun `部品脱落スイッチを保存する`() =
         runTest {
-            every { repository.observeEnabledStates() } returns
-                MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false))
-            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
+            stubSettings()
+            coEvery { repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, false) } answers
+                {
+                    enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false) }
+                }
             val viewModel = createViewModel()
-
-            assertEquals(
-                LmuWindowsReadoutVehicleDamageDetailUiState(partDetachedEnabled = false),
-                viewModel.uiState.first(),
-            )
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { overheatRepository.observeVoiceType() }
-            confirmVerified(repository, overheatRepository)
-        }
-
-    @Test
-    fun `onPartDetachedEnabledChanged を呼ぶと UiState の partDetachedEnabled が更新される`() =
-        runTest {
-            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-            every { repository.observeEnabledStates() } returns enabledStatesFlow
-            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
-            coEvery {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, false)
-            } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false) }
-            }
-            val viewModel = createViewModel()
-
             viewModel.onPartDetachedEnabledChanged(false)
-
             assertEquals(false, viewModel.uiState.first().partDetachedEnabled)
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { overheatRepository.observeVoiceType() }
+            verifySettings()
             coVerify(exactly = 1) {
                 repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, false)
             }
-            confirmVerified(repository, overheatRepository)
+            confirmVerified(repository, checkAvailable)
         }
 
     @Test
-    fun `onPartDetachedPreviewClicked を呼ぶと PartDetached イベントが再生される`() {
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
-        every { ttsEngine.speak(SpeechEvent.PartDetached, false) } returns Unit
-        val viewModel = createViewModel()
-
-        viewModel.onPartDetachedPreviewClicked()
-
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { overheatRepository.observeVoiceType() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PartDetached, false) }
-        confirmVerified(repository, overheatRepository, ttsEngine)
-    }
-
-    @Test
-    fun `リポジトリに tyreDetached=false が保存済みのとき tyreDetachedEnabled が false の UiState を返す`() =
+    fun `部品脱落文言は正規化して保存し反映する`() =
         runTest {
-            every { repository.observeEnabledStates() } returns
-                MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false))
-            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
+            stubSettings()
+            coEvery { repository.savePartDetachedReadoutText("自由文言") } answers { partDetachedText.update { "自由文言" } }
             val viewModel = createViewModel()
-
-            assertEquals(
-                LmuWindowsReadoutVehicleDamageDetailUiState(tyreDetachedEnabled = false),
-                viewModel.uiState.first(),
-            )
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { overheatRepository.observeVoiceType() }
-            confirmVerified(repository, overheatRepository)
+            viewModel.onPartDetachedReadoutTextChanged(" 自由文言 ")
+            assertEquals("自由文言", viewModel.uiState.first().partDetachedReadoutText)
+            verifySettings()
+            coVerify(exactly = 1) { repository.savePartDetachedReadoutText("自由文言") }
+            confirmVerified(repository, checkAvailable)
         }
 
     @Test
-    fun `onTyreDetachedEnabledChanged を呼ぶと UiState の tyreDetachedEnabled が更新される`() =
+    fun `部品脱落試聴はスイッチOFFでも入力中の文言を解決済みイベントで再生する`() =
         runTest {
-            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-            every { repository.observeEnabledStates() } returns enabledStatesFlow
-            every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
-            coEvery {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, false)
-            } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false) }
-            }
+            stubSettings()
+            enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false) }
+            every { observeVolume() } returns MutableStateFlow(40)
+            every { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "編集中")) } returns Unit
             val viewModel = createViewModel()
+            viewModel.onPartDetachedReadoutTextPreviewClicked("編集中")
+            verifySettings()
+            verify(exactly = 1) { observeVolume() }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "編集中")) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+        }
 
+    @Test
+    fun `タイヤ脱落スイッチを保存する`() =
+        runTest {
+            stubSettings()
+            coEvery { repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, false) } answers
+                {
+                    enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false) }
+                }
+            val viewModel = createViewModel()
             viewModel.onTyreDetachedEnabledChanged(false)
-
             assertEquals(false, viewModel.uiState.first().tyreDetachedEnabled)
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { overheatRepository.observeVoiceType() }
+            verifySettings()
             coVerify(exactly = 1) {
                 repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, false)
             }
-            confirmVerified(repository, overheatRepository)
+            confirmVerified(repository, checkAvailable)
         }
 
     @Test
-    fun `onTyreDetachedPreviewClicked を呼ぶと TyreDetached イベントが再生される`() {
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { overheatRepository.observeVoiceType() } returns MutableStateFlow(OverheatVoiceType.GP2_GP2)
-        every { ttsEngine.speak(SpeechEvent.TyreDetached, false) } returns Unit
-        val viewModel = createViewModel()
+    fun `タイヤ脱落文言は正規化して保存し反映する`() =
+        runTest {
+            stubSettings()
+            coEvery { repository.saveTyreDetachedReadoutText("自由文言") } answers { tyreDetachedText.update { "自由文言" } }
+            val viewModel = createViewModel()
+            viewModel.onTyreDetachedReadoutTextChanged(" 自由文言 ")
+            assertEquals("自由文言", viewModel.uiState.first().tyreDetachedReadoutText)
+            verifySettings()
+            coVerify(exactly = 1) { repository.saveTyreDetachedReadoutText("自由文言") }
+            confirmVerified(repository, checkAvailable)
+        }
 
-        viewModel.onTyreDetachedPreviewClicked()
+    @Test
+    fun `タイヤ脱落試聴はスイッチOFFでも入力中の文言を解決済みイベントで再生する`() =
+        runTest {
+            stubSettings()
+            enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false) }
+            every { observeVolume() } returns MutableStateFlow(40)
+            every { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "編集中")) } returns Unit
+            val viewModel = createViewModel()
+            viewModel.onTyreDetachedReadoutTextPreviewClicked("編集中")
+            verifySettings()
+            verify(exactly = 1) { observeVolume() }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "編集中")) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+        }
 
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { overheatRepository.observeVoiceType() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreDetached, false) }
-        confirmVerified(repository, overheatRepository, ttsEngine)
-    }
+    @Test
+    fun `空白文言では3イベントとも試聴しない`() =
+        runTest {
+            stubSettings(available = true)
+            val viewModel = createViewModel()
+            viewModel.onOverheatReadoutTextPreviewClicked(" ")
+            viewModel.onPartDetachedReadoutTextPreviewClicked(" ")
+            viewModel.onTyreDetachedReadoutTextPreviewClicked(" ")
+            verifySettings()
+            verify(exactly = 0) { observeVolume() }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = " ")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = " ")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = " ")) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+        }
+
+    @Test
+    fun `TTS利用不可では3イベントとも試聴しない`() =
+        runTest {
+            stubSettings(available = false)
+            val viewModel = createViewModel()
+            viewModel.onOverheatReadoutTextPreviewClicked("入力中")
+            viewModel.onPartDetachedReadoutTextPreviewClicked("入力中")
+            viewModel.onTyreDetachedReadoutTextPreviewClicked("入力中")
+            assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
+            verifySettings()
+            verify(exactly = 0) { observeVolume() }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "入力中")) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+        }
+
+    @Test
+    fun `音量ゼロでは3イベントとも試聴しない`() =
+        runTest {
+            stubSettings(available = true)
+            every { observeVolume() } returns MutableStateFlow(0)
+            val viewModel = createViewModel()
+            viewModel.onOverheatReadoutTextPreviewClicked("入力中")
+            viewModel.onPartDetachedReadoutTextPreviewClicked("入力中")
+            viewModel.onTyreDetachedReadoutTextPreviewClicked("入力中")
+            verifySettings()
+            verify(exactly = 3) { observeVolume() }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "入力中")) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+        }
+
+    @Test
+    fun `負の音量では3イベントとも試聴しない`() =
+        runTest {
+            stubSettings(available = true)
+            every { observeVolume() } returns MutableStateFlow(-1)
+            val viewModel = createViewModel()
+            viewModel.onOverheatReadoutTextPreviewClicked("入力中")
+            viewModel.onPartDetachedReadoutTextPreviewClicked("入力中")
+            viewModel.onTyreDetachedReadoutTextPreviewClicked("入力中")
+            verifySettings()
+            verify(exactly = 3) { observeVolume() }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "入力中")) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+        }
 }

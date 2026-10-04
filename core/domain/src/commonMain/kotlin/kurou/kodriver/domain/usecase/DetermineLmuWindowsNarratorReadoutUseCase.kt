@@ -13,7 +13,6 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
-import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -98,7 +97,6 @@ data class LmuWindowsNarratorReadoutSettings(
     @Serializable(with = ReadoutItemKeyMapSerializer::class)
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val myBestLapVoiceType: MyBestLapVoiceType,
-    val overheatVoiceType: OverheatVoiceType,
     val currentLap: Int,
     val skipFirstLap: Boolean,
     val vehicleApproachSustainedApproachDurationSeconds: Int,
@@ -254,10 +252,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 !previous.overheating &&
                 vehicleDamage.overheating
             ) {
-                when (settings.overheatVoiceType) {
-                    OverheatVoiceType.GP2_GP2 -> SpeechEvent.Overheating
-                    OverheatVoiceType.STANDARD -> SpeechEvent.OverheatingStandard
-                }
+                SpeechEvent.Overheating()
             } else {
                 null
             }
@@ -268,7 +263,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 !previous.partDetached &&
                 vehicleDamage.partDetached
             ) {
-                SpeechEvent.PartDetached
+                SpeechEvent.PartDetached()
             } else {
                 null
             }
@@ -296,7 +291,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached) &&
                 newlyDetached
             ) {
-                SpeechEvent.TyreDetached
+                SpeechEvent.TyreDetached()
             } else {
                 null
             }

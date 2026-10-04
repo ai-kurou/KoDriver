@@ -27,10 +27,13 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
- * フラッグ・車両接近・ピットタイミング・バーチャルエナジー残量警告・タイヤ摩耗警告・ブレーキ過熱警告・タイヤ温度警告の自由文字列をOS標準TTSで読み上げる、
+ * フラッグ・車両接近・ピットタイミング・バーチャルエナジー残量警告・タイヤ摩耗警告・ブレーキ過熱警告・タイヤ温度警告・車両故障警告の自由文字列をOS標準TTSで読み上げる、
  * [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine] 用のフック。
  * 空欄またはTTSが利用できない場合は本文を読み上げない。
  * イベントごとの文言取得とTTSの依存を明示する。
@@ -47,6 +50,9 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [SpeechEvent.CarLeftSustained] : 左車両接近継続
  * - [SpeechEvent.CarRightSustained] : 右車両接近継続
  * - [SpeechEvent.RemainingVirtualEnergyWarning] : 設定した残量閾値の警告
+ * - [SpeechEvent.Overheating] : オーバーヒート
+ * - [SpeechEvent.PartDetached] : 部品脱落
+ * - [SpeechEvent.TyreDetached] : タイヤ脱落
  * - [SpeechEvent.BrakeOverheat] : 設定した温度閾値の警告
  * - [SpeechEvent.TyreWearWarning] : 設定した残存率閾値の警告
  * - [SpeechEvent.PitTimingWarning] : バーチャルエナジー・タイヤ摩耗由来のピットタイミング
@@ -72,6 +78,9 @@ internal class LmuWindowsReadoutTextSpeaker(
     private val observeTyreWearReadoutText: ObserveLmuWindowsTyreWearReadoutTextUseCase,
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase,
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase,
+    private val observeOverheatReadoutText: ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase,
+    private val observePartDetachedReadoutText: ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase,
+    private val observeTyreDetachedReadoutText: ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -160,8 +169,16 @@ internal class LmuWindowsReadoutTextSpeaker(
             }
 
             else -> {
-                null
+                vehicleDamageText(event)
             }
+        }
+
+    private suspend fun vehicleDamageText(event: SpeechEvent): String? =
+        when (event) {
+            is SpeechEvent.Overheating -> event.resolvedText ?: observeOverheatReadoutText().first()
+            is SpeechEvent.PartDetached -> event.resolvedText ?: observePartDetachedReadoutText().first()
+            is SpeechEvent.TyreDetached -> event.resolvedText ?: observeTyreDetachedReadoutText().first()
+            else -> null
         }
 
     private suspend fun tyreTemperatureText(

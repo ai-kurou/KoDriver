@@ -29,6 +29,9 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.Test
 
@@ -53,6 +56,9 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
     private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase = mockk()
+    private val observeOverheatReadoutText: ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase = mockk()
+    private val observePartDetachedReadoutText: ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase = mockk()
+    private val observeTyreDetachedReadoutText: ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -74,6 +80,9 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
+            observeOverheatReadoutText,
+            observePartDetachedReadoutText,
+            observeTyreDetachedReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -97,6 +106,9 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
+            observeOverheatReadoutText,
+            observePartDetachedReadoutText,
+            observeTyreDetachedReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )

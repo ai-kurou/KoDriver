@@ -28,11 +28,10 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `LMU車両故障系のnarratedTextはChipと同じ文言を返す`() {
-        assertEquals("GP2 GP2… ahhh!!!", SpeechEvent.Overheating.narratedText)
-        assertEquals("オーバーヒート", SpeechEvent.OverheatingStandard.narratedText)
-        assertEquals("部品脱落", SpeechEvent.PartDetached.narratedText)
-        assertEquals("タイヤ脱落", SpeechEvent.TyreDetached.narratedText)
+    fun `LMU車両故障系のnarratedTextは既定文言を返す`() {
+        assertEquals("オーバーヒート", SpeechEvent.Overheating().narratedText)
+        assertEquals("部品脱落", SpeechEvent.PartDetached().narratedText)
+        assertEquals("タイヤ脱落", SpeechEvent.TyreDetached().narratedText)
     }
 
     @Test
@@ -194,5 +193,20 @@ class SpeechEventTest {
         assertEquals("タイヤ過熱 0度", event.narratedText)
         assertEquals(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root, event.readoutItemKey)
         assertEquals("設定文言", event.resolvedText)
+    }
+
+    @Test
+    fun `車両故障イベントは解決済み文言を保持し既定文言とRootキーを維持する`() {
+        val events =
+            listOf(
+                SpeechEvent.Overheating("カスタム"),
+                SpeechEvent.PartDetached("カスタム"),
+                SpeechEvent.TyreDetached("カスタム"),
+            )
+        assertEquals("カスタム", (events[0] as SpeechEvent.Overheating).resolvedText)
+        assertEquals("カスタム", (events[1] as SpeechEvent.PartDetached).resolvedText)
+        assertEquals("カスタム", (events[2] as SpeechEvent.TyreDetached).resolvedText)
+        assertEquals(listOf("オーバーヒート", "部品脱落", "タイヤ脱落"), events.map { it.narratedText })
+        events.forEach { assertEquals(ReadoutItemKey.LmuWindows.VehicleDamage.Root, it.readoutItemKey) }
     }
 }

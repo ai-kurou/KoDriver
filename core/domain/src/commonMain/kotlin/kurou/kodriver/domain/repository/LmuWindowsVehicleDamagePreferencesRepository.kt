@@ -10,4 +10,16 @@ interface LmuWindowsVehicleDamagePreferencesRepository {
         key: ReadoutItemKey,
         enabled: Boolean,
     )
+
+    fun observeOverheatReadoutText(): Flow<String>
+
+    suspend fun saveOverheatReadoutText(text: String)
+
+    fun observePartDetachedReadoutText(): Flow<String>
+
+    suspend fun savePartDetachedReadoutText(text: String)
+
+    fun observeTyreDetachedReadoutText(): Flow<String>
+
+    suspend fun saveTyreDetachedReadoutText(text: String)
 }
