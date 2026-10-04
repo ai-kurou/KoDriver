@@ -36,8 +36,8 @@ class SpeechEventTest {
 
     @Test
     fun `LMUタイヤ・エナジー系のnarratedTextはChipと同じ文言を返す`() {
-        assertEquals("タイヤ過熱警告", SpeechEvent.TyreOverheat(100).narratedText)
-        assertEquals("タイヤ低温警告", SpeechEvent.TyreCold(60).narratedText)
+        assertEquals("タイヤ過熱 100度", SpeechEvent.TyreOverheat(100).narratedText)
+        assertEquals("タイヤ低温 60度", SpeechEvent.TyreCold(60).narratedText)
         assertEquals("タイヤ摩耗警告", SpeechEvent.TyreWearWarning.narratedText)
         assertEquals("バーチャルエナジー残量50%以下", SpeechEvent.RemainingVirtualEnergyWarning(50).narratedText)
     }
@@ -54,8 +54,8 @@ class SpeechEventTest {
         assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root, cold.readoutItemKey)
         assertEquals("過熱100℃", overheat.copy(resolvedText = "過熱100℃").resolvedText)
         assertEquals("低温60℃", cold.copy(resolvedText = "低温60℃").resolvedText)
-        assertEquals("タイヤ過熱警告", overheat.copy(resolvedText = "過熱100℃").narratedText)
-        assertEquals("タイヤ低温警告", cold.copy(resolvedText = "低温60℃").narratedText)
+        assertEquals("タイヤ過熱 100度", overheat.copy(resolvedText = "過熱100℃").narratedText)
+        assertEquals("タイヤ低温 60度", cold.copy(resolvedText = "低温60℃").narratedText)
     }
 
     @Test
