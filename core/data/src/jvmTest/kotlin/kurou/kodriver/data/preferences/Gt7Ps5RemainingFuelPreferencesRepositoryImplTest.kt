@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -53,5 +54,19 @@ class Gt7Ps5RemainingFuelPreferencesRepositoryImplTest {
             repository.saveThresholdPercentage(60)
 
             assertEquals(60, repository.observeThresholdPercentage().first())
+        }
+
+    @Test
+    fun `文言の初期値は既定値で保存と空欄の上書きは閾値を維持する`() =
+        runTest {
+            assertEquals(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
+            repository.saveThresholdPercentage(45)
+            repository.saveReadoutText("残り{percent}%")
+            assertEquals("残り{percent}%", repository.observeReadoutText().first())
+            repository.saveReadoutText("")
+            assertEquals("", repository.observeReadoutText().first())
+            assertEquals(45, repository.observeThresholdPercentage().first())
+            repository.saveThresholdPercentage(60)
+            assertEquals("", repository.observeReadoutText().first())
         }
 }

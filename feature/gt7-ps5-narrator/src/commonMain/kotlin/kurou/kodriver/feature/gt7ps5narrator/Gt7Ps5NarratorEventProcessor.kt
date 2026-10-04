@@ -58,13 +58,22 @@ internal class Gt7Ps5NarratorEventProcessor(
     ) {
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
-            val text = if (event is SpeechEvent.RemainingFuelLapsWarning) readoutText(event) else event.narratedText
+            val text =
+                if (event is SpeechEvent.RemainingFuelLapsWarning || event is SpeechEvent.Gt7Ps5RemainingFuelWarning) {
+                    readoutText(event)
+                } else {
+                    event.narratedText
+                }
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent =
-                        if (event is SpeechEvent.RemainingFuelLapsWarning) event.copy(resolvedText = text) else event
+                        when (event) {
+                            is SpeechEvent.RemainingFuelLapsWarning -> event.copy(resolvedText = text)
+                            is SpeechEvent.Gt7Ps5RemainingFuelWarning -> event.copy(resolvedText = text)
+                            else -> event
+                        }
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(

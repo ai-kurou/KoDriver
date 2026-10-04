@@ -161,15 +161,17 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
     @Test
     fun `onPreviewClickedを呼ぶと燃料残量警告を読み上げる`() =
         runTest {
+            thresholdFlow.update { 45 }
             every { repository.observeThresholdPercentage() } returns thresholdFlow
-            every { ttsEngine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning, false) } returns Unit
+            every { ttsEngine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning(45), false) } returns Unit
             val viewModel = createViewModel()
+            viewModel.uiState.first()
 
             viewModel.onPreviewClicked()
 
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning(45), false) }
             confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
         }
 }
