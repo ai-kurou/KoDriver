@@ -19,7 +19,33 @@ class LmuWindowsReadoutTyreWearDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            LmuWindowsReadoutTyreWearDetailPaneContent()
+                            LmuWindowsReadoutTyreWearDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutTyreWearDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutTyreWearDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutTyreWearDetailUiState(
+                                        readoutText = "タイヤ残存率{percent}%以下です",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
                         }
                     }
                 }

@@ -237,11 +237,17 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousTyreWear
         events.forEach { event ->
-            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            val text = readoutText(event)
+            val narrationOutcome =
+                if (text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    speakWithPriority(event.withResolvedText(text), readoutOrder, queueEnabledStates)
+                }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
-                narratedText = event.narratedText,
+                narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
                 telemetryJson =
                     buildTelemetryLogJson(
@@ -394,10 +400,11 @@ internal class LmuWindowsNarratorEventProcessor(
         }
     }
 
-    /** 判定時に解決した文言を残量・タイヤ温度警告に持たせ、キュー待機中に設定が変わっても発話とログを一致させる。 */
+    /** 判定時に解決した文言を残量・タイヤ摩耗・タイヤ温度警告に持たせ、キュー待機中に設定が変わっても発話とログを一致させる。 */
     private fun SpeechEvent.withResolvedText(text: String): SpeechEvent =
         when (this) {
             is SpeechEvent.RemainingVirtualEnergyWarning -> copy(resolvedText = text)
+            is SpeechEvent.TyreWearWarning -> copy(resolvedText = text)
             is SpeechEvent.TyreOverheat -> copy(resolvedText = text)
             is SpeechEvent.TyreCold -> copy(resolvedText = text)
             else -> this

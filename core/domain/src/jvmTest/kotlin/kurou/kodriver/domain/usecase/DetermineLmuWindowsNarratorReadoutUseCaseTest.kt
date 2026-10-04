@@ -1335,7 +1335,20 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(tyreWearThresholdPercentage = 50),
             )
 
-        assertEquals(listOf(SpeechEvent.TyreWearWarning), decision.events)
+        assertEquals(listOf(SpeechEvent.TyreWearWarning(50)), decision.events)
+        assertEquals(true, decision.state.tyreWearWarned)
+    }
+
+    @Test
+    fun `摩耗警告イベントは実測残存率ではなく設定閾値を保持する`() {
+        val decision =
+            useCase.determineTyreWear(
+                state = LmuWindowsNarratorState(),
+                data = tyreWear(fl = 0.4),
+                settings = settings(tyreWearThresholdPercentage = 70),
+            )
+
+        assertEquals(listOf(SpeechEvent.TyreWearWarning(70)), decision.events)
         assertEquals(true, decision.state.tyreWearWarned)
     }
 
@@ -1379,7 +1392,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, recoveredState.tyreWearWarned)
-        assertEquals(listOf(SpeechEvent.TyreWearWarning), rewarnedDecision.events)
+        assertEquals(listOf(SpeechEvent.TyreWearWarning(50)), rewarnedDecision.events)
     }
 
     @Test

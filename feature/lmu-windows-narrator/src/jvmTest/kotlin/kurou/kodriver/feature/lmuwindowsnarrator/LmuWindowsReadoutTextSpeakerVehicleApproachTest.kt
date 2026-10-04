@@ -23,6 +23,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyRead
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
@@ -47,6 +48,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
+    private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
@@ -66,6 +68,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observePitTimingTyreWearReadoutText,
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
+            observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
             checkTextToSpeechAvailable,
@@ -87,6 +90,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observePitTimingTyreWearReadoutText,
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
+            observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
             checkTextToSpeechAvailable,

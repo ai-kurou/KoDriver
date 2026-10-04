@@ -394,7 +394,12 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreWear.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(tyreWearWarned = anyWorn),
-            events = if (shouldAnnounce) listOf(SpeechEvent.TyreWearWarning) else emptyList(),
+            events =
+                if (shouldAnnounce) {
+                    listOf(SpeechEvent.TyreWearWarning(percentage = settings.tyreWearThresholdPercentage))
+                } else {
+                    emptyList()
+                },
         )
     }
 

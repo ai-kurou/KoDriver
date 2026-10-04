@@ -68,6 +68,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyRead
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
@@ -100,6 +101,7 @@ class LmuWindowsNarratorEventProcessorTest {
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
+    private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
@@ -119,6 +121,7 @@ class LmuWindowsNarratorEventProcessorTest {
             observePitTimingTyreWearReadoutText,
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
+            observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
             checkTextToSpeechAvailable,
@@ -230,18 +233,20 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.TyreWearWarning, queue = false) } just Runs
+            every {
+                ttsEngine.speak(SpeechEvent.TyreWearWarning(50, resolvedText = "閾値50%です"), queue = false)
+            } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    narratedText = "タイヤ摩耗警告",
+                    narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
-            val processor = createProcessor()
+            val processor = createProcessor { "閾値50%です" }
 
             processor.processTyreWear(
                 tyreWear = tyreWear(frontLeft = 0.9),
@@ -253,7 +258,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             processor.processTyreWear(
                 tyreWear = tyreWear(frontLeft = 0.4),
-                events = listOf(SpeechEvent.TyreWearWarning),
+                events = listOf(SpeechEvent.TyreWearWarning(50)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -278,13 +283,13 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertContains(telemetryJson, """"observedAtMs":200""")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreWearWarning, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreWearWarning(50, resolvedText = "閾値50%です"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    narratedText = "タイヤ摩耗警告",
+                    narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
                 )
@@ -1393,6 +1398,42 @@ class LmuWindowsNarratorEventProcessorTest {
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `摩耗警告の文言がnullなら読み上げず空文言でSKIPPEDを保存する`() =
+        runTest {
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(json),
+                )
+            } just Runs
+            createProcessor { null }.processTyreWear(
+                tyreWear = tyreWear(frontLeft = 0.3),
+                events = listOf(SpeechEvent.TyreWearWarning(50)),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreWearWarning(50), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,

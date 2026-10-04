@@ -1,30 +1,33 @@
 package kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
-/**
- * [SpeechEvent.narratedText] は WAV と同じ内容を Chip 表示文言から複製したものであるため、
- * Chip側の文言変更を検知できるよう実際の表示テキストと突き合わせる（#1527）。
- */
 class LmuWindowsReadoutTyreWearDetailPaneNarratedTextConsistencyTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `Chip表示文言がSpeechEventのnarratedTextと一致する`() {
+    fun `既定文言の入力欄とイベントの閾値置換が一致する`() {
         rule.setContent {
-            MaterialTheme {
-                LmuWindowsReadoutTyreWearDetailPaneContent()
+            KoDriverTheme {
+                LmuWindowsReadoutTyreWearDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreWearDetailUiState(isTextToSpeechAvailable = true),
+                )
             }
         }
-
-        val narratedText = SpeechEvent.TyreWearWarning.narratedText
-        rule.onAllNodesWithText(narratedText)[0].assertTextContains(narratedText, substring = true)
+        rule.onNode(hasSetTextAction()).assertTextContains(LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT)
+        assertEquals(
+            formatLmuWindowsTyreWearReadoutText(LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT, 50),
+            SpeechEvent.TyreWearWarning(50).narratedText,
+        )
     }
 }

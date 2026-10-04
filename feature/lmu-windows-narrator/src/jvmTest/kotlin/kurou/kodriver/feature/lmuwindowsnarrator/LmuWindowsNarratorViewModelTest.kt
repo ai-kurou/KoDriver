@@ -1556,7 +1556,10 @@ class LmuWindowsNarratorViewModelTest {
 
             channel.send(tyreWear(fl = 0.4))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreWearWarning), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.TyreWearWarning(50, resolvedText = "タイヤ残存率50%以下")),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -1575,7 +1578,10 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(tyreWear(fl = 0.4))
             channel.send(tyreWear(fl = 0.4))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreWearWarning), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.TyreWearWarning(50, resolvedText = "タイヤ残存率50%以下")),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -1597,8 +1603,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.TyreWearWarning,
-                    SpeechEvent.TyreWearWarning,
+                    SpeechEvent.TyreWearWarning(50, resolvedText = "タイヤ残存率50%以下"),
+                    SpeechEvent.TyreWearWarning(50, resolvedText = "タイヤ残存率50%以下"),
                 ),
                 spokenTexts,
             )
