@@ -1450,10 +1450,10 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             useCase.determineBrakeTemperatureOverheat(
                 state = LmuWindowsNarratorState(),
                 data = brakeTemperature(fl = 750.0),
-                settings = settings(),
+                settings = settings(brakeTemperatureHighThresholdCelsius = 650),
             )
 
-        assertEquals(listOf(SpeechEvent.BrakeOverheat), decision.events)
+        assertEquals(listOf(SpeechEvent.BrakeOverheat(650)), decision.events)
         assertEquals(true, decision.state.brakeOverheating)
     }
 
@@ -1497,7 +1497,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, cooledState.brakeOverheating)
-        assertEquals(listOf(SpeechEvent.BrakeOverheat), reovertDecision.events)
+        assertEquals(listOf(SpeechEvent.BrakeOverheat(700)), reovertDecision.events)
     }
 
     @Test

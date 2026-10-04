@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
@@ -13,6 +14,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READO
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_SELECTED_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -28,6 +30,8 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
+import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -41,6 +45,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
@@ -71,6 +76,9 @@ val fakeLmuWindowsNarratorModule =
         single<SoundPlayer>(named(Simulator.LmuWindows.id)) { NoOpSoundPlayer() }
         single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
         single<LmuWindowsTyreCarcassTemperatureRepository> { FakeLmuWindowsTyreCarcassTemperatureRepository() }
+        single<LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository> {
+            FakeLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository()
+        }
         single<LmuWindowsBrakeTemperatureRepository> { FakeLmuWindowsBrakeTemperatureRepository() }
         single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
         single<LmuWindowsTyreWearRepository> { FakeLmuWindowsTyreWearRepository() }
@@ -277,4 +285,37 @@ class FakeLmuWindowsVehicleClassRepository : LmuWindowsVehicleClassRepository {
 
 class FakeLmuWindowsPitStatusRepository : LmuWindowsPitStatusRepository {
     override fun pitStatusStream(): Flow<LmuWindowsPitStatusData> = emptyFlow()
+}
+
+class FakeLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository :
+    LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository {
+    private val thresholds =
+        MutableStateFlow(
+            lmuWindowsAllVehicleClasses.associateWith {
+                lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(it)
+            },
+        )
+    private val selected = MutableStateFlow(LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_SELECTED_DEFAULT)
+    private val text = MutableStateFlow(LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT)
+
+    override fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Int>> = thresholds
+
+    override suspend fun saveHighThresholdCelsius(
+        vehicleClass: LmuWindowsVehicleClassData,
+        celsius: Int,
+    ) {
+        thresholds.update { it + (vehicleClass to celsius) }
+    }
+
+    override fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData> = selected
+
+    override suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData) {
+        selected.update { vehicleClass }
+    }
+
+    override fun observeReadoutText(): Flow<String> = text
+
+    override suspend fun saveReadoutText(text: String) {
+        this.text.update { text }
+    }
 }

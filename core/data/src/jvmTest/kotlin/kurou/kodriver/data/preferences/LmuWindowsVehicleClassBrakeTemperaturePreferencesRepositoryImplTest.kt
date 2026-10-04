@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_SELECTED_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
@@ -125,5 +126,22 @@ class LmuWindowsVehicleClassBrakeTemperaturePreferencesRepositoryImplTest {
             val result = repository.observeSelectedVehicleClass().first()
 
             assertEquals(true, result is LmuWindowsVehicleClassData.Unknown)
+        }
+
+    @Test
+    fun `共通文言を保存しても車両クラスの閾値と選択は維持される`() =
+        runTest {
+            assertEquals(LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
+            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 650)
+            repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte)
+            listOf("温度{celsius}℃", "", " ", "過熱警告").forEach { text ->
+                repository.saveReadoutText(text)
+                assertEquals(text, repository.observeReadoutText().first())
+                assertEquals(650, repository.observeHighThresholdCelsius().first()[LmuWindowsVehicleClassData.Gte])
+                assertEquals(LmuWindowsVehicleClassData.Gte, repository.observeSelectedVehicleClass().first())
+            }
+            repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gt3)
+            repository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 900)
+            assertEquals("過熱警告", repository.observeReadoutText().first())
         }
 }

@@ -5,18 +5,25 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
@@ -26,23 +33,39 @@ internal data class BrakeTemperatureUseCases(
     val observeVehicleClassSelection: ObserveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase,
     val saveVehicleClassHighThreshold: SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase,
     val saveVehicleClassSelection: SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase,
+    val observeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase,
+    val saveText: SaveLmuWindowsBrakeTemperatureReadoutTextUseCase,
+)
+
+internal data class BrakeTemperatureReadoutUseCases(
+    val playSpeechEvent: PlaySpeechEventUseCase,
+    val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
 
 internal class LmuWindowsReadoutBrakeTemperatureDetailViewModel(
     private val brakeTemperatureUseCases: BrakeTemperatureUseCases,
     observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
-    private val playSpeechEvent: PlaySpeechEventUseCase,
+    private val readout: BrakeTemperatureReadoutUseCases,
 ) : ViewModel() {
+    private val textToSpeechAvailable =
+        flow { emit(readout.checkTextToSpeechAvailable()) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val uiState: StateFlow<LmuWindowsReadoutBrakeTemperatureDetailUiState> =
         combine(
             brakeTemperatureUseCases.observeVehicleClassHighThreshold(),
             brakeTemperatureUseCases.observeVehicleClassSelection(),
             observeReadoutEnabledStates(Simulator.LmuWindows.id),
-        ) { vehicleClassHighThresholdCelsius, selectedVehicleClass, enabledStates ->
+            brakeTemperatureUseCases.observeText(),
+            textToSpeechAvailable,
+        ) { vehicleClassHighThresholdCelsius, selectedVehicleClass, enabledStates, text, available ->
             LmuWindowsReadoutBrakeTemperatureDetailUiState(
                 vehicleClassHighThresholdCelsius = vehicleClassHighThresholdCelsius,
                 selectedVehicleClass = selectedVehicleClass,
+                readoutText = text,
+                isTextToSpeechAvailable = available,
                 enabled = enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout),
             )
         }.stateIn(
@@ -51,8 +74,28 @@ internal class LmuWindowsReadoutBrakeTemperatureDetailViewModel(
             LmuWindowsReadoutBrakeTemperatureDetailUiState(),
         )
 
-    fun onWarningChipClicked() {
-        playSpeechEvent(SpeechEvent.BrakeOverheat)
+    fun onReadoutTextChanged(text: String) {
+        viewModelScope.launch { brakeTemperatureUseCases.saveText(text) }
+    }
+
+    /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
+    fun onReadoutTextPreviewClicked(text: String) {
+        val state = uiState.value
+        val celsius =
+            state.vehicleClassHighThresholdCelsius[state.selectedVehicleClass]
+                ?: lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(state.selectedVehicleClass)
+        val formattedText = formatLmuWindowsBrakeTemperatureReadoutText(text, celsius)
+        if (formattedText.isBlank() || !textToSpeechAvailable.value) return
+        viewModelScope.launch {
+            val volume = readout.observeSoundVolume().first()
+            if (volume <= 0) return@launch
+            readout.playSpeechEvent(
+                SpeechEvent.BrakeOverheat(
+                    celsius = celsius,
+                    resolvedText = formattedText,
+                ),
+            )
+        }
     }
 
     fun onVehicleClassSelected(vehicleClass: LmuWindowsVehicleClassData) {

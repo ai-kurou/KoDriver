@@ -424,7 +424,12 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(brakeOverheating = nextOverheating),
-            events = if (shouldAnnounce) listOf(SpeechEvent.BrakeOverheat) else emptyList(),
+            events =
+                if (shouldAnnounce) {
+                    listOf(SpeechEvent.BrakeOverheat(celsius = settings.brakeTemperatureHighThresholdCelsius.value))
+                } else {
+                    emptyList()
+                },
         )
     }
 

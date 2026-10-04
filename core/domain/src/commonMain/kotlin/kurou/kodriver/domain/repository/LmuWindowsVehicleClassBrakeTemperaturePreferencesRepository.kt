@@ -14,4 +14,8 @@ interface LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository {
     fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData>
 
     suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData)
+
+    fun observeReadoutText(): Flow<String>
+
+    suspend fun saveReadoutText(text: String)
 }

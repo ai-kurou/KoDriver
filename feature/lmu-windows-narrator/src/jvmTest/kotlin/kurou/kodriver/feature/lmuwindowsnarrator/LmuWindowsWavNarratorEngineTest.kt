@@ -166,6 +166,45 @@ class LmuWindowsWavNarratorEngineTest {
         }
 
     @Test
+    fun `ブレーキ過熱警告は閾値が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
+        runTest {
+            val customEvents = mutableListOf<SpeechEvent>()
+            val engine =
+                WavNarratorEngine(
+                    soundPlayer = soundPlayer,
+                    resources =
+                        WavResources<SpeechEvent, ReadoutStartSoundType>(
+                            eventToFile = mapOf(SpeechEvent.BrakeOverheat(700) to "warning.wav"),
+                            startSoundTypeToFile = emptyMap(),
+                            resourceLoader = { byteArrayOf(1) },
+                            startSoundResourceLoader = { error("開始音は設定しない") },
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    isCustomSpeakEvent = {
+                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.BrakeOverheat
+                    },
+                    customSpeak = { event, _ -> customEvents += event },
+                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                )
+            runCurrent()
+            val narrator = LmuWindowsWavNarratorEngine(engine)
+            narrator.speak(SpeechEvent.BrakeOverheat(700))
+            runCurrent()
+            narrator.speak(SpeechEvent.BrakeOverheat(900))
+            runCurrent()
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.BrakeOverheat(700),
+                    SpeechEvent.BrakeOverheat(900),
+                ),
+                customEvents,
+            )
+            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
+            confirmVerified(soundPlayer)
+        }
+
+    @Test
     fun `過熱警告はカスタム読み上げへ渡しWAVにフォールバックしない`() =
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()

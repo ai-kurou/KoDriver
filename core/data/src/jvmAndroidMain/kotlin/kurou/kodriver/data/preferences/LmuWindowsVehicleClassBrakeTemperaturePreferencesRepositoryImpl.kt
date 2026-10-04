@@ -42,6 +42,12 @@ internal class LmuWindowsVehicleClassBrakeTemperaturePreferencesRepositoryImpl(
         dataStore.saveProperty(keyOf(vehicleClass)) { prefs, value -> prefs.copy(selectedVehicleClassKey = value) }
     }
 
+    override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.readoutText }
+
+    override suspend fun saveReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(readoutText = value) }
+    }
+
     // Unknown は raw 値によらず1つの閾値を共有する（未知クラス全体の安全網としての性質上、
     // raw文字列ごとに個別の閾値を持たせる必要はないため）。
     private fun keyOf(vehicleClass: LmuWindowsVehicleClassData): String =

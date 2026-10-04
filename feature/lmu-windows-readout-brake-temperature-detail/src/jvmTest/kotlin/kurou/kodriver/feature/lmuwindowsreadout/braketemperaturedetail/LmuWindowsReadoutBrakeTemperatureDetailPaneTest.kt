@@ -1,17 +1,35 @@
 package kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextReplacement
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
+private const val DEFAULT_TEXT = LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
+
+@Suppress("TooManyFunctions")
 class LmuWindowsReadoutBrakeTemperatureDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
@@ -27,39 +45,201 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneTest {
         rule
             .onNodeWithText(
                 "ブレーキ温度が過熱した際に音声でお知らせします。" +
-                    "一度警告を読み上げた後は、4輪すべてが閾値より約100℃低い温度まで下がるまで再度読み上げません。",
+                    "一度警告を読み上げた後は、4輪すべてが閾値より約100℃低い温度まで下がるまで再度読み上げません。\n読み上げる文言は下の欄で設定できます。",
             ).assertIsDisplayed()
     }
 
     @Test
-    fun `過熱警告カードとデフォルトONのブレーキ過熱警告チップが表示される`() {
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsReadoutBrakeTemperatureDetailPaneContent()
-            }
-        }
-
-        rule.onNodeWithText("過熱警告").assertIsDisplayed()
-        rule
-            .onNodeWithText("ブレーキ過熱警告")
-            .assertIsDisplayed()
-            .assertIsSelected()
-    }
-
-    @Test
-    fun `ブレーキ過熱警告チップをタップするとonWarningChipClickedが呼ばれる`() {
-        var clicked = false
+    fun `警告カードと文言入力欄と閾値置換のヒントが表示される`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
-                    onWarningChipClicked = { clicked = true },
+                    uiState = LmuWindowsReadoutBrakeTemperatureDetailUiState(isTextToSpeechAvailable = true),
                 )
             }
         }
+        rule.onNodeWithText("過熱警告").assertIsDisplayed()
+        rule.onNodeWithText("ブレーキ温度が閾値以上になったときの文言").assertIsDisplayed()
+        rule.onNodeWithText("ブレーキ温度{celsius}℃以上").assertIsDisplayed()
+        rule.onNodeWithText("{celsius} は選択中の車両クラスの温度閾値(℃)に置き換わります").assertIsDisplayed()
+        rule.onNodeWithText("{celsius}を挿入").assertIsEnabled()
+    }
 
-        rule.onNodeWithText("ブレーキ過熱警告").performClick()
+    @Test
+    fun `スイッチOFFでも入力中の文言を編集して試聴できる`() {
+        val changed = mutableListOf<String>()
+        val previews = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            enabled = false,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onReadoutTextChanged = { changed += it },
+                    onReadoutTextPreviewClicked = { previews += it },
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).assertIsEnabled().performTextReplacement("あ".repeat(31))
+        rule.onNodeWithContentDescription("入力した文言を再生").performClick()
+        assertEquals(listOf("あ".repeat(30)), changed)
+        assertEquals(changed, previews)
+    }
 
-        assertEquals(true, clicked)
+    @Test
+    fun `保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            readoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onReadoutTextChanged = {},
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).performTextReplacement("あい")
+        savedText = "あ"
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
+        savedText = "あい"
+        rule.waitForIdle()
+        savedText = "う"
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
+    }
+
+    @Test
+    fun `前後に空白を含む入力はtrim後の保存値で待機を解除し以降の更新を反映する`() {
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            readoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onReadoutTextChanged = {},
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).performTextReplacement(" あい ")
+        rule.runOnIdle { savedText = "あい" }
+        rule.waitForIdle()
+        rule.runOnIdle { savedText = "外部更新" }
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("外部更新")).assertExists()
+    }
+
+    @Test
+    fun `最大長超過入力は制限後の保存値で待機を解除し以降の更新を反映する`() {
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            readoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onReadoutTextChanged = {},
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).performTextReplacement("あ".repeat(31))
+        rule.runOnIdle { savedText = "あ".repeat(30) }
+        rule.waitForIdle()
+        rule.runOnIdle { savedText = "外部更新" }
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("外部更新")).assertExists()
+    }
+
+    @Test
+    fun `入力直後の文言にcelsiusを挿入し上限ちょうどで無効になる`() {
+        val changed = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutBrakeTemperatureDetailUiState(isTextToSpeechAvailable = true),
+                    onReadoutTextChanged = { changed += it },
+                )
+            }
+        }
+        val text = "あ".repeat(21)
+        rule.onNode(hasSetTextAction()).performTextReplacement(text)
+        rule.onNodeWithText("{celsius}を挿入").assertIsEnabled().performClick()
+        assertEquals(listOf(text, text + "{celsius}"), changed)
+        rule.onNodeWithText("{celsius}を挿入").assertIsNotEnabled()
+    }
+
+    @Test
+    fun `挿入で文字数上限を超える場合は無効になる`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            readoutText = "あ".repeat(22),
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        rule.onNodeWithText("{celsius}を挿入").assertIsNotEnabled()
+    }
+
+    @Test
+    fun `未知プレースホルダーの警告が表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            readoutText = "{lap}{x}{lap}",
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        rule.onNodeWithText("{lap}、{x} は置き換えられません。{celsius} を使用してください").assertExists()
+    }
+
+    @Test
+    fun `空欄では読み上げない案内を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            readoutText = "",
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
+        rule.onNodeWithContentDescription("入力した文言を再生").assertIsEnabled()
+    }
+
+    @Test
+    fun `TTS不可では利用不可案内を優先し入力と試聴と挿入を無効にする`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutBrakeTemperatureDetailUiState(readoutText = "{lap}"),
+                )
+            }
+        }
+        rule.onNodeWithText("{lap}").assertIsNotEnabled()
+        rule.onNodeWithText("{celsius}を挿入").assertIsNotEnabled()
+        rule.onNodeWithContentDescription("入力した文言を再生").assertIsNotEnabled()
+        rule.onNodeWithText("この端末では音声合成を利用できないため、読み上げません").assertExists()
     }
 
     @Test
@@ -91,7 +271,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("デフォルトに戻す").performClick()
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].performScrollTo().performClick()
 
         assertEquals(LmuWindowsVehicleClassData.Hypercar, resetVehicleClass)
     }
@@ -112,4 +292,120 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneTest {
 
         assertEquals(false, changedEnabled)
     }
+
+    @Test
+    fun `編集後のリセットは既定文言を表示して保存を通知する`() {
+        val changes = mutableListOf<String>()
+        setResetTestContent(changes = changes)
+
+        rule.onNode(hasSetTextAction()).performTextReplacement("編集済み文言")
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsEnabled().performClick()
+        rule.onNode(hasSetTextAction()).assertEditableTextEquals(DEFAULT_TEXT)
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled()
+        assertEquals(listOf("編集済み文言", DEFAULT_TEXT), changes)
+    }
+
+    @Test
+    fun `既定文言と同じならリセットできず保存も通知しない`() {
+        val changes = mutableListOf<String>()
+        setResetTestContent(changes = changes)
+
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled().performClick()
+        assertEquals(emptyList(), changes)
+    }
+
+    @Test
+    fun `TTS利用不可では編集済み文言をリセットできず保存も通知しない`() {
+        val changes = mutableListOf<String>()
+        setResetTestContent(
+            changes = changes,
+            initialState = LmuWindowsReadoutBrakeTemperatureDetailUiState(readoutText = "編集済み文言"),
+        )
+
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled().performClick()
+        rule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.EditableText)).assertEditableTextEquals("編集済み文言")
+        assertEquals(emptyList(), changes)
+    }
+
+    @Test
+    fun `保存待ちのリセットは古い文言で巻き戻らず保存完了後は同期する`() {
+        val changes = mutableListOf<String>()
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            readoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onReadoutTextChanged = { changes += it },
+                )
+            }
+        }
+
+        rule.onNode(hasSetTextAction()).performTextReplacement("編集済み文言")
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].performClick()
+        rule.onNode(hasSetTextAction()).assertEditableTextEquals(DEFAULT_TEXT)
+        rule.runOnIdle { savedText = "編集済み文言" }
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction()).assertEditableTextEquals(DEFAULT_TEXT)
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled()
+        rule.runOnIdle { savedText = DEFAULT_TEXT }
+        rule.waitForIdle()
+        rule.runOnIdle { savedText = "保存後の変更" }
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction()).assertEditableTextEquals("保存後の変更")
+        assertEquals(listOf("編集済み文言", DEFAULT_TEXT), changes)
+    }
+
+    @Test
+    fun `対象クラスを選択するとそのクラスを通知し未知クラスは表示しない`() {
+        var selected: LmuWindowsVehicleClassData? = null
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutBrakeTemperatureDetailUiState(
+                            vehicleClassHighThresholdCelsius =
+                                mapOf(
+                                    LmuWindowsVehicleClassData.Hypercar to 800,
+                                    LmuWindowsVehicleClassData.Gte to 650,
+                                    LmuWindowsVehicleClassData.Unknown("custom") to 900,
+                                ),
+                        ),
+                    onVehicleClassSelected = { selected = it },
+                )
+            }
+        }
+        rule.onNodeWithText("GTE（650°C）").performScrollTo().performClick()
+        assertEquals(LmuWindowsVehicleClassData.Gte, selected)
+        rule.onNodeWithText("custom（900°C）").assertDoesNotExist()
+    }
+
+    private fun setResetTestContent(
+        changes: MutableList<String>,
+        initialState: LmuWindowsReadoutBrakeTemperatureDetailUiState =
+            LmuWindowsReadoutBrakeTemperatureDetailUiState(isTextToSpeechAvailable = true),
+    ) {
+        var uiState by mutableStateOf(initialState)
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutBrakeTemperatureDetailPaneContent(
+                    uiState = uiState,
+                    onReadoutTextChanged = {
+                        changes += it
+                        uiState = uiState.copy(readoutText = it)
+                    },
+                )
+            }
+        }
+    }
+
+    private fun SemanticsNodeInteraction.assertEditableTextEquals(expected: String) =
+        assert(
+            SemanticsMatcher("EditableText == $expected") {
+                it.config.getOrNull(SemanticsProperties.EditableText)?.text == expected
+            },
+        )
 }

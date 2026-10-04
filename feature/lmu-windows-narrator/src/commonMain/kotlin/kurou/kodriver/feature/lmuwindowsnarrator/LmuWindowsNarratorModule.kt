@@ -10,6 +10,7 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
@@ -199,6 +200,7 @@ val lmuWindowsNarratorModule: Module =
         }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreWearReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase(get()) }
         factory {
@@ -216,6 +218,7 @@ val lmuWindowsNarratorModule: Module =
                 observePitTimingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
                 observePitTimingVirtualEnergyImminentReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeRemainingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeBrakeTemperatureReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreWearReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreOverheatReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreColdReadoutText = get(named(Simulator.LmuWindows.id)),
@@ -243,7 +246,7 @@ val lmuWindowsNarratorModule: Module =
                     customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
                     isCustomSpeakEvent = {
                         it is SpeechEvent.PitTimingWarning || it is SpeechEvent.RemainingVirtualEnergyWarning ||
-                            it is SpeechEvent.TyreWearWarning ||
+                            it is SpeechEvent.TyreWearWarning || it is SpeechEvent.BrakeOverheat ||
                             it is SpeechEvent.TyreOverheat || it is SpeechEvent.TyreCold
                     },
                     customSpeakEvents =
@@ -270,7 +273,6 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.TyreDetached, "files/tyre_detached.wav")
         put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
-        put(SpeechEvent.BrakeOverheat, "files/brake_overheat.wav")
     }
 
 private val lmuWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =

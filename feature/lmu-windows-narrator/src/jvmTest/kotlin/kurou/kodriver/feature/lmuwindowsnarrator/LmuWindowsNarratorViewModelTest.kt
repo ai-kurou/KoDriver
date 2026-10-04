@@ -1675,7 +1675,10 @@ class LmuWindowsNarratorViewModelTest {
 
             channel.send(brakeTemperature(fl = 850.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.BrakeOverheat), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.BrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上")),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -1693,7 +1696,10 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(brakeTemperature(fl = 850.0))
             channel.send(brakeTemperature(fl = 850.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.BrakeOverheat), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.BrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上")),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -1714,8 +1720,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.BrakeOverheat,
-                    SpeechEvent.BrakeOverheat,
+                    SpeechEvent.BrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上"),
+                    SpeechEvent.BrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上"),
                 ),
                 spokenTexts,
             )

@@ -37,6 +37,7 @@ class SpeechEventTest {
 
     @Test
     fun `LMUタイヤ・エナジー系のnarratedTextはChipと同じ文言を返す`() {
+        assertEquals("ブレーキ温度800℃以上", SpeechEvent.BrakeOverheat(800).narratedText)
         assertEquals("タイヤ過熱 100度", SpeechEvent.TyreOverheat(100).narratedText)
         assertEquals("タイヤ低温 60度", SpeechEvent.TyreCold(60).narratedText)
         assertEquals("タイヤ残存率50%以下", SpeechEvent.TyreWearWarning(50).narratedText)

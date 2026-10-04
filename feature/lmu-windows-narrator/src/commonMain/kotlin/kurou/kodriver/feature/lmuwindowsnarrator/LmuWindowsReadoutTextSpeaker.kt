@@ -4,12 +4,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.PitTimingSource
+import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
@@ -28,7 +30,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRi
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
- * フラッグ・車両接近・ピットタイミング・バーチャルエナジー残量警告・タイヤ摩耗警告・タイヤ過熱警告の自由文字列をOS標準TTSで読み上げる、
+ * フラッグ・車両接近・ピットタイミング・バーチャルエナジー残量警告・タイヤ摩耗警告・ブレーキ過熱警告・タイヤ温度警告の自由文字列をOS標準TTSで読み上げる、
  * [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine] 用のフック。
  * 空欄またはTTSが利用できない場合は本文を読み上げない。
  * イベントごとの文言取得とTTSの依存を明示する。
@@ -45,6 +47,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [SpeechEvent.CarLeftSustained] : 左車両接近継続
  * - [SpeechEvent.CarRightSustained] : 右車両接近継続
  * - [SpeechEvent.RemainingVirtualEnergyWarning] : 設定した残量閾値の警告
+ * - [SpeechEvent.BrakeOverheat] : 設定した温度閾値の警告
  * - [SpeechEvent.TyreWearWarning] : 設定した残存率閾値の警告
  * - [SpeechEvent.PitTimingWarning] : バーチャルエナジー・タイヤ摩耗由来のピットタイミング
  */
@@ -65,6 +68,7 @@ internal class LmuWindowsReadoutTextSpeaker(
     private val observePitTimingTyreWearImminentReadoutText:
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
     private val observeRemainingVirtualEnergyReadoutText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase,
+    private val observeBrakeTemperatureReadoutText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase,
     private val observeTyreWearReadoutText: ObserveLmuWindowsTyreWearReadoutTextUseCase,
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase,
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase,
@@ -132,7 +136,7 @@ internal class LmuWindowsReadoutTextSpeaker(
             }
         }
 
-    /** 設定した閾値を文言に埋め込む警告（残量・タイヤ摩耗・タイヤ温度）の文言。対象外イベントは null。 */
+    /** 閾値や温度を文言に埋め込む警告（残量・タイヤ摩耗・ブレーキ温度・タイヤ温度）の文言。対象外イベントは null。 */
     private suspend fun thresholdWarningText(event: SpeechEvent): String? =
         when (event) {
             is SpeechEvent.TyreOverheat -> {
@@ -145,6 +149,10 @@ internal class LmuWindowsReadoutTextSpeaker(
 
             is SpeechEvent.RemainingVirtualEnergyWarning -> {
                 remainingVirtualEnergyText(event)
+            }
+
+            is SpeechEvent.BrakeOverheat -> {
+                brakeTemperatureText(event)
             }
 
             is SpeechEvent.TyreWearWarning -> {
@@ -167,6 +175,13 @@ internal class LmuWindowsReadoutTextSpeaker(
             ?: formatLmuWindowsRemainingVirtualEnergyReadoutText(
                 observeRemainingVirtualEnergyReadoutText().first(),
                 event.percentage,
+            )
+
+    private suspend fun brakeTemperatureText(event: SpeechEvent.BrakeOverheat): String =
+        event.resolvedText
+            ?: formatLmuWindowsBrakeTemperatureReadoutText(
+                observeBrakeTemperatureReadoutText().first(),
+                event.celsius,
             )
 
     private suspend fun tyreWearText(event: SpeechEvent.TyreWearWarning): String =
