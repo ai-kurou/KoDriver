@@ -239,12 +239,11 @@ val lmuWindowsNarratorModule: Module =
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
                     customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.RemainingVirtualEnergyWarning
+                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.RemainingVirtualEnergyWarning ||
+                            it is SpeechEvent.TyreOverheat || it is SpeechEvent.TyreCold
                     },
                     customSpeakEvents =
                         setOf(
-                            SpeechEvent.TyreOverheat,
-                            SpeechEvent.TyreCold,
                             SpeechEvent.CarLeft,
                             SpeechEvent.CarLeftSustained,
                             SpeechEvent.CarRight,

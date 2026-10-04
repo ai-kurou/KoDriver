@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.readoutEnabled
+import kotlin.math.roundToInt
 
 /**
  * LMU 向け読み上げ判定の継続状態。
@@ -327,7 +328,19 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(tyreOverheating = nextOverheating),
-            events = if (shouldAnnounce) listOf(SpeechEvent.TyreOverheat) else emptyList(),
+            events =
+                if (shouldAnnounce) {
+                    listOf(
+                        SpeechEvent.TyreOverheat(
+                            celsius =
+                                data.wheels.values
+                                    .maxOf { it.value }
+                                    .roundToInt(),
+                        ),
+                    )
+                } else {
+                    emptyList()
+                },
         )
     }
 
@@ -350,7 +363,19 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(previousGamePhaseForTyreLowWarning = raceFlags.gamePhase),
-            events = if (shouldAnnounce) listOf(SpeechEvent.TyreCold) else emptyList(),
+            events =
+                if (shouldAnnounce) {
+                    listOf(
+                        SpeechEvent.TyreCold(
+                            celsius =
+                                data.wheels.values
+                                    .maxOf { it.value }
+                                    .roundToInt(),
+                        ),
+                    )
+                } else {
+                    emptyList()
+                },
         )
     }
 

@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
@@ -103,7 +104,7 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
 
     /** 空白文言・TTS利用不可・音量ゼロでは再生しない。 */
     fun onOverheatReadoutTextPreviewClicked(text: String) {
-        previewReadoutText(text)
+        previewReadoutText(formatLmuWindowsTyreTemperatureReadoutText(text, OVERHEAT_PREVIEW_CELSIUS))
     }
 
     private fun previewReadoutText(text: String) {
@@ -128,7 +129,7 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
 
     /** 入力中の低温文言を過熱文言と同じTTS設定で試聴する。 */
     fun onLowWarningPreviewClicked(text: String) {
-        previewReadoutText(text)
+        previewReadoutText(formatLmuWindowsTyreTemperatureReadoutText(text, COLD_PREVIEW_CELSIUS))
     }
 
     fun onLowWarningPhaseToggled(phase: SessionPhase) {
@@ -159,3 +160,9 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
         viewModelScope.launch { tyreTemperatureUseCases.saveVehicleClassSelection(vehicleClass) }
     }
 }
+
+/** 過熱文言の試聴専用の代表温度。実際の警告判定には使用しない。 */
+private const val OVERHEAT_PREVIEW_CELSIUS = 100
+
+/** 低温文言の試聴専用の代表温度。実際の警告判定には使用しない。 */
+private const val COLD_PREVIEW_CELSIUS = 60

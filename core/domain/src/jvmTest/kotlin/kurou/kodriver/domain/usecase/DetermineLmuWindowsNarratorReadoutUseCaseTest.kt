@@ -1165,8 +1165,41 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
-        assertEquals(listOf(SpeechEvent.TyreOverheat), decision.events)
+        assertEquals(listOf(SpeechEvent.TyreOverheat(95)), decision.events)
         assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `過熱と低温の警告は全輪の最高温度を四捨五入する`() {
+        listOf(99.5 to 100, 99.4 to 99).forEach { (temperature, expected) ->
+            WheelIndex.entries.forEach { hottestWheel ->
+                val input =
+                    TyreTemperatureReadoutInput(
+                        tyreCarcassTemperature =
+                            LmuWindowsTyreCarcassTemperatureData(
+                                wheels =
+                                    WheelIndex.entries.associateWith {
+                                        CelsiusReading(if (it == hottestWheel) temperature.toFloat() else 55f)
+                                    },
+                            ),
+                        raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+                    )
+                val overheat =
+                    useCase.determineTyreTemperatureOverheat(
+                        LmuWindowsNarratorState(),
+                        input,
+                        settings(tyreTemperatureHighThresholdCelsius = 90),
+                    )
+                val cold =
+                    useCase.determineTyreTemperatureLow(
+                        LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+                        input,
+                        settings(),
+                    )
+                assertEquals(listOf(SpeechEvent.TyreOverheat(expected)), overheat.events)
+                assertEquals(listOf(SpeechEvent.TyreCold(expected)), cold.events)
+            }
+        }
     }
 
     @Test
@@ -1209,7 +1242,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, cooledState.tyreOverheating)
-        assertEquals(listOf(SpeechEvent.TyreOverheat), reovertState.events)
+        assertEquals(listOf(SpeechEvent.TyreOverheat(95)), reovertState.events)
     }
 
     @Test
@@ -1634,7 +1667,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
-        assertEquals(listOf(SpeechEvent.TyreOverheat), decision.events)
+        assertEquals(listOf(SpeechEvent.TyreOverheat(90)), decision.events)
     }
 
     @Test
@@ -1688,7 +1721,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.TyreCold), decision.events)
+        assertEquals(listOf(SpeechEvent.TyreCold(55)), decision.events)
     }
 
     @Test
@@ -1731,7 +1764,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.TyreCold), decision.events)
+        assertEquals(listOf(SpeechEvent.TyreCold(80)), decision.events)
     }
 
     @Test

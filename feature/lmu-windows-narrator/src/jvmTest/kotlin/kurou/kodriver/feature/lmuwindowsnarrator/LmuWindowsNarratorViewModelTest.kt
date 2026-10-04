@@ -498,9 +498,9 @@ class LmuWindowsNarratorViewModelTest {
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
                     readoutText = {
-                        if (it == SpeechEvent.TyreOverheat) {
+                        if (it is SpeechEvent.TyreOverheat) {
                             tyreOverheatReadoutText
-                        } else if (it == SpeechEvent.TyreCold) {
+                        } else if (it is SpeechEvent.TyreCold) {
                             tyreColdReadoutText
                         } else if (it is SpeechEvent.PitTimingWarning && it.source == PitTimingSource.TyreWear) {
                             "タイヤ交換へ"
@@ -1301,7 +1301,7 @@ class LmuWindowsNarratorViewModelTest {
 
             channel.send(tyreTemperature(fl = 95.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat(95, "タイヤを冷やして")), spokenTexts)
         }
 
     @Test
@@ -1348,7 +1348,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(tyreTemperature(fl = 95.0))
             channel.send(tyreTemperature(fl = 95.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat(95, "タイヤを冷やして")), spokenTexts)
         }
 
     @Test
@@ -1371,7 +1371,13 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(tyreTemperature(fl = 20.0))
             channel.send(tyreTemperature(fl = 95.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat, SpeechEvent.TyreOverheat), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.TyreOverheat(95, "タイヤを冷やして"),
+                    SpeechEvent.TyreOverheat(95, "タイヤを冷やして"),
+                ),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -1518,7 +1524,7 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"overheatState":{""")
             assertContains(log.telemetryJson, """"finalState":{""")
-            verify(exactly = 0) { tts.speak(SpeechEvent.TyreOverheat, queue = false) }
+            verify(exactly = 0) { tts.speak(SpeechEvent.TyreOverheat(95, "タイヤを冷やして"), queue = false) }
             verify(exactly = 0) { tts.currentReadoutItemKey }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
@@ -2346,7 +2352,7 @@ class LmuWindowsNarratorViewModelTest {
 
             flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreCold), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreCold(55, "タイヤを温めて")), spokenTexts)
         }
 
     @Test
@@ -2494,7 +2500,7 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"overheatState":{""")
             assertContains(log.telemetryJson, """"finalState":{""")
-            verify(exactly = 0) { tts.speak(SpeechEvent.TyreCold, queue = false) }
+            verify(exactly = 0) { tts.speak(SpeechEvent.TyreCold(55, "タイヤを温めて"), queue = false) }
             verify(exactly = 0) { tts.currentReadoutItemKey }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(

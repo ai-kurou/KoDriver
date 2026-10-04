@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -23,9 +24,11 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -523,5 +526,106 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
             }
         }
         rule.onNodeWithContentDescription("過熱警告の文言をデフォルトに戻す").assertIsNotEnabled()
+    }
+
+    @Test
+    fun `温度チップは入力末尾に追加して過熱と低温の保存コールバックへ渡す`() {
+        val overheatChanges = mutableListOf<String>()
+        val coldChanges = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = "過熱",
+                            coldReadoutText = "低温",
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onOverheatReadoutTextChanged = { overheatChanges += it },
+                    onColdReadoutTextChanged = { coldChanges += it },
+                )
+            }
+        }
+        rule.onAllNodesWithText("{celsius}を挿入")[0].performScrollTo().performClick()
+        rule.onAllNodesWithText("{celsius}を挿入")[1].performScrollTo().performClick()
+        assertEquals(listOf("過熱{celsius}"), overheatChanges)
+        assertEquals(listOf("低温{celsius}"), coldChanges)
+        rule.onNode(hasSetTextAction() and hasText("過熱{celsius}")).assertExists()
+        rule.onNode(hasSetTextAction() and hasText("低温{celsius}")).assertExists()
+    }
+
+    @Test
+    fun `温度チップは上限ちょうどまで追加でき上限を超えると無効になる`() {
+        val text = "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH - LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER.length)
+        val overheatChanges = mutableListOf<String>()
+        val coldChanges = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = text,
+                            coldReadoutText = text,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onOverheatReadoutTextChanged = { overheatChanges += it },
+                    onColdReadoutTextChanged = { coldChanges += it },
+                )
+            }
+        }
+        listOf(0, 1).forEach { index ->
+            rule
+                .onAllNodesWithText("{celsius}を挿入")[index]
+                .performScrollTo()
+                .assertIsEnabled()
+                .performClick()
+            rule.onAllNodesWithText("{celsius}を挿入")[index].assertIsNotEnabled()
+        }
+        assertEquals(listOf(text + LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER), overheatChanges)
+        assertEquals(overheatChanges, coldChanges)
+    }
+
+    @Test
+    fun `未知のプレースホルダーは出現順で重複なく警告し既知の温度は警告しない`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = "{celsius}{wheel}{x}{wheel}",
+                            coldReadoutText = "{celsius}{wheel}{x}{wheel}",
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        listOf(0, 1).forEach { index ->
+            rule
+                .onAllNodesWithText("未対応のプレースホルダー {wheel}、{x} はそのまま読み上げられます")[index]
+                .performScrollTo()
+                .assertIsDisplayed()
+        }
+        rule.onAllNodesWithText("未対応のプレースホルダー {celsius}", substring = true).assertCountEquals(0)
+    }
+
+    @Test
+    fun `TTS利用不可では温度チップを無効にして未知トークンより利用不可案内を優先する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = "{wheel}",
+                            coldReadoutText = "{wheel}",
+                            isTextToSpeechAvailable = false,
+                        ),
+                )
+            }
+        }
+        listOf(0, 1).forEach { index ->
+            rule.onAllNodesWithText("{celsius}を挿入")[index].performScrollTo().assertIsNotEnabled()
+            rule.onAllNodesWithText("この端末では音声合成を利用できないため、読み上げません")[index].assertExists()
+        }
+        rule.onAllNodesWithText("未対応のプレースホルダー", substring = true).assertCountEquals(0)
     }
 }
