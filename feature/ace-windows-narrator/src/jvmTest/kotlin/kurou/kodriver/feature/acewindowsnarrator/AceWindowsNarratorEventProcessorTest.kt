@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package kurou.kodriver.feature.acewindowsnarrator
 
 import io.mockk.Runs
@@ -802,9 +804,19 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `Checkeredの保存文言を読み上げログに記録する`() =
+    fun `自由文言8種の保存文言を読み上げログに記録する`() =
         runTest {
-            val events: List<SpeechEvent> = listOf(SpeechEvent.AceWindowsCheckeredFlag)
+            val events =
+                listOf(
+                    SpeechEvent.AceWindowsCheckeredFlag,
+                    SpeechEvent.AceWindowsWhiteFlag,
+                    SpeechEvent.AceWindowsGreenFlag,
+                    SpeechEvent.AceWindowsRedFlag,
+                    SpeechEvent.AceWindowsBlueFlag,
+                    SpeechEvent.AceWindowsYellowFlag,
+                    SpeechEvent.AceWindowsBlackFlag,
+                    SpeechEvent.AceWindowsBlackWhiteFlag,
+                )
             val readouts = mutableListOf<SpeechEvent>()
             val processor =
                 AceWindowsNarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { event ->
@@ -827,7 +839,19 @@ class AceWindowsNarratorEventProcessorTest {
                     )
                 } just Runs
                 processor.processFlag(
-                    flag(AceWindowsFlagType.CHECKERED_FLAG),
+                    flag(
+                        when (event) {
+                            SpeechEvent.AceWindowsCheckeredFlag -> AceWindowsFlagType.CHECKERED_FLAG
+                            SpeechEvent.AceWindowsWhiteFlag -> AceWindowsFlagType.WHITE_FLAG
+                            SpeechEvent.AceWindowsGreenFlag -> AceWindowsFlagType.GREEN_FLAG
+                            SpeechEvent.AceWindowsRedFlag -> AceWindowsFlagType.RED_FLAG
+                            SpeechEvent.AceWindowsBlueFlag -> AceWindowsFlagType.BLUE_FLAG
+                            SpeechEvent.AceWindowsYellowFlag -> AceWindowsFlagType.YELLOW_FLAG
+                            SpeechEvent.AceWindowsBlackFlag -> AceWindowsFlagType.BLACK_FLAG
+                            SpeechEvent.AceWindowsBlackWhiteFlag -> AceWindowsFlagType.BLACK_WHITE_FLAG
+                            else -> error("Unexpected flag event")
+                        },
+                    ),
                     listOf(event),
                     listOf(event.readoutItemKey),
                     emptyMap(),
@@ -852,9 +876,19 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `Checkeredの文言がnullなら空文字とSKIPPEDを記録する`() =
+    fun `自由文言8種の文言がnullなら空文字とSKIPPEDを記録する`() =
         runTest {
-            val events: List<SpeechEvent> = listOf(SpeechEvent.AceWindowsCheckeredFlag)
+            val events =
+                listOf(
+                    SpeechEvent.AceWindowsCheckeredFlag,
+                    SpeechEvent.AceWindowsWhiteFlag,
+                    SpeechEvent.AceWindowsGreenFlag,
+                    SpeechEvent.AceWindowsRedFlag,
+                    SpeechEvent.AceWindowsBlueFlag,
+                    SpeechEvent.AceWindowsYellowFlag,
+                    SpeechEvent.AceWindowsBlackFlag,
+                    SpeechEvent.AceWindowsBlackWhiteFlag,
+                )
             val readouts = mutableListOf<SpeechEvent>()
             val processor =
                 AceWindowsNarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { event ->
@@ -877,7 +911,19 @@ class AceWindowsNarratorEventProcessorTest {
                     )
                 } just Runs
                 processor.processFlag(
-                    flag(AceWindowsFlagType.CHECKERED_FLAG),
+                    flag(
+                        when (event) {
+                            SpeechEvent.AceWindowsCheckeredFlag -> AceWindowsFlagType.CHECKERED_FLAG
+                            SpeechEvent.AceWindowsWhiteFlag -> AceWindowsFlagType.WHITE_FLAG
+                            SpeechEvent.AceWindowsGreenFlag -> AceWindowsFlagType.GREEN_FLAG
+                            SpeechEvent.AceWindowsRedFlag -> AceWindowsFlagType.RED_FLAG
+                            SpeechEvent.AceWindowsBlueFlag -> AceWindowsFlagType.BLUE_FLAG
+                            SpeechEvent.AceWindowsYellowFlag -> AceWindowsFlagType.YELLOW_FLAG
+                            SpeechEvent.AceWindowsBlackFlag -> AceWindowsFlagType.BLACK_FLAG
+                            SpeechEvent.AceWindowsBlackWhiteFlag -> AceWindowsFlagType.BLACK_WHITE_FLAG
+                            else -> error("Unexpected flag event")
+                        },
+                    ),
                     listOf(event),
                     listOf(event.readoutItemKey),
                     emptyMap(),
@@ -902,17 +948,10 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `他の9種フラッグは自由文言を参照せず従来文言を記録する`() =
+    fun `残り2種フラッグは自由文言を参照せず従来文言を記録する`() =
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.AceWindowsWhiteFlag,
-                    SpeechEvent.AceWindowsGreenFlag,
-                    SpeechEvent.AceWindowsRedFlag,
-                    SpeechEvent.AceWindowsBlueFlag,
-                    SpeechEvent.AceWindowsYellowFlag,
-                    SpeechEvent.AceWindowsBlackFlag,
-                    SpeechEvent.AceWindowsBlackWhiteFlag,
                     SpeechEvent.AceWindowsOrangeCircleFlag,
                     SpeechEvent.AceWindowsRedYellowStripesFlag,
                 )

@@ -1,7 +1,14 @@
 package kurou.kodriver.feature.acewindowsreadout.flagdetail
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_black
@@ -26,37 +33,37 @@ internal enum class FlagReadoutItem(
     WhiteFlag(
         key = ReadoutItemKey.AceWindows.Flag.WhiteFlag,
         labelRes = Res.string.flag_white,
-        previewEvent = SpeechEvent.AceWindowsWhiteFlag,
+        defaultText = ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT,
     ),
     GreenFlag(
         key = ReadoutItemKey.AceWindows.Flag.GreenFlag,
         labelRes = Res.string.flag_green,
-        previewEvent = SpeechEvent.AceWindowsGreenFlag,
+        defaultText = ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT,
     ),
     RedFlag(
         key = ReadoutItemKey.AceWindows.Flag.RedFlag,
         labelRes = Res.string.flag_red,
-        previewEvent = SpeechEvent.AceWindowsRedFlag,
+        defaultText = ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT,
     ),
     BlueFlag(
         key = ReadoutItemKey.AceWindows.Flag.BlueFlag,
         labelRes = Res.string.flag_blue,
-        previewEvent = SpeechEvent.AceWindowsBlueFlag,
+        defaultText = ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT,
     ),
     YellowFlag(
         key = ReadoutItemKey.AceWindows.Flag.YellowFlag,
         labelRes = Res.string.flag_yellow,
-        previewEvent = SpeechEvent.AceWindowsYellowFlag,
+        defaultText = ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT,
     ),
     BlackFlag(
         key = ReadoutItemKey.AceWindows.Flag.BlackFlag,
         labelRes = Res.string.flag_black,
-        previewEvent = SpeechEvent.AceWindowsBlackFlag,
+        defaultText = ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT,
     ),
     BlackWhiteFlag(
         key = ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag,
         labelRes = Res.string.flag_black_white,
-        previewEvent = SpeechEvent.AceWindowsBlackWhiteFlag,
+        defaultText = ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT,
     ),
     CheckeredFlag(
         key = ReadoutItemKey.AceWindows.Flag.CheckeredFlag,

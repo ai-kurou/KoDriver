@@ -12,4 +12,46 @@ internal class AceWindowsFlagReadoutTextPreferencesRepositoryImpl(
     override suspend fun saveCheckeredFlagText(text: String) {
         dataStore.saveProperty(text) { prefs, value -> prefs.copy(checkeredFlagText = value) }
     }
+
+    override fun observeWhiteFlagText(): Flow<String> = dataStore.observeProperty { it.whiteFlagText }
+
+    override suspend fun saveWhiteFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(whiteFlagText = value) }
+    }
+
+    override fun observeGreenFlagText(): Flow<String> = dataStore.observeProperty { it.greenFlagText }
+
+    override suspend fun saveGreenFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(greenFlagText = value) }
+    }
+
+    override fun observeRedFlagText(): Flow<String> = dataStore.observeProperty { it.redFlagText }
+
+    override suspend fun saveRedFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(redFlagText = value) }
+    }
+
+    override fun observeBlueFlagText(): Flow<String> = dataStore.observeProperty { it.blueFlagText }
+
+    override suspend fun saveBlueFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(blueFlagText = value) }
+    }
+
+    override fun observeYellowFlagText(): Flow<String> = dataStore.observeProperty { it.yellowFlagText }
+
+    override suspend fun saveYellowFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(yellowFlagText = value) }
+    }
+
+    override fun observeBlackFlagText(): Flow<String> = dataStore.observeProperty { it.blackFlagText }
+
+    override suspend fun saveBlackFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(blackFlagText = value) }
+    }
+
+    override fun observeBlackWhiteFlagText(): Flow<String> = dataStore.observeProperty { it.blackWhiteFlagText }
+
+    override suspend fun saveBlackWhiteFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(blackWhiteFlagText = value) }
+    }
 }

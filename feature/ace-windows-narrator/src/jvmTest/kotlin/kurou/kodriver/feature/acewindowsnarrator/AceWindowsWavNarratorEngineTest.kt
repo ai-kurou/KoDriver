@@ -89,44 +89,57 @@ class AceWindowsWavNarratorEngineTest {
         }
 
     @Test
-    fun `CheckeredはFlagRoot開始音の後にTTS本文を再生しWAVにフォールバックしない`() =
+    fun `自由文言8種はFlagRoot開始音の後にTTS本文を再生しWAVにフォールバックしない`() =
         runTest {
-            val calls = mutableListOf<String>()
-            val startSound = byteArrayOf(2)
-            coEvery { soundPlayer.play(startSound, 42) } answers { calls += "start" }
-            val engine =
-                WavNarratorEngine(
-                    soundPlayer = soundPlayer,
-                    resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.AceWindowsCheckeredFlag to "unused.wav"),
-                            startSoundTypeToFile = mapOf(ReadoutStartSoundType.FORMULA_RADIO to "start.wav"),
-                            resourceLoader = { byteArrayOf(1) },
-                            startSoundResourceLoader = { startSound },
-                        ),
-                    eventToKey = { it.readoutItemKey },
-                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
-                    volumeFlow = flowOf(42),
-                    startSoundEnabledStatesFlow =
-                        flowOf(
-                            mapOf(
-                                ReadoutItemKey.AceWindows.Flag.Root to true,
-                                ReadoutItemKey.AceWindows.Flag.CheckeredFlag to false,
-                            ),
-                        ),
-                    isCustomSpeakEvent = ::isAceWindowsCustomSpeakEvent,
-                    customSpeak = { event, volume ->
-                        assertEquals(SpeechEvent.AceWindowsCheckeredFlag, event)
-                        assertEquals(42, volume)
-                        calls += "text"
-                    },
-                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+            val events =
+                listOf(
+                    SpeechEvent.AceWindowsCheckeredFlag,
+                    SpeechEvent.AceWindowsWhiteFlag,
+                    SpeechEvent.AceWindowsGreenFlag,
+                    SpeechEvent.AceWindowsRedFlag,
+                    SpeechEvent.AceWindowsBlueFlag,
+                    SpeechEvent.AceWindowsYellowFlag,
+                    SpeechEvent.AceWindowsBlackFlag,
+                    SpeechEvent.AceWindowsBlackWhiteFlag,
                 )
-            runCurrent()
-            AceWindowsWavNarratorEngine(engine).speak(SpeechEvent.AceWindowsCheckeredFlag)
-            runCurrent()
-            assertEquals(listOf("start", "text"), calls)
-            coVerify(exactly = 1) { soundPlayer.play(startSound, 42) }
+            val startSound = byteArrayOf(2)
+            events.forEachIndexed { index, target ->
+                val calls = mutableListOf<String>()
+                coEvery { soundPlayer.play(startSound, 42) } answers { calls += "start" }
+                val engine =
+                    WavNarratorEngine(
+                        soundPlayer = soundPlayer,
+                        resources =
+                            WavResources<SpeechEvent, ReadoutStartSoundType>(
+                                eventToFile = mapOf(target to "unused.wav"),
+                                startSoundTypeToFile = mapOf(ReadoutStartSoundType.FORMULA_RADIO to "start.wav"),
+                                resourceLoader = { byteArrayOf(1) },
+                                startSoundResourceLoader = { startSound },
+                            ),
+                        eventToKey = { it.readoutItemKey },
+                        defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                        volumeFlow = flowOf(42),
+                        startSoundEnabledStatesFlow =
+                            flowOf(
+                                mapOf(
+                                    ReadoutItemKey.AceWindows.Flag.Root to true,
+                                    ReadoutItemKey.AceWindows.Flag.WhiteFlag to false,
+                                ),
+                            ),
+                        isCustomSpeakEvent = ::isAceWindowsCustomSpeakEvent,
+                        customSpeak = { event, volume ->
+                            assertEquals(target, event)
+                            assertEquals(42, volume)
+                            calls += "text"
+                        },
+                        scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                    )
+                runCurrent()
+                AceWindowsWavNarratorEngine(engine).speak(target)
+                runCurrent()
+                assertEquals(listOf("start", "text"), calls)
+                coVerify(exactly = index + 1) { soundPlayer.play(startSound, 42) }
+            }
             confirmVerified(soundPlayer)
         }
 }

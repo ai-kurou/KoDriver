@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package kurou.kodriver.feature.acewindowsreadout.flagdetail
 
 import io.mockk.coEvery
@@ -25,14 +27,28 @@ import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepo
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsBlackFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsBlackWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsFlagEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -73,6 +89,20 @@ class AceWindowsReadoutFlagDetailViewModelTest {
                     FlagReadoutTextUseCases(
                         ObserveAceWindowsCheckeredFlagReadoutTextUseCase(texts),
                         SaveAceWindowsCheckeredFlagReadoutTextUseCase(texts),
+                        ObserveAceWindowsWhiteFlagReadoutTextUseCase(texts),
+                        SaveAceWindowsWhiteFlagReadoutTextUseCase(texts),
+                        ObserveAceWindowsGreenFlagReadoutTextUseCase(texts),
+                        SaveAceWindowsGreenFlagReadoutTextUseCase(texts),
+                        ObserveAceWindowsRedFlagReadoutTextUseCase(texts),
+                        SaveAceWindowsRedFlagReadoutTextUseCase(texts),
+                        ObserveAceWindowsBlueFlagReadoutTextUseCase(texts),
+                        SaveAceWindowsBlueFlagReadoutTextUseCase(texts),
+                        ObserveAceWindowsYellowFlagReadoutTextUseCase(texts),
+                        SaveAceWindowsYellowFlagReadoutTextUseCase(texts),
+                        ObserveAceWindowsBlackFlagReadoutTextUseCase(texts),
+                        SaveAceWindowsBlackFlagReadoutTextUseCase(texts),
+                        ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase(texts),
+                        SaveAceWindowsBlackWhiteFlagReadoutTextUseCase(texts),
                     ),
                 ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
@@ -87,6 +117,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { texts.observeCheckeredFlagText() } returns flowOf("完走")
+            every { texts.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+            every { texts.observeGreenFlagText() } returns flowOf("グリーンフラッグ")
+            every { texts.observeRedFlagText() } returns flowOf("レッドフラッグ")
+            every { texts.observeBlueFlagText() } returns flowOf("ブルーフラッグ")
+            every { texts.observeYellowFlagText() } returns flowOf("イエローフラッグ")
+            every { texts.observeBlackFlagText() } returns flowOf("ブラックフラッグ")
+            every { texts.observeBlackWhiteFlagText() } returns flowOf("ブラック・ホワイトフラッグ")
             coEvery { tts.isAvailable() } returns true
             val viewModel = createViewModel()
 
@@ -108,6 +145,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
                 statesFlow.update { it + (ReadoutItemKey.AceWindows.Flag.BlueFlag to false) }
             }
             every { texts.observeCheckeredFlagText() } returns flowOf("完走")
+            every { texts.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+            every { texts.observeGreenFlagText() } returns flowOf("グリーンフラッグ")
+            every { texts.observeRedFlagText() } returns flowOf("レッドフラッグ")
+            every { texts.observeBlueFlagText() } returns flowOf("ブルーフラッグ")
+            every { texts.observeYellowFlagText() } returns flowOf("イエローフラッグ")
+            every { texts.observeBlackFlagText() } returns flowOf("ブラックフラッグ")
+            every { texts.observeBlackWhiteFlagText() } returns flowOf("ブラック・ホワイトフラッグ")
             coEvery { tts.isAvailable() } returns true
             val viewModel = createViewModel()
 
@@ -124,24 +168,24 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         val eventByItem =
             mapOf(
-                FlagReadoutItem.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag,
-                FlagReadoutItem.GreenFlag to SpeechEvent.AceWindowsGreenFlag,
-                FlagReadoutItem.RedFlag to SpeechEvent.AceWindowsRedFlag,
-                FlagReadoutItem.BlueFlag to SpeechEvent.AceWindowsBlueFlag,
-                FlagReadoutItem.YellowFlag to SpeechEvent.AceWindowsYellowFlag,
-                FlagReadoutItem.BlackFlag to SpeechEvent.AceWindowsBlackFlag,
-                FlagReadoutItem.BlackWhiteFlag to SpeechEvent.AceWindowsBlackWhiteFlag,
                 FlagReadoutItem.OrangeCircleFlag to SpeechEvent.AceWindowsOrangeCircleFlag,
                 FlagReadoutItem.RedYellowStripesFlag to SpeechEvent.AceWindowsRedYellowStripesFlag,
             )
         assertEquals(FlagReadoutItem.entries.filter { it.defaultText == null }.toSet(), eventByItem.keys)
         eventByItem.forEach { (_, event) -> every { ttsEngine.speak(event, false) } returns Unit }
         every { texts.observeCheckeredFlagText() } returns flowOf("完走")
+        every { texts.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+        every { texts.observeGreenFlagText() } returns flowOf("グリーンフラッグ")
+        every { texts.observeRedFlagText() } returns flowOf("レッドフラッグ")
+        every { texts.observeBlueFlagText() } returns flowOf("ブルーフラッグ")
+        every { texts.observeYellowFlagText() } returns flowOf("イエローフラッグ")
+        every { texts.observeBlackFlagText() } returns flowOf("ブラックフラッグ")
+        every { texts.observeBlackWhiteFlagText() } returns flowOf("ブラック・ホワイトフラッグ")
         coEvery { tts.isAvailable() } returns true
         val viewModel = createViewModel()
 
         eventByItem.forEach { (item, _) -> viewModel.onPreviewClicked(item) }
-        viewModel.onPreviewClicked(FlagReadoutItem.CheckeredFlag)
+        FlagReadoutItem.entries.filter { it.defaultText != null }.forEach { viewModel.onPreviewClicked(it) }
 
         eventByItem.forEach { (_, event) -> verify(exactly = 1) { ttsEngine.speak(event, false) } }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
@@ -149,18 +193,30 @@ class AceWindowsReadoutFlagDetailViewModelTest {
     }
 
     @Test
-    fun `Checkeredのみ文言を監視し空白保存とリセットを反映する`() =
+    fun `8種の文言を監視し空白保存とリセットを反映する`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
             val textFlow = MutableStateFlow("完走")
             every { texts.observeCheckeredFlagText() } returns textFlow
+            every { texts.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+            every { texts.observeGreenFlagText() } returns flowOf("グリーンフラッグ")
+            every { texts.observeRedFlagText() } returns flowOf("レッドフラッグ")
+            every { texts.observeBlueFlagText() } returns flowOf("ブルーフラッグ")
+            every { texts.observeYellowFlagText() } returns flowOf("イエローフラッグ")
+            every { texts.observeBlackFlagText() } returns flowOf("ブラックフラッグ")
+            every { texts.observeBlackWhiteFlagText() } returns flowOf("ブラック・ホワイトフラッグ")
             coEvery { tts.isAvailable() } returns true
             coEvery { texts.saveCheckeredFlagText("") } answers { textFlow.update { "" } }
             coEvery { texts.saveCheckeredFlagText("チェッカーフラッグ") } answers {
                 textFlow.update { "チェッカーフラッグ" }
             }
             val vm = createViewModel()
-            assertEquals(mapOf(FlagReadoutItem.CheckeredFlag to "完走"), vm.uiState.first().flagTexts)
+            assertEquals(
+                FlagReadoutItem.entries.filter { it.defaultText != null }.associateWith {
+                    if (it == FlagReadoutItem.CheckeredFlag) "完走" else it.defaultText.orEmpty()
+                },
+                vm.uiState.first().flagTexts,
+            )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.CheckeredFlag, "   ")
             assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.CheckeredFlag))
@@ -169,6 +225,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             coVerify(exactly = 1) { texts.saveCheckeredFlagText("") }
             coVerify(exactly = 1) { texts.saveCheckeredFlagText("チェッカーフラッグ") }
             verify(exactly = 1) { texts.observeCheckeredFlagText() }
+            verify(exactly = 1) { texts.observeWhiteFlagText() }
+            verify(exactly = 1) { texts.observeGreenFlagText() }
+            verify(exactly = 1) { texts.observeRedFlagText() }
+            verify(exactly = 1) { texts.observeBlueFlagText() }
+            verify(exactly = 1) { texts.observeYellowFlagText() }
+            verify(exactly = 1) { texts.observeBlackFlagText() }
+            verify(exactly = 1) { texts.observeBlackWhiteFlagText() }
             confirmVerified(texts)
         }
 
@@ -177,6 +240,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         runTest {
             every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
             every { texts.observeCheckeredFlagText() } returns flowOf("完走")
+            every { texts.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+            every { texts.observeGreenFlagText() } returns flowOf("グリーンフラッグ")
+            every { texts.observeRedFlagText() } returns flowOf("レッドフラッグ")
+            every { texts.observeBlueFlagText() } returns flowOf("ブルーフラッグ")
+            every { texts.observeYellowFlagText() } returns flowOf("イエローフラッグ")
+            every { texts.observeBlackFlagText() } returns flowOf("ブラックフラッグ")
+            every { texts.observeBlackWhiteFlagText() } returns flowOf("ブラック・ホワイトフラッグ")
             coEvery { tts.isAvailable() } returns true
             coEvery { texts.saveCheckeredFlagText("注意") } returns Unit
             val vm = createViewModel()
@@ -187,6 +257,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             }
             coVerify(exactly = 1) { texts.saveCheckeredFlagText("注意") }
             verify(exactly = 1) { texts.observeCheckeredFlagText() }
+            verify(exactly = 1) { texts.observeWhiteFlagText() }
+            verify(exactly = 1) { texts.observeGreenFlagText() }
+            verify(exactly = 1) { texts.observeRedFlagText() }
+            verify(exactly = 1) { texts.observeBlueFlagText() }
+            verify(exactly = 1) { texts.observeYellowFlagText() }
+            verify(exactly = 1) { texts.observeBlackFlagText() }
+            verify(exactly = 1) { texts.observeBlackWhiteFlagText() }
             confirmVerified(texts)
         }
 
@@ -195,6 +272,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         runTest {
             every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
             every { texts.observeCheckeredFlagText() } returns flowOf("完走")
+            every { texts.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+            every { texts.observeGreenFlagText() } returns flowOf("グリーンフラッグ")
+            every { texts.observeRedFlagText() } returns flowOf("レッドフラッグ")
+            every { texts.observeBlueFlagText() } returns flowOf("ブルーフラッグ")
+            every { texts.observeYellowFlagText() } returns flowOf("イエローフラッグ")
+            every { texts.observeBlackFlagText() } returns flowOf("ブラックフラッグ")
+            every { texts.observeBlackWhiteFlagText() } returns flowOf("ブラック・ホワイトフラッグ")
             coEvery { tts.isAvailable() } returns true
             every { volumes.volume() } returns flowOf(42)
             every { observeVoice() } returns flowOf("voice-a")
@@ -217,6 +301,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         runTest {
             every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
             every { texts.observeCheckeredFlagText() } returns flowOf("完走")
+            every { texts.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+            every { texts.observeGreenFlagText() } returns flowOf("グリーンフラッグ")
+            every { texts.observeRedFlagText() } returns flowOf("レッドフラッグ")
+            every { texts.observeBlueFlagText() } returns flowOf("ブルーフラッグ")
+            every { texts.observeYellowFlagText() } returns flowOf("イエローフラッグ")
+            every { texts.observeBlackFlagText() } returns flowOf("ブラックフラッグ")
+            every { texts.observeBlackWhiteFlagText() } returns flowOf("ブラック・ホワイトフラッグ")
             coEvery { tts.isAvailable() } returns true
             val vm = createViewModel()
             vm.onFlagTextPreviewClicked("")
@@ -231,6 +322,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         runTest {
             every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
             every { texts.observeCheckeredFlagText() } returns flowOf("完走")
+            every { texts.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+            every { texts.observeGreenFlagText() } returns flowOf("グリーンフラッグ")
+            every { texts.observeRedFlagText() } returns flowOf("レッドフラッグ")
+            every { texts.observeBlueFlagText() } returns flowOf("ブルーフラッグ")
+            every { texts.observeYellowFlagText() } returns flowOf("イエローフラッグ")
+            every { texts.observeBlackFlagText() } returns flowOf("ブラックフラッグ")
+            every { texts.observeBlackWhiteFlagText() } returns flowOf("ブラック・ホワイトフラッグ")
             coEvery { tts.isAvailable() } returns false
             val vm = createViewModel()
             assertFalse(vm.uiState.first().isTextToSpeechAvailable)
@@ -245,6 +343,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         runTest {
             every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
             every { texts.observeCheckeredFlagText() } returns flowOf("完走")
+            every { texts.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+            every { texts.observeGreenFlagText() } returns flowOf("グリーンフラッグ")
+            every { texts.observeRedFlagText() } returns flowOf("レッドフラッグ")
+            every { texts.observeBlueFlagText() } returns flowOf("ブルーフラッグ")
+            every { texts.observeYellowFlagText() } returns flowOf("イエローフラッグ")
+            every { texts.observeBlackFlagText() } returns flowOf("ブラックフラッグ")
+            every { texts.observeBlackWhiteFlagText() } returns flowOf("ブラック・ホワイトフラッグ")
             coEvery { tts.isAvailable() } returns true
             every { volumes.volume() } returnsMany listOf(flowOf(0), flowOf(-1))
             val vm = createViewModel()
@@ -258,10 +363,12 @@ class AceWindowsReadoutFlagDetailViewModelTest {
     @Test
     fun `未設定の文言は既定値を使いWAV項目は空文字`() {
         val state = AceWindowsReadoutFlagDetailUiState()
-        assertEquals("チェッカーフラッグ", state.flagText(FlagReadoutItem.CheckeredFlag))
-        assertTrue(state.hasReadoutText(FlagReadoutItem.CheckeredFlag))
-        assertEquals("", state.flagText(FlagReadoutItem.WhiteFlag))
-        assertFalse(state.hasReadoutText(FlagReadoutItem.WhiteFlag))
+        FlagReadoutItem.entries.filter { it.defaultText != null }.forEach { item ->
+            assertEquals(item.defaultText, state.flagText(item))
+            assertTrue(state.hasReadoutText(item))
+        }
+        assertEquals("", state.flagText(FlagReadoutItem.OrangeCircleFlag))
+        assertFalse(state.hasReadoutText(FlagReadoutItem.OrangeCircleFlag))
     }
 
     @Test
@@ -271,9 +378,25 @@ class AceWindowsReadoutFlagDetailViewModelTest {
                 FlagReadoutTextUseCases(
                     ObserveAceWindowsCheckeredFlagReadoutTextUseCase(texts),
                     SaveAceWindowsCheckeredFlagReadoutTextUseCase(texts),
+                    ObserveAceWindowsWhiteFlagReadoutTextUseCase(texts),
+                    SaveAceWindowsWhiteFlagReadoutTextUseCase(texts),
+                    ObserveAceWindowsGreenFlagReadoutTextUseCase(texts),
+                    SaveAceWindowsGreenFlagReadoutTextUseCase(texts),
+                    ObserveAceWindowsRedFlagReadoutTextUseCase(texts),
+                    SaveAceWindowsRedFlagReadoutTextUseCase(texts),
+                    ObserveAceWindowsBlueFlagReadoutTextUseCase(texts),
+                    SaveAceWindowsBlueFlagReadoutTextUseCase(texts),
+                    ObserveAceWindowsYellowFlagReadoutTextUseCase(texts),
+                    SaveAceWindowsYellowFlagReadoutTextUseCase(texts),
+                    ObserveAceWindowsBlackFlagReadoutTextUseCase(texts),
+                    SaveAceWindowsBlackFlagReadoutTextUseCase(texts),
+                    ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase(texts),
+                    SaveAceWindowsBlackWhiteFlagReadoutTextUseCase(texts),
                 )
-            assertEquals(null, useCases.observe(FlagReadoutItem.WhiteFlag).firstOrNull())
-            useCases.save(FlagReadoutItem.WhiteFlag, "注意")
+            listOf(FlagReadoutItem.OrangeCircleFlag, FlagReadoutItem.RedYellowStripesFlag).forEach { item ->
+                assertEquals(null, useCases.observe(item).firstOrNull())
+                useCases.save(item, "注意")
+            }
             verify(exactly = 0) { texts.observeCheckeredFlagText() }
             coVerify(exactly = 0) { texts.saveCheckeredFlagText("注意") }
             confirmVerified(texts)

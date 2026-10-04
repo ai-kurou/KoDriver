@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package kurou.kodriver.feature.acewindowsreadout.flagdetail
 
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +39,7 @@ class AceWindowsReadoutFlagDetailPaneTest {
             .onNodeWithText(
                 "ホワイトフラッグ・グリーンフラッグ・レッドフラッグ・イエローフラッグなどのフラッグ状況を音声でお知らせします。",
             ).assertIsDisplayed()
-        rule.onAllNodesWithText("ブルーフラッグ")[0].assertIsDisplayed()
+        rule.onAllNodesWithText("ブルーフラッグ")[0].performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -57,7 +59,11 @@ class AceWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("ブルーフラッグ")[0].assertIsDisplayed().performClick()
+        rule
+            .onAllNodesWithText("ブルーフラッグ")[0]
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
 
         assertEquals(FlagReadoutItem.BlueFlag, changedItem)
         assertEquals(false, changedEnabled)
@@ -76,13 +82,13 @@ class AceWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("ブルーフラッグ")[1].performClick()
+        rule.onAllNodesWithText("オレンジボールフラッグ")[1].performScrollTo().performClick()
 
-        assertEquals(FlagReadoutItem.BlueFlag, previewedItem)
+        assertEquals(FlagReadoutItem.OrangeCircleFlag, previewedItem)
     }
 
     @Test
-    fun `Checkeredのみ入力欄とTTS試聴とリセットを表示する`() {
+    fun `自由文言8種の入力欄とTTS試聴とリセットを表示する`() {
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutFlagDetailPaneContent(
@@ -90,8 +96,8 @@ class AceWindowsReadoutFlagDetailPaneTest {
                 )
             }
         }
-        rule.onAllNodesWithContentDescription("入力した文言を再生").assertCountEquals(1)
-        rule.onAllNodesWithContentDescription("デフォルトに戻す").assertCountEquals(1)
+        rule.onAllNodesWithContentDescription("入力した文言を再生").assertCountEquals(8)
+        rule.onAllNodesWithContentDescription("デフォルトに戻す").assertCountEquals(8)
         rule.onAllNodesWithText("チェッカーフラッグ").assertCountEquals(2)
         listOf(
             "ホワイトフラッグ",
@@ -104,7 +110,7 @@ class AceWindowsReadoutFlagDetailPaneTest {
             "オレンジボールフラッグ",
             "レッド・イエローストライプフラッグ",
         ).forEach { label -> rule.onAllNodesWithText(label).assertCountEquals(2) }
-        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled()
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[7].assertIsNotEnabled()
     }
 
     @Test
@@ -131,8 +137,8 @@ class AceWindowsReadoutFlagDetailPaneTest {
         }
         rule.onAllNodesWithText("チェッカーフラッグ")[1].performScrollTo().performTextInput("完走")
         assertEquals(listOf(FlagReadoutItem.CheckeredFlag to "完走"), changes)
-        rule.onAllNodesWithContentDescription("この文言を読み上げます")[0].assertIsDisplayed()
-        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performScrollTo().performClick()
+        rule.onAllNodesWithContentDescription("この文言を読み上げます")[7].assertIsDisplayed()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[7].performScrollTo().performClick()
         assertEquals(listOf("完走"), previews)
     }
 
@@ -157,13 +163,13 @@ class AceWindowsReadoutFlagDetailPaneTest {
             }
         }
         rule
-            .onAllNodesWithContentDescription("デフォルトに戻す")[0]
+            .onAllNodesWithContentDescription("デフォルトに戻す")[7]
             .performScrollTo()
             .assertIsEnabled()
             .performClick()
         assertEquals(listOf(FlagReadoutItem.CheckeredFlag), resets)
         rule.onAllNodesWithText("チェッカーフラッグ").assertCountEquals(2)
-        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled()
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[7].assertIsNotEnabled()
     }
 
     @Test
@@ -180,10 +186,11 @@ class AceWindowsReadoutFlagDetailPaneTest {
             }
         }
         rule.onAllNodesWithText("編集済み")[0].performScrollTo().assertIsNotEnabled()
-        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].assertIsNotEnabled()
-        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[7].assertIsNotEnabled()
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[7].assertIsNotEnabled()
         rule
-            .onNodeWithText("この端末では音声合成を利用できないため、チェッカーフラッグは読み上げません")
+            .onAllNodesWithText("この端末では音声合成を利用できないため、自由文言のフラッグは読み上げません")[7]
+            .performScrollTo()
             .assertIsDisplayed()
     }
 
@@ -201,7 +208,7 @@ class AceWindowsReadoutFlagDetailPaneTest {
             }
         }
         rule.onNodeWithText("空欄のままなら読み上げません").performScrollTo().assertIsDisplayed()
-        rule.onAllNodesWithContentDescription("この文言を読み上げます").assertCountEquals(0)
+        rule.onAllNodesWithContentDescription("この文言を読み上げます").assertCountEquals(7)
     }
 
     @Test

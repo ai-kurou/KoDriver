@@ -13,11 +13,16 @@ import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
@@ -26,6 +31,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStat
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -52,9 +59,11 @@ import org.koin.dsl.module
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
- *   SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
- *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine・SpeakTextUseCase・
- *   ObserveVoiceUseCase・CheckTextToSpeechAvailableUseCase・ObserveAceWindowsCheckeredFlagReadoutTextUseCase）、
+ *   SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases）、
+ *   それらが束ねる各ドメイン UseCase、および
+ *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・
+ *   TextToSpeechEngine・SpeakTextUseCase・
+ *   ObserveVoiceUseCase・CheckTextToSpeechAvailableUseCase・8種のフラッグ文言Observe UseCase）、
  *   および自由文言TTSの AceWindowsReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）・TextToSpeechRepository（:core:text-to-speech-data）。
@@ -109,11 +118,25 @@ val aceWindowsNarratorModule: Module =
 
         // TTS依存は他シミュレーターのunqualified登録と区別する。
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsCheckeredFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsWhiteFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsGreenFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRedFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsBlueFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsYellowFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsBlackFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveVoiceUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { CheckTextToSpeechAvailableUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { SpeakTextUseCase(get(), get(named(Simulator.AceWindows.id))) }
         factory {
             AceWindowsReadoutTextSpeaker(
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
                 get(named(Simulator.AceWindows.id)),
                 get(named(Simulator.AceWindows.id)),
                 get(named(Simulator.AceWindows.id)),
@@ -150,13 +173,6 @@ val aceWindowsNarratorModule: Module =
 private val aceWindowsEventToFile: Map<SpeechEvent, String> =
     buildMap {
         put(SpeechEvent.AceWindowsRemainingFuelWarning, "files/remaining_fuel_caution.wav")
-        put(SpeechEvent.AceWindowsWhiteFlag, "files/white_flag.wav")
-        put(SpeechEvent.AceWindowsGreenFlag, "files/green_flag.wav")
-        put(SpeechEvent.AceWindowsRedFlag, "files/red_flag.wav")
-        put(SpeechEvent.AceWindowsBlueFlag, "files/blue_flag.wav")
-        put(SpeechEvent.AceWindowsYellowFlag, "files/yellow_flag.wav")
-        put(SpeechEvent.AceWindowsBlackFlag, "files/black_flag.wav")
-        put(SpeechEvent.AceWindowsBlackWhiteFlag, "files/black_white_flag.wav")
         put(SpeechEvent.AceWindowsOrangeCircleFlag, "files/orange_circle_flag.wav")
         put(SpeechEvent.AceWindowsRedYellowStripesFlag, "files/red_yellow_stripes_flag.wav")
         put(SpeechEvent.AceWindowsTyreOverheat, "files/tyre_overheat.wav")

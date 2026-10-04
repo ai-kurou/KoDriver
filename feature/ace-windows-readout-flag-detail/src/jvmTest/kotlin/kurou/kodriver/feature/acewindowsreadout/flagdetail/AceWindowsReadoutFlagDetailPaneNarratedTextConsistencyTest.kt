@@ -8,7 +8,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
 
-/** Checkeredの入力欄の既定文言と他9種のチップ文言がログ用既定文言と一致することを検証する。 */
+/** 8種の入力欄の既定文言と残り2種のチップ文言がログ用既定文言と一致することを検証する。 */
 class AceWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
     @get:Rule
     val rule = createComposeRule()

@@ -1,6 +1,15 @@
+@file:Suppress("TooManyFunctions")
+
 package kurou.kodriver.domain.engine
 
+import kurou.kodriver.domain.model.ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
@@ -159,7 +168,7 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `ACEフラッグ系のnarratedTextはChipと同じ文言を返す`() {
+    fun `ACEフラッグ系のnarratedTextは画面と同じ既定文言を返す`() {
         assertEquals("残り燃料警告", SpeechEvent.AceWindowsRemainingFuelWarning.narratedText)
         assertEquals("ホワイトフラッグ", SpeechEvent.AceWindowsWhiteFlag.narratedText)
         assertEquals("グリーンフラッグ", SpeechEvent.AceWindowsGreenFlag.narratedText)
@@ -170,6 +179,16 @@ class SpeechEventTest {
         assertEquals("ブラック・ホワイトフラッグ", SpeechEvent.AceWindowsBlackWhiteFlag.narratedText)
         assertEquals("チェッカーフラッグ", SpeechEvent.AceWindowsCheckeredFlag.narratedText)
         assertEquals(ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsCheckeredFlag.narratedText)
+        assertEquals(ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsWhiteFlag.narratedText)
+        assertEquals(ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsGreenFlag.narratedText)
+        assertEquals(ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsRedFlag.narratedText)
+        assertEquals(ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsBlueFlag.narratedText)
+        assertEquals(ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsYellowFlag.narratedText)
+        assertEquals(ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsBlackFlag.narratedText)
+        assertEquals(
+            ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT,
+            SpeechEvent.AceWindowsBlackWhiteFlag.narratedText,
+        )
         assertEquals("オレンジボールフラッグ", SpeechEvent.AceWindowsOrangeCircleFlag.narratedText)
         assertEquals("レッド・イエローストライプフラッグ", SpeechEvent.AceWindowsRedYellowStripesFlag.narratedText)
     }
