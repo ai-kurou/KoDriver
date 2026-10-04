@@ -14,6 +14,8 @@ import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodes
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -22,6 +24,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import org.junit.Rule
 import org.junit.Test
@@ -134,24 +137,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `タイヤ低温警告チップをタップするとonLowWarningPreviewClickedが呼ばれる`() {
-        var previewClicked = false
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
-                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(),
-                    onLowWarningPreviewClicked = { previewClicked = true },
-                )
-            }
-        }
-
-        rule.onAllNodesWithText("タイヤ低温警告", substring = true)[0].performScrollTo().performClick()
-
-        assertEquals(true, previewClicked)
-    }
-
-    @Test
-    fun `タイヤ低温警告チップが表示される`() {
+    fun `低温文言入力欄が表示される`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
@@ -160,7 +146,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("タイヤ低温警告", substring = true)[0].performScrollTo().assertIsDisplayed()
+        rule.onAllNodesWithText("タイヤが冷えているときの文言", substring = true)[0].performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -268,8 +254,8 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onNode(hasSetTextAction()).assertIsEnabled().performTextReplacement("あ".repeat(31))
-        rule.onNodeWithContentDescription("入力した文言を再生").performClick()
+        rule.onAllNodes(hasSetTextAction())[0].assertIsEnabled().performTextReplacement("あ".repeat(31))
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performClick()
         assertEquals(listOf("あ".repeat(30)), changed)
         assertEquals(changed, previews)
     }
@@ -289,7 +275,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onNode(hasSetTextAction()).performTextReplacement("あい")
+        rule.onAllNodes(hasSetTextAction())[0].performTextReplacement("あい")
         savedText = "あ"
         rule.waitForIdle()
         rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
@@ -315,7 +301,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onNode(hasSetTextAction()).performTextReplacement(" あい ")
+        rule.onAllNodes(hasSetTextAction())[0].performTextReplacement(" あい ")
         savedText = "あい"
         rule.waitForIdle()
         savedText = "う"
@@ -337,7 +323,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
             }
         }
         rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
-        rule.onNodeWithContentDescription("入力した文言を再生").assertIsEnabled()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].assertIsEnabled()
     }
 
     @Test
@@ -350,7 +336,138 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
             }
         }
         rule.onNodeWithText("{lap}").assertIsNotEnabled()
-        rule.onNodeWithContentDescription("入力した文言を再生").assertIsNotEnabled()
-        rule.onNodeWithText("この端末では音声合成を利用できないため、読み上げません").assertExists()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].assertIsNotEnabled()
+        rule.onAllNodesWithText("この端末では音声合成を利用できないため、読み上げません")[0].assertExists()
     }
+
+    @Test
+    fun `低温: スイッチOFFでも入力中の文言を編集して試聴できる`() {
+        val changed = mutableListOf<String>()
+        val previews = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            lowWarningEnabled = false,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onColdReadoutTextChanged = { changed += it },
+                    onLowWarningPreviewClicked = { previews += it },
+                )
+            }
+        }
+        rule.onAllNodes(hasSetTextAction())[1]
+            .performScrollTo().assertIsEnabled().performTextReplacement("あ".repeat(31))
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performScrollTo().performClick()
+        assertEquals(listOf("あ".repeat(30)), changed)
+        assertEquals(changed, previews)
+    }
+
+    @Test
+    fun `低温: 保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            coldReadoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onColdReadoutTextChanged = {},
+                )
+            }
+        }
+        rule.onAllNodes(hasSetTextAction())[1].performScrollTo().performTextReplacement("あい")
+        savedText = "あ"
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("あい")).assertExists()
+        savedText = "あい"
+        rule.waitForIdle()
+        savedText = "う"
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
+    }
+
+    @Test
+    fun `低温: 前後に空白がある入力も保存済みの正規化後の文言と一致したら同期する`() {
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            coldReadoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onColdReadoutTextChanged = {},
+                )
+            }
+        }
+        rule.onAllNodes(hasSetTextAction())[1].performScrollTo().performTextReplacement(" あい ")
+        savedText = "あい"
+        rule.waitForIdle()
+        savedText = "う"
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("う")).assertExists()
+    }
+
+    @Test
+    fun `低温: 空欄では読み上げない案内を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            coldReadoutText = "",
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        rule.onNodeWithText("空欄のままなら読み上げません").assertExists()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[1].assertIsEnabled()
+    }
+
+    @Test
+    fun `低温: TTS不可では入力と試聴を無効にする`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(coldReadoutText = "{lap}"),
+                )
+            }
+        }
+        rule.onNodeWithText("{lap}").assertIsNotEnabled()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[1].assertIsNotEnabled()
+        rule.onAllNodesWithText("この端末では音声合成を利用できないため、読み上げません")[1].assertExists()
+    }
+
+    @Test
+    fun `低温文言の編集とリセットは過熱文言を変更しない`() {
+        val coldChanges = mutableListOf<String>()
+        val overheatChanges = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(
+                        overheatReadoutText = "冷やして",
+                        coldReadoutText = "温めて",
+                        isTextToSpeechAvailable = true,
+                    ),
+                    onColdReadoutTextChanged = { coldChanges += it },
+                    onOverheatReadoutTextChanged = { overheatChanges += it },
+                )
+            }
+        }
+        rule.onAllNodes(hasSetTextAction())[1].performScrollTo().performTextReplacement("低温注意")
+        rule.onNodeWithContentDescription("低温警告の文言をデフォルトに戻す").performScrollTo().performClick()
+        assertEquals(listOf("低温注意", LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT), coldChanges)
+        assertEquals(emptyList<String>(), overheatChanges)
+        rule.onNode(hasSetTextAction() and hasText("冷やして")).assertExists()
+        rule.onNode(hasSetTextAction() and hasText(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT))
+            .assertExists()
+    }
+
 }

@@ -22,6 +22,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyRead
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
@@ -51,6 +52,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
+    private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -69,6 +71,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
             observeTyreOverheatReadoutText,
+            observeTyreColdReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -188,6 +191,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
             observeTyreOverheatReadoutText,
+            observeTyreColdReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -575,6 +579,74 @@ class LmuWindowsReadoutTextSpeakerTest {
                 assertNull(speaker.readoutText(event))
                 speaker(event, VOLUME)
             }
+            confirmAllMocksVerified()
+        }
+
+
+    @Test
+    fun `低温警告は保存した文言を置換せず読み上げる`() =
+        runTest {
+            every { observeTyreColdReadoutText() } returns flowOf("閾値{percent}%、{percent}")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("閾値{percent}%、{percent}", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.TyreCold, VOLUME)
+            verify(exactly = 1) { observeTyreColdReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("閾値{percent}%、{percent}", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `低温警告の空白文言ではTTSを確認せず読み上げない`() =
+        runTest {
+            every { observeTyreColdReadoutText() } returns flowOf(" ")
+            assertNull(speaker.readoutText(SpeechEvent.TyreCold))
+            speaker(SpeechEvent.TyreCold, VOLUME)
+            verify(exactly = 2) { observeTyreColdReadoutText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `低温警告のTTS利用不可では読み上げ文言を返さず読み上げない`() =
+        runTest {
+            every { observeTyreColdReadoutText() } returns flowOf("残り{percent}%")
+            coEvery { checkTextToSpeechAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.TyreCold))
+            speaker(SpeechEvent.TyreCold, VOLUME)
+            verify(exactly = 2) { observeTyreColdReadoutText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText("残り{percent}%", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `低温警告の読み上げ文言は保存値を返す`() =
+        runTest {
+            every { observeTyreColdReadoutText() } returns flowOf("タイヤを温めて")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            assertEquals("タイヤを温めて", speaker.readoutText(SpeechEvent.TyreCold))
+            verify(exactly = 1) { observeTyreColdReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `過熱と低温はそれぞれの保存文言を読み上げる`() =
+        runTest {
+            every { observeTyreOverheatReadoutText() } returns flowOf("冷やして")
+            every { observeTyreColdReadoutText() } returns flowOf("温めて{celsius}")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("冷やして", volume = VOLUME) } just Runs
+            coEvery { speakText("温めて{celsius}", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.TyreOverheat, VOLUME)
+            speaker(SpeechEvent.TyreCold, VOLUME)
+            verify(exactly = 1) { observeTyreOverheatReadoutText() }
+            verify(exactly = 1) { observeTyreColdReadoutText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("冷やして", volume = VOLUME) }
+            coVerify(exactly = 1) { speakText("温めて{celsius}", volume = VOLUME) }
             confirmAllMocksVerified()
         }
 

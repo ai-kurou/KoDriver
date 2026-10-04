@@ -15,6 +15,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyRead
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
@@ -30,6 +31,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  *
  * 対象イベントと文言の対応:
  * - [SpeechEvent.TyreOverheat] : タイヤ過熱警告
+ * - [SpeechEvent.TyreCold] : タイヤ低温警告
  * - [SpeechEvent.YellowFlag] : セクターイエロー
  * - [SpeechEvent.BlueFlag] : ブルー
  * - [SpeechEvent.FullCourseYellow] : フルコースイエロー
@@ -59,6 +61,7 @@ internal class LmuWindowsReadoutTextSpeaker(
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
     private val observeRemainingVirtualEnergyReadoutText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase,
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase,
+    private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -83,6 +86,7 @@ internal class LmuWindowsReadoutTextSpeaker(
     private suspend fun eventText(event: SpeechEvent): String? =
         when (event) {
             SpeechEvent.TyreOverheat -> observeTyreOverheatReadoutText().first()
+            SpeechEvent.TyreCold -> observeTyreColdReadoutText().first()
             SpeechEvent.YellowFlag -> observeSectorYellowFlagReadoutText().first()
             SpeechEvent.BlueFlag -> observeBlueFlagReadoutText().first()
             SpeechEvent.FullCourseYellow -> observeFullCourseYellowFlagReadoutText().first()

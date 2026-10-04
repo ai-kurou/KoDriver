@@ -1500,7 +1500,7 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `低温警告はカスタム文言がなくても従来のWAV経路を使用する`() =
+    fun `低温警告は自由文言を読み上げてログに保存する`() =
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
@@ -1510,13 +1510,13 @@ class LmuWindowsNarratorEventProcessorTest {
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    narratedText = "タイヤ低温警告",
+                    narratedText = "タイヤを温めて",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
                 )
             } just Runs
             val context = logContext()
-            createProcessor { null }.processTyreTemperature(
+            createProcessor { "タイヤを温めて" }.processTyreTemperature(
                 input =
                     TyreTemperatureReadoutInput(
                         tyreCarcassTemperature =
@@ -1545,8 +1545,112 @@ class LmuWindowsNarratorEventProcessorTest {
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    narratedText = "タイヤ低温警告",
+                    narratedText = "タイヤを温めて",
                     narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `低温警告の空白文言では読み上げずSKIPPEDを記録する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val context = logContext()
+            createProcessor { " " }.processTyreTemperature(
+                input =
+                    TyreTemperatureReadoutInput(
+                        tyreCarcassTemperature =
+                            LmuWindowsTyreCarcassTemperatureData(
+                                wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(100f)),
+                            ),
+                        raceFlags = raceFlags(PrimaryFlag.GREEN),
+                    ),
+                events = listOf(SpeechEvent.TyreCold),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext =
+                    LmuWindowsTyreTemperatureLogContext(
+                        context.state,
+                        context.settings,
+                        context.state,
+                        context.finalState,
+                    ),
+            )
+            assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreCold, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `低温警告のTTS利用不可では読み上げずSKIPPEDを記録する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val context = logContext()
+            createProcessor { null }.processTyreTemperature(
+                input =
+                    TyreTemperatureReadoutInput(
+                        tyreCarcassTemperature =
+                            LmuWindowsTyreCarcassTemperatureData(
+                                wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(100f)),
+                            ),
+                        raceFlags = raceFlags(PrimaryFlag.GREEN),
+                    ),
+                events = listOf(SpeechEvent.TyreCold),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext =
+                    LmuWindowsTyreTemperatureLogContext(
+                        context.state,
+                        context.settings,
+                        context.state,
+                        context.finalState,
+                    ),
+            )
+            assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreCold, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsonSlot.captured,
                 )
             }

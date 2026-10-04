@@ -110,6 +110,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
                                     LmuWindowsReadoutTyreTemperatureDetailUiState(
                                         isTextToSpeechAvailable = true,
                                         overheatReadoutText = "",
+                                        coldReadoutText = "",
                                         vehicleClassHighThresholdCelsius =
                                             lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
                                                 lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
@@ -136,6 +137,32 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
                                 uiState =
                                     LmuWindowsReadoutTyreTemperatureDetailUiState(
                                         isTextToSpeechAvailable = false,
+                                        vehicleClassHighThresholdCelsius =
+                                            lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
+                                                lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                                    vehicleClass,
+                                                ).value
+                                            },
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+    @Test
+    fun `低温のみ空白文言`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                        coldReadoutText = "",
                                         vehicleClassHighThresholdCelsius =
                                             lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
                                                 lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(

@@ -5,20 +5,18 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performScrollTo
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import org.junit.Rule
 import org.junit.Test
 
-/**
- * [SpeechEvent.narratedText] は WAV と同じ内容を Chip 表示文言から複製したものであるため、
- * Chip側の文言変更を検知できるよう実際の表示テキストと突き合わせる（#1527）。
- */
+/** 自由文言の初期表示はドメインの既定値と一致する。 */
 class LmuWindowsReadoutTyreTemperatureDetailPaneNarratedTextConsistencyTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `Chip表示文言がSpeechEventのnarratedTextと一致する`() {
+    fun `入力欄が過熱と低温の既定文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
@@ -28,7 +26,8 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.TyreCold.narratedText,
+            LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT,
+            LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
         ).forEach { narratedText ->
             rule
                 .onAllNodesWithText(
