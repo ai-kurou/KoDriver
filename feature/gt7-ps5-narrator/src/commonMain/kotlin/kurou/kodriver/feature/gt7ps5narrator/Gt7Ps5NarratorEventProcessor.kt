@@ -31,6 +31,7 @@ internal data class Gt7Ps5TelemetryLogContext(
 internal class Gt7Ps5NarratorEventProcessor(
     private val ttsEngine: TextToSpeechEngine,
     private val saveTelemetryLog: SaveTelemetryLogUseCase,
+    private val readoutText: suspend (SpeechEvent) -> String?,
 ) {
     private val previousTelemetry = mutableMapOf<ReadoutItemKey, Gt7Ps5TelemetryData>()
 
@@ -57,11 +58,19 @@ internal class Gt7Ps5NarratorEventProcessor(
     ) {
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
-            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            val text = if (event is SpeechEvent.RemainingFuelLapsWarning) readoutText(event) else event.narratedText
+            val narrationOutcome =
+                if (text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    val resolvedEvent =
+                        if (event is SpeechEvent.RemainingFuelLapsWarning) event.copy(resolvedText = text) else event
+                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
-                narratedText = event.narratedText,
+                narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
                 telemetryJson =
                     buildTelemetryLogJson(

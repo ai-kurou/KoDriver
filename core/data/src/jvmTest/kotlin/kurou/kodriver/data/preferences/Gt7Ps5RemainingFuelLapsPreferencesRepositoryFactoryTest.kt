@@ -3,6 +3,8 @@ package kurou.kodriver.data.preferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -41,6 +43,34 @@ class Gt7Ps5RemainingFuelLapsPreferencesRepositoryFactoryTest {
 
             repository.saveRemainingFuelLaps(5)
 
+            assertEquals(5, repository.observeRemainingFuelLaps().first())
+        }
+
+    @Test
+    fun `文言の初期値はドメインの既定値`() =
+        runTest {
+            val repository = createGt7Ps5RemainingFuelLapsPreferencesRepository(tempDir.absolutePath)
+            assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
+            assertEquals(
+                GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT,
+                repository.observeEmptyReadoutText().first(),
+            )
+        }
+
+    @Test
+    fun `文言を独立して上書き保存でき空欄も維持する`() =
+        runTest {
+            val repository = createGt7Ps5RemainingFuelLapsPreferencesRepository(tempDir.absolutePath)
+            repository.saveRemainingFuelLaps(5)
+            repository.saveReadoutText("残り{laps}周")
+            repository.saveEmptyReadoutText("燃料なし")
+            assertEquals("残り{laps}周", repository.observeReadoutText().first())
+            assertEquals("燃料なし", repository.observeEmptyReadoutText().first())
+            repository.saveReadoutText("")
+            assertEquals("", repository.observeReadoutText().first())
+            assertEquals("燃料なし", repository.observeEmptyReadoutText().first())
+            repository.saveEmptyReadoutText("")
+            assertEquals("", repository.observeEmptyReadoutText().first())
             assertEquals(5, repository.observeRemainingFuelLaps().first())
         }
 }

@@ -148,4 +148,14 @@ class SpeechEventTest {
         assertEquals("タイヤ過熱警告", SpeechEvent.AceWindowsTyreOverheat.narratedText)
         assertEquals("車両接近", SpeechEvent.AceWindowsVehicleApproach.narratedText)
     }
+
+    @Test
+    fun `燃料残り周回数イベントは解決文言を保持しログ用の既定文言は維持する`() {
+        val event = SpeechEvent.RemainingFuelLapsWarning(1)
+        assertEquals(null, event.resolvedText)
+        val resolved = event.copy(resolvedText = "あと1周")
+        assertEquals("あと1周", resolved.resolvedText)
+        assertEquals("燃料は残り約1周", resolved.narratedText)
+        assertEquals(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, resolved.readoutItemKey)
+    }
 }
