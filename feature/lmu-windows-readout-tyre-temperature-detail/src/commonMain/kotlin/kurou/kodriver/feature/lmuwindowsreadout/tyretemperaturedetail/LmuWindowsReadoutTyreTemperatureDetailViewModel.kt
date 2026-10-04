@@ -102,9 +102,14 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
         viewModelScope.launch { readout.saveText(text) }
     }
 
-    /** 空白文言・TTS利用不可・音量ゼロでは再生しない。 */
-    fun onOverheatReadoutTextPreviewClicked(text: String) {
-        val celsius = uiState.value.selectedVehicleClassHighThresholdCelsius.value
+    /**
+     * 空白文言・TTS利用不可・音量ゼロでは再生しない。
+     * [celsius] は画面に表示中の選択クラスの高温閾値。保存の反映待ちで旧値になるのを避けるため呼び出し側から受け取る。
+     */
+    fun onOverheatReadoutTextPreviewClicked(
+        text: String,
+        celsius: Int,
+    ) {
         previewReadoutText(formatLmuWindowsTyreTemperatureReadoutText(text, celsius))
     }
 

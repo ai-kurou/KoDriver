@@ -118,7 +118,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     uiState: LmuWindowsReadoutTyreTemperatureDetailUiState,
     onOverheatWarningEnabledChanged: (Boolean) -> Unit = {},
     onOverheatReadoutTextChanged: (String) -> Unit = {},
-    onOverheatReadoutTextPreviewClicked: (String) -> Unit = {},
+    onOverheatReadoutTextPreviewClicked: (String, Int) -> Unit = { _, _ -> },
     onLowWarningEnabledChanged: (Boolean) -> Unit = {},
     onLowWarningPhaseToggled: (SessionPhase) -> Unit = {},
     onColdReadoutTextChanged: (String) -> Unit = {},
@@ -160,7 +160,10 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         text = uiState.overheatReadoutText,
                         available = uiState.isTextToSpeechAvailable,
                         onTextChanged = onOverheatReadoutTextChanged,
-                        onPreviewClick = onOverheatReadoutTextPreviewClicked,
+                        onPreviewClick = { text ->
+                            val celsius = uiState.selectedVehicleClassHighThresholdCelsius.value
+                            onOverheatReadoutTextPreviewClicked(text, celsius)
+                        },
                     )
                     HorizontalDivider(
                         modifier =
