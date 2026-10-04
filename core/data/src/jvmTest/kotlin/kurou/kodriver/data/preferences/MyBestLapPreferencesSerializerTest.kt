@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -21,13 +22,32 @@ class MyBestLapPreferencesSerializerTest {
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = MyBestLapPreferences(voiceType = "casual")
+            val original = MyBestLapPreferences(voiceType = "casual", readoutText = "更新{laptime}")
             val output = ByteArrayOutputStream()
             MyBestLapPreferencesSerializer.writeTo(original, output)
 
             val restored = MyBestLapPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
 
             assertEquals(original, restored)
+        }
+
+    @Test
+    fun `旧形式の口調だけを保存したデータは既定文言で復元される`() =
+        runTest {
+            // ProtoNumber(1) の文字列 casual のみを含む旧形式。
+            val legacy = byteArrayOf(0x0A, 0x06) + "casual".encodeToByteArray()
+            val restored = MyBestLapPreferencesSerializer.readFrom(ByteArrayInputStream(legacy))
+            assertEquals("casual", restored.voiceType)
+            assertEquals(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT, restored.readoutText)
+        }
+
+    @Test
+    fun `空白文言もそのまま復元される`() =
+        runTest {
+            val original = MyBestLapPreferences(readoutText = " ")
+            val output = ByteArrayOutputStream()
+            MyBestLapPreferencesSerializer.writeTo(original, output)
+            assertEquals(original, MyBestLapPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())))
         }
 
     @Test

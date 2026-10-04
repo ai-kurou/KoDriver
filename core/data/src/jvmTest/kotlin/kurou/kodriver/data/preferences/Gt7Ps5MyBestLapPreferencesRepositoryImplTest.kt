@@ -6,7 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -30,30 +30,32 @@ class Gt7Ps5MyBestLapPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `voiceType の初期値は FORMAL`() =
+    fun `readoutText の初期値は 既定文言`() =
         runTest {
-            assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
+            assertEquals(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
         }
 
     @Test
-    fun `saveVoiceType で保存した値を observeVoiceType で取得できる`() =
+    fun `saveReadoutText で保存した値を observeReadoutText で取得できる`() =
         runTest {
-            repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
-            assertEquals(MyBestLapVoiceType.CASUAL, repository.observeVoiceType().first())
+            repository.saveReadoutText("更新{laptime}")
+            assertEquals("更新{laptime}", repository.observeReadoutText().first())
         }
 
     @Test
-    fun `saveVoiceType を複数回呼ぶと最後の値で上書きされる`() =
+    fun `saveReadoutText を複数回呼ぶと最後の値で上書きされる`() =
         runTest {
-            repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
-            repository.saveVoiceType(MyBestLapVoiceType.FORMAL)
-            assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
+            repository.saveReadoutText("更新{laptime}")
+            repository.saveReadoutText(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT)
+            assertEquals(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
         }
 
     @Test
-    fun `voiceType が未知の ID のとき FORMAL を返す`() =
+    fun `文言の保存は既存の口調設定を保持する`() =
         runTest {
-            dataStore.updateData { it.copy(voiceType = "unknown") }
-            assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
+            dataStore.updateData { it.copy(voiceType = "casual") }
+            repository.saveReadoutText("")
+            assertEquals("", repository.observeReadoutText().first())
+            assertEquals("casual", dataStore.data.first().voiceType)
         }
 }

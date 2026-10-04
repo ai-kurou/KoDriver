@@ -7,7 +7,6 @@ import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSI
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,7 +31,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(enabledStates = emptyMap()),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLapFormal), decision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLap(89_000)), decision.events)
     }
 
     @Test
@@ -49,21 +48,21 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `自己ベストが更新されたら設定された声種別で読み上げる`() {
+    fun `自己ベストが更新されたら更新後のタイムをイベントに保持する`() {
         val initialDecision =
             useCase.determineMyBestLap(
                 state = Gt7Ps5NarratorState(),
                 telemetry = telemetry(bestLapTimeMs = 90_000),
-                settings = settings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+                settings = settings(),
             )
         val decision =
             useCase.determineMyBestLap(
                 state = initialDecision.state,
                 telemetry = telemetry(bestLapTimeMs = 89_000),
-                settings = settings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+                settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLapCasual), decision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLap(89_000)), decision.events)
         assertEquals(89_000, decision.state.personalBestMs)
     }
 
@@ -100,7 +99,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLapFormal), second.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLap(89_000)), second.events)
     }
 
     @Test
@@ -1094,13 +1093,11 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     private fun settings(
         enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
-        myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         remainingFuelLapsThreshold: Int = 3,
         remainingFuelThresholdPercentage: Int = 30,
         tyreTemperatureHighThresholdCelsius: Celsius = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
     ) = Gt7Ps5NarratorReadoutSettings(
         enabledStates = enabledStates,
-        myBestLapVoiceType = myBestLapVoiceType,
         remainingFuelLapsThreshold = remainingFuelLapsThreshold,
         remainingFuelThresholdPercentage = remainingFuelThresholdPercentage,
         tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThresholdCelsius,

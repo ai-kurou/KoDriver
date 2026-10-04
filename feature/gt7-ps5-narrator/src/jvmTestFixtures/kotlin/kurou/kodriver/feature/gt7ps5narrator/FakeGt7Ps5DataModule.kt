@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
@@ -56,12 +56,12 @@ private class FakeGt7Ps5UdpPortPreferencesRepository : Gt7Ps5UdpPortPreferencesR
 }
 
 private class FakeGt7Ps5MyBestLapPreferencesRepository : Gt7Ps5MyBestLapPreferencesRepository {
-    private val flow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
+    private val flow = MutableStateFlow(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT)
 
-    override fun observeVoiceType(): Flow<MyBestLapVoiceType> = flow
+    override fun observeReadoutText(): Flow<String> = flow
 
-    override suspend fun saveVoiceType(type: MyBestLapVoiceType) {
-        flow.update { type }
+    override suspend fun saveReadoutText(text: String) {
+        flow.update { text }
     }
 }
 

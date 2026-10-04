@@ -14,7 +14,6 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -48,7 +47,6 @@ internal class Gt7Ps5NarratorEventProcessor(
                 settings =
                     Gt7Ps5NarratorReadoutSettings(
                         enabledStates = emptyMap(),
-                        myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
                         remainingFuelLapsThreshold = 0,
                         remainingFuelThresholdPercentage = 0,
                         tyreTemperatureHighThresholdCelsius = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
@@ -62,7 +60,8 @@ internal class Gt7Ps5NarratorEventProcessor(
                 if (
                     event is SpeechEvent.RemainingFuelLapsWarning ||
                     event is SpeechEvent.Gt7Ps5RemainingFuelWarning ||
-                    event is SpeechEvent.Gt7Ps5TyreOverheat
+                    event is SpeechEvent.Gt7Ps5TyreOverheat ||
+                    event is SpeechEvent.Gt7Ps5MyBestLap
                 ) {
                     readoutText(event)
                 } else {
@@ -76,6 +75,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                         when (event) {
                             is SpeechEvent.RemainingFuelLapsWarning -> event.copy(resolvedText = text)
                             is SpeechEvent.Gt7Ps5RemainingFuelWarning -> event.copy(resolvedText = text)
+                            is SpeechEvent.Gt7Ps5MyBestLap -> event.copy(resolvedText = text)
                             is SpeechEvent.Gt7Ps5TyreOverheat -> event.copy(resolvedText = text)
                             else -> event
                         }

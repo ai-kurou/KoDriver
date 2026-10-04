@@ -14,14 +14,12 @@ import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
-import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
@@ -36,7 +34,6 @@ import kotlin.time.ExperimentalTime
 
 internal data class MyBestLapUseCases(
     val observeGt7Ps5: ObserveGt7Ps5UseCase,
-    val observeMyBestLapVoiceType: ObserveGt7Ps5MyBestLapVoiceTypeUseCase,
 )
 
 internal data class SimulatorUseCases(
@@ -105,11 +102,6 @@ internal class Gt7Ps5NarratorViewModel(
         readoutListUseCases
             .observeQueueEnabledStates()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
-
-    private val voiceType =
-        myBestLapUseCases
-            .observeMyBestLapVoiceType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, MY_BEST_LAP_VOICE_TYPE_DEFAULT)
 
     private val fuelThreshold =
         remainingFuelLapsUseCases
@@ -263,7 +255,6 @@ internal class Gt7Ps5NarratorViewModel(
         get() =
             Gt7Ps5NarratorReadoutSettings(
                 enabledStates = mergedEnabledStates.value,
-                myBestLapVoiceType = voiceType.value,
                 remainingFuelLapsThreshold = fuelThreshold.value,
                 remainingFuelThresholdPercentage = remainingFuelThreshold.value,
                 tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThreshold.value,

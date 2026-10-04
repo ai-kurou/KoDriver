@@ -34,13 +34,13 @@ class Gt7Ps5NarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.Gt7Ps5,
                     sourceKey,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
@@ -49,7 +49,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             createProcessor().process(
                 sourceKey = sourceKey,
                 telemetry = telemetry(),
-                events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                events = listOf(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000")),
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -58,13 +58,13 @@ class Gt7Ps5NarratorEventProcessorTest {
             assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
             assertEquals(true, telemetryJsons.single().contains("\"previousTelemetry\":null"))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.Gt7Ps5,
                     sourceKey,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
@@ -79,13 +79,13 @@ class Gt7Ps5NarratorEventProcessorTest {
             every { ttsEngine.currentReadoutItemKey } returns null
             val processor = createProcessor()
             val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.Gt7Ps5,
                     sourceKey,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
@@ -95,7 +95,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             processor.process(
                 sourceKey,
                 telemetry(bestLapTimeMs = 59_000),
-                listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                listOf(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000")),
                 listOf(sourceKey),
                 emptyMap(),
                 200L,
@@ -122,13 +122,13 @@ class Gt7Ps5NarratorEventProcessorTest {
             )
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":200"""))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.Gt7Ps5,
                     sourceKey,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
@@ -141,10 +141,10 @@ class Gt7Ps5NarratorEventProcessorTest {
         runTest {
             val observedAtMs = 0L
             val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-            val narratedText = "自己ベストラップ更新"
+            val narratedText = "自己ベストラップ更新 1分0秒000"
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     observedAtMs,
@@ -159,14 +159,14 @@ class Gt7Ps5NarratorEventProcessorTest {
             createProcessor().process(
                 sourceKey = sourceKey,
                 telemetry = telemetry(),
-                events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                events = listOf(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000")),
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = observedAtMs,
             )
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     observedAtMs,
@@ -186,13 +186,13 @@ class Gt7Ps5NarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.Gt7Ps5,
                     sourceKey,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
@@ -201,7 +201,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             createProcessor().process(
                 sourceKey = sourceKey,
                 telemetry = telemetry(gasLevel = Float.NaN),
-                events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                events = listOf(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000")),
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -209,13 +209,13 @@ class Gt7Ps5NarratorEventProcessorTest {
 
             assertEquals(true, telemetryJsons.single().contains("\"gasLevel\":NaN"))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.Gt7Ps5,
                     sourceKey,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
@@ -231,13 +231,13 @@ class Gt7Ps5NarratorEventProcessorTest {
             val processor = createProcessor()
             val myBestLapKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
             val fuelKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
-            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.Gt7Ps5,
                     myBestLapKey,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
@@ -248,7 +248,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             processor.process(
                 myBestLapKey,
                 telemetry(bestLapTimeMs = 59_000),
-                listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                listOf(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000")),
                 emptyList(),
                 emptyMap(),
                 0L,
@@ -256,13 +256,13 @@ class Gt7Ps5NarratorEventProcessorTest {
 
             assertEquals(true, telemetryJsons.single().contains("\"bestLapTimeMs\":60000"))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.Gt7Ps5,
                     myBestLapKey,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
@@ -360,7 +360,7 @@ class Gt7Ps5NarratorEventProcessorTest {
     fun `優先度の低い項目を再生中なら停止して読み上げる`() =
         runTest {
             val currentKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
-            val newEvent = SpeechEvent.Gt7Ps5MyBestLapFormal
+            val newEvent = SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000")
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             every { ttsEngine.stop() } just Runs
@@ -370,7 +370,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.INTERRUPTED,
                     capture(telemetryJsons),
                 )
@@ -394,7 +394,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     0L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分0秒000",
                     NarrationOutcome.INTERRUPTED,
                     telemetryJsons.single(),
                 )
@@ -415,7 +415,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     createdAt = 100L,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
-                    narratedText = "自己ベストラップ更新",
+                    narratedText = "自己ベストラップ更新 1分0秒000",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot<String>()),
                 )
@@ -428,7 +428,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     createdAt = 200L,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
-                    narratedText = "自己ベストラップ更新",
+                    narratedText = "自己ベストラップ更新 1分0秒000",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot<String>()),
                 )
@@ -438,7 +438,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             processor.process(
                 sourceKey = sourceKey,
                 telemetry = telemetry(bestLapTimeMs = 60_000),
-                events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                events = listOf(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000")),
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
@@ -446,25 +446,28 @@ class Gt7Ps5NarratorEventProcessorTest {
             processor.process(
                 sourceKey = sourceKey,
                 telemetry = telemetry(bestLapTimeMs = 59_000),
-                events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                events = listOf(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000")),
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
             )
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal, SpeechEvent.Gt7Ps5MyBestLapFormal),
+                listOf<SpeechEvent>(
+                    SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"),
+                    SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"),
+                ),
                 spokenEvents,
             )
             assertEquals(2, saveCount)
             verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 2) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+            verify(exactly = 2) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 100L,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
-                    narratedText = "自己ベストラップ更新",
+                    narratedText = "自己ベストラップ更新 1分0秒000",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot<String>()),
                 )
@@ -474,7 +477,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     createdAt = 200L,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = sourceKey,
-                    narratedText = "自己ベストラップ更新",
+                    narratedText = "自己ベストラップ更新 1分0秒000",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot<String>()),
                 )
@@ -782,12 +785,97 @@ class Gt7Ps5NarratorEventProcessorTest {
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
+    @Test
+    fun `自己ベストラップ更新は解決文言をイベントとログに保持してキューへ渡す`() =
+        runTest {
+            val jsons = mutableListOf<String>()
+            val key = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+            val event = SpeechEvent.Gt7Ps5MyBestLap(83_456)
+            val resolved = event.copy(resolvedText = "更新1分23秒456")
+            every { ttsEngine.speak(resolved, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "更新1分23秒456",
+                    NarrationOutcome.QUEUED,
+                    capture(jsons),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) {
+                    resolvedEvents += it
+                    "更新1分23秒456"
+                }
+
+            processor.process(
+                sourceKey = key,
+                telemetry = telemetry(),
+                events = listOf(event),
+                readoutOrder = listOf(key),
+                queueEnabledStates = mapOf(key to true),
+                observedAtMs = 10L,
+            )
+
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "更新1分23秒456",
+                    NarrationOutcome.QUEUED,
+                    jsons.single(),
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `文言がnullの自己ベストラップ更新は読み上げず空文言とSKIPPEDを保存する`() =
+        runTest {
+            val jsons = mutableListOf<String>()
+            val key = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+            val event = SpeechEvent.Gt7Ps5MyBestLap(83_456)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(jsons),
+                )
+            } just Runs
+            val processor =
+                Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { null }
+
+            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L)
+
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    jsons.single(),
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
     private fun createProcessor() =
         Gt7Ps5NarratorEventProcessor(
             ttsEngine = ttsEngine,
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
             readoutText = {
-                check(it is SpeechEvent.RemainingFuelLapsWarning) { "燃料残り周回数以外は文言を解決しない" }
                 it.narratedText
             },
         )
