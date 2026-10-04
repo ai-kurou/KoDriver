@@ -28,6 +28,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -45,7 +46,7 @@ import org.koin.dsl.module
  *   （MyBestLapUseCases / SimulatorUseCases / ReadoutListUseCases / RemainingFuelLapsUseCases / RemainingFuelUseCases /
  *   TyreTemperatureUseCases）、それらが束ねる
  *   各ドメイン UseCase、および named(Simulator.Gt7Ps5.id) の音声再生系
- *   （PlaySpeechEventUseCase・TextToSpeechEngine・SpeakTextUseCase・燃料残り周回数文言の Observe UseCase・
+ *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine・SpeakTextUseCase・燃料残り周回数文言の Observe UseCase・
  *   CheckTextToSpeechAvailableUseCase・ObserveVoiceUseCase）、および Gt7Ps5ReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:gt7-ps5-data / :core:data）、
  *   TextToSpeechRepository・VoicePreferencesRepository、および SoundPlayer（[platformSoundModule]）。
@@ -126,6 +127,7 @@ val gt7Ps5NarratorModule: Module =
                 ),
             )
         }
+        factory(named(Simulator.Gt7Ps5.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.Gt7Ps5.id))) }
         factory(named(Simulator.Gt7Ps5.id)) { PlaySpeechEventUseCase(get(named(Simulator.Gt7Ps5.id))) }
     }
 
