@@ -14,7 +14,7 @@ class Gt7Ps5MyBestLapReadoutTextTest {
 
     @Test
     fun `0から999ミリ秒は分を省略しミリ秒を3桁で読む`() {
-        (0..999).forEach { milliseconds ->
+        for (milliseconds in 0..999) {
             assertEquals(
                 "0秒${milliseconds.toString().padStart(3, '0')}",
                 formatGt7Ps5MyBestLapReadoutText("{laptime}", milliseconds),
