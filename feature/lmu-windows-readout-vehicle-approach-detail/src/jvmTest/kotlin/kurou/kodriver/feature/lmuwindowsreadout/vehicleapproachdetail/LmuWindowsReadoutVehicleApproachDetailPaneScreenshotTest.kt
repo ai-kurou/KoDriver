@@ -52,6 +52,30 @@ class LmuWindowsReadoutVehicleApproachDetailPaneScreenshotTest {
         }
 
     @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutVehicleApproachDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                        startLeftText = "左注意",
+                                        startRightText = "右注意",
+                                        sustainedLeftText = "左継続",
+                                        sustainedRightText = "右継続",
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
     fun `TTS利用不可`() =
         composeScreenshotTest {
             setContent {
