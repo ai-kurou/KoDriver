@@ -10,8 +10,10 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_MAX
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
@@ -32,9 +34,12 @@ import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kurou.kodriver.feature.acewindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
@@ -48,9 +53,11 @@ import org.koin.dsl.module
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（MyBestLapUseCases / RemainingFuelUseCases / RemainingFuelLapsUseCases /
  *   SimulatorUseCases / ReadoutListUseCases / FlagUseCases / TyreTemperatureUseCases / VehicleApproachUseCases）、それらが束ねる各ドメイン UseCase、および
- *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
+ *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine・SpeakTextUseCase・
+ *   ObserveVoiceUseCase・CheckTextToSpeechAvailableUseCase・ObserveAceWindowsCheckeredFlagReadoutTextUseCase）、
+ *   および自由文言TTSの AceWindowsReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
- *   SoundPlayer（[platformSoundModule]）。
+ *   SoundPlayer（[platformSoundModule]）・TextToSpeechRepository（:core:text-to-speech-data）。
  * 音声系は LMU/GT7 と区別するため named(Simulator.AceWindows.id) で登録している。
  */
 @OptIn(ExperimentalResourceApi::class)
@@ -68,7 +75,13 @@ val aceWindowsNarratorModule: Module =
         factory { FlagUseCases(get(), get()) }
         factory { TyreTemperatureUseCases(get(), get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get()) }
-        factory { AceWindowsNarratorEventProcessor(get(named(Simulator.AceWindows.id)), get()) }
+        factory {
+            AceWindowsNarratorEventProcessor(
+                get(named(Simulator.AceWindows.id)),
+                get(),
+                get<AceWindowsReadoutTextSpeaker>()::readoutText,
+            )
+        }
 
         // ドメイン UseCase（:core:domain。get() は :core:ace-windows-data / :core:data の Repository を解決）
         factory { DetermineAceWindowsNarratorReadoutUseCase() }
@@ -94,6 +107,19 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
+        // TTS依存は他シミュレーターのunqualified登録と区別する。
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsCheckeredFlagReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveVoiceUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { CheckTextToSpeechAvailableUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { SpeakTextUseCase(get(), get(named(Simulator.AceWindows.id))) }
+        factory {
+            AceWindowsReadoutTextSpeaker(
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+            )
+        }
+
         // 音声再生（named "ace_windows" で LMU/GT7 と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
         includes(platformSoundModule(named(Simulator.AceWindows.id)))
         single<TextToSpeechEngine>(named(Simulator.AceWindows.id)) {
@@ -107,6 +133,8 @@ val aceWindowsNarratorModule: Module =
                             resourceLoader = Res::readBytes,
                             startSoundResourceLoader = ::readStartSoundBytes,
                         ),
+                    customSpeak = get<AceWindowsReadoutTextSpeaker>()::invoke,
+                    isCustomSpeakEvent = ::isAceWindowsCustomSpeakEvent,
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
@@ -115,6 +143,7 @@ val aceWindowsNarratorModule: Module =
                 ),
             )
         }
+        factory(named(Simulator.AceWindows.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.AceWindows.id))) }
         factory(named(Simulator.AceWindows.id)) { PlaySpeechEventUseCase(get(named(Simulator.AceWindows.id))) }
     }
 
@@ -128,7 +157,6 @@ private val aceWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.AceWindowsYellowFlag, "files/yellow_flag.wav")
         put(SpeechEvent.AceWindowsBlackFlag, "files/black_flag.wav")
         put(SpeechEvent.AceWindowsBlackWhiteFlag, "files/black_white_flag.wav")
-        put(SpeechEvent.AceWindowsCheckeredFlag, "files/checkered_flag.wav")
         put(SpeechEvent.AceWindowsOrangeCircleFlag, "files/orange_circle_flag.wav")
         put(SpeechEvent.AceWindowsRedYellowStripesFlag, "files/red_yellow_stripes_flag.wav")
         put(SpeechEvent.AceWindowsTyreOverheat, "files/tyre_overheat.wav")

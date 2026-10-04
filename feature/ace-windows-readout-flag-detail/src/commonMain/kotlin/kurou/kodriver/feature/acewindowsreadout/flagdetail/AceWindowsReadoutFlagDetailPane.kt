@@ -12,11 +12,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_description
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_text_preview
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_text_reset_to_default
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_text_selected_icon
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_text_supporting
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_text_unavailable
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -31,6 +38,9 @@ fun AceWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
         uiState = uiState,
         onFlagEnabledChanged = viewModel::onFlagEnabledChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
+        onFlagTextChanged = viewModel::onFlagTextChanged,
+        onFlagTextReset = viewModel::onFlagTextReset,
+        onFlagTextPreviewClicked = viewModel::onFlagTextPreviewClicked,
         modifier = modifier,
     )
 }
@@ -40,6 +50,9 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
     uiState: AceWindowsReadoutFlagDetailUiState = AceWindowsReadoutFlagDetailUiState(),
     onFlagEnabledChanged: (FlagReadoutItem, Boolean) -> Unit = { _, _ -> },
     onPreviewClicked: (FlagReadoutItem) -> Unit = {},
+    onFlagTextChanged: (FlagReadoutItem, String) -> Unit = { _, _ -> },
+    onFlagTextReset: (FlagReadoutItem) -> Unit = {},
+    onFlagTextPreviewClicked: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -60,12 +73,36 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
                 bottomContent = {
-                    DetailPaneCardChips(
-                        chipLabels = listOf(chipLabel),
-                        selectedChipLabels = setOf(chipLabel),
-                        chipEnabled = true,
-                        onChipClick = { onPreviewClicked(item) },
-                    )
+                    val defaultText = item.defaultText
+                    if (defaultText != null) {
+                        DetailPaneCardTextField(
+                            value = uiState.flagText(item),
+                            defaultValue = defaultText,
+                            onResetToDefault = { onFlagTextReset(item) },
+                            resetContentDescription = stringResource(Res.string.flag_text_reset_to_default),
+                            placeholder = stringResource(item.labelRes),
+                            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                            onValueChangeFinished = { onFlagTextChanged(item, it) },
+                            onPreviewClick = onFlagTextPreviewClicked,
+                            enabled = uiState.isTextToSpeechAvailable,
+                            selected = uiState.hasReadoutText(item),
+                            supportingText =
+                                when {
+                                    !uiState.isTextToSpeechAvailable -> stringResource(Res.string.flag_text_unavailable)
+                                    uiState.hasReadoutText(item) -> null
+                                    else -> stringResource(Res.string.flag_text_supporting)
+                                },
+                            previewContentDescription = stringResource(Res.string.flag_text_preview),
+                            selectedContentDescription = stringResource(Res.string.flag_text_selected_icon),
+                        )
+                    } else {
+                        DetailPaneCardChips(
+                            chipLabels = listOf(chipLabel),
+                            selectedChipLabels = setOf(chipLabel),
+                            chipEnabled = true,
+                            onChipClick = { onPreviewClicked(item) },
+                        )
+                    }
                 },
             )
         }
@@ -80,6 +117,7 @@ private fun AceWindowsReadoutFlagDetailPanePreview() {
             uiState =
                 AceWindowsReadoutFlagDetailUiState(
                     enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+                    isTextToSpeechAvailable = true,
                 ),
         )
     }

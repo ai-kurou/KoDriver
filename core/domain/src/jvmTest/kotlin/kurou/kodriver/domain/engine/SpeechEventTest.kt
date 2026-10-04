@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.engine
 
+import kurou.kodriver.domain.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
@@ -168,6 +169,7 @@ class SpeechEventTest {
         assertEquals("ブラックフラッグ", SpeechEvent.AceWindowsBlackFlag.narratedText)
         assertEquals("ブラック・ホワイトフラッグ", SpeechEvent.AceWindowsBlackWhiteFlag.narratedText)
         assertEquals("チェッカーフラッグ", SpeechEvent.AceWindowsCheckeredFlag.narratedText)
+        assertEquals(ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsCheckeredFlag.narratedText)
         assertEquals("オレンジボールフラッグ", SpeechEvent.AceWindowsOrangeCircleFlag.narratedText)
         assertEquals("レッド・イエローストライプフラッグ", SpeechEvent.AceWindowsRedYellowStripesFlag.narratedText)
     }
