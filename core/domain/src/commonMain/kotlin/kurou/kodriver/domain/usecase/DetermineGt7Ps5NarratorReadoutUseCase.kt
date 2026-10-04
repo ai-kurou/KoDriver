@@ -7,6 +7,7 @@ import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
+import kotlin.math.roundToInt
 
 /**
  * GT7 向け読み上げ判定の継続状態。
@@ -148,7 +149,12 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled)
         return Gt7Ps5NarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
-            events = if (shouldAnnounce) listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning) else emptyList(),
+            events =
+                if (shouldAnnounce) {
+                    listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(remainingFuelPercent(telemetry)))
+                } else {
+                    emptyList()
+                },
         )
     }
 
@@ -312,11 +318,16 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         return RemainingFuelLapsEvaluation(fuelState.currentLap, remainingLapsFloor)
     }
 
+    private fun remainingFuelPercent(telemetry: Gt7Ps5TelemetryData): Int =
+        (telemetry.gasLevel.value / telemetry.gasCapacity.value * 100f).roundToInt().coerceIn(0, 100)
+
     private fun isLowRemainingFuel(
         telemetry: Gt7Ps5TelemetryData,
         thresholdPercentage: Int,
     ): Boolean =
-        telemetry.gasLevel > Gt7Ps5FuelUnit(0f) &&
+        telemetry.gasLevel.value.isFinite() &&
+            telemetry.gasCapacity.value.isFinite() &&
+            telemetry.gasLevel > Gt7Ps5FuelUnit(0f) &&
             telemetry.gasCapacity > Gt7Ps5FuelUnit(0f) &&
             telemetry.gasLevel.value * 100f <= thresholdPercentage * telemetry.gasCapacity.value
 

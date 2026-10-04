@@ -731,8 +731,23 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(remainingFuelThresholdPercentage = 30),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning), decision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(30)), decision.events)
         assertEquals(true, decision.state.remainingFuelWarned)
+    }
+
+    @Test
+    fun `燃料残量は閾値ではなく実際の割合を四捨五入し0から100に収める`() {
+        listOf(29.6f to 30, 29.4f to 29, 0.1f to 0, 100f to 100, 110f to 100).forEach { (level, percent) ->
+            val decision =
+                useCase.determineRemainingFuel(
+                    state = Gt7Ps5NarratorState(),
+                    telemetry = telemetry(gasLevel = level, gasCapacity = 100f),
+                    settings = settings(remainingFuelThresholdPercentage = level.toInt().coerceAtLeast(30)),
+                )
+
+            assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(percent)), decision.events)
+            assertEquals(true, decision.state.remainingFuelWarned)
+        }
     }
 
     @Test
@@ -744,7 +759,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(remainingFuelThresholdPercentage = 30),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning), decision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(30)), decision.events)
     }
 
     @Test
@@ -784,7 +799,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, recoveredState.remainingFuelWarned)
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning), rewarnedDecision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(20)), rewarnedDecision.events)
     }
 
     @Test
@@ -844,6 +859,27 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
         assertTrue(decision.events.isEmpty())
         assertEquals(false, decision.state.remainingFuelWarned)
+    }
+
+    @Test
+    fun `燃料残量と容量のどちらかが非有限なら燃料残量は読み上げない`() {
+        listOf(
+            Float.POSITIVE_INFINITY to Float.POSITIVE_INFINITY,
+            Float.POSITIVE_INFINITY to 100f,
+            20f to Float.POSITIVE_INFINITY,
+            Float.NaN to 100f,
+            20f to Float.NaN,
+        ).forEach { (gasLevel, gasCapacity) ->
+            val decision =
+                useCase.determineRemainingFuel(
+                    state = Gt7Ps5NarratorState(),
+                    telemetry = telemetry(gasLevel = gasLevel, gasCapacity = gasCapacity),
+                    settings = settings(),
+                )
+
+            assertTrue(decision.events.isEmpty())
+            assertEquals(false, decision.state.remainingFuelWarned)
+        }
     }
 
     @Test

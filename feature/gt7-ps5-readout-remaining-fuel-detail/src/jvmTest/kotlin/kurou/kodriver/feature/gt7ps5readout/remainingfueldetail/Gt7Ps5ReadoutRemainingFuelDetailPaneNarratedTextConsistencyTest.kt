@@ -10,7 +10,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 /**
- * UI は「燃料残量」に統一する一方、既存 WAV と [SpeechEvent.narratedText] は変更しない（#1784）。
+ * UI の文言入力欄ラベルと、試聴サンプルの残量を展開した TTS 記録文言を検証する。
  * 表示文言と音声の記録文言をそれぞれ検証する。
  */
 class Gt7Ps5ReadoutRemainingFuelDetailPaneNarratedTextConsistencyTest {
@@ -18,14 +18,14 @@ class Gt7Ps5ReadoutRemainingFuelDetailPaneNarratedTextConsistencyTest {
     val rule = createComposeRule()
 
     @Test
-    fun `Chipは燃料残量警告を表示し既存音声の記録文言は維持される`() {
+    fun `文言入力欄は燃料残量警告の文言を表示し試聴文言にはサンプルの残量を含む`() {
         rule.setContent {
             MaterialTheme {
                 Gt7Ps5ReadoutRemainingFuelDetailPaneContent()
             }
         }
 
-        rule.onNodeWithText("燃料残量警告").assertIsDisplayed()
-        assertEquals("残り燃料警告", SpeechEvent.Gt7Ps5RemainingFuelWarning.narratedText)
+        rule.onNodeWithText("燃料残量警告の文言").assertIsDisplayed()
+        assertEquals("燃料は残り30パーセント", SpeechEvent.Gt7Ps5RemainingFuelWarning(30).narratedText)
     }
 }
