@@ -8,6 +8,7 @@ import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -89,6 +90,13 @@ private class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5Remaining
 
 private class FakeGt7Ps5RemainingFuelPreferencesRepository : Gt7Ps5RemainingFuelPreferencesRepository {
     private val flow = MutableStateFlow(30)
+    private val readoutText = MutableStateFlow(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT)
+
+    override fun observeReadoutText(): Flow<String> = readoutText
+
+    override suspend fun saveReadoutText(text: String) {
+        readoutText.update { text }
+    }
 
     override fun observeThresholdPercentage(): Flow<Int> = flow
 

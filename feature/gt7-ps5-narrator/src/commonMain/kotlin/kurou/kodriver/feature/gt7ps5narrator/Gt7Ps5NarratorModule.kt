@@ -14,6 +14,7 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
@@ -46,7 +47,8 @@ import org.koin.dsl.module
  *   （MyBestLapUseCases / SimulatorUseCases / ReadoutListUseCases / RemainingFuelLapsUseCases / RemainingFuelUseCases /
  *   TyreTemperatureUseCases）、それらが束ねる
  *   各ドメイン UseCase、および named(Simulator.Gt7Ps5.id) の音声再生系
- *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine・SpeakTextUseCase・燃料残り周回数文言の Observe UseCase・
+ *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine・SpeakTextUseCase・
+ *   燃料残量・残り周回数文言の Observe UseCase・
  *   CheckTextToSpeechAvailableUseCase・ObserveVoiceUseCase）、および Gt7Ps5ReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:gt7-ps5-data / :core:data）、
  *   TextToSpeechRepository・VoicePreferencesRepository、および SoundPlayer（[platformSoundModule]）。
@@ -90,6 +92,7 @@ val gt7Ps5NarratorModule: Module =
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
         // PR2の詳細ペイン用UseCaseや他シミュレーターと区別し、GT7のTTS依存を本モジュールで登録する。
+        factory(named(Simulator.Gt7Ps5.id)) { ObserveGt7Ps5RemainingFuelReadoutTextUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { ObserveVoiceUseCase(get()) }
@@ -99,6 +102,7 @@ val gt7Ps5NarratorModule: Module =
             Gt7Ps5ReadoutTextSpeaker(
                 observeRemainingFuelLapsReadoutText = get(named(Simulator.Gt7Ps5.id)),
                 observeRemainingFuelLapsEmptyReadoutText = get(named(Simulator.Gt7Ps5.id)),
+                observeRemainingFuelReadoutText = get(named(Simulator.Gt7Ps5.id)),
                 checkTextToSpeechAvailable = get(named(Simulator.Gt7Ps5.id)),
                 speakText = get(named(Simulator.Gt7Ps5.id)),
             )
@@ -118,7 +122,9 @@ val gt7Ps5NarratorModule: Module =
                             startSoundResourceLoader = ::readStartSoundBytes,
                         ),
                     customSpeak = get<Gt7Ps5ReadoutTextSpeaker>()::invoke,
-                    isCustomSpeakEvent = { it is SpeechEvent.RemainingFuelLapsWarning },
+                    isCustomSpeakEvent = {
+                        it is SpeechEvent.RemainingFuelLapsWarning || it is SpeechEvent.Gt7Ps5RemainingFuelWarning
+                    },
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
@@ -135,7 +141,6 @@ private val gt7Ps5EventToFile: Map<SpeechEvent, String> =
     buildMap {
         put(SpeechEvent.Gt7Ps5MyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.Gt7Ps5MyBestLapCasual, "files/my_best_lap_casual.wav")
-        put(SpeechEvent.Gt7Ps5RemainingFuelWarning, "files/remaining_fuel_caution.wav")
         put(SpeechEvent.Gt7Ps5TyreOverheat, "files/tyre_overheat.wav")
     }
 

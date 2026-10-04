@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -23,7 +24,7 @@ class Gt7Ps5RemainingFuelPreferencesSerializerTest {
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = Gt7Ps5RemainingFuelPreferences(thresholdPercentage = 45)
+            val original = Gt7Ps5RemainingFuelPreferences(thresholdPercentage = 45, readoutText = "残り{percent}%")
             val output = ByteArrayOutputStream()
             Gt7Ps5RemainingFuelPreferencesSerializer.writeTo(original, output)
 
@@ -43,5 +44,28 @@ class Gt7Ps5RemainingFuelPreferencesSerializerTest {
             assertFailsWith<CorruptionException> {
                 Gt7Ps5RemainingFuelPreferencesSerializer.readFrom(corrupt)
             }
+        }
+
+    @Test
+    fun `文言がない旧データは閾値を維持して既定文言を使用する`() =
+        runTest {
+            val restored =
+                Gt7Ps5RemainingFuelPreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(0x08, 0x2D)))
+
+            assertEquals(45, restored.thresholdPercentage)
+            assertEquals(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, restored.readoutText)
+        }
+
+    @Test
+    fun `空欄文言は読み出しても既定値に戻らない`() =
+        runTest {
+            val original = Gt7Ps5RemainingFuelPreferences(readoutText = "")
+            val output = ByteArrayOutputStream()
+            Gt7Ps5RemainingFuelPreferencesSerializer.writeTo(original, output)
+
+            assertEquals(
+                original,
+                Gt7Ps5RemainingFuelPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())),
+            )
         }
 }

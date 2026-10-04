@@ -7,3 +7,6 @@ package kurou.kodriver.domain.model
  * この一箇所にのみ定義する。
  */
 const val GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT = 30
+
+const val GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT = "燃料は残り{percent}パーセント"
+const val GT7_PS5_REMAINING_FUEL_PERCENT_PLACEHOLDER = "{percent}"

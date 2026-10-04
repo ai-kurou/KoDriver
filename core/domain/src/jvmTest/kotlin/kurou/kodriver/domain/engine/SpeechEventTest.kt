@@ -64,8 +64,19 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `Gt7Ps5の燃料・タイヤ系のnarratedTextはChipと同じ文言を返す`() {
-        assertEquals("残り燃料警告", SpeechEvent.Gt7Ps5RemainingFuelWarning.narratedText)
+    fun `Gt7Ps5燃料残量はRootキーと既定文言を持ち解決文言をcopyで保持する`() {
+        val event = SpeechEvent.Gt7Ps5RemainingFuelWarning(29)
+        val resolved = event.copy(resolvedText = "残り29%")
+
+        assertEquals(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root, event.readoutItemKey)
+        assertEquals("燃料は残り29パーセント", event.narratedText)
+        assertEquals("燃料は残り29パーセント", resolved.narratedText)
+        assertEquals("残り29%", resolved.resolvedText)
+    }
+
+    @Test
+    fun `Gt7Ps5の燃料残量は整数を展開しタイヤは警告文言を返す`() {
+        assertEquals("燃料は残り30パーセント", SpeechEvent.Gt7Ps5RemainingFuelWarning(30).narratedText)
         assertEquals("タイヤ過熱警告", SpeechEvent.Gt7Ps5TyreOverheat.narratedText)
     }
 

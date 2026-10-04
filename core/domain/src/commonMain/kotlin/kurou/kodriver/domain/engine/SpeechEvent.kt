@@ -2,6 +2,7 @@ package kurou.kodriver.domain.engine
 
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
@@ -15,6 +16,7 @@ import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
+import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 
 /**
@@ -169,9 +171,17 @@ sealed interface SpeechEvent {
             }
     }
 
-    data object Gt7Ps5RemainingFuelWarning : SpeechEvent {
+    /**
+     * GT7 の実際の燃料残量を四捨五入した整数 [percent] で読み上げるイベント。
+     * [resolvedText] は判定時に解決済みの文言。キュー待機中に設定が変わってもログと発話内容を一致させる。
+     */
+    data class Gt7Ps5RemainingFuelWarning(
+        val percent: Int,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root
-        override val narratedText = "残り燃料警告"
+        override val narratedText =
+            formatGt7Ps5RemainingFuelReadoutText(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, percent)
     }
 
     data object Gt7Ps5TyreOverheat : SpeechEvent {

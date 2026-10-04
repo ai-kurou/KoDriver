@@ -63,6 +63,6 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
     }
 
     fun onPreviewClicked() {
-        playSpeechEvent(SpeechEvent.Gt7Ps5RemainingFuelWarning)
+        playSpeechEvent(SpeechEvent.Gt7Ps5RemainingFuelWarning(percent = uiState.value.thresholdPercentage))
     }
 }
