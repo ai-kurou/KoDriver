@@ -3,6 +3,7 @@ package kurou.kodriver.domain.engine
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
@@ -19,6 +20,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
+import kurou.kodriver.domain.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 
@@ -209,9 +211,14 @@ sealed interface SpeechEvent {
             formatGt7Ps5RemainingFuelReadoutText(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, percent)
     }
 
-    data object Gt7Ps5TyreOverheat : SpeechEvent {
+    /** GT7 の全輪の最高タイヤ温度。解決済み文言は判定時の発話・ログ内容を保持する。 */
+    data class Gt7Ps5TyreOverheat(
+        val celsius: Int,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.TyreTemperature.Root
-        override val narratedText = "タイヤ過熱警告"
+        override val narratedText =
+            formatGt7Ps5TyreTemperatureReadoutText(GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, celsius)
     }
 
     /**

@@ -5,8 +5,15 @@ GT7 PS5 のタイヤ温度アナウンス詳細設定を提供する feature モ
 
 ## Responsibilities
 
-- `Gt7Ps5ReadoutTyreTemperatureDetailPane` でタイトル・説明・過熱警告の有効/無効・高温閾値の設定 UI を表示する
-- 高温閾値（スライダー）・過熱警告の有効/無効はいずれも DataStore に永続化され、Narrator の読み上げ判定にも反映される
+- `Gt7Ps5ReadoutTyreTemperatureDetailPane` でタイトル・説明・過熱警告の有効/無効・高温閾値・読み上げ文言の設定 UI を表示する
+- 高温閾値（スライダー）・過熱警告の有効/無効・文言はいずれも DataStore に永続化され、Narrator の読み上げ判定にも反映される
+
+既定文言は「タイヤ過熱 {celsius}度」。`{celsius}` は判定時の全輪の最高タイヤ温度を整数に丸めた摂氏に置換する。
+入力欄は最大 `READOUT_CUSTOM_TEXT_MAX_LENGTH` 文字で、保存時に前後の空白を除去する。
+リセット・試聴・`{celsius}` 挿入チップ・未知プレースホルダーの警告を提供する。
+試聴は現在の高温閾値をサンプル温度として置換し、`TyreTemperature.Root` の開始音の後にOS標準TTSで再生する。
+警告スイッチがOFFでも編集・試聴できる。空白文言・TTS利用不可・音量ゼロ以下では開始音も本文も再生しない。
+WAVへのフォールバックは行わない。
 
 ## Related Modules
 

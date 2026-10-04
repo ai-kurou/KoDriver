@@ -15,19 +15,29 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
+@Suppress("TooManyFunctions")
 class Gt7Ps5ReadoutTextSpeakerTest {
     private val observeText: ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase = mockk()
     private val observeEmptyText: ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase = mockk()
     private val observeFuelText: ObserveGt7Ps5RemainingFuelReadoutTextUseCase = mockk()
+    private val observeTyreText: ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
-        Gt7Ps5ReadoutTextSpeaker(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+        Gt7Ps5ReadoutTextSpeaker(
+            observeText,
+            observeEmptyText,
+            observeFuelText,
+            observeTyreText,
+            checkAvailable,
+            speakText,
+        )
 
     @Test
     fun `通常文言の周回数を置換して音量付きで読み上げる`() =
@@ -42,7 +52,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 2) { observeText() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("残り3周・3", volume = 42) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 
     @Test
@@ -57,7 +67,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
 
             verify(exactly = 3) { observeEmptyText() }
             coVerify(exactly = 3) { checkAvailable() }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 
     @Test
@@ -74,7 +84,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 0) { observeEmptyText() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 2) { speakText("確定した文言{laps}", volume = 80) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 
     @Test
@@ -98,7 +108,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 0) { speakText(" \t\n ", volume = 100) }
             coVerify(exactly = 0) { speakText("", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 
     @Test
@@ -112,7 +122,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
 
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("あと3周", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 
     @Test
@@ -121,7 +131,6 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             val events =
                 listOf(
                     SpeechEvent.Gt7Ps5MyBestLapFormal,
-                    SpeechEvent.Gt7Ps5TyreOverheat,
                     SpeechEvent.AceWindowsRemainingFuelLapsWarning(3),
                 )
             events.forEach { event ->
@@ -132,7 +141,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 0) { observeText() }
             verify(exactly = 0) { observeEmptyText() }
             coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 
     @Test
@@ -148,7 +157,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 2) { observeFuelText() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("残り30%・30", volume = 42) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 
     @Test
@@ -162,7 +171,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 0) { observeFuelText() }
             coVerify(exactly = 1) { checkAvailable() }
             coVerify(exactly = 1) { speakText("確定した文言{percent}", volume = 80) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 
     @Test
@@ -181,7 +190,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = 100) }
             coVerify(exactly = 0) { speakText("", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 
     @Test
@@ -200,6 +209,74 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 2) { observeFuelText() }
             coVerify(exactly = 4) { checkAvailable() }
             coVerify(exactly = 0) { speakText("残り30%", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, checkAvailable, speakText)
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `タイヤ過熱の保存文言を整数で置換して読み上げる`() =
+        runTest {
+            every { observeTyreText() } returns flowOf("温度{celsius}度・{celsius}{wheel}")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("温度30度・30{wheel}", volume = 42) } just Runs
+
+            assertEquals("温度30度・30{wheel}", speaker.readoutText(SpeechEvent.Gt7Ps5TyreOverheat(30)))
+            speaker(SpeechEvent.Gt7Ps5TyreOverheat(30), 42)
+
+            verify(exactly = 2) { observeTyreText() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("温度30度・30{wheel}", volume = 42) }
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `タイヤ過熱も解決済み文言を優先し設定を読み直さない`() =
+        runTest {
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("確定した文言{celsius}", volume = 80) } just Runs
+
+            speaker(SpeechEvent.Gt7Ps5TyreOverheat(30, "確定した文言{celsius}"), 80)
+
+            verify(exactly = 0) { observeTyreText() }
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("確定した文言{celsius}", volume = 80) }
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `タイヤ過熱の空白文言は利用可否を確認せず読み上げない`() =
+        runTest {
+            every { observeTyreText() } returns flowOf(" ")
+            listOf(
+                SpeechEvent.Gt7Ps5TyreOverheat(30),
+                SpeechEvent.Gt7Ps5TyreOverheat(30, ""),
+            ).forEach { event ->
+                assertNull(speaker.readoutText(event))
+                speaker(event, 100)
+            }
+
+            verify(exactly = 2) { observeTyreText() }
+            coVerify(exactly = 0) { checkAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = 100) }
+            coVerify(exactly = 0) { speakText("", volume = 100) }
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `タイヤ過熱はTTS利用不可なら保存文言も解決済み文言も読み上げない`() =
+        runTest {
+            every { observeTyreText() } returns flowOf("温度{celsius}度")
+            coEvery { checkAvailable() } returns false
+            listOf(
+                SpeechEvent.Gt7Ps5TyreOverheat(30),
+                SpeechEvent.Gt7Ps5TyreOverheat(30, "温度30度"),
+            ).forEach { event ->
+                assertNull(speaker.readoutText(event))
+                speaker(event, 100)
+            }
+
+            verify(exactly = 2) { observeTyreText() }
+            coVerify(exactly = 4) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("温度30度", volume = 100) }
+            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
         }
 }
