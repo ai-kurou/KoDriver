@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
@@ -21,6 +22,7 @@ import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 
 /**
  * 音声エンジンへ渡す読み上げイベント。
@@ -133,9 +135,20 @@ sealed interface SpeechEvent {
             )
     }
 
-    data object TyreWearWarning : SpeechEvent {
+    /**
+     * タイヤ摩耗警告。[percentage] は実際の残存率ではなく設定した閾値（%）。
+     * [resolvedText] は判定時に解決済みの読み上げ文言。キュー待機中に設定が変わっても、ログと発話内容を一致させるために使う。
+     */
+    data class TyreWearWarning(
+        val percentage: Int,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root
-        override val narratedText = "タイヤ摩耗警告"
+        override val narratedText =
+            formatLmuWindowsTyreWearReadoutText(
+                LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT,
+                percentage,
+            )
     }
 
     data object BrakeOverheat : SpeechEvent {

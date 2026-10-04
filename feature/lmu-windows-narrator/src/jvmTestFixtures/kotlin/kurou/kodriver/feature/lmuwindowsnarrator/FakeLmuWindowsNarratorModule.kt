@@ -8,6 +8,7 @@ import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
@@ -241,6 +242,13 @@ class FakeLmuWindowsTyreWearRepository : LmuWindowsTyreWearRepository {
 
 class FakeLmuWindowsTyreWearPreferencesRepository : LmuWindowsTyreWearPreferencesRepository {
     private val flow = MutableStateFlow(50)
+    private val text = MutableStateFlow(LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT)
+
+    override fun observeReadoutText(): Flow<String> = text
+
+    override suspend fun saveReadoutText(text: String) {
+        this.text.update { text }
+    }
 
     override fun observeThresholdPercentage(): Flow<Int> = flow
 
