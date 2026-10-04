@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="tyre_temperature_description">タイヤの温度状況を音声でお知らせします。</string>
+    <string name="tyre_temperature_description">タイヤの温度状況を音声でお知らせします。\n読み上げる文言は下の欄で設定できます。</string>
     <string name="tyre_temperature_overheat_warning_card_title">過熱警告</string>
-    <string name="tyre_temperature_overheat_warning_preview_chip">タイヤ過熱警告</string>
     <string name="tyre_temperature_high_threshold_subtitle">高温閾値設定</string>
     <string name="tyre_temperature_high_threshold_label">高温閾値: %1$s°C</string>
     <string name="tyre_temperature_high_threshold_reset">デフォルトに戻す</string>
+    <string name="tyre_temperature_text_reset_to_default">デフォルトに戻す</string>
+    <string name="tyre_temperature_text_label">タイヤ過熱警告の文言</string>
+    <string name="tyre_temperature_celsius_insert">{celsius}を挿入</string>
+    <string name="tyre_temperature_celsius_placeholder_hint">{celsius} は判定時の全輪の最高タイヤ温度（摂氏）に置き換わります（整数に丸めます）</string>
+    <string name="tyre_temperature_text_supporting">空欄のままなら読み上げません</string>
+    <string name="tyre_temperature_text_unavailable">この端末では音声合成を利用できないため、読み上げません</string>
+    <string name="tyre_temperature_text_preview">入力した文言を再生</string>
+    <string name="tyre_temperature_text_selected_icon">この文言を読み上げます</string>
+    <string name="tyre_temperature_text_unknown_placeholders">%1$s は置き換えられません。{celsius} を使用してください</string>
 </resources>

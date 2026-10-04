@@ -59,7 +59,11 @@ internal class Gt7Ps5NarratorEventProcessor(
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
             val text =
-                if (event is SpeechEvent.RemainingFuelLapsWarning || event is SpeechEvent.Gt7Ps5RemainingFuelWarning) {
+                if (
+                    event is SpeechEvent.RemainingFuelLapsWarning ||
+                    event is SpeechEvent.Gt7Ps5RemainingFuelWarning ||
+                    event is SpeechEvent.Gt7Ps5TyreOverheat
+                ) {
                     readoutText(event)
                 } else {
                     event.narratedText
@@ -72,6 +76,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                         when (event) {
                             is SpeechEvent.RemainingFuelLapsWarning -> event.copy(resolvedText = text)
                             is SpeechEvent.Gt7Ps5RemainingFuelWarning -> event.copy(resolvedText = text)
+                            is SpeechEvent.Gt7Ps5TyreOverheat -> event.copy(resolvedText = text)
                             else -> event
                         }
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)

@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -42,5 +43,17 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryFactoryTest {
             repository.saveHighThresholdCelsius(Celsius(100))
 
             assertEquals(Celsius(100), repository.observeHighThresholdCelsius().first())
+        }
+
+    @Test
+    fun `Factoryで作成したRepositoryから文言を監視保存できる`() =
+        runTest {
+            val repository = createGt7Ps5TyreTemperaturePreferencesRepository(directory = tempDir.absolutePath)
+            assertEquals(
+                GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                repository.observeOverheatReadoutText().first(),
+            )
+            repository.saveOverheatReadoutText("注意{celsius}度")
+            assertEquals("注意{celsius}度", repository.observeOverheatReadoutText().first())
         }
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -111,5 +112,28 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
                 mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
                 repository.observeEnabledStates().first(),
             )
+        }
+
+    @Test
+    fun `文言の初期値と空白を含む保存値を取得でき他設定を維持する`() =
+        runTest {
+            assertEquals(
+                GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                repository.observeOverheatReadoutText().first(),
+            )
+            repository.saveHighThresholdCelsius(Celsius(105))
+            repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
+            listOf("注意{celsius}度", "", " ").forEach { text ->
+                repository.saveOverheatReadoutText(text)
+                assertEquals(text, repository.observeOverheatReadoutText().first())
+                assertEquals(Celsius(105), repository.observeHighThresholdCelsius().first())
+                assertEquals(
+                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
+                    repository.observeEnabledStates().first(),
+                )
+            }
+            repository.saveHighThresholdCelsius(Celsius(100))
+            repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root, true)
+            assertEquals(" ", repository.observeOverheatReadoutText().first())
         }
 }

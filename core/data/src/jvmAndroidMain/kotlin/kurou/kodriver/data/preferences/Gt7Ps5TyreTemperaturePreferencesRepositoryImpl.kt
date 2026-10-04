@@ -11,7 +11,10 @@ internal class Gt7Ps5TyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<Gt7Ps5TyreTemperaturePreferences>,
 ) : Gt7Ps5TyreTemperaturePreferencesRepository {
     override fun observeHighThresholdCelsius(): Flow<Celsius> =
-        dataStore.observeProperty { it.highThresholdCelsius }.map { Celsius(it) }
+        dataStore
+            .observeProperty {
+                it.highThresholdCelsius
+            }.map { Celsius(it) }
 
     override suspend fun saveHighThresholdCelsius(celsius: Celsius) {
         dataStore.saveProperty(celsius.value) { prefs, value -> prefs.copy(highThresholdCelsius = value) }
@@ -34,5 +37,11 @@ internal class Gt7Ps5TyreTemperaturePreferencesRepositoryImpl(
                     prefs.enabledStates + (key.value to value),
             )
         }
+    }
+
+    override fun observeOverheatReadoutText(): Flow<String> = dataStore.observeProperty { it.overheatReadoutText }
+
+    override suspend fun saveOverheatReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(overheatReadoutText = value) }
     }
 }

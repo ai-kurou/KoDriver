@@ -19,7 +19,113 @@ class Gt7Ps5ReadoutTyreTemperatureDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            Gt7Ps5ReadoutTyreTemperatureDetailPaneContent()
+                            Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    Gt7Ps5ReadoutTyreTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    Gt7Ps5ReadoutTyreTemperatureDetailUiState(
+                                        readoutText = "タイヤ{celsius}度です",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `空白文言`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    Gt7Ps5ReadoutTyreTemperatureDetailUiState(
+                                        readoutText = " ",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `TTS利用不可`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
+                                uiState = Gt7Ps5ReadoutTyreTemperatureDetailUiState(readoutText = "{unknown}"),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `未知プレースホルダー`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    Gt7Ps5ReadoutTyreTemperatureDetailUiState(
+                                        readoutText = "{wheel} {celsius}度",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `警告OFF時`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    Gt7Ps5ReadoutTyreTemperatureDetailUiState(
+                                        overheatWarningEnabled = false,
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
                         }
                     }
                 }
