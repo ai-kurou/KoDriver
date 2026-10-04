@@ -12,4 +12,10 @@ internal class Gt7Ps5RemainingFuelPreferencesRepositoryImpl(
     override suspend fun saveThresholdPercentage(percentage: Int) {
         dataStore.saveProperty(percentage) { prefs, value -> prefs.copy(thresholdPercentage = value) }
     }
+
+    override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.readoutText }
+
+    override suspend fun saveReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(readoutText = value) }
+    }
 }

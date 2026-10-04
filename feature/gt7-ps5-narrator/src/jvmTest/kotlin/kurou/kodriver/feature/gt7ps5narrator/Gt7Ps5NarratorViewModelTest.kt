@@ -370,7 +370,10 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
             channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30パーセント")),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -403,7 +406,7 @@ class Gt7Ps5NarratorViewModelTest {
                     123_456L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                    "残り燃料警告",
+                    "燃料は残り30パーセント",
                     any(),
                     capture(telemetryJsons),
                 )
@@ -413,7 +416,10 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(lapCount = 1, gasLevel = 31f, gasCapacity = 100f))
             channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30パーセント")),
+                spokenTexts,
+            )
             assertEquals(1, telemetryJsons.size)
             assertEquals(true, telemetryJsons.single().contains("remainingFuelWarned=false"))
             assertEquals(true, telemetryJsons.single().contains("remainingFuelWarned=true"))
@@ -422,11 +428,12 @@ class Gt7Ps5NarratorViewModelTest {
                     123_456L,
                     Simulator.Gt7Ps5,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                    "残り燃料警告",
+                    "燃料は残り30パーセント",
                     any(),
                     telemetryJsons.single(),
                 )
             }
+            confirmVerified(telemetryLogRepository)
         }
 
     @Test
@@ -919,7 +926,7 @@ class Gt7Ps5NarratorViewModelTest {
                 any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                "残り燃料警告",
+                "燃料は残り30パーセント",
                 any(),
                 capture(telemetryJsons),
             )
