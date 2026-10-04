@@ -3,21 +3,30 @@ package kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+
+private const val DEFAULT_TEXT = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 
 class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneTest {
     @get:Rule
@@ -206,7 +215,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("デフォルトに戻す").performScrollTo().performClick()
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[1].performScrollTo().performClick()
 
         assertEquals(true, resetCalled)
     }
@@ -227,4 +236,96 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneTest {
 
         assertEquals(false, changedEnabled)
     }
+
+    @Test
+    fun `編集後のリセットは既定文言を表示して保存を通知する`() {
+        val changes = mutableListOf<String>()
+        setResetTestContent(changes = changes)
+
+        rule.onNode(hasSetTextAction()).performTextReplacement("編集済み文言")
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsEnabled().performClick()
+        rule.onNode(hasSetTextAction()).assertEditableTextEquals(DEFAULT_TEXT)
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled()
+        assertEquals(listOf("編集済み文言", DEFAULT_TEXT), changes)
+    }
+
+    @Test
+    fun `既定文言と同じならリセットできず保存も通知しない`() {
+        val changes = mutableListOf<String>()
+        setResetTestContent(changes = changes)
+
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled().performClick()
+        assertEquals(emptyList(), changes)
+    }
+
+    @Test
+    fun `TTS利用不可では編集済み文言をリセットできず保存も通知しない`() {
+        val changes = mutableListOf<String>()
+        setResetTestContent(
+            changes = changes,
+            initialState = LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(readoutText = "編集済み文言"),
+        )
+
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled().performClick()
+        rule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.EditableText)).assertEditableTextEquals("編集済み文言")
+        assertEquals(emptyList(), changes)
+    }
+
+    @Test
+    fun `保存待ちのリセットは古い文言で巻き戻らず保存完了後は同期する`() {
+        val changes = mutableListOf<String>()
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(
+                            readoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onReadoutTextChanged = { changes += it },
+                )
+            }
+        }
+
+        rule.onNode(hasSetTextAction()).performTextReplacement("編集済み文言")
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].performClick()
+        rule.onNode(hasSetTextAction()).assertEditableTextEquals(DEFAULT_TEXT)
+        rule.runOnIdle { savedText = "編集済み文言" }
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction()).assertEditableTextEquals(DEFAULT_TEXT)
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[0].assertIsNotEnabled()
+        rule.runOnIdle { savedText = DEFAULT_TEXT }
+        rule.waitForIdle()
+        rule.runOnIdle { savedText = "保存後の変更" }
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction()).assertEditableTextEquals("保存後の変更")
+        assertEquals(listOf("編集済み文言", DEFAULT_TEXT), changes)
+    }
+
+    private fun setResetTestContent(
+        changes: MutableList<String>,
+        initialState: LmuWindowsReadoutRemainingVirtualEnergyDetailUiState =
+            LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(isTextToSpeechAvailable = true),
+    ) {
+        var uiState by mutableStateOf(initialState)
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
+                    uiState = uiState,
+                    onReadoutTextChanged = {
+                        changes += it
+                        uiState = uiState.copy(readoutText = it)
+                    },
+                )
+            }
+        }
+    }
+
+    private fun SemanticsNodeInteraction.assertEditableTextEquals(expected: String) =
+        assert(
+            SemanticsMatcher("EditableText == $expected") {
+                it.config.getOrNull(SemanticsProperties.EditableText)?.text == expected
+            },
+        )
 }

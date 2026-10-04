@@ -32,6 +32,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_PERCENT_PLACEHOLDER
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.findUnknownLmuWindowsRemainingVirtualEnergyReadoutPlaceholders
@@ -41,6 +42,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.gen
 import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.remaining_virtual_energy_percent_placeholder_hint
 import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.remaining_virtual_energy_text_label
 import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.remaining_virtual_energy_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.remaining_virtual_energy_text_reset_to_default
 import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.remaining_virtual_energy_text_selected_icon
 import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.remaining_virtual_energy_text_supporting
 import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.remaining_virtual_energy_text_unavailable
@@ -163,6 +165,7 @@ private fun RemainingVirtualEnergyReadoutField(
     ReadoutTextField(
         label = stringResource(Res.string.remaining_virtual_energy_text_label),
         text = currentText,
+        defaultText = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
         isTextToSpeechAvailable = available,
         onTextChanged = changeText,
         onPreviewClick = onPreviewClick,
@@ -201,6 +204,7 @@ private fun RemainingVirtualEnergyReadoutField(
 private fun ReadoutTextField(
     label: String,
     text: String,
+    defaultText: String,
     isTextToSpeechAvailable: Boolean,
     onTextChanged: (String) -> Unit,
     onPreviewClick: (String) -> Unit,
@@ -210,6 +214,9 @@ private fun ReadoutTextField(
         Text(text = label, style = MaterialTheme.typography.bodyMedium)
         DetailPaneCardTextField(
             value = text,
+            defaultValue = defaultText,
+            onResetToDefault = { onTextChanged(defaultText) },
+            resetContentDescription = stringResource(Res.string.remaining_virtual_energy_text_reset_to_default),
             placeholder = label,
             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
             onValueChangeFinished = onTextChanged,

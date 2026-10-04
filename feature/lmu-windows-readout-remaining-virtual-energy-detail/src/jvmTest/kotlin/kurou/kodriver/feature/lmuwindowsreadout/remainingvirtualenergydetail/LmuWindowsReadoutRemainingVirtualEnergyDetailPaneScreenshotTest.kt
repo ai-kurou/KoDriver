@@ -31,4 +31,25 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneScreenshotTest {
             }
             onRoot().captureRoboImage()
         }
+
+    @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(
+                                        readoutText = "エナジー残量{percent}%以下です",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
 }
