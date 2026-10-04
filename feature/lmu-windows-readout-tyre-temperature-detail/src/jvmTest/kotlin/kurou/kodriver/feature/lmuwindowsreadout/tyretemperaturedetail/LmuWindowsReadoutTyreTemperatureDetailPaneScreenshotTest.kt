@@ -178,4 +178,31 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
             }
             onRoot().captureRoboImage()
         }
+
+    @Test
+    fun `過熱のみ空白文言`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                        overheatReadoutText = "",
+                                        vehicleClassHighThresholdCelsius =
+                                            lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
+                                                lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                                    vehicleClass,
+                                                ).value
+                                            },
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
 }
