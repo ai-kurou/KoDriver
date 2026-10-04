@@ -58,4 +58,10 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
     override suspend fun saveOverheatReadoutText(text: String) {
         dataStore.saveProperty(text) { prefs, value -> prefs.copy(overheatReadoutText = value) }
     }
+
+    override fun observeColdReadoutText(): Flow<String> = dataStore.observeProperty { it.coldReadoutText }
+
+    override suspend fun saveColdReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(coldReadoutText = value) }
+    }
 }

@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 
+@Suppress("TooManyFunctions")
 interface LmuWindowsTyreTemperaturePreferencesRepository {
     fun observeHighThresholdCelsius(): Flow<Celsius>
 
@@ -24,4 +25,8 @@ interface LmuWindowsTyreTemperaturePreferencesRepository {
     fun observeOverheatReadoutText(): Flow<String>
 
     suspend fun saveOverheatReadoutText(text: String)
+
+    fun observeColdReadoutText(): Flow<String>
+
+    suspend fun saveColdReadoutText(text: String)
 }
