@@ -8,15 +8,23 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.core.narrator.WavNarratorEngine
+import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5WavNarratorEngineTest {
+    private val soundPlayer: SoundPlayer = mockk()
     private val wavNarratorEngine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 
     @Test
@@ -73,5 +81,44 @@ class Gt7Ps5WavNarratorEngineTest {
 
             coVerify(exactly = 1) { wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
             confirmVerified(wavNarratorEngine)
+        }
+
+    @Test
+    fun `燃料残り周回数は値が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
+        runTest {
+            val customEvents = mutableListOf<SpeechEvent>()
+            val engine =
+                WavNarratorEngine(
+                    soundPlayer = soundPlayer,
+                    resources =
+                        WavResources<SpeechEvent, ReadoutStartSoundType>(
+                            eventToFile = mapOf(SpeechEvent.RemainingFuelLapsWarning(3, "あと3周") to "warning.wav"),
+                            startSoundTypeToFile = emptyMap(),
+                            resourceLoader = { byteArrayOf(1) },
+                            startSoundResourceLoader = { error("開始音は設定しない") },
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    isCustomSpeakEvent = {
+                        it is SpeechEvent.RemainingFuelLapsWarning
+                    },
+                    customSpeak = { event, _ -> customEvents += event },
+                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                )
+            runCurrent()
+            val narrator = Gt7Ps5WavNarratorEngine(engine)
+            narrator.speak(SpeechEvent.RemainingFuelLapsWarning(3, "あと3周"))
+            runCurrent()
+            narrator.speak(SpeechEvent.RemainingFuelLapsWarning(0, "燃料なし"))
+            runCurrent()
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.RemainingFuelLapsWarning(3, "あと3周"),
+                    SpeechEvent.RemainingFuelLapsWarning(0, "燃料なし"),
+                ),
+                customEvents,
+            )
+            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
+            confirmVerified(soundPlayer)
         }
 }

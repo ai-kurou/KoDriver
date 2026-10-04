@@ -272,6 +272,7 @@ class Gt7Ps5NarratorEventProcessorTest {
     @Test
     fun `優先度の高い項目を再生中なら読み上げずSKIPPEDとして保存する`() =
         runTest {
+            val json = slot<String>()
             val currentKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
             val newEvent = SpeechEvent.RemainingFuelLapsWarning(2)
             every { ttsEngine.currentReadoutItemKey } returns currentKey
@@ -282,7 +283,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     newEvent.readoutItemKey,
                     newEvent.narratedText,
                     NarrationOutcome.SKIPPED,
-                    any(),
+                    capture(json),
                 )
             } just Runs
             val processor = createProcessor()
@@ -305,7 +306,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     newEvent.readoutItemKey,
                     newEvent.narratedText,
                     NarrationOutcome.SKIPPED,
-                    any(),
+                    json.captured,
                 )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)
@@ -317,7 +318,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             val currentKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
             val newEvent = SpeechEvent.RemainingFuelLapsWarning(2)
             val telemetryJsons = mutableListOf<String>()
-            every { ttsEngine.speak(newEvent, queue = true) } just Runs
+            every { ttsEngine.speak(newEvent.copy(resolvedText = newEvent.narratedText), queue = true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -340,7 +341,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             )
 
             verify(exactly = 0) { ttsEngine.stop() }
-            verify(exactly = 1) { ttsEngine.speak(newEvent, queue = true) }
+            verify(exactly = 1) { ttsEngine.speak(newEvent.copy(resolvedText = newEvent.narratedText), queue = true) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -480,10 +481,142 @@ class Gt7Ps5NarratorEventProcessorTest {
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
+    @Test
+    fun `燃料残り周回数は解決文言をイベントとログに保持してキューへ渡す`() =
+        runTest {
+            val jsons = mutableListOf<String>()
+            val key = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
+            val event = SpeechEvent.RemainingFuelLapsWarning(2)
+            val resolved = event.copy(resolvedText = "あと2周")
+            every { ttsEngine.speak(resolved, true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "あと2周",
+                    NarrationOutcome.QUEUED,
+                    capture(jsons),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) {
+                    resolvedEvents += it
+                    "あと2周"
+                }
+
+            processor.process(
+                sourceKey = key,
+                telemetry = telemetry(),
+                events = listOf(event),
+                readoutOrder = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, key),
+                queueEnabledStates = mapOf(key to true),
+                observedAtMs = 10L,
+            )
+
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "あと2周",
+                    NarrationOutcome.QUEUED,
+                    jsons.single(),
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `文言がnullの燃料残り周回数は読み上げず空文言とSKIPPEDを保存する`() =
+        runTest {
+            val jsons = mutableListOf<String>()
+            val key = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
+            val event = SpeechEvent.RemainingFuelLapsWarning(0)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(jsons),
+                )
+            } just Runs
+            val processor =
+                Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { null }
+
+            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L)
+
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    jsons.single(),
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `燃料なし文言も解決して通常再生とログに渡す`() =
+        runTest {
+            val jsons = mutableListOf<String>()
+            val key = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
+            val event = SpeechEvent.RemainingFuelLapsWarning(0)
+            val resolved = event.copy(resolvedText = "燃料切れです")
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolved, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "燃料切れです",
+                    NarrationOutcome.SPOKEN,
+                    capture(jsons),
+                )
+            } just Runs
+            val processor =
+                Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) {
+                    assertEquals(event, it)
+                    "燃料切れです"
+                }
+
+            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L)
+
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(resolved, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "燃料切れです",
+                    NarrationOutcome.SPOKEN,
+                    jsons.single(),
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
     private fun createProcessor() =
         Gt7Ps5NarratorEventProcessor(
             ttsEngine = ttsEngine,
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            readoutText = {
+                check(it is SpeechEvent.RemainingFuelLapsWarning) { "燃料残り周回数以外は文言を解決しない" }
+                it.narratedText
+            },
         )
 
     private fun telemetry(

@@ -12,4 +12,16 @@ internal class Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl(
     override suspend fun saveRemainingFuelLaps(laps: Int) {
         dataStore.saveProperty(laps) { prefs, value -> prefs.copy(remainingFuelLaps = value) }
     }
+
+    override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.readoutText }
+
+    override suspend fun saveReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(readoutText = value) }
+    }
+
+    override fun observeEmptyReadoutText(): Flow<String> = dataStore.observeProperty { it.emptyReadoutText }
+
+    override suspend fun saveEmptyReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(emptyReadoutText = value) }
+    }
 }

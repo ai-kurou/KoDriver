@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -63,11 +65,25 @@ private class FakeGt7Ps5MyBestLapPreferencesRepository : Gt7Ps5MyBestLapPreferen
 
 private class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5RemainingFuelLapsPreferencesRepository {
     private val flow = MutableStateFlow(3)
+    private val readoutText = MutableStateFlow(GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT)
+    private val emptyReadoutText = MutableStateFlow(GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT)
 
     override fun observeRemainingFuelLaps(): Flow<Int> = flow
 
     override suspend fun saveRemainingFuelLaps(laps: Int) {
         flow.update { laps }
+    }
+
+    override fun observeReadoutText(): Flow<String> = readoutText
+
+    override suspend fun saveReadoutText(text: String) {
+        readoutText.update { text }
+    }
+
+    override fun observeEmptyReadoutText(): Flow<String> = emptyReadoutText
+
+    override suspend fun saveEmptyReadoutText(text: String) {
+        emptyReadoutText.update { text }
     }
 }
 
