@@ -19,7 +19,33 @@ class Gt7Ps5ReadoutRemainingFuelDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            Gt7Ps5ReadoutRemainingFuelDetailPaneContent()
+                            Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
+                                uiState =
+                                    Gt7Ps5ReadoutRemainingFuelDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
+                                uiState =
+                                    Gt7Ps5ReadoutRemainingFuelDetailUiState(
+                                        readoutText = "燃料残り{percent}%です",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
                         }
                     }
                 }
