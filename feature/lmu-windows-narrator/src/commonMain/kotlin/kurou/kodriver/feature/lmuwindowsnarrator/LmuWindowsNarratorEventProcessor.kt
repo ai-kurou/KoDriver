@@ -332,10 +332,11 @@ internal class LmuWindowsNarratorEventProcessor(
         logContext: LmuWindowsTyreTemperatureLogContext,
     ) {
         events.forEach { event ->
-            val isCustomSpeakEvent = event == SpeechEvent.TyreOverheat
-            val text = if (isCustomSpeakEvent) readoutText(event) else event.narratedText
+            val isCustomSpeakEvent = event == SpeechEvent.TyreOverheat || event == SpeechEvent.TyreCold
+            val text =
+                if (isCustomSpeakEvent) readoutText(event)?.takeIf { it.isNotBlank() } else event.narratedText
             val narrationOutcome =
-                if (isCustomSpeakEvent && text == null) {
+                if (isCustomSpeakEvent && text.isNullOrBlank()) {
                     NarrationOutcome.SKIPPED
                 } else {
                     speakWithPriority(event, readoutOrder, queueEnabledStates)

@@ -159,4 +159,38 @@ class LmuWindowsWavNarratorEngineTest {
             coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
             confirmVerified(soundPlayer)
         }
+
+    @Test
+    fun `低温警告はカスタム読み上げへ渡しWAVにフォールバックしない`() =
+        runTest {
+            val customEvents = mutableListOf<SpeechEvent>()
+            val engine =
+                WavNarratorEngine(
+                    soundPlayer = soundPlayer,
+                    resources =
+                        WavResources<SpeechEvent, ReadoutStartSoundType>(
+                            eventToFile = mapOf(SpeechEvent.TyreCold to "warning.wav"),
+                            startSoundTypeToFile = emptyMap(),
+                            resourceLoader = { byteArrayOf(1) },
+                            startSoundResourceLoader = { error("開始音は設定しない") },
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    customSpeakEvents = setOf(SpeechEvent.TyreCold),
+                    customSpeak = { event, _ -> customEvents += event },
+                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                )
+            runCurrent()
+            val narrator = LmuWindowsWavNarratorEngine(engine)
+            narrator.speak(SpeechEvent.TyreCold)
+            runCurrent()
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.TyreCold,
+                ),
+                customEvents,
+            )
+            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
+            confirmVerified(soundPlayer)
+        }
 }

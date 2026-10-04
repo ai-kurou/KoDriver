@@ -37,6 +37,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
@@ -45,12 +46,17 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_carcass_card_title
+import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_cold_text_label
+import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_cold_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_cold_text_reset
+import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_cold_text_selected_icon
+import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_cold_text_supporting
+import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_cold_text_unavailable
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_description
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_label
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_reset
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_subtitle
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_card_title
-import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_chip
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_formation
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_garage
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_grid_walk
@@ -82,6 +88,7 @@ fun LmuWindowsReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
         onOverheatWarningEnabledChanged = viewModel::onOverheatWarningEnabledChanged,
         onOverheatReadoutTextChanged = viewModel::onOverheatReadoutTextChanged,
         onOverheatReadoutTextPreviewClicked = viewModel::onOverheatReadoutTextPreviewClicked,
+        onColdReadoutTextChanged = viewModel::onColdReadoutTextChanged,
         onLowWarningEnabledChanged = viewModel::onLowWarningEnabledChanged,
         onLowWarningPhaseToggled = viewModel::onLowWarningPhaseToggled,
         onLowWarningPreviewClicked = viewModel::onLowWarningPreviewClicked,
@@ -101,7 +108,8 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     onOverheatReadoutTextPreviewClicked: (String) -> Unit = {},
     onLowWarningEnabledChanged: (Boolean) -> Unit = {},
     onLowWarningPhaseToggled: (SessionPhase) -> Unit = {},
-    onLowWarningPreviewClicked: () -> Unit = {},
+    onColdReadoutTextChanged: (String) -> Unit = {},
+    onLowWarningPreviewClicked: (String) -> Unit = {},
     onVehicleClassSelected: (LmuWindowsVehicleClassData) -> Unit = {},
     onVehicleClassHighThresholdChanged: (LmuWindowsVehicleClassData, Int) -> Unit = { _, _ -> },
     onVehicleClassHighThresholdReset: (LmuWindowsVehicleClassData) -> Unit = {},
@@ -222,7 +230,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                 }
             },
         )
-        val lowWarningChipLabel = stringResource(Res.string.tyre_temperature_low_warning_chip)
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_low_warning_card_title),
             checked = uiState.lowWarningEnabled,
@@ -230,18 +237,12 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        DetailPaneCardChips(
-                            chipLabels = listOf(lowWarningChipLabel),
-                            selectedChipLabels = setOf(lowWarningChipLabel),
-                            chipEnabled = uiState.lowWarningEnabled,
-                            onChipClick = { onLowWarningPreviewClicked() },
-                        )
-                    }
+                    TyreTemperatureColdReadoutField(
+                        text = uiState.coldReadoutText,
+                        available = uiState.isTextToSpeechAvailable,
+                        onTextChanged = onColdReadoutTextChanged,
+                        onPreviewClick = onLowWarningPreviewClicked,
+                    )
                     HorizontalDivider(
                         modifier =
                             Modifier.padding(
@@ -334,6 +335,54 @@ private fun TyreTemperatureOverheatReadoutField(
                 },
             previewContentDescription = stringResource(Res.string.tyre_temperature_overheat_text_preview),
             selectedContentDescription = stringResource(Res.string.tyre_temperature_overheat_text_selected_icon),
+        )
+    }
+}
+
+@Composable
+private fun TyreTemperatureColdReadoutField(
+    text: String,
+    available: Boolean,
+    onTextChanged: (String) -> Unit,
+    onPreviewClick: (String) -> Unit,
+) {
+    var currentText by remember { mutableStateOf(text) }
+    // 保存が非同期のため、入力中の最新の値と一致するまでは保存済みの古い値で入力欄を巻き戻さない。
+    // 保存時に前後の空白が除去されるため、比較する値も同じ正規化をかける
+    var pendingText by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(text) {
+        if (pendingText == null || pendingText == text) {
+            currentText = text
+            pendingText = null
+        }
+    }
+    val changeText: (String) -> Unit = {
+        currentText = it
+        pendingText = it.trim()
+        onTextChanged(it)
+    }
+    Column {
+        val label = stringResource(Res.string.tyre_temperature_cold_text_label)
+        Text(text = label, style = MaterialTheme.typography.bodyMedium)
+        DetailPaneCardTextField(
+            value = currentText,
+            defaultValue = LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT,
+            onResetToDefault = { changeText(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT) },
+            resetContentDescription = stringResource(Res.string.tyre_temperature_cold_text_reset),
+            placeholder = label,
+            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+            onValueChangeFinished = changeText,
+            onPreviewClick = onPreviewClick,
+            enabled = available,
+            selected = currentText.isNotBlank(),
+            supportingText =
+                when {
+                    !available -> stringResource(Res.string.tyre_temperature_cold_text_unavailable)
+                    currentText.isBlank() -> stringResource(Res.string.tyre_temperature_cold_text_supporting)
+                    else -> null
+                },
+            previewContentDescription = stringResource(Res.string.tyre_temperature_cold_text_preview),
+            selectedContentDescription = stringResource(Res.string.tyre_temperature_cold_text_selected_icon),
         )
     }
 }

@@ -29,6 +29,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThre
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
@@ -197,6 +198,7 @@ val lmuWindowsNarratorModule: Module =
         }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase(get()) }
         factory {
             LmuWindowsReadoutTextSpeaker(
                 observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
@@ -213,6 +215,7 @@ val lmuWindowsNarratorModule: Module =
                 observePitTimingVirtualEnergyImminentReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeRemainingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreOverheatReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeTyreColdReadoutText = get(named(Simulator.LmuWindows.id)),
                 checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )
@@ -241,6 +244,7 @@ val lmuWindowsNarratorModule: Module =
                     customSpeakEvents =
                         setOf(
                             SpeechEvent.TyreOverheat,
+                            SpeechEvent.TyreCold,
                             SpeechEvent.CarLeft,
                             SpeechEvent.CarLeftSustained,
                             SpeechEvent.CarRight,
@@ -263,7 +267,6 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.TyreDetached, "files/tyre_detached.wav")
         put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
-        put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         put(SpeechEvent.BrakeOverheat, "files/brake_overheat.wav")
     }
