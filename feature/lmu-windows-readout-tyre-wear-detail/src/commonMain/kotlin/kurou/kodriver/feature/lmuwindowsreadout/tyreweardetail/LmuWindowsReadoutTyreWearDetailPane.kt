@@ -151,15 +151,17 @@ private fun TyreWearReadoutField(
     var currentText by remember { mutableStateOf(text) }
     // 保存が非同期のため、入力中の最新の値と一致するまでは保存済みの古い値で入力欄を巻き戻さない
     var pendingText by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(text) {
-        if (pendingText == null || pendingText == text) {
+    LaunchedEffect(text, pendingText) {
+        if (pendingText == null) {
             currentText = text
+        } else if (pendingText == text) {
+            // 保存値は trim と文字数制限で正規化されるため、入力欄は巻き戻さず待機状態だけ解除する
             pendingText = null
         }
     }
     val changeText: (String) -> Unit = {
         currentText = it
-        pendingText = it
+        pendingText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
         onTextChanged(it)
     }
     ReadoutTextField(

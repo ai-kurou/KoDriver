@@ -114,6 +114,29 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
     }
 
     @Test
+    fun `前後に空白を含む入力はtrim後の保存値で待機を解除し以降の更新を反映する`() {
+        var savedText by mutableStateOf("")
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreWearDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreWearDetailUiState(
+                            readoutText = savedText,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onReadoutTextChanged = {},
+                )
+            }
+        }
+        rule.onNode(hasSetTextAction()).performTextReplacement(" あい ")
+        rule.runOnIdle { savedText = "あい" }
+        rule.waitForIdle()
+        rule.runOnIdle { savedText = "外部更新" }
+        rule.waitForIdle()
+        rule.onNode(hasSetTextAction() and hasText("外部更新")).assertExists()
+    }
+
+    @Test
     fun `入力直後の文言にpercentを挿入し上限ちょうどで無効になる`() {
         val changed = mutableListOf<String>()
         rule.setContent {
