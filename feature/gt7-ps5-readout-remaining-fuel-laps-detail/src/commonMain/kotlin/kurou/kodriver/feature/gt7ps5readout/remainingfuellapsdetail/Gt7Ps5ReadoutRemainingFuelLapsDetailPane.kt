@@ -31,6 +31,8 @@ import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_MAX
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_MIN
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_PLACEHOLDER
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
@@ -54,8 +56,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
-private const val THRESHOLD_MIN = 1f
-private const val THRESHOLD_MAX = 5f
+private const val THRESHOLD_MIN = GT7_PS5_REMAINING_FUEL_LAPS_MIN.toFloat()
+private const val THRESHOLD_MAX = GT7_PS5_REMAINING_FUEL_LAPS_MAX.toFloat()
 
 /**
  * Gt7Ps5ReadoutRemainingFuelLapsDetail の画面を表示する Composable。
@@ -163,15 +165,17 @@ private fun RemainingFuelLapsReadoutField(
     var currentText by remember { mutableStateOf(text) }
     // 保存が非同期のため、入力中の最新の値と一致するまでは保存済みの古い値で入力欄を巻き戻さない
     var pendingText by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(text) {
-        if (pendingText == null || pendingText == text) {
+    LaunchedEffect(text, pendingText) {
+        if (pendingText == null) {
             currentText = text
+        } else if (pendingText == text) {
+            // 保存値は trim と文字数制限で正規化されるため、入力欄は巻き戻さず待機状態だけ解除する
             pendingText = null
         }
     }
     val changeText: (String) -> Unit = {
         currentText = it
-        pendingText = it
+        pendingText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
         onTextChanged(it)
     }
     ReadoutTextField(
