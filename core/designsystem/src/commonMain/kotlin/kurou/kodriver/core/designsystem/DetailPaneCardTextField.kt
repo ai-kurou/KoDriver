@@ -1,5 +1,6 @@
 package kurou.kodriver.core.designsystem
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +41,9 @@ import androidx.compose.ui.unit.dp
  * 1文字ごとに確定することでこの問題を避ける。
  *
  * 末尾の再生ボタンは、入力中の文言（空欄なら既定の文言）の試聴に使う。
+ * [onResetToDefault] を渡すと、その左に既定値へ戻すボタンを配置する。
+ * [enabled] が false、[defaultValue] が null、または入力中の文言と同じときは無効・透明にし、それ以外は有効にして表示する。
+ * 透明度はアニメーションし、押下時はハプティクスとコールバックを実行する。
  *
  * [selected] が true のときは、同じ [DetailPaneCard] 内に並ぶ [DetailPaneCardChips] の選択済みチップと同じく
  * チェックアイコンとプライマリ色のインジケーターを表示し、「いまはこちらが読み上げに使われる」ことを示す。
@@ -60,9 +66,14 @@ fun DetailPaneCardTextField(
     supportingText: String? = null,
     previewContentDescription: String? = null,
     selectedContentDescription: String? = null,
+    defaultValue: String? = null,
+    onResetToDefault: (() -> Unit)? = null,
+    resetContentDescription: String? = null,
 ) {
     val haptic = LocalHapticFeedback.current
     var text by remember(value) { mutableStateOf(value) }
+    val isResettable = enabled && defaultValue != null && text != defaultValue
+    val resetButtonAlpha by animateFloatAsState(targetValue = if (isResettable) 1f else 0f)
 
     TextField(
         value = text,
@@ -109,20 +120,39 @@ fun DetailPaneCardTextField(
                 null
             },
         trailingIcon = {
-            IconButton(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    onPreviewClick(text)
-                },
-                enabled = enabled,
-                modifier = Modifier.size(32.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.PlayArrow,
-                    contentDescription = previewContentDescription,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(18.dp),
-                )
+            Row {
+                if (onResetToDefault != null) {
+                    IconButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            onResetToDefault()
+                        },
+                        enabled = isResettable,
+                        modifier = Modifier.size(32.dp).graphicsLayer { alpha = resetButtonAlpha },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.RestartAlt,
+                            contentDescription = resetContentDescription,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
+                }
+                IconButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onPreviewClick(text)
+                    },
+                    enabled = enabled,
+                    modifier = Modifier.size(32.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.PlayArrow,
+                        contentDescription = previewContentDescription,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
             }
         },
         modifier = modifier.fillMaxWidth(),
@@ -170,6 +200,9 @@ private fun DetailPaneCardTextFieldPreview() {
                     )
                     DetailPaneCardTextField(
                         value = "イエロー、前方注意",
+                        defaultValue = "イエローフラッグ",
+                        onResetToDefault = {},
+                        resetContentDescription = "デフォルトに戻す",
                         placeholder = "イエローフラッグ",
                         maxLength = 30,
                         onValueChangeFinished = {},

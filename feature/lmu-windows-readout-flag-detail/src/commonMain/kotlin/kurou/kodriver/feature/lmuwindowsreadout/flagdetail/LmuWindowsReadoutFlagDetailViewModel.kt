@@ -109,6 +109,10 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         viewModelScope.launch { settingsUseCases.readoutTexts.save(item, text) }
     }
 
+    fun onFlagTextReset(item: FlagReadoutItem) {
+        viewModelScope.launch { settingsUseCases.readoutTexts.save(item, item.defaultText) }
+    }
+
     /**
      * 空白文言・TTS利用不可時は試聴しない。本文はOS標準TTSのみで読み上げる。
      * 開始音の有効設定は読み上げ一覧のトップレベル項目 [ReadoutItemKey.LmuWindows.Flag.Root] に保存され、

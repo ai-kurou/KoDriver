@@ -20,6 +20,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_reset_to_default
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_selected_icon
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_supporting
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_unavailable
@@ -37,6 +38,7 @@ fun LmuWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
         uiState = uiState,
         onFlagEnabledChanged = viewModel::onFlagEnabledChanged,
         onFlagTextChanged = viewModel::onFlagTextChanged,
+        onFlagTextReset = viewModel::onFlagTextReset,
         onFlagTextPreviewClicked = viewModel::onFlagTextPreviewClicked,
         modifier = modifier,
     )
@@ -47,6 +49,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     uiState: LmuWindowsReadoutFlagDetailUiState,
     onFlagEnabledChanged: (FlagReadoutItem, Boolean) -> Unit,
     onFlagTextChanged: (FlagReadoutItem, String) -> Unit,
+    onFlagTextReset: (FlagReadoutItem) -> Unit,
     onFlagTextPreviewClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -69,6 +72,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
                 onTextChanged = { text -> onFlagTextChanged(item, text) },
                 onTextPreviewClick = onFlagTextPreviewClicked,
+                onFlagTextReset = { onFlagTextReset(item) },
             )
         }
     }
@@ -85,6 +89,7 @@ private fun FlagReadoutCard(
     onCheckedChange: (Boolean) -> Unit,
     onTextChanged: (String) -> Unit,
     onTextPreviewClick: (String) -> Unit,
+    onFlagTextReset: () -> Unit,
 ) {
     DetailPaneCard(
         title = stringResource(item.labelRes),
@@ -94,6 +99,9 @@ private fun FlagReadoutCard(
         bottomContent = {
             DetailPaneCardTextField(
                 value = text,
+                defaultValue = item.defaultText,
+                onResetToDefault = onFlagTextReset,
+                resetContentDescription = stringResource(Res.string.flag_text_reset_to_default),
                 placeholder = stringResource(item.labelRes),
                 maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
                 onValueChangeFinished = onTextChanged,
@@ -130,6 +138,7 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
                 ),
             onFlagEnabledChanged = { _, _ -> },
             onFlagTextChanged = { _, _ -> },
+            onFlagTextReset = {},
             onFlagTextPreviewClicked = {},
         )
     }

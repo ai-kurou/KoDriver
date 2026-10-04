@@ -4,12 +4,12 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_countdown
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_formation
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_full_course_yellow
@@ -41,16 +41,21 @@ private fun gamePhaseDisplayName(gamePhase: SessionPhase): String =
 
 @Composable
 internal fun GamePhaseContent(raceFlags: LmuWindowsRaceFlagsData?) {
-    val displayText =
-        if (raceFlags == null) {
-            stringResource(Res.string.debug_state_flag_info_unavailable)
-        } else {
-            gamePhaseDisplayName(raceFlags.gamePhase)
-        }
     AnimatedContent(
-        targetState = displayText,
+        targetState = raceFlags?.gamePhase,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
-    ) { text ->
-        Text(text = text)
+    ) { gamePhase ->
+        if (gamePhase == null) {
+            DebugStateUnavailableContent()
+        } else {
+            val accent =
+                when (gamePhase) {
+                    SessionPhase.GREEN_FLAG -> MaterialTheme.colorScheme.primary
+                    SessionPhase.FULL_COURSE_YELLOW -> KoDriverExtendedColors.current.onWarningContainer
+                    SessionPhase.RED_FLAG -> MaterialTheme.colorScheme.error
+                    else -> MaterialTheme.colorScheme.tertiary
+                }
+            DebugStateStatusChip(text = gamePhaseDisplayName(gamePhase), accent = accent)
+        }
     }
 }

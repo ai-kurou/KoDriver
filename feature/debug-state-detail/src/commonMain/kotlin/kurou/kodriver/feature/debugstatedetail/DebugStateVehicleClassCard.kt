@@ -5,9 +5,6 @@ import androidx.compose.runtime.Composable
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun VehicleClassContent(
@@ -22,7 +19,7 @@ internal fun VehicleClassContent(
             is Simulator.AceWindows -> null
         }
     if (name.isNullOrEmpty()) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        DebugStateUnavailableContent()
         return
     }
     Text(text = name)

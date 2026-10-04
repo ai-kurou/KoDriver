@@ -8,7 +8,6 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_tyre_wear_remaining_laps
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_virtual_energy_remaining_laps
 import org.jetbrains.compose.resources.stringResource
@@ -21,7 +20,7 @@ internal fun PitTimingRemainingLapsContent(
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
 ) {
     if (selectedSimulator !is Simulator.LmuWindows) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        DebugStateUnavailableContent()
         return
     }
     val virtualEnergyRemainingLaps =

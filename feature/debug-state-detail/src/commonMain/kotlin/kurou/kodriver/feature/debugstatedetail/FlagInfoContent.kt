@@ -1,9 +1,15 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.core.designsystem.KoDriverExtendedColors
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -47,8 +53,36 @@ internal fun determineActiveRaceFlags(raceFlags: LmuWindowsRaceFlagsData): List<
         if (raceFlags.gamePhase == SessionPhase.RED_FLAG) add(ActiveRaceFlag.RED)
     }
 
+// 表示するフラグが変わらないテレメトリの更新ではフェードし直さないよう、表示内容だけをキーにする。
+internal fun flagInfoContentKey(
+    selectedSimulator: Simulator,
+    raceFlags: LmuWindowsRaceFlagsData?,
+    aceWindowsFlag: AceWindowsFlagData?,
+): Pair<Simulator, Any?> =
+    selectedSimulator to
+        when (selectedSimulator) {
+            is Simulator.LmuWindows -> raceFlags?.let { determineActiveRaceFlags(it) }
+            is Simulator.AceWindows -> aceWindowsFlag?.flag
+            is Simulator.Gt7Ps5 -> null
+        }
+
 @Composable
 internal fun FlagInfoContent(
+    selectedSimulator: Simulator,
+    raceFlags: LmuWindowsRaceFlagsData?,
+    aceWindowsFlag: AceWindowsFlagData?,
+) {
+    AnimatedContent(
+        targetState = Triple(selectedSimulator, raceFlags, aceWindowsFlag),
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+        contentKey = { (simulator, lmuFlags, aceFlag) -> flagInfoContentKey(simulator, lmuFlags, aceFlag) },
+    ) { (simulator, lmuFlags, aceFlag) ->
+        FlagInfoStaticContent(simulator, lmuFlags, aceFlag)
+    }
+}
+
+@Composable
+private fun FlagInfoStaticContent(
     selectedSimulator: Simulator,
     raceFlags: LmuWindowsRaceFlagsData?,
     aceWindowsFlag: AceWindowsFlagData?,
@@ -63,10 +97,7 @@ internal fun FlagInfoContent(
         }
 
         is Simulator.Gt7Ps5 -> {
-            Text(
-                text = stringResource(Res.string.debug_state_flag_info_unavailable),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            DebugStateUnavailableContent()
         }
     }
 }
@@ -74,22 +105,30 @@ internal fun FlagInfoContent(
 @Composable
 private fun LmuFlagInfoContent(raceFlags: LmuWindowsRaceFlagsData?) {
     if (raceFlags == null) {
-        Text(
-            text = stringResource(Res.string.debug_state_flag_info_unavailable),
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        DebugStateUnavailableContent()
         return
     }
     val activeFlags = determineActiveRaceFlags(raceFlags)
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.extraSmall)) {
         if (activeFlags.isEmpty()) {
-            Text(
-                text = stringResource(Res.string.debug_state_flag_none),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            DebugStateStatusChip(text = stringResource(Res.string.debug_state_flag_none))
         } else {
             activeFlags.forEach { flag ->
-                Text(text = stringResource(flag.labelRes), style = MaterialTheme.typography.bodyMedium)
+                val accent =
+                    when (flag) {
+                        ActiveRaceFlag.RED -> {
+                            MaterialTheme.colorScheme.error
+                        }
+
+                        ActiveRaceFlag.YELLOW, ActiveRaceFlag.FULL_COURSE_YELLOW -> {
+                            KoDriverExtendedColors.current.onWarningContainer
+                        }
+
+                        ActiveRaceFlag.BLUE -> {
+                            MaterialTheme.colorScheme.tertiary
+                        }
+                    }
+                DebugStateStatusChip(text = stringResource(flag.labelRes), accent = accent)
             }
         }
     }
@@ -115,11 +154,25 @@ private fun aceFlagDisplayName(flag: AceWindowsFlagType): String =
 @Composable
 private fun AceFlagInfoContent(aceWindowsFlag: AceWindowsFlagData?) {
     if (aceWindowsFlag == null) {
-        Text(
-            text = stringResource(Res.string.debug_state_flag_info_unavailable),
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        DebugStateUnavailableContent()
         return
     }
-    Text(text = aceFlagDisplayName(aceWindowsFlag.flag), style = MaterialTheme.typography.bodyMedium)
+    val displayText = aceFlagDisplayName(aceWindowsFlag.flag)
+    if (aceWindowsFlag.flag == AceWindowsFlagType.UNKNOWN) {
+        DebugStateUnavailableContent()
+    } else {
+        val accent =
+            when (aceWindowsFlag.flag) {
+                AceWindowsFlagType.RED_FLAG -> MaterialTheme.colorScheme.error
+
+                AceWindowsFlagType.GREEN_FLAG -> MaterialTheme.colorScheme.primary
+
+                AceWindowsFlagType.YELLOW_FLAG, AceWindowsFlagType.ORANGE_CIRCLE_FLAG,
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG,
+                -> KoDriverExtendedColors.current.onWarningContainer
+
+                else -> MaterialTheme.colorScheme.tertiary
+            }
+        DebugStateStatusChip(text = displayText, accent = accent)
+    }
 }

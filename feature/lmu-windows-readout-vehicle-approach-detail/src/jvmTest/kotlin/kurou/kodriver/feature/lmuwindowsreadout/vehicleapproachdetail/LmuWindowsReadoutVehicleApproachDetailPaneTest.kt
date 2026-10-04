@@ -27,6 +27,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Suppress("TooManyFunctions")
 class LmuWindowsReadoutVehicleApproachDetailPaneTest {
     private val leftChangedTexts = mutableListOf<String>()
     private val rightChangedTexts = mutableListOf<String>()
@@ -272,7 +273,7 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
             }
         }
 
-        rule.onAllNodes(hasContentDescription("デフォルトに戻す"))[2].performScrollTo().performClick()
+        rule.onAllNodes(hasContentDescription("デフォルトに戻す"))[6].performScrollTo().performClick()
 
         assertEquals(true, resetCalled)
     }
@@ -415,5 +416,101 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
         rule
             .onAllNodes(hasText("この端末では音声合成を利用できないため、接近継続時は読み上げません"))
             .assertCountEquals(2)
+    }
+
+    @Test
+    fun `編集済みの開始と継続の左右文言をリセットすると対応する項目だけが通知される`() {
+        val resets = mutableListOf<String>()
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutVehicleApproachDetailUiState(
+                            isTextToSpeechAvailable = true,
+                            startReadoutEnabled = false,
+                            sustainedReadoutEnabled = false,
+                            startLeftText = "編集済みStartLeft",
+                            startRightText = "編集済みStartRight",
+                            sustainedLeftText = "編集済みSustainedLeft",
+                            sustainedRightText = "編集済みSustainedRight",
+                        ),
+                    onStartLeftTextReset = { resets += "StartLeft" },
+                    onStartRightTextReset = { resets += "StartRight" },
+                    onSustainedLeftTextReset = { resets += "SustainedLeft" },
+                    onSustainedRightTextReset = { resets += "SustainedRight" },
+                )
+            }
+        }
+
+        listOf("StartLeft", "StartRight", "SustainedLeft", "SustainedRight").forEachIndexed { index, _ ->
+            rule
+                .onAllNodes(hasContentDescription("デフォルトに戻す"))[index + 2]
+                .performScrollTo()
+                .assertIsEnabled()
+                .performClick()
+            assertEquals(listOf("StartLeft", "StartRight", "SustainedLeft", "SustainedRight").take(index + 1), resets)
+        }
+    }
+
+    @Test
+    fun `既定文言の開始と継続の左右文言はリセットできない`() {
+        val resets = mutableListOf<String>()
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutVehicleApproachDetailUiState(
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onStartLeftTextReset = { resets += "StartLeft" },
+                    onStartRightTextReset = { resets += "StartRight" },
+                    onSustainedLeftTextReset = { resets += "SustainedLeft" },
+                    onSustainedRightTextReset = { resets += "SustainedRight" },
+                )
+            }
+        }
+
+        listOf("StartLeft", "StartRight", "SustainedLeft", "SustainedRight").forEachIndexed { index, _ ->
+            rule
+                .onAllNodes(hasContentDescription("デフォルトに戻す"))[index + 2]
+                .performScrollTo()
+                .assertIsNotEnabled()
+                .performClick()
+            assertEquals(emptyList(), resets)
+        }
+    }
+
+    @Test
+    fun `TTS利用不可では編集済みの開始と継続の左右文言をリセットできない`() {
+        val resets = mutableListOf<String>()
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutVehicleApproachDetailUiState(
+                            isTextToSpeechAvailable = false,
+                            startReadoutEnabled = false,
+                            sustainedReadoutEnabled = false,
+                            startLeftText = "編集済みStartLeft",
+                            startRightText = "編集済みStartRight",
+                            sustainedLeftText = "編集済みSustainedLeft",
+                            sustainedRightText = "編集済みSustainedRight",
+                        ),
+                    onStartLeftTextReset = { resets += "StartLeft" },
+                    onStartRightTextReset = { resets += "StartRight" },
+                    onSustainedLeftTextReset = { resets += "SustainedLeft" },
+                    onSustainedRightTextReset = { resets += "SustainedRight" },
+                )
+            }
+        }
+
+        listOf("StartLeft", "StartRight", "SustainedLeft", "SustainedRight").forEachIndexed { index, _ ->
+            rule
+                .onAllNodes(hasContentDescription("デフォルトに戻す"))[index + 2]
+                .performScrollTo()
+                .assertIsNotEnabled()
+                .performClick()
+            assertEquals(emptyList(), resets)
+        }
     }
 }

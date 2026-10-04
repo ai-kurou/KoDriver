@@ -37,7 +37,11 @@ import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach
@@ -56,6 +60,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_sustained_readout_switch_label
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_sustained_text_unavailable
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_preview
+import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_reset_to_default
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_selected_icon
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_supporting
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_text_unavailable
@@ -85,11 +90,15 @@ fun LmuWindowsReadoutVehicleApproachDetailPane(modifier: Modifier = Modifier) {
         onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
         onSustainedReadoutEnabledChanged = viewModel::onSustainedReadoutEnabledChanged,
         onStartLeftTextChanged = viewModel::onStartLeftTextChanged,
+        onStartLeftTextReset = viewModel::onStartLeftTextReset,
         onStartRightTextChanged = viewModel::onStartRightTextChanged,
+        onStartRightTextReset = viewModel::onStartRightTextReset,
         onStartLeftTextPreviewClicked = viewModel::onStartLeftTextPreviewClicked,
         onStartRightTextPreviewClicked = viewModel::onStartRightTextPreviewClicked,
         onSustainedLeftTextChanged = viewModel::onSustainedLeftTextChanged,
+        onSustainedLeftTextReset = viewModel::onSustainedLeftTextReset,
         onSustainedRightTextChanged = viewModel::onSustainedRightTextChanged,
+        onSustainedRightTextReset = viewModel::onSustainedRightTextReset,
         onSustainedLeftTextPreviewClicked = viewModel::onSustainedLeftTextPreviewClicked,
         onSustainedRightTextPreviewClicked = viewModel::onSustainedRightTextPreviewClicked,
         modifier = modifier,
@@ -111,11 +120,15 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
     onSustainedReadoutEnabledChanged: (Boolean) -> Unit = {},
     onStartLeftTextChanged: (String) -> Unit = {},
+    onStartLeftTextReset: () -> Unit = {},
     onStartRightTextChanged: (String) -> Unit = {},
+    onStartRightTextReset: () -> Unit = {},
     onStartLeftTextPreviewClicked: (String) -> Unit = {},
     onStartRightTextPreviewClicked: (String) -> Unit = {},
     onSustainedLeftTextChanged: (String) -> Unit = {},
+    onSustainedLeftTextReset: () -> Unit = {},
     onSustainedRightTextChanged: (String) -> Unit = {},
+    onSustainedRightTextReset: () -> Unit = {},
     onSustainedLeftTextPreviewClicked: (String) -> Unit = {},
     onSustainedRightTextPreviewClicked: (String) -> Unit = {},
 ) {
@@ -203,6 +216,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                         isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                         unavailableText = stringResource(Res.string.vehicle_approach_text_unavailable),
                         onTextChanged = onStartLeftTextChanged,
+                        defaultText = LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT,
+                        onReset = onStartLeftTextReset,
                         onPreviewClick = onStartLeftTextPreviewClicked,
                     )
                     ReadoutTextField(
@@ -211,6 +226,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                         isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                         unavailableText = stringResource(Res.string.vehicle_approach_text_unavailable),
                         onTextChanged = onStartRightTextChanged,
+                        defaultText = LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT,
+                        onReset = onStartRightTextReset,
                         onPreviewClick = onStartRightTextPreviewClicked,
                     )
                 }
@@ -230,6 +247,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                             isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                             unavailableText = stringResource(Res.string.vehicle_approach_sustained_text_unavailable),
                             onTextChanged = onSustainedLeftTextChanged,
+                            defaultText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT,
+                            onReset = onSustainedLeftTextReset,
                             onPreviewClick = onSustainedLeftTextPreviewClicked,
                         )
                         ReadoutTextField(
@@ -238,6 +257,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                             isTextToSpeechAvailable = uiState.isTextToSpeechAvailable,
                             unavailableText = stringResource(Res.string.vehicle_approach_sustained_text_unavailable),
                             onTextChanged = onSustainedRightTextChanged,
+                            defaultText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT,
+                            onReset = onSustainedRightTextReset,
                             onPreviewClick = onSustainedRightTextPreviewClicked,
                         )
                     }
@@ -269,6 +290,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
 private fun ReadoutTextField(
     label: String,
     text: String,
+    defaultText: String,
+    onReset: () -> Unit,
     isTextToSpeechAvailable: Boolean,
     unavailableText: String,
     onTextChanged: (String) -> Unit,
@@ -277,6 +300,9 @@ private fun ReadoutTextField(
     DetailPaneLabeledTextField(
         label = label,
         value = text,
+        defaultValue = defaultText,
+        onResetToDefault = onReset,
+        resetContentDescription = stringResource(Res.string.vehicle_approach_text_reset_to_default),
         maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
         onValueChangeFinished = onTextChanged,
         onPreviewClick = onPreviewClick,

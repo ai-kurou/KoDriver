@@ -10,7 +10,6 @@ import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_pitentry
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_pitexit
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_pitlane
@@ -85,7 +84,7 @@ internal fun VehicleLocationContent(
     when (selectedSimulator) {
         is Simulator.AceWindows -> {
             if (aceWindowsStatus == null) {
-                Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+                DebugStateUnavailableContent()
                 return
             }
             Column {
@@ -102,7 +101,7 @@ internal fun VehicleLocationContent(
 
         is Simulator.LmuWindows -> {
             if (lmuWindowsPitStatus == null) {
-                Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+                DebugStateUnavailableContent()
                 return
             }
             Column {
@@ -131,7 +130,7 @@ internal fun VehicleLocationContent(
         }
 
         is Simulator.Gt7Ps5 -> {
-            Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+            DebugStateUnavailableContent()
         }
     }
 }

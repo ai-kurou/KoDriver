@@ -137,6 +137,7 @@ class DebugStateTyreWearCardTest {
                                             WheelIndex.REAR_RIGHT to sampleWheel(0.65),
                                         ),
                                 ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
                         ),
                     canNavigateBack = true,
                     onBack = {},

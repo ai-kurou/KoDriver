@@ -15,7 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -228,10 +227,11 @@ private fun DebugStateCard(
     enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    DetailPaneCard(
+    DebugStateCardFrame(
+        cardKey = cardKey,
         title = stringResource(debugStateCardTitles.getValue(cardKey)),
         modifier = modifier.alpha(if (enabled) 1f else DISABLED_CARD_ALPHA),
-        bottomContent = {
+        content = {
             debugStateCardContents.getValue(cardKey)(uiState)
         },
     )

@@ -49,6 +49,10 @@ internal fun YellowFlagStateContent(raceFlags: LmuWindowsRaceFlagsData?) {
         targetState = displayText,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
     ) { text ->
-        Text(text = text)
+        if (text == stringResource(Res.string.debug_state_flag_info_unavailable)) {
+            DebugStateUnavailableContent()
+        } else {
+            Text(text = text)
+        }
     }
 }
