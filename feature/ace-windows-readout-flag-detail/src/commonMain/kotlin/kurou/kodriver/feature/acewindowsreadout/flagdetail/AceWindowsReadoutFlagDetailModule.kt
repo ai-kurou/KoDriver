@@ -1,24 +1,40 @@
 package kurou.kodriver.feature.acewindowsreadout.flagdetail
 
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsFlagEnabledStateUseCase
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
- * フラグアナウンス詳細設定（ace-windows-readout-flag-detail feature）の Koin モジュール。
- *
- * 提供: AceWindowsReadoutFlagDetailViewModel と、それが使うドメイン UseCase。
- * 消費（get で解決）: AceWindowsFlagPreferencesRepository（:core:data）、試聴用の
- *   named(Simulator.AceWindows.id) の PlaySpeechEventUseCase（:feature:ace-windows-narrator で登録）。
+ * ACEフラッグ詳細設定の Koin モジュール。
+ * 提供: ViewModel・有効状態と文言のObserve/Save UseCase・設定UseCase集約・ObserveSoundVolumeUseCase。
+ * 消費: AceWindowsFlagPreferencesRepository・AceWindowsFlagReadoutTextPreferencesRepository・
+ *   SoundVolumePreferencesRepository（:core:data）、named(Simulator.AceWindows.id) の
+ *   PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・CheckTextToSpeechAvailableUseCase
+ *   （:feature:ace-windows-narrator。SpeakTextUseCaseは同名のObserveVoiceUseCaseを利用する）。
  */
 val aceWindowsReadoutFlagDetailModule =
     module {
-        // ViewModel（get(named(Simulator.AceWindows.id)) は narrator モジュールの PlaySpeechEventUseCase を解決）
-        viewModel { AceWindowsReadoutFlagDetailViewModel(get(), get(), get(named(Simulator.AceWindows.id))) }
-
+        viewModel {
+            AceWindowsReadoutFlagDetailViewModel(
+                get(),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(named(Simulator.AceWindows.id)),
+                get(),
+            )
+        }
+        factory { FlagSettingsUseCases(get(), get(), get()) }
+        factory { FlagReadoutTextUseCases(get(), get()) }
         factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
         factory { SaveAceWindowsFlagEnabledStateUseCase(get()) }
+        factory { ObserveAceWindowsCheckeredFlagReadoutTextUseCase(get()) }
+        factory { SaveAceWindowsCheckeredFlagReadoutTextUseCase(get()) }
+        factory { ObserveSoundVolumeUseCase(get()) }
     }

@@ -15,3 +15,6 @@ val ACE_WINDOWS_FLAG_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to true,
         ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to true,
     )
+
+/** ACE のチェッカーフラッグ読み上げ文言の初期値。空白文言の場合は読み上げない。 */
+const val ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT = "チェッカーフラッグ"

@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.acewindowsreadout.flagdetail
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_black
@@ -18,7 +19,9 @@ import org.jetbrains.compose.resources.StringResource
 internal enum class FlagReadoutItem(
     val key: ReadoutItemKey,
     val labelRes: StringResource,
-    val previewEvent: SpeechEvent,
+    val previewEvent: SpeechEvent? = null,
+    /** nullなら従来のWAVチップを表示する。 */
+    val defaultText: String? = null,
 ) {
     WhiteFlag(
         key = ReadoutItemKey.AceWindows.Flag.WhiteFlag,
@@ -58,7 +61,7 @@ internal enum class FlagReadoutItem(
     CheckeredFlag(
         key = ReadoutItemKey.AceWindows.Flag.CheckeredFlag,
         labelRes = Res.string.flag_checkered,
-        previewEvent = SpeechEvent.AceWindowsCheckeredFlag,
+        defaultText = ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT,
     ),
     OrangeCircleFlag(
         key = ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag,

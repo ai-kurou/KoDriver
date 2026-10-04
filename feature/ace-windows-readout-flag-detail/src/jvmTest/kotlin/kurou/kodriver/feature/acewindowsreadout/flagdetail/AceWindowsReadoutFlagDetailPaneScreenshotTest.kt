@@ -30,15 +30,52 @@ class AceWindowsReadoutFlagDetailPaneScreenshotTest {
             )
         }
 
+    @Test
+    fun `TTS利用不可`() =
+        composeScreenshotTest {
+            captureAceWindowsReadoutFlagDetailPane(
+                enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+                flagTexts = mapOf(FlagReadoutItem.CheckeredFlag to "編集済み"),
+                isTextToSpeechAvailable = false,
+            )
+        }
+
+    @Test
+    fun `空白文言`() =
+        composeScreenshotTest {
+            captureAceWindowsReadoutFlagDetailPane(
+                enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+                flagTexts = mapOf(FlagReadoutItem.CheckeredFlag to ""),
+                isTextToSpeechAvailable = true,
+            )
+        }
+
+    @Test
+    fun `編集済み文言のリセットボタン表示`() =
+        composeScreenshotTest {
+            captureAceWindowsReadoutFlagDetailPane(
+                enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+                flagTexts = mapOf(FlagReadoutItem.CheckeredFlag to "チェッカー、完走"),
+                isTextToSpeechAvailable = true,
+            )
+        }
+
     private fun DesktopComposeUiTest.captureAceWindowsReadoutFlagDetailPane(
         enabledStates: Map<ReadoutItemKey, Boolean>,
+        flagTexts: Map<FlagReadoutItem, String> = emptyMap(),
+        isTextToSpeechAvailable: Boolean = true,
     ) {
         setContent {
             KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                         AceWindowsReadoutFlagDetailPaneContent(
-                            uiState = AceWindowsReadoutFlagDetailUiState(enabledStates = enabledStates),
+                            uiState =
+                                AceWindowsReadoutFlagDetailUiState(
+                                    enabledStates = enabledStates,
+                                    flagTexts = flagTexts,
+                                    isTextToSpeechAvailable = isTextToSpeechAvailable,
+                                ),
                         )
                     }
                 }

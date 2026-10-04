@@ -8,15 +8,24 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.core.narrator.WavNarratorEngine
+import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsWavNarratorEngineTest {
+    private val soundPlayer: SoundPlayer = mockk()
     private val wavNarratorEngine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 
     @Test
@@ -77,5 +86,47 @@ class AceWindowsWavNarratorEngineTest {
                 wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.AceWindows.VehicleApproach.Root)
             }
             confirmVerified(wavNarratorEngine)
+        }
+
+    @Test
+    fun `CheckeredはFlagRoot開始音の後にTTS本文を再生しWAVにフォールバックしない`() =
+        runTest {
+            val calls = mutableListOf<String>()
+            val startSound = byteArrayOf(2)
+            coEvery { soundPlayer.play(startSound, 42) } answers { calls += "start" }
+            val engine =
+                WavNarratorEngine(
+                    soundPlayer = soundPlayer,
+                    resources =
+                        WavResources<SpeechEvent, ReadoutStartSoundType>(
+                            eventToFile = mapOf(SpeechEvent.AceWindowsCheckeredFlag to "unused.wav"),
+                            startSoundTypeToFile = mapOf(ReadoutStartSoundType.FORMULA_RADIO to "start.wav"),
+                            resourceLoader = { byteArrayOf(1) },
+                            startSoundResourceLoader = { startSound },
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    volumeFlow = flowOf(42),
+                    startSoundEnabledStatesFlow =
+                        flowOf(
+                            mapOf(
+                                ReadoutItemKey.AceWindows.Flag.Root to true,
+                                ReadoutItemKey.AceWindows.Flag.CheckeredFlag to false,
+                            ),
+                        ),
+                    isCustomSpeakEvent = ::isAceWindowsCustomSpeakEvent,
+                    customSpeak = { event, volume ->
+                        assertEquals(SpeechEvent.AceWindowsCheckeredFlag, event)
+                        assertEquals(42, volume)
+                        calls += "text"
+                    },
+                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                )
+            runCurrent()
+            AceWindowsWavNarratorEngine(engine).speak(SpeechEvent.AceWindowsCheckeredFlag)
+            runCurrent()
+            assertEquals(listOf("start", "text"), calls)
+            coVerify(exactly = 1) { soundPlayer.play(startSound, 42) }
+            confirmVerified(soundPlayer)
         }
 }

@@ -801,6 +801,167 @@ class AceWindowsNarratorEventProcessorTest {
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
+    @Test
+    fun `Checkeredの保存文言を読み上げログに記録する`() =
+        runTest {
+            val events: List<SpeechEvent> = listOf(SpeechEvent.AceWindowsCheckeredFlag)
+            val readouts = mutableListOf<SpeechEvent>()
+            val processor =
+                AceWindowsNarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { event ->
+                    readouts += event
+                    "完走"
+                }
+            every { ttsEngine.currentReadoutItemKey } returns null
+            events.forEach { event ->
+                val jsons = mutableListOf<String>()
+                val text: String? = "完走"
+                every { ttsEngine.speak(event, false) } just Runs
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SPOKEN,
+                        capture(jsons),
+                    )
+                } just Runs
+                processor.processFlag(
+                    flag(AceWindowsFlagType.CHECKERED_FLAG),
+                    listOf(event),
+                    listOf(event.readoutItemKey),
+                    emptyMap(),
+                    0L,
+                    logContext(),
+                )
+                verify(exactly = 1) { ttsEngine.speak(event, false) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SPOKEN,
+                        jsons.single(),
+                    )
+                }
+            }
+            assertEquals(events, readouts)
+            verify(exactly = events.size) { ttsEngine.currentReadoutItemKey }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `Checkeredの文言がnullなら空文字とSKIPPEDを記録する`() =
+        runTest {
+            val events: List<SpeechEvent> = listOf(SpeechEvent.AceWindowsCheckeredFlag)
+            val readouts = mutableListOf<SpeechEvent>()
+            val processor =
+                AceWindowsNarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { event ->
+                    readouts += event
+                    null
+                }
+
+            events.forEach { event ->
+                val jsons = mutableListOf<String>()
+                val text: String? = null
+
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SKIPPED,
+                        capture(jsons),
+                    )
+                } just Runs
+                processor.processFlag(
+                    flag(AceWindowsFlagType.CHECKERED_FLAG),
+                    listOf(event),
+                    listOf(event.readoutItemKey),
+                    emptyMap(),
+                    0L,
+                    logContext(),
+                )
+                verify(exactly = 0) { ttsEngine.speak(event, false) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SKIPPED,
+                        jsons.single(),
+                    )
+                }
+            }
+            assertEquals(events, readouts)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `他の9種フラッグは自由文言を参照せず従来文言を記録する`() =
+        runTest {
+            val events =
+                listOf(
+                    SpeechEvent.AceWindowsWhiteFlag,
+                    SpeechEvent.AceWindowsGreenFlag,
+                    SpeechEvent.AceWindowsRedFlag,
+                    SpeechEvent.AceWindowsBlueFlag,
+                    SpeechEvent.AceWindowsYellowFlag,
+                    SpeechEvent.AceWindowsBlackFlag,
+                    SpeechEvent.AceWindowsBlackWhiteFlag,
+                    SpeechEvent.AceWindowsOrangeCircleFlag,
+                    SpeechEvent.AceWindowsRedYellowStripesFlag,
+                )
+            val readouts = mutableListOf<SpeechEvent>()
+            val processor =
+                AceWindowsNarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { event ->
+                    readouts += event
+                    "完走"
+                }
+            every { ttsEngine.currentReadoutItemKey } returns null
+            events.forEach { event ->
+                val jsons = mutableListOf<String>()
+                val text: String? = event.narratedText
+                every { ttsEngine.speak(event, false) } just Runs
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SPOKEN,
+                        capture(jsons),
+                    )
+                } just Runs
+                processor.processFlag(
+                    flag(AceWindowsFlagType.CHECKERED_FLAG),
+                    listOf(event),
+                    listOf(event.readoutItemKey),
+                    emptyMap(),
+                    0L,
+                    logContext(),
+                )
+                verify(exactly = 1) { ttsEngine.speak(event, false) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SPOKEN,
+                        jsons.single(),
+                    )
+                }
+            }
+            assertEquals(emptyList(), readouts)
+            verify(exactly = events.size) { ttsEngine.currentReadoutItemKey }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
     private fun tyreCarcassTemperature(frontLeftCelsius: Float) =
         AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(frontLeftCelsius)))
 
@@ -812,6 +973,7 @@ class AceWindowsNarratorEventProcessorTest {
         AceWindowsNarratorEventProcessor(
             ttsEngine = ttsEngine,
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            readoutText = { it.narratedText },
         )
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))

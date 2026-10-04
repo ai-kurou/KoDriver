@@ -209,6 +209,7 @@ class AceWindowsNarratorViewModelTest {
                 AceWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+                    readoutText = { it.narratedText },
                 ),
             currentTimeMs = currentTimeMs,
         )
