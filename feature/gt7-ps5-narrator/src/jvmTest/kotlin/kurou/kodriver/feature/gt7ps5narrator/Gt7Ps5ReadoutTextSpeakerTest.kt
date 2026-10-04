@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCase
@@ -27,6 +28,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
     private val observeEmptyText: ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase = mockk()
     private val observeFuelText: ObserveGt7Ps5RemainingFuelReadoutTextUseCase = mockk()
     private val observeTyreText: ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase = mockk()
+    private val observeMyBestLapText: ObserveGt7Ps5MyBestLapReadoutTextUseCase = mockk()
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -34,6 +36,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             observeText,
             observeEmptyText,
             observeFuelText,
+            observeMyBestLapText,
             observeTyreText,
             checkAvailable,
             speakText,
@@ -52,7 +55,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 2) { observeText() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("残り3周・3", volume = 42) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -67,7 +78,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
 
             verify(exactly = 3) { observeEmptyText() }
             coVerify(exactly = 3) { checkAvailable() }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -84,7 +103,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 0) { observeEmptyText() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 2) { speakText("確定した文言{laps}", volume = 80) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -108,7 +135,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 0) { speakText(" \t\n ", volume = 100) }
             coVerify(exactly = 0) { speakText("", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -122,7 +157,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
 
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("あと3周", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -130,7 +173,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.Gt7Ps5MyBestLapFormal,
+                    SpeechEvent.LmuWindowsMyBestLapFormal,
                     SpeechEvent.AceWindowsRemainingFuelLapsWarning(3),
                 )
             events.forEach { event ->
@@ -141,7 +184,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 0) { observeText() }
             verify(exactly = 0) { observeEmptyText() }
             coVerify(exactly = 0) { checkAvailable() }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -157,7 +208,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 2) { observeFuelText() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("残り30%・30", volume = 42) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -171,7 +230,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 0) { observeFuelText() }
             coVerify(exactly = 1) { checkAvailable() }
             coVerify(exactly = 1) { speakText("確定した文言{percent}", volume = 80) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -190,7 +257,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = 100) }
             coVerify(exactly = 0) { speakText("", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -209,7 +284,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 2) { observeFuelText() }
             coVerify(exactly = 4) { checkAvailable() }
             coVerify(exactly = 0) { speakText("残り30%", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -225,7 +308,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 2) { observeTyreText() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 1) { speakText("温度30度・30{wheel}", volume = 42) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -239,7 +330,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 0) { observeTyreText() }
             coVerify(exactly = 1) { checkAvailable() }
             coVerify(exactly = 1) { speakText("確定した文言{celsius}", volume = 80) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -258,7 +357,15 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = 100) }
             coVerify(exactly = 0) { speakText("", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 
     @Test
@@ -277,6 +384,114 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             verify(exactly = 2) { observeTyreText() }
             coVerify(exactly = 4) { checkAvailable() }
             coVerify(exactly = 0) { speakText("温度30度", volume = 100) }
-            confirmVerified(observeText, observeEmptyText, observeFuelText, observeTyreText, checkAvailable, speakText)
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
+        }
+
+    @Test
+    fun `自己ベストラップ更新の保存文言を日本語のタイムに置換して読み上げる`() =
+        runTest {
+            every { observeMyBestLapText() } returns flowOf("更新{laptime}・{laptime}{wheel}")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("更新1分23秒005・1分23秒005{wheel}", volume = 42) } just Runs
+
+            assertEquals("更新1分23秒005・1分23秒005{wheel}", speaker.readoutText(SpeechEvent.Gt7Ps5MyBestLap(83_005)))
+            speaker(SpeechEvent.Gt7Ps5MyBestLap(83_005), 42)
+
+            verify(exactly = 2) { observeMyBestLapText() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("更新1分23秒005・1分23秒005{wheel}", volume = 42) }
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
+        }
+
+    @Test
+    fun `自己ベストラップ更新も解決済み文言を優先し設定を読み直さない`() =
+        runTest {
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("確定した文言{laptime}", volume = 80) } just Runs
+
+            speaker(SpeechEvent.Gt7Ps5MyBestLap(83_005, "確定した文言{laptime}"), 80)
+
+            verify(exactly = 0) { observeMyBestLapText() }
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("確定した文言{laptime}", volume = 80) }
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
+        }
+
+    @Test
+    fun `自己ベストラップ更新の空白文言は利用可否を確認せず読み上げない`() =
+        runTest {
+            every { observeMyBestLapText() } returns flowOf(" ")
+            listOf(
+                SpeechEvent.Gt7Ps5MyBestLap(83_005),
+                SpeechEvent.Gt7Ps5MyBestLap(83_005, ""),
+            ).forEach { event ->
+                assertNull(speaker.readoutText(event))
+                speaker(event, 100)
+            }
+
+            verify(exactly = 2) { observeMyBestLapText() }
+            coVerify(exactly = 0) { checkAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = 100) }
+            coVerify(exactly = 0) { speakText("", volume = 100) }
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
+        }
+
+    @Test
+    fun `自己ベストラップ更新はTTS利用不可なら保存文言も解決済み文言も読み上げない`() =
+        runTest {
+            every { observeMyBestLapText() } returns flowOf("更新{laptime}")
+            coEvery { checkAvailable() } returns false
+            listOf(
+                SpeechEvent.Gt7Ps5MyBestLap(83_005),
+                SpeechEvent.Gt7Ps5MyBestLap(83_005, "更新1分23秒005"),
+            ).forEach { event ->
+                assertNull(speaker.readoutText(event))
+                speaker(event, 100)
+            }
+
+            verify(exactly = 2) { observeMyBestLapText() }
+            coVerify(exactly = 4) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("更新1分23秒005", volume = 100) }
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+                checkAvailable,
+                speakText,
+            )
         }
 }
