@@ -14,7 +14,6 @@ import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodes
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -30,6 +29,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
+@Suppress("TooManyFunctions")
 class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
@@ -341,7 +341,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `低温: スイッチOFFでも入力中の文言を編集して試聴できる`() {
+    fun `低温 スイッチOFFでも入力中の文言を編集して試聴できる`() {
         val changed = mutableListOf<String>()
         val previews = mutableListOf<String>()
         rule.setContent {
@@ -357,15 +357,18 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
                 )
             }
         }
-        rule.onAllNodes(hasSetTextAction())[1]
-            .performScrollTo().assertIsEnabled().performTextReplacement("あ".repeat(31))
+        rule
+            .onAllNodes(hasSetTextAction())[1]
+            .performScrollTo()
+            .assertIsEnabled()
+            .performTextReplacement("あ".repeat(31))
         rule.onAllNodesWithContentDescription("入力した文言を再生")[1].performScrollTo().performClick()
         assertEquals(listOf("あ".repeat(30)), changed)
         assertEquals(changed, previews)
     }
 
     @Test
-    fun `低温: 保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
+    fun `低温 保存済みの古い文言が流れてきても入力中の文言を巻き戻さず一致したら同期する`() {
         var savedText by mutableStateOf("")
         rule.setContent {
             KoDriverTheme {
@@ -391,7 +394,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `低温: 前後に空白がある入力も保存済みの正規化後の文言と一致したら同期する`() {
+    fun `低温 前後に空白がある入力も保存済みの正規化後の文言と一致したら同期する`() {
         var savedText by mutableStateOf("")
         rule.setContent {
             KoDriverTheme {
@@ -414,7 +417,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `低温: 空欄では読み上げない案内を表示する`() {
+    fun `低温 空欄では読み上げない案内を表示する`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
@@ -431,7 +434,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `低温: TTS不可では入力と試聴を無効にする`() {
+    fun `低温 TTS不可では入力と試聴を無効にする`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
@@ -451,11 +454,12 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
-                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(
-                        overheatReadoutText = "冷やして",
-                        coldReadoutText = "温めて",
-                        isTextToSpeechAvailable = true,
-                    ),
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = "冷やして",
+                            coldReadoutText = "温めて",
+                            isTextToSpeechAvailable = true,
+                        ),
                     onColdReadoutTextChanged = { coldChanges += it },
                     onOverheatReadoutTextChanged = { overheatChanges += it },
                 )
@@ -466,8 +470,8 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
         assertEquals(listOf("低温注意", LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT), coldChanges)
         assertEquals(emptyList<String>(), overheatChanges)
         rule.onNode(hasSetTextAction() and hasText("冷やして")).assertExists()
-        rule.onNode(hasSetTextAction() and hasText(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT))
+        rule
+            .onNode(hasSetTextAction() and hasText(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT))
             .assertExists()
     }
-
 }

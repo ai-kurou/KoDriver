@@ -151,6 +151,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
             }
             onRoot().captureRoboImage()
         }
+
     @Test
     fun `低温のみ空白文言`() =
         composeScreenshotTest {

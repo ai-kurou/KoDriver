@@ -582,7 +582,6 @@ class LmuWindowsReadoutTextSpeakerTest {
             confirmAllMocksVerified()
         }
 
-
     @Test
     fun `低温警告は保存した文言を置換せず読み上げる`() =
         runTest {

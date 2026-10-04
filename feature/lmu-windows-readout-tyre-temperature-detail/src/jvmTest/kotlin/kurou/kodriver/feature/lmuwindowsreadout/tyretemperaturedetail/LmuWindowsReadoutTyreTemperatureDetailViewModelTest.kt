@@ -47,13 +47,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val repository: LmuWindowsTyreTemperaturePreferencesRepository = mockk()
 
     private val vehicleClassRepository: LmuWindowsVehicleClassTyreTemperaturePreferencesRepository = mockk()
-
 
     private val observeText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val saveText: SaveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
@@ -478,7 +478,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `低温: 文言の監視と保存をUiStateに反映する`() =
+    fun `低温 文言の監視と保存をUiStateに反映する`() =
         runTest {
             stubSettings()
             stubReadout(available = true)
@@ -496,7 +496,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `低温: 入力文言を置換せず開始音の後に試聴する`() =
+    fun `低温 入力文言を置換せず開始音の後に試聴する`() =
         runTest {
             stubSettings()
             stubReadout(available = true)
@@ -516,7 +516,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `低温: 空白文言では音量を取得せず試聴しない`() =
+    fun `低温 空白文言では音量を取得せず試聴しない`() =
         runTest {
             stubSettings()
             stubReadout(available = true)
@@ -528,7 +528,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `低温: TTS利用不可を反映し試聴しない`() =
+    fun `低温 TTS利用不可を反映し試聴しない`() =
         runTest {
             stubSettings()
             stubReadout(available = false)
@@ -542,7 +542,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `低温: 音量ゼロ以下では開始音も本文も試聴しない`() =
+    fun `低温 音量ゼロ以下では開始音も本文も試聴しない`() =
         runTest {
             stubSettings()
             stubReadout(available = true)

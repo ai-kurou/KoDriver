@@ -78,8 +78,12 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
         }
 
     val uiState: StateFlow<LmuWindowsReadoutTyreTemperatureDetailUiState> =
-        combine(temperatureSettings, readout.observeText(), readout.observeColdText(), textToSpeechAvailable) {
-            settings, text, coldText, available ->
+        combine(
+            temperatureSettings,
+            readout.observeText(),
+            readout.observeColdText(),
+            textToSpeechAvailable,
+        ) { settings, text, coldText, available ->
             settings.copy(overheatReadoutText = text, coldReadoutText = coldText, isTextToSpeechAvailable = available)
         }.stateIn(
             viewModelScope,
