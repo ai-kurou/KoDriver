@@ -1,12 +1,13 @@
 package kurou.kodriver.feature.acewindowsreadout.flagdetail
 
-import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -26,9 +27,7 @@ import org.jetbrains.compose.resources.StringResource
 internal enum class FlagReadoutItem(
     val key: ReadoutItemKey,
     val labelRes: StringResource,
-    val previewEvent: SpeechEvent? = null,
-    /** nullなら従来のWAVチップを表示する。 */
-    val defaultText: String? = null,
+    val defaultText: String,
 ) {
     WhiteFlag(
         key = ReadoutItemKey.AceWindows.Flag.WhiteFlag,
@@ -73,11 +72,11 @@ internal enum class FlagReadoutItem(
     OrangeCircleFlag(
         key = ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag,
         labelRes = Res.string.flag_orange_circle,
-        previewEvent = SpeechEvent.AceWindowsOrangeCircleFlag,
+        defaultText = ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT,
     ),
     RedYellowStripesFlag(
         key = ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag,
         labelRes = Res.string.flag_red_yellow_stripes,
-        previewEvent = SpeechEvent.AceWindowsRedYellowStripesFlag,
+        defaultText = ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT,
     ),
 }

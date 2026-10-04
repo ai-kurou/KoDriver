@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -37,7 +36,6 @@ fun AceWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
     AceWindowsReadoutFlagDetailPaneContent(
         uiState = uiState,
         onFlagEnabledChanged = viewModel::onFlagEnabledChanged,
-        onPreviewClicked = viewModel::onPreviewClicked,
         onFlagTextChanged = viewModel::onFlagTextChanged,
         onFlagTextReset = viewModel::onFlagTextReset,
         onFlagTextPreviewClicked = viewModel::onFlagTextPreviewClicked,
@@ -49,7 +47,6 @@ fun AceWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
 internal fun AceWindowsReadoutFlagDetailPaneContent(
     uiState: AceWindowsReadoutFlagDetailUiState = AceWindowsReadoutFlagDetailUiState(),
     onFlagEnabledChanged: (FlagReadoutItem, Boolean) -> Unit = { _, _ -> },
-    onPreviewClicked: (FlagReadoutItem) -> Unit = {},
     onFlagTextChanged: (FlagReadoutItem, String) -> Unit = { _, _ -> },
     onFlagTextReset: (FlagReadoutItem) -> Unit = {},
     onFlagTextPreviewClicked: (String) -> Unit = {},
@@ -73,36 +70,26 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
                 bottomContent = {
-                    val defaultText = item.defaultText
-                    if (defaultText != null) {
-                        DetailPaneCardTextField(
-                            value = uiState.flagText(item),
-                            defaultValue = defaultText,
-                            onResetToDefault = { onFlagTextReset(item) },
-                            resetContentDescription = stringResource(Res.string.flag_text_reset_to_default),
-                            placeholder = stringResource(item.labelRes),
-                            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-                            onValueChangeFinished = { onFlagTextChanged(item, it) },
-                            onPreviewClick = onFlagTextPreviewClicked,
-                            enabled = uiState.isTextToSpeechAvailable,
-                            selected = uiState.hasReadoutText(item),
-                            supportingText =
-                                when {
-                                    !uiState.isTextToSpeechAvailable -> stringResource(Res.string.flag_text_unavailable)
-                                    uiState.hasReadoutText(item) -> null
-                                    else -> stringResource(Res.string.flag_text_supporting)
-                                },
-                            previewContentDescription = stringResource(Res.string.flag_text_preview),
-                            selectedContentDescription = stringResource(Res.string.flag_text_selected_icon),
-                        )
-                    } else {
-                        DetailPaneCardChips(
-                            chipLabels = listOf(chipLabel),
-                            selectedChipLabels = setOf(chipLabel),
-                            chipEnabled = true,
-                            onChipClick = { onPreviewClicked(item) },
-                        )
-                    }
+                    DetailPaneCardTextField(
+                        value = uiState.flagText(item),
+                        defaultValue = item.defaultText,
+                        onResetToDefault = { onFlagTextReset(item) },
+                        resetContentDescription = stringResource(Res.string.flag_text_reset_to_default),
+                        placeholder = stringResource(item.labelRes),
+                        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+                        onValueChangeFinished = { onFlagTextChanged(item, it) },
+                        onPreviewClick = onFlagTextPreviewClicked,
+                        enabled = uiState.isTextToSpeechAvailable,
+                        selected = uiState.hasReadoutText(item),
+                        supportingText =
+                            when {
+                                !uiState.isTextToSpeechAvailable -> stringResource(Res.string.flag_text_unavailable)
+                                uiState.hasReadoutText(item) -> null
+                                else -> stringResource(Res.string.flag_text_supporting)
+                            },
+                        previewContentDescription = stringResource(Res.string.flag_text_preview),
+                        selectedContentDescription = stringResource(Res.string.flag_text_selected_icon),
+                    )
                 },
             )
         }

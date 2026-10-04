@@ -89,7 +89,7 @@ class AceWindowsWavNarratorEngineTest {
         }
 
     @Test
-    fun `自由文言8種はFlagRoot開始音の後にTTS本文を再生しWAVにフォールバックしない`() =
+    fun `自由文言10種はFlagRoot開始音の後にTTS本文を再生しWAVにフォールバックしない`() =
         runTest {
             val events =
                 listOf(
@@ -101,6 +101,8 @@ class AceWindowsWavNarratorEngineTest {
                     SpeechEvent.AceWindowsYellowFlag,
                     SpeechEvent.AceWindowsBlackFlag,
                     SpeechEvent.AceWindowsBlackWhiteFlag,
+                    SpeechEvent.AceWindowsOrangeCircleFlag,
+                    SpeechEvent.AceWindowsRedYellowStripesFlag,
                 )
             val startSound = byteArrayOf(2)
             events.forEachIndexed { index, target ->

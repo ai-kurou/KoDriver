@@ -226,6 +226,8 @@ class AceWindowsFlagReadoutTextPreferencesRepositoryImplTest {
             repository.saveYellowFlagText("保存文言Yellow")
             repository.saveBlackFlagText("保存文言Black")
             repository.saveBlackWhiteFlagText("保存文言BlackWhite")
+            repository.saveOrangeCircleFlagText("保存文言OrangeCircle")
+            repository.saveRedYellowStripesFlagText("保存文言RedYellowStripes")
 
             assertEquals("保存文言Checkered", repository.observeCheckeredFlagText().first())
             assertEquals("保存文言White", repository.observeWhiteFlagText().first())
@@ -235,5 +237,70 @@ class AceWindowsFlagReadoutTextPreferencesRepositoryImplTest {
             assertEquals("保存文言Yellow", repository.observeYellowFlagText().first())
             assertEquals("保存文言Black", repository.observeBlackFlagText().first())
             assertEquals("保存文言BlackWhite", repository.observeBlackWhiteFlagText().first())
+            assertEquals("保存文言OrangeCircle", repository.observeOrangeCircleFlagText().first())
+            assertEquals("保存文言RedYellowStripes", repository.observeRedYellowStripesFlagText().first())
+        }
+
+    @Test
+    fun `orangeCircleFlagText の初期値はオレンジボールフラッグ、車両に不具合があります`() =
+        runTest {
+            assertEquals("オレンジボールフラッグ、車両に不具合があります", repository.observeOrangeCircleFlagText().first())
+        }
+
+    @Test
+    fun `saveOrangeCircleFlagText で保存した値を observeOrangeCircleFlagText で取得できる`() =
+        runTest {
+            repository.saveOrangeCircleFlagText("オレンジボールフラッグ、車両に不具合があります、注意")
+
+            assertEquals("オレンジボールフラッグ、車両に不具合があります、注意", repository.observeOrangeCircleFlagText().first())
+        }
+
+    @Test
+    fun `OrangeCircleの空文字を保存すると未設定に戻る`() =
+        runTest {
+            repository.saveOrangeCircleFlagText("オレンジボールフラッグ、車両に不具合があります、注意")
+            repository.saveOrangeCircleFlagText("")
+
+            assertEquals("", repository.observeOrangeCircleFlagText().first())
+        }
+
+    @Test
+    fun `redYellowStripesFlagText の初期値はレッド・イエローストライプフラッグ、路面が滑りやすいです`() =
+        runTest {
+            assertEquals("レッド・イエローストライプフラッグ、路面が滑りやすいです", repository.observeRedYellowStripesFlagText().first())
+        }
+
+    @Test
+    fun `saveRedYellowStripesFlagText で保存した値を observeRedYellowStripesFlagText で取得できる`() =
+        runTest {
+            repository.saveRedYellowStripesFlagText("レッド・イエローストライプフラッグ、路面が滑りやすいです、注意")
+
+            assertEquals("レッド・イエローストライプフラッグ、路面が滑りやすいです、注意", repository.observeRedYellowStripesFlagText().first())
+        }
+
+    @Test
+    fun `RedYellowStripesの空文字を保存すると未設定に戻る`() =
+        runTest {
+            repository.saveRedYellowStripesFlagText("レッド・イエローストライプフラッグ、路面が滑りやすいです、注意")
+            repository.saveRedYellowStripesFlagText("")
+
+            assertEquals("", repository.observeRedYellowStripesFlagText().first())
+        }
+
+    @Test
+    fun `既存データの文言と空文字を保持し追加2種は既定値で監視できる`() =
+        runTest {
+            tempDir.resolve("test.pb").writeBytes(byteArrayOf(0x0a, 1, 65, 0x42, 0))
+
+            assertEquals("A", repository.observeCheckeredFlagText().first())
+            assertEquals("", repository.observeBlackWhiteFlagText().first())
+            assertEquals(
+                "オレンジボールフラッグ、車両に不具合があります",
+                repository.observeOrangeCircleFlagText().first(),
+            )
+            assertEquals(
+                "レッド・イエローストライプフラッグ、路面が滑りやすいです",
+                repository.observeRedYellowStripesFlagText().first(),
+            )
         }
 }

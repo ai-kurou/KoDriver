@@ -14,7 +14,7 @@
 
 新しい `ReadoutItemKey` を読み上げ判定ロジックに追加する場合は、対応する `Determine*NarratorReadoutUseCase` のテストに「その項目を無効にした場合は読み上げられない」ケースを必ず追加すること。
 
-ACEフラッグの Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite は保存した自由文言をOS標準TTSのみで読み上げる。既定文言は各SpeechEventの現行narratedTextと同じ（例: White「ホワイトフラッグ」、BlackWhite「ブラック・ホワイトフラッグ」）、保存先は `ace_windows_flag_readout_text_preferences.pb`。既存の `ace_windows_flag_preferences.pb`（enabledStates）は変更せず、詳細の個別キー（`ReadoutItemKey.AceWindows.Flag.WhiteFlag` 等）と一覧の `Flag.Root` の有効状態を従来どおり判定する。空白文言またはTTS利用不可の場合は本文と開始音を要求せず、ログに `narratedText` 空文字と `narrationOutcome=SKIPPED` を記録する。対象8種の `SpeechEvent.readoutItemKey` は `Flag.Root` のため、開始音・優先度・キュー・詳細画面のTTS試聴の開始音も `Flag.Root` を参照する。試聴は空白・TTS利用不可・音量0以下では再生しない。WAVフォールバックは行わず、`checkered_flag.wav` は廃止する。共通7種のWAVも廃止する。OrangeCircle・RedYellowStripes の2種のみ従来のWAVを維持する。
+ACEの全10フラッグ（Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes）は保存した自由文言をOS標準TTSのみで読み上げ、WAVは使用しない。既定文言はドメイン定数を参照し、OrangeCircleは「オレンジボールフラッグ、車両に不具合があります」、RedYellowStripesは「レッド・イエローストライプフラッグ、路面が滑りやすいです」。保存先は `ace_windows_flag_readout_text_preferences.pb`。既存の `ace_windows_flag_preferences.pb`（enabledStates）は変更せず、詳細の個別キー（`ReadoutItemKey.AceWindows.Flag.WhiteFlag` 等）と一覧の `Flag.Root` の有効状態を従来どおり判定する。空白文言またはTTS利用不可の場合は本文と開始音を要求せず、ログに `narratedText` 空文字と `narrationOutcome=SKIPPED` を記録する。全10種の `SpeechEvent.readoutItemKey` は `Flag.Root` のため、開始音・優先度・キュー・詳細画面のTTS試聴の開始音も `Flag.Root` を参照する。試聴は空白・TTS利用不可・音量0以下では再生しない。WAVフォールバックは行わず、フラッグのWAVはすべて廃止する。
 
 LMU車両接近では、詳細ペインの `StartReadout` / `Sustained` と一覧の `Root` の有効状態を既存どおり判定する。開始時・継続時の自由文言TTSはともに `VehicleApproach.Root` をイベントキーに持つため、開始音・優先度・キュー設定も `Root` を参照する。開始時・継続時の文言が空白またはTTS利用不可の場合は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。
 
