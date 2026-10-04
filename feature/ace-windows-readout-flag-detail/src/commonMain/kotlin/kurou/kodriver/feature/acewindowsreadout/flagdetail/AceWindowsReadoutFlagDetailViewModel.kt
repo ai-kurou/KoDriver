@@ -13,13 +13,27 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsBlackFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsBlackWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsFlagEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal data class FlagSettingsUseCases(
@@ -29,13 +43,35 @@ internal data class FlagSettingsUseCases(
 )
 
 /** フラッグごとの読み上げ文言の Observe / Save UseCase を [FlagReadoutItem] で引けるようにまとめたもの。 */
+@Suppress("LongParameterList")
 internal data class FlagReadoutTextUseCases(
     val observeCheckeredFlag: ObserveAceWindowsCheckeredFlagReadoutTextUseCase,
     val saveCheckeredFlag: SaveAceWindowsCheckeredFlagReadoutTextUseCase,
+    val observeWhiteFlag: ObserveAceWindowsWhiteFlagReadoutTextUseCase,
+    val saveWhiteFlag: SaveAceWindowsWhiteFlagReadoutTextUseCase,
+    val observeGreenFlag: ObserveAceWindowsGreenFlagReadoutTextUseCase,
+    val saveGreenFlag: SaveAceWindowsGreenFlagReadoutTextUseCase,
+    val observeRedFlag: ObserveAceWindowsRedFlagReadoutTextUseCase,
+    val saveRedFlag: SaveAceWindowsRedFlagReadoutTextUseCase,
+    val observeBlueFlag: ObserveAceWindowsBlueFlagReadoutTextUseCase,
+    val saveBlueFlag: SaveAceWindowsBlueFlagReadoutTextUseCase,
+    val observeYellowFlag: ObserveAceWindowsYellowFlagReadoutTextUseCase,
+    val saveYellowFlag: SaveAceWindowsYellowFlagReadoutTextUseCase,
+    val observeBlackFlag: ObserveAceWindowsBlackFlagReadoutTextUseCase,
+    val saveBlackFlag: SaveAceWindowsBlackFlagReadoutTextUseCase,
+    val observeBlackWhiteFlag: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase,
+    val saveBlackWhiteFlag: SaveAceWindowsBlackWhiteFlagReadoutTextUseCase,
 ) {
     fun observe(item: FlagReadoutItem): Flow<String> =
         when (item) {
             FlagReadoutItem.CheckeredFlag -> observeCheckeredFlag()
+            FlagReadoutItem.WhiteFlag -> observeWhiteFlag()
+            FlagReadoutItem.GreenFlag -> observeGreenFlag()
+            FlagReadoutItem.RedFlag -> observeRedFlag()
+            FlagReadoutItem.BlueFlag -> observeBlueFlag()
+            FlagReadoutItem.YellowFlag -> observeYellowFlag()
+            FlagReadoutItem.BlackFlag -> observeBlackFlag()
+            FlagReadoutItem.BlackWhiteFlag -> observeBlackWhiteFlag()
             else -> flow { }
         }
 
@@ -45,6 +81,13 @@ internal data class FlagReadoutTextUseCases(
     ) {
         when (item) {
             FlagReadoutItem.CheckeredFlag -> saveCheckeredFlag(text)
+            FlagReadoutItem.WhiteFlag -> saveWhiteFlag(text)
+            FlagReadoutItem.GreenFlag -> saveGreenFlag(text)
+            FlagReadoutItem.RedFlag -> saveRedFlag(text)
+            FlagReadoutItem.BlueFlag -> saveBlueFlag(text)
+            FlagReadoutItem.YellowFlag -> saveYellowFlag(text)
+            FlagReadoutItem.BlackFlag -> saveBlackFlag(text)
+            FlagReadoutItem.BlackWhiteFlag -> saveBlackWhiteFlag(text)
             else -> Unit
         }
     }

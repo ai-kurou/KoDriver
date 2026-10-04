@@ -11,7 +11,7 @@
     <string name="flag_orange_circle">オレンジボールフラッグ</string>
     <string name="flag_red_yellow_stripes">レッド・イエローストライプフラッグ</string>
     <string name="flag_text_supporting">空欄のままなら読み上げません</string>
-    <string name="flag_text_unavailable">この端末では音声合成を利用できないため、チェッカーフラッグは読み上げません</string>
+    <string name="flag_text_unavailable">この端末では音声合成を利用できないため、自由文言のフラッグは読み上げません</string>
     <string name="flag_text_preview">入力した文言を再生</string>
     <string name="flag_text_selected_icon">この文言を読み上げます</string>
     <string name="flag_text_reset_to_default">デフォルトに戻す</string>
