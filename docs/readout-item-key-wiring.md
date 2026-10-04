@@ -41,4 +41,15 @@ GT7タイヤ過熱警告は自由文言のOS標準TTSのみを使用する。既
 
 LMUタイヤ過熱・低温警告は保存した自由文言の `{celsius}` を、警告を発生させた判定時点の全輪の最高カーカス温度を四捨五入した整数（℃）に置換してOS標準TTSで読み上げる。低温警告も全輪の最高温度を使い、`{wheel}` は対応しない。判定時に解決した本文をイベントの `resolvedText` に保持し、キュー待機中に設定が変わっても発話とログを一致させる。既定文言は「タイヤ過熱 {celsius}度」「タイヤ低温 {celsius}度」。DataStore の保存済み文言は変更せず、未設定の場合と「デフォルトに戻す」操作で新しい既定文言を使用する。DataStore の移行は不要。詳細画面は挿入チップと未知プレースホルダーの警告を提供し、試聴では過熱は選択中車両クラスの高温閾値（スライダーの現在値）、低温は60℃固定に置換する。空白文言・TTS利用不可時は開始音も要求せず、ログに空文字と `SKIPPED` を記録する。収録WAVへのフォールバックは行わない。開始音・優先度・キュー設定と試聴の開始音は `TyreTemperature.Root` を参照する。
 
+LMU車両故障のオーバーヒート・部品脱落・タイヤ脱落は、各1つのグローバルな自由文言をOS標準TTSで読み上げる。既定文言は「オーバーヒート」「部品脱落」「タイヤ脱落」。文言は既存の `LmuWindowsVehicleDamagePreferences` に保存し、保存時は `trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)` で正規化する。判定時に解決した本文をイベントの `resolvedText` に保持し、キュー待機中の設定変更でもログと発話を一致させる。空白文言・TTS利用不可時は本文と開始音を要求せず、ログに空文字と `SKIPPED` を記録する。一覧の `VehicleDamage.Root` と詳細の `Overheat` / `PartDetached` / `TyreDetached` のスイッチ配線は維持し、開始音・優先度・キューと試聴は `VehicleDamage.Root` を参照する。旧オーバーヒート音声タイプは廃止し、3種類の警告は収録WAVへフォールバックしない。
+
 LMUブレーキ過熱警告では一覧の `BrakeTemperature.Root` と詳細の `WarningReadout` の有効状態を判定する。イベントは判定時の車両クラス別温度閾値を持ち、全クラス共通文言の `{celsius}` をその閾値（℃）に置換する。実測温度は使用しない。既存の `LmuWindowsVehicleClassBrakeTemperaturePreferences` に文言を保存する。判定時に `resolvedText` を確定してログと発話を一致させる。空白・TTS利用不可では本文と開始音を要求せず空文字と `SKIPPED` を記録する。開始音・優先度・キューと試聴は `BrakeTemperature.Root` を参照する。詳細ペインの試聴は選択中クラスのスライダー閾値を使う。WAVへはフォールバックしない。
+
+GT7の自己ベストラップ更新は保存した自由文言をOS標準TTSで読み上げる。既定文言は「自己ベストラップ更新 {laptime}」。
+`{laptime}` は判定時の更新後の `bestLapTimeMs` を「1分23秒456」の形式に置換する。1分未満では分を省略し、
+ミリ秒は3桁固定、60分以上も時間にせず分で表す。解決した文言は `resolvedText` に保持し、キュー待機中も発話とログを一致させる。
+判定条件と `MyBestLap.Root` / `DetailEnabled` の有効状態は従来どおり。開始音・優先度・キューは `MyBestLap.Root` を参照する。
+空白文言・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` を記録する。formal/casual の収録WAVは削除し、
+WAVへフォールバックしない。共有protoの `voiceType` はACEと旧データの互換性のため残し、GT7は `readoutText`、LMUは `lmuWindowsReadoutText` を使用する。
+
+LMU自己ベストラップ更新は自由文言のOS標準TTSを使う。既定文言は「自己ベストラップ更新 {laptime}」。`{laptime}` は更新後の `telemetry.timing.bestLapTimeMs`（Long）を「1分23秒456」形式に置換し、1分未満では分を省略、ミリ秒は3桁固定、60分以上も分で表す。判定時に本文を `resolvedText` へ保持して発話とログを一致させる。空白・TTS利用不可では開始音も本文も要求せず、ログに空文字と `SKIPPED` を記録する。更新判定と一覧の `MyBestLap.Root`・詳細の `MyBestLap.DetailEnabled` のスイッチ配線は維持し、開始音・優先度・キュー・試聴は `MyBestLap.Root` を使う。詳細画面で文言編集・`{laptime}` 挿入・未知プレースホルダー警告・リセット・サンプルタイム83456msでの試聴を提供する。LMUの口調設定は移行せず参照しない。自己ベスト用WAVは廃止し、WAVへのフォールバックは行わない。

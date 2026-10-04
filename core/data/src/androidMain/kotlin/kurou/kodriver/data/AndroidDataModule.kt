@@ -30,7 +30,6 @@ import kurou.kodriver.data.preferences.createGt7Ps5TyreTemperaturePreferencesRep
 import kurou.kodriver.data.preferences.createLmuWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsTyreTemperaturePreferencesRepository
@@ -105,7 +104,6 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
@@ -267,9 +265,6 @@ private fun androidDataModuleMisc(context: Context) =
         }
         single<LmuWindowsFlagReadoutTextPreferencesRepository> {
             createLmuWindowsFlagReadoutTextPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsOverheatPreferencesRepository> {
-            createLmuWindowsOverheatPreferencesRepository(context.filesDir.absolutePath)
         }
         single<ServerIpPreferencesRepository> {
             AndroidServerIpPreferencesRepository(context.serverIpDataStore)

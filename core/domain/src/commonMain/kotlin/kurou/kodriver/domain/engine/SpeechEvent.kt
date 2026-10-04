@@ -10,6 +10,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
@@ -17,6 +18,7 @@ import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEX
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
@@ -26,14 +28,19 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READO
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
@@ -97,24 +104,25 @@ sealed interface SpeechEvent {
         override val narratedText = LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
     }
 
-    data object Overheating : SpeechEvent {
+    data class Overheating(
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
-        override val narratedText = "GP2 GP2… ahhh!!!"
+        override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
     }
 
-    data object OverheatingStandard : SpeechEvent {
+    data class PartDetached(
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
-        override val narratedText = "オーバーヒート"
+        override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
     }
 
-    data object PartDetached : SpeechEvent {
+    data class TyreDetached(
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
-        override val narratedText = "部品脱落"
-    }
-
-    data object TyreDetached : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
-        override val narratedText = "タイヤ脱落"
+        override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
     }
 
     /**
@@ -197,24 +205,23 @@ sealed interface SpeechEvent {
             )
     }
 
-    data object LmuWindowsMyBestLapFormal : SpeechEvent {
+    data class LmuWindowsMyBestLap(
+        val lapTimeMs: Long,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root
-        override val narratedText = "自己ベストラップ更新"
+        override val narratedText =
+            formatLmuWindowsMyBestLapReadoutText(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
     }
 
-    data object LmuWindowsMyBestLapCasual : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root
-        override val narratedText = "ベストラップ"
-    }
-
-    data object Gt7Ps5MyBestLapFormal : SpeechEvent {
+    /** GT7 の更新後の自己ベストタイム。解決済み文言は判定時の発話・ログ内容を保持する。 */
+    data class Gt7Ps5MyBestLap(
+        val lapTimeMs: Int,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-        override val narratedText = "自己ベストラップ更新"
-    }
-
-    data object Gt7Ps5MyBestLapCasual : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-        override val narratedText = "ベストラップ"
+        override val narratedText =
+            formatGt7Ps5MyBestLapReadoutText(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
     }
 
     /**
@@ -351,7 +358,7 @@ sealed interface SpeechEvent {
     /**
      * ACE の自己ベストラップ更新を読み上げるイベント（フォーマル / カジュアルの2種）。
      *
-     * 再生する WAV は LMU（[LmuWindowsMyBestLapFormal]/[LmuWindowsMyBestLapCasual]）と同じ音源を流用する。
+     * ACE専用の WAV 音源を再生する。
      */
     data object AceWindowsMyBestLapFormal : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root

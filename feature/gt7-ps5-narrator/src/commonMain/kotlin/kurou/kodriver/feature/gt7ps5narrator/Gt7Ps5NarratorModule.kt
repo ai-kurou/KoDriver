@@ -10,7 +10,7 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
@@ -49,7 +49,7 @@ import org.koin.dsl.module
  *   TyreTemperatureUseCases）、それらが束ねる
  *   各ドメイン UseCase、および named(Simulator.Gt7Ps5.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine・SpeakTextUseCase・
- *   タイヤ過熱・燃料残量・残り周回数文言の Observe UseCase・
+ *   自己ベストラップ更新・タイヤ過熱・燃料残量・残り周回数文言の Observe UseCase・
  *   CheckTextToSpeechAvailableUseCase・ObserveVoiceUseCase）、および Gt7Ps5ReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:gt7-ps5-data / :core:data）、
  *   TextToSpeechRepository・VoicePreferencesRepository、および SoundPlayer（[platformSoundModule]）。
@@ -62,7 +62,7 @@ val gt7Ps5NarratorModule: Module =
         viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-        factory { MyBestLapUseCases(get(), get()) }
+        factory { MyBestLapUseCases(get()) }
         factory { SimulatorUseCases(get()) }
         factory { ReadoutListUseCases(get(), get(), get()) }
         factory { RemainingFuelLapsUseCases(get()) }
@@ -80,7 +80,6 @@ val gt7Ps5NarratorModule: Module =
         factory { DetermineGt7Ps5NarratorReadoutUseCase() }
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveGt7Ps5UseCase(get()) }
-        factory { ObserveGt7Ps5MyBestLapVoiceTypeUseCase(get()) }
         factory { ObserveReadoutEnabledStatesUseCase(get()) }
         factory { ObserveReadoutOrderUseCase(get()) }
         factory { ResolveReadoutOrderUseCase() }
@@ -97,6 +96,7 @@ val gt7Ps5NarratorModule: Module =
         factory(named(Simulator.Gt7Ps5.id)) { ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase(get()) }
+        factory(named(Simulator.Gt7Ps5.id)) { ObserveGt7Ps5MyBestLapReadoutTextUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { ObserveVoiceUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { CheckTextToSpeechAvailableUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { SpeakTextUseCase(get(), get(named(Simulator.Gt7Ps5.id))) }
@@ -105,6 +105,7 @@ val gt7Ps5NarratorModule: Module =
                 observeRemainingFuelLapsReadoutText = get(named(Simulator.Gt7Ps5.id)),
                 observeRemainingFuelLapsEmptyReadoutText = get(named(Simulator.Gt7Ps5.id)),
                 observeRemainingFuelReadoutText = get(named(Simulator.Gt7Ps5.id)),
+                observeMyBestLapReadoutText = get(named(Simulator.Gt7Ps5.id)),
                 observeTyreOverheatReadoutText = get(named(Simulator.Gt7Ps5.id)),
                 checkTextToSpeechAvailable = get(named(Simulator.Gt7Ps5.id)),
                 speakText = get(named(Simulator.Gt7Ps5.id)),
@@ -128,7 +129,8 @@ val gt7Ps5NarratorModule: Module =
                     isCustomSpeakEvent = {
                         it is SpeechEvent.RemainingFuelLapsWarning ||
                             it is SpeechEvent.Gt7Ps5RemainingFuelWarning ||
-                            it is SpeechEvent.Gt7Ps5TyreOverheat
+                            it is SpeechEvent.Gt7Ps5TyreOverheat ||
+                            it is SpeechEvent.Gt7Ps5MyBestLap
                     },
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
@@ -142,11 +144,7 @@ val gt7Ps5NarratorModule: Module =
         factory(named(Simulator.Gt7Ps5.id)) { PlaySpeechEventUseCase(get(named(Simulator.Gt7Ps5.id))) }
     }
 
-private val gt7Ps5EventToFile: Map<SpeechEvent, String> =
-    buildMap {
-        put(SpeechEvent.Gt7Ps5MyBestLapFormal, "files/my_best_lap_formal.wav")
-        put(SpeechEvent.Gt7Ps5MyBestLapCasual, "files/my_best_lap_casual.wav")
-    }
+private val gt7Ps5EventToFile: Map<SpeechEvent, String> = emptyMap()
 
 private val gt7Ps5StartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(

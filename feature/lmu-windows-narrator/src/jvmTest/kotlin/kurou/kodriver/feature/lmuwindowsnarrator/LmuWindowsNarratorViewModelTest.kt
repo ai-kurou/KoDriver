@@ -24,6 +24,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
@@ -45,9 +46,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -57,13 +56,12 @@ import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
-import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsOverheatPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -88,8 +86,6 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
@@ -188,10 +184,6 @@ class LmuWindowsNarratorViewModelTest {
 
     private val pitTimingPreferencesRepository: LmuWindowsPitTimingPreferencesRepository = mockk(relaxUnitFun = true)
 
-    private val myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository = mockk(relaxUnitFun = true)
-
-    private val overheatPreferencesRepository: LmuWindowsOverheatPreferencesRepository = mockk(relaxUnitFun = true)
-
     private val telemetryLogRepository: TelemetryLogRepository = mockk(relaxUnitFun = true)
 
     private val queuePreferencesRepository: QueuePreferencesRepository = mockk(relaxUnitFun = true)
@@ -225,8 +217,6 @@ class LmuWindowsNarratorViewModelTest {
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean>,
         vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean>,
         orderOverride: List<ReadoutItemKey>,
-        voiceType: MyBestLapVoiceType,
-        overheatVoiceType: OverheatVoiceType,
         skipFirstLap: Boolean,
         startReadoutEnabled: Boolean,
         sustainedReadoutEnabled: Boolean,
@@ -305,8 +295,6 @@ class LmuWindowsNarratorViewModelTest {
             MutableStateFlow(pitTimingTyreWearLapsThreshold)
         every { pitTimingPreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(pitTimingEnabledOverrides)
-        every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
-        every { overheatPreferencesRepository.observeVoiceType() } returns MutableStateFlow(overheatVoiceType)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns
             MutableStateFlow(queueEnabledOverrides)
     }
@@ -331,14 +319,16 @@ class LmuWindowsNarratorViewModelTest {
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ),
-        voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-        overheatVoiceType: OverheatVoiceType = OverheatVoiceType.GP2_GP2,
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         sustainedReadoutEnabled: Boolean = true,
         sustainedApproachDurationSeconds: Int = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
         tyreOverheatReadoutText: String? = "タイヤを冷やして",
         tyreColdReadoutText: String? = "タイヤを温めて",
+        myBestLapReadoutText: String? = LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT,
+        overheatReadoutText: String? = "オーバーヒート",
+        partDetachedReadoutText: String? = "部品脱落",
+        tyreDetachedReadoutText: String? = "タイヤ脱落",
         tyreTemperatureHighThreshold: Int = 90,
         vehicleClass: LmuWindowsVehicleClassData = LmuWindowsVehicleClassData.Hypercar,
         tyreTemperatureHighThresholdByVehicleClass: Map<LmuWindowsVehicleClassData, Int>? = null,
@@ -368,8 +358,6 @@ class LmuWindowsNarratorViewModelTest {
             flagEnabledOverrides = flagEnabledOverrides,
             vehicleDamageEnabledOverrides = vehicleDamageEnabledOverrides,
             orderOverride = orderOverride,
-            voiceType = voiceType,
-            overheatVoiceType = overheatVoiceType,
             skipFirstLap = skipFirstLap,
             startReadoutEnabled = startReadoutEnabled,
             sustainedReadoutEnabled = sustainedReadoutEnabled,
@@ -498,7 +486,17 @@ class LmuWindowsNarratorViewModelTest {
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
                     readoutText = {
-                        if (it is SpeechEvent.TyreOverheat) {
+                        if (it is SpeechEvent.LmuWindowsMyBestLap) {
+                            myBestLapReadoutText?.let { template ->
+                                formatLmuWindowsMyBestLapReadoutText(template, it.lapTimeMs)
+                            }
+                        } else if (it is SpeechEvent.Overheating) {
+                            overheatReadoutText
+                        } else if (it is SpeechEvent.PartDetached) {
+                            partDetachedReadoutText
+                        } else if (it is SpeechEvent.TyreDetached) {
+                            tyreDetachedReadoutText
+                        } else if (it is SpeechEvent.TyreOverheat) {
                             tyreOverheatReadoutText
                         } else if (it is SpeechEvent.TyreCold) {
                             tyreColdReadoutText
@@ -512,14 +510,6 @@ class LmuWindowsNarratorViewModelTest {
             narratorUseCases =
                 NarratorUseCases(
                     determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
-                    observeMyBestLapVoiceType =
-                        ObserveLmuWindowsMyBestLapVoiceTypeUseCase(
-                            myBestLapPreferencesRepository,
-                        ),
-                    observeOverheatVoiceType =
-                        ObserveLmuWindowsOverheatVoiceTypeUseCase(
-                            overheatPreferencesRepository,
-                        ),
                 ),
             currentTimeMs = currentTimeMs,
         )
@@ -588,7 +578,7 @@ class LmuWindowsNarratorViewModelTest {
     // --- 自己ベストラップ ---
 
     @Test
-    fun `自己ベストラップの声種別設定を反映して読み上げる`() =
+    fun `自己ベストラップの更新タイムを解決して読み上げる`() =
         runTest(testDispatcher) {
             val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -596,7 +586,6 @@ class LmuWindowsNarratorViewModelTest {
             createViewModel(
                 telemetryChannel = telemetryChannel,
                 ttsEngine = tts,
-                voiceType = MyBestLapVoiceType.CASUAL,
                 enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to true),
                 orderOverride = listOf(ReadoutItemKey.LmuWindows.MyBestLap.Root),
             )
@@ -604,7 +593,10 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
             telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsMyBestLapCasual), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.LmuWindowsMyBestLap(59_000L, "自己ベストラップ更新 59秒000")),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -1019,7 +1011,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `オーバーヒート音声タイプがSTANDARDのときはOverheatingStandardを読み上げる`() =
+    fun `オーバーヒートが発生すると解決済みの文言を読み上げる`() =
         runTest(testDispatcher) {
             val damageChannel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -1028,13 +1020,219 @@ class LmuWindowsNarratorViewModelTest {
                 damageChannel = damageChannel,
                 ttsEngine = tts,
                 enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
-                overheatVoiceType = OverheatVoiceType.STANDARD,
             )
 
             damageChannel.send(noDamage())
             damageChannel.send(noDamage(overheating = true))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.OverheatingStandard), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating(resolvedText = "オーバーヒート")), spokenTexts)
+        }
+
+    @Test
+    fun `オーバーヒートの自由文言を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                damageChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                overheatReadoutText = "カスタム",
+            )
+            channel.send(noDamage())
+            channel.send(noDamage(overheating = true))
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating(resolvedText = "カスタム")), spokenTexts)
+        }
+
+    @Test
+    fun `オーバーヒートの空白文言を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                damageChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                overheatReadoutText = " ",
+            )
+            channel.send(noDamage())
+            channel.send(noDamage(overheating = true))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `オーバーヒートのTTS利用不可を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                damageChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                overheatReadoutText = null,
+            )
+            channel.send(noDamage())
+            channel.send(noDamage(overheating = true))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `自己ベストラップの自由文言を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                telemetryChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to true),
+                myBestLapReadoutText = "カスタム{laptime}",
+            )
+            channel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
+            channel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.LmuWindowsMyBestLap(59_000L, resolvedText = "カスタム59秒000")),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `自己ベストラップの空白文言を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                telemetryChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to true),
+                myBestLapReadoutText = " ",
+            )
+            channel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
+            channel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `自己ベストラップのTTS利用不可を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                telemetryChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to true),
+                myBestLapReadoutText = null,
+            )
+            channel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
+            channel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `部品脱落の自由文言を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                damageChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                partDetachedReadoutText = "カスタム",
+            )
+            channel.send(noDamage())
+            channel.send(noDamage(partDetached = true))
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.PartDetached(resolvedText = "カスタム")), spokenTexts)
+        }
+
+    @Test
+    fun `部品脱落の空白文言を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                damageChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                partDetachedReadoutText = " ",
+            )
+            channel.send(noDamage())
+            channel.send(noDamage(partDetached = true))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `部品脱落のTTS利用不可を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                damageChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                partDetachedReadoutText = null,
+            )
+            channel.send(noDamage())
+            channel.send(noDamage(partDetached = true))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `タイヤ脱落の自由文言を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsTyreDetachedData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                tyreDetachedChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                tyreDetachedReadoutText = "カスタム",
+            )
+            channel.send(noTyreDetached())
+            channel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreDetached(resolvedText = "カスタム")), spokenTexts)
+        }
+
+    @Test
+    fun `タイヤ脱落の空白文言を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsTyreDetachedData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                tyreDetachedChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                tyreDetachedReadoutText = " ",
+            )
+            channel.send(noTyreDetached())
+            channel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `タイヤ脱落のTTS利用不可を判定時に解決する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsTyreDetachedData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                tyreDetachedChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
+                tyreDetachedReadoutText = null,
+            )
+            channel.send(noTyreDetached())
+            channel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
 
     @Test
@@ -1052,7 +1250,7 @@ class LmuWindowsNarratorViewModelTest {
             damageChannel.send(noDamage())
             damageChannel.send(noDamage(partDetached = true))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.PartDetached), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.PartDetached(resolvedText = "部品脱落")), spokenTexts)
         }
 
     @Test
@@ -1092,7 +1290,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreDetachedChannel.send(noTyreDetached())
             tyreDetachedChannel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreDetached), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreDetached(resolvedText = "タイヤ脱落")), spokenTexts)
         }
 
     @Test

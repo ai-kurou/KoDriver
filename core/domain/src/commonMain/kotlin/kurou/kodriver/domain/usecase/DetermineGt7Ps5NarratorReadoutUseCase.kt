@@ -4,7 +4,6 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.roundToInt
@@ -48,7 +47,6 @@ data class Gt7Ps5FuelTrackingState(
 /** GT7 向け読み上げ判定で参照するユーザー設定。 */
 data class Gt7Ps5NarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
-    val myBestLapVoiceType: MyBestLapVoiceType,
     val remainingFuelLapsThreshold: Int,
     val remainingFuelThresholdPercentage: Int,
     val tyreTemperatureHighThresholdCelsius: Celsius,
@@ -84,11 +82,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 
-        val event =
-            when (settings.myBestLapVoiceType) {
-                MyBestLapVoiceType.FORMAL -> SpeechEvent.Gt7Ps5MyBestLapFormal
-                MyBestLapVoiceType.CASUAL -> SpeechEvent.Gt7Ps5MyBestLapCasual
-            }
+        val event = SpeechEvent.Gt7Ps5MyBestLap(current)
         return Gt7Ps5NarratorReadoutDecision(
             state = stateWithCurrentBestLap.copy(personalBestMs = current),
             events = listOf(event),

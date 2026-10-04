@@ -22,8 +22,6 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_D
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
-import kurou.kodriver.domain.model.OVERHEAT_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -37,8 +35,6 @@ import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
@@ -132,8 +128,6 @@ internal data class PitTimingUseCases(
 
 internal data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
-    val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
-    val observeOverheatVoiceType: ObserveLmuWindowsOverheatVoiceTypeUseCase,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
@@ -217,16 +211,6 @@ internal class LmuWindowsNarratorViewModel(
         lmuTelemetryFlow
             .map { it.timing.currentLap }
             .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
-
-    private val voiceType =
-        narratorUseCases
-            .observeMyBestLapVoiceType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, MY_BEST_LAP_VOICE_TYPE_DEFAULT)
-
-    private val overheatVoiceType =
-        narratorUseCases
-            .observeOverheatVoiceType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, OVERHEAT_VOICE_TYPE_DEFAULT)
 
     private val vehicleClassFlow =
         selectedSimulator
@@ -678,8 +662,6 @@ internal class LmuWindowsNarratorViewModel(
         get() =
             LmuWindowsNarratorReadoutSettings(
                 enabledStates = mergedEnabledStates.value,
-                myBestLapVoiceType = voiceType.value,
-                overheatVoiceType = overheatVoiceType.value,
                 currentLap = currentLap.value,
                 skipFirstLap = skipFirstLap.value,
                 vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds.value,

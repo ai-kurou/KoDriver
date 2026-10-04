@@ -271,4 +271,160 @@ class LmuWindowsWavNarratorEngineTest {
             coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
             confirmVerified(soundPlayer)
         }
+
+    @Test
+    fun `オーバーヒートは解決済み文言が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
+        runTest {
+            val customEvents = mutableListOf<SpeechEvent>()
+            val engine =
+                WavNarratorEngine(
+                    soundPlayer = soundPlayer,
+                    resources =
+                        WavResources<SpeechEvent, ReadoutStartSoundType>(
+                            eventToFile = mapOf(SpeechEvent.Overheating() to "warning.wav"),
+                            startSoundTypeToFile = emptyMap(),
+                            resourceLoader = { byteArrayOf(1) },
+                            startSoundResourceLoader = { error("開始音は設定しない") },
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    isCustomSpeakEvent = {
+                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.Overheating
+                    },
+                    customSpeak = { event, _ -> customEvents += event },
+                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                )
+            runCurrent()
+            val narrator = LmuWindowsWavNarratorEngine(engine)
+            narrator.speak(SpeechEvent.Overheating())
+            runCurrent()
+            narrator.speak(SpeechEvent.Overheating("カスタム"))
+            runCurrent()
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.Overheating(),
+                    SpeechEvent.Overheating("カスタム"),
+                ),
+                customEvents,
+            )
+            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
+            confirmVerified(soundPlayer)
+        }
+
+    @Test
+    fun `自己ベストラップは解決済み文言が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
+        runTest {
+            val customEvents = mutableListOf<SpeechEvent>()
+            val engine =
+                WavNarratorEngine(
+                    soundPlayer = soundPlayer,
+                    resources =
+                        WavResources<SpeechEvent, ReadoutStartSoundType>(
+                            eventToFile = mapOf(SpeechEvent.LmuWindowsMyBestLap(83_456L) to "warning.wav"),
+                            startSoundTypeToFile = emptyMap(),
+                            resourceLoader = { byteArrayOf(1) },
+                            startSoundResourceLoader = { error("開始音は設定しない") },
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    isCustomSpeakEvent = {
+                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.LmuWindowsMyBestLap
+                    },
+                    customSpeak = { event, _ -> customEvents += event },
+                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                )
+            runCurrent()
+            val narrator = LmuWindowsWavNarratorEngine(engine)
+            narrator.speak(SpeechEvent.LmuWindowsMyBestLap(83_456L))
+            runCurrent()
+            narrator.speak(SpeechEvent.LmuWindowsMyBestLap(23_005L, "カスタム"))
+            runCurrent()
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.LmuWindowsMyBestLap(83_456L),
+                    SpeechEvent.LmuWindowsMyBestLap(23_005L, "カスタム"),
+                ),
+                customEvents,
+            )
+            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
+            confirmVerified(soundPlayer)
+        }
+
+    @Test
+    fun `部品脱落は解決済み文言が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
+        runTest {
+            val customEvents = mutableListOf<SpeechEvent>()
+            val engine =
+                WavNarratorEngine(
+                    soundPlayer = soundPlayer,
+                    resources =
+                        WavResources<SpeechEvent, ReadoutStartSoundType>(
+                            eventToFile = mapOf(SpeechEvent.PartDetached() to "warning.wav"),
+                            startSoundTypeToFile = emptyMap(),
+                            resourceLoader = { byteArrayOf(1) },
+                            startSoundResourceLoader = { error("開始音は設定しない") },
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    isCustomSpeakEvent = {
+                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.PartDetached
+                    },
+                    customSpeak = { event, _ -> customEvents += event },
+                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                )
+            runCurrent()
+            val narrator = LmuWindowsWavNarratorEngine(engine)
+            narrator.speak(SpeechEvent.PartDetached())
+            runCurrent()
+            narrator.speak(SpeechEvent.PartDetached("カスタム"))
+            runCurrent()
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.PartDetached(),
+                    SpeechEvent.PartDetached("カスタム"),
+                ),
+                customEvents,
+            )
+            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
+            confirmVerified(soundPlayer)
+        }
+
+    @Test
+    fun `タイヤ脱落は解決済み文言が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
+        runTest {
+            val customEvents = mutableListOf<SpeechEvent>()
+            val engine =
+                WavNarratorEngine(
+                    soundPlayer = soundPlayer,
+                    resources =
+                        WavResources<SpeechEvent, ReadoutStartSoundType>(
+                            eventToFile = mapOf(SpeechEvent.TyreDetached() to "warning.wav"),
+                            startSoundTypeToFile = emptyMap(),
+                            resourceLoader = { byteArrayOf(1) },
+                            startSoundResourceLoader = { error("開始音は設定しない") },
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    isCustomSpeakEvent = {
+                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.TyreDetached
+                    },
+                    customSpeak = { event, _ -> customEvents += event },
+                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                )
+            runCurrent()
+            val narrator = LmuWindowsWavNarratorEngine(engine)
+            narrator.speak(SpeechEvent.TyreDetached())
+            runCurrent()
+            narrator.speak(SpeechEvent.TyreDetached("カスタム"))
+            runCurrent()
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.TyreDetached(),
+                    SpeechEvent.TyreDetached("カスタム"),
+                ),
+                customEvents,
+            )
+            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
+            confirmVerified(soundPlayer)
+        }
 }

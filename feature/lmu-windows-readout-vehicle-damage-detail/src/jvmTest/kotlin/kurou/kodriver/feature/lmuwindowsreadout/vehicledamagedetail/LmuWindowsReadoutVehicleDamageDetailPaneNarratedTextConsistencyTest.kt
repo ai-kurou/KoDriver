@@ -2,37 +2,34 @@ package kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
 
-/**
- * [SpeechEvent.narratedText] は WAV と同じ内容を Chip 表示文言から複製したものであるため、
- * Chip側の文言変更を検知できるよう実際の表示テキストと突き合わせる（#1527）。
- */
+/** 既定文言とイベントの narratedText が一致することを確認する。 */
 class LmuWindowsReadoutVehicleDamageDetailPaneNarratedTextConsistencyTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `Chip表示文言がSpeechEventのnarratedTextと一致する`() {
+    fun `入力欄の既定文言がSpeechEventのnarratedTextと一致する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutVehicleDamageDetailPaneContent(
-                    uiState = LmuWindowsReadoutVehicleDamageDetailUiState(),
+                    uiState = LmuWindowsReadoutVehicleDamageDetailUiState(isTextToSpeechAvailable = true),
                 )
             }
         }
 
         listOf(
-            SpeechEvent.Overheating.narratedText,
-            SpeechEvent.OverheatingStandard.narratedText,
-            SpeechEvent.PartDetached.narratedText,
-            SpeechEvent.TyreDetached.narratedText,
+            SpeechEvent.Overheating().narratedText,
+            SpeechEvent.PartDetached().narratedText,
+            SpeechEvent.TyreDetached().narratedText,
         ).forEach { narratedText ->
-            rule.onAllNodesWithText(narratedText)[0].assertTextContains(narratedText, substring = true)
+            rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText, substring = true)
         }
     }
 }

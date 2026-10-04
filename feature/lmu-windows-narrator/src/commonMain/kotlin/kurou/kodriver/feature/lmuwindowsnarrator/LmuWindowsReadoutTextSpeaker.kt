@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.first
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
@@ -13,6 +14,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
@@ -27,15 +29,19 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
- * フラッグ・車両接近・ピットタイミング・バーチャルエナジー残量警告・タイヤ摩耗警告・ブレーキ過熱警告・タイヤ温度警告の自由文字列をOS標準TTSで読み上げる、
+ * フラッグ・車両接近・ピットタイミング・バーチャルエナジー残量警告・タイヤ摩耗警告・ブレーキ過熱警告・タイヤ温度警告・車両故障警告・自己ベストラップ更新の自由文字列をOS標準TTSで読み上げる、
  * [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine] 用のフック。
  * 空欄またはTTSが利用できない場合は本文を読み上げない。
  * イベントごとの文言取得とTTSの依存を明示する。
  *
  * 対象イベントと文言の対応:
+ * - [SpeechEvent.LmuWindowsMyBestLap] : 自己ベストラップ更新（`{laptime}` は更新後のタイム）
  * - [SpeechEvent.TyreOverheat] : タイヤ過熱警告（`{celsius}` は判定時の全輪の最高カーカス温度）
  * - [SpeechEvent.TyreCold] : タイヤ低温警告（`{celsius}` は判定時の全輪の最高カーカス温度）
  * - [SpeechEvent.YellowFlag] : セクターイエロー
@@ -47,6 +53,9 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [SpeechEvent.CarLeftSustained] : 左車両接近継続
  * - [SpeechEvent.CarRightSustained] : 右車両接近継続
  * - [SpeechEvent.RemainingVirtualEnergyWarning] : 設定した残量閾値の警告
+ * - [SpeechEvent.Overheating] : オーバーヒート
+ * - [SpeechEvent.PartDetached] : 部品脱落
+ * - [SpeechEvent.TyreDetached] : タイヤ脱落
  * - [SpeechEvent.BrakeOverheat] : 設定した温度閾値の警告
  * - [SpeechEvent.TyreWearWarning] : 設定した残存率閾値の警告
  * - [SpeechEvent.PitTimingWarning] : バーチャルエナジー・タイヤ摩耗由来のピットタイミング
@@ -72,6 +81,10 @@ internal class LmuWindowsReadoutTextSpeaker(
     private val observeTyreWearReadoutText: ObserveLmuWindowsTyreWearReadoutTextUseCase,
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase,
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase,
+    private val observeOverheatReadoutText: ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase,
+    private val observePartDetachedReadoutText: ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase,
+    private val observeTyreDetachedReadoutText: ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase,
+    private val observeMyBestLapReadoutText: ObserveLmuWindowsMyBestLapReadoutTextUseCase,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -127,6 +140,10 @@ internal class LmuWindowsReadoutTextSpeaker(
                 observeSustainedRightReadoutText().first()
             }
 
+            is SpeechEvent.LmuWindowsMyBestLap -> {
+                myBestLapText(event)
+            }
+
             is SpeechEvent.PitTimingWarning -> {
                 pitTimingText(event)
             }
@@ -160,9 +177,21 @@ internal class LmuWindowsReadoutTextSpeaker(
             }
 
             else -> {
-                null
+                vehicleDamageText(event)
             }
         }
+
+    private suspend fun vehicleDamageText(event: SpeechEvent): String? =
+        when (event) {
+            is SpeechEvent.Overheating -> event.resolvedText ?: observeOverheatReadoutText().first()
+            is SpeechEvent.PartDetached -> event.resolvedText ?: observePartDetachedReadoutText().first()
+            is SpeechEvent.TyreDetached -> event.resolvedText ?: observeTyreDetachedReadoutText().first()
+            else -> null
+        }
+
+    private suspend fun myBestLapText(event: SpeechEvent.LmuWindowsMyBestLap): String =
+        event.resolvedText
+            ?: formatLmuWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
 
     private suspend fun tyreTemperatureText(
         resolvedText: String?,

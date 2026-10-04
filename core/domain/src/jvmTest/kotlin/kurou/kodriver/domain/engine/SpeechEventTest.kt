@@ -40,11 +40,10 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `LMU車両故障系のnarratedTextはChipと同じ文言を返す`() {
-        assertEquals("GP2 GP2… ahhh!!!", SpeechEvent.Overheating.narratedText)
-        assertEquals("オーバーヒート", SpeechEvent.OverheatingStandard.narratedText)
-        assertEquals("部品脱落", SpeechEvent.PartDetached.narratedText)
-        assertEquals("タイヤ脱落", SpeechEvent.TyreDetached.narratedText)
+    fun `LMU車両故障系のnarratedTextは既定文言を返す`() {
+        assertEquals("オーバーヒート", SpeechEvent.Overheating().narratedText)
+        assertEquals("部品脱落", SpeechEvent.PartDetached().narratedText)
+        assertEquals("タイヤ脱落", SpeechEvent.TyreDetached().narratedText)
     }
 
     @Test
@@ -73,13 +72,27 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `自己ベストラップ系のnarratedTextはChipと同じ文言を返す`() {
-        assertEquals("自己ベストラップ更新", SpeechEvent.LmuWindowsMyBestLapFormal.narratedText)
-        assertEquals("ベストラップ", SpeechEvent.LmuWindowsMyBestLapCasual.narratedText)
-        assertEquals("自己ベストラップ更新", SpeechEvent.Gt7Ps5MyBestLapFormal.narratedText)
-        assertEquals("ベストラップ", SpeechEvent.Gt7Ps5MyBestLapCasual.narratedText)
+    fun `自己ベストラップ系はシミュレーターごとの既定文言を返す`() {
+        assertEquals("自己ベストラップ更新 1分23秒456", SpeechEvent.LmuWindowsMyBestLap(83_456L).narratedText)
+        assertEquals("自己ベストラップ更新 23秒005", SpeechEvent.LmuWindowsMyBestLap(23_005L, "カスタム").narratedText)
+        val gt7Event = SpeechEvent.Gt7Ps5MyBestLap(83_456)
+        assertEquals("自己ベストラップ更新 1分23秒456", gt7Event.narratedText)
+        assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, gt7Event.readoutItemKey)
+        assertEquals(83_456, gt7Event.lapTimeMs)
+        assertEquals("更新済み", gt7Event.copy(resolvedText = "更新済み").resolvedText)
+        assertEquals("自己ベストラップ更新 1分23秒456", gt7Event.copy(resolvedText = "更新済み").narratedText)
         assertEquals("自己ベストラップ更新", SpeechEvent.AceWindowsMyBestLapFormal.narratedText)
         assertEquals("ベストラップ", SpeechEvent.AceWindowsMyBestLapCasual.narratedText)
+    }
+
+    @Test
+    fun `LMU自己ベストラップはLongのタイムと解決文言を保持しRootキーを維持する`() {
+        val event = SpeechEvent.LmuWindowsMyBestLap(3_000_000_005L)
+        assertEquals(3_000_000_005L, event.lapTimeMs)
+        assertEquals(null, event.resolvedText)
+        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, event.readoutItemKey)
+        assertEquals("50000分0秒005", event.copy(resolvedText = "50000分0秒005").resolvedText)
+        assertEquals("自己ベストラップ更新 50000分0秒005", event.copy(resolvedText = "カスタム").narratedText)
     }
 
     @Test
@@ -223,5 +236,20 @@ class SpeechEventTest {
         assertEquals("タイヤ過熱 0度", event.narratedText)
         assertEquals(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root, event.readoutItemKey)
         assertEquals("設定文言", event.resolvedText)
+    }
+
+    @Test
+    fun `車両故障イベントは解決済み文言を保持し既定文言とRootキーを維持する`() {
+        val events =
+            listOf(
+                SpeechEvent.Overheating("カスタム"),
+                SpeechEvent.PartDetached("カスタム"),
+                SpeechEvent.TyreDetached("カスタム"),
+            )
+        assertEquals("カスタム", (events[0] as SpeechEvent.Overheating).resolvedText)
+        assertEquals("カスタム", (events[1] as SpeechEvent.PartDetached).resolvedText)
+        assertEquals("カスタム", (events[2] as SpeechEvent.TyreDetached).resolvedText)
+        assertEquals(listOf("オーバーヒート", "部品脱落", "タイヤ脱落"), events.map { it.narratedText })
+        events.forEach { assertEquals(ReadoutItemKey.LmuWindows.VehicleDamage.Root, it.readoutItemKey) }
     }
 }

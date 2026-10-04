@@ -202,4 +202,46 @@ class Gt7Ps5WavNarratorEngineTest {
             coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
             confirmVerified(soundPlayer)
         }
+
+    @Test
+    fun `自己ベストラップ更新は値が異なってもカスタム読み上げ対象でWAVにフォールバックしない`() =
+        runTest {
+            val customEvents = mutableListOf<SpeechEvent>()
+            val engine =
+                WavNarratorEngine(
+                    soundPlayer = soundPlayer,
+                    resources =
+                        WavResources<SpeechEvent, ReadoutStartSoundType>(
+                            eventToFile = mapOf(SpeechEvent.Gt7Ps5MyBestLap(83_456, "更新1分23秒456") to "warning.wav"),
+                            startSoundTypeToFile = emptyMap(),
+                            resourceLoader = { byteArrayOf(1) },
+                            startSoundResourceLoader = { error("開始音は設定しない") },
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    isCustomSpeakEvent = {
+                        it is SpeechEvent.Gt7Ps5MyBestLap
+                    },
+                    customSpeak = { event, _ -> customEvents += event },
+                    scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+                )
+            runCurrent()
+            val narrator = Gt7Ps5WavNarratorEngine(engine)
+            narrator.speak(SpeechEvent.Gt7Ps5MyBestLap(83_456, "更新1分23秒456"))
+            runCurrent()
+            narrator.speak(SpeechEvent.Gt7Ps5MyBestLap(59_000, "更新59秒000"))
+            runCurrent()
+            narrator.speak(SpeechEvent.Gt7Ps5MyBestLap(59_000, ""))
+            runCurrent()
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.Gt7Ps5MyBestLap(83_456, "更新1分23秒456"),
+                    SpeechEvent.Gt7Ps5MyBestLap(59_000, "更新59秒000"),
+                    SpeechEvent.Gt7Ps5MyBestLap(59_000, ""),
+                ),
+                customEvents,
+            )
+            coVerify(exactly = 0) { soundPlayer.play(byteArrayOf(1), 100) }
+            confirmVerified(soundPlayer)
+        }
 }
