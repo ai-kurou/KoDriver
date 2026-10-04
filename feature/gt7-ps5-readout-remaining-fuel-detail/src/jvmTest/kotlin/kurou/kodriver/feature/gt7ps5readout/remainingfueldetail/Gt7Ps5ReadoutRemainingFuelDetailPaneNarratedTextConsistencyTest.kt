@@ -10,7 +10,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 /**
- * UI の「燃料残量」表示と、試聴サンプルの残量を展開した TTS 記録文言を検証する。
+ * UI の文言入力欄ラベルと、試聴サンプルの残量を展開した TTS 記録文言を検証する。
  * 表示文言と音声の記録文言をそれぞれ検証する。
  */
 class Gt7Ps5ReadoutRemainingFuelDetailPaneNarratedTextConsistencyTest {
@@ -18,14 +18,14 @@ class Gt7Ps5ReadoutRemainingFuelDetailPaneNarratedTextConsistencyTest {
     val rule = createComposeRule()
 
     @Test
-    fun `Chipは燃料残量警告を表示し試聴文言にはサンプルの残量を含む`() {
+    fun `文言入力欄は燃料残量警告の文言を表示し試聴文言にはサンプルの残量を含む`() {
         rule.setContent {
             MaterialTheme {
                 Gt7Ps5ReadoutRemainingFuelDetailPaneContent()
             }
         }
 
-        rule.onNodeWithText("燃料残量警告").assertIsDisplayed()
+        rule.onNodeWithText("燃料残量警告の文言").assertIsDisplayed()
         assertEquals("燃料は残り30パーセント", SpeechEvent.Gt7Ps5RemainingFuelWarning(30).narratedText)
     }
 }
