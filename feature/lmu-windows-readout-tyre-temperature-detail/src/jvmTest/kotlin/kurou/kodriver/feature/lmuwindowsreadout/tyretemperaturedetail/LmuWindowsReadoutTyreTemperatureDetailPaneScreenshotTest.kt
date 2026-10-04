@@ -24,6 +24,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
                             LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                                 uiState =
                                     LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
                                         vehicleClassHighThresholdCelsius =
                                             lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
                                                 lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
@@ -49,6 +50,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
                             LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                                 uiState =
                                     LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
                                         overheatWarningEnabled = false,
                                         lowWarningEnabled = false,
                                         vehicleClassHighThresholdCelsius =
@@ -89,6 +91,114 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             TyreTemperatureLowWarningPhasesHelpSheetContent()
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `空白文言`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                        overheatReadoutText = "",
+                                        coldReadoutText = "",
+                                        vehicleClassHighThresholdCelsius =
+                                            lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
+                                                lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                                    vehicleClass,
+                                                ).value
+                                            },
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `TTS利用不可`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = false,
+                                        vehicleClassHighThresholdCelsius =
+                                            lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
+                                                lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                                    vehicleClass,
+                                                ).value
+                                            },
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `低温のみ空白文言`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                        coldReadoutText = "",
+                                        vehicleClassHighThresholdCelsius =
+                                            lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
+                                                lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                                    vehicleClass,
+                                                ).value
+                                            },
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `過熱のみ空白文言`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                                uiState =
+                                    LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        isTextToSpeechAvailable = true,
+                                        overheatReadoutText = "",
+                                        vehicleClassHighThresholdCelsius =
+                                            lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
+                                                lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                                    vehicleClass,
+                                                ).value
+                                            },
+                                    ),
+                            )
                         }
                     }
                 }

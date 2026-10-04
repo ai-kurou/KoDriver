@@ -332,11 +332,19 @@ internal class LmuWindowsNarratorEventProcessor(
         logContext: LmuWindowsTyreTemperatureLogContext,
     ) {
         events.forEach { event ->
-            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            val isCustomSpeakEvent = event is SpeechEvent.TyreOverheat || event is SpeechEvent.TyreCold
+            val text =
+                if (isCustomSpeakEvent) readoutText(event)?.takeIf { it.isNotBlank() } else event.narratedText
+            val narrationOutcome =
+                if (isCustomSpeakEvent && text.isNullOrBlank()) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    speakWithPriority(event.withResolvedText(text.orEmpty()), readoutOrder, queueEnabledStates)
+                }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
-                narratedText = event.narratedText,
+                narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
                 telemetryJson =
                     buildTelemetryLogJson(
@@ -386,9 +394,14 @@ internal class LmuWindowsNarratorEventProcessor(
         }
     }
 
-    /** 判定時に解決した文言を残量警告に持たせ、キュー待機中に設定が変わっても発話とログを一致させる。 */
+    /** 判定時に解決した文言を残量・タイヤ温度警告に持たせ、キュー待機中に設定が変わっても発話とログを一致させる。 */
     private fun SpeechEvent.withResolvedText(text: String): SpeechEvent =
-        if (this is SpeechEvent.RemainingVirtualEnergyWarning) copy(resolvedText = text) else this
+        when (this) {
+            is SpeechEvent.RemainingVirtualEnergyWarning -> copy(resolvedText = text)
+            is SpeechEvent.TyreOverheat -> copy(resolvedText = text)
+            is SpeechEvent.TyreCold -> copy(resolvedText = text)
+            else -> this
+        }
 
     /**
      * 読み上げの処理結果を返す。キュー追加・通常再生・割り込み再生・優先度負けによる読み上げなしの4種を

@@ -6,6 +6,8 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
@@ -16,6 +18,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 
 /**
  * 音声エンジンへ渡す読み上げイベント。
@@ -96,14 +99,36 @@ sealed interface SpeechEvent {
         override val narratedText = "タイヤ脱落"
     }
 
-    data object TyreOverheat : SpeechEvent {
+    /**
+     * タイヤ過熱警告。[celsius] は判定時の全輪の最高カーカス温度を整数に丸めた摂氏温度。
+     * [resolvedText] は判定時に解決済みの読み上げ文言。キュー待機中に設定が変わってもログと発話内容を一致させる。
+     */
+    data class TyreOverheat(
+        val celsius: Int,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
-        override val narratedText = "タイヤ過熱警告"
+        override val narratedText =
+            formatLmuWindowsTyreTemperatureReadoutText(
+                LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                celsius,
+            )
     }
 
-    data object TyreCold : SpeechEvent {
+    /**
+     * タイヤ低温警告。[celsius] は判定時の全輪の最高カーカス温度を整数に丸めた摂氏温度。
+     * [resolvedText] は判定時に解決済みの読み上げ文言。キュー待機中に設定が変わってもログと発話内容を一致させる。
+     */
+    data class TyreCold(
+        val celsius: Int,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
-        override val narratedText = "タイヤ低温警告"
+        override val narratedText =
+            formatLmuWindowsTyreTemperatureReadoutText(
+                LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT,
+                celsius,
+            )
     }
 
     data object TyreWearWarning : SpeechEvent {

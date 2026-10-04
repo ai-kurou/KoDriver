@@ -29,7 +29,9 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThre
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
@@ -77,9 +79,9 @@ import org.koin.dsl.module
  *   RemainingVirtualEnergyUseCases / PitTimingUseCases）、
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
- *   各フラッグ・車両接近・VE残量警告・VEピットタイミングの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
+ *   各フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミングの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
  *   および LmuWindowsReadoutTextSpeaker
- *   （フラッグ・車両接近・VE残量警告・VEピットタイミングの実際の読み上げ時に
+ *   （フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミングの実際の読み上げ時に
  *   自由文字列をOS標準TTSで読み上げるフック。WavNarratorEngine の customSpeak に渡す）。
  * 音声設定監視用の ObserveVoiceUseCase を提供し、VoicePreferencesRepository（:core:data）を消費する。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
@@ -195,6 +197,8 @@ val lmuWindowsNarratorModule: Module =
             ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase(get())
         }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase(get()) }
         factory {
             LmuWindowsReadoutTextSpeaker(
                 observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
@@ -210,6 +214,8 @@ val lmuWindowsNarratorModule: Module =
                 observePitTimingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
                 observePitTimingVirtualEnergyImminentReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeRemainingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeTyreOverheatReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeTyreColdReadoutText = get(named(Simulator.LmuWindows.id)),
                 checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )
@@ -233,7 +239,8 @@ val lmuWindowsNarratorModule: Module =
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
                     customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.RemainingVirtualEnergyWarning
+                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.RemainingVirtualEnergyWarning ||
+                            it is SpeechEvent.TyreOverheat || it is SpeechEvent.TyreCold
                     },
                     customSpeakEvents =
                         setOf(
@@ -259,8 +266,6 @@ private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
         put(SpeechEvent.TyreDetached, "files/tyre_detached.wav")
         put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
-        put(SpeechEvent.TyreOverheat, "files/tyre_overheat.wav")
-        put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         put(SpeechEvent.BrakeOverheat, "files/brake_overheat.wav")
     }

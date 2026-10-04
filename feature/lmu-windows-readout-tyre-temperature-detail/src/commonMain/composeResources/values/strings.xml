@@ -8,9 +8,7 @@
     <string name="tyre_temperature_threshold_help_icon_content_description">高温閾値の説明を表示</string>
     <string name="tyre_temperature_threshold_help_description">設定した温度以上になると過熱警告を読み上げます。一度警告を読み上げた後は、閾値より約5°C低い温度まで下がるまで再度読み上げません。温度が閾値付近で細かく上下しても連続して警告しないための制御です。</string>
     <string name="tyre_temperature_carcass_card_title">過熱警告</string>
-    <string name="tyre_temperature_overheat_warning_chip">タイヤ過熱警告</string>
     <string name="tyre_temperature_low_warning_card_title">低温警告</string>
-    <string name="tyre_temperature_low_warning_chip">タイヤ低温警告</string>
     <string name="tyre_temperature_low_warning_phases_subtitle">低温警告の対象フェーズ</string>
     <string name="tyre_temperature_low_warning_phases_help_icon_content_description">低温警告の対象フェーズの説明を表示</string>
     <string name="tyre_temperature_low_warning_phases_help_description">ガレージ・ウォームアップラップ・グリッドウォーク・フォーメーションラップのうち、選択したフェーズに切り替わった瞬間に、4輪のうち1輪でも60°C以下であれば低温警告を読み上げます。フェーズが変わらない間や、切り替わった時点で全輪が60°Cを超えている場合は読み上げません。</string>
@@ -18,4 +16,22 @@
     <string name="tyre_temperature_low_warning_phase_warm_up">ウォームアップラップ</string>
     <string name="tyre_temperature_low_warning_phase_grid_walk">グリッドウォーク</string>
     <string name="tyre_temperature_low_warning_phase_formation">フォーメーションラップ</string>
+    <string name="tyre_temperature_overheat_text_label">タイヤが過熱したときの文言</string>
+    <string name="tyre_temperature_overheat_text_preview">入力した文言を再生</string>
+    <string name="tyre_temperature_overheat_text_selected_icon">この文言を読み上げます</string>
+    <string name="tyre_temperature_overheat_text_supporting">空欄のままなら読み上げません</string>
+    <string name="tyre_temperature_overheat_text_unavailable">この端末では音声合成を利用できないため、読み上げません</string>
+    <string name="tyre_temperature_cold_text_label">タイヤが冷えているときの文言</string>
+    <string name="tyre_temperature_cold_text_preview">入力した文言を再生</string>
+    <string name="tyre_temperature_cold_text_selected_icon">この文言を読み上げます</string>
+    <string name="tyre_temperature_cold_text_supporting">空欄のままなら読み上げません</string>
+    <string name="tyre_temperature_cold_text_unavailable">この端末では音声合成を利用できないため、読み上げません</string>
+    <string name="tyre_temperature_overheat_text_reset">過熱警告の文言をデフォルトに戻す</string>
+    <string name="tyre_temperature_cold_text_reset">低温警告の文言をデフォルトに戻す</string>
+    <string name="tyre_temperature_overheat_celsius_insert">{celsius}を挿入</string>
+    <string name="tyre_temperature_overheat_celsius_placeholder_hint">{celsius} は警告時点で最も高温のタイヤのカーカス温度(℃)を整数に丸めた値に置き換わります</string>
+    <string name="tyre_temperature_overheat_text_unknown_placeholders">未対応のプレースホルダー %1$s はそのまま読み上げられます</string>
+    <string name="tyre_temperature_cold_celsius_insert">{celsius}を挿入</string>
+    <string name="tyre_temperature_cold_celsius_placeholder_hint">{celsius} は警告時点で最も高温のタイヤのカーカス温度(℃)を整数に丸めた値に置き換わります</string>
+    <string name="tyre_temperature_cold_text_unknown_placeholders">未対応のプレースホルダー %1$s はそのまま読み上げられます</string>
 </resources>
