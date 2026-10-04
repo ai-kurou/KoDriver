@@ -325,7 +325,9 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         telemetry: Gt7Ps5TelemetryData,
         thresholdPercentage: Int,
     ): Boolean =
-        telemetry.gasLevel > Gt7Ps5FuelUnit(0f) &&
+        telemetry.gasLevel.value.isFinite() &&
+            telemetry.gasCapacity.value.isFinite() &&
+            telemetry.gasLevel > Gt7Ps5FuelUnit(0f) &&
             telemetry.gasCapacity > Gt7Ps5FuelUnit(0f) &&
             telemetry.gasLevel.value * 100f <= thresholdPercentage * telemetry.gasCapacity.value
 

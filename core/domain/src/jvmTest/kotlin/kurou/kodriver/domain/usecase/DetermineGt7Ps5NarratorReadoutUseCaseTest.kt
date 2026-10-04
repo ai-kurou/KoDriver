@@ -862,6 +862,27 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `燃料残量と容量のどちらかが非有限なら燃料残量は読み上げない`() {
+        listOf(
+            Float.POSITIVE_INFINITY to Float.POSITIVE_INFINITY,
+            Float.POSITIVE_INFINITY to 100f,
+            20f to Float.POSITIVE_INFINITY,
+            Float.NaN to 100f,
+            20f to Float.NaN,
+        ).forEach { (gasLevel, gasCapacity) ->
+            val decision =
+                useCase.determineRemainingFuel(
+                    state = Gt7Ps5NarratorState(),
+                    telemetry = telemetry(gasLevel = gasLevel, gasCapacity = gasCapacity),
+                    settings = settings(),
+                )
+
+            assertTrue(decision.events.isEmpty())
+            assertEquals(false, decision.state.remainingFuelWarned)
+        }
+    }
+
+    @Test
     fun `タイヤ温度が高温閾値以上になると読み上げる`() {
         val decision =
             useCase.determineTyreTemperature(
