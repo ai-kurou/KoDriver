@@ -24,6 +24,7 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import org.junit.Rule
 import org.junit.Test
@@ -473,5 +474,54 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
         rule
             .onNode(hasSetTextAction() and hasText(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT))
             .assertExists()
+    }
+
+    @Test
+    fun `過熱文言が既定値と異なるとリセットボタンを表示しクリックで既定文言を保存する`() {
+        val overheatChanges = mutableListOf<String>()
+        val coldChanges = mutableListOf<String>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = "冷やして",
+                            coldReadoutText = "温めて",
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onOverheatReadoutTextChanged = { overheatChanges += it },
+                    onColdReadoutTextChanged = { coldChanges += it },
+                )
+            }
+        }
+        rule
+            .onNodeWithContentDescription("過熱警告の文言をデフォルトに戻す")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .assertIsEnabled()
+            .performClick()
+        assertEquals(listOf(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT), overheatChanges)
+        assertEquals(emptyList<String>(), coldChanges)
+        rule
+            .onNode(hasSetTextAction() and hasText(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT))
+            .assertExists()
+        rule.onNode(hasSetTextAction() and hasText("温めて")).assertExists()
+        rule.onNodeWithContentDescription("過熱警告の文言をデフォルトに戻す").assertIsNotEnabled()
+    }
+
+    @Test
+    fun `過熱文言が既定値と一致するとリセットボタンは無効になる`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            overheatReadoutText = LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                            isTextToSpeechAvailable = true,
+                        ),
+                )
+            }
+        }
+        rule.onNodeWithContentDescription("過熱警告の文言をデフォルトに戻す").assertIsNotEnabled()
     }
 }
