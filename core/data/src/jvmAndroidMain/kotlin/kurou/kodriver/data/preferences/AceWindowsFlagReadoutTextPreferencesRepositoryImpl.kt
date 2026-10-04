@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 
+@Suppress("TooManyFunctions")
 internal class AceWindowsFlagReadoutTextPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsFlagReadoutTextPreferences>,
 ) : AceWindowsFlagReadoutTextPreferencesRepository {
@@ -53,5 +54,18 @@ internal class AceWindowsFlagReadoutTextPreferencesRepositoryImpl(
 
     override suspend fun saveBlackWhiteFlagText(text: String) {
         dataStore.saveProperty(text) { prefs, value -> prefs.copy(blackWhiteFlagText = value) }
+    }
+
+    override fun observeOrangeCircleFlagText(): Flow<String> = dataStore.observeProperty { it.orangeCircleFlagText }
+
+    override suspend fun saveOrangeCircleFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(orangeCircleFlagText = value) }
+    }
+
+    override fun observeRedYellowStripesFlagText(): Flow<String> =
+        dataStore.observeProperty { it.redYellowStripesFlagText }
+
+    override suspend fun saveRedYellowStripesFlagText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(redYellowStripesFlagText = value) }
     }
 }

@@ -27,3 +27,7 @@ const val ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT = "ブルーフラッグ"
 const val ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT = "イエローフラッグ"
 const val ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT = "ブラックフラッグ"
 const val ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT = "ブラック・ホワイトフラッグ"
+
+/** ACE の固有フラッグ読み上げ文言の初期値。空白文言の場合は読み上げない。 */
+const val ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT = "オレンジボールフラッグ、車両に不具合があります"
+const val ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT = "レッド・イエローストライプフラッグ、路面が滑りやすいです"

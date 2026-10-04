@@ -10,7 +10,7 @@ internal data class AceWindowsReadoutFlagDetailUiState(
     val isTextToSpeechAvailable: Boolean = false,
 ) {
     /** [item] の読み上げ文言。未設定なら [FlagReadoutItem.defaultText]。 */
-    fun flagText(item: FlagReadoutItem): String = flagTexts[item] ?: item.defaultText.orEmpty()
+    fun flagText(item: FlagReadoutItem): String = flagTexts[item] ?: item.defaultText
 
     /** [item] に読み上げ文言があるか。 */
     fun hasReadoutText(item: FlagReadoutItem): Boolean = flagText(item).isNotBlank()

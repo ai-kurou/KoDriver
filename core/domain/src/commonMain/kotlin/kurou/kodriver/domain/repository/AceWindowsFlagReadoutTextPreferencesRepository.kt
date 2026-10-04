@@ -36,4 +36,12 @@ interface AceWindowsFlagReadoutTextPreferencesRepository {
     fun observeBlackWhiteFlagText(): Flow<String>
 
     suspend fun saveBlackWhiteFlagText(text: String)
+
+    fun observeOrangeCircleFlagText(): Flow<String>
+
+    suspend fun saveOrangeCircleFlagText(text: String)
+
+    fun observeRedYellowStripesFlagText(): Flow<String>
+
+    suspend fun saveRedYellowStripesFlagText(text: String)
 }

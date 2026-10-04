@@ -19,11 +19,12 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsBlackFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsBlackWhiteFlagReadoutTextUseCase
@@ -31,7 +32,9 @@ import kurou.kodriver.domain.usecase.SaveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsFlagEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsRedYellowStripesFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -61,6 +64,10 @@ internal data class FlagReadoutTextUseCases(
     val saveBlackFlag: SaveAceWindowsBlackFlagReadoutTextUseCase,
     val observeBlackWhiteFlag: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase,
     val saveBlackWhiteFlag: SaveAceWindowsBlackWhiteFlagReadoutTextUseCase,
+    val observeOrangeCircleFlag: ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase,
+    val saveOrangeCircleFlag: SaveAceWindowsOrangeCircleFlagReadoutTextUseCase,
+    val observeRedYellowStripesFlag: ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase,
+    val saveRedYellowStripesFlag: SaveAceWindowsRedYellowStripesFlagReadoutTextUseCase,
 ) {
     fun observe(item: FlagReadoutItem): Flow<String> =
         when (item) {
@@ -72,7 +79,8 @@ internal data class FlagReadoutTextUseCases(
             FlagReadoutItem.YellowFlag -> observeYellowFlag()
             FlagReadoutItem.BlackFlag -> observeBlackFlag()
             FlagReadoutItem.BlackWhiteFlag -> observeBlackWhiteFlag()
-            else -> flow { }
+            FlagReadoutItem.OrangeCircleFlag -> observeOrangeCircleFlag()
+            FlagReadoutItem.RedYellowStripesFlag -> observeRedYellowStripesFlag()
         }
 
     suspend fun save(
@@ -88,14 +96,14 @@ internal data class FlagReadoutTextUseCases(
             FlagReadoutItem.YellowFlag -> saveYellowFlag(text)
             FlagReadoutItem.BlackFlag -> saveBlackFlag(text)
             FlagReadoutItem.BlackWhiteFlag -> saveBlackWhiteFlag(text)
-            else -> Unit
+            FlagReadoutItem.OrangeCircleFlag -> saveOrangeCircleFlag(text)
+            FlagReadoutItem.RedYellowStripesFlag -> saveRedYellowStripesFlag(text)
         }
     }
 }
 
 internal class AceWindowsReadoutFlagDetailViewModel(
     private val settingsUseCases: FlagSettingsUseCases,
-    private val playSpeechEvent: PlaySpeechEventUseCase,
     private val speakText: SpeakTextUseCase,
     private val playStartSoundForKey: PlayStartSoundForKeyUseCase,
     checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
@@ -109,7 +117,7 @@ internal class AceWindowsReadoutFlagDetailViewModel(
         combine(
             settingsUseCases.observeFlagEnabledStates(),
             combine(
-                FlagReadoutItem.entries.filter { it.defaultText != null }.map { item ->
+                FlagReadoutItem.entries.map { item ->
                     settingsUseCases.readoutTexts.observe(item).map { item to it }
                 },
             ) {
@@ -135,17 +143,12 @@ internal class AceWindowsReadoutFlagDetailViewModel(
         item: FlagReadoutItem,
         text: String,
     ) {
-        if (item.defaultText == null) return
         viewModelScope.launch { settingsUseCases.readoutTexts.save(item, text) }
     }
 
     fun onFlagTextReset(item: FlagReadoutItem) {
-        val defaultText = item.defaultText ?: return
+        val defaultText = item.defaultText
         viewModelScope.launch { settingsUseCases.readoutTexts.save(item, defaultText) }
-    }
-
-    fun onPreviewClicked(item: FlagReadoutItem) {
-        item.previewEvent?.let { playSpeechEvent(it) }
     }
 
     /**

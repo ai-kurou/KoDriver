@@ -8,14 +8,16 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextU
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
  * ACE の保存した自由文言をOS標準TTSで読み上げる。空白・TTS利用不可なら読み上げない。
- * 対象イベント: Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite。
+ * 対象イベント: Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes。
  */
 @Suppress("LongParameterList")
 internal class AceWindowsReadoutTextSpeaker(
@@ -27,6 +29,8 @@ internal class AceWindowsReadoutTextSpeaker(
     private val observeYellowFlagReadoutText: ObserveAceWindowsYellowFlagReadoutTextUseCase,
     private val observeBlackFlagReadoutText: ObserveAceWindowsBlackFlagReadoutTextUseCase,
     private val observeBlackWhiteFlagReadoutText: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase,
+    private val observeOrangeCircleFlagReadoutText: ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase,
+    private val observeRedYellowStripesFlagReadoutText: ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -50,6 +54,8 @@ internal class AceWindowsReadoutTextSpeaker(
                 SpeechEvent.AceWindowsYellowFlag -> observeYellowFlagReadoutText().first()
                 SpeechEvent.AceWindowsBlackFlag -> observeBlackFlagReadoutText().first()
                 SpeechEvent.AceWindowsBlackWhiteFlag -> observeBlackWhiteFlagReadoutText().first()
+                SpeechEvent.AceWindowsOrangeCircleFlag -> observeOrangeCircleFlagReadoutText().first()
+                SpeechEvent.AceWindowsRedYellowStripesFlag -> observeRedYellowStripesFlagReadoutText().first()
                 else -> return null
             }
         return text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
@@ -66,6 +72,8 @@ internal fun isAceWindowsCustomSpeakEvent(event: SpeechEvent): Boolean =
         SpeechEvent.AceWindowsYellowFlag,
         SpeechEvent.AceWindowsBlackFlag,
         SpeechEvent.AceWindowsBlackWhiteFlag,
+        SpeechEvent.AceWindowsOrangeCircleFlag,
+        SpeechEvent.AceWindowsRedYellowStripesFlag,
         SpeechEvent.AceWindowsCheckeredFlag,
         -> true
 

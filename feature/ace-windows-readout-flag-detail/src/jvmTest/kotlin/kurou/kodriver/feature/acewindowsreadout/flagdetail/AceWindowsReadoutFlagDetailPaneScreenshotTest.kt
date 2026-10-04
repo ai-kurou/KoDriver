@@ -37,7 +37,7 @@ class AceWindowsReadoutFlagDetailPaneScreenshotTest {
         composeScreenshotTest {
             captureAceWindowsReadoutFlagDetailPane(
                 enabledStates = FlagReadoutItem.entries.associate { it.key to true },
-                flagTexts = FlagReadoutItem.entries.filter { it.defaultText != null }.associateWith { "編集済み" },
+                flagTexts = FlagReadoutItem.entries.associateWith { "編集済み" },
                 isTextToSpeechAvailable = false,
             )
         }
@@ -47,7 +47,7 @@ class AceWindowsReadoutFlagDetailPaneScreenshotTest {
         composeScreenshotTest {
             captureAceWindowsReadoutFlagDetailPane(
                 enabledStates = FlagReadoutItem.entries.associate { it.key to true },
-                flagTexts = FlagReadoutItem.entries.filter { it.defaultText != null }.associateWith { "" },
+                flagTexts = FlagReadoutItem.entries.associateWith { "" },
                 isTextToSpeechAvailable = true,
             )
         }
@@ -57,7 +57,7 @@ class AceWindowsReadoutFlagDetailPaneScreenshotTest {
         composeScreenshotTest {
             captureAceWindowsReadoutFlagDetailPane(
                 enabledStates = FlagReadoutItem.entries.associate { it.key to true },
-                flagTexts = FlagReadoutItem.entries.filter { it.defaultText != null }.associateWith { "チェッカー、完走" },
+                flagTexts = FlagReadoutItem.entries.associateWith { "チェッカー、完走" },
                 isTextToSpeechAvailable = true,
             )
         }
@@ -129,6 +129,26 @@ class AceWindowsReadoutFlagDetailPaneScreenshotTest {
                 enabledStates = FlagReadoutItem.entries.associate { it.key to true },
                 flagTexts = mapOf(FlagReadoutItem.BlackWhiteFlag to "編集済みBlackWhite"),
                 scrollToText = "編集済みBlackWhite",
+            )
+        }
+
+    @Test
+    fun `OrangeCircleの自由文言入力`() =
+        composeScreenshotTest {
+            captureAceWindowsReadoutFlagDetailPane(
+                enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+                flagTexts = mapOf(FlagReadoutItem.OrangeCircleFlag to "編集済みOrangeCircle"),
+                scrollToText = "編集済みOrangeCircle",
+            )
+        }
+
+    @Test
+    fun `RedYellowStripesの自由文言入力`() =
+        composeScreenshotTest {
+            captureAceWindowsReadoutFlagDetailPane(
+                enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+                flagTexts = mapOf(FlagReadoutItem.RedYellowStripesFlag to "編集済みRedYellowStripes"),
+                scrollToText = "編集済みRedYellowStripes",
             )
         }
 

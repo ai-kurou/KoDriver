@@ -498,6 +498,8 @@ class AceWindowsNarratorViewModelTest {
                 AceWindowsFlagType.YELLOW_FLAG,
                 AceWindowsFlagType.BLACK_FLAG,
                 AceWindowsFlagType.BLACK_WHITE_FLAG,
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG,
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG,
             ).forEach { type ->
                 flagChannel.send(flag(type))
             }
@@ -511,6 +513,8 @@ class AceWindowsNarratorViewModelTest {
                     SpeechEvent.AceWindowsYellowFlag,
                     SpeechEvent.AceWindowsBlackFlag,
                     SpeechEvent.AceWindowsBlackWhiteFlag,
+                    SpeechEvent.AceWindowsOrangeCircleFlag,
+                    SpeechEvent.AceWindowsRedYellowStripesFlag,
                 ),
                 spokenTexts,
             )
@@ -538,6 +542,8 @@ class AceWindowsNarratorViewModelTest {
                 AceWindowsFlagType.YELLOW_FLAG,
                 AceWindowsFlagType.BLACK_FLAG,
                 AceWindowsFlagType.BLACK_WHITE_FLAG,
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG,
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG,
             ).forEach { type ->
                 flagChannel.send(flag(type))
             }
@@ -563,6 +569,8 @@ class AceWindowsNarratorViewModelTest {
                         ReadoutItemKey.AceWindows.Flag.YellowFlag to false,
                         ReadoutItemKey.AceWindows.Flag.BlackFlag to false,
                         ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to false,
                     ),
             )
             createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
@@ -576,6 +584,8 @@ class AceWindowsNarratorViewModelTest {
                 AceWindowsFlagType.YELLOW_FLAG,
                 AceWindowsFlagType.BLACK_FLAG,
                 AceWindowsFlagType.BLACK_WHITE_FLAG,
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG,
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG,
             ).forEach { type ->
                 flagChannel.send(flag(type))
             }
