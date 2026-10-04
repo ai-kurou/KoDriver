@@ -5,38 +5,60 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveGt7Ps5MyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
+/**
+ * GT7 自己ベストラップアナウンス詳細設定の ViewModel。
+ *
+ * 自己ベストラップ更新の有効/無効・文言はいずれも DataStore に永続化される。
+ */
 internal data class MyBestLapUseCases(
-    val observeVoiceType: ObserveGt7Ps5MyBestLapVoiceTypeUseCase,
-    val saveVoiceType: SaveGt7Ps5MyBestLapVoiceTypeUseCase,
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
+internal data class MyBestLapReadoutUseCases(
+    val observeText: ObserveGt7Ps5MyBestLapReadoutTextUseCase,
+    val saveText: SaveGt7Ps5MyBestLapReadoutTextUseCase,
+    val speakText: SpeakTextUseCase,
+    val playStartSoundForKey: PlayStartSoundForKeyUseCase,
+    val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
 
 internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
     private val myBestLapUseCases: MyBestLapUseCases,
-    private val playSpeechEvent: PlaySpeechEventUseCase,
+    private val readout: MyBestLapReadoutUseCases,
 ) : ViewModel() {
+    private val textToSpeechAvailable =
+        flow { emit(readout.checkTextToSpeechAvailable()) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val uiState: StateFlow<Gt7Ps5ReadoutMyBestLapDetailUiState> =
         combine(
-            myBestLapUseCases.observeVoiceType(),
-            myBestLapUseCases.observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
-        ) { voiceType, enabledStates ->
+            myBestLapUseCases.observeEnabledStates(Simulator.Gt7Ps5.id),
+            readout.observeText(),
+            textToSpeechAvailable,
+        ) { states, text, available ->
             Gt7Ps5ReadoutMyBestLapDetailUiState(
-                voiceType = voiceType,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled),
+                enabled = states.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled),
+                readoutText = text,
+                isTextToSpeechAvailable = available,
             )
         }.stateIn(
             viewModelScope,
@@ -44,15 +66,9 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
             Gt7Ps5ReadoutMyBestLapDetailUiState(),
         )
 
-    fun onVoiceTypeChanged(type: MyBestLapVoiceType) {
-        viewModelScope.launch {
-            myBestLapUseCases.saveVoiceType(type)
-        }
-    }
-
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            myBestLapUseCases.saveReadoutEnabledState(
+            myBestLapUseCases.saveEnabledState(
                 Simulator.Gt7Ps5.id,
                 ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
                 enabled,
@@ -60,12 +76,23 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
         }
     }
 
-    fun onPreviewClicked(type: MyBestLapVoiceType) {
-        val event =
-            when (type) {
-                MyBestLapVoiceType.FORMAL -> SpeechEvent.Gt7Ps5MyBestLapFormal
-                MyBestLapVoiceType.CASUAL -> SpeechEvent.Gt7Ps5MyBestLapCasual
-            }
-        playSpeechEvent(event)
+    fun onReadoutTextChanged(text: String) {
+        viewModelScope.launch { readout.saveText(text) }
+    }
+
+    /** サンプルタイムに置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
+    fun onReadoutTextPreviewClicked(text: String) {
+        val formattedText = formatGt7Ps5MyBestLapReadoutText(text, 83_456)
+        previewText(formattedText)
+    }
+
+    private fun previewText(text: String) {
+        if (text.isBlank() || !textToSpeechAvailable.value) return
+        viewModelScope.launch {
+            val volume = readout.observeSoundVolume().first()
+            if (volume <= 0) return@launch
+            readout.playStartSoundForKey(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
+            readout.speakText(text, volume = volume)
+        }
     }
 }

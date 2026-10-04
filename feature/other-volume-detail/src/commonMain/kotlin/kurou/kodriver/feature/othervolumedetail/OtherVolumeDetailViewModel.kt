@@ -83,7 +83,9 @@ internal class OtherVolumeDetailViewModel(
     }
 
     fun onPreviewClicked() {
-        playSpeechEvent(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L))
+        // 保存済みの自己ベスト文言が空欄でも音量を確認できるよう、既定文言を解決済みとして再生する。
+        val sample = SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = PREVIEW_LAP_TIME_MS)
+        playSpeechEvent(sample.copy(resolvedText = sample.narratedText))
     }
 
     fun onDeviceVolumeChanged(volume: Int) {
@@ -92,5 +94,6 @@ internal class OtherVolumeDetailViewModel(
 
     private companion object {
         const val DEVICE_VOLUME_POLLING_INTERVAL_MS = 500L
+        const val PREVIEW_LAP_TIME_MS = 83_456L
     }
 }

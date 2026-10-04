@@ -348,7 +348,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `対象外のイベントは何も読み上げずカスタム文言を参照しない`() =
         runTest {
-            speaker(SpeechEvent.Gt7Ps5MyBestLapFormal, VOLUME)
+            speaker(SpeechEvent.Gt7Ps5MyBestLap(lapTimeMs = 83_456), VOLUME)
 
             confirmAllMocksVerified()
         }
@@ -722,7 +722,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `対象外イベントの文言はnullで読み上げない`() =
         runTest {
-            val events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal)
+            val events = listOf(SpeechEvent.Gt7Ps5MyBestLap(lapTimeMs = 83_456))
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))
                 speaker(event, VOLUME)

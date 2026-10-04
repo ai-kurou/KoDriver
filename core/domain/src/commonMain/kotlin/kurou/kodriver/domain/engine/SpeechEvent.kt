@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.engine
 
+import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5TyreTemperatureReadoutText
@@ -202,14 +204,14 @@ sealed interface SpeechEvent {
             formatLmuWindowsMyBestLapReadoutText(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
     }
 
-    data object Gt7Ps5MyBestLapFormal : SpeechEvent {
+    /** GT7 の更新後の自己ベストタイム。解決済み文言は判定時の発話・ログ内容を保持する。 */
+    data class Gt7Ps5MyBestLap(
+        val lapTimeMs: Int,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-        override val narratedText = "自己ベストラップ更新"
-    }
-
-    data object Gt7Ps5MyBestLapCasual : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-        override val narratedText = "ベストラップ"
+        override val narratedText =
+            formatGt7Ps5MyBestLapReadoutText(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
     }
 
     /**

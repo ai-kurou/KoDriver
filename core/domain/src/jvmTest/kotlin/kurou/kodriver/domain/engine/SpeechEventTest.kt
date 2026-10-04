@@ -60,11 +60,15 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `自己ベストラップ系のnarratedTextは既定文言を返す`() {
+    fun `自己ベストラップ系はシミュレーターごとの既定文言を返す`() {
         assertEquals("自己ベストラップ更新 1分23秒456", SpeechEvent.LmuWindowsMyBestLap(83_456L).narratedText)
         assertEquals("自己ベストラップ更新 23秒005", SpeechEvent.LmuWindowsMyBestLap(23_005L, "カスタム").narratedText)
-        assertEquals("自己ベストラップ更新", SpeechEvent.Gt7Ps5MyBestLapFormal.narratedText)
-        assertEquals("ベストラップ", SpeechEvent.Gt7Ps5MyBestLapCasual.narratedText)
+        val gt7Event = SpeechEvent.Gt7Ps5MyBestLap(83_456)
+        assertEquals("自己ベストラップ更新 1分23秒456", gt7Event.narratedText)
+        assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, gt7Event.readoutItemKey)
+        assertEquals(83_456, gt7Event.lapTimeMs)
+        assertEquals("更新済み", gt7Event.copy(resolvedText = "更新済み").resolvedText)
+        assertEquals("自己ベストラップ更新 1分23秒456", gt7Event.copy(resolvedText = "更新済み").narratedText)
         assertEquals("自己ベストラップ更新", SpeechEvent.AceWindowsMyBestLapFormal.narratedText)
         assertEquals("ベストラップ", SpeechEvent.AceWindowsMyBestLapCasual.narratedText)
     }
