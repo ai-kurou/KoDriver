@@ -1125,8 +1125,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `全輪の最高温度を整数に丸めて過熱イベントに渡す`() {
-        listOf(95.4f to 95, 107.5f to 108).forEach { (temperature, rounded) ->
-            (0..3).forEach { hotWheel ->
+        for ((temperature, rounded) in listOf(95.4f to 95, 107.5f to 108)) {
+            for (hotWheel in 0..3) {
                 val wheels = List(4) { CelsiusReading(if (it == hotWheel) temperature else 0f) }
                 val decision =
                     useCase.determineTyreTemperature(
