@@ -12,7 +12,6 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -96,7 +95,6 @@ private data class ApproachSideStatesResult(
 data class LmuWindowsNarratorReadoutSettings(
     @Serializable(with = ReadoutItemKeyMapSerializer::class)
     val enabledStates: Map<ReadoutItemKey, Boolean>,
-    val myBestLapVoiceType: MyBestLapVoiceType,
     val currentLap: Int,
     val skipFirstLap: Boolean,
     val vehicleApproachSustainedApproachDurationSeconds: Int,
@@ -153,11 +151,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 
-        val event =
-            when (settings.myBestLapVoiceType) {
-                MyBestLapVoiceType.FORMAL -> SpeechEvent.LmuWindowsMyBestLapFormal
-                MyBestLapVoiceType.CASUAL -> SpeechEvent.LmuWindowsMyBestLapCasual
-            }
+        val event = SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = current)
         return LmuWindowsNarratorReadoutDecision(
             state = stateWithCurrentBestLap.copy(personalBestMs = current),
             events = listOf(event),

@@ -173,7 +173,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.LmuWindowsMyBestLapFormal,
+                    SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L),
                     SpeechEvent.AceWindowsRemainingFuelLapsWarning(3),
                 )
             events.forEach { event ->

@@ -15,6 +15,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
@@ -59,6 +60,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
     private val observeOverheatReadoutText: ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase = mockk()
     private val observePartDetachedReadoutText: ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase = mockk()
     private val observeTyreDetachedReadoutText: ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase = mockk()
+    private val observeMyBestLapReadoutText: ObserveLmuWindowsMyBestLapReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -83,6 +85,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observeOverheatReadoutText,
             observePartDetachedReadoutText,
             observeTyreDetachedReadoutText,
+            observeMyBestLapReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -109,6 +112,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observeOverheatReadoutText,
             observePartDetachedReadoutText,
             observeTyreDetachedReadoutText,
+            observeMyBestLapReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )

@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="my_best_lap_description">自己ベストラップを更新したときに音声でお知らせします。</string>
+    <string name="my_best_lap_description">自己ベストラップを更新したときに音声でお知らせします。\n読み上げる文言は下の欄で設定できます。</string>
     <string name="my_best_lap_enabled">自己ベストラップ更新</string>
-    <string name="my_best_lap_voice_type_formal">自己ベストラップ更新</string>
-    <string name="my_best_lap_voice_type_casual">ベストラップ</string>
+    <string name="my_best_lap_text_reset_to_default">デフォルトに戻す</string>
+    <string name="my_best_lap_text_label">自己ベストラップ更新の文言</string>
+    <string name="my_best_lap_laptime_insert">{laptime}を挿入</string>
+    <string name="my_best_lap_laptime_placeholder_hint">{laptime} は更新後の自己ベストタイムに置き換わります（例: 1分23秒456）</string>
+    <string name="my_best_lap_text_supporting">空欄のままなら読み上げません</string>
+    <string name="my_best_lap_text_unavailable">この端末では音声合成を利用できないため、読み上げません</string>
+    <string name="my_best_lap_text_preview">入力した文言を再生</string>
+    <string name="my_best_lap_text_selected_icon">この文言を読み上げます</string>
+    <string name="my_best_lap_text_unknown_placeholders">%1$s は置き換えられません。{laptime} を使用してください</string>
 </resources>

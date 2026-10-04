@@ -1,10 +1,13 @@
 package kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail
 
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -12,24 +15,30 @@ import org.koin.dsl.module
 /**
  * LMU 自己ベストラップアナウンス詳細設定（lmu-windows-readout-my-best-lap-detail feature）の Koin モジュール。
  *
- * 提供: LmuWindowsReadoutMyBestLapDetailViewModel と、それが使うドメイン UseCase。
- * 消費（get で解決）: LmuWindowsMyBestLapPreferencesRepository（:core:data）、ReadoutPreferencesRepository（:core:data）、
- *   試聴用の named(Simulator.LmuWindows.id) の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
+ * 提供: LmuWindowsReadoutMyBestLapDetailViewModel。自己ベストラップ更新の有効/無効・文言の永続化用 UseCase を解決する。
+ * 試聴は lmu-windows-narrator が提供する LMU 修飾子付き PlayStartSoundForKeyUseCase・SpeakTextUseCase を利用する。
  */
 val lmuWindowsReadoutMyBestLapDetailModule =
     module {
-        // ViewModel（get(named(Simulator.LmuWindows.id)) は narrator モジュールの TextToSpeechEngine を解決）
         viewModel {
-            LmuWindowsReadoutMyBestLapDetailViewModel(
-                get(),
-                get(named(Simulator.LmuWindows.id)),
-            )
+            LmuWindowsReadoutMyBestLapDetailViewModel(get(), get())
         }
 
-        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-        factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
-        factory { SaveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
-        factory { ObserveReadoutEnabledStatesUseCase(get()) }
-        factory { SaveReadoutEnabledStateUseCase(get()) }
-        factory { MyBestLapUseCases(get(), get(), get(), get()) }
+        factory {
+            MyBestLapReadoutUseCases(
+                get(),
+                get(),
+                get(named(Simulator.LmuWindows.id)),
+                get(named(Simulator.LmuWindows.id)),
+                get(),
+                get(),
+            )
+        }
+        factoryOf(::ObserveLmuWindowsMyBestLapReadoutTextUseCase)
+        factoryOf(::SaveLmuWindowsMyBestLapReadoutTextUseCase)
+        factoryOf(::CheckTextToSpeechAvailableUseCase)
+        factoryOf(::ObserveSoundVolumeUseCase)
+        factory { MyBestLapUseCases(get(), get()) }
+        factoryOf(::ObserveReadoutEnabledStatesUseCase)
+        factoryOf(::SaveReadoutEnabledStateUseCase)
     }

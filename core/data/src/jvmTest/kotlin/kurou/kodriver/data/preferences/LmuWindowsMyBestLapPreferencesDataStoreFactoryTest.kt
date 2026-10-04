@@ -19,7 +19,7 @@ class LmuWindowsMyBestLapPreferencesDataStoreFactoryTest {
     fun `LMU自己ベストラップ設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createLmuWindowsMyBestLapPreferencesDataStore(tempDir.absolutePath)
-            dataStore.updateData { it.copy(voiceType = "casual") }
+            dataStore.updateData { it.copy(lmuWindowsReadoutText = "更新{laptime}") }
 
             assertTrue(tempDir.resolve("lmu_windows_my_best_lap_preferences.pb").exists())
         }

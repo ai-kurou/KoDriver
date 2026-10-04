@@ -1,10 +1,10 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 
-class SaveLmuWindowsMyBestLapVoiceTypeUseCase(
+class ObserveLmuWindowsMyBestLapReadoutTextUseCase(
     private val repository: LmuWindowsMyBestLapPreferencesRepository,
 ) {
-    suspend operator fun invoke(type: MyBestLapVoiceType) = repository.saveVoiceType(type)
+    operator fun invoke(): Flow<String> = repository.observeReadoutText()
 }

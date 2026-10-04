@@ -16,3 +16,5 @@
 
 ![Module Graph](../../docs/graphs/core-data.svg)
 <!-- MODULE-GRAPH-END -->
+
+LMU自己ベストラップの自由文言は、共有 `MyBestLapPreferences` のLMU専用 `@ProtoNumber(3) lmuWindowsReadoutText` に保存する。既定値は「自己ベストラップ更新 {laptime}」。GT7用のフィールド番号2は予約し、既存の番号1 `voiceType` はGT7/ACEと旧データの互換性のため維持する。LMUは口調を読み取らず、旧口調設定の移行は行わない。シミュレーターごとにDataStoreファイルが分かれているため文言は混在しない。

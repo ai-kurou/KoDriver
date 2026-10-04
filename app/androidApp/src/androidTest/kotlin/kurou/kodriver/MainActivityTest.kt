@@ -93,7 +93,10 @@ class MainActivityTest {
             "車両故障",
             "車両の故障状況を音声でお知らせします。\n読み上げる文言は下の欄で設定できます。",
         )
-        clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
+        clickItemAndVerifyDescription(
+            "自己ベストラップ",
+            "自己ベストラップを更新したときに音声でお知らせします。\n読み上げる文言は下の欄で設定できます。",
+        )
     }
 
     @Test
