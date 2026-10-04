@@ -415,21 +415,21 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `入力文言を置換せず開始音の後に試聴する`() =
+    fun `代表温度を置換して未知のトークンを維持し開始音の後に試聴する`() =
         runTest {
             stubSettings()
             stubReadout(available = true)
             every { observeVolume() } returns flowOf(60)
             coEvery { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) } returns Unit
-            coEvery { speakText("注意{percent}", volume = 60) } returns Unit
+            coEvery { speakText("注意100℃{unknown}", volume = 60) } returns Unit
             val viewModel = createViewModel()
-            viewModel.onOverheatReadoutTextPreviewClicked("注意{percent}")
+            viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}")
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
-            coVerify(exactly = 1) { speakText("注意{percent}", volume = 60) }
+            coVerify(exactly = 1) { speakText("注意100℃{unknown}", volume = 60) }
             coVerifyOrder {
                 playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
-                speakText("注意{percent}", volume = 60)
+                speakText("注意100℃{unknown}", volume = 60)
             }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -496,21 +496,21 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `低温 入力文言を置換せず開始音の後に試聴する`() =
+    fun `低温 代表温度を置換して未知のトークンを維持し開始音の後に試聴する`() =
         runTest {
             stubSettings()
             stubReadout(available = true)
             every { observeVolume() } returns flowOf(60)
             coEvery { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) } returns Unit
-            coEvery { speakText("注意{percent}", volume = 60) } returns Unit
+            coEvery { speakText("注意60℃{unknown}", volume = 60) } returns Unit
             val viewModel = createViewModel()
-            viewModel.onLowWarningPreviewClicked("注意{percent}")
+            viewModel.onLowWarningPreviewClicked("注意{celsius}℃{unknown}")
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
-            coVerify(exactly = 1) { speakText("注意{percent}", volume = 60) }
+            coVerify(exactly = 1) { speakText("注意60℃{unknown}", volume = 60) }
             coVerifyOrder {
                 playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
-                speakText("注意{percent}", volume = 60)
+                speakText("注意60℃{unknown}", volume = 60)
             }
             confirmVerified(observeVolume, playStartSound, speakText)
         }

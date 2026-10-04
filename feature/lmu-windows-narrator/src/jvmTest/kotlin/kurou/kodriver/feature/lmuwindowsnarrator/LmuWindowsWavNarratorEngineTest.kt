@@ -135,24 +135,24 @@ class LmuWindowsWavNarratorEngineTest {
                     soundPlayer = soundPlayer,
                     resources =
                         WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.TyreOverheat to "warning.wav"),
+                            eventToFile = mapOf(SpeechEvent.TyreOverheat(100) to "warning.wav"),
                             startSoundTypeToFile = emptyMap(),
                             resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
-                    customSpeakEvents = setOf(SpeechEvent.TyreOverheat),
+                    isCustomSpeakEvent = { it is SpeechEvent.TyreOverheat },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsWavNarratorEngine(engine)
-            narrator.speak(SpeechEvent.TyreOverheat)
+            narrator.speak(SpeechEvent.TyreOverheat(100))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.TyreOverheat,
+                    SpeechEvent.TyreOverheat(100),
                 ),
                 customEvents,
             )
@@ -169,24 +169,24 @@ class LmuWindowsWavNarratorEngineTest {
                     soundPlayer = soundPlayer,
                     resources =
                         WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.TyreCold to "warning.wav"),
+                            eventToFile = mapOf(SpeechEvent.TyreCold(60) to "warning.wav"),
                             startSoundTypeToFile = emptyMap(),
                             resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
-                    customSpeakEvents = setOf(SpeechEvent.TyreCold),
+                    isCustomSpeakEvent = { it is SpeechEvent.TyreCold },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsWavNarratorEngine(engine)
-            narrator.speak(SpeechEvent.TyreCold)
+            narrator.speak(SpeechEvent.TyreCold(60))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.TyreCold,
+                    SpeechEvent.TyreCold(60),
                 ),
                 customEvents,
             )
