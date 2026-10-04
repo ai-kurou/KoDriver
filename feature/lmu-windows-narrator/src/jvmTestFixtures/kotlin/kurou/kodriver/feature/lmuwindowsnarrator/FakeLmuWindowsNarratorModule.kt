@@ -15,6 +15,9 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READ
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_SELECTED_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -166,6 +169,30 @@ class FakeLmuWindowsVehicleDamagePreferencesRepository : LmuWindowsVehicleDamage
         key: ReadoutItemKey,
         enabled: Boolean,
     ) = Unit
+
+    private val overheatText = MutableStateFlow(LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT)
+
+    override fun observeOverheatReadoutText(): Flow<String> = overheatText
+
+    override suspend fun saveOverheatReadoutText(text: String) {
+        overheatText.update { text }
+    }
+
+    private val partDetachedText = MutableStateFlow(LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT)
+
+    override fun observePartDetachedReadoutText(): Flow<String> = partDetachedText
+
+    override suspend fun savePartDetachedReadoutText(text: String) {
+        partDetachedText.update { text }
+    }
+
+    private val tyreDetachedText = MutableStateFlow(LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT)
+
+    override fun observeTyreDetachedReadoutText(): Flow<String> = tyreDetachedText
+
+    override suspend fun saveTyreDetachedReadoutText(text: String) {
+        tyreDetachedText.update { text }
+    }
 }
 
 class FakeLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository {

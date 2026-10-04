@@ -30,6 +30,9 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartLeftRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLeftReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -57,6 +60,9 @@ class LmuWindowsReadoutTextSpeakerTest {
     private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase = mockk()
+    private val observeOverheatReadoutText: ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase = mockk()
+    private val observePartDetachedReadoutText: ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase = mockk()
+    private val observeTyreDetachedReadoutText: ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -78,6 +84,9 @@ class LmuWindowsReadoutTextSpeakerTest {
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
+            observeOverheatReadoutText,
+            observePartDetachedReadoutText,
+            observeTyreDetachedReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -324,6 +333,9 @@ class LmuWindowsReadoutTextSpeakerTest {
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
+            observeOverheatReadoutText,
+            observePartDetachedReadoutText,
+            observeTyreDetachedReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -332,7 +344,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `対象外のイベントは何も読み上げずカスタム文言を参照しない`() =
         runTest {
-            speaker(SpeechEvent.Overheating, VOLUME)
+            speaker(SpeechEvent.LmuWindowsMyBestLapFormal, VOLUME)
 
             confirmAllMocksVerified()
         }
@@ -706,7 +718,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `対象外イベントの文言はnullで読み上げない`() =
         runTest {
-            val events = listOf(SpeechEvent.Overheating)
+            val events = listOf(SpeechEvent.LmuWindowsMyBestLapFormal)
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))
                 speaker(event, VOLUME)
@@ -812,4 +824,190 @@ class LmuWindowsReadoutTextSpeakerTest {
     private companion object {
         const val VOLUME = 40
     }
+
+    @Test
+    fun `オーバーヒートは保存した自由文言をそのまま読み上げる`() =
+        runTest {
+            every { observeOverheatReadoutText() } returns flowOf("自由文言{literal}")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("自由文言{literal}", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.Overheating(), VOLUME)
+            verify(exactly = 1) { observeOverheatReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("自由文言{literal}", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `オーバーヒートは解決済みの文言があれば設定を再取得せずその文言を読み上げる`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("解決済み", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.Overheating(resolvedText = "解決済み"), VOLUME)
+            verify(exactly = 0) { observeOverheatReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `オーバーヒートの空白文言ではTTSを確認せず読み上げない`() =
+        runTest {
+            every { observeOverheatReadoutText() } returns flowOf(" ")
+            assertNull(speaker.readoutText(SpeechEvent.Overheating()))
+            speaker(SpeechEvent.Overheating(), VOLUME)
+            verify(exactly = 2) { observeOverheatReadoutText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `オーバーヒートのTTS利用不可では読み上げ文言を返さず読み上げない`() =
+        runTest {
+            every { observeOverheatReadoutText() } returns flowOf("自由文言")
+            coEvery { checkTextToSpeechAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.Overheating()))
+            speaker(SpeechEvent.Overheating(), VOLUME)
+            verify(exactly = 2) { observeOverheatReadoutText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText("自由文言", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `オーバーヒートの解決済み空白文言は既定文言へ戻さず読み上げない`() =
+        runTest {
+            val event = SpeechEvent.Overheating(resolvedText = " ")
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+            verify(exactly = 0) { observeOverheatReadoutText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `部品脱落は保存した自由文言をそのまま読み上げる`() =
+        runTest {
+            every { observePartDetachedReadoutText() } returns flowOf("自由文言{literal}")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("自由文言{literal}", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.PartDetached(), VOLUME)
+            verify(exactly = 1) { observePartDetachedReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("自由文言{literal}", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `部品脱落は解決済みの文言があれば設定を再取得せずその文言を読み上げる`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("解決済み", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.PartDetached(resolvedText = "解決済み"), VOLUME)
+            verify(exactly = 0) { observePartDetachedReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `部品脱落の空白文言ではTTSを確認せず読み上げない`() =
+        runTest {
+            every { observePartDetachedReadoutText() } returns flowOf(" ")
+            assertNull(speaker.readoutText(SpeechEvent.PartDetached()))
+            speaker(SpeechEvent.PartDetached(), VOLUME)
+            verify(exactly = 2) { observePartDetachedReadoutText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `部品脱落のTTS利用不可では読み上げ文言を返さず読み上げない`() =
+        runTest {
+            every { observePartDetachedReadoutText() } returns flowOf("自由文言")
+            coEvery { checkTextToSpeechAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.PartDetached()))
+            speaker(SpeechEvent.PartDetached(), VOLUME)
+            verify(exactly = 2) { observePartDetachedReadoutText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText("自由文言", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `部品脱落の解決済み空白文言は既定文言へ戻さず読み上げない`() =
+        runTest {
+            val event = SpeechEvent.PartDetached(resolvedText = " ")
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+            verify(exactly = 0) { observePartDetachedReadoutText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `タイヤ脱落は保存した自由文言をそのまま読み上げる`() =
+        runTest {
+            every { observeTyreDetachedReadoutText() } returns flowOf("自由文言{literal}")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("自由文言{literal}", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.TyreDetached(), VOLUME)
+            verify(exactly = 1) { observeTyreDetachedReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("自由文言{literal}", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `タイヤ脱落は解決済みの文言があれば設定を再取得せずその文言を読み上げる`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("解決済み", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.TyreDetached(resolvedText = "解決済み"), VOLUME)
+            verify(exactly = 0) { observeTyreDetachedReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `タイヤ脱落の空白文言ではTTSを確認せず読み上げない`() =
+        runTest {
+            every { observeTyreDetachedReadoutText() } returns flowOf(" ")
+            assertNull(speaker.readoutText(SpeechEvent.TyreDetached()))
+            speaker(SpeechEvent.TyreDetached(), VOLUME)
+            verify(exactly = 2) { observeTyreDetachedReadoutText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `タイヤ脱落のTTS利用不可では読み上げ文言を返さず読み上げない`() =
+        runTest {
+            every { observeTyreDetachedReadoutText() } returns flowOf("自由文言")
+            coEvery { checkTextToSpeechAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.TyreDetached()))
+            speaker(SpeechEvent.TyreDetached(), VOLUME)
+            verify(exactly = 2) { observeTyreDetachedReadoutText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText("自由文言", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `タイヤ脱落の解決済み空白文言は既定文言へ戻さず読み上げない`() =
+        runTest {
+            val event = SpeechEvent.TyreDetached(resolvedText = " ")
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+            verify(exactly = 0) { observeTyreDetachedReadoutText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
 }

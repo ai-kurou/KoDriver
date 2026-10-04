@@ -13,15 +13,43 @@ import org.junit.Test
 
 class LmuWindowsReadoutVehicleDamageDetailPaneScreenshotTest {
     @Test
-    fun `デフォルト`() =
+    fun `デフォルト`() = capture(LmuWindowsReadoutVehicleDamageDetailUiState(isTextToSpeechAvailable = true))
+
+    @Test
+    fun `空白文言`() =
+        capture(
+            LmuWindowsReadoutVehicleDamageDetailUiState(
+                overheatReadoutText = "",
+                partDetachedReadoutText = "",
+                tyreDetachedReadoutText = "",
+                isTextToSpeechAvailable = true,
+            ),
+        )
+
+    @Test
+    fun `カスタム文言とスイッチOFF`() =
+        capture(
+            LmuWindowsReadoutVehicleDamageDetailUiState(
+                overheatEnabled = false,
+                partDetachedEnabled = false,
+                tyreDetachedEnabled = false,
+                overheatReadoutText = "エンジンが過熱しています",
+                partDetachedReadoutText = "パーツが外れました",
+                tyreDetachedReadoutText = "ホイールが外れました",
+                isTextToSpeechAvailable = true,
+            ),
+        )
+
+    @Test
+    fun `TTS利用不可`() = capture(LmuWindowsReadoutVehicleDamageDetailUiState())
+
+    private fun capture(state: LmuWindowsReadoutVehicleDamageDetailUiState) =
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            LmuWindowsReadoutVehicleDamageDetailPaneContent(
-                                uiState = LmuWindowsReadoutVehicleDamageDetailUiState(),
-                            )
+                            LmuWindowsReadoutVehicleDamageDetailPaneContent(uiState = state)
                         }
                     }
                 }

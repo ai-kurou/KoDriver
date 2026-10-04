@@ -15,7 +15,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsOverheatVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
@@ -49,6 +48,9 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatu
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -116,7 +118,7 @@ val lmuWindowsNarratorModule: Module =
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { ObserveVoiceUseCase(get()) }
-        factory { NarratorUseCases(get(), get(), get()) }
+        factory { NarratorUseCases(get(), get()) }
         factory { FlagUseCases(get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get()) }
         factory { VehicleDamageUseCases(get(), get()) }
@@ -141,7 +143,6 @@ val lmuWindowsNarratorModule: Module =
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
         factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
-        factory { ObserveLmuWindowsOverheatVoiceTypeUseCase(get()) }
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
         factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
@@ -203,6 +204,9 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase(get()) }
         factory {
             LmuWindowsReadoutTextSpeaker(
                 observeSectorYellowFlagReadoutText = get(named(Simulator.LmuWindows.id)),
@@ -222,6 +226,9 @@ val lmuWindowsNarratorModule: Module =
                 observeTyreWearReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreOverheatReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreColdReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeOverheatReadoutText = get(named(Simulator.LmuWindows.id)),
+                observePartDetachedReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeTyreDetachedReadoutText = get(named(Simulator.LmuWindows.id)),
                 checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )
@@ -247,7 +254,9 @@ val lmuWindowsNarratorModule: Module =
                     isCustomSpeakEvent = {
                         it is SpeechEvent.PitTimingWarning || it is SpeechEvent.RemainingVirtualEnergyWarning ||
                             it is SpeechEvent.TyreWearWarning || it is SpeechEvent.BrakeOverheat ||
-                            it is SpeechEvent.TyreOverheat || it is SpeechEvent.TyreCold
+                            it is SpeechEvent.TyreOverheat || it is SpeechEvent.TyreCold ||
+                            it is SpeechEvent.Overheating || it is SpeechEvent.PartDetached ||
+                            it is SpeechEvent.TyreDetached
                     },
                     customSpeakEvents =
                         setOf(
@@ -267,10 +276,6 @@ val lmuWindowsNarratorModule: Module =
 
 private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
     buildMap {
-        put(SpeechEvent.Overheating, "files/gp2_gp2.wav")
-        put(SpeechEvent.OverheatingStandard, "files/overheat.wav")
-        put(SpeechEvent.PartDetached, "files/part_detached.wav")
-        put(SpeechEvent.TyreDetached, "files/tyre_detached.wav")
         put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
     }

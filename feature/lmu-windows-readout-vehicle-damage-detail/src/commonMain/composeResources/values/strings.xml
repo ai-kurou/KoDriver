@@ -1,11 +1,13 @@
 <resources>
     <string name="vehicle_damage_title">車両故障</string>
-    <string name="vehicle_damage_description">車両の故障状況を音声でお知らせします。</string>
+    <string name="vehicle_damage_description">車両の故障状況を音声でお知らせします。\n読み上げる文言は下の欄で設定できます。</string>
     <string name="vehicle_damage_overheat_switch_label">オーバーヒート</string>
-    <string name="vehicle_damage_overheat_gp2_gp2_chip_label">GP2 GP2… ahhh!!!</string>
-    <string name="vehicle_damage_overheat_standard_chip_label">オーバーヒート</string>
     <string name="vehicle_damage_part_detached_switch_label">部品脱落（ホイール除く）</string>
-    <string name="vehicle_damage_part_detached_chip_label">部品脱落</string>
     <string name="vehicle_damage_tyre_detached_switch_label">タイヤ脱落</string>
-    <string name="vehicle_damage_tyre_detached_chip_label">タイヤ脱落</string>
+    <string name="vehicle_damage_text_label">読み上げ文言</string>
+    <string name="vehicle_damage_text_reset_to_default">デフォルトに戻す</string>
+    <string name="vehicle_damage_text_unavailable">この端末では音声合成を利用できないため、読み上げません</string>
+    <string name="vehicle_damage_text_supporting">空欄のままなら読み上げません</string>
+    <string name="vehicle_damage_text_preview">入力した文言を再生</string>
+    <string name="vehicle_damage_text_selected_icon">この文言を読み上げます</string>
 </resources>

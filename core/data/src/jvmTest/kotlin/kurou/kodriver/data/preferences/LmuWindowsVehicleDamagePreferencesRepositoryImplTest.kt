@@ -72,4 +72,55 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
                 repository.observeEnabledStates().first(),
             )
         }
+
+    @Test
+    fun `オーバーヒート文言を保存しても他の文言とスイッチは維持される`() =
+        runTest {
+            assertEquals("オーバーヒート", repository.observeOverheatReadoutText().first())
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+            listOf("自由文言", "", " ").forEach { text ->
+                repository.saveOverheatReadoutText(text)
+                assertEquals(text, repository.observeOverheatReadoutText().first())
+                assertEquals(
+                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
+                    repository.observeEnabledStates().first(),
+                )
+                assertEquals("部品脱落", repository.observePartDetachedReadoutText().first())
+                assertEquals("タイヤ脱落", repository.observeTyreDetachedReadoutText().first())
+            }
+        }
+
+    @Test
+    fun `部品脱落文言を保存しても他の文言とスイッチは維持される`() =
+        runTest {
+            assertEquals("部品脱落", repository.observePartDetachedReadoutText().first())
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+            listOf("自由文言", "", " ").forEach { text ->
+                repository.savePartDetachedReadoutText(text)
+                assertEquals(text, repository.observePartDetachedReadoutText().first())
+                assertEquals(
+                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
+                    repository.observeEnabledStates().first(),
+                )
+                assertEquals("オーバーヒート", repository.observeOverheatReadoutText().first())
+                assertEquals("タイヤ脱落", repository.observeTyreDetachedReadoutText().first())
+            }
+        }
+
+    @Test
+    fun `タイヤ脱落文言を保存しても他の文言とスイッチは維持される`() =
+        runTest {
+            assertEquals("タイヤ脱落", repository.observeTyreDetachedReadoutText().first())
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+            listOf("自由文言", "", " ").forEach { text ->
+                repository.saveTyreDetachedReadoutText(text)
+                assertEquals(text, repository.observeTyreDetachedReadoutText().first())
+                assertEquals(
+                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
+                    repository.observeEnabledStates().first(),
+                )
+                assertEquals("オーバーヒート", repository.observeOverheatReadoutText().first())
+                assertEquals("部品脱落", repository.observePartDetachedReadoutText().first())
+            }
+        }
 }

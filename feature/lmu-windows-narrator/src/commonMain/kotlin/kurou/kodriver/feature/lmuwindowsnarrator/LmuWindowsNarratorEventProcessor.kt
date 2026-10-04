@@ -141,11 +141,17 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousVehicleDamage
         events.forEach { event ->
-            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            val text = readoutText(event)?.takeIf { it.isNotBlank() }
+            val narrationOutcome =
+                if (text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    speakWithPriority(event.withResolvedText(text), readoutOrder, queueEnabledStates)
+                }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
-                narratedText = event.narratedText,
+                narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
                 telemetryJson =
                     buildTelemetryLogJson(
@@ -171,11 +177,17 @@ internal class LmuWindowsNarratorEventProcessor(
     ) {
         val previous = previousTyreDetached
         events.forEach { event ->
-            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            val text = readoutText(event)?.takeIf { it.isNotBlank() }
+            val narrationOutcome =
+                if (text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    speakWithPriority(event.withResolvedText(text), readoutOrder, queueEnabledStates)
+                }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
-                narratedText = event.narratedText,
+                narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
                 telemetryJson =
                     buildTelemetryLogJson(
@@ -406,12 +418,15 @@ internal class LmuWindowsNarratorEventProcessor(
         }
     }
 
-    /** 判定時に解決した文言を残量・タイヤ摩耗・ブレーキ温度・タイヤ温度警告に持たせ、キュー待機中に設定が変わっても発話とログを一致させる。 */
+    /** 判定時に解決した文言を残量・タイヤ摩耗・ブレーキ温度・タイヤ温度・車両故障警告に持たせ、キュー待機中に設定が変わっても発話とログを一致させる。 */
     private fun SpeechEvent.withResolvedText(text: String): SpeechEvent =
         when (this) {
             is SpeechEvent.RemainingVirtualEnergyWarning -> copy(resolvedText = text)
             is SpeechEvent.TyreWearWarning -> copy(resolvedText = text)
             is SpeechEvent.BrakeOverheat -> copy(resolvedText = text)
+            is SpeechEvent.Overheating -> copy(resolvedText = text)
+            is SpeechEvent.PartDetached -> copy(resolvedText = text)
+            is SpeechEvent.TyreDetached -> copy(resolvedText = text)
             is SpeechEvent.TyreOverheat -> copy(resolvedText = text)
             is SpeechEvent.TyreCold -> copy(resolvedText = text)
             else -> this

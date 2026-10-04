@@ -23,7 +23,6 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.MyBestLapVoiceType
-import kurou.kodriver.domain.model.OverheatVoiceType
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -912,26 +911,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.Overheating), second.events)
-    }
-
-    @Test
-    fun `overheatVoiceTypeがSTANDARDのときOverheatingStandardを返す`() {
-        val first =
-            useCase.determineVehicleDamage(
-                state = LmuWindowsNarratorState(),
-                vehicleDamage = damage(overheating = false),
-                settings = settings(overheatVoiceType = OverheatVoiceType.STANDARD),
-            )
-
-        val second =
-            useCase.determineVehicleDamage(
-                state = first.state,
-                vehicleDamage = damage(overheating = true),
-                settings = settings(overheatVoiceType = OverheatVoiceType.STANDARD),
-            )
-
-        assertEquals(listOf(SpeechEvent.OverheatingStandard), second.events)
+        assertEquals(listOf(SpeechEvent.Overheating()), second.events)
     }
 
     @Test
@@ -1012,7 +992,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.PartDetached), second.events)
+        assertEquals(listOf(SpeechEvent.PartDetached()), second.events)
     }
 
     @Test
@@ -1059,7 +1039,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.Overheating, SpeechEvent.PartDetached), second.events)
+        assertEquals(listOf(SpeechEvent.Overheating(), SpeechEvent.PartDetached()), second.events)
     }
 
     @Test
@@ -1091,7 +1071,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.TyreDetached), second.events)
+        assertEquals(listOf(SpeechEvent.TyreDetached()), second.events)
     }
 
     @Test
@@ -1153,7 +1133,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.TyreDetached), second.events)
+        assertEquals(listOf(SpeechEvent.TyreDetached()), second.events)
     }
 
     @Test
@@ -2324,7 +2304,6 @@ private val pitTimingDisabledStates: Map<ReadoutItemKey, Boolean> =
 private fun settings(
     enabledStates: Map<ReadoutItemKey, Boolean> = allEnabledStates,
     myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-    overheatVoiceType: OverheatVoiceType = OverheatVoiceType.GP2_GP2,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,
     sustainedApproachDurationSeconds: Int = 7,
@@ -2337,7 +2316,6 @@ private fun settings(
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
     myBestLapVoiceType = myBestLapVoiceType,
-    overheatVoiceType = overheatVoiceType,
     currentLap = currentLap,
     skipFirstLap = skipFirstLap,
     vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds,

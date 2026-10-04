@@ -16,6 +16,9 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READO
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -87,24 +90,25 @@ sealed interface SpeechEvent {
         override val narratedText = LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
     }
 
-    data object Overheating : SpeechEvent {
+    data class Overheating(
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
-        override val narratedText = "GP2 GP2… ahhh!!!"
+        override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
     }
 
-    data object OverheatingStandard : SpeechEvent {
+    data class PartDetached(
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
-        override val narratedText = "オーバーヒート"
+        override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
     }
 
-    data object PartDetached : SpeechEvent {
+    data class TyreDetached(
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
-        override val narratedText = "部品脱落"
-    }
-
-    data object TyreDetached : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
-        override val narratedText = "タイヤ脱落"
+        override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
     }
 
     /**
