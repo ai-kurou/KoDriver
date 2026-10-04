@@ -150,7 +150,10 @@ class AppTest {
             "車両の故障状況を音声でお知らせします。\n読み上げる文言は下の欄で設定できます。",
         )
         scrollToItem("自己ベストラップ")
-        clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
+        clickItemAndVerifyDescription(
+            "自己ベストラップ",
+            "自己ベストラップを更新したときに音声でお知らせします。\n読み上げる文言は下の欄で設定できます。",
+        )
     }
 
     @Test

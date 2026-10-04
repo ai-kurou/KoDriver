@@ -7,22 +7,21 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ObserveLmuWindowsMyBestLapVoiceTypeUseCaseTest {
+class ObserveLmuWindowsMyBestLapReadoutTextUseCaseTest {
     private val repository: LmuWindowsMyBestLapPreferencesRepository = mockk()
 
     @Test
-    fun `保存済みのLMU自己ベストラップ音声タイプを返す`() =
+    fun `自己ベストラップ更新の読み上げ文言を監視できる`() =
         runTest {
-            every { repository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.CASUAL)
-            val useCase = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository)
+            every { repository.observeReadoutText() } returns MutableStateFlow("更新{laptime}")
+            val useCase = ObserveLmuWindowsMyBestLapReadoutTextUseCase(repository)
 
-            assertEquals(MyBestLapVoiceType.CASUAL, useCase().first())
-            verify(exactly = 1) { repository.observeVoiceType() }
+            assertEquals("更新{laptime}", useCase().first())
+            verify(exactly = 1) { repository.observeReadoutText() }
             confirmVerified(repository)
         }
 }

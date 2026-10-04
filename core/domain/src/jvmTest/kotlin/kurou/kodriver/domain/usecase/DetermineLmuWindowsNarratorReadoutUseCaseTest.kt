@@ -22,7 +22,6 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -136,42 +135,23 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `自己ベストラップが更新されると設定した音声イベントを返す`() {
+    fun `自己ベストラップが更新されると更新後のタイムを持つイベントを返す`() {
         val first =
             useCase.determineMyBestLap(
                 state = LmuWindowsNarratorState(),
                 telemetry = telemetry(bestLapTimeMs = 60_000L),
-                settings = settings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+                settings = settings(),
             )
 
         val second =
             useCase.determineMyBestLap(
                 state = first.state,
                 telemetry = telemetry(bestLapTimeMs = 59_000L),
-                settings = settings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+                settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLapCasual), second.events)
+        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLap(59_000L)), second.events)
         assertEquals(59_000L, second.state.personalBestMs)
-    }
-
-    @Test
-    fun `音声種別がFORMALなら自己ベストラップ更新でLmuWindowsMyBestLapFormalを返す`() {
-        val first =
-            useCase.determineMyBestLap(
-                state = LmuWindowsNarratorState(),
-                telemetry = telemetry(bestLapTimeMs = 60_000L),
-                settings = settings(myBestLapVoiceType = MyBestLapVoiceType.FORMAL),
-            )
-
-        val second =
-            useCase.determineMyBestLap(
-                state = first.state,
-                telemetry = telemetry(bestLapTimeMs = 59_000L),
-                settings = settings(myBestLapVoiceType = MyBestLapVoiceType.FORMAL),
-            )
-
-        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLapFormal), second.events)
     }
 
     @Test
@@ -209,7 +189,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLapFormal), second.events)
+        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLap(59_000L)), second.events)
     }
 
     @Test
@@ -2303,7 +2283,6 @@ private val pitTimingDisabledStates: Map<ReadoutItemKey, Boolean> =
 @Suppress("LongParameterList")
 private fun settings(
     enabledStates: Map<ReadoutItemKey, Boolean> = allEnabledStates,
-    myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,
     sustainedApproachDurationSeconds: Int = 7,
@@ -2315,7 +2294,6 @@ private fun settings(
     pitTimingTyreWearLapsThreshold: Int = 3,
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
-    myBestLapVoiceType = myBestLapVoiceType,
     currentLap = currentLap,
     skipFirstLap = skipFirstLap,
     vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds,

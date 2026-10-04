@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
@@ -29,7 +30,6 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
@@ -293,12 +293,12 @@ class FakeLmuWindowsTyreWearPreferencesRepository : LmuWindowsTyreWearPreference
 }
 
 class FakeLmuWindowsMyBestLapPreferencesRepository : LmuWindowsMyBestLapPreferencesRepository {
-    private val flow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
+    private val flow = MutableStateFlow(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT)
 
-    override fun observeVoiceType(): Flow<MyBestLapVoiceType> = flow
+    override fun observeReadoutText(): Flow<String> = flow
 
-    override suspend fun saveVoiceType(type: MyBestLapVoiceType) {
-        flow.update { type }
+    override suspend fun saveReadoutText(text: String) {
+        flow.update { text }
     }
 }
 

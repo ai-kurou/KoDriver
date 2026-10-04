@@ -60,13 +60,23 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `自己ベストラップ系のnarratedTextはChipと同じ文言を返す`() {
-        assertEquals("自己ベストラップ更新", SpeechEvent.LmuWindowsMyBestLapFormal.narratedText)
-        assertEquals("ベストラップ", SpeechEvent.LmuWindowsMyBestLapCasual.narratedText)
+    fun `自己ベストラップ系のnarratedTextは既定文言を返す`() {
+        assertEquals("自己ベストラップ更新 1分23秒456", SpeechEvent.LmuWindowsMyBestLap(83_456L).narratedText)
+        assertEquals("自己ベストラップ更新 23秒005", SpeechEvent.LmuWindowsMyBestLap(23_005L, "カスタム").narratedText)
         assertEquals("自己ベストラップ更新", SpeechEvent.Gt7Ps5MyBestLapFormal.narratedText)
         assertEquals("ベストラップ", SpeechEvent.Gt7Ps5MyBestLapCasual.narratedText)
         assertEquals("自己ベストラップ更新", SpeechEvent.AceWindowsMyBestLapFormal.narratedText)
         assertEquals("ベストラップ", SpeechEvent.AceWindowsMyBestLapCasual.narratedText)
+    }
+
+    @Test
+    fun `LMU自己ベストラップはLongのタイムと解決文言を保持しRootキーを維持する`() {
+        val event = SpeechEvent.LmuWindowsMyBestLap(3_000_000_005L)
+        assertEquals(3_000_000_005L, event.lapTimeMs)
+        assertEquals(null, event.resolvedText)
+        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, event.readoutItemKey)
+        assertEquals("50000分0秒005", event.copy(resolvedText = "50000分0秒005").resolvedText)
+        assertEquals("自己ベストラップ更新 50000分0秒005", event.copy(resolvedText = "カスタム").narratedText)
     }
 
     @Test

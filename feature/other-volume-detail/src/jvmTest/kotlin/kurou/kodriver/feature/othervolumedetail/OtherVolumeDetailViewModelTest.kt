@@ -146,15 +146,15 @@ class OtherVolumeDetailViewModelTest {
         }
 
     @Test
-    fun `onPreviewClickedを呼ぶとLmuWindowsMyBestLapFormalイベントが再生される`() {
+    fun `onPreviewClickedを呼ぶとLmuWindowsMyBestLapイベントが再生される`() {
         every { soundVolumeRepository.volume() } returns volumeFlow
-        every { ttsEngine.speak(SpeechEvent.LmuWindowsMyBestLapFormal, false) } returns Unit
+        every { ttsEngine.speak(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L), false) } returns Unit
         val viewModel = createViewModel()
 
         viewModel.onPreviewClicked()
 
         verify(exactly = 1) { soundVolumeRepository.volume() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsMyBestLapFormal, false) }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L), false) }
         confirmVerified(soundVolumeRepository, ttsEngine)
     }
 

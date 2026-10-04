@@ -83,7 +83,7 @@ internal class OtherVolumeDetailViewModel(
     }
 
     fun onPreviewClicked() {
-        playSpeechEvent(SpeechEvent.LmuWindowsMyBestLapFormal)
+        playSpeechEvent(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L))
     }
 
     fun onDeviceVolumeChanged(volume: Int) {

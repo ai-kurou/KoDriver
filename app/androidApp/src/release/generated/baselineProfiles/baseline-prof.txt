@@ -25825,8 +25825,6 @@ Lkurou/kodriver/data/preferences/LmuWindowsMyBestLapPreferencesRepositoryFactory
 SPLkurou/kodriver/data/preferences/LmuWindowsMyBestLapPreferencesRepositoryFactoryKt;->createLmuWindowsMyBestLapPreferencesRepository(Ljava/lang/String;)Lkurou/kodriver/domain/repository/LmuWindowsMyBestLapPreferencesRepository;
 Lkurou/kodriver/data/preferences/LmuWindowsMyBestLapPreferencesRepositoryImpl;
 SPLkurou/kodriver/data/preferences/LmuWindowsMyBestLapPreferencesRepositoryImpl;-><init>(Landroidx/datastore/core/DataStore;)V
-SPLkurou/kodriver/data/preferences/LmuWindowsMyBestLapPreferencesRepositoryImpl;->observeVoiceType$lambda$0(Lkurou/kodriver/data/preferences/MyBestLapPreferences;)Lkurou/kodriver/domain/model/MyBestLapVoiceType;
-SPLkurou/kodriver/data/preferences/LmuWindowsMyBestLapPreferencesRepositoryImpl;->observeVoiceType()Lkotlinx/coroutines/flow/Flow;
 Lkurou/kodriver/data/preferences/LmuWindowsMyBestLapPreferencesRepositoryImpl$$ExternalSyntheticLambda1;
 SPLkurou/kodriver/data/preferences/LmuWindowsMyBestLapPreferencesRepositoryImpl$$ExternalSyntheticLambda1;-><init>()V
 SPLkurou/kodriver/data/preferences/LmuWindowsMyBestLapPreferencesRepositoryImpl$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;
@@ -26744,15 +26742,6 @@ SPLkurou/kodriver/domain/engine/SpeechEvent$LeftSustained;-><clinit>()V
 SPLkurou/kodriver/domain/engine/SpeechEvent$LeftSustained;-><init>()V
 SPLkurou/kodriver/domain/engine/SpeechEvent$LeftSustained;->equals(Ljava/lang/Object;)Z
 SPLkurou/kodriver/domain/engine/SpeechEvent$LeftSustained;->hashCode()I
-Lkurou/kodriver/domain/engine/SpeechEvent$LmuWindowsMyBestLapCasual;
-SPLkurou/kodriver/domain/engine/SpeechEvent$LmuWindowsMyBestLapCasual;-><clinit>()V
-SPLkurou/kodriver/domain/engine/SpeechEvent$LmuWindowsMyBestLapCasual;-><init>()V
-SPLkurou/kodriver/domain/engine/SpeechEvent$LmuWindowsMyBestLapCasual;->hashCode()I
-Lkurou/kodriver/domain/engine/SpeechEvent$LmuWindowsMyBestLapFormal;
-SPLkurou/kodriver/domain/engine/SpeechEvent$LmuWindowsMyBestLapFormal;-><clinit>()V
-SPLkurou/kodriver/domain/engine/SpeechEvent$LmuWindowsMyBestLapFormal;-><init>()V
-SPLkurou/kodriver/domain/engine/SpeechEvent$LmuWindowsMyBestLapFormal;->equals(Ljava/lang/Object;)Z
-SPLkurou/kodriver/domain/engine/SpeechEvent$LmuWindowsMyBestLapFormal;->hashCode()I
 Lkurou/kodriver/domain/engine/SpeechEvent$Overheating;
 SPLkurou/kodriver/domain/engine/SpeechEvent$Overheating;-><clinit>()V
 SPLkurou/kodriver/domain/engine/SpeechEvent$Overheating;-><init>()V
@@ -27564,9 +27553,6 @@ SPLkurou/kodriver/domain/usecase/ObserveLmuWindowsFlagEnabledStatesUseCase$invok
 Lkurou/kodriver/domain/usecase/ObserveLmuWindowsFlagEnabledStatesUseCaseKt;
 SPLkurou/kodriver/domain/usecase/ObserveLmuWindowsFlagEnabledStatesUseCaseKt;-><clinit>()V
 SPLkurou/kodriver/domain/usecase/ObserveLmuWindowsFlagEnabledStatesUseCaseKt;->access$getFlagEnabledStateDefaults$p()Ljava/util/Map;
-Lkurou/kodriver/domain/usecase/ObserveLmuWindowsMyBestLapVoiceTypeUseCase;
-SPLkurou/kodriver/domain/usecase/ObserveLmuWindowsMyBestLapVoiceTypeUseCase;-><init>(Lkurou/kodriver/domain/repository/LmuWindowsMyBestLapPreferencesRepository;)V
-SPLkurou/kodriver/domain/usecase/ObserveLmuWindowsMyBestLapVoiceTypeUseCase;->invoke()Lkotlinx/coroutines/flow/Flow;
 Lkurou/kodriver/domain/usecase/ObserveLmuWindowsPitStatusUseCase;
 Lkurou/kodriver/domain/usecase/ObserveLmuWindowsPitTimingTyreWearLapsUseCase;
 SPLkurou/kodriver/domain/usecase/ObserveLmuWindowsPitTimingTyreWearLapsUseCase;-><init>(Lkurou/kodriver/domain/repository/LmuWindowsPitTimingPreferencesRepository;)V
@@ -27808,7 +27794,6 @@ SPLkurou/kodriver/domain/usecase/SaveHapticFeedbackEnabledUseCase;-><init>(Lkuro
 Lkurou/kodriver/domain/usecase/SaveKeepScreenOnEnabledUseCase;
 SPLkurou/kodriver/domain/usecase/SaveKeepScreenOnEnabledUseCase;-><init>(Lkurou/kodriver/domain/repository/KeepScreenOnEnabledRepository;)V
 Lkurou/kodriver/domain/usecase/SaveLmuWindowsFlagEnabledStateUseCase;
-Lkurou/kodriver/domain/usecase/SaveLmuWindowsMyBestLapVoiceTypeUseCase;
 Lkurou/kodriver/domain/usecase/SaveLmuWindowsPitTimingTyreWearLapsUseCase;
 Lkurou/kodriver/domain/usecase/SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase;
 Lkurou/kodriver/domain/usecase/SaveLmuWindowsRedFlagVoiceTypeUseCase;
@@ -28819,7 +28804,6 @@ SPLkurou/kodriver/feature/lmuwindowsnarrator/LmuWindowsWavNarratorEngine;-><clin
 SPLkurou/kodriver/feature/lmuwindowsnarrator/LmuWindowsWavNarratorEngine;-><init>(Lkurou/kodriver/core/narrator/WavNarratorEngine;)V
 Lkurou/kodriver/feature/lmuwindowsnarrator/NarratorUseCases;
 SPLkurou/kodriver/feature/lmuwindowsnarrator/NarratorUseCases;-><clinit>()V
-SPLkurou/kodriver/feature/lmuwindowsnarrator/NarratorUseCases;->getObserveMyBestLapVoiceType()Lkurou/kodriver/domain/usecase/ObserveLmuWindowsMyBestLapVoiceTypeUseCase;
 SPLkurou/kodriver/feature/lmuwindowsnarrator/NarratorUseCases;->getObserveRedFlagVoiceType()Lkurou/kodriver/domain/usecase/ObserveLmuWindowsRedFlagVoiceTypeUseCase;
 Lkurou/kodriver/feature/lmuwindowsnarrator/PitTimingUseCases;
 SPLkurou/kodriver/feature/lmuwindowsnarrator/PitTimingUseCases;-><clinit>()V
@@ -28896,10 +28880,8 @@ Lkurou/kodriver/feature/lmuwindowsreadout/flagdetail/LmuWindowsReadoutFlagDetail
 SPLkurou/kodriver/feature/lmuwindowsreadout/flagdetail/LmuWindowsReadoutFlagDetailModuleKt$$ExternalSyntheticLambda5;-><init>()V
 Lkurou/kodriver/feature/lmuwindowsreadout/flagdetail/LmuWindowsReadoutFlagDetailViewModel;
 Lkurou/kodriver/feature/lmuwindowsreadout/mybestlapdetail/LmuWindowsReadoutMyBestLapDetailModuleKt;
-SPLkurou/kodriver/feature/lmuwindowsreadout/mybestlapdetail/LmuWindowsReadoutMyBestLapDetailModuleKt;->$r8$lambda$15JCFDZW7wUFBCAUpHIDKQxvD0E(Lorg/koin/core/scope/Scope;Lorg/koin/core/parameter/ParametersHolder;)Lkurou/kodriver/domain/usecase/ObserveLmuWindowsMyBestLapVoiceTypeUseCase;
 SPLkurou/kodriver/feature/lmuwindowsreadout/mybestlapdetail/LmuWindowsReadoutMyBestLapDetailModuleKt;-><clinit>()V
 SPLkurou/kodriver/feature/lmuwindowsreadout/mybestlapdetail/LmuWindowsReadoutMyBestLapDetailModuleKt;->getLmuWindowsReadoutMyBestLapDetailModule()Lorg/koin/core/module/Module;
-SPLkurou/kodriver/feature/lmuwindowsreadout/mybestlapdetail/LmuWindowsReadoutMyBestLapDetailModuleKt;->lmuWindowsReadoutMyBestLapDetailModule$lambda$0$1(Lorg/koin/core/scope/Scope;Lorg/koin/core/parameter/ParametersHolder;)Lkurou/kodriver/domain/usecase/ObserveLmuWindowsMyBestLapVoiceTypeUseCase;
 SPLkurou/kodriver/feature/lmuwindowsreadout/mybestlapdetail/LmuWindowsReadoutMyBestLapDetailModuleKt;->lmuWindowsReadoutMyBestLapDetailModule$lambda$0(Lorg/koin/core/module/Module;)Lkotlin/Unit;
 Lkurou/kodriver/feature/lmuwindowsreadout/mybestlapdetail/LmuWindowsReadoutMyBestLapDetailModuleKt$$ExternalSyntheticLambda0;
 SPLkurou/kodriver/feature/lmuwindowsreadout/mybestlapdetail/LmuWindowsReadoutMyBestLapDetailModuleKt$$ExternalSyntheticLambda0;-><init>()V

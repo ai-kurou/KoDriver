@@ -16,6 +16,7 @@ import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCase
@@ -63,6 +64,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     private val observeOverheatReadoutText: ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase = mockk()
     private val observePartDetachedReadoutText: ObserveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase = mockk()
     private val observeTyreDetachedReadoutText: ObserveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase = mockk()
+    private val observeMyBestLapReadoutText: ObserveLmuWindowsMyBestLapReadoutTextUseCase = mockk()
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -87,6 +89,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             observeOverheatReadoutText,
             observePartDetachedReadoutText,
             observeTyreDetachedReadoutText,
+            observeMyBestLapReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -336,6 +339,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             observeOverheatReadoutText,
             observePartDetachedReadoutText,
             observeTyreDetachedReadoutText,
+            observeMyBestLapReadoutText,
             checkTextToSpeechAvailable,
             speakText,
         )
@@ -344,7 +348,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `対象外のイベントは何も読み上げずカスタム文言を参照しない`() =
         runTest {
-            speaker(SpeechEvent.LmuWindowsMyBestLapFormal, VOLUME)
+            speaker(SpeechEvent.Gt7Ps5MyBestLapFormal, VOLUME)
 
             confirmAllMocksVerified()
         }
@@ -718,7 +722,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `対象外イベントの文言はnullで読み上げない`() =
         runTest {
-            val events = listOf(SpeechEvent.LmuWindowsMyBestLapFormal)
+            val events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal)
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))
                 speaker(event, VOLUME)
@@ -882,6 +886,68 @@ class LmuWindowsReadoutTextSpeakerTest {
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
             verify(exactly = 0) { observeOverheatReadoutText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `自己ベストラップは保存した文言のタイムを置換して読み上げる`() =
+        runTest {
+            every { observeMyBestLapReadoutText() } returns flowOf("更新{laptime}{literal}")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("更新1分23秒456{literal}", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L), VOLUME)
+            verify(exactly = 1) { observeMyBestLapReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("更新1分23秒456{literal}", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `自己ベストラップは解決済みの文言があれば設定を再取得せずその文言を読み上げる`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("解決済み", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L, resolvedText = "解決済み"), VOLUME)
+            verify(exactly = 0) { observeMyBestLapReadoutText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `自己ベストラップの空白文言ではTTSを確認せず読み上げない`() =
+        runTest {
+            every { observeMyBestLapReadoutText() } returns flowOf(" ")
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L)))
+            speaker(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L), VOLUME)
+            verify(exactly = 2) { observeMyBestLapReadoutText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `自己ベストラップのTTS利用不可では読み上げ文言を返さず読み上げない`() =
+        runTest {
+            every { observeMyBestLapReadoutText() } returns flowOf("自由文言")
+            coEvery { checkTextToSpeechAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L)))
+            speaker(SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L), VOLUME)
+            verify(exactly = 2) { observeMyBestLapReadoutText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText("自由文言", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `自己ベストラップの解決済み空白文言は既定文言へ戻さず読み上げない`() =
+        runTest {
+            val event = SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L, resolvedText = " ")
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+            verify(exactly = 0) { observeMyBestLapReadoutText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
             confirmAllMocksVerified()

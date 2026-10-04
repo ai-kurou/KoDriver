@@ -7,6 +7,7 @@ import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEX
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
@@ -27,6 +28,7 @@ import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
@@ -191,14 +193,13 @@ sealed interface SpeechEvent {
             )
     }
 
-    data object LmuWindowsMyBestLapFormal : SpeechEvent {
+    data class LmuWindowsMyBestLap(
+        val lapTimeMs: Long,
+        val resolvedText: String? = null,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root
-        override val narratedText = "自己ベストラップ更新"
-    }
-
-    data object LmuWindowsMyBestLapCasual : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root
-        override val narratedText = "ベストラップ"
+        override val narratedText =
+            formatLmuWindowsMyBestLapReadoutText(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
     }
 
     data object Gt7Ps5MyBestLapFormal : SpeechEvent {
@@ -345,7 +346,7 @@ sealed interface SpeechEvent {
     /**
      * ACE の自己ベストラップ更新を読み上げるイベント（フォーマル / カジュアルの2種）。
      *
-     * 再生する WAV は LMU（[LmuWindowsMyBestLapFormal]/[LmuWindowsMyBestLapCasual]）と同じ音源を流用する。
+     * ACE専用の WAV 音源を再生する。
      */
     data object AceWindowsMyBestLapFormal : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root

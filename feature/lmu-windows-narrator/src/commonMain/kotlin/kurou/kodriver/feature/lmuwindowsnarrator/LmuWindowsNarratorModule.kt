@@ -14,7 +14,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTex
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
@@ -83,9 +83,9 @@ import org.koin.dsl.module
  *   RemainingVirtualEnergyUseCases / PitTimingUseCases）、
  *   それらが束ねる各ドメイン UseCase、named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・SpeakTextUseCase・
- *   各フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミングの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
+ *   各フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミング・自己ベストの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
  *   および LmuWindowsReadoutTextSpeaker
- *   （フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミングの実際の読み上げ時に
+ *   （フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミング・自己ベストの読み上げ時に
  *   自由文字列をOS標準TTSで読み上げるフック。WavNarratorEngine の customSpeak に渡す）。
  * 音声設定監視用の ObserveVoiceUseCase を提供し、VoicePreferencesRepository（:core:data）を消費する。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
@@ -118,7 +118,7 @@ val lmuWindowsNarratorModule: Module =
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { ObserveVoiceUseCase(get()) }
-        factory { NarratorUseCases(get(), get()) }
+        factory { NarratorUseCases(get()) }
         factory { FlagUseCases(get(), get()) }
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get()) }
         factory { VehicleDamageUseCases(get(), get()) }
@@ -142,7 +142,7 @@ val lmuWindowsNarratorModule: Module =
         factory { DetermineLmuWindowsNarratorReadoutUseCase() }
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
-        factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsMyBestLapReadoutTextUseCase(get()) }
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
         factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
@@ -229,6 +229,7 @@ val lmuWindowsNarratorModule: Module =
                 observeOverheatReadoutText = get(named(Simulator.LmuWindows.id)),
                 observePartDetachedReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreDetachedReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeMyBestLapReadoutText = get(named(Simulator.LmuWindows.id)),
                 checkTextToSpeechAvailable = get(),
                 speakText = get(named(Simulator.LmuWindows.id)),
             )
@@ -256,7 +257,7 @@ val lmuWindowsNarratorModule: Module =
                             it is SpeechEvent.TyreWearWarning || it is SpeechEvent.BrakeOverheat ||
                             it is SpeechEvent.TyreOverheat || it is SpeechEvent.TyreCold ||
                             it is SpeechEvent.Overheating || it is SpeechEvent.PartDetached ||
-                            it is SpeechEvent.TyreDetached
+                            it is SpeechEvent.TyreDetached || it is SpeechEvent.LmuWindowsMyBestLap
                     },
                     customSpeakEvents =
                         setOf(
@@ -274,11 +275,7 @@ val lmuWindowsNarratorModule: Module =
         }
     }
 
-private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
-    buildMap {
-        put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
-        put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
-    }
+private val lmuWindowsEventToFile: Map<SpeechEvent, String> = emptyMap()
 
 private val lmuWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(

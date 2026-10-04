@@ -21,13 +21,22 @@ class MyBestLapPreferencesSerializerTest {
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = MyBestLapPreferences(voiceType = "casual")
+            val original = MyBestLapPreferences(voiceType = "casual", lmuWindowsReadoutText = "更新{laptime}")
             val output = ByteArrayOutputStream()
             MyBestLapPreferencesSerializer.writeTo(original, output)
 
             val restored = MyBestLapPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
 
             assertEquals(original, restored)
+        }
+
+    @Test
+    fun `旧口調設定だけのデータはLMUの既定文言で復元する`() =
+        runTest {
+            // ProtoNumber(1) の文字列「casual」のみを持つ旧データ。
+            val legacy = byteArrayOf(0x0A, 0x06) + "casual".encodeToByteArray()
+            val restored = MyBestLapPreferencesSerializer.readFrom(ByteArrayInputStream(legacy))
+            assertEquals(MyBestLapPreferences(voiceType = "casual"), restored)
         }
 
     @Test
