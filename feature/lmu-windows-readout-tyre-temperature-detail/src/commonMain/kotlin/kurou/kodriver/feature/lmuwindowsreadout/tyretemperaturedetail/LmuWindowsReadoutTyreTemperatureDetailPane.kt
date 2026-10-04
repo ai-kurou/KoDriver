@@ -118,7 +118,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     uiState: LmuWindowsReadoutTyreTemperatureDetailUiState,
     onOverheatWarningEnabledChanged: (Boolean) -> Unit = {},
     onOverheatReadoutTextChanged: (String) -> Unit = {},
-    onOverheatReadoutTextPreviewClicked: (String) -> Unit = {},
+    onOverheatReadoutTextPreviewClicked: (String, Int) -> Unit = { _, _ -> },
     onLowWarningEnabledChanged: (Boolean) -> Unit = {},
     onLowWarningPhaseToggled: (SessionPhase) -> Unit = {},
     onColdReadoutTextChanged: (String) -> Unit = {},
@@ -160,7 +160,10 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         text = uiState.overheatReadoutText,
                         available = uiState.isTextToSpeechAvailable,
                         onTextChanged = onOverheatReadoutTextChanged,
-                        onPreviewClick = onOverheatReadoutTextPreviewClicked,
+                        onPreviewClick = { text ->
+                            val celsius = uiState.selectedVehicleClassHighThresholdCelsius.value
+                            onOverheatReadoutTextPreviewClicked(text, celsius)
+                        },
                     )
                     HorizontalDivider(
                         modifier =
@@ -218,15 +221,10 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             )
                         },
                     )
-                    val selectedVehicleClassHighThresholdCelsius =
-                        uiState.vehicleClassHighThresholdCelsius[uiState.selectedVehicleClass]
-                            ?: lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
-                                uiState.selectedVehicleClass,
-                            ).value
                     val highThresholdMin = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MIN.value.toFloat()
                     val highThresholdMax = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_MAX.value.toFloat()
                     ThresholdSlider(
-                        value = selectedVehicleClassHighThresholdCelsius.toFloat(),
+                        value = uiState.selectedVehicleClassHighThresholdCelsius.value.toFloat(),
                         valueRange = highThresholdMin..highThresholdMax,
                         steps = (highThresholdMax - highThresholdMin).toInt() - 1,
                         labelFormatter = { labelTemplate.formatSliderLabel(it.roundToInt()) },

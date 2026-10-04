@@ -29,6 +29,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEX
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
+import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -242,6 +243,37 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
+    fun `過熱文言の試聴は選択中クラスの現在の閾値を渡す`() {
+        var selectedClass by mutableStateOf<LmuWindowsVehicleClassData>(LmuWindowsVehicleClassData.Hypercar)
+        val thresholds = mapOf<LmuWindowsVehicleClassData, Int>(LmuWindowsVehicleClassData.Gt3 to 107)
+        val previews = mutableListOf<Pair<String, Int>>()
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            isTextToSpeechAvailable = true,
+                            vehicleClassHighThresholdCelsius = thresholds,
+                            selectedVehicleClass = selectedClass,
+                        ),
+                    onOverheatReadoutTextPreviewClicked = { text, celsius -> previews += text to celsius },
+                )
+            }
+        }
+        val expected = mutableListOf<Pair<String, Int>>()
+        tyreTemperatureVehicleClasses.forEach { vehicleClass ->
+            selectedClass = vehicleClass
+            rule.waitForIdle()
+            rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performClick()
+            val celsius =
+                thresholds[vehicleClass]
+                    ?: lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClass).value
+            expected += LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT to celsius
+        }
+        assertEquals(expected, previews)
+    }
+
+    @Test
     fun `スイッチOFFでも入力中の文言を編集して試聴できる`() {
         val changed = mutableListOf<String>()
         val previews = mutableListOf<String>()
@@ -254,7 +286,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
                             isTextToSpeechAvailable = true,
                         ),
                     onOverheatReadoutTextChanged = { changed += it },
-                    onOverheatReadoutTextPreviewClicked = { previews += it },
+                    onOverheatReadoutTextPreviewClicked = { text, _ -> previews += text },
                 )
             }
         }

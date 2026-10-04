@@ -102,9 +102,15 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
         viewModelScope.launch { readout.saveText(text) }
     }
 
-    /** 空白文言・TTS利用不可・音量ゼロでは再生しない。 */
-    fun onOverheatReadoutTextPreviewClicked(text: String) {
-        previewReadoutText(formatLmuWindowsTyreTemperatureReadoutText(text, OVERHEAT_PREVIEW_CELSIUS))
+    /**
+     * 空白文言・TTS利用不可・音量ゼロでは再生しない。
+     * [celsius] は画面に表示中の選択クラスの高温閾値。保存の反映待ちで旧値になるのを避けるため呼び出し側から受け取る。
+     */
+    fun onOverheatReadoutTextPreviewClicked(
+        text: String,
+        celsius: Int,
+    ) {
+        previewReadoutText(formatLmuWindowsTyreTemperatureReadoutText(text, celsius))
     }
 
     private fun previewReadoutText(text: String) {
@@ -160,9 +166,6 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
         viewModelScope.launch { tyreTemperatureUseCases.saveVehicleClassSelection(vehicleClass) }
     }
 }
-
-/** 過熱文言の試聴専用の代表温度。実際の警告判定には使用しない。 */
-private const val OVERHEAT_PREVIEW_CELSIUS = 100
 
 /** 低温文言の試聴専用の代表温度。実際の警告判定には使用しない。 */
 private const val COLD_PREVIEW_CELSIUS = 60
