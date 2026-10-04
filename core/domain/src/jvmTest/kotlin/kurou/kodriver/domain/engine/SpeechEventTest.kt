@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Suppress("TooManyFunctions")
 class SpeechEventTest {
     @Test
     fun `LMU車両接近系のnarratedTextは既定文言を返す`() {
