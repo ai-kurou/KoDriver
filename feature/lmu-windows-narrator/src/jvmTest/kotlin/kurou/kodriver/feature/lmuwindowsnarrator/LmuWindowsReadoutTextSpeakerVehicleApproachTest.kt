@@ -125,7 +125,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("左注意", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.CarLeft, VOLUME)
+            speaker(SpeechEvent.CarLeft(), VOLUME)
 
             verify(exactly = 1) { observeLeft() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -138,7 +138,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
         runTest {
             every { observeLeft() } returns flowOf("  ")
 
-            speaker(SpeechEvent.CarLeft, VOLUME)
+            speaker(SpeechEvent.CarLeft(), VOLUME)
 
             verify(exactly = 1) { observeLeft() }
             confirmAllMocksVerified()
@@ -150,7 +150,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             every { observeLeft() } returns flowOf("左注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.CarLeft, VOLUME)
+            speaker(SpeechEvent.CarLeft(), VOLUME)
 
             verify(exactly = 1) { observeLeft() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -164,7 +164,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("右注意", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.CarRight, VOLUME)
+            speaker(SpeechEvent.CarRight(), VOLUME)
 
             verify(exactly = 1) { observeRight() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -177,7 +177,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
         runTest {
             every { observeRight() } returns flowOf("  ")
 
-            speaker(SpeechEvent.CarRight, VOLUME)
+            speaker(SpeechEvent.CarRight(), VOLUME)
 
             verify(exactly = 1) { observeRight() }
             confirmAllMocksVerified()
@@ -189,7 +189,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             every { observeRight() } returns flowOf("右注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.CarRight, VOLUME)
+            speaker(SpeechEvent.CarRight(), VOLUME)
 
             verify(exactly = 1) { observeRight() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -203,7 +203,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("左注意", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.CarLeftSustained, VOLUME)
+            speaker(SpeechEvent.CarLeftSustained(), VOLUME)
 
             verify(exactly = 1) { observeSustainedLeft() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -216,7 +216,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
         runTest {
             every { observeSustainedLeft() } returns flowOf("  ")
 
-            speaker(SpeechEvent.CarLeftSustained, VOLUME)
+            speaker(SpeechEvent.CarLeftSustained(), VOLUME)
 
             verify(exactly = 1) { observeSustainedLeft() }
             confirmAllMocksVerified()
@@ -228,7 +228,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             every { observeSustainedLeft() } returns flowOf("左注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.CarLeftSustained, VOLUME)
+            speaker(SpeechEvent.CarLeftSustained(), VOLUME)
 
             verify(exactly = 1) { observeSustainedLeft() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -242,7 +242,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("右注意", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.CarRightSustained, VOLUME)
+            speaker(SpeechEvent.CarRightSustained(), VOLUME)
 
             verify(exactly = 1) { observeSustainedRight() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -255,7 +255,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
         runTest {
             every { observeSustainedRight() } returns flowOf("  ")
 
-            speaker(SpeechEvent.CarRightSustained, VOLUME)
+            speaker(SpeechEvent.CarRightSustained(), VOLUME)
 
             verify(exactly = 1) { observeSustainedRight() }
             confirmAllMocksVerified()
@@ -267,7 +267,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             every { observeSustainedRight() } returns flowOf("右注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.CarRightSustained, VOLUME)
+            speaker(SpeechEvent.CarRightSustained(), VOLUME)
 
             verify(exactly = 1) { observeSustainedRight() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }

@@ -307,7 +307,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(emptyList<SpeechEvent>(), first.events)
-        assertEquals(listOf(SpeechEvent.CarLeft), second.events)
+        assertEquals(listOf(SpeechEvent.CarLeft()), second.events)
     }
 
     @Test
@@ -328,7 +328,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 50L,
             )
 
-        assertEquals(listOf(SpeechEvent.CarRight), second.events)
+        assertEquals(listOf(SpeechEvent.CarRight()), second.events)
     }
 
     @Test
@@ -349,7 +349,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 50L,
             )
 
-        assertEquals(listOf(SpeechEvent.CarLeft), second.events)
+        assertEquals(listOf(SpeechEvent.CarLeft()), second.events)
     }
 
     @Test
@@ -483,7 +483,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 7_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.CarLeftSustained), second.events)
+        assertEquals(listOf(SpeechEvent.CarLeft(), SpeechEvent.CarLeftSustained()), second.events)
     }
 
     @Test
@@ -504,7 +504,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 7_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.CarRight, SpeechEvent.CarRightSustained), second.events)
+        assertEquals(listOf(SpeechEvent.CarRight(), SpeechEvent.CarRightSustained()), second.events)
     }
 
     @Test
@@ -546,7 +546,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 6_999L,
             )
 
-        assertEquals(listOf(SpeechEvent.CarLeft), second.events)
+        assertEquals(listOf(SpeechEvent.CarLeft()), second.events)
     }
 
     @Test
@@ -572,7 +572,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 7_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.CarLeft), second.events)
+        assertEquals(listOf(SpeechEvent.CarLeft()), second.events)
     }
 
     @Test
@@ -664,7 +664,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(
-            listOf(SpeechEvent.BlueFlag, SpeechEvent.YellowFlag, SpeechEvent.FullCourseYellow),
+            listOf(SpeechEvent.BlueFlag(), SpeechEvent.YellowFlag(), SpeechEvent.FullCourseYellow()),
             second.events,
         )
     }
@@ -685,7 +685,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.RedFlag), second.events)
+        assertEquals(listOf(SpeechEvent.RedFlag()), second.events)
     }
 
     @Test

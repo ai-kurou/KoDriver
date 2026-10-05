@@ -20,7 +20,7 @@ class PitTimingLapGateTest {
     fun `PitTimingWarning以外のイベントは通さない`() {
         assertEquals(
             emptyList<SpeechEvent>(),
-            gate.filter(currentLap = 1, events = listOf(SpeechEvent.RedFlag)),
+            gate.filter(currentLap = 1, events = listOf(SpeechEvent.RedFlag())),
         )
     }
 

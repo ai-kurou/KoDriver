@@ -66,3 +66,6 @@ Float/Double フィールドが NaN/Infinity を取りうる GT7/ACE では、`J
 
 ![Module Graph](../../docs/graphs/core-narrator.svg)
 <!-- MODULE-GRAPH-END -->
+
+LMUは `FreeTextSpeechEvent` の型判定を `isCustomSpeakEvent` に渡し、フラッグ・車両接近・ピットタイミングを含む全自由文字列イベントを処理する。
+本文は判定時に確定してイベントへ保持し、キュー再生でもログと一致させる。共通エンジンの `customSpeakEvents` パラメータは維持する。

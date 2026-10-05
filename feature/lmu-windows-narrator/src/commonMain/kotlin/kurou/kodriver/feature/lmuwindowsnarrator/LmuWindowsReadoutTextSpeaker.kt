@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kurou.kodriver.domain.engine.FreeTextSpeechEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
@@ -102,41 +103,41 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     /** 現在の読み上げ文言。空欄・TTS利用不可・対象外イベントは null。 */
     suspend fun readoutText(event: SpeechEvent): String? {
-        val text = eventText(event) ?: return null
+        val text = (event as? FreeTextSpeechEvent)?.resolvedText ?: eventText(event) ?: return null
         return text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
     }
 
     private suspend fun eventText(event: SpeechEvent): String? =
         when (event) {
-            SpeechEvent.YellowFlag -> {
+            is SpeechEvent.YellowFlag -> {
                 observeSectorYellowFlagReadoutText().first()
             }
 
-            SpeechEvent.BlueFlag -> {
+            is SpeechEvent.BlueFlag -> {
                 observeBlueFlagReadoutText().first()
             }
 
-            SpeechEvent.FullCourseYellow -> {
+            is SpeechEvent.FullCourseYellow -> {
                 observeFullCourseYellowFlagReadoutText().first()
             }
 
-            SpeechEvent.RedFlag -> {
+            is SpeechEvent.RedFlag -> {
                 observeRedFlagReadoutText().first()
             }
 
-            SpeechEvent.CarLeft -> {
+            is SpeechEvent.CarLeft -> {
                 observeStartLeftReadoutText().first()
             }
 
-            SpeechEvent.CarLeftSustained -> {
+            is SpeechEvent.CarLeftSustained -> {
                 observeSustainedLeftReadoutText().first()
             }
 
-            SpeechEvent.CarRight -> {
+            is SpeechEvent.CarRight -> {
                 observeStartRightReadoutText().first()
             }
 
-            SpeechEvent.CarRightSustained -> {
+            is SpeechEvent.CarRightSustained -> {
                 observeSustainedRightReadoutText().first()
             }
 
@@ -157,11 +158,11 @@ internal class LmuWindowsReadoutTextSpeaker(
     private suspend fun thresholdWarningText(event: SpeechEvent): String? =
         when (event) {
             is SpeechEvent.TyreOverheat -> {
-                tyreTemperatureText(event.resolvedText, event.celsius) { observeTyreOverheatReadoutText() }
+                tyreTemperatureText(event.celsius) { observeTyreOverheatReadoutText() }
             }
 
             is SpeechEvent.TyreCold -> {
-                tyreTemperatureText(event.resolvedText, event.celsius) { observeTyreColdReadoutText() }
+                tyreTemperatureText(event.celsius) { observeTyreColdReadoutText() }
             }
 
             is SpeechEvent.RemainingVirtualEnergyWarning -> {
@@ -183,42 +184,37 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     private suspend fun vehicleDamageText(event: SpeechEvent): String? =
         when (event) {
-            is SpeechEvent.Overheating -> event.resolvedText ?: observeOverheatReadoutText().first()
-            is SpeechEvent.PartDetached -> event.resolvedText ?: observePartDetachedReadoutText().first()
-            is SpeechEvent.TyreDetached -> event.resolvedText ?: observeTyreDetachedReadoutText().first()
+            is SpeechEvent.Overheating -> observeOverheatReadoutText().first()
+            is SpeechEvent.PartDetached -> observePartDetachedReadoutText().first()
+            is SpeechEvent.TyreDetached -> observeTyreDetachedReadoutText().first()
             else -> null
         }
 
     private suspend fun myBestLapText(event: SpeechEvent.LmuWindowsMyBestLap): String =
-        event.resolvedText
-            ?: formatLmuWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
+        formatLmuWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
 
     private suspend fun tyreTemperatureText(
-        resolvedText: String?,
         celsius: Int,
         observeTemplate: () -> Flow<String>,
-    ): String = resolvedText ?: formatLmuWindowsTyreTemperatureReadoutText(observeTemplate().first(), celsius)
+    ): String = formatLmuWindowsTyreTemperatureReadoutText(observeTemplate().first(), celsius)
 
     private suspend fun remainingVirtualEnergyText(event: SpeechEvent.RemainingVirtualEnergyWarning): String =
-        event.resolvedText
-            ?: formatLmuWindowsRemainingVirtualEnergyReadoutText(
-                observeRemainingVirtualEnergyReadoutText().first(),
-                event.percentage,
-            )
+        formatLmuWindowsRemainingVirtualEnergyReadoutText(
+            observeRemainingVirtualEnergyReadoutText().first(),
+            event.percentage,
+        )
 
     private suspend fun brakeTemperatureText(event: SpeechEvent.BrakeOverheat): String =
-        event.resolvedText
-            ?: formatLmuWindowsBrakeTemperatureReadoutText(
-                observeBrakeTemperatureReadoutText().first(),
-                event.celsius,
-            )
+        formatLmuWindowsBrakeTemperatureReadoutText(
+            observeBrakeTemperatureReadoutText().first(),
+            event.celsius,
+        )
 
     private suspend fun tyreWearText(event: SpeechEvent.TyreWearWarning): String =
-        event.resolvedText
-            ?: formatLmuWindowsTyreWearReadoutText(
-                observeTyreWearReadoutText().first(),
-                event.percentage,
-            )
+        formatLmuWindowsTyreWearReadoutText(
+            observeTyreWearReadoutText().first(),
+            event.percentage,
+        )
 
     private suspend fun pitTimingText(event: SpeechEvent.PitTimingWarning): String? {
         if (event.source == PitTimingSource.TyreWear) {

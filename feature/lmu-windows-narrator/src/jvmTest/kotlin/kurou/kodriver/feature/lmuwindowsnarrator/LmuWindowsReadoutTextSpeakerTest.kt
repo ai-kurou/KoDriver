@@ -358,7 +358,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeSectorYellow() } returns flowOf("")
 
-            speaker(SpeechEvent.YellowFlag, VOLUME)
+            speaker(SpeechEvent.YellowFlag(), VOLUME)
             verify(exactly = 1) { observeSectorYellow() }
             confirmAllMocksVerified()
         }
@@ -369,7 +369,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeSectorYellow() } returns flowOf("イエロー、前方注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.YellowFlag, VOLUME)
+            speaker(SpeechEvent.YellowFlag(), VOLUME)
             verify(exactly = 1) { observeSectorYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
@@ -382,7 +382,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("イエロー、前方注意", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.YellowFlag, VOLUME)
+            speaker(SpeechEvent.YellowFlag(), VOLUME)
             verify(exactly = 1) { observeSectorYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("イエロー、前方注意", volume = VOLUME) }
@@ -396,7 +396,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("ブルー、譲って", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.BlueFlag, VOLUME)
+            speaker(SpeechEvent.BlueFlag(), VOLUME)
             verify(exactly = 1) { observeBlue() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("ブルー、譲って", volume = VOLUME) }
@@ -408,7 +408,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeBlue() } returns flowOf(" ")
 
-            speaker(SpeechEvent.BlueFlag, VOLUME)
+            speaker(SpeechEvent.BlueFlag(), VOLUME)
             verify(exactly = 1) { observeBlue() }
             confirmAllMocksVerified()
         }
@@ -420,7 +420,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("フルコースイエロー、減速", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.FullCourseYellow, VOLUME)
+            speaker(SpeechEvent.FullCourseYellow(), VOLUME)
             verify(exactly = 1) { observeFullCourseYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("フルコースイエロー、減速", volume = VOLUME) }
@@ -432,7 +432,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeFullCourseYellow() } returns flowOf("")
 
-            speaker(SpeechEvent.FullCourseYellow, VOLUME)
+            speaker(SpeechEvent.FullCourseYellow(), VOLUME)
             verify(exactly = 1) { observeFullCourseYellow() }
             confirmAllMocksVerified()
         }
@@ -444,7 +444,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("赤旗、停止", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.RedFlag, VOLUME)
+            speaker(SpeechEvent.RedFlag(), VOLUME)
 
             verify(exactly = 1) { observeRed() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -457,7 +457,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeRed() } returns flowOf("")
 
-            speaker(SpeechEvent.RedFlag, VOLUME)
+            speaker(SpeechEvent.RedFlag(), VOLUME)
             verify(exactly = 1) { observeRed() }
             confirmAllMocksVerified()
         }
@@ -468,7 +468,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeRed() } returns flowOf("赤旗、停止")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.RedFlag, VOLUME)
+            speaker(SpeechEvent.RedFlag(), VOLUME)
             verify(exactly = 1) { observeRed() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
@@ -480,7 +480,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeFullCourseYellow() } returns flowOf("フルコースイエロー")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.FullCourseYellow, VOLUME)
+            speaker(SpeechEvent.FullCourseYellow(), VOLUME)
 
             verify(exactly = 1) { observeFullCourseYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }

@@ -14,9 +14,9 @@ class PlaySpeechEventUseCaseTest {
     fun `invoke を呼ぶと TextToSpeechEngine の speak が呼ばれる`() {
         val useCase = PlaySpeechEventUseCase(engine)
 
-        useCase(SpeechEvent.BlueFlag)
+        useCase(SpeechEvent.BlueFlag())
 
-        verify(exactly = 1) { engine.speak(SpeechEvent.BlueFlag, false) }
+        verify(exactly = 1) { engine.speak(SpeechEvent.BlueFlag(), false) }
         confirmVerified(engine)
     }
 
@@ -24,11 +24,11 @@ class PlaySpeechEventUseCaseTest {
     fun `複数回 invoke を呼ぶと呼んだ順に speak が呼ばれる`() {
         val useCase = PlaySpeechEventUseCase(engine)
 
-        useCase(SpeechEvent.YellowFlag)
-        useCase(SpeechEvent.RedFlag)
+        useCase(SpeechEvent.YellowFlag())
+        useCase(SpeechEvent.RedFlag())
 
-        verify(exactly = 1) { engine.speak(SpeechEvent.YellowFlag, false) }
-        verify(exactly = 1) { engine.speak(SpeechEvent.RedFlag, false) }
+        verify(exactly = 1) { engine.speak(SpeechEvent.YellowFlag(), false) }
+        verify(exactly = 1) { engine.speak(SpeechEvent.RedFlag(), false) }
         confirmVerified(engine)
     }
 
@@ -36,9 +36,9 @@ class PlaySpeechEventUseCaseTest {
     fun `queue true を指定すると TextToSpeechEngine の speak に渡される`() {
         val useCase = PlaySpeechEventUseCase(engine)
 
-        useCase(SpeechEvent.CarRight, queue = true)
+        useCase(SpeechEvent.CarRight(), queue = true)
 
-        verify(exactly = 1) { engine.speak(SpeechEvent.CarRight, true) }
+        verify(exactly = 1) { engine.speak(SpeechEvent.CarRight(), true) }
         confirmVerified(engine)
     }
 }

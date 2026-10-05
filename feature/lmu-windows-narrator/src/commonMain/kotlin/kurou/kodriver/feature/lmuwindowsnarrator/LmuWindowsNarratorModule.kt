@@ -4,6 +4,7 @@ import kurou.kodriver.core.designsystem.readStartSoundBytes
 import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
+import kurou.kodriver.domain.engine.FreeTextSpeechEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
@@ -252,24 +253,7 @@ val lmuWindowsNarratorModule: Module =
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
                     customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
-                    isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.RemainingVirtualEnergyWarning ||
-                            it is SpeechEvent.TyreWearWarning || it is SpeechEvent.BrakeOverheat ||
-                            it is SpeechEvent.TyreOverheat || it is SpeechEvent.TyreCold ||
-                            it is SpeechEvent.Overheating || it is SpeechEvent.PartDetached ||
-                            it is SpeechEvent.TyreDetached || it is SpeechEvent.LmuWindowsMyBestLap
-                    },
-                    customSpeakEvents =
-                        setOf(
-                            SpeechEvent.CarLeft,
-                            SpeechEvent.CarLeftSustained,
-                            SpeechEvent.CarRight,
-                            SpeechEvent.CarRightSustained,
-                            SpeechEvent.BlueFlag,
-                            SpeechEvent.YellowFlag,
-                            SpeechEvent.FullCourseYellow,
-                            SpeechEvent.RedFlag,
-                        ),
+                    isCustomSpeakEvent = { it is FreeTextSpeechEvent },
                 ),
             )
         }
