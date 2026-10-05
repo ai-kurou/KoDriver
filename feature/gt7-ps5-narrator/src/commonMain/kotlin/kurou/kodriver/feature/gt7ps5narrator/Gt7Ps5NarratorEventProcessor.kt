@@ -10,6 +10,7 @@ import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
+import kurou.kodriver.domain.engine.Gt7Ps5ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -45,12 +46,7 @@ internal class Gt7Ps5NarratorEventProcessor(
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
             val text =
-                if (
-                    event is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning ||
-                    event is SpeechEvent.Gt7Ps5RemainingFuelWarning ||
-                    event is SpeechEvent.Gt7Ps5TyreOverheat ||
-                    event is SpeechEvent.Gt7Ps5MyBestLap
-                ) {
+                if (event is Gt7Ps5ReadoutTextEvent) {
                     readoutText(event)?.takeIf { it.isNotBlank() }
                 } else {
                     event.narratedText
@@ -60,13 +56,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent =
-                        when (event) {
-                            is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning -> event.copy(resolvedText = text)
-                            is SpeechEvent.Gt7Ps5RemainingFuelWarning -> event.copy(resolvedText = text)
-                            is SpeechEvent.Gt7Ps5MyBestLap -> event.copy(resolvedText = text)
-                            is SpeechEvent.Gt7Ps5TyreOverheat -> event.copy(resolvedText = text)
-                            else -> event
-                        }
+                        if (event is Gt7Ps5ReadoutTextEvent) event.withResolvedText(text) else event
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(

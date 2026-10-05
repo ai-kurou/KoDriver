@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
 import kotlinx.coroutines.flow.first
+import kurou.kodriver.domain.engine.Gt7Ps5ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
@@ -34,13 +35,13 @@ internal class Gt7Ps5ReadoutTextSpeaker(
 
     /** 判定時の解決済み文言を優先する。空白・TTS利用不可・対象外イベントは null。 */
     suspend fun readoutText(event: SpeechEvent): String? {
+        if (event !is Gt7Ps5ReadoutTextEvent) return null
         val text =
             when (event) {
                 is SpeechEvent.Gt7Ps5RemainingFuelWarning -> remainingFuelText(event)
                 is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning -> remainingFuelLapsText(event)
                 is SpeechEvent.Gt7Ps5MyBestLap -> myBestLapText(event)
                 is SpeechEvent.Gt7Ps5TyreOverheat -> tyreOverheatText(event)
-                else -> return null
             }
         return text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
     }
