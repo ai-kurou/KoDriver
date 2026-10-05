@@ -12,12 +12,15 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
+import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -53,10 +56,14 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
+                logContext = logContext,
             )
 
             assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
             assertEquals(true, telemetryJsons.single().contains("\"previousTelemetry\":null"))
+            assertEquals(true, telemetryJsons.single().contains("remainingFuelLapsThreshold=3"))
+            assertEquals(true, telemetryJsons.single().contains("remainingFuelThresholdPercentage=20"))
+            assertEquals(true, telemetryJsons.single().contains("previousBestLapTimeMs=59000"))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLap(60_000, "自己ベストラップ更新 1分0秒000"), false) }
             coVerify(exactly = 1) {
@@ -91,7 +98,15 @@ class Gt7Ps5NarratorEventProcessorTest {
                 )
             } just Runs
 
-            processor.process(sourceKey, telemetry(bestLapTimeMs = 60_000), emptyList(), emptyList(), emptyMap(), 100L)
+            processor.process(
+                sourceKey,
+                telemetry(bestLapTimeMs = 60_000),
+                emptyList(),
+                emptyList(),
+                emptyMap(),
+                100L,
+                logContext,
+            )
             processor.process(
                 sourceKey,
                 telemetry(bestLapTimeMs = 59_000),
@@ -99,6 +114,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 listOf(sourceKey),
                 emptyMap(),
                 200L,
+                logContext = logContext,
             )
 
             assertEquals(1, telemetryJsons.size)
@@ -163,6 +179,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = observedAtMs,
+                logContext = logContext,
             )
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
@@ -205,6 +222,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
+                logContext = logContext,
             )
 
             assertEquals(true, telemetryJsons.single().contains("\"gasLevel\":NaN"))
@@ -243,8 +261,24 @@ class Gt7Ps5NarratorEventProcessorTest {
                 )
             } just Runs
 
-            processor.process(myBestLapKey, telemetry(bestLapTimeMs = 60_000), emptyList(), emptyList(), emptyMap(), 0L)
-            processor.process(fuelKey, telemetry(bestLapTimeMs = 50_000), emptyList(), emptyList(), emptyMap(), 0L)
+            processor.process(
+                myBestLapKey,
+                telemetry(bestLapTimeMs = 60_000),
+                emptyList(),
+                emptyList(),
+                emptyMap(),
+                0L,
+                logContext,
+            )
+            processor.process(
+                fuelKey,
+                telemetry(bestLapTimeMs = 50_000),
+                emptyList(),
+                emptyList(),
+                emptyMap(),
+                0L,
+                logContext,
+            )
             processor.process(
                 myBestLapKey,
                 telemetry(bestLapTimeMs = 59_000),
@@ -252,6 +286,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 emptyList(),
                 emptyMap(),
                 0L,
+                logContext = logContext,
             )
 
             assertEquals(true, telemetryJsons.single().contains("\"bestLapTimeMs\":60000"))
@@ -296,6 +331,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(currentKey, newEvent.readoutItemKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
+                logContext = logContext,
             )
 
             verify(exactly = 0) { ttsEngine.stop() }
@@ -339,6 +375,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(currentKey, newEvent.readoutItemKey),
                 queueEnabledStates = mapOf(newEvent.readoutItemKey to true),
                 observedAtMs = 0L,
+                logContext = logContext,
             )
 
             verify(exactly = 0) { ttsEngine.stop() }
@@ -384,6 +421,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(newEvent.readoutItemKey, currentKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
+                logContext = logContext,
             )
 
             verify(exactly = 1) { ttsEngine.stop() }
@@ -442,6 +480,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
+                logContext = logContext,
             )
             processor.process(
                 sourceKey = sourceKey,
@@ -450,6 +489,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(sourceKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
+                logContext = logContext,
             )
 
             assertEquals(
@@ -517,6 +557,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 10L,
+                logContext = logContext,
             )
 
             assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
@@ -554,7 +595,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             val processor =
                 Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { null }
 
-            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L)
+            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L, logContext)
 
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 0) { ttsEngine.speak(event, false) }
@@ -596,7 +637,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                     "燃料切れです"
                 }
 
-            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L)
+            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L, logContext)
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(resolved, false) }
@@ -645,6 +686,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 10L,
+                logContext = logContext,
             )
 
             assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
@@ -682,7 +724,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             val processor =
                 Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { null }
 
-            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L)
+            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L, logContext)
 
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 0) { ttsEngine.speak(event, false) }
@@ -731,6 +773,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 10L,
+                logContext = logContext,
             )
 
             assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
@@ -768,7 +811,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             val processor =
                 Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { null }
 
-            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L)
+            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L, logContext)
 
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 0) { ttsEngine.speak(event, false) }
@@ -817,6 +860,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 readoutOrder = listOf(key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 10L,
+                logContext = logContext,
             )
 
             assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
@@ -854,7 +898,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             val processor =
                 Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { null }
 
-            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L)
+            processor.process(key, telemetry(), listOf(event), listOf(key), emptyMap(), 10L, logContext)
 
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 0) { ttsEngine.speak(event, false) }
@@ -870,6 +914,19 @@ class Gt7Ps5NarratorEventProcessorTest {
             }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
+
+    private val logContext =
+        Gt7Ps5TelemetryLogContext(
+            state = Gt7Ps5NarratorState(),
+            settings =
+                Gt7Ps5NarratorReadoutSettings(
+                    enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
+                    remainingFuelLapsThreshold = 3,
+                    remainingFuelThresholdPercentage = 20,
+                    tyreTemperatureHighThresholdCelsius = Celsius(120),
+                ),
+            finalState = Gt7Ps5NarratorState(previousBestLapTimeMs = 59_000),
+        )
 
     private fun createProcessor() =
         Gt7Ps5NarratorEventProcessor(
