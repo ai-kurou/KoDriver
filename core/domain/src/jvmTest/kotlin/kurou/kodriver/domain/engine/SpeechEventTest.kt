@@ -154,13 +154,13 @@ class SpeechEventTest {
 
     @Test
     fun `RemainingFuelLapsWarningはlapsが1以上のとき残り周回数の文言を返す`() {
-        assertEquals("燃料は残り約3周", SpeechEvent.RemainingFuelLapsWarning(laps = 3).narratedText)
+        assertEquals("燃料は残り約3周", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = 3).narratedText)
     }
 
     @Test
     fun `RemainingFuelLapsWarningはlapsが0以下のとき燃料切れの文言を返す`() {
-        assertEquals("燃料がありません", SpeechEvent.RemainingFuelLapsWarning(laps = 0).narratedText)
-        assertEquals("燃料がありません", SpeechEvent.RemainingFuelLapsWarning(laps = -1).narratedText)
+        assertEquals("燃料がありません", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = 0).narratedText)
+        assertEquals("燃料がありません", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = -1).narratedText)
     }
 
     @Test
@@ -279,7 +279,7 @@ class SpeechEventTest {
 
     @Test
     fun `燃料残り周回数イベントは解決文言を保持しログ用の既定文言は維持する`() {
-        val event = SpeechEvent.RemainingFuelLapsWarning(1)
+        val event = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(1)
         assertEquals(null, event.resolvedText)
         val resolved = event.copy(resolvedText = "あと1周")
         assertEquals("あと1周", resolved.resolvedText)

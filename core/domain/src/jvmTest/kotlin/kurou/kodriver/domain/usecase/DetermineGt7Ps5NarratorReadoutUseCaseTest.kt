@@ -221,7 +221,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 160_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), decision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), decision.events)
         assertEquals(2, decision.state.lastFuelEvaluationLap)
         assertEquals(0, decision.state.lastAnnouncedRemainingLaps)
     }
@@ -361,11 +361,11 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 360_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), firstWarningDecision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), firstWarningDecision.events)
         assertTrue(refueledDecision.events.isEmpty())
         assertEquals(-1, refueledDecision.state.lastAnnouncedRemainingLaps)
         assertEquals(Gt7Ps5FuelUnit(50f), refueledDecision.state.fuelTrackingState.totalRefueled)
-        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), secondWarningDecision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), secondWarningDecision.events)
     }
 
     @Test
@@ -399,7 +399,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 170_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), warningDecision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), warningDecision.events)
         assertTrue(sameLapDecision.events.isEmpty())
         assertEquals(2, sameLapDecision.state.lastFuelEvaluationLap)
         assertEquals(0, sameLapDecision.state.lastAnnouncedRemainingLaps)
@@ -548,7 +548,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 260_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), firstWarningDecision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), firstWarningDecision.events)
         assertEquals(Gt7Ps5FuelUnit(0f), jitterDecision.state.fuelTrackingState.totalRefueled)
         assertEquals(false, jitterDecision.state.fuelTrackingState.hasRefueled)
         assertTrue(jitterDecision.events.isEmpty())
@@ -717,7 +717,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 260_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), firstWarningDecision.events)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), firstWarningDecision.events)
         assertTrue(secondEvaluationDecision.events.isEmpty())
     }
 
