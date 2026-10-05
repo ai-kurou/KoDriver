@@ -8,6 +8,8 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -41,6 +43,75 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             checkAvailable,
             speakText,
         )
+
+    @Test
+    fun `設定とTTS利用可否の取得が中断しても全種類の文言を解決して再生する`() =
+        runTest {
+            every { observeText() } returns
+                flow {
+                    delay(1)
+                    emit("あと{laps}周")
+                }
+            every { observeEmptyText() } returns
+                flow {
+                    delay(1)
+                    emit("燃料なし")
+                }
+            every { observeFuelText() } returns
+                flow {
+                    delay(1)
+                    emit("残り{percent}%")
+                }
+            every { observeMyBestLapText() } returns
+                flow {
+                    delay(1)
+                    emit("更新{laptime}")
+                }
+            every { observeTyreText() } returns
+                flow {
+                    delay(1)
+                    emit("温度{celsius}度")
+                }
+            coEvery { checkAvailable() } coAnswers {
+                delay(1)
+                true
+            }
+            val events =
+                listOf(
+                    SpeechEvent.RemainingFuelLapsWarning(3) to "あと3周",
+                    SpeechEvent.RemainingFuelLapsWarning(0) to "燃料なし",
+                    SpeechEvent.Gt7Ps5RemainingFuelWarning(30) to "残り30%",
+                    SpeechEvent.Gt7Ps5MyBestLap(83_005) to "更新1分23秒005",
+                    SpeechEvent.Gt7Ps5TyreOverheat(120) to "温度120度",
+                )
+            events.forEach { (_, text) ->
+                coEvery { speakText(text, volume = 80) } coAnswers { delay(1) }
+            }
+
+            events.forEach { (event, text) ->
+                assertEquals(text, speaker.readoutText(event))
+                speaker(event, 80)
+            }
+
+            verify(exactly = 2) { observeText() }
+            verify(exactly = 2) { observeEmptyText() }
+            verify(exactly = 2) { observeFuelText() }
+            verify(exactly = 2) { observeMyBestLapText() }
+            verify(exactly = 2) { observeTyreText() }
+            coVerify(exactly = 10) { checkAvailable() }
+            events.forEach { (_, text) ->
+                coVerify(exactly = 1) { speakText(text, volume = 80) }
+            }
+            confirmVerified(
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeMyBestLapText,
+                observeTyreText,
+                checkAvailable,
+                speakText,
+            )
+        }
 
     @Test
     fun `通常文言の周回数を置換して音量付きで読み上げる`() =
