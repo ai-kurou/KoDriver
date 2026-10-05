@@ -15,7 +15,7 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCas
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
-/** 自己ベストラップ更新・タイヤ過熱・燃料残量・残り周回数の自由文言をOS標準TTSで読み上げる。空白・TTS利用不可なら読み上げない。 */
+/** 自己ベストラップ更新・タイヤ過熱・燃料残量・残り周回数の自由文言をOS標準TTSで読み上げる。空白は読み上げず、TTS利用可否は文言解決時に確認する。 */
 internal class Gt7Ps5ReadoutTextSpeaker(
     private val observeRemainingFuelLapsReadoutText: ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase,
     private val observeRemainingFuelLapsEmptyReadoutText: ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase,
@@ -29,21 +29,49 @@ internal class Gt7Ps5ReadoutTextSpeaker(
         event: SpeechEvent,
         volume: Int,
     ) {
-        val text = readoutText(event) ?: return
-        speakText(text, volume = volume)
+        val readout = eventText(event) ?: return
+        if (readout.text.isBlank()) return
+        // Processorで利用可否を確認した解決済み本文は、そのまま再生する。
+        if (!readout.isResolved && !checkTextToSpeechAvailable()) return
+        speakText(readout.text, volume = volume)
     }
 
     /** 判定時の解決済み文言を優先する。空白・TTS利用不可・対象外イベントは null。 */
     suspend fun readoutText(event: SpeechEvent): String? {
-        if (event !is Gt7Ps5ReadoutTextEvent) return null
-        val text =
-            when (event) {
-                is SpeechEvent.Gt7Ps5RemainingFuelWarning -> remainingFuelText(event)
-                is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning -> remainingFuelLapsText(event)
-                is SpeechEvent.Gt7Ps5MyBestLap -> myBestLapText(event)
-                is SpeechEvent.Gt7Ps5TyreOverheat -> tyreOverheatText(event)
-            }
+        val text = eventText(event)?.text ?: return null
         return text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
+    }
+
+    private data class ReadoutText(
+        val text: String,
+        val isResolved: Boolean,
+    )
+
+    private suspend fun eventText(event: SpeechEvent): ReadoutText? {
+        if (event !is Gt7Ps5ReadoutTextEvent) return null
+        return when (event) {
+            is SpeechEvent.Gt7Ps5RemainingFuelWarning -> {
+                ReadoutText(
+                    remainingFuelText(event),
+                    event.resolvedText != null,
+                )
+            }
+
+            is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning -> {
+                ReadoutText(
+                    remainingFuelLapsText(event),
+                    event.resolvedText != null,
+                )
+            }
+
+            is SpeechEvent.Gt7Ps5MyBestLap -> {
+                ReadoutText(myBestLapText(event), event.resolvedText != null)
+            }
+
+            is SpeechEvent.Gt7Ps5TyreOverheat -> {
+                ReadoutText(tyreOverheatText(event), event.resolvedText != null)
+            }
+        }
     }
 
     private suspend fun remainingFuelText(event: SpeechEvent.Gt7Ps5RemainingFuelWarning): String =
