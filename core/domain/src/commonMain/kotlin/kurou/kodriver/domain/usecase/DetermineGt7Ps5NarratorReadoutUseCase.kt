@@ -126,7 +126,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             )
         return Gt7Ps5NarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedRemainingLaps = remainingLaps),
-            events = listOf(SpeechEvent.RemainingFuelLapsWarning(remainingLaps)),
+            events = listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(remainingLaps)),
         )
     }
 
