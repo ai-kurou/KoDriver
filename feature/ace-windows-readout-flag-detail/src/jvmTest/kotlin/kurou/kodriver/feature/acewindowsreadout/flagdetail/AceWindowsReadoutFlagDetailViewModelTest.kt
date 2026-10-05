@@ -8,6 +8,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -268,10 +269,17 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             every { volumes.volume() } returns flowOf(42)
             every { observeVoice() } returns flowOf("voice-a")
             val calls = mutableListOf<String>()
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) } answers { calls += "start" }
+            val startSoundCompleted = CompletableDeferred<Unit>()
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) } coAnswers {
+                calls += "start"
+                startSoundCompleted.await()
+            }
             coEvery { tts.speak("完走", false, 42, "voice-a") } answers { calls += "text" }
             val vm = createViewModel()
             vm.onFlagTextPreviewClicked("完走")
+            assertEquals(listOf("start"), calls)
+            coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a") }
+            startSoundCompleted.complete(Unit)
             assertEquals(listOf("start", "text"), calls)
             coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
             coVerify(exactly = 1) { tts.speak("完走", false, 42, "voice-a") }

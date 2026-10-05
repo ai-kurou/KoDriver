@@ -6,12 +6,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
@@ -67,14 +66,19 @@ internal data class FlagReadoutTextUseCases(
 
 internal class LmuWindowsReadoutFlagDetailViewModel(
     private val settingsUseCases: FlagSettingsUseCases,
-    private val speakText: SpeakTextUseCase,
-    private val playStartSoundForKey: PlayStartSoundForKeyUseCase,
+    speakText: SpeakTextUseCase,
+    playStartSoundForKey: PlayStartSoundForKeyUseCase,
     checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
-    private val observeSoundVolume: ObserveSoundVolumeUseCase,
+    observeSoundVolume: ObserveSoundVolumeUseCase,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            checkTextToSpeechAvailable,
+            observeSoundVolume,
+            playStartSoundForKey,
+            speakText,
+        )
 
     val uiState: StateFlow<LmuWindowsReadoutFlagDetailUiState> =
         combine(
@@ -86,7 +90,7 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
             ) {
                 it.toMap()
             },
-            textToSpeechAvailable,
+            preview.textToSpeechAvailable,
         ) { enabledStates, flagTexts, isTextToSpeechAvailable ->
             LmuWindowsReadoutFlagDetailUiState(
                 enabledStates = enabledStates,
@@ -119,12 +123,6 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
      * 実際の読み上げもそのキーで判定するため、試聴でも個別フラッグのキーではなくそれを渡す。
      */
     fun onFlagTextPreviewClicked(text: String) {
-        if (text.isBlank() || !textToSpeechAvailable.value) return
-        viewModelScope.launch {
-            val volume = observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.Root)
-            speakText(text, volume = volume)
-        }
+        viewModelScope.launch { preview.preview(text, ReadoutItemKey.LmuWindows.Flag.Root) }
     }
 }
