@@ -29,6 +29,52 @@ class Gt7Ps5NarratorEventProcessorTest {
     private val ttsEngine: TextToSpeechEngine = mockk()
 
     @Test
+    fun `自由文言の対象外イベントは既定文言と元のイベントを再生とログへ渡す`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(3)
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    event.readoutItemKey,
+                    event.narratedText,
+                    NarrationOutcome.SPOKEN,
+                    capture(json),
+                )
+            } just Runs
+            val processor =
+                Gt7Ps5NarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) {
+                    error("対象外イベントの自由文言は解決しない")
+                }
+
+            processor.process(
+                event.readoutItemKey,
+                telemetry(),
+                listOf(event),
+                listOf(event.readoutItemKey),
+                emptyMap(),
+                10L,
+            )
+
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    10L,
+                    Simulator.Gt7Ps5,
+                    event.readoutItemKey,
+                    event.narratedText,
+                    NarrationOutcome.SPOKEN,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `直前のテレメトリがないイベントはnullとして保存する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
@@ -876,8 +922,8 @@ class Gt7Ps5NarratorEventProcessorTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.RemainingFuelLapsWarning(3),
-                    SpeechEvent.RemainingFuelLapsWarning(0),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0),
                     SpeechEvent.Gt7Ps5RemainingFuelWarning(20),
                     SpeechEvent.Gt7Ps5MyBestLap(83_456),
                     SpeechEvent.Gt7Ps5TyreOverheat(120),
