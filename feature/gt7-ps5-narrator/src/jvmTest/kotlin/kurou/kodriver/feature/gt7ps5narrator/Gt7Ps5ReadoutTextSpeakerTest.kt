@@ -92,7 +92,6 @@ class Gt7Ps5ReadoutTextSpeakerTest {
     @Test
     fun `解決済み文言を優先し設定を読み直さない`() =
         runTest {
-            coEvery { checkAvailable() } returns true
             coEvery { speakText("確定した文言{laps}", volume = 80) } just Runs
 
             listOf(3, 0).forEach { laps ->
@@ -101,7 +100,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
 
             verify(exactly = 0) { observeText() }
             verify(exactly = 0) { observeEmptyText() }
-            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 2) { speakText("確定した文言{laps}", volume = 80) }
             confirmVerified(
                 observeText,
@@ -147,15 +146,14 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `TTS利用不可なら解決済み文言も読み上げない`() =
+    fun `TTS利用不可なら判定時に解決済み文言もスキップする`() =
         runTest {
             coEvery { checkAvailable() } returns false
             val event = SpeechEvent.RemainingFuelLapsWarning(3, "あと3周")
 
             assertNull(speaker.readoutText(event))
-            speaker(event, 100)
 
-            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { checkAvailable() }
             coVerify(exactly = 0) { speakText("あと3周", volume = 100) }
             confirmVerified(
                 observeText,
@@ -222,13 +220,12 @@ class Gt7Ps5ReadoutTextSpeakerTest {
     @Test
     fun `燃料残量も解決済み文言を優先し設定を読み直さない`() =
         runTest {
-            coEvery { checkAvailable() } returns true
             coEvery { speakText("確定した文言{percent}", volume = 80) } just Runs
 
             speaker(SpeechEvent.Gt7Ps5RemainingFuelWarning(30, "確定した文言{percent}"), 80)
 
             verify(exactly = 0) { observeFuelText() }
-            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 1) { speakText("確定した文言{percent}", volume = 80) }
             confirmVerified(
                 observeText,
@@ -269,7 +266,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `燃料残量はTTS利用不可なら保存文言も解決済み文言も読み上げない`() =
+    fun `燃料残量はTTS利用不可なら判定時に保存文言も解決済み文言もスキップする`() =
         runTest {
             every { observeFuelText() } returns flowOf("残り{percent}%")
             coEvery { checkAvailable() } returns false
@@ -278,11 +275,10 @@ class Gt7Ps5ReadoutTextSpeakerTest {
                 SpeechEvent.Gt7Ps5RemainingFuelWarning(30, "残り30%"),
             ).forEach { event ->
                 assertNull(speaker.readoutText(event))
-                speaker(event, 100)
             }
 
-            verify(exactly = 2) { observeFuelText() }
-            coVerify(exactly = 4) { checkAvailable() }
+            verify(exactly = 1) { observeFuelText() }
+            coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("残り30%", volume = 100) }
             confirmVerified(
                 observeText,
@@ -322,13 +318,12 @@ class Gt7Ps5ReadoutTextSpeakerTest {
     @Test
     fun `タイヤ過熱も解決済み文言を優先し設定を読み直さない`() =
         runTest {
-            coEvery { checkAvailable() } returns true
             coEvery { speakText("確定した文言{celsius}", volume = 80) } just Runs
 
             speaker(SpeechEvent.Gt7Ps5TyreOverheat(30, "確定した文言{celsius}"), 80)
 
             verify(exactly = 0) { observeTyreText() }
-            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 1) { speakText("確定した文言{celsius}", volume = 80) }
             confirmVerified(
                 observeText,
@@ -369,7 +364,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `タイヤ過熱はTTS利用不可なら保存文言も解決済み文言も読み上げない`() =
+    fun `タイヤ過熱はTTS利用不可なら判定時に保存文言も解決済み文言もスキップする`() =
         runTest {
             every { observeTyreText() } returns flowOf("温度{celsius}度")
             coEvery { checkAvailable() } returns false
@@ -378,11 +373,10 @@ class Gt7Ps5ReadoutTextSpeakerTest {
                 SpeechEvent.Gt7Ps5TyreOverheat(30, "温度30度"),
             ).forEach { event ->
                 assertNull(speaker.readoutText(event))
-                speaker(event, 100)
             }
 
-            verify(exactly = 2) { observeTyreText() }
-            coVerify(exactly = 4) { checkAvailable() }
+            verify(exactly = 1) { observeTyreText() }
+            coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("温度30度", volume = 100) }
             confirmVerified(
                 observeText,
@@ -422,13 +416,12 @@ class Gt7Ps5ReadoutTextSpeakerTest {
     @Test
     fun `自己ベストラップ更新も解決済み文言を優先し設定を読み直さない`() =
         runTest {
-            coEvery { checkAvailable() } returns true
             coEvery { speakText("確定した文言{laptime}", volume = 80) } just Runs
 
             speaker(SpeechEvent.Gt7Ps5MyBestLap(83_005, "確定した文言{laptime}"), 80)
 
             verify(exactly = 0) { observeMyBestLapText() }
-            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 0) { checkAvailable() }
             coVerify(exactly = 1) { speakText("確定した文言{laptime}", volume = 80) }
             confirmVerified(
                 observeText,
@@ -469,7 +462,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         }
 
     @Test
-    fun `自己ベストラップ更新はTTS利用不可なら保存文言も解決済み文言も読み上げない`() =
+    fun `自己ベストラップ更新はTTS利用不可なら判定時に保存文言も解決済み文言もスキップする`() =
         runTest {
             every { observeMyBestLapText() } returns flowOf("更新{laptime}")
             coEvery { checkAvailable() } returns false
@@ -478,11 +471,10 @@ class Gt7Ps5ReadoutTextSpeakerTest {
                 SpeechEvent.Gt7Ps5MyBestLap(83_005, "更新1分23秒005"),
             ).forEach { event ->
                 assertNull(speaker.readoutText(event))
-                speaker(event, 100)
             }
 
-            verify(exactly = 2) { observeMyBestLapText() }
-            coVerify(exactly = 4) { checkAvailable() }
+            verify(exactly = 1) { observeMyBestLapText() }
+            coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("更新1分23秒005", volume = 100) }
             confirmVerified(
                 observeText,
@@ -493,5 +485,45 @@ class Gt7Ps5ReadoutTextSpeakerTest {
                 checkAvailable,
                 speakText,
             )
+        }
+
+    @Test
+    fun `判定時に利用可否を一度確認し解決済み本文の再生では確認し直さない`() =
+        runTest {
+            every { observeText() } returns flowOf("あと{laps}周")
+            coEvery { checkAvailable() } returnsMany listOf(true, false)
+            coEvery { speakText("あと3周", volume = 80) } just Runs
+            val event = SpeechEvent.RemainingFuelLapsWarning(3)
+
+            val text = speaker.readoutText(event)
+            assertEquals("あと3周", text)
+            speaker(event.copy(resolvedText = text), 80)
+
+            verify(exactly = 1) { observeText() }
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("あと3周", volume = 80) }
+            confirmVerified(
+                checkAvailable,
+                speakText,
+                observeText,
+                observeEmptyText,
+                observeFuelText,
+                observeTyreText,
+                observeMyBestLapText,
+            )
+        }
+
+    @Test
+    fun `未解決イベントの直接再生でもTTS利用不可なら本文を要求しない`() =
+        runTest {
+            every { observeText() } returns flowOf("あと{laps}周")
+            coEvery { checkAvailable() } returns false
+
+            speaker(SpeechEvent.RemainingFuelLapsWarning(3), 80)
+
+            verify(exactly = 1) { observeText() }
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("あと3周", volume = 80) }
+            confirmVerified(observeText, checkAvailable, speakText)
         }
 }
