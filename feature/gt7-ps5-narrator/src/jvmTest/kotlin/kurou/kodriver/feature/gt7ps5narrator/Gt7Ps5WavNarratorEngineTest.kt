@@ -92,7 +92,7 @@ class Gt7Ps5WavNarratorEngineTest {
                     soundPlayer = soundPlayer,
                     resources =
                         WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.RemainingFuelLapsWarning(3, "あと3周") to "warning.wav"),
+                            eventToFile = mapOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3, "あと3周") to "warning.wav"),
                             startSoundTypeToFile = emptyMap(),
                             resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
@@ -100,21 +100,21 @@ class Gt7Ps5WavNarratorEngineTest {
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.RemainingFuelLapsWarning
+                        it is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning
                     },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = Gt7Ps5WavNarratorEngine(engine)
-            narrator.speak(SpeechEvent.RemainingFuelLapsWarning(3, "あと3周"))
+            narrator.speak(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3, "あと3周"))
             runCurrent()
-            narrator.speak(SpeechEvent.RemainingFuelLapsWarning(0, "燃料なし"))
+            narrator.speak(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, "燃料なし"))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.RemainingFuelLapsWarning(3, "あと3周"),
-                    SpeechEvent.RemainingFuelLapsWarning(0, "燃料なし"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3, "あと3周"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, "燃料なし"),
                 ),
                 customEvents,
             )

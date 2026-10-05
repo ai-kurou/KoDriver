@@ -275,7 +275,7 @@ class Gt7Ps5NarratorEventProcessorTest {
         runTest {
             val json = slot<String>()
             val currentKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-            val newEvent = SpeechEvent.RemainingFuelLapsWarning(2)
+            val newEvent = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(2)
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -317,7 +317,7 @@ class Gt7Ps5NarratorEventProcessorTest {
     fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() =
         runTest {
             val currentKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-            val newEvent = SpeechEvent.RemainingFuelLapsWarning(2)
+            val newEvent = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(2)
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.speak(newEvent.copy(resolvedText = newEvent.narratedText), queue = true) } just Runs
             coEvery {
@@ -490,7 +490,7 @@ class Gt7Ps5NarratorEventProcessorTest {
         runTest {
             val jsons = mutableListOf<String>()
             val key = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
-            val event = SpeechEvent.RemainingFuelLapsWarning(2)
+            val event = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(2)
             val resolved = event.copy(resolvedText = "あと2周")
             every { ttsEngine.speak(resolved, true) } just Runs
             coEvery {
@@ -540,7 +540,7 @@ class Gt7Ps5NarratorEventProcessorTest {
         runTest {
             val jsons = mutableListOf<String>()
             val key = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
-            val event = SpeechEvent.RemainingFuelLapsWarning(0)
+            val event = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     10L,
@@ -576,7 +576,7 @@ class Gt7Ps5NarratorEventProcessorTest {
         runTest {
             val jsons = mutableListOf<String>()
             val key = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
-            val event = SpeechEvent.RemainingFuelLapsWarning(0)
+            val event = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)
             val resolved = event.copy(resolvedText = "燃料切れです")
             every { ttsEngine.currentReadoutItemKey } returns null
             every { ttsEngine.speak(resolved, false) } just Runs

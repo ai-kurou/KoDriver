@@ -49,8 +49,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("残り3周・3", volume = 42) } just Runs
 
-            assertEquals("残り3周・3", speaker.readoutText(SpeechEvent.RemainingFuelLapsWarning(3)))
-            speaker(SpeechEvent.RemainingFuelLapsWarning(3), 42)
+            assertEquals("残り3周・3", speaker.readoutText(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3)))
+            speaker(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3), 42)
 
             verify(exactly = 2) { observeText() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -73,7 +73,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
 
             listOf(0, -1, Int.MIN_VALUE).forEach { laps ->
-                assertEquals("燃料なし{laps}", speaker.readoutText(SpeechEvent.RemainingFuelLapsWarning(laps)))
+                assertEquals("燃料なし{laps}", speaker.readoutText(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps)))
             }
 
             verify(exactly = 3) { observeEmptyText() }
@@ -96,7 +96,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coEvery { speakText("確定した文言{laps}", volume = 80) } just Runs
 
             listOf(3, 0).forEach { laps ->
-                speaker(SpeechEvent.RemainingFuelLapsWarning(laps, "確定した文言{laps}"), 80)
+                speaker(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps, "確定した文言{laps}"), 80)
             }
 
             verify(exactly = 0) { observeText() }
@@ -121,9 +121,9 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             every { observeEmptyText() } returns flowOf("")
             val events =
                 listOf(
-                    SpeechEvent.RemainingFuelLapsWarning(1),
-                    SpeechEvent.RemainingFuelLapsWarning(0),
-                    SpeechEvent.RemainingFuelLapsWarning(1, ""),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(1),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(1, ""),
                 )
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))
@@ -150,7 +150,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
     fun `TTS利用不可なら解決済み文言も読み上げない`() =
         runTest {
             coEvery { checkAvailable() } returns false
-            val event = SpeechEvent.RemainingFuelLapsWarning(3, "あと3周")
+            val event = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3, "あと3周")
 
             assertNull(speaker.readoutText(event))
             speaker(event, 100)
