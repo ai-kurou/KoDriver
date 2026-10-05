@@ -9,8 +9,8 @@ class Gt7Ps5ReadoutTextEventTest {
         val events: List<Gt7Ps5ReadoutTextEvent> =
             listOf(
                 SpeechEvent.Gt7Ps5MyBestLap(83_456),
-                SpeechEvent.RemainingFuelLapsWarning(3),
-                SpeechEvent.RemainingFuelLapsWarning(0),
+                SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3),
+                SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0),
                 SpeechEvent.Gt7Ps5RemainingFuelWarning(30),
                 SpeechEvent.Gt7Ps5TyreOverheat(120),
             )

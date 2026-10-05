@@ -59,7 +59,7 @@ internal class Gt7Ps5NarratorEventProcessor(
         events.forEach { event ->
             val text =
                 if (event is Gt7Ps5ReadoutTextEvent) {
-                    readoutText(event)
+                    readoutText(event)?.takeIf { it.isNotBlank() }
                 } else {
                     event.narratedText
                 }

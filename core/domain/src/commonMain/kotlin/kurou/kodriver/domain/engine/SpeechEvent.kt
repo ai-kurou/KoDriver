@@ -281,7 +281,7 @@ sealed interface SpeechEvent {
      * GT7 の燃料残量から推定した残り周回数を読み上げるイベント。
      * [resolvedText] は判定時に解決済みの文言。キュー待機中に設定が変わってもログと発話内容を一致させる。
      */
-    data class RemainingFuelLapsWarning(
+    data class Gt7Ps5RemainingFuelLapsWarning(
         val laps: Int,
         override val resolvedText: String? = null,
     ) : Gt7Ps5ReadoutTextEvent {
@@ -293,7 +293,7 @@ sealed interface SpeechEvent {
                 formatGt7Ps5RemainingFuelLapsReadoutText(GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT, laps)
             }
 
-        override fun withResolvedText(text: String): RemainingFuelLapsWarning = copy(resolvedText = text)
+        override fun withResolvedText(text: String): Gt7Ps5RemainingFuelLapsWarning = copy(resolvedText = text)
     }
 
     /**
@@ -338,7 +338,7 @@ sealed interface SpeechEvent {
         override fun withResolvedText(text: String): PitTimingWarning = copy(resolvedText = text)
     }
 
-    /** ACE の残燃料で走行可能な周回数を読み上げるイベント。文言・WAV は GT7 の [RemainingFuelLapsWarning] と共通。 */
+    /** ACE の残燃料で走行可能な周回数を読み上げるイベント。文言・WAV は GT7 の [Gt7Ps5RemainingFuelLapsWarning] と共通。 */
     data class AceWindowsRemainingFuelLapsWarning(
         val laps: Int,
     ) : SpeechEvent {

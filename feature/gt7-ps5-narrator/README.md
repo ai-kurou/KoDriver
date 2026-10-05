@@ -37,3 +37,7 @@ WAVへフォールバックしない。共有protoの `voiceType` はLMU/ACEと�
 GT7の自由文言イベントは `Gt7Ps5ReadoutTextEvent` を実装する。Processorと音声エンジンはこの型で
 対象を判定し、`withResolvedText` で本文を保持する。Speakerの文言取得はsealed interfaceに対する
 網羅的な `when` とし、新しいイベントを追加した際の取得処理の漏れをコンパイル時に検出する。
+
+GT7の全自由文言イベントで、空文字・空白だけの本文は読み上げなしとして扱う。SpeakerとProcessorで
+空白を除外し、音声エンジンへ開始音・本文を要求せず、空文字と `SKIPPED` をログに保存する。
+この仕様の整理はGT7のみを対象とし、LMUの空白文言の扱いは変更しない。

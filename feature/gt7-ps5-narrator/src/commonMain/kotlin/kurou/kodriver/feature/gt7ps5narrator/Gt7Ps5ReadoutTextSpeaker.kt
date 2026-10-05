@@ -39,7 +39,7 @@ internal class Gt7Ps5ReadoutTextSpeaker(
         val text =
             when (event) {
                 is SpeechEvent.Gt7Ps5RemainingFuelWarning -> remainingFuelText(event)
-                is SpeechEvent.RemainingFuelLapsWarning -> remainingFuelLapsText(event)
+                is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning -> remainingFuelLapsText(event)
                 is SpeechEvent.Gt7Ps5MyBestLap -> myBestLapText(event)
                 is SpeechEvent.Gt7Ps5TyreOverheat -> tyreOverheatText(event)
             }
@@ -50,7 +50,7 @@ internal class Gt7Ps5ReadoutTextSpeaker(
         event.resolvedText
             ?: formatGt7Ps5RemainingFuelReadoutText(observeRemainingFuelReadoutText().first(), event.percent)
 
-    private suspend fun remainingFuelLapsText(event: SpeechEvent.RemainingFuelLapsWarning): String =
+    private suspend fun remainingFuelLapsText(event: SpeechEvent.Gt7Ps5RemainingFuelLapsWarning): String =
         event.resolvedText
             ?: if (event.laps <= 0) {
                 observeRemainingFuelLapsEmptyReadoutText().first()
