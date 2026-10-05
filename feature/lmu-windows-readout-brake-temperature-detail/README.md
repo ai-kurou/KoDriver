@@ -4,6 +4,8 @@
 
 文言は既存の車両クラス別ブレーキ温度Preferencesへ保存し、保存時に前後の空白を除去して30文字に制限する。挿入チップ・未知プレースホルダー警告・デフォルトへ戻すボタンを提供する。試聴は編集中の文言と現在の閾値を解決した `SpeechEvent.BrakeOverheat` を使う。空白文言・TTS利用不可・音量ゼロ以下では再生しない。収録WAVへのフォールバックは行わない。
 
+試聴の再生条件とTTS利用可否は `:core:domain` の `ReadoutSpeechEventPreviewHelper` で共通化し、文言の解決とイベント生成はViewModelが担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

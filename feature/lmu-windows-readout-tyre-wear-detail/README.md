@@ -6,6 +6,8 @@ LMU のタイヤ摩耗警告の詳細設定画面。いずれかのタイヤの�
 
 「残存率閾値」はタイヤの残存率（%）に対する閾値を指し、摩耗率ではありません。燃料・バーチャルエナジーの「残量閾値」とは計測対象に合わせて表記を区別しています。
 
+試聴の再生条件とTTS利用可否は `:core:domain` の `ReadoutSpeechEventPreviewHelper` で共通化し、文言の解決とイベント生成はViewModelが担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

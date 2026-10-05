@@ -1,10 +1,6 @@
 package kurou.kodriver.domain.preview
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
@@ -19,22 +15,19 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
 class ReadoutTextPreviewHelper(
     scope: CoroutineScope,
     checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
-    private val observeSoundVolume: ObserveSoundVolumeUseCase,
+    observeSoundVolume: ObserveSoundVolumeUseCase,
     private val playStartSoundForKey: PlayStartSoundForKeyUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
-    val textToSpeechAvailable =
-        flow { emit(checkTextToSpeechAvailable()) }
-            .stateIn(scope, SharingStarted.Eagerly, false)
+    private val guard = ReadoutPreviewGuard(scope, checkTextToSpeechAvailable, observeSoundVolume)
+    val textToSpeechAvailable = guard.textToSpeechAvailable
 
     /** 空白文言・TTS利用不可・音量0以下では開始音も本文も再生しない。 */
     suspend fun preview(
         text: String,
         key: ReadoutItemKey,
     ) {
-        if (text.isBlank() || !textToSpeechAvailable.value) return
-        val volume = observeSoundVolume().first()
-        if (volume <= 0) return
+        val volume = guard.volumeForPreview(text) ?: return
         playStartSoundForKey(key)
         speakText(text, volume = volume)
     }

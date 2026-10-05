@@ -267,7 +267,7 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
         }
 
     @Test
-    fun `空白文言では3イベントとも試聴しない`() =
+    fun `空白と改行だけの文言では3イベントとも試聴しない`() =
         runTest {
             stubSettings(available = true)
             val viewModel = createViewModel()
@@ -275,6 +275,9 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             viewModel.onPartDetachedReadoutTextPreviewClicked(" ")
             viewModel.onTyreDetachedReadoutTextPreviewClicked(" ")
             verifySettings()
+            viewModel.onOverheatReadoutTextPreviewClicked("\t\n")
+            viewModel.onPartDetachedReadoutTextPreviewClicked("\t\n")
+            viewModel.onTyreDetachedReadoutTextPreviewClicked("\t\n")
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = " ")) }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = " ")) }

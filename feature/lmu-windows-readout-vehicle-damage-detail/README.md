@@ -6,6 +6,8 @@
 
 文言とスイッチは既存の `LmuWindowsVehicleDamagePreferencesRepository` を使用する。文言の Observe/Save UseCase は `VehicleDamageUseCases`、試聴・TTS利用可否・音量は `VehicleDamageReadoutUseCases` が束ねる。
 
+試聴の再生条件とTTS利用可否は `:core:domain` の `ReadoutSpeechEventPreviewHelper` で共通化し、文言の解決とイベント生成はViewModelが担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

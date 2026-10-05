@@ -294,7 +294,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.BrakeOverheat(800, "残り800℃")) }
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.BrakeOverheat(650, "残り650℃")) }
             verify(exactly = 2) { observeVolume() }
-            confirmVerified(playSpeechEvent, observeVolume)
+            coVerify(exactly = 1) { checkAvailable() }
+            confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
             collection.cancel()
         }
 
@@ -361,6 +362,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("温度{celsius}℃")
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.BrakeOverheat(800, "温度800℃")) }
             verify(exactly = 1) { observeVolume() }
-            confirmVerified(playSpeechEvent, observeVolume)
+            coVerify(exactly = 1) { checkAvailable() }
+            confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
         }
 }

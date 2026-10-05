@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -15,6 +13,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
@@ -42,18 +41,22 @@ internal data class TyreWearReadoutUseCases(
 
 internal class LmuWindowsReadoutTyreWearDetailViewModel(
     private val tyreWearUseCases: TyreWearUseCases,
-    private val readout: TyreWearReadoutUseCases,
+    readout: TyreWearReadoutUseCases,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(readout.checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val previewHelper =
+        ReadoutSpeechEventPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playSpeechEvent,
+        )
 
     val uiState: StateFlow<LmuWindowsReadoutTyreWearDetailUiState> =
         combine(
             tyreWearUseCases.observeThresholdPercentage(),
             tyreWearUseCases.observeReadoutEnabledStates(Simulator.LmuWindows.id),
             tyreWearUseCases.observeText(),
-            textToSpeechAvailable,
+            previewHelper.textToSpeechAvailable,
         ) { thresholdPercentage, enabledStates, text, available ->
             LmuWindowsReadoutTyreWearDetailUiState(
                 thresholdPercentage = thresholdPercentage,
@@ -75,11 +78,9 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
     fun onReadoutTextPreviewClicked(text: String) {
         val percentage = uiState.value.thresholdPercentage
         val formattedText = formatLmuWindowsTyreWearReadoutText(text, percentage)
-        if (formattedText.isBlank() || !textToSpeechAvailable.value) return
         viewModelScope.launch {
-            val volume = readout.observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            readout.playSpeechEvent(
+            previewHelper.preview(
+                formattedText,
                 SpeechEvent.TyreWearWarning(
                     percentage = percentage,
                     resolvedText = formattedText,

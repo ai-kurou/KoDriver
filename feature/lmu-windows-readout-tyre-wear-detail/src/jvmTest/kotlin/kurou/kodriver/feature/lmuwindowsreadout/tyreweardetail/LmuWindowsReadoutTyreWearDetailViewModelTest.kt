@@ -221,7 +221,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.TyreWearWarning(50, "残り50%")) }
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.TyreWearWarning(70, "残り70%")) }
             verify(exactly = 2) { observeVolume() }
-            confirmVerified(playSpeechEvent, observeVolume)
+            coVerify(exactly = 1) { checkAvailable() }
+            confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
             collection.cancel()
         }
 
