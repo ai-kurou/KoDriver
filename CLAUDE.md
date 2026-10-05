@@ -80,6 +80,8 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 主要コマンド一覧は [`docs/build-commands.md`](docs/build-commands.md) を参照。特に完了報告・PR 作成前は `./gradlew preSubmitChecks` を実行すること。GitHub Actions ワークフローの一覧・詳細な挙動・権限設計は [`docs/ci-workflows.md`](docs/ci-workflows.md) を参照。
 
+**同一セッション内で `preSubmitChecks` を重複実行しないこと。** セッション内で実行中の `preSubmitChecks` は、ワークツリーやバックグラウンド実行の有無にかかわらず、最大1つまでとする。開始したプロセスが実行中の場合は、そのプロセスの完了と終了コードを確認してから次の実行を開始する。出力の待機がタイムアウトした場合も、プロセスが終了したとは扱わず、既存のプロセスの状態・出力を確認する。別セッションでの同時実行は許容する。
+
 ---
 
 ## Git 操作ルール
