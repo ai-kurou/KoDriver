@@ -5,14 +5,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -45,15 +44,20 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
     private val myBestLapUseCases: MyBestLapUseCases,
     private val readout: MyBestLapReadoutUseCases,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(readout.checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
 
     val uiState: StateFlow<Gt7Ps5ReadoutMyBestLapDetailUiState> =
         combine(
             myBestLapUseCases.observeEnabledStates(Simulator.Gt7Ps5.id),
             readout.observeText(),
-            textToSpeechAvailable,
+            preview.textToSpeechAvailable,
         ) { states, text, available ->
             Gt7Ps5ReadoutMyBestLapDetailUiState(
                 enabled = states.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled),
@@ -87,12 +91,6 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        if (text.isBlank() || !textToSpeechAvailable.value) return
-        viewModelScope.launch {
-            val volume = readout.observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            readout.playStartSoundForKey(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
-            readout.speakText(text, volume = volume)
-        }
+        viewModelScope.launch { preview.preview(text, ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
     }
 }
