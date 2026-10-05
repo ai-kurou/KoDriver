@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
@@ -14,6 +12,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
@@ -45,16 +44,21 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
     private val remainingFuelUseCases: RemainingFuelUseCases,
     private val readout: RemainingFuelReadoutUseCases,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(readout.checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
 
     val uiState: StateFlow<Gt7Ps5ReadoutRemainingFuelDetailUiState> =
         combine(
             remainingFuelUseCases.observeThresholdPercentage(),
             remainingFuelUseCases.observeReadoutEnabledStates(Simulator.Gt7Ps5.id),
             readout.observeText(),
-            textToSpeechAvailable,
+            preview.textToSpeechAvailable,
         ) { thresholdPercentage, enabledStates, text, available ->
             Gt7Ps5ReadoutRemainingFuelDetailUiState(
                 thresholdPercentage = thresholdPercentage,
@@ -79,13 +83,7 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        if (text.isBlank() || !textToSpeechAvailable.value) return
-        viewModelScope.launch {
-            val volume = readout.observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            readout.playStartSoundForKey(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
-            readout.speakText(text, volume = volume)
-        }
+        viewModelScope.launch { preview.preview(text, ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) }
     }
 
     fun onThresholdChanged(percentage: Int) {
