@@ -871,6 +871,64 @@ class Gt7Ps5NarratorEventProcessorTest {
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
+    @Test
+    fun `全GT7自由文言イベントの空文字と空白は開始音を要求せずSKIPPEDを保存する`() =
+        runTest {
+            val events =
+                listOf(
+                    SpeechEvent.RemainingFuelLapsWarning(3),
+                    SpeechEvent.RemainingFuelLapsWarning(0),
+                    SpeechEvent.Gt7Ps5RemainingFuelWarning(20),
+                    SpeechEvent.Gt7Ps5MyBestLap(83_456),
+                    SpeechEvent.Gt7Ps5TyreOverheat(120),
+                )
+            var observedAtMs = 0L
+            events.forEach { event ->
+                listOf("", " \t\n　").forEach { text ->
+                    observedAtMs++
+                    val jsons = mutableListOf<String>()
+                    coEvery {
+                        telemetryLogRepository.saveTelemetryLog(
+                            observedAtMs,
+                            Simulator.Gt7Ps5,
+                            event.readoutItemKey,
+                            "",
+                            NarrationOutcome.SKIPPED,
+                            capture(jsons),
+                        )
+                    } just Runs
+                    val processor =
+                        Gt7Ps5NarratorEventProcessor(
+                            ttsEngine,
+                            SaveTelemetryLogUseCase(telemetryLogRepository),
+                        ) { text }
+
+                    processor.process(
+                        event.readoutItemKey,
+                        telemetry(),
+                        listOf(event),
+                        listOf(event.readoutItemKey),
+                        emptyMap(),
+                        observedAtMs,
+                    )
+
+                    coVerify(exactly = 1) {
+                        telemetryLogRepository.saveTelemetryLog(
+                            observedAtMs,
+                            Simulator.Gt7Ps5,
+                            event.readoutItemKey,
+                            "",
+                            NarrationOutcome.SKIPPED,
+                            jsons.single(),
+                        )
+                    }
+                }
+            }
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            events.forEach { event -> verify(exactly = 0) { ttsEngine.speak(event, false) } }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
     private fun createProcessor() =
         Gt7Ps5NarratorEventProcessor(
             ttsEngine = ttsEngine,

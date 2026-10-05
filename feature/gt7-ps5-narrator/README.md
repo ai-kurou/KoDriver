@@ -33,3 +33,7 @@
 判定条件と `MyBestLap.Root` / `DetailEnabled` の有効状態は従来どおり。開始音・優先度・キューは `MyBestLap.Root` を参照する。
 空白文言・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` を記録する。formal/casual の収録WAVは削除し、
 WAVへフォールバックしない。共有protoの `voiceType` はLMU/ACEと旧データの互換性のため残し、GT7のみ `readoutText` を使用する。
+
+GT7の全自由文言イベントで、空文字・空白だけの本文は読み上げなしとして扱う。SpeakerとProcessorで
+空白を除外し、音声エンジンへ開始音・本文を要求せず、空文字と `SKIPPED` をログに保存する。
+この仕様の整理はGT7のみを対象とし、LMUの空白文言の扱いは変更しない。

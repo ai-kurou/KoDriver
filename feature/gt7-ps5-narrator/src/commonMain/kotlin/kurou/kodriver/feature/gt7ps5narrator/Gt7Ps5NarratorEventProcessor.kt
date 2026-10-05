@@ -63,7 +63,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                     event is SpeechEvent.Gt7Ps5TyreOverheat ||
                     event is SpeechEvent.Gt7Ps5MyBestLap
                 ) {
-                    readoutText(event)
+                    readoutText(event)?.takeIf { it.isNotBlank() }
                 } else {
                     event.narratedText
                 }
