@@ -209,6 +209,7 @@ class AceWindowsNarratorViewModelTest {
                 AceWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+                    readoutText = { it.narratedText },
                 ),
             currentTimeMs = currentTimeMs,
         )
@@ -489,9 +490,34 @@ class AceWindowsNarratorViewModelTest {
             createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
 
             flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
-            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+            listOf(
+                AceWindowsFlagType.WHITE_FLAG,
+                AceWindowsFlagType.GREEN_FLAG,
+                AceWindowsFlagType.RED_FLAG,
+                AceWindowsFlagType.BLUE_FLAG,
+                AceWindowsFlagType.YELLOW_FLAG,
+                AceWindowsFlagType.BLACK_FLAG,
+                AceWindowsFlagType.BLACK_WHITE_FLAG,
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG,
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG,
+            ).forEach { type ->
+                flagChannel.send(flag(type))
+            }
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsBlueFlag), spokenTexts)
+            assertEquals(
+                listOf(
+                    SpeechEvent.AceWindowsWhiteFlag,
+                    SpeechEvent.AceWindowsGreenFlag,
+                    SpeechEvent.AceWindowsRedFlag,
+                    SpeechEvent.AceWindowsBlueFlag,
+                    SpeechEvent.AceWindowsYellowFlag,
+                    SpeechEvent.AceWindowsBlackFlag,
+                    SpeechEvent.AceWindowsBlackWhiteFlag,
+                    SpeechEvent.AceWindowsOrangeCircleFlag,
+                    SpeechEvent.AceWindowsRedYellowStripesFlag,
+                ),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -508,7 +534,19 @@ class AceWindowsNarratorViewModelTest {
             createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
 
             flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
-            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+            listOf(
+                AceWindowsFlagType.WHITE_FLAG,
+                AceWindowsFlagType.GREEN_FLAG,
+                AceWindowsFlagType.RED_FLAG,
+                AceWindowsFlagType.BLUE_FLAG,
+                AceWindowsFlagType.YELLOW_FLAG,
+                AceWindowsFlagType.BLACK_FLAG,
+                AceWindowsFlagType.BLACK_WHITE_FLAG,
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG,
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG,
+            ).forEach { type ->
+                flagChannel.send(flag(type))
+            }
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
@@ -522,12 +560,35 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                flagEnabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false),
+                flagEnabledOverrides =
+                    mapOf(
+                        ReadoutItemKey.AceWindows.Flag.WhiteFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.GreenFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.RedFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.BlueFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.YellowFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.BlackFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to false,
+                        ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to false,
+                    ),
             )
             createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
 
             flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
-            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+            listOf(
+                AceWindowsFlagType.WHITE_FLAG,
+                AceWindowsFlagType.GREEN_FLAG,
+                AceWindowsFlagType.RED_FLAG,
+                AceWindowsFlagType.BLUE_FLAG,
+                AceWindowsFlagType.YELLOW_FLAG,
+                AceWindowsFlagType.BLACK_FLAG,
+                AceWindowsFlagType.BLACK_WHITE_FLAG,
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG,
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG,
+            ).forEach { type ->
+                flagChannel.send(flag(type))
+            }
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }

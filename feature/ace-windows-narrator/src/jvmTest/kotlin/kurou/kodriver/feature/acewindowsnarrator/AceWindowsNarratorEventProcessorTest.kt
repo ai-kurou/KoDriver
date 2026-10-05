@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package kurou.kodriver.feature.acewindowsnarrator
 
 import io.mockk.Runs
@@ -801,6 +803,158 @@ class AceWindowsNarratorEventProcessorTest {
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
+    @Test
+    fun `自由文言10種の保存文言を読み上げログに記録する`() =
+        runTest {
+            val events =
+                listOf(
+                    SpeechEvent.AceWindowsCheckeredFlag,
+                    SpeechEvent.AceWindowsWhiteFlag,
+                    SpeechEvent.AceWindowsGreenFlag,
+                    SpeechEvent.AceWindowsRedFlag,
+                    SpeechEvent.AceWindowsBlueFlag,
+                    SpeechEvent.AceWindowsYellowFlag,
+                    SpeechEvent.AceWindowsBlackFlag,
+                    SpeechEvent.AceWindowsBlackWhiteFlag,
+                    SpeechEvent.AceWindowsOrangeCircleFlag,
+                    SpeechEvent.AceWindowsRedYellowStripesFlag,
+                )
+            val readouts = mutableListOf<SpeechEvent>()
+            val processor =
+                AceWindowsNarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { event ->
+                    readouts += event
+                    "完走"
+                }
+            every { ttsEngine.currentReadoutItemKey } returns null
+            events.forEach { event ->
+                val jsons = mutableListOf<String>()
+                val text: String? = "完走"
+                every { ttsEngine.speak(event, false) } just Runs
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SPOKEN,
+                        capture(jsons),
+                    )
+                } just Runs
+                processor.processFlag(
+                    flag(
+                        when (event) {
+                            SpeechEvent.AceWindowsCheckeredFlag -> AceWindowsFlagType.CHECKERED_FLAG
+                            SpeechEvent.AceWindowsWhiteFlag -> AceWindowsFlagType.WHITE_FLAG
+                            SpeechEvent.AceWindowsGreenFlag -> AceWindowsFlagType.GREEN_FLAG
+                            SpeechEvent.AceWindowsRedFlag -> AceWindowsFlagType.RED_FLAG
+                            SpeechEvent.AceWindowsBlueFlag -> AceWindowsFlagType.BLUE_FLAG
+                            SpeechEvent.AceWindowsYellowFlag -> AceWindowsFlagType.YELLOW_FLAG
+                            SpeechEvent.AceWindowsBlackFlag -> AceWindowsFlagType.BLACK_FLAG
+                            SpeechEvent.AceWindowsBlackWhiteFlag -> AceWindowsFlagType.BLACK_WHITE_FLAG
+                            SpeechEvent.AceWindowsOrangeCircleFlag -> AceWindowsFlagType.ORANGE_CIRCLE_FLAG
+                            SpeechEvent.AceWindowsRedYellowStripesFlag -> AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG
+                            else -> error("Unexpected flag event")
+                        },
+                    ),
+                    listOf(event),
+                    listOf(event.readoutItemKey),
+                    emptyMap(),
+                    0L,
+                    logContext(),
+                )
+                verify(exactly = 1) { ttsEngine.speak(event, false) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SPOKEN,
+                        jsons.single(),
+                    )
+                }
+            }
+            assertEquals(events, readouts)
+            verify(exactly = events.size) { ttsEngine.currentReadoutItemKey }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `自由文言10種の文言がnullなら空文字とSKIPPEDを記録する`() =
+        runTest {
+            val events =
+                listOf(
+                    SpeechEvent.AceWindowsCheckeredFlag,
+                    SpeechEvent.AceWindowsWhiteFlag,
+                    SpeechEvent.AceWindowsGreenFlag,
+                    SpeechEvent.AceWindowsRedFlag,
+                    SpeechEvent.AceWindowsBlueFlag,
+                    SpeechEvent.AceWindowsYellowFlag,
+                    SpeechEvent.AceWindowsBlackFlag,
+                    SpeechEvent.AceWindowsBlackWhiteFlag,
+                    SpeechEvent.AceWindowsOrangeCircleFlag,
+                    SpeechEvent.AceWindowsRedYellowStripesFlag,
+                )
+            val readouts = mutableListOf<SpeechEvent>()
+            val processor =
+                AceWindowsNarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { event ->
+                    readouts += event
+                    null
+                }
+
+            events.forEach { event ->
+                val jsons = mutableListOf<String>()
+                val text: String? = null
+
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SKIPPED,
+                        capture(jsons),
+                    )
+                } just Runs
+                processor.processFlag(
+                    flag(
+                        when (event) {
+                            SpeechEvent.AceWindowsCheckeredFlag -> AceWindowsFlagType.CHECKERED_FLAG
+                            SpeechEvent.AceWindowsWhiteFlag -> AceWindowsFlagType.WHITE_FLAG
+                            SpeechEvent.AceWindowsGreenFlag -> AceWindowsFlagType.GREEN_FLAG
+                            SpeechEvent.AceWindowsRedFlag -> AceWindowsFlagType.RED_FLAG
+                            SpeechEvent.AceWindowsBlueFlag -> AceWindowsFlagType.BLUE_FLAG
+                            SpeechEvent.AceWindowsYellowFlag -> AceWindowsFlagType.YELLOW_FLAG
+                            SpeechEvent.AceWindowsBlackFlag -> AceWindowsFlagType.BLACK_FLAG
+                            SpeechEvent.AceWindowsBlackWhiteFlag -> AceWindowsFlagType.BLACK_WHITE_FLAG
+                            SpeechEvent.AceWindowsOrangeCircleFlag -> AceWindowsFlagType.ORANGE_CIRCLE_FLAG
+                            SpeechEvent.AceWindowsRedYellowStripesFlag -> AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG
+                            else -> error("Unexpected flag event")
+                        },
+                    ),
+                    listOf(event),
+                    listOf(event.readoutItemKey),
+                    emptyMap(),
+                    0L,
+                    logContext(),
+                )
+                verify(exactly = 0) { ttsEngine.speak(event, false) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        event.readoutItemKey,
+                        text.orEmpty(),
+                        NarrationOutcome.SKIPPED,
+                        jsons.single(),
+                    )
+                }
+            }
+            assertEquals(events, readouts)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
     private fun tyreCarcassTemperature(frontLeftCelsius: Float) =
         AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(frontLeftCelsius)))
 
@@ -812,6 +966,7 @@ class AceWindowsNarratorEventProcessorTest {
         AceWindowsNarratorEventProcessor(
             ttsEngine = ttsEngine,
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            readoutText = { it.narratedText },
         )
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))

@@ -8,6 +8,7 @@ import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
 import kurou.kodriver.data.preferences.LmuWindowsVehicleApproachPreferencesRepositories
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
+import kurou.kodriver.data.preferences.createAceWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelPreferencesRepository
@@ -48,6 +49,7 @@ import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -225,6 +227,9 @@ val desktopDataModule =
         }
         single<AceWindowsFlagPreferencesRepository> {
             createAceWindowsFlagPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<AceWindowsFlagReadoutTextPreferencesRepository> {
+            createAceWindowsFlagReadoutTextPreferencesRepository(directory = kodriverDirectory)
         }
         single<AceWindowsTyreTemperaturePreferencesRepository> {
             createAceWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)

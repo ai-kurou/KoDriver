@@ -1,0 +1,514 @@
+@file:Suppress("TooManyFunctions")
+
+package kurou.kodriver.feature.acewindowsnarrator
+
+import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+class AceWindowsReadoutTextSpeakerTest {
+    private val observeText: ObserveAceWindowsCheckeredFlagReadoutTextUseCase = mockk()
+    private val observeWhite: ObserveAceWindowsWhiteFlagReadoutTextUseCase = mockk()
+    private val observeGreen: ObserveAceWindowsGreenFlagReadoutTextUseCase = mockk()
+    private val observeRed: ObserveAceWindowsRedFlagReadoutTextUseCase = mockk()
+    private val observeBlue: ObserveAceWindowsBlueFlagReadoutTextUseCase = mockk()
+    private val observeYellow: ObserveAceWindowsYellowFlagReadoutTextUseCase = mockk()
+    private val observeBlack: ObserveAceWindowsBlackFlagReadoutTextUseCase = mockk()
+    private val observeBlackWhite: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase = mockk()
+    private val observeOrangeCircle: ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase = mockk()
+    private val observeRedYellowStripes: ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase = mockk()
+    private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
+    private val speakText: SpeakTextUseCase = mockk()
+    private val speaker =
+        AceWindowsReadoutTextSpeaker(
+            observeText,
+            observeWhite,
+            observeGreen,
+            observeRed,
+            observeBlue,
+            observeYellow,
+            observeBlack,
+            observeBlackWhite,
+            observeOrangeCircle,
+            observeRedYellowStripes,
+            checkAvailable,
+            speakText,
+        )
+
+    @Test
+    fun `保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeText() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsCheckeredFlag))
+            speaker(SpeechEvent.AceWindowsCheckeredFlag, 42)
+
+            verify(exactly = 2) { observeText() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeText, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeText() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsCheckeredFlag))
+                speaker(SpeechEvent.AceWindowsCheckeredFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeText() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeText, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `TTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeText() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsCheckeredFlag))
+            speaker(SpeechEvent.AceWindowsCheckeredFlag, 100)
+            verify(exactly = 2) { observeText() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeText, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `対象外イベントは設定を参照しない`() =
+        runTest {
+            val events =
+                listOf(
+                    SpeechEvent.AceWindowsRemainingFuelWarning,
+                )
+            events.forEach { event ->
+                assertFalse(isAceWindowsCustomSpeakEvent(event))
+                assertNull(speaker.readoutText(event))
+                speaker(event, 100)
+            }
+            listOf(
+                SpeechEvent.AceWindowsCheckeredFlag,
+                SpeechEvent.AceWindowsOrangeCircleFlag,
+                SpeechEvent.AceWindowsRedYellowStripesFlag,
+            ).forEach { assertTrue(isAceWindowsCustomSpeakEvent(it)) }
+            verify(exactly = 0) { observeText() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeText, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Whiteは保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeWhite() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsWhiteFlag))
+            speaker(SpeechEvent.AceWindowsWhiteFlag, 42)
+
+            verify(exactly = 2) { observeWhite() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeWhite, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Whiteは空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeWhite() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsWhiteFlag))
+                speaker(SpeechEvent.AceWindowsWhiteFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeWhite() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeWhite, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `WhiteはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeWhite() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsWhiteFlag))
+            speaker(SpeechEvent.AceWindowsWhiteFlag, 100)
+            verify(exactly = 2) { observeWhite() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeWhite, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Greenは保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeGreen() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsGreenFlag))
+            speaker(SpeechEvent.AceWindowsGreenFlag, 42)
+
+            verify(exactly = 2) { observeGreen() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeGreen, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Greenは空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeGreen() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsGreenFlag))
+                speaker(SpeechEvent.AceWindowsGreenFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeGreen() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeGreen, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `GreenはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeGreen() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsGreenFlag))
+            speaker(SpeechEvent.AceWindowsGreenFlag, 100)
+            verify(exactly = 2) { observeGreen() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeGreen, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Redは保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeRed() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsRedFlag))
+            speaker(SpeechEvent.AceWindowsRedFlag, 42)
+
+            verify(exactly = 2) { observeRed() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeRed, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Redは空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeRed() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsRedFlag))
+                speaker(SpeechEvent.AceWindowsRedFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeRed() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeRed, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `RedはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeRed() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsRedFlag))
+            speaker(SpeechEvent.AceWindowsRedFlag, 100)
+            verify(exactly = 2) { observeRed() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeRed, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Blueは保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeBlue() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsBlueFlag))
+            speaker(SpeechEvent.AceWindowsBlueFlag, 42)
+
+            verify(exactly = 2) { observeBlue() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeBlue, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Blueは空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeBlue() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlueFlag))
+                speaker(SpeechEvent.AceWindowsBlueFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeBlue() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeBlue, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `BlueはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeBlue() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlueFlag))
+            speaker(SpeechEvent.AceWindowsBlueFlag, 100)
+            verify(exactly = 2) { observeBlue() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeBlue, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Yellowは保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeYellow() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsYellowFlag))
+            speaker(SpeechEvent.AceWindowsYellowFlag, 42)
+
+            verify(exactly = 2) { observeYellow() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeYellow, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Yellowは空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeYellow() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsYellowFlag))
+                speaker(SpeechEvent.AceWindowsYellowFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeYellow() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeYellow, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `YellowはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeYellow() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsYellowFlag))
+            speaker(SpeechEvent.AceWindowsYellowFlag, 100)
+            verify(exactly = 2) { observeYellow() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeYellow, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Blackは保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeBlack() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsBlackFlag))
+            speaker(SpeechEvent.AceWindowsBlackFlag, 42)
+
+            verify(exactly = 2) { observeBlack() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeBlack, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `Blackは空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeBlack() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlackFlag))
+                speaker(SpeechEvent.AceWindowsBlackFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeBlack() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeBlack, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `BlackはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeBlack() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlackFlag))
+            speaker(SpeechEvent.AceWindowsBlackFlag, 100)
+            verify(exactly = 2) { observeBlack() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeBlack, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `BlackWhiteは保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeBlackWhite() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsBlackWhiteFlag))
+            speaker(SpeechEvent.AceWindowsBlackWhiteFlag, 42)
+
+            verify(exactly = 2) { observeBlackWhite() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeBlackWhite, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `BlackWhiteは空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeBlackWhite() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlackWhiteFlag))
+                speaker(SpeechEvent.AceWindowsBlackWhiteFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeBlackWhite() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeBlackWhite, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `BlackWhiteはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeBlackWhite() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlackWhiteFlag))
+            speaker(SpeechEvent.AceWindowsBlackWhiteFlag, 100)
+            verify(exactly = 2) { observeBlackWhite() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeBlackWhite, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `OrangeCircleは保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeOrangeCircle() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsOrangeCircleFlag))
+            speaker(SpeechEvent.AceWindowsOrangeCircleFlag, 42)
+
+            verify(exactly = 2) { observeOrangeCircle() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeOrangeCircle, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `OrangeCircleは空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeOrangeCircle() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsOrangeCircleFlag))
+                speaker(SpeechEvent.AceWindowsOrangeCircleFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeOrangeCircle() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeOrangeCircle, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `OrangeCircleはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeOrangeCircle() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsOrangeCircleFlag))
+            speaker(SpeechEvent.AceWindowsOrangeCircleFlag, 100)
+            verify(exactly = 2) { observeOrangeCircle() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeOrangeCircle, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `RedYellowStripesは保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeRedYellowStripes() } returns flowOf("チェッカー、完走")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
+
+            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsRedYellowStripesFlag))
+            speaker(SpeechEvent.AceWindowsRedYellowStripesFlag, 42)
+
+            verify(exactly = 2) { observeRedYellowStripes() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("チェッカー、完走", volume = 42) }
+            confirmVerified(observeRedYellowStripes, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `RedYellowStripesは空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeRedYellowStripes() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsRedYellowStripesFlag))
+                speaker(SpeechEvent.AceWindowsRedYellowStripesFlag, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeRedYellowStripes() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeRedYellowStripes, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `RedYellowStripesはTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeRedYellowStripes() } returns flowOf("完走")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsRedYellowStripesFlag))
+            speaker(SpeechEvent.AceWindowsRedYellowStripesFlag, 100)
+            verify(exactly = 2) { observeRedYellowStripes() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("完走", volume = 100) }
+            confirmVerified(observeRedYellowStripes, checkAvailable, speakText)
+        }
+}

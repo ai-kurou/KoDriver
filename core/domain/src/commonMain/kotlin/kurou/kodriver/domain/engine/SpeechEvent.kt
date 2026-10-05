@@ -1,5 +1,15 @@
 package kurou.kodriver.domain.engine
 
+import kurou.kodriver.domain.model.ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
@@ -48,7 +58,7 @@ sealed interface SpeechEvent {
 
     /**
      * テレメトリログに記録するイベントの既定文言。
-     * WAVイベントでは収録音声・チップ表示と一致する。LMUフラッグ・車両接近(開始時・継続時)・ピットタイミングは自由文字列を読み上げるため、
+     * WAVイベントでは収録音声・チップ表示と一致する。ACEフラッグ・LMUフラッグ・車両接近(開始時・継続時)・ピットタイミングは自由文字列を読み上げるため、
      * 実際の本文ではなく既定文言の定数（`LMU_WINDOWS_*_READOUT_TEXT_DEFAULT`）を参照する。
      * ドメイン層はCompose Resourcesに依存しないため、表示文言の変更時はここも更新する。
      */
@@ -281,52 +291,52 @@ sealed interface SpeechEvent {
 
     data object AceWindowsWhiteFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "ホワイトフラッグ"
+        override val narratedText = ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsGreenFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "グリーンフラッグ"
+        override val narratedText = ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsRedFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "レッドフラッグ"
+        override val narratedText = ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsBlueFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "ブルーフラッグ"
+        override val narratedText = ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsYellowFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "イエローフラッグ"
+        override val narratedText = ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsBlackFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "ブラックフラッグ"
+        override val narratedText = ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsBlackWhiteFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "ブラック・ホワイトフラッグ"
+        override val narratedText = ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsCheckeredFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "チェッカーフラッグ"
+        override val narratedText = ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsOrangeCircleFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "オレンジボールフラッグ"
+        override val narratedText = ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsRedYellowStripesFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
-        override val narratedText = "レッド・イエローストライプフラッグ"
+        override val narratedText = ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
     }
 
     data object AceWindowsTyreOverheat : SpeechEvent {
