@@ -33,3 +33,7 @@
 判定条件と `MyBestLap.Root` / `DetailEnabled` の有効状態は従来どおり。開始音・優先度・キューは `MyBestLap.Root` を参照する。
 空白文言・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` を記録する。formal/casual の収録WAVは削除し、
 WAVへフォールバックしない。共有protoの `voiceType` はLMU/ACEと旧データの互換性のため残し、GT7のみ `readoutText` を使用する。
+
+GT7の自由文言イベントは `Gt7Ps5ReadoutTextEvent` を実装する。Processorと音声エンジンはこの型で
+対象を判定し、`withResolvedText` で本文を保持する。Speakerの文言取得はsealed interfaceに対する
+網羅的な `when` とし、新しいイベントを追加した際の取得処理の漏れをコンパイル時に検出する。

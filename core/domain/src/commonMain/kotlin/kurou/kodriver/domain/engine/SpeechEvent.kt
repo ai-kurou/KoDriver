@@ -268,11 +268,13 @@ sealed interface SpeechEvent {
     /** GT7 の更新後の自己ベストタイム。解決済み文言は判定時の発話・ログ内容を保持する。 */
     data class Gt7Ps5MyBestLap(
         val lapTimeMs: Int,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : Gt7Ps5ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
         override val narratedText =
             formatGt7Ps5MyBestLapReadoutText(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
+
+        override fun withResolvedText(text: String): Gt7Ps5MyBestLap = copy(resolvedText = text)
     }
 
     /**
@@ -281,8 +283,8 @@ sealed interface SpeechEvent {
      */
     data class RemainingFuelLapsWarning(
         val laps: Int,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : Gt7Ps5ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
         override val narratedText =
             if (laps <= 0) {
@@ -290,6 +292,8 @@ sealed interface SpeechEvent {
             } else {
                 formatGt7Ps5RemainingFuelLapsReadoutText(GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT, laps)
             }
+
+        override fun withResolvedText(text: String): RemainingFuelLapsWarning = copy(resolvedText = text)
     }
 
     /**
@@ -298,21 +302,25 @@ sealed interface SpeechEvent {
      */
     data class Gt7Ps5RemainingFuelWarning(
         val percent: Int,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : Gt7Ps5ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root
         override val narratedText =
             formatGt7Ps5RemainingFuelReadoutText(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, percent)
+
+        override fun withResolvedText(text: String): Gt7Ps5RemainingFuelWarning = copy(resolvedText = text)
     }
 
     /** GT7 の全輪の最高タイヤ温度。解決済み文言は判定時の発話・ログ内容を保持する。 */
     data class Gt7Ps5TyreOverheat(
         val celsius: Int,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : Gt7Ps5ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.TyreTemperature.Root
         override val narratedText =
             formatGt7Ps5TyreTemperatureReadoutText(GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, celsius)
+
+        override fun withResolvedText(text: String): Gt7Ps5TyreOverheat = copy(resolvedText = text)
     }
 
     /**
@@ -430,4 +438,11 @@ sealed interface FreeTextSpeechEvent : SpeechEvent {
     val resolvedText: String?
 
     fun withResolvedText(text: String): FreeTextSpeechEvent
+}
+
+/** GT7の自由文言イベント。文言取得の分岐を網羅し、判定時の本文を発話・ログで共有する。 */
+sealed interface Gt7Ps5ReadoutTextEvent : SpeechEvent {
+    val resolvedText: String?
+
+    fun withResolvedText(text: String): Gt7Ps5ReadoutTextEvent
 }

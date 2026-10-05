@@ -4,6 +4,7 @@ import kurou.kodriver.core.designsystem.readStartSoundBytes
 import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
+import kurou.kodriver.domain.engine.Gt7Ps5ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
@@ -126,12 +127,7 @@ val gt7Ps5NarratorModule: Module =
                             startSoundResourceLoader = ::readStartSoundBytes,
                         ),
                     customSpeak = get<Gt7Ps5ReadoutTextSpeaker>()::invoke,
-                    isCustomSpeakEvent = {
-                        it is SpeechEvent.RemainingFuelLapsWarning ||
-                            it is SpeechEvent.Gt7Ps5RemainingFuelWarning ||
-                            it is SpeechEvent.Gt7Ps5TyreOverheat ||
-                            it is SpeechEvent.Gt7Ps5MyBestLap
-                    },
+                    isCustomSpeakEvent = { it is Gt7Ps5ReadoutTextEvent },
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
