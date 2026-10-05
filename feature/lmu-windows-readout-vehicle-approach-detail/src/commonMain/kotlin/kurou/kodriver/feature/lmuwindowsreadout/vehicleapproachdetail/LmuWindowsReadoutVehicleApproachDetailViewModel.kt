@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
@@ -17,6 +15,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATI
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
@@ -50,9 +49,14 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private val observeSustainedRightText: ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase,
     private val startReadout: StartReadoutUseCases,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(startReadout.checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            startReadout.checkTextToSpeechAvailable,
+            startReadout.observeSoundVolume,
+            startReadout.playStartSoundForKey,
+            startReadout.speakText,
+        )
 
     val uiState: StateFlow<LmuWindowsReadoutVehicleApproachDetailUiState> =
         combine(
@@ -82,7 +86,7 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
                 sustainedLeftText = sustainedTexts.first,
                 sustainedRightText = sustainedTexts.second,
             )
-        }.combine(textToSpeechAvailable) { state, available ->
+        }.combine(preview.textToSpeechAvailable) { state, available ->
             state.copy(isTextToSpeechAvailable = available)
         }.stateIn(
             viewModelScope,
@@ -202,12 +206,6 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
 
     /** 空白文言・TTS利用不可・音量ゼロでは試聴せず、実際の読み上げと同じRootキーで開始音を鳴らす。 */
     private fun playStartReadoutPreview(text: String) {
-        if (text.isBlank() || !textToSpeechAvailable.value) return
-        viewModelScope.launch {
-            val volume = startReadout.observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            startReadout.playStartSoundForKey(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-            startReadout.speakText(text, volume = volume)
-        }
+        viewModelScope.launch { preview.preview(text, ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
     }
 }

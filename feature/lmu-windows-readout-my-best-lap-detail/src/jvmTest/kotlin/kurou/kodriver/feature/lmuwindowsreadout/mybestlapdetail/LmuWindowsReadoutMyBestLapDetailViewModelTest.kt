@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -155,9 +156,13 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) } returns Unit
+            val startSoundCompleted = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) } coAnswers
+                { startSoundCompleted.await() }
             coEvery { speakText("更新1分23秒456{unknown}", volume = 60) } returns Unit
             createViewModel().onReadoutTextPreviewClicked("更新{laptime}{unknown}")
+            coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
+            startSoundCompleted.complete(Unit)
             coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) }
             coVerify(exactly = 1) { speakText("更新1分23秒456{unknown}", volume = 60) }
             coVerifyOrder {

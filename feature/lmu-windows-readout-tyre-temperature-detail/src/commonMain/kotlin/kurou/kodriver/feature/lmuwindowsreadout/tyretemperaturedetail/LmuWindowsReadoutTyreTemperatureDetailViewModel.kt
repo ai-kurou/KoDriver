@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.Celsius
@@ -15,6 +13,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
@@ -58,9 +57,14 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     private val tyreTemperatureUseCases: TyreTemperatureUseCases,
     private val readout: TyreTemperatureReadoutUseCases,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(readout.checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
 
     private val temperatureSettings =
         combine(
@@ -83,7 +87,7 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
             temperatureSettings,
             readout.observeText(),
             readout.observeColdText(),
-            textToSpeechAvailable,
+            preview.textToSpeechAvailable,
         ) { settings, text, coldText, available ->
             settings.copy(overheatReadoutText = text, coldReadoutText = coldText, isTextToSpeechAvailable = available)
         }.stateIn(
@@ -114,13 +118,7 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     }
 
     private fun previewReadoutText(text: String) {
-        if (text.isBlank() || !textToSpeechAvailable.value) return
-        viewModelScope.launch {
-            val volume = readout.observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            readout.playStartSoundForKey(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
-            readout.speakText(text, volume = volume)
-        }
+        viewModelScope.launch { preview.preview(text, ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
     }
 
     fun onLowWarningEnabledChanged(enabled: Boolean) {

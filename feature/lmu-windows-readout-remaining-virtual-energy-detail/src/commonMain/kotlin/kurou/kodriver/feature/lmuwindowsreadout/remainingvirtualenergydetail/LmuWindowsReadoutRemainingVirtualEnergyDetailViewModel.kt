@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
@@ -14,6 +12,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
@@ -45,16 +44,21 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
     private val remainingVirtualEnergyUseCases: RemainingVirtualEnergyUseCases,
     private val readout: RemainingVirtualEnergyReadoutUseCases,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(readout.checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
 
     val uiState: StateFlow<LmuWindowsReadoutRemainingVirtualEnergyDetailUiState> =
         combine(
             remainingVirtualEnergyUseCases.observeThresholdPercentage(),
             remainingVirtualEnergyUseCases.observeReadoutEnabledStates(Simulator.LmuWindows.id),
             readout.observeText(),
-            textToSpeechAvailable,
+            preview.textToSpeechAvailable,
         ) { thresholdPercentage, enabledStates, text, available ->
             LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(
                 thresholdPercentage = thresholdPercentage,
@@ -75,13 +79,7 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
     /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
     fun onReadoutTextPreviewClicked(text: String) {
         val formattedText = formatLmuWindowsRemainingVirtualEnergyReadoutText(text, uiState.value.thresholdPercentage)
-        if (formattedText.isBlank() || !textToSpeechAvailable.value) return
-        viewModelScope.launch {
-            val volume = readout.observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            readout.playStartSoundForKey(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
-            readout.speakText(formattedText, volume = volume)
-        }
+        viewModelScope.launch { preview.preview(formattedText, ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) }
     }
 
     fun onThresholdChanged(percentage: Int) {

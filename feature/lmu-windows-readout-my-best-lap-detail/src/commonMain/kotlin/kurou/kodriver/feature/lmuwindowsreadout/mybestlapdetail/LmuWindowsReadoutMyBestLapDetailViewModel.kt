@@ -5,14 +5,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -45,15 +44,20 @@ internal class LmuWindowsReadoutMyBestLapDetailViewModel(
     private val myBestLapUseCases: MyBestLapUseCases,
     private val readout: MyBestLapReadoutUseCases,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(readout.checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
 
     val uiState: StateFlow<LmuWindowsReadoutMyBestLapDetailUiState> =
         combine(
             myBestLapUseCases.observeEnabledStates(Simulator.LmuWindows.id),
             readout.observeText(),
-            textToSpeechAvailable,
+            preview.textToSpeechAvailable,
         ) { states, text, available ->
             LmuWindowsReadoutMyBestLapDetailUiState(
                 enabled = states.readoutEnabled(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled),
@@ -87,12 +91,6 @@ internal class LmuWindowsReadoutMyBestLapDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        if (text.isBlank() || !textToSpeechAvailable.value) return
-        viewModelScope.launch {
-            val volume = readout.observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            readout.playStartSoundForKey(ReadoutItemKey.LmuWindows.MyBestLap.Root)
-            readout.speakText(text, volume = volume)
-        }
+        viewModelScope.launch { preview.preview(text, ReadoutItemKey.LmuWindows.MyBestLap.Root) }
     }
 }

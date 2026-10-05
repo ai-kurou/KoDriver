@@ -5,12 +5,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.formatLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
@@ -62,9 +61,14 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
     private val pitTimingUseCases: PitTimingUseCases,
     private val readout: PitTimingReadoutUseCases,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(readout.checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
 
     val uiState: StateFlow<LmuWindowsReadoutPitTimingDetailUiState> =
         combine(
@@ -77,7 +81,7 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
                     text to imminent
                 },
             ) { virtualEnergy, tyreWear -> virtualEnergy to tyreWear },
-            textToSpeechAvailable,
+            preview.textToSpeechAvailable,
         ) { virtualEnergyLaps, tyreWearLaps, enabledStates, texts, available ->
             LmuWindowsReadoutPitTimingDetailUiState(
                 virtualEnergyEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy),
@@ -154,12 +158,6 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
 
     /** 空白文言・TTS利用不可・音量ゼロでは開始音も本文も再生しない。 */
     private fun playReadoutPreview(text: String) {
-        if (text.isBlank() || !textToSpeechAvailable.value) return
-        viewModelScope.launch {
-            val volume = readout.observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            readout.playStartSoundForKey(ReadoutItemKey.LmuWindows.PitTiming.Root)
-            readout.speakText(text, volume = volume)
-        }
+        viewModelScope.launch { preview.preview(text, ReadoutItemKey.LmuWindows.PitTiming.Root) }
     }
 }
