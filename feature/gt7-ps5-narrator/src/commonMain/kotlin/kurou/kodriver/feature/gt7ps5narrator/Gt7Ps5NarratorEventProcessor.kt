@@ -13,7 +13,6 @@ import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.Gt7Ps5ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -42,18 +41,7 @@ internal class Gt7Ps5NarratorEventProcessor(
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
-        logContext: Gt7Ps5TelemetryLogContext =
-            Gt7Ps5TelemetryLogContext(
-                state = Gt7Ps5NarratorState(),
-                settings =
-                    Gt7Ps5NarratorReadoutSettings(
-                        enabledStates = emptyMap(),
-                        remainingFuelLapsThreshold = 0,
-                        remainingFuelThresholdPercentage = 0,
-                        tyreTemperatureHighThresholdCelsius = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
-                    ),
-                finalState = Gt7Ps5NarratorState(),
-            ),
+        logContext: Gt7Ps5TelemetryLogContext,
     ) {
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
