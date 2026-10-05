@@ -127,7 +127,7 @@ val gt7Ps5NarratorModule: Module =
                         ),
                     customSpeak = get<Gt7Ps5ReadoutTextSpeaker>()::invoke,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.RemainingFuelLapsWarning ||
+                        it is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning ||
                             it is SpeechEvent.Gt7Ps5RemainingFuelWarning ||
                             it is SpeechEvent.Gt7Ps5TyreOverheat ||
                             it is SpeechEvent.Gt7Ps5MyBestLap

@@ -55,7 +55,7 @@ internal class Gt7Ps5ReadoutTextSpeaker(
                 )
             }
 
-            is SpeechEvent.RemainingFuelLapsWarning -> {
+            is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning -> {
                 ReadoutText(
                     remainingFuelLapsText(event),
                     event.resolvedText != null,
@@ -79,7 +79,7 @@ internal class Gt7Ps5ReadoutTextSpeaker(
         event.resolvedText
             ?: formatGt7Ps5RemainingFuelReadoutText(observeRemainingFuelReadoutText().first(), event.percent)
 
-    private suspend fun remainingFuelLapsText(event: SpeechEvent.RemainingFuelLapsWarning): String =
+    private suspend fun remainingFuelLapsText(event: SpeechEvent.Gt7Ps5RemainingFuelLapsWarning): String =
         event.resolvedText
             ?: if (event.laps <= 0) {
                 observeRemainingFuelLapsEmptyReadoutText().first()

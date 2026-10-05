@@ -259,7 +259,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(lapCount = 2, gasLevel = 20f, gasCapacity = 100f))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(2, resolvedText = "燃料は残り約2周")),
+                listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(2, resolvedText = "燃料は残り約2周")),
                 spokenTexts,
             )
         }
@@ -306,8 +306,8 @@ class Gt7Ps5NarratorViewModelTest {
             )
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
-                    SpeechEvent.RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
                 ),
                 refuelSpokenTexts,
             )
@@ -327,8 +327,8 @@ class Gt7Ps5NarratorViewModelTest {
             )
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
-                    SpeechEvent.RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
                 ),
                 lapResetSpokenTexts,
             )

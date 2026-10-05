@@ -58,12 +58,12 @@ internal class Gt7Ps5NarratorEventProcessor(
         events.forEach { event ->
             val text =
                 if (
-                    event is SpeechEvent.RemainingFuelLapsWarning ||
+                    event is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning ||
                     event is SpeechEvent.Gt7Ps5RemainingFuelWarning ||
                     event is SpeechEvent.Gt7Ps5TyreOverheat ||
                     event is SpeechEvent.Gt7Ps5MyBestLap
                 ) {
-                    readoutText(event)
+                    readoutText(event)?.takeIf { it.isNotBlank() }
                 } else {
                     event.narratedText
                 }
@@ -73,7 +73,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                 } else {
                     val resolvedEvent =
                         when (event) {
-                            is SpeechEvent.RemainingFuelLapsWarning -> event.copy(resolvedText = text)
+                            is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning -> event.copy(resolvedText = text)
                             is SpeechEvent.Gt7Ps5RemainingFuelWarning -> event.copy(resolvedText = text)
                             is SpeechEvent.Gt7Ps5MyBestLap -> event.copy(resolvedText = text)
                             is SpeechEvent.Gt7Ps5TyreOverheat -> event.copy(resolvedText = text)
