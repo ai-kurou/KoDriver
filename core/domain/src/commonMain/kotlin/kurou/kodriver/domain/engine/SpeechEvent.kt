@@ -48,71 +48,109 @@ sealed interface SpeechEvent {
 
     /**
      * テレメトリログに記録するイベントの既定文言。
-     * WAVイベントでは収録音声・チップ表示と一致する。LMUフラッグ・車両接近(開始時・継続時)・ピットタイミングは自由文字列を読み上げるため、
-     * 実際の本文ではなく既定文言の定数（`LMU_WINDOWS_*_READOUT_TEXT_DEFAULT`）を参照する。
+     * WAVイベントでは収録音声・チップ表示と一致する。LMUの自由文字列イベントでは既定文言を参照し、
+     * 判定時の実際の本文は [FreeTextSpeechEvent.resolvedText] に保持する。
      * ドメイン層はCompose Resourcesに依存しないため、表示文言の変更時はここも更新する。
      */
     val narratedText: String
 
-    data object CarLeft : SpeechEvent {
+    data class CarLeft(
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): CarLeft = copy(resolvedText = text)
     }
 
-    data object CarRight : SpeechEvent {
+    data class CarRight(
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): CarRight = copy(resolvedText = text)
     }
 
-    data object CarLeftSustained : SpeechEvent {
+    data class CarLeftSustained(
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): CarLeftSustained = copy(resolvedText = text)
     }
 
-    data object CarRightSustained : SpeechEvent {
+    data class CarRightSustained(
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): CarRightSustained = copy(resolvedText = text)
     }
 
-    data object BlueFlag : SpeechEvent {
+    data class BlueFlag(
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
         override val narratedText = LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): BlueFlag = copy(resolvedText = text)
     }
 
-    data object YellowFlag : SpeechEvent {
+    data class YellowFlag(
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
         override val narratedText = LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): YellowFlag = copy(resolvedText = text)
     }
 
-    data object FullCourseYellow : SpeechEvent {
+    data class FullCourseYellow(
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
         override val narratedText = LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): FullCourseYellow = copy(resolvedText = text)
     }
 
-    data object RedFlag : SpeechEvent {
+    data class RedFlag(
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
         override val narratedText = LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): RedFlag = copy(resolvedText = text)
     }
 
     data class Overheating(
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): Overheating = copy(resolvedText = text)
     }
 
     data class PartDetached(
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): PartDetached = copy(resolvedText = text)
     }
 
     data class TyreDetached(
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): TyreDetached = copy(resolvedText = text)
     }
 
     /**
@@ -121,14 +159,16 @@ sealed interface SpeechEvent {
      */
     data class TyreOverheat(
         val celsius: Int,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
         override val narratedText =
             formatLmuWindowsTyreTemperatureReadoutText(
                 LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
                 celsius,
             )
+
+        override fun withResolvedText(text: String): TyreOverheat = copy(resolvedText = text)
     }
 
     /**
@@ -137,14 +177,16 @@ sealed interface SpeechEvent {
      */
     data class TyreCold(
         val celsius: Int,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
         override val narratedText =
             formatLmuWindowsTyreTemperatureReadoutText(
                 LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT,
                 celsius,
             )
+
+        override fun withResolvedText(text: String): TyreCold = copy(resolvedText = text)
     }
 
     /**
@@ -153,14 +195,16 @@ sealed interface SpeechEvent {
      */
     data class TyreWearWarning(
         val percentage: Int,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root
         override val narratedText =
             formatLmuWindowsTyreWearReadoutText(
                 LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT,
                 percentage,
             )
+
+        override fun withResolvedText(text: String): TyreWearWarning = copy(resolvedText = text)
     }
 
     /**
@@ -169,14 +213,16 @@ sealed interface SpeechEvent {
      */
     data class BrakeOverheat(
         val celsius: Int,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root
         override val narratedText =
             formatLmuWindowsBrakeTemperatureReadoutText(
                 LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT,
                 celsius,
             )
+
+        override fun withResolvedText(text: String): BrakeOverheat = copy(resolvedText = text)
     }
 
     /**
@@ -185,23 +231,27 @@ sealed interface SpeechEvent {
      */
     data class RemainingVirtualEnergyWarning(
         val percentage: Int,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root
         override val narratedText =
             formatLmuWindowsRemainingVirtualEnergyReadoutText(
                 LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
                 percentage,
             )
+
+        override fun withResolvedText(text: String): RemainingVirtualEnergyWarning = copy(resolvedText = text)
     }
 
     data class LmuWindowsMyBestLap(
         val lapTimeMs: Long,
-        val resolvedText: String? = null,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root
         override val narratedText =
             formatLmuWindowsMyBestLapReadoutText(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
+
+        override fun withResolvedText(text: String): LmuWindowsMyBestLap = copy(resolvedText = text)
     }
 
     /** GT7 の更新後の自己ベストタイム。解決済み文言は判定時の発話・ログ内容を保持する。 */
@@ -261,9 +311,12 @@ sealed interface SpeechEvent {
     data class PitTimingWarning(
         val laps: Int,
         val source: PitTimingSource,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : FreeTextSpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root
         override val narratedText = defaultLmuWindowsPitTimingReadoutText(source, laps)
+
+        override fun withResolvedText(text: String): PitTimingWarning = copy(resolvedText = text)
     }
 
     /** ACE の残燃料で走行可能な周回数を読み上げるイベント。文言・WAV は GT7 の [RemainingFuelLapsWarning] と共通。 */
@@ -359,4 +412,11 @@ sealed interface SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root
         override val narratedText = "ベストラップ"
     }
+}
+
+/** 判定時の本文を保持し、キュー待機中の設定変更後も発話とログを一致させるLMUイベント。 */
+sealed interface FreeTextSpeechEvent : SpeechEvent {
+    val resolvedText: String?
+
+    fun withResolvedText(text: String): FreeTextSpeechEvent
 }

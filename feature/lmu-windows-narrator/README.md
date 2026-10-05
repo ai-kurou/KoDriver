@@ -28,3 +28,10 @@ LMUタイヤ過熱・低温警告は保存した自由文言の `{celsius}` を�
 ブレーキ過熱警告は設定した車両クラスの温度閾値（℃）をイベントに持ち、全クラス共通の自由文言の `{celsius}` をその閾値に置換する。実測温度は使用しない。既定文言は「ブレーキ温度{celsius}℃以上」。判定時に文言を `resolvedText` へ保持し、キュー待機中もログと発話を一致させる。空欄・TTS利用不可では開始音も要求せず空文字と `SKIPPED` を記録する。`brake_overheat.wav` は廃止し、WAVへはフォールバックしない。
 
 LMU自己ベストラップ更新は自由文言のOS標準TTSを使う。既定文言は「自己ベストラップ更新 {laptime}」。`{laptime}` は更新後の `telemetry.timing.bestLapTimeMs`（Long）を「1分23秒456」形式に置換し、1分未満では分を省略、ミリ秒は3桁固定、60分以上も分で表す。判定時に本文を `resolvedText` へ保持して発話とログを一致させる。空白・TTS利用不可では開始音も本文も要求せず、ログに空文字と `SKIPPED` を記録する。更新判定と一覧の `MyBestLap.Root`・詳細の `MyBestLap.DetailEnabled` のスイッチ配線は維持し、開始音・優先度・キュー・試聴は `MyBestLap.Root` を使う。詳細画面で文言編集・`{laptime}` 挿入・未知プレースホルダー警告・リセット・サンプルタイム83456msでの試聴を提供する。LMUの口調設定は移行せず参照しない。自己ベスト用WAVは廃止し、WAVへのフォールバックは行わない。
+
+LMUの全自由文字列イベント（フラッグ・車両接近・ピットタイミングを含む18種類）は `FreeTextSpeechEvent` を実装する。
+`LmuWindowsNarratorEventProcessor` の共通 `processEvents` が判定時の本文を `withResolvedText` で保持し、同じ本文をログに保存する。
+自己ベストラップの処理名は `processMyBestLap`。空白本文は共通処理でスキップする。
+`LmuWindowsReadoutTextSpeaker` は解決済み本文を優先し、未解決の場合だけ設定を参照する。
+`LmuWindowsNarratorModule` は `isCustomSpeakEvent = { it is FreeTextSpeechEvent }` で対象を判定する。
+ピットタイミングの周回ゲートとソース選択は本文ではなく `laps` を使い続ける。

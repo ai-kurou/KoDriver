@@ -28,10 +28,10 @@ class LmuWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.BlueFlag.narratedText,
-            SpeechEvent.YellowFlag.narratedText,
-            SpeechEvent.FullCourseYellow.narratedText,
-            SpeechEvent.RedFlag.narratedText,
+            SpeechEvent.BlueFlag().narratedText,
+            SpeechEvent.YellowFlag().narratedText,
+            SpeechEvent.FullCourseYellow().narratedText,
+            SpeechEvent.RedFlag().narratedText,
         ).forEach { narratedText ->
             rule.onAllNodesWithText(narratedText)[0].assertTextContains(narratedText, substring = true)
         }

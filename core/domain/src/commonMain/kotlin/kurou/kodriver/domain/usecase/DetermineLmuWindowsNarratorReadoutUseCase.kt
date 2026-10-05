@@ -613,7 +613,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 raceFlags.sectorFlags[i] == SectorFlagState.YELLOW &&
                     previous.sectorFlags.getOrNull(i) != SectorFlagState.YELLOW
             }
-        return if (newYellowSector) SpeechEvent.YellowFlag else null
+        return if (newYellowSector) SpeechEvent.YellowFlag() else null
     }
 
     private fun determineFullCourseYellowEvent(
@@ -626,7 +626,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             previous.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
             raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW
         ) {
-            SpeechEvent.FullCourseYellow
+            SpeechEvent.FullCourseYellow()
         } else {
             null
         }
@@ -642,7 +642,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             raceFlags.gamePhase == SessionPhase.RED_FLAG
         ) {
             // 赤旗本文は自由文字列を読み上げる。
-            SpeechEvent.RedFlag
+            SpeechEvent.RedFlag()
         } else {
             null
         }
@@ -706,7 +706,7 @@ private fun determineBlueFlagEvent(
         previous.playerFlag != PrimaryFlag.BLUE &&
         raceFlags.playerFlag == PrimaryFlag.BLUE
     ) {
-        SpeechEvent.BlueFlag
+        SpeechEvent.BlueFlag()
     } else {
         null
     }
@@ -843,13 +843,13 @@ private enum class ApproachSide {
 
     fun toSpeechEvent(): SpeechEvent =
         when (this) {
-            LEFT -> SpeechEvent.CarLeft
-            RIGHT -> SpeechEvent.CarRight
+            LEFT -> SpeechEvent.CarLeft()
+            RIGHT -> SpeechEvent.CarRight()
         }
 
     fun toSustainedSpeechEvent(): SpeechEvent =
         when (this) {
-            LEFT -> SpeechEvent.CarLeftSustained
-            RIGHT -> SpeechEvent.CarRightSustained
+            LEFT -> SpeechEvent.CarLeftSustained()
+            RIGHT -> SpeechEvent.CarRightSustained()
         }
 }

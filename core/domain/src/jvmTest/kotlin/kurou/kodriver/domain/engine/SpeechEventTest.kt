@@ -12,19 +12,76 @@ import kotlin.test.assertEquals
 @Suppress("TooManyFunctions")
 class SpeechEventTest {
     @Test
+    fun `全自由文字列イベントは本文を置き換えて型と既定文言とキーを維持する`() {
+        val events =
+            listOf<FreeTextSpeechEvent>(
+                SpeechEvent.CarLeft(),
+                SpeechEvent.CarRight(),
+                SpeechEvent.CarLeftSustained(),
+                SpeechEvent.CarRightSustained(),
+                SpeechEvent.BlueFlag(),
+                SpeechEvent.YellowFlag(),
+                SpeechEvent.FullCourseYellow(),
+                SpeechEvent.RedFlag(),
+                SpeechEvent.Overheating(),
+                SpeechEvent.PartDetached(),
+                SpeechEvent.TyreDetached(),
+                SpeechEvent.TyreOverheat(100),
+                SpeechEvent.TyreCold(60),
+                SpeechEvent.TyreWearWarning(50),
+                SpeechEvent.BrakeOverheat(700),
+                SpeechEvent.RemainingVirtualEnergyWarning(50),
+                SpeechEvent.LmuWindowsMyBestLap(83_456L),
+                SpeechEvent.PitTimingWarning(2, PitTimingSource.TyreWear),
+            )
+        val expected =
+            listOf<FreeTextSpeechEvent>(
+                SpeechEvent.CarLeft("判定時の本文"),
+                SpeechEvent.CarRight("判定時の本文"),
+                SpeechEvent.CarLeftSustained("判定時の本文"),
+                SpeechEvent.CarRightSustained("判定時の本文"),
+                SpeechEvent.BlueFlag("判定時の本文"),
+                SpeechEvent.YellowFlag("判定時の本文"),
+                SpeechEvent.FullCourseYellow("判定時の本文"),
+                SpeechEvent.RedFlag("判定時の本文"),
+                SpeechEvent.Overheating("判定時の本文"),
+                SpeechEvent.PartDetached("判定時の本文"),
+                SpeechEvent.TyreDetached("判定時の本文"),
+                SpeechEvent.TyreOverheat(100, "判定時の本文"),
+                SpeechEvent.TyreCold(60, "判定時の本文"),
+                SpeechEvent.TyreWearWarning(50, "判定時の本文"),
+                SpeechEvent.BrakeOverheat(700, "判定時の本文"),
+                SpeechEvent.RemainingVirtualEnergyWarning(50, "判定時の本文"),
+                SpeechEvent.LmuWindowsMyBestLap(83_456L, "判定時の本文"),
+                SpeechEvent.PitTimingWarning(2, PitTimingSource.TyreWear, "判定時の本文"),
+            )
+        assertEquals(expected, events.map { it.withResolvedText("判定時の本文") })
+        events.forEach { event ->
+            assertEquals(null, event.resolvedText)
+            val resolved = event.withResolvedText("判定時の本文")
+            assertEquals(event::class, resolved::class)
+            assertEquals("判定時の本文", resolved.resolvedText)
+            assertEquals(event.narratedText, resolved.narratedText)
+            assertEquals(event.readoutItemKey, resolved.readoutItemKey)
+            assertEquals("変更後の本文", resolved.withResolvedText("変更後の本文").resolvedText)
+            assertEquals("", resolved.withResolvedText("").resolvedText)
+        }
+    }
+
+    @Test
     fun `LMU車両接近系のnarratedTextは既定文言を返す`() {
-        assertEquals("カーレフト", SpeechEvent.CarLeft.narratedText)
-        assertEquals("カーライト", SpeechEvent.CarRight.narratedText)
-        assertEquals("キープレフト", SpeechEvent.CarRightSustained.narratedText)
-        assertEquals("キープライト", SpeechEvent.CarLeftSustained.narratedText)
+        assertEquals("カーレフト", SpeechEvent.CarLeft().narratedText)
+        assertEquals("カーライト", SpeechEvent.CarRight().narratedText)
+        assertEquals("キープレフト", SpeechEvent.CarRightSustained().narratedText)
+        assertEquals("キープライト", SpeechEvent.CarLeftSustained().narratedText)
     }
 
     @Test
     fun `LMUフラッグ系のnarratedTextは既定文言を返す`() {
-        assertEquals("ブルーフラッグ", SpeechEvent.BlueFlag.narratedText)
-        assertEquals("イエローフラッグ", SpeechEvent.YellowFlag.narratedText)
-        assertEquals("フルコースイエロー", SpeechEvent.FullCourseYellow.narratedText)
-        assertEquals("レッドフラッグ", SpeechEvent.RedFlag.narratedText)
+        assertEquals("ブルーフラッグ", SpeechEvent.BlueFlag().narratedText)
+        assertEquals("イエローフラッグ", SpeechEvent.YellowFlag().narratedText)
+        assertEquals("フルコースイエロー", SpeechEvent.FullCourseYellow().narratedText)
+        assertEquals("レッドフラッグ", SpeechEvent.RedFlag().narratedText)
     }
 
     @Test

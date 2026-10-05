@@ -311,7 +311,7 @@ internal class LmuWindowsNarratorViewModel(
                         settings = settings,
                     )
                 narratorState = decision.state
-                eventProcessor.processTelemetry(
+                eventProcessor.processMyBestLap(
                     telemetry = telemetry,
                     events = decision.events,
                     readoutOrder = readoutOrder.value,

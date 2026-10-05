@@ -32,12 +32,12 @@ class AceWindowsWavNarratorEngineTest {
 
     @Test
     fun `speakはWavNarratorEngineのspeakへ委譲する`() {
-        every { wavNarratorEngine.speak(SpeechEvent.CarLeft, queue = true) } just Runs
+        every { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) } just Runs
         val engine = AceWindowsWavNarratorEngine(wavNarratorEngine)
 
-        engine.speak(SpeechEvent.CarLeft, queue = true)
+        engine.speak(SpeechEvent.CarLeft(), queue = true)
 
-        verify(exactly = 1) { wavNarratorEngine.speak(SpeechEvent.CarLeft, queue = true) }
+        verify(exactly = 1) { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) }
         confirmVerified(wavNarratorEngine)
     }
 

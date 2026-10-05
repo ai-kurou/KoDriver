@@ -27,12 +27,12 @@ class LmuWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
             }
         }
 
-        listOf(SpeechEvent.CarLeft.narratedText, SpeechEvent.CarRight.narratedText).forEach { narratedText ->
+        listOf(SpeechEvent.CarLeft().narratedText, SpeechEvent.CarRight().narratedText).forEach { narratedText ->
             rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText)
         }
         listOf(
-            SpeechEvent.CarRightSustained.narratedText,
-            SpeechEvent.CarLeftSustained.narratedText,
+            SpeechEvent.CarRightSustained().narratedText,
+            SpeechEvent.CarLeftSustained().narratedText,
         ).forEach { narratedText ->
             rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText)
         }
