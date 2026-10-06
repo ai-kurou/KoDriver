@@ -343,6 +343,7 @@ class LmuWindowsNarratorViewModelTest {
         currentTimeMs: () -> Long = { 0L },
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         pitTimingEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        readoutTextOverride: (suspend (SpeechEvent) -> String?)? = null,
     ): LmuWindowsNarratorViewModel {
         stubRepositories(
             vehicleApproachChannel = vehicleApproachChannel,
@@ -485,27 +486,28 @@ class LmuWindowsNarratorViewModelTest {
                 LmuWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-                    readoutText = {
-                        if (it is SpeechEvent.LmuWindowsMyBestLap) {
-                            myBestLapReadoutText?.let { template ->
-                                formatLmuWindowsMyBestLapReadoutText(template, it.lapTimeMs)
+                    readoutText =
+                        readoutTextOverride ?: {
+                            if (it is SpeechEvent.LmuWindowsMyBestLap) {
+                                myBestLapReadoutText?.let { template ->
+                                    formatLmuWindowsMyBestLapReadoutText(template, it.lapTimeMs)
+                                }
+                            } else if (it is SpeechEvent.Overheating) {
+                                overheatReadoutText
+                            } else if (it is SpeechEvent.PartDetached) {
+                                partDetachedReadoutText
+                            } else if (it is SpeechEvent.TyreDetached) {
+                                tyreDetachedReadoutText
+                            } else if (it is SpeechEvent.TyreOverheat) {
+                                tyreOverheatReadoutText
+                            } else if (it is SpeechEvent.TyreCold) {
+                                tyreColdReadoutText
+                            } else if (it is SpeechEvent.PitTimingWarning && it.source == PitTimingSource.TyreWear) {
+                                "タイヤ交換へ"
+                            } else {
+                                it.narratedText
                             }
-                        } else if (it is SpeechEvent.Overheating) {
-                            overheatReadoutText
-                        } else if (it is SpeechEvent.PartDetached) {
-                            partDetachedReadoutText
-                        } else if (it is SpeechEvent.TyreDetached) {
-                            tyreDetachedReadoutText
-                        } else if (it is SpeechEvent.TyreOverheat) {
-                            tyreOverheatReadoutText
-                        } else if (it is SpeechEvent.TyreCold) {
-                            tyreColdReadoutText
-                        } else if (it is SpeechEvent.PitTimingWarning && it.source == PitTimingSource.TyreWear) {
-                            "タイヤ交換へ"
-                        } else {
-                            it.narratedText
-                        }
-                    },
+                        },
                 ),
             narratorUseCases =
                 NarratorUseCases(
@@ -576,6 +578,74 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     // --- 自己ベストラップ ---
+
+    @Test
+    fun `自由文言の解決に失敗しても次のテレメトリを収集して読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            val key = ReadoutItemKey.LmuWindows.Flag.Root
+            val skippedJson = slot<String>()
+            val spokenJson = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(skippedJson),
+                )
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "復旧",
+                    NarrationOutcome.SPOKEN,
+                    capture(spokenJson),
+                )
+            } just Runs
+            createViewModel(
+                flagChannel = channel,
+                ttsEngine = tts,
+                readoutTextOverride = {
+                    if (it is SpeechEvent.BlueFlag) error("preference error")
+                    "復旧"
+                },
+            )
+
+            channel.send(clearFlags())
+            channel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
+            channel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.RedFlag("復旧")), spokenTexts)
+            verify(exactly = 1) { tts.currentReadoutItemKey }
+            verify(exactly = 1) { tts.speak(SpeechEvent.RedFlag("復旧"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    skippedJson.captured,
+                )
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.LmuWindows,
+                    key,
+                    "復旧",
+                    NarrationOutcome.SPOKEN,
+                    spokenJson.captured,
+                )
+            }
+            confirmVerified(tts, telemetryLogRepository)
+        }
 
     @Test
     fun `自己ベストラップの更新タイムを解決して読み上げる`() =
