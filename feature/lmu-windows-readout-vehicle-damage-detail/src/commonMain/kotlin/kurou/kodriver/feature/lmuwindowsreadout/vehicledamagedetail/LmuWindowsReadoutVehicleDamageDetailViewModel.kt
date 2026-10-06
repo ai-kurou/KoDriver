@@ -5,12 +5,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
@@ -42,11 +41,15 @@ internal data class VehicleDamageReadoutUseCases(
 
 internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     private val vehicleDamageUseCases: VehicleDamageUseCases,
-    private val readout: VehicleDamageReadoutUseCases,
+    readout: VehicleDamageReadoutUseCases,
 ) : ViewModel() {
-    private val textToSpeechAvailable =
-        flow { emit(readout.checkTextToSpeechAvailable()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val previewHelper =
+        ReadoutSpeechEventPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playSpeechEvent,
+        )
 
     val uiState: StateFlow<LmuWindowsReadoutVehicleDamageDetailUiState> =
         combine(
@@ -54,7 +57,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
             vehicleDamageUseCases.observeOverheatReadoutText(),
             vehicleDamageUseCases.observePartDetachedReadoutText(),
             vehicleDamageUseCases.observeTyreDetachedReadoutText(),
-            textToSpeechAvailable,
+            previewHelper.textToSpeechAvailable,
         ) { states, overheatText, partDetachedText, tyreDetachedText, available ->
             LmuWindowsReadoutVehicleDamageDetailUiState(
                 overheatEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat),
@@ -118,11 +121,8 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
         event: SpeechEvent,
         text: String,
     ) {
-        if (text.isBlank() || !textToSpeechAvailable.value) return
         viewModelScope.launch {
-            val volume = readout.observeSoundVolume().first()
-            if (volume <= 0) return@launch
-            readout.playSpeechEvent(event)
+            previewHelper.preview(text, event)
         }
     }
 }
