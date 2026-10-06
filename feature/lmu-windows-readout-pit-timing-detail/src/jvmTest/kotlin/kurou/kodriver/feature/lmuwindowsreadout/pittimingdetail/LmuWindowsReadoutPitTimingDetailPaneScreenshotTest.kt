@@ -12,6 +12,24 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Test
 
 class LmuWindowsReadoutPitTimingDetailPaneScreenshotTest {
+    // 長いラベルと挿入ヒントが折り返すスマホ幅で、項目のまとまりを確認する。
+    @Test
+    fun `スマホ幅の文言グループ`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            LmuWindowsReadoutPitTimingDetailPaneContent(
+                                uiState = LmuWindowsReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
     @Test
     fun `デフォルト`() =
         composeScreenshotTest {
