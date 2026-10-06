@@ -23,6 +23,14 @@ internal class AndroidVoiceListRepository(
             } catch (_: Exception) {
                 null
             }
+        val defaultVoiceId =
+            try {
+                engine.defaultVoice?.name
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            }
         return voices
             .orEmpty()
             .filter {
@@ -34,6 +42,7 @@ internal class AndroidVoiceListRepository(
                     id = it.name,
                     displayName = formatVoiceDisplayName(it.name),
                     cultureName = TTS_CULTURE_NAME,
+                    isDefault = it.name == defaultVoiceId,
                 )
             }
     }

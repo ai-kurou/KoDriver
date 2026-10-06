@@ -55,3 +55,5 @@ SecurityExceptionはSentryへ記録します。androidMainには、Windowsの音
 
 ![Module Graph](../../docs/graphs/core-text-to-speech-data.svg)
 <!-- MODULE-GRAPH-END -->
+
+音声一覧には`isDefault`を付け、詳細画面で既定音声の重複表示を避ける。Windowsは読み上げと同じ日本語の`SelectVoiceByHints`で選択された音声、Androidは`getDefaultVoice()`の音声をIDで照合する。既定情報を取得できない場合は音声を除外しない。

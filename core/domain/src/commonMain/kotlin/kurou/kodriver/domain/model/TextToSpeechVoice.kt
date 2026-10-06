@@ -5,4 +5,6 @@ data class TextToSpeechVoice(
     val id: String,
     val displayName: String,
     val cultureName: String,
+    /** システム既定として使われる音声か。 */
+    val isDefault: Boolean = false,
 )

@@ -41,6 +41,43 @@ class OtherVoiceDetailPaneTest {
     private val onBack: () -> Unit = mockk()
 
     @Test
+    fun `既定音声を日本語の一覧と件数から除外し保存済みなら既定を選択表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherVoiceDetailPaneContent(
+                    OtherVoiceDetailUiState(
+                        voices = listOf(voice.copy(isDefault = true), TextToSpeechVoice("other", "音声B", "ja-JP")),
+                        selectedVoiceId = voice.id,
+                        isLoading = false,
+                    ),
+                )
+            }
+        }
+        rule.onNodeWithText("音声A").assertDoesNotExist()
+        rule.onNodeWithText("音声B").assertIsNotSelected()
+        rule.onNodeWithText("1 件").assertExists()
+        rule.onNodeWithText("システム既定").assertIsSelected()
+        rule.onNodeWithText("保存済みの音声が見つからないため、システム既定で読み上げます。").assertDoesNotExist()
+    }
+
+    @Test
+    fun `既定音声のみなら追加音声がない案内を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherVoiceDetailPaneContent(
+                    OtherVoiceDetailUiState(voices = listOf(voice.copy(isDefault = true)), isLoading = false),
+                )
+            }
+        }
+        rule.onNodeWithText("音声A").assertDoesNotExist()
+        rule.onNodeWithText("0 件").assertExists()
+        rule.onNodeWithText("システム既定").assertIsSelected()
+        rule.onNodeWithText("システム既定以外の日本語の音声が見つかりません。").assertExists()
+        rule.onNodeWithText("再読み込み").assertExists()
+        rule.onNodeWithText("日本語の音声が見つかりません。端末の設定で日本語の音声を追加してください。").assertDoesNotExist()
+    }
+
+    @Test
     fun `広いペインは2列で3件目を次の行に配置する`() {
         rule.setContent {
             MaterialTheme {

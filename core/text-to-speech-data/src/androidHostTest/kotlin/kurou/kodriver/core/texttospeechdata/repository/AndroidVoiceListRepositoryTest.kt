@@ -23,12 +23,56 @@ class AndroidVoiceListRepositoryTest {
     private val engine: TextToSpeech = mockk(relaxUnitFun = true)
     private val engineProvider: suspend () -> TextToSpeech? = mockk()
     private val voice: Voice = mockk()
+    private val defaultVoice: Voice = mockk()
     private val repository = AndroidVoiceListRepository(engineProvider)
+
+    @Test
+    fun `システム既定と同じIDの音声を識別し取得不能なら既定扱いにしない`() =
+        runTest {
+            coEvery { engineProvider() } returns engine
+            every { engine.voices } returns setOf(voice)
+            every { engine.defaultVoice } returns defaultVoice andThenThrows IllegalStateException("default")
+            every { defaultVoice.name } returns "ja-jp-x-jab-local"
+            every { voice.locale } returns Locale.JAPANESE
+            every { voice.isNetworkConnectionRequired } returns false
+            every { voice.features } returns emptySet()
+            every { voice.name } returns "ja-jp-x-jab-local"
+
+            val expected = TextToSpeechVoice("ja-jp-x-jab-local", "日本語 (jab・ローカル)", TTS_CULTURE_NAME)
+            assertEquals(listOf(expected.copy(isDefault = true)), repository.availableVoices())
+            assertEquals(listOf(expected), repository.availableVoices())
+
+            coVerify(exactly = 2) { engineProvider() }
+            verify(exactly = 2) { engine.voices }
+            verify(exactly = 2) { engine.defaultVoice }
+            verify(exactly = 1) { defaultVoice.name }
+            verify(exactly = 2) { voice.locale }
+            verify(exactly = 2) { voice.isNetworkConnectionRequired }
+            verify(exactly = 2) { voice.features }
+            verify(exactly = 6) { voice.name }
+            confirmVerified(engineProvider, engine, voice, defaultVoice)
+        }
+
+    @Test
+    fun `既定音声取得のキャンセルは再スローする`() =
+        runTest {
+            coEvery { engineProvider() } returns engine
+            every { engine.voices } returns emptySet()
+            every { engine.defaultVoice } throws CancellationException("default")
+
+            assertFailsWith<CancellationException> { repository.availableVoices() }
+
+            coVerify(exactly = 1) { engineProvider() }
+            verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { engine.defaultVoice }
+            confirmVerified(engineProvider, engine)
+        }
 
     @Test
     fun `日本語の音声を整形して返す`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } returns setOf(voice)
             every { voice.locale } returns Locale.JAPANESE
             every { voice.isNetworkConnectionRequired } returns false
@@ -42,10 +86,11 @@ class AndroidVoiceListRepositoryTest {
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { engine.defaultVoice }
             verify(exactly = 1) { voice.locale }
             verify(exactly = 1) { voice.isNetworkConnectionRequired }
             verify(exactly = 1) { voice.features }
-            verify(exactly = 2) { voice.name }
+            verify(exactly = 3) { voice.name }
             confirmVerified(engineProvider, engine, voice)
         }
 
@@ -53,6 +98,7 @@ class AndroidVoiceListRepositoryTest {
     fun `日本語の地域違いも一覧に含める`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } returns setOf(voice)
             every { voice.locale } returns Locale.JAPAN
             every { voice.isNetworkConnectionRequired } returns false
@@ -66,10 +112,11 @@ class AndroidVoiceListRepositoryTest {
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { engine.defaultVoice }
             verify(exactly = 1) { voice.locale }
             verify(exactly = 1) { voice.isNetworkConnectionRequired }
             verify(exactly = 1) { voice.features }
-            verify(exactly = 2) { voice.name }
+            verify(exactly = 3) { voice.name }
             confirmVerified(engineProvider, engine, voice)
         }
 
@@ -77,6 +124,7 @@ class AndroidVoiceListRepositoryTest {
     fun `日本語以外の音声は除外する`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } returns setOf(voice)
             every { voice.locale } returns Locale.ENGLISH
 
@@ -84,6 +132,7 @@ class AndroidVoiceListRepositoryTest {
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { engine.defaultVoice }
             verify(exactly = 1) { voice.locale }
             confirmVerified(engineProvider, engine, voice)
         }
@@ -92,6 +141,7 @@ class AndroidVoiceListRepositoryTest {
     fun `ネットワーク必須の音声は除外する`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } returns setOf(voice)
             every { voice.locale } returns Locale.JAPANESE
             every { voice.isNetworkConnectionRequired } returns true
@@ -100,6 +150,7 @@ class AndroidVoiceListRepositoryTest {
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { engine.defaultVoice }
             verify(exactly = 1) { voice.locale }
             verify(exactly = 1) { voice.isNetworkConnectionRequired }
             confirmVerified(engineProvider, engine, voice)
@@ -109,6 +160,7 @@ class AndroidVoiceListRepositoryTest {
     fun `未インストールの音声は除外する`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } returns setOf(voice)
             every { voice.locale } returns Locale.JAPANESE
             every { voice.isNetworkConnectionRequired } returns false
@@ -118,6 +170,7 @@ class AndroidVoiceListRepositoryTest {
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { engine.defaultVoice }
             verify(exactly = 1) { voice.locale }
             verify(exactly = 1) { voice.isNetworkConnectionRequired }
             verify(exactly = 1) { voice.features }
@@ -128,12 +181,14 @@ class AndroidVoiceListRepositoryTest {
     fun `音声一覧がnullなら空を返す`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } returns null
 
             assertEquals(emptyList(), repository.availableVoices())
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { engine.defaultVoice }
             confirmVerified(engineProvider, engine)
         }
 
@@ -141,12 +196,14 @@ class AndroidVoiceListRepositoryTest {
     fun `音声一覧が空なら空を返す`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } returns emptySet()
 
             assertEquals(emptyList(), repository.availableVoices())
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { engine.defaultVoice }
             confirmVerified(engineProvider, engine)
         }
 
@@ -154,12 +211,14 @@ class AndroidVoiceListRepositoryTest {
     fun `音声一覧取得の例外なら空を返す`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } throws IllegalStateException("voices")
 
             assertEquals(emptyList(), repository.availableVoices())
 
             coVerify(exactly = 1) { engineProvider() }
             verify(exactly = 1) { engine.voices }
+            verify(exactly = 1) { engine.defaultVoice }
             confirmVerified(engineProvider, engine)
         }
 
@@ -178,6 +237,7 @@ class AndroidVoiceListRepositoryTest {
     fun `音声一覧取得のキャンセルは再スローする`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } throws CancellationException("voices")
 
             assertFailsWith<CancellationException> { repository.availableVoices() }
@@ -191,6 +251,7 @@ class AndroidVoiceListRepositoryTest {
     fun `再読み込み時は一覧を再取得する`() =
         runTest {
             coEvery { engineProvider() } returns engine
+            every { engine.defaultVoice } returns null
             every { engine.voices } returnsMany listOf(null, emptySet())
 
             assertEquals(emptyList(), repository.availableVoices())
@@ -198,6 +259,7 @@ class AndroidVoiceListRepositoryTest {
 
             coVerify(exactly = 2) { engineProvider() }
             verify(exactly = 2) { engine.voices }
+            verify(exactly = 2) { engine.defaultVoice }
             confirmVerified(engineProvider, engine)
         }
 }

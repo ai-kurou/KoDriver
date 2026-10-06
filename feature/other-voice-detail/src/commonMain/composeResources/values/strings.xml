@@ -3,6 +3,7 @@
     <string name="voice_title">読み上げ音声</string>
     <string name="voice_description">インストールされた日本語の読み上げ音声を選択します。右の再生ボタンで、その音声のまま試聴できます。</string>
     <string name="voice_system_default">システム既定</string>
+    <string name="voice_alternatives_empty">システム既定以外の日本語の音声が見つかりません。</string>
     <string name="voice_empty">日本語の音声が見つかりません。端末の設定で日本語の音声を追加してください。</string>
     <string name="voice_loading">読み込み中…</string>
     <string name="voice_retry">再読み込み</string>
