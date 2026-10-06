@@ -4,14 +4,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.window.core.layout.WindowSizeClass
+import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -19,6 +23,56 @@ import kotlin.test.assertEquals
 class AppScreenContentTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `両バナー表示時だけ背景色の隙間を表示する`() {
+        val connectionVisible = mutableStateOf(true)
+        val reason = mutableStateOf<TtsUnavailableGuidance?>(TtsUnavailableGuidance.EngineMissing)
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                bannerUiState = ConnectionBannerUiState(isVisible = connectionVisible.value),
+                ttsUnavailableGuidance = reason.value,
+            )
+        }
+        rule.onNodeWithTag("connectionTtsBannerGap").assertIsDisplayed()
+        rule.runOnIdle { connectionVisible.value = false }
+        rule.onNodeWithTag("connectionTtsBannerGap").assertDoesNotExist()
+        rule.runOnIdle { reason.value = null }
+        rule.onNodeWithTag("connectionTtsBannerGap").assertDoesNotExist()
+        rule.runOnIdle { connectionVisible.value = true }
+        rule.onNodeWithTag("connectionTtsBannerGap").assertDoesNotExist()
+        rule.runOnIdle { reason.value = TtsUnavailableGuidance.EngineMissing }
+        rule.onNodeWithTag("connectionTtsBannerGap").assertIsDisplayed()
+    }
+
+    @Test
+    fun `接続状況とTTS警告を同時表示し警告をタップしてもタブは変わらない`() {
+        var actionCount = 0
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                bannerUiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.CONNECTED,
+                        message = "シミュレーターに接続中",
+                    ),
+                ttsUnavailableGuidance = TtsUnavailableGuidance.EngineMissing,
+                onTtsAction = { actionCount++ },
+                readoutContent = { Text("読み上げ画面") },
+                otherContent = { Text("その他画面") },
+            )
+        }
+        rule.onNodeWithText("シミュレーターに接続中").assertIsDisplayed()
+        rule.onNodeWithText("このまま使う").assertDoesNotExist()
+        rule.onNodeWithText("音声読み上げを利用できません").performClick()
+        rule.onNodeWithText("インストール").performClick()
+        assertEquals(1, actionCount)
+        rule.onNodeWithText("このまま使う").performClick()
+        rule.onNodeWithText("読み上げ画面").assertIsDisplayed()
+        rule.onNodeWithText("その他画面").assertDoesNotExist()
+        rule.onNodeWithText("シミュレーターに接続中").assertIsDisplayed()
+    }
 
     @Test
     fun `expanded幅ではNavigationRailを使用する`() {
