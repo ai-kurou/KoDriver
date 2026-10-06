@@ -12,6 +12,22 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Test
 
 class AceWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
+    // スマホ幅でチップの折り返しと下部の余白を確認する。
+    @Test
+    fun `スマホ幅のチップ行`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            AceWindowsReadoutTyreTemperatureDetailPaneContent()
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
     @Test
     fun `デフォルト`() =
         composeScreenshotTest {

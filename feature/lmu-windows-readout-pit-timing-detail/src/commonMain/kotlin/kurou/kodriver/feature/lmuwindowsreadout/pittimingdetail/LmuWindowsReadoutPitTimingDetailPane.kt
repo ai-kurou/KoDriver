@@ -291,6 +291,7 @@ private fun PitTimingReadoutFields(
                         .joinToString("、"),
             )
             Row(
+                modifier = Modifier.padding(bottom = KoDriverSpacing.small),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
             ) {

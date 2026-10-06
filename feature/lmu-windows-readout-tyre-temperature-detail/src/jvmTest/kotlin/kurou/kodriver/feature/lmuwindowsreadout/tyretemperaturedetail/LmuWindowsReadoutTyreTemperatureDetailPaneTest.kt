@@ -1,8 +1,10 @@
 package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
@@ -23,6 +25,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_CELSIUS_PLACEHOLDER
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
@@ -38,6 +42,32 @@ import kotlin.test.assertEquals
 class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `タイトルと入力欄の間に4dpを確保する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(isTextToSpeechAvailable = true),
+                    modifier = Modifier.requiredSize(360.dp, 4000.dp),
+                )
+            }
+        }
+
+        val expected = with(rule.density) { KoDriverSpacing.extraSmall.toPx() }
+        val fields = rule.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().map { it.boundsInRoot }
+        listOf(
+            "タイヤが過熱したときの文言",
+            "タイヤが冷えているときの文言",
+        ).forEach { label ->
+            rule.onAllNodesWithText(label).assertCountEquals(1)
+            rule.onAllNodesWithText(label).fetchSemanticsNodes().forEach { node ->
+                val labelBounds = node.boundsInRoot
+                val fieldBounds = fields.first { it.top >= labelBounds.bottom }
+                assertEquals(expected, fieldBounds.top - labelBounds.bottom, absoluteTolerance = 1f)
+            }
+        }
+    }
 
     @Test
     fun `リセットボタンをクリックするとonVehicleClassHighThresholdResetが選択中クラスで呼ばれる`() {

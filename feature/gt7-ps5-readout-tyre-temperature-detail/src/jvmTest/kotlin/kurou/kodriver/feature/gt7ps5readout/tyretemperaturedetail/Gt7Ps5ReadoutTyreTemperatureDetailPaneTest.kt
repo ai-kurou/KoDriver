@@ -1,8 +1,10 @@
 package kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail
 
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -10,6 +12,7 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -18,12 +21,15 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import org.junit.Rule
@@ -36,6 +42,31 @@ private const val DEFAULT_TEXT = GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_
 class Gt7Ps5ReadoutTyreTemperatureDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `タイトルと入力欄の間に4dpを確保する`() {
+        rule.setContent {
+            KoDriverTheme {
+                Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
+                    uiState = Gt7Ps5ReadoutTyreTemperatureDetailUiState(isTextToSpeechAvailable = true),
+                    modifier = Modifier.requiredSize(360.dp, 4000.dp),
+                )
+            }
+        }
+
+        val expected = with(rule.density) { KoDriverSpacing.extraSmall.toPx() }
+        val fields = rule.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().map { it.boundsInRoot }
+        listOf(
+            "タイヤ過熱警告の文言",
+        ).forEach { label ->
+            rule.onAllNodesWithText(label).assertCountEquals(1)
+            rule.onAllNodesWithText(label).fetchSemanticsNodes().forEach { node ->
+                val labelBounds = node.boundsInRoot
+                val fieldBounds = fields.first { it.top >= labelBounds.bottom }
+                assertEquals(expected, fieldBounds.top - labelBounds.bottom, absoluteTolerance = 1f)
+            }
+        }
+    }
 
     @Test
     fun `説明文が表示される`() {

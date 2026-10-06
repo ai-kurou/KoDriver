@@ -32,8 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -330,13 +330,12 @@ private fun TyreTemperatureOverheatReadoutField(
     val unknownPlaceholders = findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders(currentText).joinToString("、")
     Column {
         val label = stringResource(Res.string.tyre_temperature_overheat_text_label)
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        DetailPaneCardTextField(
+        DetailPaneLabeledTextField(
+            label = label,
             value = currentText,
             defaultValue = LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
             onResetToDefault = { changeText(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT) },
             resetContentDescription = stringResource(Res.string.tyre_temperature_overheat_text_reset),
-            placeholder = label,
             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
             onValueChangeFinished = changeText,
             onPreviewClick = onPreviewClick,
@@ -367,6 +366,7 @@ private fun TyreTemperatureOverheatReadoutField(
             selectedContentDescription = stringResource(Res.string.tyre_temperature_overheat_text_selected_icon),
         )
         Row(
+            modifier = Modifier.padding(bottom = KoDriverSpacing.small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
@@ -413,13 +413,12 @@ private fun TyreTemperatureColdReadoutField(
     val unknownPlaceholders = findUnknownLmuWindowsTyreTemperatureReadoutPlaceholders(currentText).joinToString("、")
     Column {
         val label = stringResource(Res.string.tyre_temperature_cold_text_label)
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        DetailPaneCardTextField(
+        DetailPaneLabeledTextField(
+            label = label,
             value = currentText,
             defaultValue = LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT,
             onResetToDefault = { changeText(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT) },
             resetContentDescription = stringResource(Res.string.tyre_temperature_cold_text_reset),
-            placeholder = label,
             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
             onValueChangeFinished = changeText,
             onPreviewClick = onPreviewClick,
@@ -447,6 +446,7 @@ private fun TyreTemperatureColdReadoutField(
             selectedContentDescription = stringResource(Res.string.tyre_temperature_cold_text_selected_icon),
         )
         Row(
+            modifier = Modifier.padding(bottom = KoDriverSpacing.small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {

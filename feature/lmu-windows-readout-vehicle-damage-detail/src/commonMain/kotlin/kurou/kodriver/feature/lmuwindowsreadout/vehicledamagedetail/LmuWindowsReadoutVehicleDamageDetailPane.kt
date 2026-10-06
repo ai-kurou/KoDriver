@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
@@ -154,13 +152,12 @@ private fun VehicleDamageReadoutField(
     }
     Column {
         val label = stringResource(Res.string.vehicle_damage_text_label)
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        DetailPaneCardTextField(
+        DetailPaneLabeledTextField(
+            label = label,
             value = currentText,
             defaultValue = defaultText,
             onResetToDefault = { changeText(defaultText) },
             resetContentDescription = stringResource(Res.string.vehicle_damage_text_reset_to_default),
-            placeholder = label,
             maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
             onValueChangeFinished = changeText,
             onPreviewClick = onPreviewClick,

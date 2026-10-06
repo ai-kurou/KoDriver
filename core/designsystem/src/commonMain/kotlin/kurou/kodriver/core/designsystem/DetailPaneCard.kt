@@ -130,6 +130,30 @@ private fun DetailPaneCardLayout(
     }
 }
 
+/** 試聴・口調選択のチップを折り返して並べ、行の下部に8dpの余白を確保する。 */
+@Suppress("UnstableCollections")
+@Composable
+fun DetailPaneCardChipRow(
+    chipLabels: List<String>,
+    selectedChipLabels: Set<String>,
+    chipEnabled: Boolean,
+    onChipClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FlowRow(
+        modifier = modifier.fillMaxWidth().padding(bottom = KoDriverSpacing.small),
+        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
+    ) {
+        DetailPaneCardChips(
+            chipLabels = chipLabels,
+            selectedChipLabels = selectedChipLabels,
+            chipEnabled = chipEnabled,
+            onChipClick = onChipClick,
+        )
+    }
+}
+
 /**
  * DetailPaneCardChips を提供する公開関数。
  *

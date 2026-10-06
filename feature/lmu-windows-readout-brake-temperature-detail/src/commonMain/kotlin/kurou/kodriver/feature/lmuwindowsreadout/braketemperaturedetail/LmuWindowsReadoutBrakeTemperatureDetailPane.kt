@@ -28,8 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.HelpIconButton
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -258,6 +258,7 @@ private fun BrakeTemperatureReadoutField(
                 .joinToString("、"),
     )
     Row(
+        modifier = Modifier.padding(bottom = KoDriverSpacing.small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
@@ -294,44 +295,41 @@ private fun ReadoutTextField(
     onPreviewClick: (String) -> Unit,
     unknownPlaceholders: String = "",
 ) {
-    Column {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        DetailPaneCardTextField(
-            value = text,
-            defaultValue = defaultText,
-            onResetToDefault = { onTextChanged(defaultText) },
-            resetContentDescription = stringResource(Res.string.brake_temperature_text_reset_to_default),
-            placeholder = label,
-            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            onValueChangeFinished = onTextChanged,
-            onPreviewClick = onPreviewClick,
-            enabled = isTextToSpeechAvailable,
-            selected = text.isNotBlank(),
-            supportingText =
-                when {
-                    !isTextToSpeechAvailable -> {
-                        stringResource(Res.string.brake_temperature_text_unavailable)
-                    }
+    DetailPaneLabeledTextField(
+        label = label,
+        value = text,
+        defaultValue = defaultText,
+        onResetToDefault = { onTextChanged(defaultText) },
+        resetContentDescription = stringResource(Res.string.brake_temperature_text_reset_to_default),
+        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+        onValueChangeFinished = onTextChanged,
+        onPreviewClick = onPreviewClick,
+        enabled = isTextToSpeechAvailable,
+        selected = text.isNotBlank(),
+        supportingText =
+            when {
+                !isTextToSpeechAvailable -> {
+                    stringResource(Res.string.brake_temperature_text_unavailable)
+                }
 
-                    unknownPlaceholders.isNotEmpty() -> {
-                        stringResource(
-                            Res.string.brake_temperature_text_unknown_placeholders,
-                            unknownPlaceholders,
-                        )
-                    }
+                unknownPlaceholders.isNotEmpty() -> {
+                    stringResource(
+                        Res.string.brake_temperature_text_unknown_placeholders,
+                        unknownPlaceholders,
+                    )
+                }
 
-                    text.isNotBlank() -> {
-                        null
-                    }
+                text.isNotBlank() -> {
+                    null
+                }
 
-                    else -> {
-                        stringResource(Res.string.brake_temperature_text_supporting)
-                    }
-                },
-            previewContentDescription = stringResource(Res.string.brake_temperature_text_preview),
-            selectedContentDescription = stringResource(Res.string.brake_temperature_text_selected_icon),
-        )
-    }
+                else -> {
+                    stringResource(Res.string.brake_temperature_text_supporting)
+                }
+            },
+        previewContentDescription = stringResource(Res.string.brake_temperature_text_preview),
+        selectedContentDescription = stringResource(Res.string.brake_temperature_text_selected_icon),
+    )
 }
 
 @Preview(showBackground = true)

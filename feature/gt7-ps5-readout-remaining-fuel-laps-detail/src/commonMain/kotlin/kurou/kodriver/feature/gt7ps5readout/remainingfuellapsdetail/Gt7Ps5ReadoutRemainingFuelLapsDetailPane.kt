@@ -23,8 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -110,24 +110,28 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    RemainingFuelLapsReadoutField(
-                        label = stringResource(Res.string.remaining_fuel_laps_text_label),
-                        defaultText = GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT,
-                        withPlaceholder = true,
-                        text = uiState.readoutText,
-                        available = uiState.isTextToSpeechAvailable,
-                        onTextChanged = onReadoutTextChanged,
-                        onPreviewClick = onReadoutTextPreviewClicked,
-                    )
-                    RemainingFuelLapsReadoutField(
-                        label = stringResource(Res.string.remaining_fuel_laps_empty_text_label),
-                        defaultText = GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT,
-                        withPlaceholder = false,
-                        text = uiState.emptyReadoutText,
-                        available = uiState.isTextToSpeechAvailable,
-                        onTextChanged = onEmptyReadoutTextChanged,
-                        onPreviewClick = onEmptyReadoutTextPreviewClicked,
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.large)) {
+                        Column {
+                            RemainingFuelLapsReadoutField(
+                                label = stringResource(Res.string.remaining_fuel_laps_text_label),
+                                defaultText = GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT,
+                                withPlaceholder = true,
+                                text = uiState.readoutText,
+                                available = uiState.isTextToSpeechAvailable,
+                                onTextChanged = onReadoutTextChanged,
+                                onPreviewClick = onReadoutTextPreviewClicked,
+                            )
+                        }
+                        RemainingFuelLapsReadoutField(
+                            label = stringResource(Res.string.remaining_fuel_laps_empty_text_label),
+                            defaultText = GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT,
+                            withPlaceholder = false,
+                            text = uiState.emptyReadoutText,
+                            available = uiState.isTextToSpeechAvailable,
+                            onTextChanged = onEmptyReadoutTextChanged,
+                            onPreviewClick = onEmptyReadoutTextPreviewClicked,
+                        )
+                    }
                     HorizontalDivider(
                         modifier =
                             Modifier.padding(
@@ -194,6 +198,7 @@ private fun RemainingFuelLapsReadoutField(
     )
     if (!withPlaceholder) return
     Row(
+        modifier = Modifier.padding(bottom = KoDriverSpacing.small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
     ) {
@@ -230,44 +235,41 @@ private fun ReadoutTextField(
     onPreviewClick: (String) -> Unit,
     unknownPlaceholders: String = "",
 ) {
-    Column {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        DetailPaneCardTextField(
-            value = text,
-            defaultValue = defaultText,
-            onResetToDefault = { onTextChanged(defaultText) },
-            resetContentDescription = stringResource(Res.string.remaining_fuel_laps_text_reset_to_default),
-            placeholder = label,
-            maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
-            onValueChangeFinished = onTextChanged,
-            onPreviewClick = onPreviewClick,
-            enabled = isTextToSpeechAvailable,
-            selected = text.isNotBlank(),
-            supportingText =
-                when {
-                    !isTextToSpeechAvailable -> {
-                        stringResource(Res.string.remaining_fuel_laps_text_unavailable)
-                    }
+    DetailPaneLabeledTextField(
+        label = label,
+        value = text,
+        defaultValue = defaultText,
+        onResetToDefault = { onTextChanged(defaultText) },
+        resetContentDescription = stringResource(Res.string.remaining_fuel_laps_text_reset_to_default),
+        maxLength = READOUT_CUSTOM_TEXT_MAX_LENGTH,
+        onValueChangeFinished = onTextChanged,
+        onPreviewClick = onPreviewClick,
+        enabled = isTextToSpeechAvailable,
+        selected = text.isNotBlank(),
+        supportingText =
+            when {
+                !isTextToSpeechAvailable -> {
+                    stringResource(Res.string.remaining_fuel_laps_text_unavailable)
+                }
 
-                    unknownPlaceholders.isNotEmpty() -> {
-                        stringResource(
-                            Res.string.remaining_fuel_laps_text_unknown_placeholders,
-                            unknownPlaceholders,
-                        )
-                    }
+                unknownPlaceholders.isNotEmpty() -> {
+                    stringResource(
+                        Res.string.remaining_fuel_laps_text_unknown_placeholders,
+                        unknownPlaceholders,
+                    )
+                }
 
-                    text.isNotBlank() -> {
-                        null
-                    }
+                text.isNotBlank() -> {
+                    null
+                }
 
-                    else -> {
-                        stringResource(Res.string.remaining_fuel_laps_text_supporting)
-                    }
-                },
-            previewContentDescription = stringResource(Res.string.remaining_fuel_laps_text_preview),
-            selectedContentDescription = stringResource(Res.string.remaining_fuel_laps_text_selected_icon),
-        )
-    }
+                else -> {
+                    stringResource(Res.string.remaining_fuel_laps_text_supporting)
+                }
+            },
+        previewContentDescription = stringResource(Res.string.remaining_fuel_laps_text_preview),
+        selectedContentDescription = stringResource(Res.string.remaining_fuel_laps_text_selected_icon),
+    )
 }
 
 @Preview(showBackground = true)

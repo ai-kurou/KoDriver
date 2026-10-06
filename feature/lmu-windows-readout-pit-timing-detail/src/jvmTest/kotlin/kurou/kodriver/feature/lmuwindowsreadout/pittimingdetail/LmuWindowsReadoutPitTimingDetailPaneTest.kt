@@ -33,6 +33,32 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `タイトルと入力欄の間に4dpを確保する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsReadoutPitTimingDetailUiState(isTextToSpeechAvailable = true),
+                    modifier = Modifier.requiredSize(360.dp, 4000.dp),
+                )
+            }
+        }
+
+        val expected = with(rule.density) { KoDriverSpacing.extraSmall.toPx() }
+        val fields = rule.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().map { it.boundsInRoot }
+        listOf(
+            "通常（残り1周以上）",
+            "ピットイン必須（残り1周未満）",
+        ).forEach { label ->
+            rule.onAllNodesWithText(label).assertCountEquals(2)
+            rule.onAllNodesWithText(label).fetchSemanticsNodes().forEach { node ->
+                val labelBounds = node.boundsInRoot
+                val fieldBounds = fields.first { it.top >= labelBounds.bottom }
+                assertEquals(expected, fieldBounds.top - labelBounds.bottom, absoluteTolerance = 1f)
+            }
+        }
+    }
+
+    @Test
     fun `説明文とカードタイトルを表示する`() {
         rule.setContent {
             KoDriverTheme {
@@ -92,7 +118,7 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
             }
         }
 
-        val groupSpacing = with(rule.density) { KoDriverSpacing.large.toPx() }
+        val groupSpacing = with(rule.density) { (KoDriverSpacing.large + KoDriverSpacing.small).toPx() }
         val labelSpacing = with(rule.density) { KoDriverSpacing.extraSmall.toPx() }
         val fields = rule.onAllNodes(hasSetTextAction())
         repeat(2) { index ->
