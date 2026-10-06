@@ -149,17 +149,18 @@ private fun RemainingVirtualEnergyReadoutField(
     onPreviewClick: (String) -> Unit,
 ) {
     var currentText by remember { mutableStateOf(text) }
-    // 保存が非同期のため、入力中の最新の値と一致するまでは保存済みの古い値で入力欄を巻き戻さない
+    // 古い保存結果で入力を巻き戻さず、正規化後の保存値が一致したら待機を解除する。
     var pendingText by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(text) {
-        if (pendingText == null || pendingText == text) {
+    LaunchedEffect(text, pendingText) {
+        if (pendingText == null) {
             currentText = text
+        } else if (pendingText == text) {
             pendingText = null
         }
     }
     val changeText: (String) -> Unit = {
         currentText = it
-        pendingText = it
+        pendingText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
         onTextChanged(it)
     }
     ReadoutTextField(
