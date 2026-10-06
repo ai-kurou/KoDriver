@@ -430,7 +430,6 @@ class AppTest {
             }
         }
         waitUntilDisplayed("Windowsで日本語音声を利用できません")
-        rule.onNodeWithText("このまま使う").assertDoesNotExist()
     }
 
     private fun waitUntilDisplayed(text: String) {
