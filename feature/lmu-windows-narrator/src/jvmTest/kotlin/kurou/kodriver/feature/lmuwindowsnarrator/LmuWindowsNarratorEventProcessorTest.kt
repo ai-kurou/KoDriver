@@ -11,6 +11,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
@@ -84,6 +85,8 @@ import kurou.kodriver.domain.usecase.TyreTemperatureReadoutInput
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 
 class LmuWindowsNarratorEventProcessorTest {
     private val telemetryLogRepository: TelemetryLogRepository = mockk()
@@ -2863,6 +2866,139 @@ class LmuWindowsNarratorEventProcessorTest {
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `文言解決に失敗しても同じ入力の後続イベントと次回処理を継続する`() =
+        runTest {
+            val key = ReadoutItemKey.LmuWindows.Flag.Root
+            val failedEvent = SpeechEvent.BlueFlag()
+            val nextEvent = SpeechEvent.RedFlag()
+            val resolvedEvent = SpeechEvent.RedFlag("復旧")
+            val skippedJson = slot<String>()
+            val spokenJsons = mutableListOf<String>()
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolvedEvent, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.LmuWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(skippedJson),
+                )
+            } just Runs
+            listOf(100L, 200L).forEach { time ->
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        time,
+                        Simulator.LmuWindows,
+                        key,
+                        "復旧",
+                        NarrationOutcome.SPOKEN,
+                        capture(spokenJsons),
+                    )
+                } just Runs
+            }
+            val processor =
+                createProcessor { event ->
+                    resolvedEvents += event
+                    if (event == failedEvent) error("preference error")
+                    "復旧"
+                }
+
+            processor.processRaceFlags(
+                raceFlags = raceFlags(PrimaryFlag.BLUE),
+                events = listOf(failedEvent, nextEvent),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+                logContext = logContext(),
+            )
+            processor.processRaceFlags(
+                raceFlags = raceFlags(PrimaryFlag.GREEN),
+                events = listOf(nextEvent),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            assertEquals(listOf<SpeechEvent>(failedEvent, nextEvent, nextEvent), resolvedEvents)
+            assertEquals(2, spokenJsons.size)
+            assertEquals(
+                Json.parseToJsonElement(skippedJson.captured).jsonObject["raceFlags"],
+                Json.parseToJsonElement(spokenJsons.last()).jsonObject["previousRaceFlags"],
+            )
+            verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 2) { ttsEngine.speak(resolvedEvent, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.LmuWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    skippedJson.captured,
+                )
+            }
+            listOf(100L, 200L).forEachIndexed { index, time ->
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        time,
+                        Simulator.LmuWindows,
+                        key,
+                        "復旧",
+                        NarrationOutcome.SPOKEN,
+                        spokenJsons[index],
+                    )
+                }
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `文言解決のキャンセルは再スローしログ保存と後続処理を行わない`() =
+        runTest {
+            val key = ReadoutItemKey.LmuWindows.Flag.Root
+            val event = SpeechEvent.BlueFlag()
+            val cancellation = CancellationException("cancelled")
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor { input ->
+                    resolvedEvents += input
+                    throw cancellation
+                }
+
+            val thrown =
+                assertFailsWith<CancellationException> {
+                    processor.processRaceFlags(
+                        raceFlags = raceFlags(PrimaryFlag.BLUE),
+                        events = listOf(event, SpeechEvent.RedFlag()),
+                        readoutOrder = listOf(key),
+                        queueEnabledStates = emptyMap(),
+                        observedAtMs = 100L,
+                        logContext = logContext(),
+                    )
+                }
+
+            assertSame(cancellation, thrown)
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 0) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.LmuWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    match { it.isNotEmpty() },
                 )
             }
             confirmVerified(ttsEngine, telemetryLogRepository)

@@ -292,7 +292,7 @@ internal class LmuWindowsNarratorEventProcessor(
         telemetryJson: () -> String,
     ) {
         events.forEach { event ->
-            val text = readoutText(event)?.takeIf { it.isNotBlank() }
+            val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED
@@ -345,6 +345,17 @@ internal class LmuWindowsNarratorEventProcessor(
             else -> NarrationOutcome.SPOKEN
         }
     }
+
+    /** 文言解決に失敗したイベントだけをスキップし、後続の読み上げとログ保存を継続する。 */
+    private suspend fun readoutTextSafely(event: SpeechEvent): String? =
+        try {
+            readoutText(event)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            captureNarratorError(e)
+            null
+        }
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
