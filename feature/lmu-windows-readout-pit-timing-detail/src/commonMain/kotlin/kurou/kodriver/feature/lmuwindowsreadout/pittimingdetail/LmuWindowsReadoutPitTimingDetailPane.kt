@@ -16,6 +16,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -246,10 +247,35 @@ private fun PitTimingReadoutFields(
     onPreviewClick: (String) -> Unit,
     onImminentPreviewClick: (String) -> Unit,
 ) {
-    var currentText by remember(text) { mutableStateOf(text) }
+    var currentText by remember { mutableStateOf(text) }
+    // 古い保存結果で入力を巻き戻さず、正規化後の保存値が一致したら待機を解除する。
+    var pendingText by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(text, pendingText) {
+        if (pendingText == null) {
+            currentText = text
+        } else if (pendingText == text) {
+            pendingText = null
+        }
+    }
     val changeText: (String) -> Unit = {
         currentText = it
+        pendingText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
         onTextChanged(it)
+    }
+    var currentImminentText by remember { mutableStateOf(imminentText) }
+    // 古い保存結果で入力を巻き戻さず、正規化後の保存値が一致したら待機を解除する。
+    var pendingImminentText by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(imminentText, pendingImminentText) {
+        if (pendingImminentText == null) {
+            currentImminentText = imminentText
+        } else if (pendingImminentText == imminentText) {
+            pendingImminentText = null
+        }
+    }
+    val changeImminentText: (String) -> Unit = {
+        currentImminentText = it
+        pendingImminentText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+        onImminentTextChanged(it)
     }
     Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.large)) {
         Column {
@@ -290,10 +316,10 @@ private fun PitTimingReadoutFields(
         }
         ReadoutTextField(
             label = stringResource(Res.string.pit_timing_imminent_text_label),
-            text = imminentText,
+            text = currentImminentText,
             defaultText = imminentDefaultText,
             isTextToSpeechAvailable = available,
-            onTextChanged = onImminentTextChanged,
+            onTextChanged = changeImminentText,
             onPreviewClick = onImminentPreviewClick,
         )
     }
