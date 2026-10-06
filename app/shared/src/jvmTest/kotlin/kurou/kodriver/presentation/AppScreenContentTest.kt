@@ -4,12 +4,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.window.core.layout.WindowSizeClass
@@ -21,6 +23,28 @@ import kotlin.test.assertEquals
 class AppScreenContentTest {
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `両バナー表示時だけ区切り線を表示する`() {
+        val connectionVisible = mutableStateOf(true)
+        val reason = mutableStateOf<TtsUnavailableGuidance?>(TtsUnavailableGuidance.EngineMissing)
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                bannerUiState = ConnectionBannerUiState(isVisible = connectionVisible.value),
+                ttsUnavailableGuidance = reason.value,
+            )
+        }
+        rule.onNodeWithTag("connectionTtsBannerDivider").assertIsDisplayed()
+        rule.runOnIdle { connectionVisible.value = false }
+        rule.onNodeWithTag("connectionTtsBannerDivider").assertDoesNotExist()
+        rule.runOnIdle { reason.value = null }
+        rule.onNodeWithTag("connectionTtsBannerDivider").assertDoesNotExist()
+        rule.runOnIdle { connectionVisible.value = true }
+        rule.onNodeWithTag("connectionTtsBannerDivider").assertDoesNotExist()
+        rule.runOnIdle { reason.value = TtsUnavailableGuidance.EngineMissing }
+        rule.onNodeWithTag("connectionTtsBannerDivider").assertIsDisplayed()
+    }
 
     @Test
     fun `接続状況とTTS警告を同時表示し警告をタップしてもタブは変わらない`() {

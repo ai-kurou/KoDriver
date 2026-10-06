@@ -721,6 +721,9 @@ private fun AppScreenScaffold(
                         onClick = onBannerTapWithTabSwitch,
                     )
                 }
+                if (bannerUiState.isVisible && ttsUnavailableGuidance != null) {
+                    HorizontalDivider(modifier = Modifier.testTag("connectionTtsBannerDivider"))
+                }
                 TtsUnavailableBannerHost(reason = ttsUnavailableGuidance, onAction = onTtsAction)
                 AnimatedContent(
                     targetState = navigationState.current,
