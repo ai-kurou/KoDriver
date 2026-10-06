@@ -47,7 +47,7 @@ internal class Gt7Ps5NarratorEventProcessor(
         events.forEach { event ->
             val text =
                 if (event is Gt7Ps5ReadoutTextEvent) {
-                    readoutText(event)?.takeIf { it.isNotBlank() }
+                    readoutTextSafely(event)?.takeIf { it.isNotBlank() }
                 } else {
                     event.narratedText
                 }
@@ -113,6 +113,17 @@ internal class Gt7Ps5NarratorEventProcessor(
             else -> NarrationOutcome.SPOKEN
         }
     }
+
+    /** 文言解決に失敗したイベントだけをスキップし、後続の読み上げとログ保存を継続する。 */
+    private suspend fun readoutTextSafely(event: SpeechEvent): String? =
+        try {
+            readoutText(event)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            captureNarratorError(e)
+            null
+        }
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
