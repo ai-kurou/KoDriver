@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -137,6 +138,7 @@ class AceWindowsNarratorViewModelTest {
         bestLapTimeChannel: Channel<AceWindowsBestLapTimeData> = Channel(Channel.UNLIMITED),
         remainingFuelLapsChannel: Channel<AceWindowsRemainingFuelLapsData> = Channel(Channel.UNLIMITED),
         currentTimeMs: () -> Long = { 0L },
+        readoutText: suspend (SpeechEvent) -> String? = { it.narratedText },
     ): AceWindowsNarratorViewModel {
         every { fuelRepository.fuelStream() } returns fuelChannel.receiveAsFlow()
         every { flagRepository.flagStream() } returns flagChannel.receiveAsFlow()
@@ -209,11 +211,81 @@ class AceWindowsNarratorViewModelTest {
                 AceWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
                     saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-                    readoutText = { it.narratedText },
+                    readoutText = readoutText,
                 ),
             currentTimeMs = currentTimeMs,
         )
     }
+
+    @Test
+    fun `自由文言の解決に失敗しても次のテレメトリを収集して読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            val key = ReadoutItemKey.AceWindows.Flag.Root
+            stubReadoutDefaults(thresholdPercentage = 30)
+            val skippedJson = slot<String>()
+            val spokenJson = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(skippedJson),
+                )
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "復旧",
+                    NarrationOutcome.SPOKEN,
+                    capture(spokenJson),
+                )
+            } just Runs
+            createViewModel(
+                fuelChannel = Channel(Channel.UNLIMITED),
+                flagChannel = channel,
+                ttsEngine = tts,
+                readoutText = {
+                    if (it == SpeechEvent.AceWindowsBlueFlag) error("preference error")
+                    "復旧"
+                },
+            )
+
+            channel.send(flag(AceWindowsFlagType.NO_FLAG))
+            channel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+            channel.send(flag(AceWindowsFlagType.RED_FLAG))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsRedFlag), spokenTexts)
+            verify(exactly = 1) { tts.currentReadoutItemKey }
+            verify(exactly = 1) { tts.speak(SpeechEvent.AceWindowsRedFlag, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    skippedJson.captured,
+                )
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "復旧",
+                    NarrationOutcome.SPOKEN,
+                    spokenJson.captured,
+                )
+            }
+            confirmVerified(tts, telemetryLogRepository)
+        }
 
     @Test
     fun `残量が閾値以下になると読み上げる`() =
