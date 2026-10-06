@@ -1,8 +1,6 @@
 package kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneCardChipRow
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
@@ -84,18 +82,12 @@ internal fun AceWindowsReadoutTyreTemperatureDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                        verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        DetailPaneCardChips(
-                            chipLabels = listOf(overheatWarningChipLabel),
-                            selectedChipLabels = setOf(overheatWarningChipLabel),
-                            chipEnabled = uiState.overheatWarningEnabled,
-                            onChipClick = { onPreviewClicked() },
-                        )
-                    }
+                    DetailPaneCardChipRow(
+                        chipLabels = listOf(overheatWarningChipLabel),
+                        selectedChipLabels = setOf(overheatWarningChipLabel),
+                        chipEnabled = uiState.overheatWarningEnabled,
+                        onChipClick = { onPreviewClicked() },
+                    )
                     DetailPaneSubtitle(text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle))
                     ThresholdSlider(
                         value = uiState.highThresholdCelsius.toFloat(),

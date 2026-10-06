@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
-import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneCardChipRow
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -85,7 +85,7 @@ internal fun AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    DetailPaneCardChips(
+                    DetailPaneCardChipRow(
                         chipLabels = listOf(voiceTypeLabel),
                         selectedChipLabels = setOf(voiceTypeLabel),
                         chipEnabled = uiState.enabled,
