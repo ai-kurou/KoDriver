@@ -60,6 +60,8 @@ data class LmuWindowsPitTimingTrackingState(
     val currentLapStartedAtMs: Long = 0L,
     val currentLapStartValue: Double = 0.0,
     val currentLapHasRefilled: Boolean = false,
+    /** 周回境界から計測を開始した周だけを消費量の推定に使う。 */
+    val currentLapStartedAtBoundary: Boolean = false,
     val currentValue: Double = 0.0,
     /** 直近に完走した（給油・タイヤ交換なしの）ラップの消費量。まだ存在しなければ null。 */
     val lastValidLapConsumption: Double? = null,
@@ -776,7 +778,13 @@ private fun trackPitTimingValue(
                 // その消費量を今後の残り周回数推定の基準として採用する。
                 val completedLapConsumption = state.currentLapStartValue - state.currentValue
                 val lastValidLapConsumption =
-                    if (!state.currentLapHasRefilled && completedLapConsumption > 0.0) {
+                    if (
+                        state.currentLapStartedAtBoundary &&
+                        currentLap == state.currentLap + 1 &&
+                        !state.currentLapHasRefilled &&
+                        refilled == 0.0 &&
+                        completedLapConsumption > 0.0
+                    ) {
                         completedLapConsumption
                     } else {
                         state.lastValidLapConsumption
@@ -786,7 +794,8 @@ private fun trackPitTimingValue(
                     currentLap = currentLap,
                     currentLapStartedAtMs = observedAtMs,
                     currentLapStartValue = currentValue,
-                    currentLapHasRefilled = false,
+                    currentLapHasRefilled = refilled > 0.0,
+                    currentLapStartedAtBoundary = currentLap == state.currentLap + 1,
                     currentValue = currentValue,
                     lastValidLapConsumption = lastValidLapConsumption,
                     bestLapTimeMs = bestLapTimeMs,

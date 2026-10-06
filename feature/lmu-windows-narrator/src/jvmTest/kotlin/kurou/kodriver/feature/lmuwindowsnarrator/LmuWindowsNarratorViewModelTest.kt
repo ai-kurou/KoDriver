@@ -2188,6 +2188,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear())
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
@@ -2230,6 +2232,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear())
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
@@ -2264,6 +2268,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear())
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
@@ -2298,6 +2304,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear(fl = 1.0))
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             tyreWearChannel.send(tyreWear(fl = 0.9))
@@ -2334,6 +2342,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear(fl = 1.0))
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             tyreWearChannel.send(tyreWear(fl = 0.9))
@@ -2376,6 +2386,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear())
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
@@ -2438,6 +2450,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear(fl = 1.0))
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             tyreWearChannel.send(tyreWear(fl = 0.9))
@@ -2490,6 +2504,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear(fl = 1.0))
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
@@ -2537,6 +2553,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear(fl = 1.0))
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
@@ -2580,6 +2598,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear(fl = 1.0))
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
@@ -2627,6 +2647,8 @@ class LmuWindowsNarratorViewModelTest {
 
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
             tyreWearChannel.send(tyreWear())
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
             telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
             currentTime = 45_000L
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
