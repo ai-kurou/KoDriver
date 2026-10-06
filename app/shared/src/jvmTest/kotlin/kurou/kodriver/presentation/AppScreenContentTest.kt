@@ -25,7 +25,7 @@ class AppScreenContentTest {
     val rule = createComposeRule()
 
     @Test
-    fun `両バナー表示時だけ区切り線を表示する`() {
+    fun `両バナー表示時だけ背景色の隙間を表示する`() {
         val connectionVisible = mutableStateOf(true)
         val reason = mutableStateOf<TtsUnavailableGuidance?>(TtsUnavailableGuidance.EngineMissing)
         rule.setContent {
@@ -35,15 +35,15 @@ class AppScreenContentTest {
                 ttsUnavailableGuidance = reason.value,
             )
         }
-        rule.onNodeWithTag("connectionTtsBannerDivider").assertIsDisplayed()
+        rule.onNodeWithTag("connectionTtsBannerGap").assertIsDisplayed()
         rule.runOnIdle { connectionVisible.value = false }
-        rule.onNodeWithTag("connectionTtsBannerDivider").assertDoesNotExist()
+        rule.onNodeWithTag("connectionTtsBannerGap").assertDoesNotExist()
         rule.runOnIdle { reason.value = null }
-        rule.onNodeWithTag("connectionTtsBannerDivider").assertDoesNotExist()
+        rule.onNodeWithTag("connectionTtsBannerGap").assertDoesNotExist()
         rule.runOnIdle { connectionVisible.value = true }
-        rule.onNodeWithTag("connectionTtsBannerDivider").assertDoesNotExist()
+        rule.onNodeWithTag("connectionTtsBannerGap").assertDoesNotExist()
         rule.runOnIdle { reason.value = TtsUnavailableGuidance.EngineMissing }
-        rule.onNodeWithTag("connectionTtsBannerDivider").assertIsDisplayed()
+        rule.onNodeWithTag("connectionTtsBannerGap").assertIsDisplayed()
     }
 
     @Test

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -722,7 +723,14 @@ private fun AppScreenScaffold(
                     )
                 }
                 if (bannerUiState.isVisible && ttsUnavailableGuidance != null) {
-                    HorizontalDivider(modifier = Modifier.testTag("connectionTtsBannerDivider"))
+                    Spacer(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(1.dp)
+                                .background(MaterialTheme.colorScheme.background)
+                                .testTag("connectionTtsBannerGap"),
+                    )
                 }
                 TtsUnavailableBannerHost(reason = ttsUnavailableGuidance, onAction = onTtsAction)
                 AnimatedContent(
