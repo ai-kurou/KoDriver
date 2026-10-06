@@ -9,6 +9,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -141,6 +142,75 @@ class Gt7Ps5NarratorViewModelTest {
             currentTimeMs = currentTimeMs,
         )
     }
+
+    @Test
+    fun `自由文言の解決に失敗しても次のテレメトリを収集して読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            val key = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+            stubReadoutDefaults()
+            val skippedJson = slot<String>()
+            val spokenJson = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(skippedJson),
+                )
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "復旧",
+                    NarrationOutcome.SPOKEN,
+                    capture(spokenJson),
+                )
+            } just Runs
+            createViewModel(
+                telemetryChannel = channel,
+                ttsEngine = tts,
+                readoutText = {
+                    if (it is SpeechEvent.Gt7Ps5MyBestLap && it.lapTimeMs == 59_000) error("preference error")
+                    "復旧"
+                },
+            )
+
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 58_000))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLap(58_000, "復旧")), spokenTexts)
+            verify(exactly = 1) { tts.currentReadoutItemKey }
+            verify(exactly = 1) { tts.speak(SpeechEvent.Gt7Ps5MyBestLap(58_000, "復旧"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    skippedJson.captured,
+                )
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "復旧",
+                    NarrationOutcome.SPOKEN,
+                    spokenJson.captured,
+                )
+            }
+            confirmVerified(tts, telemetryLogRepository)
+        }
 
     @Test
     fun `起動直後の最初のemitではベストラップが設定済みでもアナウンスしない`() =

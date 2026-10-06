@@ -9,7 +9,10 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
@@ -24,6 +27,8 @@ import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 
 @Suppress("TooManyFunctions")
 class Gt7Ps5NarratorEventProcessorTest {
@@ -1034,13 +1039,147 @@ class Gt7Ps5NarratorEventProcessorTest {
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
-    private fun createProcessor() =
+    @Test
+    fun `文言解決に失敗しても同じ入力の後続イベントと次回処理を継続する`() =
+        runTest {
+            val key = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root
+            val failedEvent = SpeechEvent.Gt7Ps5RemainingFuelWarning(20)
+            val nextEvent = SpeechEvent.Gt7Ps5RemainingFuelWarning(10)
+            val resolvedEvent = SpeechEvent.Gt7Ps5RemainingFuelWarning(10, "復旧")
+            val skippedJson = slot<String>()
+            val spokenJsons = mutableListOf<String>()
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolvedEvent, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(skippedJson),
+                )
+            } just Runs
+            listOf(100L, 200L).forEach { time ->
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        time,
+                        Simulator.Gt7Ps5,
+                        key,
+                        "復旧",
+                        NarrationOutcome.SPOKEN,
+                        capture(spokenJsons),
+                    )
+                } just Runs
+            }
+            val processor =
+                createProcessor { event ->
+                    resolvedEvents += event
+                    if (event == failedEvent) error("preference error")
+                    "復旧"
+                }
+
+            processor.process(
+                sourceKey = key,
+                telemetry = telemetry(gasLevel = 20f),
+                events = listOf(failedEvent, nextEvent),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+                logContext = logContext,
+            )
+            processor.process(
+                sourceKey = key,
+                telemetry = telemetry(gasLevel = 10f),
+                events = listOf(nextEvent),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext,
+            )
+
+            assertEquals(listOf<SpeechEvent>(failedEvent, nextEvent, nextEvent), resolvedEvents)
+            assertEquals(2, spokenJsons.size)
+            assertEquals(
+                Json.parseToJsonElement(skippedJson.captured).jsonObject["telemetry"],
+                Json.parseToJsonElement(spokenJsons.last()).jsonObject["previousTelemetry"],
+            )
+            verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 2) { ttsEngine.speak(resolvedEvent, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    skippedJson.captured,
+                )
+            }
+            listOf(100L, 200L).forEachIndexed { index, time ->
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        time,
+                        Simulator.Gt7Ps5,
+                        key,
+                        "復旧",
+                        NarrationOutcome.SPOKEN,
+                        spokenJsons[index],
+                    )
+                }
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `文言解決のキャンセルは再スローしログ保存と後続処理を行わない`() =
+        runTest {
+            val key = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root
+            val event = SpeechEvent.Gt7Ps5RemainingFuelWarning(20)
+            val cancellation = CancellationException("cancelled")
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor { input ->
+                    resolvedEvents += input
+                    throw cancellation
+                }
+
+            val thrown =
+                assertFailsWith<CancellationException> {
+                    processor.process(
+                        sourceKey = key,
+                        telemetry = telemetry(gasLevel = 20f),
+                        events = listOf(event, SpeechEvent.Gt7Ps5RemainingFuelWarning(10)),
+                        readoutOrder = listOf(key),
+                        queueEnabledStates = emptyMap(),
+                        observedAtMs = 100L,
+                        logContext = logContext,
+                    )
+                }
+
+            assertSame(cancellation, thrown)
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 0) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.Gt7Ps5,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    match { it.isNotEmpty() },
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    private fun createProcessor(readoutText: suspend (SpeechEvent) -> String? = { it.narratedText }) =
         Gt7Ps5NarratorEventProcessor(
             ttsEngine = ttsEngine,
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-            readoutText = {
-                it.narratedText
-            },
+            readoutText = readoutText,
         )
 
     private fun telemetry(
