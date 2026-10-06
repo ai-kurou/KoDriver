@@ -9,8 +9,12 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
@@ -31,6 +35,8 @@ import kurou.kodriver.domain.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 
 @Suppress("TooManyFunctions")
 class AceWindowsNarratorEventProcessorTest {
@@ -962,11 +968,144 @@ class AceWindowsNarratorEventProcessorTest {
 
     private fun bestLapTime(bestLapTimeMs: Int) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)
 
-    private fun createProcessor() =
+    @Test
+    fun `文言解決に失敗しても同じ入力の後続イベントと次回処理を継続する`() =
+        runTest {
+            val key = ReadoutItemKey.AceWindows.Flag.Root
+            val failedEvent = SpeechEvent.AceWindowsBlueFlag
+            val nextEvent = SpeechEvent.AceWindowsRedFlag
+            val resolvedEvent = SpeechEvent.AceWindowsRedFlag
+            val skippedJson = slot<String>()
+            val spokenJsons = mutableListOf<String>()
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(resolvedEvent, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(skippedJson),
+                )
+            } just Runs
+            listOf(100L, 200L).forEach { time ->
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        time,
+                        Simulator.AceWindows,
+                        key,
+                        "復旧",
+                        NarrationOutcome.SPOKEN,
+                        capture(spokenJsons),
+                    )
+                } just Runs
+            }
+            val processor =
+                createProcessor { event ->
+                    resolvedEvents += event
+                    if (event == failedEvent) error("preference error")
+                    "復旧"
+                }
+
+            processor.processFlag(
+                flag = flag(AceWindowsFlagType.BLUE_FLAG),
+                events = listOf(failedEvent, nextEvent),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+                logContext = logContext(),
+            )
+            processor.processFlag(
+                flag = flag(AceWindowsFlagType.RED_FLAG),
+                events = listOf(nextEvent),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            assertEquals(listOf<SpeechEvent>(failedEvent, nextEvent, nextEvent), resolvedEvents)
+            assertEquals(2, spokenJsons.size)
+            assertEquals(
+                Json.parseToJsonElement(skippedJson.captured).jsonObject["flag"],
+                Json.parseToJsonElement(spokenJsons.last()).jsonObject["previousFlag"],
+            )
+            verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 2) { ttsEngine.speak(resolvedEvent, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    skippedJson.captured,
+                )
+            }
+            listOf(100L, 200L).forEachIndexed { index, time ->
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        time,
+                        Simulator.AceWindows,
+                        key,
+                        "復旧",
+                        NarrationOutcome.SPOKEN,
+                        spokenJsons[index],
+                    )
+                }
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `文言解決のキャンセルは再スローしログ保存と後続処理を行わない`() =
+        runTest {
+            val key = ReadoutItemKey.AceWindows.Flag.Root
+            val event = SpeechEvent.AceWindowsBlueFlag
+            val cancellation = CancellationException("cancelled")
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor { input ->
+                    resolvedEvents += input
+                    throw cancellation
+                }
+
+            val thrown =
+                assertFailsWith<CancellationException> {
+                    processor.processFlag(
+                        flag = flag(AceWindowsFlagType.BLUE_FLAG),
+                        events = listOf(event, SpeechEvent.AceWindowsRedFlag),
+                        readoutOrder = listOf(key),
+                        queueEnabledStates = emptyMap(),
+                        observedAtMs = 100L,
+                        logContext = logContext(),
+                    )
+                }
+
+            assertSame(cancellation, thrown)
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 0) {
+                telemetryLogRepository.saveTelemetryLog(
+                    100L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    match { it.isNotEmpty() },
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    private fun createProcessor(readoutText: suspend (SpeechEvent) -> String? = { it.narratedText }) =
         AceWindowsNarratorEventProcessor(
             ttsEngine = ttsEngine,
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-            readoutText = { it.narratedText },
+            readoutText = readoutText,
         )
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))
