@@ -111,6 +111,7 @@ class AppTest {
             "フラッグ",
             "ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。",
         )
+        scrollToItem("タイヤ温度")
         clickItemAndVerifyDescription(
             "タイヤ温度",
             "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
@@ -429,8 +430,7 @@ class AppTest {
             }
         }
         waitUntilDisplayed("Windowsで日本語音声を利用できません")
-        clickItem("このまま使う")
-        waitUntilNotDisplayed("このまま使う")
+        rule.onNodeWithText("このまま使う").assertDoesNotExist()
     }
 
     private fun waitUntilDisplayed(text: String) {

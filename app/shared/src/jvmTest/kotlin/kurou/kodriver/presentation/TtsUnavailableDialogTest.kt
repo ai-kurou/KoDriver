@@ -1,6 +1,5 @@
 package kurou.kodriver.presentation
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -73,40 +72,19 @@ class TtsUnavailableDialogTest {
         confirmVerified(installEngine, openLanguageSettings, openWindowsSettings)
     }
 
-    @Test
-    fun `利用可能なら非表示で利用不可になれば表示し解消すると消える`() {
-        val reason = mutableStateOf<TtsUnavailableGuidance?>(null)
-        rule.setContent {
-            AppTheme {
-                TtsUnavailableDialogHost(reason.value, installEngine, openLanguageSettings, openWindowsSettings)
-            }
-        }
-        rule.onNodeWithText("このまま使う").assertDoesNotExist()
-        rule.runOnIdle { reason.value = TtsUnavailableGuidance.EngineMissing }
-        rule.onNodeWithText("インストール").assertIsDisplayed()
-        rule.runOnIdle { reason.value = null }
-        rule.onNodeWithText("このまま使う").assertDoesNotExist()
-    }
-
-    @Test
-    fun `このまま使うで閉じた後は理由が変わっても再表示しない`() {
-        val reason = mutableStateOf<TtsUnavailableGuidance?>(TtsUnavailableGuidance.EngineMissing)
-        rule.setContent {
-            AppTheme {
-                TtsUnavailableDialogHost(reason.value, installEngine, openLanguageSettings, openWindowsSettings)
-            }
-        }
-        rule.onNodeWithText("このまま使う").performClick()
-        rule.onNodeWithText("このまま使う").assertDoesNotExist()
-        rule.runOnIdle { reason.value = null }
-        rule.runOnIdle { reason.value = TtsUnavailableGuidance.LanguageDataMissing }
-        rule.onNodeWithText("設定を開く").assertDoesNotExist()
-    }
-
     private fun show(reason: TtsUnavailableGuidance) {
         rule.setContent {
             AppTheme {
-                TtsUnavailableDialogHost(reason, installEngine, openLanguageSettings, openWindowsSettings)
+                TtsUnavailableDialog(
+                    reason = reason,
+                    onPrimaryClick =
+                        when (reason) {
+                            TtsUnavailableGuidance.EngineMissing -> installEngine
+                            TtsUnavailableGuidance.LanguageDataMissing -> openLanguageSettings
+                            TtsUnavailableGuidance.WindowsSpeechUnavailable -> openWindowsSettings
+                        },
+                    onDismiss = {},
+                )
             }
         }
     }

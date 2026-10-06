@@ -321,7 +321,7 @@ class MainActivityTest {
                 TextToSpeechUnavailableReason.WindowsSpeechUnavailable -> "Windowsで日本語音声を利用できません"
             }
         waitUntilDisplayed(title)
-        clickItem("このまま使う")
+        composeTestRule.onNodeWithText("このまま使う").assertDoesNotExist()
     }
 
     private fun selectSimulator(simulatorName: String) {

@@ -8,10 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.tts_continue
 import kurou.kodriver.app.shared.generated.resources.tts_engine_action
@@ -61,27 +57,4 @@ internal fun TtsUnavailableDialog(
         confirmButton = { Button(onClick = onPrimaryClick) { Text(stringResource(action)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.tts_continue)) } },
     )
-}
-
-/** 閉じた案内はこの起動中には再表示せず、設定への移動では閉じない。 */
-@Composable
-internal fun TtsUnavailableDialogHost(
-    reason: TtsUnavailableGuidance?,
-    onInstallEngine: () -> Unit,
-    onOpenLanguageSettings: () -> Unit,
-    onOpenWindowsSpeechSettings: () -> Unit,
-) {
-    var dismissed by rememberSaveable { mutableStateOf(false) }
-    if (reason != null && !dismissed) {
-        TtsUnavailableDialog(
-            reason = reason,
-            onPrimaryClick =
-                when (reason) {
-                    TtsUnavailableGuidance.EngineMissing -> onInstallEngine
-                    TtsUnavailableGuidance.LanguageDataMissing -> onOpenLanguageSettings
-                    TtsUnavailableGuidance.WindowsSpeechUnavailable -> onOpenWindowsSpeechSettings
-                },
-            onDismiss = { dismissed = true },
-        )
-    }
 }

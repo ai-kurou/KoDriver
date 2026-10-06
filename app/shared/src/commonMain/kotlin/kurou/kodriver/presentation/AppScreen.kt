@@ -95,6 +95,7 @@ import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListViewModel
+import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import kurou.kodriver.feature.otherlist.rememberOpenTtsSettings
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPane
 import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
@@ -435,14 +436,6 @@ fun AppScreen(
     AppTtsAvailabilityEffect(otherListViewModel::checkTextToSpeechAvailability)
     val uriHandler = LocalUriHandler.current
     val openTtsSettings = rememberOpenTtsSettings()
-    AppTheme(darkTheme = darkTheme, dynamicColor = uiState.dynamicColorEnabled) {
-        TtsUnavailableDialogHost(
-            reason = otherListUiState.ttsUnavailableGuidance,
-            onInstallEngine = { uriHandler.openUri(TTS_ENGINE_PLAY_STORE_URL) },
-            onOpenLanguageSettings = openTtsSettings,
-            onOpenWindowsSpeechSettings = otherListViewModel::openWindowsSpeechSettings,
-        )
-    }
 
     LifecycleResumeEffect(Unit) {
         viewModel.checkAccessLocalNetworkPermission()
@@ -453,6 +446,15 @@ fun AppScreen(
         darkTheme = darkTheme,
         dynamicColorEnabled = uiState.dynamicColorEnabled,
         bannerUiState = bannerUiState,
+        ttsUnavailableGuidance = otherListUiState.ttsUnavailableGuidance,
+        onTtsAction = {
+            when (otherListUiState.ttsUnavailableGuidance) {
+                TtsUnavailableGuidance.EngineMissing -> uriHandler.openUri(TTS_ENGINE_PLAY_STORE_URL)
+                TtsUnavailableGuidance.LanguageDataMissing -> openTtsSettings()
+                TtsUnavailableGuidance.WindowsSpeechUnavailable -> otherListViewModel.openWindowsSpeechSettings()
+                null -> Unit
+            }
+        },
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,
         accessLocalNetworkPermissionGranted = uiState.accessLocalNetworkPermissionGranted,
@@ -547,6 +549,8 @@ internal fun AppScreenContent(
     dynamicColorEnabled: Boolean = false,
     layoutType: NavigationSuiteType? = null,
     bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
+    ttsUnavailableGuidance: TtsUnavailableGuidance? = null,
+    onTtsAction: () -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     hasAppUpdate: Boolean = false,
     accessLocalNetworkPermissionGranted: Boolean = true,
@@ -591,6 +595,8 @@ internal fun AppScreenContent(
                 selectedSimulatorId = selectedSimulatorId,
                 onSimulatorSelected = onSimulatorSelected,
                 bannerUiState = bannerUiState,
+                ttsUnavailableGuidance = ttsUnavailableGuidance,
+                onTtsAction = onTtsAction,
                 snackbarHostState = snackbarHostState,
                 navigationState = navigationState,
                 onBannerTapWithTabSwitch = onBannerTapWithTabSwitch,
@@ -617,6 +623,8 @@ private fun AppScreenScaffold(
     selectedSimulatorId: String,
     onSimulatorSelected: (String) -> Unit,
     bannerUiState: ConnectionBannerUiState,
+    ttsUnavailableGuidance: TtsUnavailableGuidance?,
+    onTtsAction: () -> Unit,
     snackbarHostState: SnackbarHostState,
     navigationState: AppNavigationState,
     onBannerTapWithTabSwitch: (() -> Unit)?,
@@ -713,6 +721,7 @@ private fun AppScreenScaffold(
                         onClick = onBannerTapWithTabSwitch,
                     )
                 }
+                TtsUnavailableBannerHost(reason = ttsUnavailableGuidance, onAction = onTtsAction)
                 AnimatedContent(
                     targetState = navigationState.current,
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
