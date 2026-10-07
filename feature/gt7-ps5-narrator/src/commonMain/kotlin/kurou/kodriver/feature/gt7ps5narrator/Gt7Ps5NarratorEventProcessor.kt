@@ -8,6 +8,7 @@ import kurou.kodriver.core.narrator.TelemetryLogJsonCurrentField
 import kurou.kodriver.core.narrator.TelemetryLogJsonPreviousField
 import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.captureNarratorError
+import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.Gt7Ps5ReadoutTextEvent
@@ -115,15 +116,7 @@ internal class Gt7Ps5NarratorEventProcessor(
     }
 
     /** 文言解決に失敗したイベントだけをスキップし、後続の読み上げとログ保存を継続する。 */
-    private suspend fun readoutTextSafely(event: SpeechEvent): String? =
-        try {
-            readoutText(event)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            captureNarratorError(e)
-            null
-        }
+    private suspend fun readoutTextSafely(event: SpeechEvent): String? = runCatchingNarratorError { readoutText(event) }
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
