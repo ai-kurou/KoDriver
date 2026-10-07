@@ -38,3 +38,7 @@
 - アイコンサイズ・カード幅など「余白」ではない寸法（`Modifier.size` 等）は対象外。値がたまたま同じでも `KoDriverSpacing` は使わない。
 - `app:shared` は `moduleGraphAssert` で `core:.*` への依存が禁止されているため、`AppSpacing.kt` に同じ余白値を複製している。余白の値を変更する場合は両方を同期させる。
 - 4dp グリッドから外れる半端な余白値（18dp・6dp・3dp・10dp 等）の統一は本トークン化のスコープ外（[#1560](https://github.com/ai-kurou/KoDriver/issues/1560) 参照）。
+
+## 文言入力の状態
+
+- `PendingTextState.kt` の `rememberPendingText` は非同期保存中の入力を保持し、保存側UseCaseと同じ `trim().take(MAX)` に正規化した保存値が一致すると保存待ちを解除する。文字数上限は呼び出し側から渡す。

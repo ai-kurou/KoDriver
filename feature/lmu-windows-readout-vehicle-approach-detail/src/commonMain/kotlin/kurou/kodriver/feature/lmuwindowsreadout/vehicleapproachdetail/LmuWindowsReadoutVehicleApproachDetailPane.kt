@@ -18,11 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -39,6 +35,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
@@ -301,19 +298,10 @@ private fun ReadoutTextField(
     onTextChanged: (String) -> Unit,
     onPreviewClick: (String) -> Unit,
 ) {
-    var currentText by remember { mutableStateOf(text) }
-    // 古い保存結果で入力を巻き戻さず、正規化後の保存値が一致したら待機を解除する。
-    var pendingText by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(text, pendingText) {
-        if (pendingText == null) {
-            currentText = text
-        } else if (pendingText == text) {
-            pendingText = null
-        }
-    }
+    val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
+    val currentText = textState.currentText
     val changeText: (String) -> Unit = {
-        currentText = it
-        pendingText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+        textState.change(it)
         onTextChanged(it)
     }
     DetailPaneLabeledTextField(
@@ -321,8 +309,7 @@ private fun ReadoutTextField(
         value = currentText,
         defaultValue = defaultText,
         onResetToDefault = {
-            currentText = defaultText
-            pendingText = defaultText.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+            textState.change(defaultText)
             onReset()
         },
         resetContentDescription = stringResource(Res.string.vehicle_approach_text_reset_to_default),
