@@ -12,15 +12,17 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Test
 
 class AceWindowsReadoutVehicleApproachDetailPaneScreenshotTest {
-    // スマホ幅でチップの折り返しと下部の余白を確認する。
+    // スマホ幅で文言入力欄と下部の余白を確認する。
     @Test
-    fun `スマホ幅のチップ行`() =
+    fun `スマホ幅の文言入力`() =
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
-                            AceWindowsReadoutVehicleApproachDetailPaneContent()
+                            AceWindowsReadoutVehicleApproachDetailPaneContent(
+                                uiState = AceWindowsReadoutVehicleApproachDetailUiState(isTextToSpeechAvailable = true),
+                            )
                         }
                     }
                 }
@@ -36,7 +38,7 @@ class AceWindowsReadoutVehicleApproachDetailPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             AceWindowsReadoutVehicleApproachDetailPaneContent(
-                                uiState = AceWindowsReadoutVehicleApproachDetailUiState(),
+                                uiState = AceWindowsReadoutVehicleApproachDetailUiState(isTextToSpeechAvailable = true),
                             )
                         }
                     }
@@ -53,6 +55,89 @@ class AceWindowsReadoutVehicleApproachDetailPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             VehicleApproachHelpSheetContent()
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `TTS利用不可`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsReadoutVehicleApproachDetailPaneContent(
+                                uiState =
+                                    AceWindowsReadoutVehicleApproachDetailUiState(
+                                        isTextToSpeechAvailable = false,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `空白文言`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsReadoutVehicleApproachDetailPaneContent(
+                                uiState =
+                                    AceWindowsReadoutVehicleApproachDetailUiState(
+                                        readoutText = "",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `リセットボタン表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsReadoutVehicleApproachDetailPaneContent(
+                                uiState =
+                                    AceWindowsReadoutVehicleApproachDetailUiState(
+                                        readoutText = "周囲に注意",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `読み上げ無効`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsReadoutVehicleApproachDetailPaneContent(
+                                uiState =
+                                    AceWindowsReadoutVehicleApproachDetailUiState(
+                                        startReadoutEnabled = false,
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
                         }
                     }
                 }

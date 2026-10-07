@@ -22,6 +22,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCas
 import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
@@ -42,6 +43,7 @@ class AceWindowsReadoutTextSpeakerTest {
     private val observeBlackWhite: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase = mockk()
     private val observeOrangeCircle: ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase = mockk()
     private val observeRedYellowStripes: ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase = mockk()
+    private val observeVehicleApproach: ObserveAceWindowsVehicleApproachReadoutTextUseCase = mockk()
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -56,6 +58,7 @@ class AceWindowsReadoutTextSpeakerTest {
             observeBlackWhite,
             observeOrangeCircle,
             observeRedYellowStripes,
+            observeVehicleApproach,
             checkAvailable,
             speakText,
         )
@@ -510,5 +513,48 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
             confirmVerified(observeRedYellowStripes, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `車両接近は保存文言をそのまま指定音量で読み上げる`() =
+        runTest {
+            every { observeVehicleApproach() } returns flowOf("周囲に注意")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("周囲に注意", volume = 42) } just Runs
+
+            assertEquals("周囲に注意", speaker.readoutText(SpeechEvent.AceWindowsVehicleApproach))
+            speaker(SpeechEvent.AceWindowsVehicleApproach, 42)
+
+            verify(exactly = 2) { observeVehicleApproach() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("周囲に注意", volume = 42) }
+            confirmVerified(observeVehicleApproach, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `車両接近は空文字と空白では利用可否を確認せず読み上げない`() =
+        runTest {
+            listOf("", " \t\n ").forEach { text ->
+                every { observeVehicleApproach() } returns flowOf(text)
+                assertNull(speaker.readoutText(SpeechEvent.AceWindowsVehicleApproach))
+                speaker(SpeechEvent.AceWindowsVehicleApproach, 100)
+                coVerify(exactly = 0) { speakText(text, volume = 100) }
+            }
+            verify(exactly = 4) { observeVehicleApproach() }
+            coVerify(exactly = 0) { checkAvailable() }
+            confirmVerified(observeVehicleApproach, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `車両接近はTTS利用不可なら読み上げない`() =
+        runTest {
+            every { observeVehicleApproach() } returns flowOf("接近")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.AceWindowsVehicleApproach))
+            speaker(SpeechEvent.AceWindowsVehicleApproach, 100)
+            verify(exactly = 2) { observeVehicleApproach() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("接近", volume = 100) }
+            confirmVerified(observeVehicleApproach, checkAvailable, speakText)
         }
 }

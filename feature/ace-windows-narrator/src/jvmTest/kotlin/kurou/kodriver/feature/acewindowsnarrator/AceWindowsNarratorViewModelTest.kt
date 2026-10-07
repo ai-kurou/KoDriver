@@ -810,6 +810,100 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `保存した車両接近文言をログに記録する`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                orderOverride = listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
+            )
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    "周囲に注意",
+                    NarrationOutcome.SPOKEN,
+                    capture(json),
+                )
+            } just Runs
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                vehicleApproachChannel = vehicleApproachChannel,
+                readoutText = { "周囲に注意" },
+            )
+
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach), spokenTexts)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    "周囲に注意",
+                    NarrationOutcome.SPOKEN,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `車両接近文言が空白またはTTS不可なら空文字のSKIPPEDを記録する`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                orderOverride = listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
+            )
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                vehicleApproachChannel = vehicleApproachChannel,
+                readoutText = { null },
+            )
+
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
     fun `車両接近項目が無効のときは読み上げない`() =
         runTest(testDispatcher) {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)

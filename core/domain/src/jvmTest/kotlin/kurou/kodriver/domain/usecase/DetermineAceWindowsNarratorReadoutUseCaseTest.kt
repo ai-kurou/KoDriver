@@ -834,6 +834,26 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         assertEquals(true, decision.state.vehicleApproaching)
     }
 
+    @Test
+    fun `RootとStartReadoutがともに無効なら接近しても読み上げない`() {
+        val decision =
+            useCase.determineVehicleApproach(
+                state = AceWindowsNarratorState(),
+                data = vehicleApproach(distanceMeters = 5.0),
+                settings =
+                    vehicleApproachSettings(
+                        thresholdMeters = 10.0,
+                        enabledOverrides =
+                            mapOf(
+                                ReadoutItemKey.AceWindows.VehicleApproach.Root to false,
+                                ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false,
+                            ),
+                    ),
+            )
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.vehicleApproaching)
+    }
+
     private fun bestLapTime(bestLapTimeMs: Int) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)
 
     private fun myBestLapSettings(

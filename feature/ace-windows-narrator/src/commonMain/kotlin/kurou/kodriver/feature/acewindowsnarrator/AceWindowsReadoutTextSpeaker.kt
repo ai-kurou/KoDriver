@@ -11,13 +11,14 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCas
 import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
  * ACE の保存した自由文言をOS標準TTSで読み上げる。空白・TTS利用不可なら読み上げない。
- * 対象イベント: Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes。
+ * 対象イベント: Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes・VehicleApproach。
  */
 @Suppress("LongParameterList")
 internal class AceWindowsReadoutTextSpeaker(
@@ -31,6 +32,7 @@ internal class AceWindowsReadoutTextSpeaker(
     private val observeBlackWhiteFlagReadoutText: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase,
     private val observeOrangeCircleFlagReadoutText: ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase,
     private val observeRedYellowStripesFlagReadoutText: ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase,
+    private val observeVehicleApproachReadoutText: ObserveAceWindowsVehicleApproachReadoutTextUseCase,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -56,6 +58,7 @@ internal class AceWindowsReadoutTextSpeaker(
                 SpeechEvent.AceWindowsBlackWhiteFlag -> observeBlackWhiteFlagReadoutText().first()
                 SpeechEvent.AceWindowsOrangeCircleFlag -> observeOrangeCircleFlagReadoutText().first()
                 SpeechEvent.AceWindowsRedYellowStripesFlag -> observeRedYellowStripesFlagReadoutText().first()
+                SpeechEvent.AceWindowsVehicleApproach -> observeVehicleApproachReadoutText().first()
                 else -> return null
             }
         return text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
@@ -75,6 +78,7 @@ internal fun isAceWindowsCustomSpeakEvent(event: SpeechEvent): Boolean =
         SpeechEvent.AceWindowsOrangeCircleFlag,
         SpeechEvent.AceWindowsRedYellowStripesFlag,
         SpeechEvent.AceWindowsCheckeredFlag,
+        SpeechEvent.AceWindowsVehicleApproach,
         -> true
 
         else -> false

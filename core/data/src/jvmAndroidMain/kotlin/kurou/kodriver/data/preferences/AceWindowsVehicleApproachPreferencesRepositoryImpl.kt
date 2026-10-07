@@ -8,6 +8,12 @@ import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepo
 internal class AceWindowsVehicleApproachPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsVehicleApproachPreferences>,
 ) : AceWindowsVehicleApproachPreferencesRepository {
+    override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.readoutText }
+
+    override suspend fun saveReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(readoutText = value) }
+    }
+
     override fun observeThresholdMeters(): Flow<Double> = dataStore.observeProperty { it.thresholdMeters }
 
     override suspend fun saveThresholdMeters(meters: Double) {

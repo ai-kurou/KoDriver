@@ -6,8 +6,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -101,5 +104,40 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
                 mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),
                 repository.observeEnabledStates().first(),
             )
+        }
+
+    @Test
+    fun `文言の初期値は車両接近`() =
+        runTest {
+            assertEquals(ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
+        }
+
+    @Test
+    fun `文言を保存しても閾値と有効状態を保持する`() =
+        runTest {
+            repository.saveThresholdMeters(7.0)
+            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
+            repository.saveReadoutText("周囲に注意")
+            assertEquals("周囲に注意", repository.observeReadoutText().first())
+            assertEquals(7.0, repository.observeThresholdMeters().first())
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),
+                repository.observeEnabledStates().first(),
+            )
+            repository.saveThresholdMeters(8.0)
+            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, true)
+            assertEquals("周囲に注意", repository.observeReadoutText().first())
+        }
+
+    @Test
+    fun `UseCase経由の保存は空白と最大文字数を正規化する`() =
+        runTest {
+            val save = SaveAceWindowsVehicleApproachReadoutTextUseCase(repository)
+            save("  周囲に注意  ")
+            assertEquals("周囲に注意", repository.observeReadoutText().first())
+            save(" \t\n ")
+            assertEquals("", repository.observeReadoutText().first())
+            save("  " + "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH + 1) + "  ")
+            assertEquals("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH), repository.observeReadoutText().first())
         }
 }

@@ -8,16 +8,13 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
 
-/**
- * [SpeechEvent.narratedText] は WAV と同じ内容を Chip 表示文言から複製したものであるため、
- * Chip側の文言変更を検知できるよう実際の表示テキストと突き合わせる（#1527）。
- */
+/** 詳細画面の初期文言は SpeechEvent と同じドメイン既定値を参照する。 */
 class AceWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `Chip表示文言がSpeechEventのnarratedTextと一致する`() {
+    fun `入力欄の既定文言がSpeechEventのnarratedTextと一致する`() {
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutVehicleApproachDetailPaneContent()

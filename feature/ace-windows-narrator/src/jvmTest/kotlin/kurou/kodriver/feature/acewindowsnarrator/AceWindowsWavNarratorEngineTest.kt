@@ -89,10 +89,11 @@ class AceWindowsWavNarratorEngineTest {
         }
 
     @Test
-    fun `自由文言10種はFlagRoot開始音の後にTTS本文を再生しWAVにフォールバックしない`() =
+    fun `フラッグと車両接近はRoot開始音の後にTTS本文を再生しWAVにフォールバックしない`() =
         runTest {
             val events =
                 listOf(
+                    SpeechEvent.AceWindowsVehicleApproach,
                     SpeechEvent.AceWindowsCheckeredFlag,
                     SpeechEvent.AceWindowsWhiteFlag,
                     SpeechEvent.AceWindowsGreenFlag,
@@ -113,9 +114,9 @@ class AceWindowsWavNarratorEngineTest {
                         soundPlayer = soundPlayer,
                         resources =
                             WavResources<SpeechEvent, ReadoutStartSoundType>(
-                                eventToFile = mapOf(target to "unused.wav"),
+                                eventToFile = emptyMap(),
                                 startSoundTypeToFile = mapOf(ReadoutStartSoundType.FORMULA_RADIO to "start.wav"),
-                                resourceLoader = { byteArrayOf(1) },
+                                resourceLoader = { error("WAV fallback requested: $it") },
                                 startSoundResourceLoader = { startSound },
                             ),
                         eventToKey = { it.readoutItemKey },
@@ -124,7 +125,8 @@ class AceWindowsWavNarratorEngineTest {
                         startSoundEnabledStatesFlow =
                             flowOf(
                                 mapOf(
-                                    ReadoutItemKey.AceWindows.Flag.Root to true,
+                                    target.readoutItemKey to true,
+                                    ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false,
                                     ReadoutItemKey.AceWindows.Flag.WhiteFlag to false,
                                 ),
                             ),
