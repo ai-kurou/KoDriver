@@ -25,6 +25,8 @@
 
 角丸は `Shapes.kt` の `KoDriverShapes` で定義し、`Theme.kt` の `KoDriverTheme` から `MaterialTheme` へ渡している。
 
+`large=16dp`・`extraLarge=28dp` は Material3 の既定値と同じ値を明示しており、見た目は変わらない。
+
 - feature モジュール側では `RoundedCornerShape` を直接指定せず、`MaterialTheme.shapes.*` のスタイルだけを参照する。
 - `app:shared` の `AppTheme.kt` に同じ角丸値を複製しているため、角丸を変更する場合は両方を同期させる。
 
