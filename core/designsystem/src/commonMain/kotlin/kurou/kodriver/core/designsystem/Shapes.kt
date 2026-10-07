@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 
 /**
  * KoDriver アプリ全体の角丸定義。
+ * large（16.dp）・extraLarge（28.dp）は Material3 の既定値と同じ値を明示している。
  *
  * [KoDriverTheme] を通じて全画面へ配布されるため、角丸の調整はこのファイルの変更だけで完結する。
  *
@@ -16,4 +17,6 @@ val KoDriverShapes =
         extraSmall = RoundedCornerShape(4.dp),
         small = RoundedCornerShape(6.dp),
         medium = RoundedCornerShape(10.dp),
+        large = RoundedCornerShape(16.dp),
+        extraLarge = RoundedCornerShape(28.dp),
     )
