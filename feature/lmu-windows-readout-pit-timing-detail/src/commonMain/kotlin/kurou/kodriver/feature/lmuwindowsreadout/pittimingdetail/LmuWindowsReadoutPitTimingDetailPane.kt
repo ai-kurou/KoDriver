@@ -16,11 +16,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +30,7 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
+import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MAX
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_MIN
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_LAPS_PLACEHOLDER
@@ -247,34 +244,16 @@ private fun PitTimingReadoutFields(
     onPreviewClick: (String) -> Unit,
     onImminentPreviewClick: (String) -> Unit,
 ) {
-    var currentText by remember { mutableStateOf(text) }
-    // 古い保存結果で入力を巻き戻さず、正規化後の保存値が一致したら待機を解除する。
-    var pendingText by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(text, pendingText) {
-        if (pendingText == null) {
-            currentText = text
-        } else if (pendingText == text) {
-            pendingText = null
-        }
-    }
+    val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
+    val currentText = textState.currentText
     val changeText: (String) -> Unit = {
-        currentText = it
-        pendingText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+        textState.change(it)
         onTextChanged(it)
     }
-    var currentImminentText by remember { mutableStateOf(imminentText) }
-    // 古い保存結果で入力を巻き戻さず、正規化後の保存値が一致したら待機を解除する。
-    var pendingImminentText by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(imminentText, pendingImminentText) {
-        if (pendingImminentText == null) {
-            currentImminentText = imminentText
-        } else if (pendingImminentText == imminentText) {
-            pendingImminentText = null
-        }
-    }
+    val imminentTextState = rememberPendingText(imminentText, READOUT_CUSTOM_TEXT_MAX_LENGTH)
+    val currentImminentText = imminentTextState.currentText
     val changeImminentText: (String) -> Unit = {
-        currentImminentText = it
-        pendingImminentText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+        imminentTextState.change(it)
         onImminentTextChanged(it)
     }
     Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.large)) {
