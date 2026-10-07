@@ -74,9 +74,11 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
 
     // playJob はキューのチェーン最後尾しか指さないため、割り込み時に再生中・待機中の
     // ジョブをまとめてキャンセルできるよう、全再生ジョブをこの親 Job にぶら下げる。
-    // queue=true の speak() は常にこの Job 配下へ launch するため、cancelPlayback() は
-    // 呼び出しのたびにここを生存中の新しい Job へ差し替える。
+    // 新しい再生を launch する前に、生存中の Job へ差し替える。
     private var playbackParent: Job = SupervisorJob()
+
+    // 再生側の待機ジョブが割り込みでキャンセルされても、過去の停止完了待ちを保持する。
+    private var stopBarrier: Job = Job().apply { complete() }
 
     @Volatile
     private var _currentKey: KEY? = null
@@ -126,9 +128,11 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
             // stop() 直後で playbackParent がキャンセル済みのままだと、その配下へ launch した
             // 瞬間に子ジョブごとキャンセルされてしまうため、生存中でなければ差し替える。
             if (!playbackParent.isActive) playbackParent = SupervisorJob()
+            val barrier = stopBarrier
             val previousJob = playJob
             playJob =
                 scope.launch(playbackParent) {
+                    barrier.join()
                     previousJob?.join()
                     play(event, body)
                 }
@@ -175,22 +179,28 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     }
 
     // playbackParent.cancel() は SoundPlayer の停止処理を非同期にトリガーするだけで、
-    // 呼び出した時点では前の再生がまだ鳴っている。次に本当に再生を始めてよいタイミングは
-    // ここでキャンセルした Job が完了（＝停止処理が完了）した後なので、その Job を戻り値として
-    // 返し、呼び出し元（speak()/previewStartSound()）はそれを join() してから再生する。
+    // 呼び出した時点では前の再生がまだ鳴っている。過去のバリアと今回キャンセルした親 Job の
+    // 完了を順に待つバリアを返し、次の再生はそれを join() してから開始する。
+    // バリアは playbackParent 配下ではなく scope へ直接 launch するため、連続割り込みで
+    // 再生側の待機ジョブがキャンセルされても、過去の停止完了待ちは失われない。
     //
-    // ここでは playbackParent を新しい Job に差し替えない。stop() は「今キャンセルすべき Job」を
-    // 返すだけで、次に speak()/previewStartSound() が呼ばれるまで playbackParent はキャンセル済み
-    // のまま保持される。こうすることで、stop() の直後に speak() が呼ばれた場合でも、
-    // speak() 自身の cancelPlayback() がその「まだ停止処理中の Job」を正しく再取得して待てる。
-    // （stop() 側で先に新しい空の Job へ差し替えてしまうと、speak() 側は空の Job しか
-    // 参照できず、停止処理の完了を待たずに次の音声が重複再生されてしまう。）
-    // 差し替え自体は、新しい再生を実際に launch する直前（speak()/previewStartSound() 側）で行う。
+    // ここでは playbackParent を新しい Job に差し替えない。stop() 後もキャンセル済みの親を
+    // 保持し、新しい再生を実際に launch する直前に差し替える。停止処理中の親を空の親へ
+    // 置き換えず、stop() を含む各呼び出しの停止完了待ちを stopBarrier に連鎖させる。
     private fun cancelPlayback(): Job {
         val cancelled = playbackParent
         cancelled.cancel()
         playJob = null
-        return cancelled
+        // キャンセルされた play() は _currentKey のクリアまで進まないため、停止待ちで新しいジョブが
+        // active になった間に古いキーが currentKey として見えないようここで消す。
+        _currentKey = null
+        val previous = stopBarrier
+        stopBarrier =
+            scope.launch {
+                previous.join()
+                cancelled.join()
+            }
+        return stopBarrier
     }
 
     fun previewStartSound(type: START_TYPE) {
