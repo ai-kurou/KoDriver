@@ -198,7 +198,7 @@ class PendingTextStateTest {
     }
 
     @Test
-    fun `重複した保存待ちは末尾側の一致までまとめて除去する`() {
+    fun `重複した保存待ちは先頭側の一致まで除去し最新の入力を保持する`() {
         var savedText by mutableStateOf("初期値")
         lateinit var state: PendingTextState
         composeRule.setContent {
@@ -215,14 +215,108 @@ class PendingTextStateTest {
 
         savedText = "A"
         composeRule.waitForIdle()
-        assertEquals("A", state.currentText)
+        assertEquals("  A  ", state.currentText)
 
         savedText = "B"
         composeRule.waitForIdle()
-        assertEquals("B", state.currentText)
+        assertEquals("  A  ", state.currentText)
+
+        savedText = "A"
+        composeRule.waitForIdle()
+        assertEquals("A", state.currentText)
 
         savedText = "外部の更新"
         composeRule.waitForIdle()
         assertEquals("外部の更新", state.currentText)
+    }
+
+    @Test
+    fun `保存反映がconflateされても既定の期限後は外部更新に追従する`() {
+        composeRule.mainClock.autoAdvance = false
+        var savedText by mutableStateOf("D")
+        lateinit var state: PendingTextState
+        composeRule.setContent {
+            state = rememberPendingText(savedText, maxLength = 10)
+        }
+
+        composeRule.runOnIdle {
+            state.change("Q")
+            state.change("D")
+        }
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.mainClock.advanceTimeBy(2000)
+        composeRule.runOnIdle {
+            assertEquals("D", savedText)
+            assertEquals("D", state.currentText)
+        }
+
+        savedText = "期限前の外部更新"
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.runOnIdle { assertEquals("D", state.currentText) }
+
+        composeRule.mainClock.advanceTimeBy(1100)
+        composeRule.runOnIdle { assertEquals("D", state.currentText) }
+        savedText = "外部の更新"
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.runOnIdle { assertEquals("外部の更新", state.currentText) }
+    }
+
+    @Test
+    fun `保存値の一致で解除されたタイマーは次の保存待ちに影響しない`() {
+        composeRule.mainClock.autoAdvance = false
+        var savedText by mutableStateOf("初期値")
+        lateinit var state: PendingTextState
+        composeRule.setContent {
+            state = rememberPendingText(savedText, maxLength = 10, pendingTimeoutMillis = 1000L)
+        }
+
+        composeRule.runOnIdle { state.change("  A  ") }
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.mainClock.advanceTimeBy(800)
+        savedText = "A"
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.runOnIdle {
+            assertEquals("A", state.currentText)
+            state.change("  B  ")
+        }
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.mainClock.advanceTimeBy(300)
+        savedText = "外部の更新"
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.runOnIdle { assertEquals("  B  ", state.currentText) }
+
+        savedText = "B"
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.runOnIdle { assertEquals("B", state.currentText) }
+        composeRule.mainClock.advanceTimeBy(1100)
+        savedText = "次の外部更新"
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.runOnIdle { assertEquals("次の外部更新", state.currentText) }
+    }
+
+    @Test
+    fun `保存待ちが追加されるとタイムアウトの期限を再設定する`() {
+        composeRule.mainClock.autoAdvance = false
+        var savedText by mutableStateOf("初期値")
+        lateinit var state: PendingTextState
+        composeRule.setContent {
+            state = rememberPendingText(savedText, maxLength = 10, pendingTimeoutMillis = 1000L)
+        }
+
+        composeRule.runOnIdle { state.change("A") }
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.mainClock.advanceTimeBy(900)
+        composeRule.runOnIdle { state.change("  B  ") }
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.mainClock.advanceTimeBy(200)
+        savedText = "期限前の外部更新"
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.runOnIdle { assertEquals("  B  ", state.currentText) }
+
+        composeRule.mainClock.advanceTimeBy(900)
+        composeRule.runOnIdle { assertEquals("  B  ", state.currentText) }
+        savedText = "外部の更新"
+        composeRule.mainClock.advanceTimeByFrame()
+        composeRule.runOnIdle { assertEquals("外部の更新", state.currentText) }
     }
 }
