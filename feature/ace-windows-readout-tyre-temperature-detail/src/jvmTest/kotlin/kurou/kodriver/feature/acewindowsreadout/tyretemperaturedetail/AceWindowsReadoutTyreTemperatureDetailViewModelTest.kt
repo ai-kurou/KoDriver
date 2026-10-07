@@ -147,19 +147,21 @@ class AceWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `onPreviewClickedを呼ぶとAceWindowsTyreOverheatイベントが再生される`() {
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
-        val celsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value
-        val event = SpeechEvent.AceWindowsTyreOverheat(celsius)
-        every { ttsEngine.speak(event, false) } returns Unit
-        val viewModel = createViewModel()
+    fun `onPreviewClickedを呼ぶと設定中の閾値でAceWindowsTyreOverheatイベントが再生される`() =
+        runTest {
+            highThresholdFlow.update { Celsius(105) }
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+            val event = SpeechEvent.AceWindowsTyreOverheat(105)
+            every { ttsEngine.speak(event, false) } returns Unit
+            val viewModel = createViewModel()
+            viewModel.uiState.first()
 
-        viewModel.onPreviewClicked()
+            viewModel.onPreviewClicked()
 
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-        verify(exactly = 1) { ttsEngine.speak(event, false) }
-        confirmVerified(repository, ttsEngine)
-    }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { ttsEngine.speak(event, false) }
+            confirmVerified(repository, ttsEngine)
+        }
 }
