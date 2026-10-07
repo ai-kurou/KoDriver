@@ -73,6 +73,10 @@ subprojects {
     // macOS でテスト用 JVM が Dock に表示されて画面フォーカスが奪われるのを防ぐ
     tasks.withType<Test>().configureEach {
         jvmArgs("-Dapple.awt.UIElement=true")
+        // Robolectric 4.17 が JDK 17 以降で FileDescriptor の内部 API を参照するために必要
+        if (name.contains("AndroidHostTest", ignoreCase = true) || name.endsWith("UnitTest")) {
+            jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED")
+        }
     }
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jetbrains.dokka")
