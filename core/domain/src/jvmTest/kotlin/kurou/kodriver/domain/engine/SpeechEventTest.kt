@@ -274,7 +274,7 @@ class SpeechEventTest {
 
     @Test
     fun `ACEタイヤと車両接近は既定文言を返す`() {
-        assertEquals("タイヤ過熱警告", SpeechEvent.AceWindowsTyreOverheat.narratedText)
+        assertEquals("タイヤ過熱 110度", SpeechEvent.AceWindowsTyreOverheat(110).narratedText)
         assertEquals(
             ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT,
             SpeechEvent.AceWindowsVehicleApproach.narratedText,
@@ -316,5 +316,16 @@ class SpeechEventTest {
         assertEquals("カスタム", (events[2] as SpeechEvent.TyreDetached).resolvedText)
         assertEquals(listOf("オーバーヒート", "部品脱落", "タイヤ脱落"), events.map { it.narratedText })
         events.forEach { assertEquals(ReadoutItemKey.LmuWindows.VehicleDamage.Root, it.readoutItemKey) }
+    }
+
+    @Test
+    fun `ACEタイヤ過熱は温度と判定時本文を保持する`() {
+        val event = SpeechEvent.AceWindowsTyreOverheat(111)
+        assertEquals(ReadoutItemKey.AceWindows.TyreTemperature.Root, event.readoutItemKey)
+        assertEquals(null, event.resolvedText)
+        val resolved = event.withResolvedText("過熱注意")
+        assertEquals(111, resolved.celsius)
+        assertEquals("過熱注意", resolved.resolvedText)
+        assertEquals("タイヤ過熱 111度", resolved.narratedText)
     }
 }

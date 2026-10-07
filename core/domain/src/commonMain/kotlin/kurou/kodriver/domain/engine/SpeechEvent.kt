@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
@@ -36,6 +37,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
@@ -402,9 +404,19 @@ sealed interface SpeechEvent {
         override val narratedText = ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
     }
 
-    data object AceWindowsTyreOverheat : SpeechEvent {
+    /** 判定時点の最大カーカス温度と解決済み本文を保持するタイヤ過熱イベント。 */
+    data class AceWindowsTyreOverheat(
+        val celsius: Int,
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.TyreTemperature.Root
-        override val narratedText = "タイヤ過熱警告"
+        override val narratedText =
+            formatAceWindowsTyreTemperatureReadoutText(
+                ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                celsius,
+            )
+
+        override fun withResolvedText(text: String): AceWindowsTyreOverheat = copy(resolvedText = text)
     }
 
     /**
@@ -446,4 +458,11 @@ sealed interface Gt7Ps5ReadoutTextEvent : SpeechEvent {
     val resolvedText: String?
 
     fun withResolvedText(text: String): Gt7Ps5ReadoutTextEvent
+}
+
+/** ACEの自由文言イベント。判定時の本文を発話・ログで共有する。 */
+sealed interface AceWindowsReadoutTextEvent : SpeechEvent {
+    val resolvedText: String?
+
+    fun withResolvedText(text: String): AceWindowsReadoutTextEvent
 }

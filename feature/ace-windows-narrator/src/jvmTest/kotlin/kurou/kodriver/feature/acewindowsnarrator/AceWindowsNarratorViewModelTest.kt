@@ -666,7 +666,7 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `タイヤが高温になると読み上げる`() =
+    fun `タイヤが高温になると判定時に解決した本文を保持して読み上げる`() =
         runTest(testDispatcher) {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val tyreCarcassTemperatureChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
@@ -677,12 +677,13 @@ class AceWindowsNarratorViewModelTest {
                 fuelChannel = fuelChannel,
                 ttsEngine = ttsEngine,
                 tyreCarcassTemperatureChannel = tyreCarcassTemperatureChannel,
+                readoutText = { "過熱注意 95度" },
             )
 
             tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0f))
             tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0f))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsTyreOverheat), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsTyreOverheat(95, "過熱注意 95度")), spokenTexts)
         }
 
     @Test
@@ -748,7 +749,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root,
-                    "タイヤ過熱警告",
+                    "タイヤ過熱 95度",
                     NarrationOutcome.QUEUED,
                     match { it.isNotEmpty() },
                 )
@@ -768,7 +769,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.TyreTemperature.Root,
-                    "タイヤ過熱警告",
+                    "タイヤ過熱 95度",
                     NarrationOutcome.QUEUED,
                     capture(telemetryJsonSlot),
                 )

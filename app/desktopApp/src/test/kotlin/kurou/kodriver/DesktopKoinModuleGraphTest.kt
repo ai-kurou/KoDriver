@@ -24,6 +24,7 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
@@ -71,6 +72,23 @@ class DesktopKoinModuleGraphTest {
                 ),
             )
             assertNotNull(application.koin.get<SaveAceWindowsVehicleApproachReadoutTextUseCase>())
+        } finally {
+            application.close()
+        }
+    }
+
+    @Test
+    fun `ACEタイヤ過熱文言UseCaseをNarrator構成で解決できる`() {
+        val application =
+            koinApplication {
+                modules(listOf(desktopDataModule) + featureModules)
+            }
+        try {
+            assertNotNull(
+                application.koin.get<ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase>(
+                    named(Simulator.AceWindows.id),
+                ),
+            )
         } finally {
             application.close()
         }
