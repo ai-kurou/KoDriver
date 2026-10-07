@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
@@ -414,7 +415,7 @@ sealed interface SpeechEvent {
      */
     data object AceWindowsVehicleApproach : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.VehicleApproach.Root
-        override val narratedText = "車両接近"
+        override val narratedText = ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
     }
 
     /**

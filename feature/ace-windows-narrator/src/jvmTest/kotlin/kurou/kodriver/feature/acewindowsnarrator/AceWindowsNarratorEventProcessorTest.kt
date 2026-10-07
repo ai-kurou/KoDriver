@@ -21,8 +21,10 @@ import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.NarrationOutcome
@@ -1098,6 +1100,164 @@ class AceWindowsNarratorEventProcessorTest {
                     match { it.isNotEmpty() },
                 )
             }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `車両接近は保存文言をRootのログに記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsVehicleApproach
+            val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "周囲に注意",
+                    NarrationOutcome.SPOKEN,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    "周囲に注意"
+                }
+            processor.processVehicleApproach(
+                AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(5.0))),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "周囲に注意",
+                    NarrationOutcome.SPOKEN,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `車両接近は空白またはTTS不可の解決結果なら開始音を要求せず空文字でSKIPPEDを記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsVehicleApproach
+            val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    null
+                }
+            processor.processVehicleApproach(
+                AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(5.0))),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `車両接近は文言解決に失敗しても空文字でSKIPPEDを記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsVehicleApproach
+            val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    error("preference error")
+                }
+            processor.processVehicleApproach(
+                AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(5.0))),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `車両接近の文言解決キャンセルは読み上げとログを要求せず伝播する`() =
+        runTest {
+            val processor = createProcessor { throw CancellationException("cancelled") }
+            assertFailsWith<CancellationException> {
+                processor.processVehicleApproach(
+                    AceWindowsVehicleApproachData(nearbyVehicles = emptyList()),
+                    listOf(SpeechEvent.AceWindowsVehicleApproach),
+                    listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
+                    emptyMap(),
+                    0L,
+                    logContext(),
+                )
+            }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 

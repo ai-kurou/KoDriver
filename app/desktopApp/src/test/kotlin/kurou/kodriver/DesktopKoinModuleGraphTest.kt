@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
@@ -23,12 +24,16 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.presentation.featureModules
 import org.junit.Test
 import org.koin.core.qualifier.named
+import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import org.koin.test.check.checkKoinModules
+import kotlin.test.assertNotNull
 
 /**
  * Main.kt の composition root（desktopDataModule + 各 :core:*data モジュール + featureModules +
@@ -52,6 +57,25 @@ import org.koin.test.check.checkKoinModules
  *   Desktop 構成にも含まれ、グラフ検証のためにここで補う。
  */
 class DesktopKoinModuleGraphTest {
+    @Test
+    fun `ACE車両接近文言UseCaseをNarratorと詳細の両構成で解決できる`() {
+        val application =
+            koinApplication {
+                modules(listOf(desktopDataModule) + featureModules)
+            }
+        try {
+            assertNotNull(application.koin.get<ObserveAceWindowsVehicleApproachReadoutTextUseCase>())
+            assertNotNull(
+                application.koin.get<ObserveAceWindowsVehicleApproachReadoutTextUseCase>(
+                    named(Simulator.AceWindows.id),
+                ),
+            )
+            assertNotNull(application.koin.get<SaveAceWindowsVehicleApproachReadoutTextUseCase>())
+        } finally {
+            application.close()
+        }
+    }
+
     @Test
     fun `Desktop構成のKoinモジュールグラフが解決可能である`() {
         checkKoinModules(

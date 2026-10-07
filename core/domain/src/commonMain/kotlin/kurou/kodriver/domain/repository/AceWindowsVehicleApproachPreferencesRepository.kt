@@ -4,6 +4,10 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 interface AceWindowsVehicleApproachPreferencesRepository {
+    fun observeReadoutText(): Flow<String>
+
+    suspend fun saveReadoutText(text: String)
+
     fun observeThresholdMeters(): Flow<Double>
 
     suspend fun saveThresholdMeters(meters: Double)

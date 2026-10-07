@@ -10,3 +10,6 @@ const val ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT = 6.0
 
 /** ACE 車両接近アナウンスの、接近開始時読み上げの有効/無効デフォルト値。 */
 const val ACE_WINDOWS_VEHICLE_APPROACH_START_READOUT_ENABLED_DEFAULT = true
+
+/** ACE 車両接近アナウンスの既定文言。 */
+const val ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT = "車両接近"

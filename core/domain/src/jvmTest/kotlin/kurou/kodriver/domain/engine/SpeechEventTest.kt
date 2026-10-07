@@ -10,6 +10,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
@@ -272,9 +273,16 @@ class SpeechEventTest {
     }
 
     @Test
-    fun `ACEタイヤ・車両接近系のnarratedTextはChipと同じ文言を返す`() {
+    fun `ACEタイヤと車両接近は既定文言を返す`() {
         assertEquals("タイヤ過熱警告", SpeechEvent.AceWindowsTyreOverheat.narratedText)
-        assertEquals("車両接近", SpeechEvent.AceWindowsVehicleApproach.narratedText)
+        assertEquals(
+            ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT,
+            SpeechEvent.AceWindowsVehicleApproach.narratedText,
+        )
+        assertEquals(
+            ReadoutItemKey.AceWindows.VehicleApproach.Root,
+            SpeechEvent.AceWindowsVehicleApproach.readoutItemKey,
+        )
     }
 
     @Test
