@@ -73,9 +73,19 @@ subprojects {
     // macOS でテスト用 JVM が Dock に表示されて画面フォーカスが奪われるのを防ぐ
     tasks.withType<Test>().configureEach {
         jvmArgs("-Dapple.awt.UIElement=true")
-        // Robolectric 4.17 が JDK 17 以降で FileDescriptor の内部 API を参照するために必要
+        // Robolectric 4.17 の公式推奨設定: JDK 17 以降で内部 API へのアクセスを許可する
         if (name.contains("AndroidHostTest", ignoreCase = true) || name.endsWith("UnitTest")) {
-            jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED")
+            jvmArgs(
+                "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                "--add-opens=java.base/java.util=ALL-UNNAMED",
+                "--add-opens=java.base/java.io=ALL-UNNAMED",
+                "--add-opens=java.base/java.net=ALL-UNNAMED",
+                "--add-opens=java.base/java.security=ALL-UNNAMED",
+                "--add-opens=java.base/java.text=ALL-UNNAMED",
+                "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
+                "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+            )
         }
     }
     apply(plugin = "io.gitlab.arturbosch.detekt")
