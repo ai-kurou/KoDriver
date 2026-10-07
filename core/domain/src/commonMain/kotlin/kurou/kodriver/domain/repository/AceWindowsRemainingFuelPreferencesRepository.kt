@@ -6,4 +6,8 @@ interface AceWindowsRemainingFuelPreferencesRepository {
     fun observeThresholdPercentage(): Flow<Int>
 
     suspend fun saveThresholdPercentage(percentage: Int)
+
+    fun observeReadoutText(): Flow<String>
+
+    suspend fun saveReadoutText(text: String)
 }
