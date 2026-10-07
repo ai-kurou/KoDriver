@@ -35,4 +35,10 @@ internal class AceWindowsTyreTemperaturePreferencesRepositoryImpl(
             )
         }
     }
+
+    override fun observeOverheatReadoutText(): Flow<String> = dataStore.observeProperty { it.overheatReadoutText }
+
+    override suspend fun saveOverheatReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(overheatReadoutText = value) }
+    }
 }

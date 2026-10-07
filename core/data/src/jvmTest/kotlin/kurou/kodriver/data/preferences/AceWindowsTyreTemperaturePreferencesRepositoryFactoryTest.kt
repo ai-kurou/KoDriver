@@ -3,6 +3,7 @@ package kurou.kodriver.data.preferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.Celsius
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -42,5 +43,20 @@ class AceWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
             repository.saveHighThresholdCelsius(Celsius(100))
 
             assertEquals(Celsius(100), repository.observeHighThresholdCelsius().first())
+        }
+
+    @Test
+    fun `Factoryで作成したRepositoryから文言を監視保存できる`() =
+        runTest {
+            val repository =
+                createAceWindowsTyreTemperaturePreferencesRepository(
+                    directory = tempDir.absolutePath,
+                )
+            assertEquals(
+                ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                repository.observeOverheatReadoutText().first(),
+            )
+            repository.saveOverheatReadoutText("注意{celsius}度")
+            assertEquals("注意{celsius}度", repository.observeOverheatReadoutText().first())
         }
 }
