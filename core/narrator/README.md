@@ -6,6 +6,7 @@ WAV 音声を読み上げる narrator feature（`feature:lmu-windows-narrator` /
 `SoundPlayer` はプラットフォームごとに JVM（`javax.sound.sampled`）/ Android（`SoundPool`）/ Js / WasmJs の
 実装を提供します。JVM/Android 実装は Bluetooth A2DP 接続時の音切れ対策（末尾への無音追記・アンロードタイミングの調整）を
 含みます。`NarratorErrorCapture` は再生失敗を Sentry（JVM/Android のみ）へ送出する expect/actual です。
+Js / WasmJs では例外文字列とスタックトレースを `console.error` に出力します。
 
 `wavDurationMs`（`WavDuration.kt`）は WAV（RIFF）ヘッダから再生時間を求める純粋関数です。再生完了を通知しない
 `SoundPool` を使う Android 実装が、再生時間だけ待ってから `stop()` するために利用します（JVM 実装は
