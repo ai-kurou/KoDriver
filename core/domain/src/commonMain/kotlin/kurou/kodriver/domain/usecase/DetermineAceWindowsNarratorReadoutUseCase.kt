@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.floor
+import kotlin.math.roundToInt
 
 /**
  * ACE 向け読み上げ判定の継続状態。
@@ -173,6 +174,12 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         return AceWindowsNarratorReadoutDecision(nextState, listOfNotNull(event))
     }
 
+    /** 全輪の最大カーカス温度。過熱判定済み（1輪以上が閾値以上）の場合のみ呼ぶ。 */
+    private fun maxCelsius(data: AceWindowsTyreCarcassTemperatureData): Int {
+        val maxReading = data.wheels.values.maxOf { it.value }
+        return maxReading.roundToInt()
+    }
+
     fun determineTyreTemperatureOverheat(
         state: AceWindowsNarratorState,
         data: AceWindowsTyreCarcassTemperatureData,
@@ -194,7 +201,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(tyreOverheating = nextOverheating),
-            events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsTyreOverheat) else emptyList(),
+            events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsTyreOverheat(maxCelsius(data))) else emptyList(),
         )
     }
 

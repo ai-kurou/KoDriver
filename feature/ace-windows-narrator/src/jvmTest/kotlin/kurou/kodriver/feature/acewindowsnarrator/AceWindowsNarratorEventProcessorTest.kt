@@ -710,13 +710,13 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
-            every { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat(110, "タイヤ過熱 110度"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "タイヤ過熱警告",
+                    "タイヤ過熱 110度",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
@@ -724,7 +724,7 @@ class AceWindowsNarratorEventProcessorTest {
 
             createProcessor().processTyreTemperature(
                 tyreCarcassTemperature = tyreCarcassTemperature(110.0f),
-                events = listOf(SpeechEvent.AceWindowsTyreOverheat),
+                events = listOf(SpeechEvent.AceWindowsTyreOverheat(110)),
                 readoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -737,13 +737,13 @@ class AceWindowsNarratorEventProcessorTest {
                 telemetryJsons.single().contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":110.0}}"""),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat(110, "タイヤ過熱 110度"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "タイヤ過熱警告",
+                    "タイヤ過熱 110度",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
@@ -758,13 +758,13 @@ class AceWindowsNarratorEventProcessorTest {
             every { ttsEngine.currentReadoutItemKey } returns null
             val processor = createProcessor()
             val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
-            every { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat(110, "タイヤ過熱 110度"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "タイヤ過熱警告",
+                    "タイヤ過熱 110度",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
@@ -780,7 +780,7 @@ class AceWindowsNarratorEventProcessorTest {
             )
             processor.processTyreTemperature(
                 tyreCarcassTemperature(110.0f),
-                listOf(SpeechEvent.AceWindowsTyreOverheat),
+                listOf(SpeechEvent.AceWindowsTyreOverheat(110)),
                 listOf(key),
                 emptyMap(),
                 200L,
@@ -797,13 +797,13 @@ class AceWindowsNarratorEventProcessorTest {
                 telemetryJsons.single().contains(""""tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":110.0}}"""),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat(110, "タイヤ過熱 110度"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "タイヤ過熱警告",
+                    "タイヤ過熱 110度",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
@@ -1300,6 +1300,210 @@ class AceWindowsNarratorEventProcessorTest {
                 )
             }
             verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `タイヤ過熱は保存文言をRootのログに記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsTyreOverheat(110)
+            val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event.withResolvedText("過熱 110度"), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "過熱 110度",
+                    NarrationOutcome.SPOKEN,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    "過熱 110度"
+                }
+            processor.processTyreTemperature(
+                tyreCarcassTemperature(110.0f),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(event.withResolvedText("過熱 110度"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "過熱 110度",
+                    NarrationOutcome.SPOKEN,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `タイヤ過熱はTTS不可の解決結果なら開始音を要求せず空文字でSKIPPEDを記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsTyreOverheat(110)
+            val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    null
+                }
+            processor.processTyreTemperature(
+                tyreCarcassTemperature(110.0f),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event.withResolvedText("過熱 110度"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `タイヤ過熱は空白の解決結果なら開始音を要求せず空文字でSKIPPEDを記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsTyreOverheat(110)
+            val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    " "
+                }
+            processor.processTyreTemperature(
+                tyreCarcassTemperature(110.0f),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event.withResolvedText("過熱 110度"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `タイヤ過熱は文言解決に失敗しても空文字でSKIPPEDを記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsTyreOverheat(110)
+            val key = ReadoutItemKey.AceWindows.TyreTemperature.Root
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    error("preference error")
+                }
+            processor.processTyreTemperature(
+                tyreCarcassTemperature(110.0f),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event.withResolvedText("過熱 110度"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `タイヤ過熱の文言解決キャンセルは読み上げとログを要求せず伝播する`() =
+        runTest {
+            val processor = createProcessor { throw CancellationException("cancelled") }
+            assertFailsWith<CancellationException> {
+                processor.processTyreTemperature(
+                    tyreCarcassTemperature(110.0f),
+                    listOf(SpeechEvent.AceWindowsTyreOverheat(110)),
+                    listOf(ReadoutItemKey.AceWindows.TyreTemperature.Root),
+                    emptyMap(),
+                    0L,
+                    logContext(),
+                )
+            }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat(110), false) }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 

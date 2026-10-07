@@ -11,6 +11,7 @@ import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
+import kurou.kodriver.domain.engine.AceWindowsReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
@@ -185,11 +186,18 @@ internal class AceWindowsNarratorEventProcessor(
     ) {
         val previous = previousTyreCarcassTemperature
         events.forEach { event ->
-            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
+            val narrationOutcome =
+                if (text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
-                narratedText = event.narratedText,
+                narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
                 telemetryJson =
                     buildTyreTemperatureTelemetryLogJson(

@@ -22,6 +22,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCas
 import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
@@ -43,6 +44,7 @@ class AceWindowsReadoutTextSpeakerTest {
     private val observeBlackWhite: ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase = mockk()
     private val observeOrangeCircle: ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase = mockk()
     private val observeRedYellowStripes: ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase = mockk()
+    private val observeTyreOverheat: ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeVehicleApproach: ObserveAceWindowsVehicleApproachReadoutTextUseCase = mockk()
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
@@ -59,6 +61,7 @@ class AceWindowsReadoutTextSpeakerTest {
             observeOrangeCircle,
             observeRedYellowStripes,
             observeVehicleApproach,
+            observeTyreOverheat,
             checkAvailable,
             speakText,
         )
@@ -556,5 +559,64 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("接近", volume = 100) }
             confirmVerified(observeVehicleApproach, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `タイヤ過熱は保存文言の温度を整形して読み上げる`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsTyreOverheat(111)
+            every { observeTyreOverheat() } returns flowOf("過熱 {celsius}度、{celsius}")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("過熱 111度、111", volume = 42) } just Runs
+            assertEquals("過熱 111度、111", speaker.readoutText(event))
+            speaker(event, 42)
+            assertEquals(true, isAceWindowsCustomSpeakEvent(event))
+            verify(exactly = 2) { observeTyreOverheat() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("過熱 111度、111", volume = 42) }
+            confirmVerified(observeTyreOverheat, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `タイヤ過熱の解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsTyreOverheat(111, "判定時の本文")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("判定時の本文", volume = 42) } just Runs
+            assertEquals("判定時の本文", speaker.readoutText(event))
+            coEvery { checkAvailable() } returns false
+            speaker(event, 42)
+            verify(exactly = 0) { observeTyreOverheat() }
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("判定時の本文", volume = 42) }
+            confirmVerified(observeTyreOverheat, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `タイヤ過熱は空白の保存文言や解決済み本文を読み上げない`() =
+        runTest {
+            every { observeTyreOverheat() } returns flowOf(" ")
+            val event = SpeechEvent.AceWindowsTyreOverheat(111)
+            assertNull(speaker.readoutText(event))
+            speaker(event, 42)
+            speaker(event.withResolvedText(" "), 42)
+            verify(exactly = 2) { observeTyreOverheat() }
+            coVerify(exactly = 0) { checkAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = 42) }
+            confirmVerified(observeTyreOverheat, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `タイヤ過熱はTTS利用不可なら読み上げない`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsTyreOverheat(111)
+            every { observeTyreOverheat() } returns flowOf("過熱 {celsius}度")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(event))
+            speaker(event, 42)
+            verify(exactly = 2) { observeTyreOverheat() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("過熱 111度", volume = 42) }
+            confirmVerified(observeTyreOverheat, checkAvailable, speakText)
         }
 }
