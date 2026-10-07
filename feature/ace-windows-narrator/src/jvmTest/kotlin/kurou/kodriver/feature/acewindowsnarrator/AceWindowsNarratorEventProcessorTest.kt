@@ -963,6 +963,48 @@ class AceWindowsNarratorEventProcessorTest {
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
 
+    @Test
+    fun `自由文言の文言が空白なら読み上げず空文字とSKIPPEDを記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsGreenFlag
+            val jsons = mutableListOf<String>()
+            val processor =
+                AceWindowsNarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { "  " }
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(jsons),
+                )
+            } just Runs
+
+            processor.processFlag(
+                flag(AceWindowsFlagType.GREEN_FLAG),
+                listOf(event),
+                listOf(event.readoutItemKey),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+
+            verify(exactly = 0) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    event.readoutItemKey,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    jsons.single(),
+                )
+            }
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
     private fun tyreCarcassTemperature(frontLeftCelsius: Float) =
         AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(frontLeftCelsius)))
 
