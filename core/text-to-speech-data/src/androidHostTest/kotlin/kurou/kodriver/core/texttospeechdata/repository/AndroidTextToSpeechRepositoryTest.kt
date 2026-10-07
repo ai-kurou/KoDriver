@@ -122,6 +122,77 @@ class AndroidTextToSpeechRepositoryTest {
         }
 
     @Test
+    fun `初期化待機中にキャンセルされた場合はエンジンを解放する`() =
+        runTest {
+            every { textToSpeech.shutdown() } returns Unit
+            val initListeners = mutableListOf<TextToSpeech.OnInitListener>()
+            val repository =
+                AndroidTextToSpeechRepository(
+                    textToSpeechFactory = { listener ->
+                        factoryCallCount++
+                        initListeners += listener
+                        textToSpeech
+                    },
+                    volumeParamsFactory = volumeParamsFactory,
+                )
+
+            val job = launch { repository.isAvailable() }
+            runCurrent()
+            assertEquals(1, initListeners.size)
+            assertFalse(job.isCompleted)
+
+            job.cancel()
+            job.join()
+
+            assertTrue(job.isCancelled)
+            assertEquals(1, factoryCallCount)
+            verify(exactly = 1) { textToSpeech.shutdown() }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
+    fun `初期化待機中のキャンセル後は次の呼び出しで再初期化する`() =
+        runTest {
+            every { textToSpeech.shutdown() } returns Unit
+            every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE
+            every { textToSpeech.voice } returns null
+            every { textToSpeech.setOnUtteranceProgressListener(capture(listenerSlot)) } returns TextToSpeech.SUCCESS
+            val initListeners = mutableListOf<TextToSpeech.OnInitListener>()
+            val repository =
+                AndroidTextToSpeechRepository(
+                    textToSpeechFactory = { listener ->
+                        factoryCallCount++
+                        initListeners += listener
+                        textToSpeech
+                    },
+                    volumeParamsFactory = volumeParamsFactory,
+                )
+
+            val cancelledJob = launch { repository.isAvailable() }
+            runCurrent()
+            assertEquals(1, factoryCallCount)
+            cancelledJob.cancel()
+            cancelledJob.join()
+
+            var available = false
+            val retryJob = launch { available = repository.isAvailable() }
+            runCurrent()
+
+            assertTrue(cancelledJob.isCancelled)
+            assertEquals(2, factoryCallCount)
+            assertFalse(retryJob.isCompleted)
+            initListeners[1].onInit(TextToSpeech.SUCCESS)
+            retryJob.join()
+
+            assertTrue(available)
+            verify(exactly = 1) { textToSpeech.shutdown() }
+            verify(exactly = 1) { textToSpeech.setLanguage(Locale.JAPANESE) }
+            verify(exactly = 1) { textToSpeech.voice }
+            verify(exactly = 1) { textToSpeech.setOnUtteranceProgressListener(listenerSlot.captured) }
+            confirmVerified(textToSpeech)
+        }
+
+    @Test
     fun `初期音声の取得中のキャンセルは再スローする`() =
         runTest {
             every { textToSpeech.setLanguage(Locale.JAPANESE) } returns TextToSpeech.LANG_AVAILABLE

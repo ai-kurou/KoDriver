@@ -176,6 +176,7 @@ internal class AndroidTextToSpeechRepository(
      * 初回呼び出し時のみ [TextToSpeech] を生成し、初期化完了を待つ。
      * 利用できない場合は `null` を返し、[unavailableReason] にその理由を記録する。以降の [speak] / [isAvailable] では再初期化せず、
      * [unavailableReason] の呼び出し時のみ再初期化する。
+     * 初期化待機中にキャンセルされた場合はエンジンを解放し、次回呼び出しで再初期化する。
      *
      * 理由の切り分けは、[TextToSpeech.OnInitListener] の結果と [TextToSpeech.setLanguage] の結果の
      * どちらで失敗したかで行う。エンジンサービス自体が端末に存在しない・バインドに失敗した場合は
@@ -195,7 +196,15 @@ internal class AndroidTextToSpeechRepository(
                 appliedVoiceId = null
                 defaultVoiceIdValue = null
             }
-            if (initStatus.await() != TextToSpeech.SUCCESS) {
+            val status =
+                try {
+                    initStatus.await()
+                } catch (e: CancellationException) {
+                    engine.shutdown()
+                    initialized = false
+                    throw e
+                }
+            if (status != TextToSpeech.SUCCESS) {
                 unavailableReason = TextToSpeechUnavailableReason.EngineMissing
                 engine.shutdown()
                 textToSpeech = null
