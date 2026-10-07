@@ -14,7 +14,7 @@ androidx-core-ktx = "1.19.1"
 androidx-benchmark = "1.5.0"
 androidx-profileinstaller = "1.4.1"
 androidx-uiautomator = "2.4.0"
-composeMultiplatform = "1.11.1"
+composeMultiplatform = "1.12.1"
 junit = "4.13.2"
 kotlin = "2.4.20"
 ksp = "2.3.11"
@@ -38,7 +38,7 @@ modulesGraphAssert = "2.9.1"
 # 1.6.x はJava 21ビルド前提の破壊的変更(非推奨API削除等)を含むメジャーアップデートのため、互換性未確認により更新を見送っている
 logback = "1.5.34"
 mockk = "1.14.11"
-material3 = "1.11.0-alpha07"
+material3 = "1.12.0-alpha03"
 compose-material-icons-extended = "1.7.3"
 reorderable = "3.1.0"
 aboutLibraries = "15.1.0"
@@ -64,8 +64,8 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
-compose-material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version = "1.2.0" }
-compose-material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version = "1.2.0" }
+compose-material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version = "1.3.0-rc01" }
+compose-material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version = "1.3.0-rc01" }
 compose-material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
