@@ -21,6 +21,14 @@ Narratorで都度文言を解決し、空白・TTS利用不可では開始音も
 有効判定は `VehicleApproach.Root` と `StartReadout` を維持し、開始音・優先度・キューは `VehicleApproach.Root` を使う。
 `vehicle_approach.wav` は廃止し、WAVへのフォールバックは行わない。
 
+タイヤ過熱も保存した自由文言をOS標準TTSで読み上げる。既定文言は「タイヤ過熱 {celsius}度」で、
+`AceWindowsTyreTemperaturePreferences` のフィールド3に保存する。`{celsius}` は判定時点の全輪最大カーカス温度を
+`roundToInt` で四捨五入した整数に置換する。過熱・解除の判定ロジックは従来どおり。
+Processorで解決した本文を `SpeechEvent.AceWindowsTyreOverheat.resolvedText` に保持し、発話とログを一致させる。
+空白・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` をログに保存する。
+開始音・優先度・キューは `TyreTemperature.Root` を維持し、`tyre_overheat.wav` を廃止する。WAVフォールバックは行わない。
+自由文言の入力UI・試聴対応はPR3で追加する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

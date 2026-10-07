@@ -598,7 +598,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = tyreTemperatureSettings(highThresholdCelsius = 90),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat), decision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat(95)), decision.events)
         assertEquals(true, decision.state.tyreOverheating)
     }
 
@@ -641,7 +641,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, cooledState.tyreOverheating)
-        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat), reovertDecision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat(95)), reovertDecision.events)
     }
 
     @Test
@@ -687,7 +687,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = tyreTemperatureSettings(highThresholdCelsius = 90),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat), decision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat(90)), decision.events)
     }
 
     @Test
@@ -943,4 +943,26 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 remainingFuelLapsThreshold = 3,
             ),
     )
+
+    @Test
+    fun `タイヤ過熱は全輪の最大カーカス温度を四捨五入する`() {
+        listOf(110.49f to 110, 110.5f to 111).forEach { (maximum, expected) ->
+            val decision =
+                useCase.determineTyreTemperatureOverheat(
+                    state = AceWindowsNarratorState(),
+                    data =
+                        AceWindowsTyreCarcassTemperatureData(
+                            wheels =
+                                mapOf(
+                                    WheelIndex.FRONT_LEFT to CelsiusReading(95.0f),
+                                    WheelIndex.FRONT_RIGHT to CelsiusReading(99.0f),
+                                    WheelIndex.REAR_LEFT to CelsiusReading(maximum),
+                                    WheelIndex.REAR_RIGHT to CelsiusReading(100.0f),
+                                ),
+                        ),
+                    settings = tyreTemperatureSettings(highThresholdCelsius = 90),
+                )
+            assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat(expected)), decision.events)
+        }
+    }
 }

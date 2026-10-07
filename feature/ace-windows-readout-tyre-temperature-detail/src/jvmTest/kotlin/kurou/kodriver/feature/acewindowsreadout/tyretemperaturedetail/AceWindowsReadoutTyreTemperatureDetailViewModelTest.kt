@@ -150,14 +150,16 @@ class AceWindowsReadoutTyreTemperatureDetailViewModelTest {
     fun `onPreviewClickedを呼ぶとAceWindowsTyreOverheatイベントが再生される`() {
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
         every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
-        every { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) } returns Unit
+        val celsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value
+        val event = SpeechEvent.AceWindowsTyreOverheat(celsius)
+        every { ttsEngine.speak(event, false) } returns Unit
         val viewModel = createViewModel()
 
         viewModel.onPreviewClicked()
 
         verify(exactly = 1) { repository.observeEnabledStates() }
         verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat, false) }
+        verify(exactly = 1) { ttsEngine.speak(event, false) }
         confirmVerified(repository, ttsEngine)
     }
 }

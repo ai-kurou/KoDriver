@@ -63,6 +63,8 @@ internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
     }
 
     fun onPreviewClicked() {
-        playSpeechEvent(SpeechEvent.AceWindowsTyreOverheat)
+        playSpeechEvent(
+            SpeechEvent.AceWindowsTyreOverheat(ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value),
+        )
     }
 }
