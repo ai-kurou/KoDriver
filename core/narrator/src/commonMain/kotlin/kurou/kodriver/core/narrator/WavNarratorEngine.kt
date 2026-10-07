@@ -191,6 +191,9 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
         val cancelled = playbackParent
         cancelled.cancel()
         playJob = null
+        // キャンセルされた play() は _currentKey のクリアまで進まないため、停止待ちで新しいジョブが
+        // active になった間に古いキーが currentKey として見えないようここで消す。
+        _currentKey = null
         val previous = stopBarrier
         stopBarrier =
             scope.launch {

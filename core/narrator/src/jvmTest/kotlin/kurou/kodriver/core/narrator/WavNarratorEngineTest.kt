@@ -619,6 +619,28 @@ class WavNarratorEngineTest {
         }
 
     @Test
+    fun `stop直後のqueue speakが停止待ちの間currentKeyは停止前のキーを返さない`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+            assertEquals(CAR_LEFT_KEY, engine.currentKey)
+
+            engine.stop()
+            engine.speak(RED_FLAG, queue = true)
+            runCurrent()
+
+            assertEquals(null, engine.currentKey)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+        }
+
+    @Test
     fun `customSpeakEventsのイベントはWAVを再生せず開始音のみ再生してcustomSpeakで読み上げる`() =
         runTest {
             val player = FakeSoundPlayer()
