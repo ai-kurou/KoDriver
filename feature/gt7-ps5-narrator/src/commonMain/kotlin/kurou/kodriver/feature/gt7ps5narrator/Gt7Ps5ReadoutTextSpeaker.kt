@@ -65,11 +65,17 @@ internal class Gt7Ps5ReadoutTextSpeaker(
             }
 
             is SpeechEvent.Gt7Ps5MyBestLap -> {
-                ReadoutText(myBestLapText(event), event.resolvedText != null)
+                ReadoutText(
+                    myBestLapText(event),
+                    event.resolvedText != null,
+                )
             }
 
             is SpeechEvent.Gt7Ps5TyreOverheat -> {
-                ReadoutText(tyreOverheatText(event), event.resolvedText != null)
+                ReadoutText(
+                    tyreOverheatText(event),
+                    event.resolvedText != null,
+                )
             }
         }
     }
