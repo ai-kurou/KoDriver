@@ -136,6 +136,9 @@ private val PrimarySimulatorRailHeaderIconSize = 40.dp
  */
 private val PrimarySimulatorRailHeaderDividerWidth = 32.dp
 
+// 接続バナーとTTS警告バナーの間に背景色の隙間として見せる1dp。
+private val ConnectionTtsBannerGap = 1.dp
+
 private fun withTabSwitch(
     action: (() -> Unit)?,
     switchToMore: () -> Unit,
@@ -727,7 +730,7 @@ private fun AppScreenScaffold(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .height(1.dp)
+                                .height(ConnectionTtsBannerGap)
                                 .background(MaterialTheme.colorScheme.background)
                                 .testTag("connectionTtsBannerGap"),
                     )
