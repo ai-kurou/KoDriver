@@ -27,8 +27,10 @@ val textToSpeechDataModule =
             )
         } bind TextToSpeechRepository::class
         single<VoiceListRepository> {
-            AndroidVoiceListRepository {
-                get<AndroidTextToSpeechRepository>().engineOrNull(retryIfUnavailable = true)
-            }
+            val repository = get<AndroidTextToSpeechRepository>()
+            AndroidVoiceListRepository(
+                engineProvider = { repository.engineOrNull(retryIfUnavailable = true) },
+                defaultVoiceIdProvider = { repository.defaultVoiceId },
+            )
         }
     }

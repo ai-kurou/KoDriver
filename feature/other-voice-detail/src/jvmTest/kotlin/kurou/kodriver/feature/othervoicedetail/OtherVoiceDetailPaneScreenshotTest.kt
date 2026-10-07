@@ -37,6 +37,20 @@ class OtherVoiceDetailPaneScreenshotTest {
         )
 
     @Test
+    fun `既定音声を除外した一覧`() =
+        screenshot(
+            OtherVoiceDetailUiState(
+                voices = listOf(voice.copy(isDefault = true), TextToSpeechVoice("voice-b", "音声B", "ja-JP")),
+                selectedVoiceId = voice.id,
+                isLoading = false,
+            ),
+        )
+
+    @Test
+    fun `既定音声のみの案内`() =
+        screenshot(OtherVoiceDetailUiState(voices = listOf(voice.copy(isDefault = true)), isLoading = false))
+
+    @Test
     fun `取得中`() = screenshot(OtherVoiceDetailUiState(isLoading = true))
 
     @Test

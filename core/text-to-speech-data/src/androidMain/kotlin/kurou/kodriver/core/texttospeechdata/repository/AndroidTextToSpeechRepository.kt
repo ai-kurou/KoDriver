@@ -50,6 +50,12 @@ internal class AndroidTextToSpeechRepository(
     private val mutex = Mutex()
     private val voiceLock = Any()
     private var appliedVoiceId: String? = null
+    private var defaultVoiceIdValue: String? = null
+
+    /** 日本語の初期化で選ばれた音声ID。試聴や個別の音声指定では変えない。 */
+    internal val defaultVoiceId: String?
+        get() = synchronized(voiceLock) { defaultVoiceIdValue }
+
     private var initialized = false
     private var textToSpeech: TextToSpeech? = null
     private var unavailableReason: TextToSpeechUnavailableReason? = null
@@ -185,7 +191,10 @@ internal class AndroidTextToSpeechRepository(
             val initStatus = CompletableDeferred<Int>()
             val engine = textToSpeechFactory { status -> initStatus.complete(status) }
             // 再初期化したエンジンには前の声が引き継がれないため、適用済みのIDを破棄する。
-            synchronized(voiceLock) { appliedVoiceId = null }
+            synchronized(voiceLock) {
+                appliedVoiceId = null
+                defaultVoiceIdValue = null
+            }
             if (initStatus.await() != TextToSpeech.SUCCESS) {
                 unavailableReason = TextToSpeechUnavailableReason.EngineMissing
                 engine.shutdown()
@@ -197,6 +206,16 @@ internal class AndroidTextToSpeechRepository(
                 engine.shutdown()
                 textToSpeech = null
                 return@withLock null
+            }
+            synchronized(voiceLock) {
+                defaultVoiceIdValue =
+                    try {
+                        engine.voice?.name
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        null
+                    }
             }
             val listenerRegistered =
                 engine.setOnUtteranceProgressListener(

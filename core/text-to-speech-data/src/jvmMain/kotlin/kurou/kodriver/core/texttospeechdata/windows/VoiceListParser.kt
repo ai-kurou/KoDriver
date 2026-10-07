@@ -13,7 +13,12 @@ internal fun parseVoiceList(output: String): List<TextToSpeechVoice> =
             if (columns.size < VOICE_COLUMN_COUNT) {
                 null
             } else {
-                TextToSpeechVoice(columns[0], columns[1], columns[2])
+                TextToSpeechVoice(
+                    columns[0],
+                    columns[1],
+                    columns[2],
+                    isDefault = columns.getOrNull(3).equals("True", ignoreCase = true),
+                )
             }
         }.toList()
 

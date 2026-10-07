@@ -17,11 +17,15 @@ class ListVoicesScriptTest {
         assertTrue(script.contains("[Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"))
         assertTrue(script.contains("Add-Type -AssemblyName System.Speech;"))
         assertTrue(script.contains("GetInstalledVoices()"))
+        assertTrue(script.contains("SelectVoiceByHints("))
+        assertTrue(script.contains("GetCultureInfo('ja-JP')"))
+        assertTrue(script.contains("\$defaultName = \$s.Voice.Name;"))
         assertTrue(script.contains("Where-Object { \$_.Enabled }"))
         assertTrue(script.contains("\$v = \$_.VoiceInfo;"))
         assertTrue(
             script.contains(
-                "[Console]::WriteLine([string]::Join([string][char]9, @(\$v.Name, \$v.Description, \$v.Culture.Name)))",
+                "[Console]::WriteLine([string]::Join([string][char]9, " +
+                    "@(\$v.Name, \$v.Description, \$v.Culture.Name, (\$v.Name -eq \$defaultName))))",
             ),
         )
     }

@@ -30,9 +30,9 @@ Androidは`voiceId`を`Voice.name`として検索して`setVoice`で反映しま
 スクリプト生成は純粋関数`buildSpeakScript`として切り出し、音声選択・フォールバック・エスケープをテストします。
 
 Windows専用の`WindowsVoiceListRepository`は、有効なSAPI音声のID（`VoiceInfo.Name`）、表示名
-（`VoiceInfo.Description`）、言語を取得します。取得はIOスレッド上で排他し、`ja-JP`の音声を含む一覧だけを保持して以降は
-再取得しません。非Windows・失敗・15秒のタイムアウト・音声未導入・他言語のみで`ja-JP`の音声を含まない場合は保持せず、
-後から音声が導入されても検出できるよう次回に再取得します。
+（`VoiceInfo.Description`）、言語を取得します。取得はIOスレッド上で排他し、一覧はキャッシュせず毎回取得します。
+詳細画面の再読み込みで、音声の追加・削除や日本語の既定音声の変更を反映します。
+非Windows・失敗・15秒のタイムアウト・音声未導入の場合は空の一覧を返します。
 一覧取得スクリプトは純粋関数`buildListVoicesScript`で生成し、Windowsのコマンドライン引数では二重引用符が
 欠落するため、文字列の引用には単一引用符のみを使い、タブ区切りは`[char]9`で指定します。
 `GetAvailableVoicesUseCase`が`ja-JP`の音声だけに絞り込み、表示名の昇順に並べます。
@@ -55,3 +55,5 @@ SecurityExceptionはSentryへ記録します。androidMainには、Windowsの音
 
 ![Module Graph](../../docs/graphs/core-text-to-speech-data.svg)
 <!-- MODULE-GRAPH-END -->
+
+音声一覧には`isDefault`を付け、詳細画面で既定音声の重複表示を避ける。Windowsは読み上げと同じ日本語の`SelectVoiceByHints`で選択された音声、Androidは日本語の初期化時に`setLanguage`で選ばれた音声のIDを保持し、一覧のIDと照合する。試聴・個別音声の指定で保持したIDは変えず、エンジンの再初期化時に取得し直す。既定情報を取得できない場合は音声を除外しない。

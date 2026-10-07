@@ -8,16 +8,26 @@ import kurou.kodriver.domain.repository.VoiceListRepository
 
 /**
  * 日本語のうちオフラインで使えるインストール済み音声を取得する。
+ * 既定音声は読み上げ側が日本語の初期化で保持したIDで照合し、現在の試聴音声とは区別する。
  * 詳細画面の再読み込みで音声の導入を反映できるよう、一覧はキャッシュせず毎回取得する。
  */
 internal class AndroidVoiceListRepository(
     private val engineProvider: suspend () -> TextToSpeech?,
+    private val defaultVoiceIdProvider: () -> String?,
 ) : VoiceListRepository {
     override suspend fun availableVoices(): List<TextToSpeechVoice> {
         val engine = engineProvider() ?: return emptyList()
         val voices =
             try {
                 engine.voices
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            }
+        val defaultVoiceId =
+            try {
+                defaultVoiceIdProvider()
             } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {
@@ -34,6 +44,7 @@ internal class AndroidVoiceListRepository(
                     id = it.name,
                     displayName = formatVoiceDisplayName(it.name),
                     cultureName = TTS_CULTURE_NAME,
+                    isDefault = it.name == defaultVoiceId,
                 )
             }
     }

@@ -60,6 +60,7 @@ import kurou.kodriver.domain.model.TextToSpeechVoice
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.othervoicedetail.generated.resources.Res
 import kurou.kodriver.feature.othervoicedetail.generated.resources.navigate_back
+import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_alternatives_empty
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_count
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_default_section
 import kurou.kodriver.feature.othervoicedetail.generated.resources.voice_description
@@ -125,7 +126,13 @@ fun OtherVoiceDetailPaneContent(
     onBack: () -> Unit = {},
 ) {
     val previewSample = stringResource(Res.string.voice_preview_sample)
-    val selectedId = if (uiState.savedVoiceMissing) VOICE_ID_UNSPECIFIED else uiState.selectedVoiceId
+    val voices = uiState.voices.filterNot { it.isDefault }
+    val selectedId =
+        if (uiState.savedVoiceMissing || uiState.voices.any { it.isDefault && it.id == uiState.selectedVoiceId }) {
+            VOICE_ID_UNSPECIFIED
+        } else {
+            uiState.selectedVoiceId
+        }
     DetailPaneScaffold(
         title = stringResource(Res.string.voice_title),
         canNavigateBack = canNavigateBack,
@@ -162,20 +169,29 @@ fun OtherVoiceDetailPaneContent(
                             modifier = Modifier.weight(1f),
                         )
                         Text(
-                            text = stringResource(Res.string.voice_count, uiState.voices.size),
+                            text = stringResource(Res.string.voice_count, voices.size),
                             style = koDriverMonospaceTextStyle(),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     VoiceCards(
-                        voices = uiState.voices,
+                        voices = voices,
                         selectedId = selectedId,
                         previewingId = uiState.previewingVoiceId,
                         onVoiceSelected = onVoiceSelected,
                         onPreviewClicked = { onPreviewClicked(it, previewSample) },
                     )
-                    if (uiState.voices.isEmpty()) {
-                        DetailPaneBodyText(text = stringResource(Res.string.voice_empty))
+                    if (voices.isEmpty()) {
+                        DetailPaneBodyText(
+                            text =
+                                stringResource(
+                                    if (uiState.voices.isEmpty()) {
+                                        Res.string.voice_empty
+                                    } else {
+                                        Res.string.voice_alternatives_empty
+                                    },
+                                ),
+                        )
                         TextButton(onClick = onRetryClicked) {
                             Text(stringResource(Res.string.voice_retry))
                         }
