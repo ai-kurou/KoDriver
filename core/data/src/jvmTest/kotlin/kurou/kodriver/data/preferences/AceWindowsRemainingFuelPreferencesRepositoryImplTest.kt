@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -48,5 +49,19 @@ class AceWindowsRemainingFuelPreferencesRepositoryImplTest {
             repository.saveThresholdPercentage(80)
             repository.saveThresholdPercentage(50)
             assertEquals(50, repository.observeThresholdPercentage().first())
+        }
+
+    @Test
+    fun `文言の初期値は既定値で保存と空欄の上書きは閾値を維持する`() =
+        runTest {
+            assertEquals(ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
+            repository.saveThresholdPercentage(45)
+            repository.saveReadoutText("残り{percent}%")
+            assertEquals("残り{percent}%", repository.observeReadoutText().first())
+            repository.saveReadoutText("")
+            assertEquals("", repository.observeReadoutText().first())
+            assertEquals(45, repository.observeThresholdPercentage().first())
+            repository.saveThresholdPercentage(60)
+            assertEquals("", repository.observeReadoutText().first())
         }
 }
