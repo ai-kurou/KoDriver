@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
@@ -37,6 +38,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
@@ -349,9 +351,19 @@ sealed interface SpeechEvent {
         override val narratedText = if (laps <= 0) "燃料がありません" else "燃料は残り約${laps}周"
     }
 
-    data object AceWindowsRemainingFuelWarning : SpeechEvent {
+    /**
+     * percent は判定時の実残量を四捨五入した整数。
+     * resolvedText は判定時に解決済みの文言で、キュー待機中に設定が変わってもログと発話を一致させる。
+     */
+    data class AceWindowsRemainingFuelWarning(
+        val percent: Int,
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
-        override val narratedText = "残り燃料警告"
+        override val narratedText =
+            formatAceWindowsRemainingFuelReadoutText(ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT, percent)
+
+        override fun withResolvedText(text: String): AceWindowsRemainingFuelWarning = copy(resolvedText = text)
     }
 
     data object AceWindowsWhiteFlag : SpeechEvent {

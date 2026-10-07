@@ -27,6 +27,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStatesUseCase
@@ -67,7 +68,7 @@ import org.koin.dsl.module
  *   それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・
  *   TextToSpeechEngine・SpeakTextUseCase・
- *   ObserveVoiceUseCase・CheckTextToSpeechAvailableUseCase・フラッグ・車両接近・タイヤ過熱文言Observe UseCase）、
+ *   ObserveVoiceUseCase・CheckTextToSpeechAvailableUseCase・フラッグ・車両接近・タイヤ過熱・燃料残量文言Observe UseCase）、
  *   および自由文言TTSの AceWindowsReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）・TextToSpeechRepository（:core:text-to-speech-data）。
@@ -133,11 +134,13 @@ val aceWindowsNarratorModule: Module =
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsVehicleApproachReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRemainingFuelReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveVoiceUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { CheckTextToSpeechAvailableUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { SpeakTextUseCase(get(), get(named(Simulator.AceWindows.id))) }
         factory {
             AceWindowsReadoutTextSpeaker(
+                get(named(Simulator.AceWindows.id)),
                 get(named(Simulator.AceWindows.id)),
                 get(named(Simulator.AceWindows.id)),
                 get(named(Simulator.AceWindows.id)),
@@ -184,7 +187,6 @@ val aceWindowsNarratorModule: Module =
 
 private val aceWindowsEventToFile: Map<SpeechEvent, String> =
     buildMap {
-        put(SpeechEvent.AceWindowsRemainingFuelWarning, "files/remaining_fuel_caution.wav")
         put(SpeechEvent.AceWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.AceWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
         for (laps in 0..ACE_WINDOWS_REMAINING_FUEL_LAPS_MAX) {

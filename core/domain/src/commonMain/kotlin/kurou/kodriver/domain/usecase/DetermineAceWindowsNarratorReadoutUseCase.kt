@@ -150,7 +150,14 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
-            events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsRemainingFuelWarning) else emptyList(),
+            events =
+                if (shouldAnnounce) {
+                    val rounded = data.remainingPercent.value.roundToInt()
+                    val percent = rounded.coerceIn(0, 100)
+                    listOf(SpeechEvent.AceWindowsRemainingFuelWarning(percent))
+                } else {
+                    emptyList()
+                },
         )
     }
 
