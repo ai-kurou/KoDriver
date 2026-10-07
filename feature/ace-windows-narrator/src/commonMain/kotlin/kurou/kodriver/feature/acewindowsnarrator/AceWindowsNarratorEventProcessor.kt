@@ -84,7 +84,12 @@ internal class AceWindowsNarratorEventProcessor(
     ) {
         val previous = previousFlag
         events.forEach { event ->
-            val text = if (isAceWindowsCustomSpeakEvent(event)) readoutTextSafely(event) else event.narratedText
+            val text =
+                if (isAceWindowsCustomSpeakEvent(event)) {
+                    readoutTextSafely(event)?.takeIf { it.isNotBlank() }
+                } else {
+                    event.narratedText
+                }
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED
@@ -210,7 +215,12 @@ internal class AceWindowsNarratorEventProcessor(
     ) {
         val previous = previousVehicleApproach
         events.forEach { event ->
-            val text = if (isAceWindowsCustomSpeakEvent(event)) readoutTextSafely(event) else event.narratedText
+            val text =
+                if (isAceWindowsCustomSpeakEvent(event)) {
+                    readoutTextSafely(event)?.takeIf { it.isNotBlank() }
+                } else {
+                    event.narratedText
+                }
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED
