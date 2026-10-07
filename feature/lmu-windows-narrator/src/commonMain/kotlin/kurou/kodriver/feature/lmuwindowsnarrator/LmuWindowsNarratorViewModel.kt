@@ -632,12 +632,17 @@ internal class LmuWindowsNarratorViewModel(
                         settings = settings,
                         observedAtMs = observedAtMs,
                     )
-                narratorState = tyreWearDecision.state
                 val pitTimingEvents =
                     pitTimingLapGate.filter(
                         currentLap = telemetry.timing.currentLap,
                         events = selectLowerPitTimingEvent(virtualEnergyDecision.events, tyreWearDecision.events),
                     )
+                narratorState =
+                    pitTimingEvents
+                        .filterIsInstance<SpeechEvent.PitTimingWarning>()
+                        .fold(tyreWearDecision.state) { finalState, event ->
+                            narratorUseCases.determineReadout.recordPitTimingAnnounced(finalState, event)
+                        }
                 eventProcessor.processPitTiming(
                     snapshot =
                         LmuWindowsPitTimingSnapshot(
@@ -653,7 +658,7 @@ internal class LmuWindowsNarratorViewModel(
                         LmuWindowsPitTimingLogContext(
                             state = state,
                             settings = settings,
-                            finalState = tyreWearDecision.state,
+                            finalState = narratorState,
                         ),
                 )
             }.launchIn(viewModelScope)

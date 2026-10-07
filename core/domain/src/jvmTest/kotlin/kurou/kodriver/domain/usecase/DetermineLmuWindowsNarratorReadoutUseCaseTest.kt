@@ -1819,6 +1819,38 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `バーチャルエナジーのピットタイミング読み上げ記録は対応する履歴だけを更新する`() {
+        val state =
+            pitTimingBoundaryState().copy(
+                lastAnnouncedPitTimingVirtualEnergyLaps = 3,
+                lastAnnouncedPitTimingTyreWearLaps = 2,
+                lastPitTimingVirtualEnergyEvaluationLap = 5,
+                lastPitTimingTyreWearEvaluationLap = 5,
+            )
+
+        val announcedState =
+            useCase.recordPitTimingAnnounced(state, SpeechEvent.PitTimingWarning(0, PitTimingSource.VirtualEnergy))
+
+        assertEquals(state.copy(lastAnnouncedPitTimingVirtualEnergyLaps = 0), announcedState)
+    }
+
+    @Test
+    fun `タイヤ摩耗のピットタイミング読み上げ記録は対応する履歴だけを更新する`() {
+        val state =
+            pitTimingBoundaryState().copy(
+                lastAnnouncedPitTimingVirtualEnergyLaps = 3,
+                lastAnnouncedPitTimingTyreWearLaps = 2,
+                lastPitTimingVirtualEnergyEvaluationLap = 5,
+                lastPitTimingTyreWearEvaluationLap = 5,
+            )
+
+        val announcedState =
+            useCase.recordPitTimingAnnounced(state, SpeechEvent.PitTimingWarning(0, PitTimingSource.TyreWear))
+
+        assertEquals(state.copy(lastAnnouncedPitTimingTyreWearLaps = 0), announcedState)
+    }
+
+    @Test
     fun `バーチャルエナジー予想残り周回数は直近に完走したラップの消費率を使って最速ラップの30秒前を過ぎたら読み上げる`() {
         val firstLapDecision =
             useCase.determinePitTimingVirtualEnergy(
@@ -1861,7 +1893,13 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         )
         assertEquals(listOf(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy)), decision.events)
         assertEquals(2, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
-        assertEquals(0, decision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
+        assertEquals(-1, decision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
+        val announcedState =
+            useCase.recordPitTimingAnnounced(
+                decision.state,
+                SpeechEvent.PitTimingWarning(0, PitTimingSource.VirtualEnergy),
+            )
+        assertEquals(0, announcedState.lastAnnouncedPitTimingVirtualEnergyLaps)
     }
 
     @Test
@@ -2003,7 +2041,11 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         // ラップ2の途中で給油。この周は次回以降の推定基準として採用されなくなる。
         val refilledDecision =
             useCase.determinePitTimingVirtualEnergy(
-                state = firstWarningDecision.state,
+                state =
+                    useCase.recordPitTimingAnnounced(
+                        firstWarningDecision.state,
+                        firstWarningDecision.events.single() as SpeechEvent.PitTimingWarning,
+                    ),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
                 settings = settings(),
@@ -2161,7 +2203,10 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
         assertEquals(listOf(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear)), decision.events)
         assertEquals(2, decision.state.lastPitTimingTyreWearEvaluationLap)
-        assertEquals(0, decision.state.lastAnnouncedPitTimingTyreWearLaps)
+        assertEquals(-1, decision.state.lastAnnouncedPitTimingTyreWearLaps)
+        val announcedState =
+            useCase.recordPitTimingAnnounced(decision.state, SpeechEvent.PitTimingWarning(0, PitTimingSource.TyreWear))
+        assertEquals(0, announcedState.lastAnnouncedPitTimingTyreWearLaps)
     }
 
     @Test
@@ -2232,7 +2277,11 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         // ラップ2の途中でタイヤ交換。この周は次回以降の推定基準として採用されなくなる。
         val tyreChangedDecision =
             useCase.determinePitTimingTyreWear(
-                state = firstWarningDecision.state,
+                state =
+                    useCase.recordPitTimingAnnounced(
+                        firstWarningDecision.state,
+                        firstWarningDecision.events.single() as SpeechEvent.PitTimingWarning,
+                    ),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
                 tyreWear = tyreWear(fl = 1.0),
                 settings = settings(),

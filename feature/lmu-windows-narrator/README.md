@@ -35,6 +35,7 @@ LMUの全自由文字列イベント（フラッグ・車両接近・ピット�
 `LmuWindowsReadoutTextSpeaker` は解決済み本文を優先し、未解決の場合だけ設定を参照する。
 `LmuWindowsNarratorModule` は `isCustomSpeakEvent = { it is FreeTextSpeechEvent }` で対象を判定する。
 ピットタイミングの周回ゲートとソース選択は本文ではなく `laps` を使い続ける。
+読み上げ済みの周回数は、ソース選択と周回ゲートを通過した警告のみViewModelで記録する。
 
 自由文言の解決で例外が発生した場合はエラーを記録し、当該イベントの開始音・本文を要求せず、
 空文字と `SKIPPED` をテレメトリログに保存する。同じ入力の後続イベントと次回以降の収集は継続する。

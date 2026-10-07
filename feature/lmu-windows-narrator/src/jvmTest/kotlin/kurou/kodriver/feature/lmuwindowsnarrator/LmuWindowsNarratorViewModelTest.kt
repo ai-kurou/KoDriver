@@ -2625,6 +2625,79 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `同一周でゲートに抑止された警告は翌周に読み上げ通過済みの同じ残り周回数は再度読み上げない`() =
+        runTest(testDispatcher) {
+            val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            var currentTime = 0L
+            createViewModel(
+                telemetryChannel = telemetryChannel,
+                remainingVirtualEnergyChannel = virtualEnergyChannel,
+                tyreWearChannel = tyreWearChannel,
+                ttsEngine = tts,
+                pitTimingVirtualEnergyLapsThreshold = 3,
+                pitTimingTyreWearLapsThreshold = 3,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+                currentTimeMs = { currentTime },
+            )
+
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyreWearChannel.send(tyreWear(fl = 1.0))
+            // 初回取得周を除外し、次の周回境界から計測する。
+            telemetryChannel.send(fakeTelemetryData(currentLap = 0, bestLapTimeMs = 90_000L))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            currentTime = 45_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
+            tyreWearChannel.send(tyreWear(fl = 0.9))
+            currentTime = 90_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            tyreWearChannel.send(tyreWear(fl = 0.8))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            currentTime = 150_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
+            tyreWearChannel.send(tyreWear(fl = 0.05))
+
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.PitTimingWarning(
+                        0,
+                        source = PitTimingSource.VirtualEnergy,
+                        resolvedText = "エナジー切れのため必ずピットイン",
+                    ),
+                ),
+                spokenTexts,
+            )
+
+            // 同じ残り0周のタイヤ摩耗警告はラップ2のゲートで抑止されたが、履歴には記録されない。
+            currentTime = 180_000L
+            telemetryChannel.send(fakeTelemetryData(currentLap = 3, bestLapTimeMs = 90_000L))
+            currentTime = 240_000L
+            telemetryChannel.send(fakeTelemetryData(currentLap = 3, bestLapTimeMs = 90_000L))
+
+            val expectedEvents =
+                listOf<SpeechEvent>(
+                    SpeechEvent.PitTimingWarning(
+                        0,
+                        source = PitTimingSource.VirtualEnergy,
+                        resolvedText = "エナジー切れのため必ずピットイン",
+                    ),
+                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear, resolvedText = "タイヤ交換へ"),
+                )
+            assertEquals(expectedEvents, spokenTexts)
+
+            // 両ソースとも通過済みなので、次の周でも残り0周なら再度読み上げない。
+            currentTime = 270_000L
+            telemetryChannel.send(fakeTelemetryData(currentLap = 4, bestLapTimeMs = 90_000L))
+            currentTime = 330_000L
+            telemetryChannel.send(fakeTelemetryData(currentLap = 4, bestLapTimeMs = 90_000L))
+
+            assertEquals(expectedEvents, spokenTexts)
+        }
+
+    @Test
     fun `ピットタイミングの読み上げでテレメトリログを保存する`() =
         runTest(testDispatcher) {
             val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)

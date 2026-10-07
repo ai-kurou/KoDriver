@@ -130,6 +130,7 @@ data class TyreTemperatureReadoutInput(
 /**
  * LMU の共有メモリ由来データから、今回読み上げるべき音声イベントを決定する UseCase。
  */
+@Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCase {
     fun determineMyBestLap(
         state: LmuWindowsNarratorState,
@@ -502,7 +503,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 emptyList(),
             )
         return LmuWindowsNarratorReadoutDecision(
-            state = stateAfterEvaluation.copy(lastAnnouncedPitTimingVirtualEnergyLaps = remainingLaps),
+            state = stateAfterEvaluation,
             events = listOf(SpeechEvent.PitTimingWarning(remainingLaps, source = PitTimingSource.VirtualEnergy)),
         )
     }
@@ -565,10 +566,20 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 emptyList(),
             )
         return LmuWindowsNarratorReadoutDecision(
-            state = stateAfterEvaluation.copy(lastAnnouncedPitTimingTyreWearLaps = remainingLaps),
+            state = stateAfterEvaluation,
             events = listOf(SpeechEvent.PitTimingWarning(remainingLaps, source = PitTimingSource.TyreWear)),
         )
     }
+
+    /** 周回ゲートを通過したピットタイミング警告の読み上げ履歴を記録する。 */
+    fun recordPitTimingAnnounced(
+        state: LmuWindowsNarratorState,
+        event: SpeechEvent.PitTimingWarning,
+    ): LmuWindowsNarratorState =
+        when (event.source) {
+            PitTimingSource.VirtualEnergy -> state.copy(lastAnnouncedPitTimingVirtualEnergyLaps = event.laps)
+            PitTimingSource.TyreWear -> state.copy(lastAnnouncedPitTimingTyreWearLaps = event.laps)
+        }
 
     fun determineRaceFlags(
         state: LmuWindowsNarratorState,
