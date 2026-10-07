@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -94,6 +95,113 @@ class WavNarratorEngineTest {
             assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
             assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
             assertContentEquals(RED_FLAG_SOUND, player.playedSounds[3])
+        }
+
+    @Test
+    fun `停止待ちのspeakにさらに割り込んでも最初の停止完了後に最後の音声だけを再生する`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+            engine.speak(LEFT_APPROACH)
+            runCurrent()
+            engine.speak(RED_FLAG)
+            runCurrent()
+
+            assertEquals(2, player.playedSounds.size)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals(4, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
+            assertContentEquals(RED_FLAG_SOUND, player.playedSounds[3])
+        }
+
+    @Test
+    fun `stop直後のqueue speakは停止処理が完了するまで再生しない`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+            engine.stop()
+            engine.speak(RED_FLAG, queue = true)
+            runCurrent()
+
+            assertEquals(2, player.playedSounds.size)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals(4, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
+            assertContentEquals(RED_FLAG_SOUND, player.playedSounds[3])
+        }
+
+    @Test
+    fun `previewStartSoundは連続割り込みでも最初の停止完了後に最後の開始音だけを再生する`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+            engine.previewStartSound(FORMULA_RADIO)
+            runCurrent()
+            engine.previewStartSound(ELECTRONIC_NOISE)
+            runCurrent()
+
+            assertEquals(2, player.playedSounds.size)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals(3, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+            assertContentEquals(ELECTRONIC_NOISE_SOUND, player.playedSounds[2])
+        }
+
+    @Test
+    fun `playStartSoundForKeyは停止待ちのspeakに割り込んでも最初の停止完了まで待つ`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+            engine.speak(LEFT_APPROACH)
+            runCurrent()
+            val startSoundJob = launch { engine.playStartSoundForKey(CAR_LEFT_KEY) }
+            runCurrent()
+
+            assertEquals(2, player.playedSounds.size)
+            assertEquals(false, startSoundJob.isCompleted)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals(true, startSoundJob.isCompleted)
+            assertEquals(3, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
         }
 
     @Test
