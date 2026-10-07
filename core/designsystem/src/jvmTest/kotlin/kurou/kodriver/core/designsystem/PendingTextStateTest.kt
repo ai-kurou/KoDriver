@@ -112,7 +112,7 @@ class PendingTextStateTest {
     }
 
     @Test
-    fun `保存値が変わらなくても入力の正規化後の値が一致すれば待機を解除する`() {
+    fun `保存値が変わらなくても入力の正規化後の値が一致すれば保存値を表示し保存待ちを追加しない`() {
         var savedText by mutableStateOf("保存済み")
         lateinit var state: PendingTextState
         composeRule.setContent {
@@ -127,5 +127,102 @@ class PendingTextStateTest {
         savedText = "更新値"
         composeRule.waitForIdle()
         assertEquals("更新値", state.currentText)
+    }
+
+    @Test
+    fun `保存反映前に既定値へリセットしても途中の保存値に巻き戻らない`() {
+        var savedText by mutableStateOf("D")
+        lateinit var state: PendingTextState
+        composeRule.setContent {
+            state = rememberPendingText(savedText, maxLength = 10)
+        }
+
+        composeRule.waitForIdle()
+        composeRule.runOnIdle {
+            state.change("Q")
+            state.change("D")
+            state.updateSavedText("D")
+        }
+        composeRule.waitForIdle()
+        assertEquals("D", state.currentText)
+
+        savedText = "Q"
+        composeRule.waitForIdle()
+        assertEquals("D", state.currentText)
+
+        savedText = "D"
+        composeRule.waitForIdle()
+        assertEquals("D", state.currentText)
+
+        savedText = "外部の更新"
+        composeRule.waitForIdle()
+        assertEquals("外部の更新", state.currentText)
+    }
+
+    @Test
+    fun `連続編集の保存値を順に観測しても最新の入力を保持する`() {
+        var savedText by mutableStateOf("初期値")
+        lateinit var state: PendingTextState
+        composeRule.setContent {
+            state = rememberPendingText(savedText, maxLength = 10)
+        }
+
+        composeRule.waitForIdle()
+        composeRule.runOnIdle {
+            state.change("A")
+            state.change("B")
+            state.change("C")
+        }
+        composeRule.waitForIdle()
+        assertEquals("C", state.currentText)
+
+        savedText = "A"
+        composeRule.waitForIdle()
+        assertEquals("C", state.currentText)
+
+        savedText = "古い保存値"
+        composeRule.waitForIdle()
+        assertEquals("C", state.currentText)
+
+        savedText = "B"
+        composeRule.waitForIdle()
+        assertEquals("C", state.currentText)
+
+        savedText = "C"
+        composeRule.waitForIdle()
+        assertEquals("C", state.currentText)
+
+        savedText = "外部の更新"
+        composeRule.waitForIdle()
+        assertEquals("外部の更新", state.currentText)
+    }
+
+    @Test
+    fun `重複した保存待ちは末尾側の一致までまとめて除去する`() {
+        var savedText by mutableStateOf("初期値")
+        lateinit var state: PendingTextState
+        composeRule.setContent {
+            state = rememberPendingText(savedText, maxLength = 10)
+        }
+
+        composeRule.waitForIdle()
+        composeRule.runOnIdle {
+            state.change("A")
+            state.change("B")
+            state.change("  A  ")
+        }
+        composeRule.waitForIdle()
+
+        savedText = "A"
+        composeRule.waitForIdle()
+        assertEquals("A", state.currentText)
+
+        savedText = "B"
+        composeRule.waitForIdle()
+        assertEquals("B", state.currentText)
+
+        savedText = "外部の更新"
+        composeRule.waitForIdle()
+        assertEquals("外部の更新", state.currentText)
     }
 }
