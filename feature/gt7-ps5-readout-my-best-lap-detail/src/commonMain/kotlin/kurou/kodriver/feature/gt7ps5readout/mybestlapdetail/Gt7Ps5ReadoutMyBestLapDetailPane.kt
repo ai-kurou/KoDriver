@@ -12,11 +12,7 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +22,7 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneLabeledTextField
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_LAPTIME_PLACEHOLDER
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
@@ -105,20 +102,10 @@ private fun MyBestLapReadoutField(
     onTextChanged: (String) -> Unit,
     onPreviewClick: (String) -> Unit,
 ) {
-    var currentText by remember { mutableStateOf(text) }
-    // 保存が非同期のため、入力中の最新の値と一致するまでは保存済みの古い値で入力欄を巻き戻さない
-    var pendingText by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(text, pendingText) {
-        if (pendingText == null) {
-            currentText = text
-        } else if (pendingText == text) {
-            // 保存値は trim と文字数制限で正規化されるため、入力欄は巻き戻さず待機状態だけ解除する
-            pendingText = null
-        }
-    }
+    val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
+    val currentText = textState.currentText
     val changeText: (String) -> Unit = {
-        currentText = it
-        pendingText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+        textState.change(it)
         onTextChanged(it)
     }
     ReadoutTextField(

@@ -6,11 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +15,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCardTextField
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_description
@@ -67,19 +64,10 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
         )
         FlagReadoutItem.entries.forEach { item ->
             val text = uiState.flagText(item)
-            var currentText by remember { mutableStateOf(text) }
-            // 古い保存結果で入力を巻き戻さず、正規化後の保存値が一致したら待機を解除する。
-            var pendingText by remember { mutableStateOf<String?>(null) }
-            LaunchedEffect(text, pendingText) {
-                if (pendingText == null) {
-                    currentText = text
-                } else if (pendingText == text) {
-                    pendingText = null
-                }
-            }
+            val textState = rememberPendingText(text, READOUT_CUSTOM_TEXT_MAX_LENGTH)
+            val currentText = textState.currentText
             val changeText: (String) -> Unit = {
-                currentText = it
-                pendingText = it.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+                textState.change(it)
                 onFlagTextChanged(item, it)
             }
             val chipLabel = stringResource(item.labelRes)
@@ -94,8 +82,7 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
                         value = currentText,
                         defaultValue = item.defaultText,
                         onResetToDefault = {
-                            currentText = item.defaultText
-                            pendingText = item.defaultText.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH)
+                            textState.change(item.defaultText)
                             onFlagTextReset(item)
                         },
                         resetContentDescription = stringResource(Res.string.flag_text_reset_to_default),
