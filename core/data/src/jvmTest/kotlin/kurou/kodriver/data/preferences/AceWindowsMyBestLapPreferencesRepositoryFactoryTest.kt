@@ -3,7 +3,6 @@ package kurou.kodriver.data.preferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -19,24 +18,6 @@ class AceWindowsMyBestLapPreferencesRepositoryFactoryTest {
     fun tearDown() {
         tempDir.deleteRecursively()
     }
-
-    @Test
-    fun `デフォルト値は voiceType が FORMAL`() =
-        runTest {
-            val repository = createAceWindowsMyBestLapPreferencesRepository(tempDir.absolutePath)
-
-            assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
-        }
-
-    @Test
-    fun `保存した voiceType を読み出せる`() =
-        runTest {
-            val repository = createAceWindowsMyBestLapPreferencesRepository(tempDir.absolutePath)
-
-            repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
-
-            assertEquals(MyBestLapVoiceType.CASUAL, repository.observeVoiceType().first())
-        }
 
     @Test
     fun `デフォルト値は readoutText が既定文言`() =

@@ -1,34 +1,31 @@
 package kurou.kodriver.feature.acewindowsreadout.mybestlapdetail
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 /**
- * [SpeechEvent.narratedText] は WAV と同じ内容を Chip 表示文言から複製したものであるため、
- * Chip側の文言変更を検知できるよう実際の表示テキストと突き合わせる（#1527）。
+ * UI の文言入力欄ラベルと、試聴サンプルのタイムを展開した TTS 記録文言を検証する。
+ * 表示文言と音声の記録文言をそれぞれ検証する。
  */
 class AceWindowsReadoutMyBestLapDetailPaneNarratedTextConsistencyTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `Chip表示文言がSpeechEventのnarratedTextと一致する`() {
+    fun `文言入力欄は自己ベストラップ更新の文言を表示し試聴文言にはサンプルのタイムを含む`() {
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutMyBestLapDetailPaneContent()
             }
         }
 
-        listOf(
-            SpeechEvent.AceWindowsMyBestLapFormal.narratedText,
-            SpeechEvent.AceWindowsMyBestLapCasual.narratedText,
-        ).forEach { narratedText ->
-            rule.onAllNodesWithText(narratedText)[0].assertTextContains(narratedText, substring = true)
-        }
+        rule.onNodeWithText("自己ベストラップ更新の文言").assertIsDisplayed()
+        assertEquals("自己ベストラップ更新 1分23秒456", SpeechEvent.AceWindowsMyBestLap(83_456).narratedText)
     }
 }

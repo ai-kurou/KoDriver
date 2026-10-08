@@ -466,21 +466,6 @@ sealed interface SpeechEvent {
 
         override fun withResolvedText(text: String): AceWindowsMyBestLap = copy(resolvedText = text)
     }
-
-    /**
-     * ACE の自己ベストラップ更新を読み上げるイベント（フォーマル / カジュアルの2種）。
-     *
-     * ACE専用の WAV 音源を再生する。
-     */
-    data object AceWindowsMyBestLapFormal : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root
-        override val narratedText = "自己ベストラップ更新"
-    }
-
-    data object AceWindowsMyBestLapCasual : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root
-        override val narratedText = "ベストラップ"
-    }
 }
 
 /** 判定時の本文を保持し、キュー待機中の設定変更後も発話とログを一致させるLMUイベント。 */

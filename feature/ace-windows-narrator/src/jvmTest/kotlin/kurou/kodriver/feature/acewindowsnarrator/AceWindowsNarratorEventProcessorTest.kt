@@ -1633,8 +1633,8 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `燃料残量処理は自由文言イベント以外も解決した本文でログに記録する`() =
         runTest {
-            val event = SpeechEvent.AceWindowsMyBestLapFormal
-            val key = ReadoutItemKey.AceWindows.MyBestLap.Root
+            val event = SpeechEvent.AceWindowsVehicleApproach
+            val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             every { ttsEngine.speak(event, false) } just Runs
@@ -1885,8 +1885,8 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `燃料残り周回数処理は自由文言イベント以外も解決した本文でログに記録する`() =
         runTest {
-            val event = SpeechEvent.AceWindowsMyBestLapFormal
-            val key = ReadoutItemKey.AceWindows.MyBestLap.Root
+            val event = SpeechEvent.AceWindowsVehicleApproach
+            val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             every { ttsEngine.speak(event, false) } just Runs

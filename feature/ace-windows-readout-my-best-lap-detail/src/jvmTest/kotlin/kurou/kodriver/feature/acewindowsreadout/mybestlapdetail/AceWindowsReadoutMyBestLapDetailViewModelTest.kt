@@ -2,6 +2,7 @@ package kurou.kodriver.feature.acewindowsreadout.mybestlapdetail
 
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.coVerifyOrder
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -15,18 +16,19 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -38,19 +40,17 @@ class AceWindowsReadoutMyBestLapDetailViewModelTest {
 
     private val repository: AceWindowsMyBestLapPreferencesRepository = mockk()
 
-    private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
+    private val enabledRepository: ReadoutPreferencesRepository = mockk()
 
-    private val ttsEngine: TextToSpeechEngine = mockk()
-
-    private val voiceTypeFlow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
-
-    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+    private val speakText: SpeakTextUseCase = mockk()
+    private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
+    private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
+    private val observeVolume: ObserveSoundVolumeUseCase = mockk()
+    private val textFlow = MutableStateFlow(ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT)
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
-            enabledStatesFlow
     }
 
     @AfterTest
@@ -62,51 +62,45 @@ class AceWindowsReadoutMyBestLapDetailViewModelTest {
         AceWindowsReadoutMyBestLapDetailViewModel(
             myBestLapUseCases =
                 MyBestLapUseCases(
-                    observeVoiceType = ObserveAceWindowsMyBestLapVoiceTypeUseCase(repository),
-                    saveVoiceType = SaveAceWindowsMyBestLapVoiceTypeUseCase(repository),
-                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
+                    observeEnabledStates = ObserveReadoutEnabledStatesUseCase(enabledRepository),
+                    saveEnabledState = SaveReadoutEnabledStateUseCase(enabledRepository),
                 ),
-            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+            readout =
+                MyBestLapReadoutUseCases(
+                    ObserveAceWindowsMyBestLapReadoutTextUseCase(repository),
+                    SaveAceWindowsMyBestLapReadoutTextUseCase(repository),
+                    speakText,
+                    playStartSound,
+                    checkAvailable,
+                    observeVolume,
+                ),
         )
 
     @Test
-    fun `初期状態は voiceType=FORMAL の UiState を返す`() =
+    fun `初期状態はデフォルト値のUiStateを返す`() =
         runTest {
-            every { repository.observeVoiceType() } returns voiceTypeFlow
+            every { repository.observeReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns false
+            every {
+                enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
             val viewModel = createViewModel()
 
-            assertEquals(MyBestLapVoiceType.FORMAL, viewModel.uiState.first().voiceType)
-            assertEquals(true, viewModel.uiState.first().enabled)
-            verify(exactly = 1) { repository.observeVoiceType() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            assertEquals(AceWindowsReadoutMyBestLapDetailUiState(), viewModel.uiState.first())
+            verify(exactly = 1) { enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
+            verify(exactly = 1) { repository.observeReadoutText() }
+            confirmVerified(repository, enabledRepository)
         }
 
     @Test
-    fun `onVoiceTypeChanged に CASUAL を渡すと voiceType=CASUAL になる`() =
+    fun `onEnabledChangedを呼ぶとuiStateのenabledが更新される`() =
         runTest {
-            every { repository.observeVoiceType() } returns voiceTypeFlow
-            coEvery { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) } answers {
-                voiceTypeFlow.update { MyBestLapVoiceType.CASUAL }
-            }
-            val viewModel = createViewModel()
-
-            viewModel.onVoiceTypeChanged(MyBestLapVoiceType.CASUAL)
-
-            assertEquals(MyBestLapVoiceType.CASUAL, viewModel.uiState.first().voiceType)
-            verify(exactly = 1) { repository.observeVoiceType() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
-            coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
-            confirmVerified(repository, readoutPreferencesRepository)
-        }
-
-    @Test
-    fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
-        runTest {
-            every { repository.observeVoiceType() } returns voiceTypeFlow
+            every { repository.observeReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns false
+            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns enabledStatesFlow
             coEvery {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                enabledRepository.saveReadoutEnabledState(
                     Simulator.AceWindows.id,
                     ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled,
                     false,
@@ -119,43 +113,111 @@ class AceWindowsReadoutMyBestLapDetailViewModelTest {
             viewModel.onEnabledChanged(false)
 
             assertEquals(false, viewModel.uiState.first().enabled)
-            verify(exactly = 1) { repository.observeVoiceType() }
-            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
+            verify(exactly = 1) { enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
             coVerify(exactly = 1) {
-                readoutPreferencesRepository.saveReadoutEnabledState(
+                enabledRepository.saveReadoutEnabledState(
                     Simulator.AceWindows.id,
                     ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled,
                     false,
                 )
             }
-            confirmVerified(repository, readoutPreferencesRepository)
+            verify(exactly = 1) { repository.observeReadoutText() }
+            confirmVerified(repository, enabledRepository)
         }
 
     @Test
-    fun `onPreviewClicked に FORMAL を渡すと MyBestLapFormal イベントが再生される`() {
-        every { repository.observeVoiceType() } returns voiceTypeFlow
-        every { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) } returns Unit
-        val viewModel = createViewModel()
-
-        viewModel.onPreviewClicked(MyBestLapVoiceType.FORMAL)
-
-        verify(exactly = 1) { repository.observeVoiceType() }
-        verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) }
-        confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
-    }
+    fun `文言の監視と保存をUiStateに反映する`() =
+        runTest {
+            every {
+                enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every { repository.observeReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns true
+            coEvery { repository.saveReadoutText("更新{laptime}") } answers
+                { textFlow.update { "更新{laptime}" } }
+            val viewModel = createViewModel()
+            assertEquals(ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, viewModel.uiState.first().readoutText)
+            assertEquals(true, viewModel.uiState.first().isTextToSpeechAvailable)
+            viewModel.onReadoutTextChanged(" 更新{laptime} ")
+            assertEquals("更新{laptime}", viewModel.uiState.first().readoutText)
+            verify(exactly = 1) { repository.observeReadoutText() }
+            coVerify(exactly = 1) { repository.saveReadoutText("更新{laptime}") }
+            verify(exactly = 1) { enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
+            confirmVerified(repository, enabledRepository)
+        }
 
     @Test
-    fun `onPreviewClicked に CASUAL を渡すと MyBestLapCasual イベントが再生される`() {
-        every { repository.observeVoiceType() } returns voiceTypeFlow
-        every { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapCasual, false) } returns Unit
-        val viewModel = createViewModel()
+    fun `サンプルタイムに置換して開始音の後に試聴する`() =
+        runTest {
+            every {
+                enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every { repository.observeReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns true
+            every { observeVolume() } returns MutableStateFlow(60)
+            coEvery { playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root) } returns Unit
+            coEvery { speakText("更新1分23秒456{unknown}", volume = 60) } returns Unit
+            createViewModel().onReadoutTextPreviewClicked("更新{laptime}{unknown}")
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root) }
+            coVerify(exactly = 1) { speakText("更新1分23秒456{unknown}", volume = 60) }
+            coVerifyOrder {
+                playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root)
+                speakText("更新1分23秒456{unknown}", volume = 60)
+            }
+            verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
+        }
 
-        viewModel.onPreviewClicked(MyBestLapVoiceType.CASUAL)
+    @Test
+    fun `空白文言では音量を取得せず試聴しない`() =
+        runTest {
+            every {
+                enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every { repository.observeReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns true
+            createViewModel().onReadoutTextPreviewClicked(" ")
+            verify(exactly = 0) { observeVolume() }
+            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root) }
+            coVerify(exactly = 0) { speakText(" ", volume = 60) }
+            confirmVerified(observeVolume, playStartSound, speakText)
+        }
 
-        verify(exactly = 1) { repository.observeVoiceType() }
-        verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapCasual, false) }
-        confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
-    }
+    @Test
+    fun `TTS利用不可を反映し試聴しない`() =
+        runTest {
+            every {
+                enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every { repository.observeReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns false
+            val viewModel = createViewModel()
+            assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
+            viewModel.onReadoutTextPreviewClicked("注意")
+            verify(exactly = 0) { observeVolume() }
+            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root) }
+            coVerify(exactly = 0) { speakText("注意", volume = 60) }
+            confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `音量ゼロ以下では開始音も本文も試聴しない`() =
+        runTest {
+            every {
+                enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every { repository.observeReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns true
+            val volume = MutableStateFlow(0)
+            every { observeVolume() } returns volume
+            val viewModel = createViewModel()
+            viewModel.onReadoutTextPreviewClicked("注意")
+            volume.update { -1 }
+            viewModel.onReadoutTextPreviewClicked("注意")
+            verify(exactly = 2) { observeVolume() }
+            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root) }
+            coVerify(exactly = 0) { speakText("注意", volume = 0) }
+            coVerify(exactly = 0) { speakText("注意", volume = -1) }
+            confirmVerified(observeVolume, playStartSound, speakText)
+        }
 }

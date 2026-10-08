@@ -156,7 +156,11 @@ class MainActivityTest {
                 "1周減るごとに音声でお知らせします。\n" +
                 "読み上げる文言は下の欄で設定できます。",
         )
-        clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
+        clickItemAndVerifyDescription(
+            "自己ベストラップ",
+            "自己ベストラップを更新したときに音声でお知らせします。\n" +
+                "読み上げる文言は下の欄で設定できます。",
+        )
     }
 
     @Test
