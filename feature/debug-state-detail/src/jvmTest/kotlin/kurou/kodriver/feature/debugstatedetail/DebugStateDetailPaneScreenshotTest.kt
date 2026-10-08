@@ -159,6 +159,8 @@ private val sampleVehicleApproach =
         lateralDistanceRightMeters = LateralDistanceMeters(1.5),
     )
 
+private val sampleSideBySideDurations = LmuWindowsSideBySideDurations(leftMillis = 3_400, rightMillis = 12_800)
+
 class DebugStateDetailPaneScreenshotTest {
     @Test
     fun `デフォルト データ未取得`() =
@@ -213,6 +215,32 @@ class DebugStateDetailPaneScreenshotTest {
             onRoot().captureRoboImage()
         }
 
+    @Test
+    fun `LMUの並走車両カードに左右の並走継続秒数を表示する`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            DebugStateDetailPaneContent(
+                                uiState =
+                                    DebugStateDetailUiState(
+                                        selectedSimulator = Simulator.LmuWindows,
+                                        vehicleApproach = sampleVehicleApproach,
+                                        lmuWindowsSideBySideDurations = sampleSideBySideDurations,
+                                        cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                                        enabledCardKeys = setOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                                    ),
+                                canNavigateBack = true,
+                                onBack = {},
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
     private val allCardsFilledUiState =
         DebugStateDetailUiState(
             selectedSimulator = Simulator.LmuWindows,
@@ -221,6 +249,7 @@ class DebugStateDetailPaneScreenshotTest {
             lmuWindowsTelemetry = sampleLmuWindowsTelemetry,
             gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
             vehicleApproach = sampleVehicleApproach,
+            lmuWindowsSideBySideDurations = sampleSideBySideDurations,
             tyreCarcassTemperature = sampleTyreCarcassTemperature,
             brakeTemperature = sampleBrakeTemperature,
             lmuWindowsVehicleClass = sampleVehicleClass,
