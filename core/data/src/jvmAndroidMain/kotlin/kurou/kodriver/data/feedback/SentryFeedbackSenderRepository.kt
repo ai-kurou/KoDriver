@@ -20,24 +20,29 @@ internal class SentryFeedbackSenderRepository(
 ) : FeedbackSenderRepository {
     override suspend fun send(feedback: Feedback): Result<Unit> =
         try {
-            captureFeedback(
-                SentryFeedback(feedback.message).apply {
-                    feedback.email?.let { contactEmail = it }
-                    feedback.name?.let { name = it }
-                },
-                Hint(),
-            ) { scope ->
-                scope.setTag("feedback.type", feedback.type.tagValue)
-                scope.setContexts(
-                    "kodriver.feedback",
-                    buildMap {
-                        put("includesDiagnostics", feedback.includesDiagnostics)
-                        feedback.telemetryLogId?.let { put("telemetryLogId", it) }
-                        feedback.telemetryLogJson?.let { put("telemetryLogJson", it) }
+            val sentryId =
+                captureFeedback(
+                    SentryFeedback(feedback.message).apply {
+                        feedback.email?.let { contactEmail = it }
+                        feedback.name?.let { name = it }
                     },
-                )
+                    Hint(),
+                ) { scope ->
+                    scope.setTag("feedback.type", feedback.type.tagValue)
+                    scope.setContexts(
+                        "kodriver.feedback",
+                        buildMap {
+                            put("includesDiagnostics", feedback.includesDiagnostics)
+                            feedback.telemetryLogId?.let { put("telemetryLogId", it) }
+                            feedback.telemetryLogJson?.let { put("telemetryLogJson", it) }
+                        },
+                    )
+                }
+            if (sentryId == SentryId.EMPTY_ID) {
+                Result.failure(IllegalStateException("Sentry did not accept feedback."))
+            } else {
+                Result.success(Unit)
             }
-            Result.success(Unit)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

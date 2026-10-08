@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import io.sentry.protocol.Feedback as SentryFeedback
 
@@ -83,6 +84,32 @@ class SentryFeedbackSenderRepositoryTest {
             val context = scope.contexts.get("kodriver.feedback") as Map<*, *>
             assertEquals(1L, context["telemetryLogId"])
             assertEquals("""{"lapCount":1}""", context["telemetryLogJson"])
+        }
+
+    @Test
+    fun `Sentryが空のIDを返したらResult failureを返す`() =
+        runTest {
+            var captureFeedbackCount = 0
+            val repository =
+                SentryFeedbackSenderRepository(
+                    captureFeedback = { _, _, _ ->
+                        captureFeedbackCount += 1
+                        SentryId.EMPTY_ID
+                    },
+                )
+
+            val result =
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.Other,
+                        message = "本文",
+                    ),
+                )
+
+            assertTrue(result.isFailure)
+            assertEquals(1, captureFeedbackCount)
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals("Sentry did not accept feedback.", result.exceptionOrNull()?.message)
         }
 
     @Test
