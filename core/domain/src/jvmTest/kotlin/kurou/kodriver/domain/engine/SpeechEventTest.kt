@@ -160,8 +160,8 @@ class SpeechEventTest {
 
     @Test
     fun `RemainingFuelLapsWarningはlapsが0以下のとき燃料切れの文言を返す`() {
-        assertEquals("燃料がありません", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = 0).narratedText)
-        assertEquals("燃料がありません", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = -1).narratedText)
+        assertEquals("燃料残り1周未満", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = 0).narratedText)
+        assertEquals("燃料残り1周未満", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = -1).narratedText)
     }
 
     @Test
