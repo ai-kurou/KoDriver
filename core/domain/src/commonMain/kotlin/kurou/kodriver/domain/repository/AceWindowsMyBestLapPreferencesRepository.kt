@@ -7,4 +7,8 @@ interface AceWindowsMyBestLapPreferencesRepository {
     fun observeVoiceType(): Flow<MyBestLapVoiceType>
 
     suspend fun saveVoiceType(type: MyBestLapVoiceType)
+
+    fun observeReadoutText(): Flow<String>
+
+    suspend fun saveReadoutText(text: String)
 }

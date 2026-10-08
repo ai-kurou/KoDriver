@@ -14,4 +14,10 @@ internal class AceWindowsMyBestLapPreferencesRepositoryImpl(
     override suspend fun saveVoiceType(type: MyBestLapVoiceType) {
         dataStore.saveProperty(type.id) { prefs, value -> prefs.copy(voiceType = value) }
     }
+
+    override fun observeReadoutText(): Flow<String> = dataStore.observeProperty { it.aceWindowsReadoutText }
+
+    override suspend fun saveReadoutText(text: String) {
+        dataStore.saveProperty(text) { prefs, value -> prefs.copy(aceWindowsReadoutText = value) }
+    }
 }

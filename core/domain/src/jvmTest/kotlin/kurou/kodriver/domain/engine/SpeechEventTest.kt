@@ -139,6 +139,13 @@ class SpeechEventTest {
         assertEquals(83_456, gt7Event.lapTimeMs)
         assertEquals("更新済み", gt7Event.copy(resolvedText = "更新済み").resolvedText)
         assertEquals("自己ベストラップ更新 1分23秒456", gt7Event.copy(resolvedText = "更新済み").narratedText)
+        val aceEvent = SpeechEvent.AceWindowsMyBestLap(83_456)
+        assertEquals("自己ベストラップ更新 1分23秒456", aceEvent.narratedText)
+        assertEquals(ReadoutItemKey.AceWindows.MyBestLap.Root, aceEvent.readoutItemKey)
+        assertEquals(83_456, aceEvent.lapTimeMs)
+        assertEquals(null, aceEvent.resolvedText)
+        assertEquals("更新済み", aceEvent.withResolvedText("更新済み").resolvedText)
+        assertEquals("自己ベストラップ更新 1分23秒456", aceEvent.withResolvedText("更新済み").narratedText)
         assertEquals("自己ベストラップ更新", SpeechEvent.AceWindowsMyBestLapFormal.narratedText)
         assertEquals("ベストラップ", SpeechEvent.AceWindowsMyBestLapCasual.narratedText)
     }

@@ -12,8 +12,6 @@ import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 import kotlin.math.floor
@@ -44,7 +42,6 @@ data class AceWindowsNarratorReadoutSettings(
     val remainingFuelThresholdPercentage: Int,
     val tyreTemperatureHighThresholdCelsius: Celsius = ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
     val vehicleApproachThresholdMeters: Double = ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT,
-    val myBestLapVoiceType: MyBestLapVoiceType = MY_BEST_LAP_VOICE_TYPE_DEFAULT,
     val remainingFuelLapsThreshold: Int = ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT,
 )
 
@@ -104,14 +101,9 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 
-        val event =
-            when (settings.myBestLapVoiceType) {
-                MyBestLapVoiceType.FORMAL -> SpeechEvent.AceWindowsMyBestLapFormal
-                MyBestLapVoiceType.CASUAL -> SpeechEvent.AceWindowsMyBestLapCasual
-            }
         return AceWindowsNarratorReadoutDecision(
             state = stateWithCurrentBestLap.copy(personalBestMs = current),
-            events = listOf(event),
+            events = listOf(SpeechEvent.AceWindowsMyBestLap(lapTimeMs = current)),
         )
     }
 
