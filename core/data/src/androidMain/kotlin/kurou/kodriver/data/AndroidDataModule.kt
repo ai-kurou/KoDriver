@@ -13,6 +13,7 @@ import kurou.kodriver.data.preferences.AndroidReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
 import kurou.kodriver.data.preferences.LmuWindowsPitTimingPreferencesRepositories
+import kurou.kodriver.data.preferences.LmuWindowsTyreTemperaturePreferencesRepositories
 import kurou.kodriver.data.preferences.LmuWindowsVehicleApproachPreferencesRepositories
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsFlagReadoutTextPreferencesRepository
@@ -113,6 +114,7 @@ import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreDetachedRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
@@ -373,8 +375,14 @@ private fun androidDataModuleAceWindows() =
  */
 private fun androidDataModuleThresholdPreferences(context: Context) =
     module {
-        single<LmuWindowsTyreTemperaturePreferencesRepository> {
+        single {
             createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsTyreTemperaturePreferencesRepository> {
+            get<LmuWindowsTyreTemperaturePreferencesRepositories>().preferences
+        }
+        single<LmuWindowsTyreTemperatureReadoutTextPreferencesRepository> {
+            get<LmuWindowsTyreTemperaturePreferencesRepositories>().readoutText
         }
         single<LmuWindowsVehicleClassTyreTemperaturePreferencesRepository> {
             createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)

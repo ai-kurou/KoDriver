@@ -43,6 +43,7 @@ import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreDetachedRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
@@ -84,6 +85,9 @@ val fakeLmuWindowsNarratorModule =
         }
         single<LmuWindowsBrakeTemperatureRepository> { FakeLmuWindowsBrakeTemperatureRepository() }
         single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
+        single<LmuWindowsTyreTemperatureReadoutTextPreferencesRepository> {
+            FakeLmuWindowsTyreTemperatureReadoutTextPreferencesRepository()
+        }
         single<LmuWindowsTyreWearRepository> { FakeLmuWindowsTyreWearRepository() }
         single<LmuWindowsTyreWearPreferencesRepository> { FakeLmuWindowsTyreWearPreferencesRepository() }
         single<LmuWindowsMyBestLapPreferencesRepository> { FakeLmuWindowsMyBestLapPreferencesRepository() }
@@ -231,8 +235,6 @@ class FakeLmuWindowsBrakeTemperatureRepository : LmuWindowsBrakeTemperatureRepos
 }
 
 class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTemperaturePreferencesRepository {
-    private val overheatReadoutTextFlow = MutableStateFlow(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT)
-    private val coldReadoutTextFlow = MutableStateFlow(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT)
     private val flow = MutableStateFlow(Celsius(90))
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     private val lowWarningPhasesFlow = MutableStateFlow<Map<SessionPhase, Boolean>>(emptyMap())
@@ -257,6 +259,12 @@ class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTempera
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
         lowWarningPhasesFlow.update { phases.associateWith { true } }
     }
+}
+
+class FakeLmuWindowsTyreTemperatureReadoutTextPreferencesRepository :
+    LmuWindowsTyreTemperatureReadoutTextPreferencesRepository {
+    private val overheatReadoutTextFlow = MutableStateFlow(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT)
+    private val coldReadoutTextFlow = MutableStateFlow(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT)
 
     override fun observeOverheatReadoutText(): Flow<String> = overheatReadoutTextFlow
 

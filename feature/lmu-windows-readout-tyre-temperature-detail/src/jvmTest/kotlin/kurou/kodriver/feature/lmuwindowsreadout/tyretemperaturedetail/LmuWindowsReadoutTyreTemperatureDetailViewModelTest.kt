@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase
@@ -51,6 +52,7 @@ import kotlin.test.assertEquals
 class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
+    private val readoutTextRepository: LmuWindowsTyreTemperatureReadoutTextPreferencesRepository = mockk()
     private val repository: LmuWindowsTyreTemperaturePreferencesRepository = mockk()
 
     private val vehicleClassRepository: LmuWindowsVehicleClassTyreTemperaturePreferencesRepository = mockk()
@@ -123,7 +125,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             verify(exactly = 1) { repository.observeLowWarningPhases() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            confirmVerified(repository, vehicleClassRepository)
+            confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
 
     @Test
@@ -153,7 +155,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             coVerify(exactly = 1) {
                 repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
             }
-            confirmVerified(repository, vehicleClassRepository)
+            confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
 
     @Test
@@ -183,7 +185,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             coVerify(exactly = 1) {
                 repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning, false)
             }
-            confirmVerified(repository, vehicleClassRepository)
+            confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
 
     @Test
@@ -225,7 +227,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             coVerify(exactly = 1) { repository.saveLowWarningPhases(setOf(SessionPhase.GARAGE)) }
-            confirmVerified(repository, vehicleClassRepository)
+            confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
 
     @Test
@@ -273,7 +275,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             coVerify(exactly = 1) {
                 repository.saveLowWarningPhases(setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK))
             }
-            confirmVerified(repository, vehicleClassRepository)
+            confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
 
     @Test
@@ -311,7 +313,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, Celsius(100))
             }
-            confirmVerified(repository, vehicleClassRepository)
+            confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
 
     @Test
@@ -349,7 +351,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, Celsius(90))
             }
-            confirmVerified(repository, vehicleClassRepository)
+            confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
 
     @Test
@@ -375,7 +377,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             coVerify(exactly = 1) { vehicleClassRepository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte) }
-            confirmVerified(repository, vehicleClassRepository)
+            confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
 
     private val textFlow = MutableStateFlow(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT)

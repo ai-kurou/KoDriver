@@ -30,3 +30,10 @@ GT7の燃料残り周回数・燃料残量・タイヤ温度・自己ベスト�
 `LmuWindowsPitTimingReadoutTextPreferencesRepository` は予告・直前の読み上げ文言を扱う。
 Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStoreを共有する。
 既存の保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
+
+## LMUタイヤ温度設定
+
+`LmuWindowsTyreTemperaturePreferencesRepository` は温度閾値・有効状態・低温警告対象フェーズ、
+`LmuWindowsTyreTemperatureReadoutTextPreferencesRepository` は過熱・低温警告の文言を扱う。
+Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共有する。
+保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
