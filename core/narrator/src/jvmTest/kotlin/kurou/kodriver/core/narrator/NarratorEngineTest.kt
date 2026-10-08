@@ -21,11 +21,11 @@ import org.junit.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-private typealias TestEngine = WavNarratorEngine<String, String, String>
+private typealias TestEngine = NarratorEngine<String, String, String>
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions")
-class WavNarratorEngineTest {
+class NarratorEngineTest {
     @Test
     fun `soundPlayer isPlaying が true でも実行中のジョブがなければ音声を再生する`() =
         runTest {
@@ -831,7 +831,7 @@ class WavNarratorEngineTest {
             }
         },
     ): TestEngine =
-        WavNarratorEngine(
+        NarratorEngine(
             soundPlayer = player,
             resources =
                 WavResources(

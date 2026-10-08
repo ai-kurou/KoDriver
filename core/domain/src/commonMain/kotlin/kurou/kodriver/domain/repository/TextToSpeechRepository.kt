@@ -27,7 +27,7 @@ interface TextToSpeechRepository {
 
     /**
      * [text] を読み上げる。実装は読み上げが実際に完了する（または [stop] やコルーチンのキャンセルで
-     * 打ち切られる）まで suspend すること。`:core:narrator` の `WavNarratorEngine` は開始音と同じ
+     * 打ち切られる）まで suspend すること。`:core:narrator` の `NarratorEngine` は開始音と同じ
      * コルーチン上で完了・優先度判定・割り込みを扱う前提でこのRepositoryを呼び出すため、
      * 即座に返ってしまうと読み上げ中に次のイベントの音声が重なって再生されてしまう。
      *

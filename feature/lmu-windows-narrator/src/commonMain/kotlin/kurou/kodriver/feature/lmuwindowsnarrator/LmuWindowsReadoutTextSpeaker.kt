@@ -37,7 +37,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 /**
  * フラッグ・車両接近・ピットタイミング・バーチャルエナジー残量警告・タイヤ摩耗警告・ブレーキ過熱警告・タイヤ温度警告・車両故障警告・自己ベストラップ更新の自由文字列をOS標準TTSで読み上げる、
- * [WavNarratorEngine][kurou.kodriver.core.narrator.WavNarratorEngine] 用のフック。
+ * [NarratorEngine][kurou.kodriver.core.narrator.NarratorEngine] 用のフック。
  * 空欄またはTTSが利用できない場合は本文を読み上げない。
  * イベントごとの文言取得とTTSの依存を明示する。
  *

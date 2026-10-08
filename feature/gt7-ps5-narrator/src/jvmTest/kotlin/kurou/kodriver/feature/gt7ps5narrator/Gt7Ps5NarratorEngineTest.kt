@@ -13,8 +13,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.SoundPlayer
-import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -25,10 +25,10 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5NarratorEngineTest {
     private val soundPlayer: SoundPlayer = mockk()
-    private val wavNarratorEngine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
+    private val wavNarratorEngine: NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 
     @Test
-    fun `currentReadoutItemKeyはWavNarratorEngineのcurrentKeyを返す`() {
+    fun `currentReadoutItemKeyはNarratorEngineのcurrentKeyを返す`() {
         every { wavNarratorEngine.currentKey } returns ReadoutItemKey.Gt7Ps5.MyBestLap.Root
         val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
@@ -39,7 +39,7 @@ class Gt7Ps5NarratorEngineTest {
     }
 
     @Test
-    fun `speakはWavNarratorEngineのspeakへ委譲する`() {
+    fun `speakはNarratorEngineのspeakへ委譲する`() {
         every { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) } just Runs
         val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
@@ -50,7 +50,7 @@ class Gt7Ps5NarratorEngineTest {
     }
 
     @Test
-    fun `stopはWavNarratorEngineのstopへ委譲する`() {
+    fun `stopはNarratorEngineのstopへ委譲する`() {
         every { wavNarratorEngine.stop() } just Runs
         val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
@@ -61,7 +61,7 @@ class Gt7Ps5NarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundはWavNarratorEngineのpreviewStartSoundへ委譲する`() {
+    fun `previewStartSoundはNarratorEngineのpreviewStartSoundへ委譲する`() {
         every { wavNarratorEngine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO) } just Runs
         val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
@@ -72,7 +72,7 @@ class Gt7Ps5NarratorEngineTest {
     }
 
     @Test
-    fun `playStartSoundはWavNarratorEngineのplayStartSoundForKeyへ委譲する`() =
+    fun `playStartSoundはNarratorEngineのplayStartSoundForKeyへ委譲する`() =
         runTest {
             coEvery { wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) } just Runs
             val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
@@ -88,7 +88,7 @@ class Gt7Ps5NarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
+                NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
                         WavResources<ReadoutStartSoundType>(
@@ -125,7 +125,7 @@ class Gt7Ps5NarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
+                NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
                         WavResources<ReadoutStartSoundType>(
@@ -162,7 +162,7 @@ class Gt7Ps5NarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
+                NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
                         WavResources<ReadoutStartSoundType>(
@@ -202,7 +202,7 @@ class Gt7Ps5NarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
+                NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
                         WavResources<ReadoutStartSoundType>(

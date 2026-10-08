@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import kotlin.concurrent.Volatile
 
 /**
- * [WavNarratorEngine] が読み込む開始音のリソース群。開始音タイプ→ファイルパスのマップと、
+ * [NarratorEngine] が読み込む開始音のリソース群。開始音タイプ→ファイルパスのマップと、
  * それを読み込む startSoundResourceLoader をまとめたもの。
  */
 data class WavResources<START_TYPE>(
@@ -31,7 +31,7 @@ data class WavResources<START_TYPE>(
  * 依存しないようにするため、イベント・キー種別をすべて型パラメータ化している。
  */
 @Suppress("LongParameterList")
-class WavNarratorEngine<EVENT, START_TYPE, KEY>(
+class NarratorEngine<EVENT, START_TYPE, KEY>(
     private val soundPlayer: SoundPlayer,
     private val resources: WavResources<START_TYPE>,
     private val eventToKey: (EVENT) -> KEY,

@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * [speak] は [UtteranceProgressListener] で発話の完了（エラー・打ち切りを含む）通知を待ち合わせるため、
  * 実際に読み上げが終わるまで（あるいは [stop] やコルーチンのキャンセルで打ち切られるまで）
- * suspendする。`:core:narrator` の `WavNarratorEngine` は「WAV再生と同じコルーチン上で
+ * suspendする。`:core:narrator` の `NarratorEngine` は「開始音のWAV再生と同じコルーチン上で
  * 完了・割り込みを扱える」ことを前提に `customSpeak` フックへこのRepositoryを渡しているため、
  * ここが即座に返ってしまうと発話中に次のイベントの音声が重なってしまう。
  *

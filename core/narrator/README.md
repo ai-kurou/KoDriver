@@ -16,7 +16,7 @@ Js / WasmJs では例外文字列とスタックトレースを `console.error` 
 なるのを避けるためフォールバックの待ち時間を使います。プラットフォーム非依存の純粋なバイト列解析なので
 `commonMain` に置き、`jvmTest` でテストしています（`androidMain` の `private companion object` に置くとテストできません）。
 
-`WavNarratorEngine<EVENT, START_TYPE, KEY>` は開始音の WAV 再生とカスタム読み上げ（OS標準TTS）の共通実装です。`:core:domain` の
+`NarratorEngine<EVENT, START_TYPE, KEY>` は開始音の WAV 再生とカスタム読み上げ（OS標準TTS）の共通実装です。`:core:domain` の
 `SpeechEvent` / `ReadoutStartSoundType` / `ReadoutItemKey` を型パラメータとして受け取る形にすることで、
 `:core:narrator` 自体は `:core:domain` に依存しません（`moduleGraphAssert` の `maxHeight` 制約を超えないため）。
 開始音タイプ→ファイルパスのマップ・開始音を読み込む `startSoundResourceLoader`・イベントからキーへの変換関数 `eventToKey` をコンストラクタで
@@ -25,7 +25,7 @@ Js / WasmJs では例外文字列とスタックトレースを `console.error` 
 `stop()` → `speak()` の連続呼び出しに対しても、直前にキャンセルした再生ジョブの停止処理が完了するまで新しい再生を
 始めないよう `lastCancelledPlayback` で待ち合わせます。
 
-`WavNarratorEngine` の `isCustomSpeakEvent` が true のイベントは、開始音の後に `customSpeak` へ本文と音量を渡す。false のイベントは再生対象外で、イベント別のWAV本文は持たない。
+`NarratorEngine` の `isCustomSpeakEvent` が true のイベントは、開始音の後に `customSpeak` へ本文と音量を渡す。false のイベントは再生対象外で、イベント別のWAV本文は持たない。
 
 `platformSoundModule(qualifier)` は `SoundPlayer` のプラットフォーム実装を、呼び出し側が指定した Koin の named
 修飾子付きでバインドする expect/actual です。3つの narrator feature は同一の Koin コンテナに同時にロードされるため、
@@ -51,7 +51,7 @@ Js / WasmJs では例外文字列とスタックトレースを `console.error` 
 だけで `stop()` は呼ばれておらず、経路3の割り込み再生とは異なります。両者を取り違えると通常の読み上げが
 「割り込み再生」として記録されます（PR #1626 で修正済み）。
 
-`WavNarratorEngine` と同様に `:core:domain` の `SpeechEvent` / `ReadoutItemKey` へ依存しないよう、イベントのキーは
+`NarratorEngine` と同様に `:core:domain` の `SpeechEvent` / `ReadoutItemKey` へ依存しないよう、イベントのキーは
 呼び出し側から値として渡し、`speak` / `stop` の実行や現在再生中のキーの取得もラムダで受け取ります。この制約の
 ため、この関数自体が `:core:domain` の `NarrationOutcome` を返すことはできません。
 
