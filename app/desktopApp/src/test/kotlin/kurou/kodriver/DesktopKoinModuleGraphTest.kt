@@ -24,8 +24,10 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
@@ -89,6 +91,25 @@ class DesktopKoinModuleGraphTest {
             assertNotNull(application.koin.get<SaveAceWindowsTyreTemperatureOverheatReadoutTextUseCase>())
             assertNotNull(
                 application.koin.get<ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase>(
+                    named(Simulator.AceWindows.id),
+                ),
+            )
+        } finally {
+            application.close()
+        }
+    }
+
+    @Test
+    fun `ACE燃料残量文言UseCaseをNarratorと詳細の両構成で解決できる`() {
+        val application =
+            koinApplication {
+                modules(listOf(desktopDataModule) + featureModules)
+            }
+        try {
+            assertNotNull(application.koin.get<ObserveAceWindowsRemainingFuelReadoutTextUseCase>())
+            assertNotNull(application.koin.get<SaveAceWindowsRemainingFuelReadoutTextUseCase>())
+            assertNotNull(
+                application.koin.get<ObserveAceWindowsRemainingFuelReadoutTextUseCase>(
                     named(Simulator.AceWindows.id),
                 ),
             )

@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -12,7 +13,10 @@ class AceWindowsRemainingFuelPreferencesSerializerTest {
     @Test
     fun `デフォルト値は thresholdPercentage が 30`() {
         assertEquals(
-            AceWindowsRemainingFuelPreferences(thresholdPercentage = 30),
+            AceWindowsRemainingFuelPreferences(
+                thresholdPercentage = 30,
+                readoutText = ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT,
+            ),
             AceWindowsRemainingFuelPreferencesSerializer.defaultValue,
         )
     }
@@ -20,7 +24,7 @@ class AceWindowsRemainingFuelPreferencesSerializerTest {
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = AceWindowsRemainingFuelPreferences(thresholdPercentage = 50)
+            val original = AceWindowsRemainingFuelPreferences(thresholdPercentage = 50, readoutText = "残り{percent}%")
             val output = ByteArrayOutputStream()
             AceWindowsRemainingFuelPreferencesSerializer.writeTo(original, output)
 
@@ -40,5 +44,28 @@ class AceWindowsRemainingFuelPreferencesSerializerTest {
             assertFailsWith<CorruptionException> {
                 AceWindowsRemainingFuelPreferencesSerializer.readFrom(corrupt)
             }
+        }
+
+    @Test
+    fun `文言がない旧データは閾値を維持して既定文言を使用する`() =
+        runTest {
+            val restored =
+                AceWindowsRemainingFuelPreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(0x08, 0x2D)))
+
+            assertEquals(45, restored.thresholdPercentage)
+            assertEquals(ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT, restored.readoutText)
+        }
+
+    @Test
+    fun `空欄文言は読み出しても既定値に戻らない`() =
+        runTest {
+            val original = AceWindowsRemainingFuelPreferences(readoutText = "")
+            val output = ByteArrayOutputStream()
+            AceWindowsRemainingFuelPreferencesSerializer.writeTo(original, output)
+
+            assertEquals(
+                original,
+                AceWindowsRemainingFuelPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())),
+            )
         }
 }

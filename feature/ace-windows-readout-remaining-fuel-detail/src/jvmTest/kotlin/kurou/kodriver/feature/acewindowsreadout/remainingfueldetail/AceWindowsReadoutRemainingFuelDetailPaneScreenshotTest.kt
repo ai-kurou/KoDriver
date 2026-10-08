@@ -12,7 +12,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Test
 
 class AceWindowsReadoutRemainingFuelDetailPaneScreenshotTest {
-    // スマホ幅でチップの折り返しと下部の余白を確認する。
+    // スマホ幅で文言欄・挿入チップ・残量説明の配置を確認する。
     @Test
     fun `スマホ幅のチップ行`() =
         composeScreenshotTest {
@@ -20,7 +20,9 @@ class AceWindowsReadoutRemainingFuelDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
-                            AceWindowsReadoutRemainingFuelDetailPaneContent()
+                            AceWindowsReadoutRemainingFuelDetailPaneContent(
+                                uiState = AceWindowsReadoutRemainingFuelDetailUiState(isTextToSpeechAvailable = true),
+                            )
                         }
                     }
                 }
@@ -35,7 +37,92 @@ class AceWindowsReadoutRemainingFuelDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            AceWindowsReadoutRemainingFuelDetailPaneContent()
+                            AceWindowsReadoutRemainingFuelDetailPaneContent(
+                                uiState = AceWindowsReadoutRemainingFuelDetailUiState(isTextToSpeechAvailable = true),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `警告OFF時`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsReadoutRemainingFuelDetailPaneContent(
+                                uiState =
+                                    AceWindowsReadoutRemainingFuelDetailUiState(
+                                        enabled = false,
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `空白文言`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsReadoutRemainingFuelDetailPaneContent(
+                                uiState =
+                                    AceWindowsReadoutRemainingFuelDetailUiState(
+                                        readoutText = "",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `TTS利用不可`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsReadoutRemainingFuelDetailPaneContent(
+                                uiState =
+                                    AceWindowsReadoutRemainingFuelDetailUiState(
+                                        isTextToSpeechAvailable = false,
+                                    ),
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `未知のプレースホルダー`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            AceWindowsReadoutRemainingFuelDetailPaneContent(
+                                uiState =
+                                    AceWindowsReadoutRemainingFuelDetailUiState(
+                                        readoutText = "{wheel}",
+                                        isTextToSpeechAvailable = true,
+                                    ),
+                            )
                         }
                     }
                 }

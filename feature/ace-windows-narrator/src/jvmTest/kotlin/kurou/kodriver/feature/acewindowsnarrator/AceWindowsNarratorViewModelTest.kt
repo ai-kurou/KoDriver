@@ -294,12 +294,15 @@ class AceWindowsNarratorViewModelTest {
             val spokenTexts = mutableListOf<SpeechEvent>()
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(thresholdPercentage = 30)
-            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
+            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine, readoutText = { "残り20%" })
 
             channel.send(fuel(50.0))
             channel.send(fuel(20.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsRemainingFuelWarning), spokenTexts)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.AceWindowsRemainingFuelWarning(20, "残り20%")),
+                spokenTexts,
+            )
         }
 
     @Test
@@ -319,8 +322,8 @@ class AceWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.AceWindowsRemainingFuelWarning,
-                    SpeechEvent.AceWindowsRemainingFuelWarning,
+                    SpeechEvent.AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"),
+                    SpeechEvent.AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"),
                 ),
                 spokenTexts,
             )
@@ -339,7 +342,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root,
-                    "残り燃料警告",
+                    "燃料は残り20パーセント",
                     NarrationOutcome.QUEUED,
                     match { it.isNotEmpty() },
                 )
@@ -354,7 +357,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.RemainingFuel.Root,
-                    "残り燃料警告",
+                    "燃料は残り20パーセント",
                     NarrationOutcome.QUEUED,
                     capture(telemetryJsonSlot),
                 )
@@ -544,7 +547,7 @@ class AceWindowsNarratorViewModelTest {
                 0L,
                 Simulator.AceWindows,
                 ReadoutItemKey.AceWindows.RemainingFuel.Root,
-                "残り燃料警告",
+                "燃料は残り20パーセント",
                 NarrationOutcome.SPOKEN,
                 "{}",
             )
