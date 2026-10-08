@@ -29,6 +29,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsReadoutTe
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
@@ -137,6 +139,20 @@ class DesktopKoinModuleGraphTest {
                     named(Simulator.AceWindows.id),
                 ),
             )
+        } finally {
+            application.close()
+        }
+    }
+
+    @Test
+    fun `ACE燃料残り周回数の通常と燃料なし文言の保存UseCaseを解決できる`() {
+        val application =
+            koinApplication {
+                modules(listOf(desktopDataModule) + featureModules)
+            }
+        try {
+            assertNotNull(application.koin.get<SaveAceWindowsRemainingFuelLapsReadoutTextUseCase>())
+            assertNotNull(application.koin.get<SaveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase>())
         } finally {
             application.close()
         }

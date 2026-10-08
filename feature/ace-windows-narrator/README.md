@@ -20,7 +20,7 @@ Processorで解決した本文をイベントの `resolvedText` に保持し、�
 フィールド3（`emptyReadoutText`、0周以下用、既定「燃料がありません」）。`{laps}` は判定時の整数周回数に置換する。
 Processorで解決した本文を `resolvedText` に保持し、空白・TTS利用不可では開始音も本文も要求せず `SKIPPED` を記録する。
 開始音・優先度・キューは `RemainingFuelLaps.Root` を維持する。`remaining_fuel_laps_0.wav`〜`remaining_fuel_laps_5.wav` は廃止し、WAVフォールバックは行わない。
-詳細画面の入力UI・試聴対応は別PRで追加する（それまで試聴は不可）。
+詳細画面では通常文言・0周以下用文言の自由文言編集と既定値へのリセットを提供し、通常文言には `{laps}` の末尾挿入と未知プレースホルダーの警告を表示する。試聴は通常文言を画面に表示中の閾値周回数で置換し、0周以下用文言はそのまま使い、`RemainingFuelLaps.Root` の開始音とOS標準TTSで再生する。空白文言・TTS利用不可・音量ゼロ以下では開始音も本文も再生しない。
 イベント→WAVファイルパスのマップと `Res::readBytes` は `AceWindowsNarratorModule.kt` で定義する。
 `SoundPlayer` 等の音声再生基盤の実装は `:core:narrator` を参照。
 

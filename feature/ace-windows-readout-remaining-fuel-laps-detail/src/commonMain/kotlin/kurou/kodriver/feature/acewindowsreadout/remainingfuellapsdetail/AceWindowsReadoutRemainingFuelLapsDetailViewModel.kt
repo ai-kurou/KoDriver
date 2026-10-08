@@ -7,16 +7,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal data class RemainingFuelLapsUseCases(
     val observeThreshold: ObserveAceWindowsRemainingFuelLapsThresholdUseCase,
@@ -25,17 +33,43 @@ internal data class RemainingFuelLapsUseCases(
     val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
 )
 
+internal data class RemainingFuelLapsReadoutUseCases(
+    val observeText: ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase,
+    val saveText: SaveAceWindowsRemainingFuelLapsReadoutTextUseCase,
+    val observeEmptyText: ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase,
+    val saveEmptyText: SaveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase,
+    val speakText: SpeakTextUseCase,
+    val playStartSoundForKey: PlayStartSoundForKeyUseCase,
+    val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
+)
+
 internal class AceWindowsReadoutRemainingFuelLapsDetailViewModel(
     private val remainingFuelLapsUseCases: RemainingFuelLapsUseCases,
-    private val playSpeechEvent: PlaySpeechEventUseCase,
+    private val readout: RemainingFuelLapsReadoutUseCases,
 ) : ViewModel() {
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
+
     val uiState: StateFlow<AceWindowsReadoutRemainingFuelLapsDetailUiState> =
         combine(
             remainingFuelLapsUseCases.observeThreshold(),
             remainingFuelLapsUseCases.observeReadoutEnabledStates(Simulator.AceWindows.id),
-        ) { remainingFuelLaps, enabledStates ->
+            readout.observeText(),
+            readout.observeEmptyText(),
+            preview.textToSpeechAvailable,
+        ) { remainingFuelLaps, enabledStates, text, emptyText, available ->
             AceWindowsReadoutRemainingFuelLapsDetailUiState(
                 remainingFuelLaps = remainingFuelLaps,
+                readoutText = text,
+                emptyReadoutText = emptyText,
+                isTextToSpeechAvailable = available,
                 enabled = enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled),
             )
         }.stateIn(
@@ -44,10 +78,30 @@ internal class AceWindowsReadoutRemainingFuelLapsDetailViewModel(
             AceWindowsReadoutRemainingFuelLapsDetailUiState(),
         )
 
+    fun onReadoutTextChanged(text: String) {
+        viewModelScope.launch { readout.saveText(text) }
+    }
+
+    /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
+    fun onReadoutTextPreviewClicked(text: String) {
+        val formattedText = formatAceWindowsRemainingFuelLapsReadoutText(text, uiState.value.remainingFuelLaps)
+        previewText(formattedText)
+    }
+
+    fun onEmptyReadoutTextChanged(text: String) {
+        viewModelScope.launch { readout.saveEmptyText(text) }
+    }
+
+    fun onEmptyReadoutTextPreviewClicked(text: String) {
+        previewText(text)
+    }
+
+    private fun previewText(text: String) {
+        viewModelScope.launch { preview.preview(text, ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
+    }
+
     fun onRemainingFuelLapsChanged(laps: Int) {
-        viewModelScope.launch {
-            remainingFuelLapsUseCases.saveThreshold(laps)
-        }
+        viewModelScope.launch { remainingFuelLapsUseCases.saveThreshold(laps) }
     }
 
     fun onResetRemainingFuelLaps() {
@@ -62,10 +116,5 @@ internal class AceWindowsReadoutRemainingFuelLapsDetailViewModel(
                 enabled,
             )
         }
-    }
-
-    fun onPreviewClicked() {
-        playSpeechEvent(SpeechEvent.AceWindowsRemainingFuelLapsWarning(uiState.value.remainingFuelLaps))
-        playSpeechEvent(SpeechEvent.AceWindowsRemainingFuelLapsWarning(0), queue = true)
     }
 }
