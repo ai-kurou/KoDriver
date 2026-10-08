@@ -55,8 +55,8 @@ data class AceWindowsNarratorReadoutDecision(
  * ACE の燃料残量・旗状態・タイヤカーカス温度・周辺車両接近から、今回読み上げるべき音声イベントを決定する UseCase。
  *
  * 注意: ACE の共有メモリには自車の向きに相当するフィールドが存在せず、周辺車両との直線距離
- * （[AceWindowsVehicleApproachData.nearbyVehicles]）のみが取得できるため、LMU（[SpeechEvent.CarLeft]/
- * [SpeechEvent.CarRight] 等）のような左右を区別した接近アナウンスはできない。単一の閾値
+ * （[AceWindowsVehicleApproachData.nearbyVehicles]）のみが取得できるため、LMU（[SpeechEvent.LmuWindowsCarLeft]/
+ * [SpeechEvent.LmuWindowsCarRight] 等）のような左右を区別した接近アナウンスはできない。単一の閾値
  * （[AceWindowsNarratorReadoutSettings.vehicleApproachThresholdMeters]）を下回る車両が1台でもいれば、
  * 左右を区別しない [SpeechEvent.AceWindowsVehicleApproach] を読み上げる。
  *

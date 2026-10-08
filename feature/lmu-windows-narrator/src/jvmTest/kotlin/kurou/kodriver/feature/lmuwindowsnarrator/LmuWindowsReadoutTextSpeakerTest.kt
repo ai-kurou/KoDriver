@@ -100,7 +100,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeRemainingText() } returns flowOf("閾値{percent}%、{percent}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("閾値50%、50", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.RemainingVirtualEnergyWarning(50), VOLUME)
+            speaker(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50), VOLUME)
             verify(exactly = 1) { observeRemainingText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("閾値50%、50", volume = VOLUME) }
@@ -112,7 +112,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("解決済み", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.RemainingVirtualEnergyWarning(50, resolvedText = "解決済み"), VOLUME)
+            speaker(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50, resolvedText = "解決済み"), VOLUME)
             verify(exactly = 0) { observeRemainingText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
@@ -123,8 +123,8 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `残量警告の空白文言ではTTSを確認せず読み上げない`() =
         runTest {
             every { observeRemainingText() } returns flowOf(" ")
-            assertNull(speaker.readoutText(SpeechEvent.RemainingVirtualEnergyWarning(30)))
-            speaker(SpeechEvent.RemainingVirtualEnergyWarning(30), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(30)))
+            speaker(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(30), VOLUME)
             verify(exactly = 2) { observeRemainingText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
@@ -136,8 +136,8 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeRemainingText() } returns flowOf("残り{percent}%")
             coEvery { checkTextToSpeechAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.RemainingVirtualEnergyWarning(70)))
-            speaker(SpeechEvent.RemainingVirtualEnergyWarning(70), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(70)))
+            speaker(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(70), VOLUME)
             verify(exactly = 2) { observeRemainingText() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText("残り70%", volume = VOLUME) }
@@ -150,7 +150,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeBrakeText() } returns flowOf("閾値{celsius}℃、{celsius}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("閾値50℃、50", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.BrakeOverheat(50), VOLUME)
+            speaker(SpeechEvent.LmuWindowsBrakeOverheat(50), VOLUME)
             verify(exactly = 1) { observeBrakeText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("閾値50℃、50", volume = VOLUME) }
@@ -162,7 +162,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("解決済み", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.BrakeOverheat(50, resolvedText = "解決済み"), VOLUME)
+            speaker(SpeechEvent.LmuWindowsBrakeOverheat(50, resolvedText = "解決済み"), VOLUME)
             verify(exactly = 0) { observeBrakeText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
@@ -173,8 +173,8 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `ブレーキ過熱警告の空白文言ではTTSを確認せず読み上げない`() =
         runTest {
             every { observeBrakeText() } returns flowOf(" ")
-            assertNull(speaker.readoutText(SpeechEvent.BrakeOverheat(30)))
-            speaker(SpeechEvent.BrakeOverheat(30), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsBrakeOverheat(30)))
+            speaker(SpeechEvent.LmuWindowsBrakeOverheat(30), VOLUME)
             verify(exactly = 2) { observeBrakeText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
@@ -186,8 +186,8 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeBrakeText() } returns flowOf("残り{celsius}℃")
             coEvery { checkTextToSpeechAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.BrakeOverheat(70)))
-            speaker(SpeechEvent.BrakeOverheat(70), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsBrakeOverheat(70)))
+            speaker(SpeechEvent.LmuWindowsBrakeOverheat(70), VOLUME)
             verify(exactly = 2) { observeBrakeText() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText("残り70℃", volume = VOLUME) }
@@ -197,7 +197,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `ブレーキ過熱警告の解決済み空白文言は既定文言へ戻さず読み上げない`() =
         runTest {
-            val event = SpeechEvent.BrakeOverheat(50, resolvedText = " ")
+            val event = SpeechEvent.LmuWindowsBrakeOverheat(50, resolvedText = " ")
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
             verify(exactly = 0) { observeBrakeText() }
@@ -212,7 +212,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeTyreWearText() } returns flowOf("閾値{percent}%、{percent}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("閾値50%、50", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.TyreWearWarning(50), VOLUME)
+            speaker(SpeechEvent.LmuWindowsTyreWearWarning(50), VOLUME)
             verify(exactly = 1) { observeTyreWearText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("閾値50%、50", volume = VOLUME) }
@@ -224,7 +224,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("解決済み", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.TyreWearWarning(50, resolvedText = "解決済み"), VOLUME)
+            speaker(SpeechEvent.LmuWindowsTyreWearWarning(50, resolvedText = "解決済み"), VOLUME)
             verify(exactly = 0) { observeTyreWearText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
@@ -235,8 +235,8 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `摩耗警告の空白文言ではTTSを確認せず読み上げない`() =
         runTest {
             every { observeTyreWearText() } returns flowOf(" ")
-            assertNull(speaker.readoutText(SpeechEvent.TyreWearWarning(30)))
-            speaker(SpeechEvent.TyreWearWarning(30), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsTyreWearWarning(30)))
+            speaker(SpeechEvent.LmuWindowsTyreWearWarning(30), VOLUME)
             verify(exactly = 2) { observeTyreWearText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
@@ -248,8 +248,8 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeTyreWearText() } returns flowOf("残り{percent}%")
             coEvery { checkTextToSpeechAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.TyreWearWarning(70)))
-            speaker(SpeechEvent.TyreWearWarning(70), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsTyreWearWarning(70)))
+            speaker(SpeechEvent.LmuWindowsTyreWearWarning(70), VOLUME)
             verify(exactly = 2) { observeTyreWearText() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText("残り70%", volume = VOLUME) }
@@ -259,7 +259,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `摩耗警告の解決済み空白文言は既定文言へ戻さず読み上げない`() =
         runTest {
-            val event = SpeechEvent.TyreWearWarning(50, resolvedText = " ")
+            val event = SpeechEvent.LmuWindowsTyreWearWarning(50, resolvedText = " ")
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
             verify(exactly = 0) { observeTyreWearText() }
@@ -274,7 +274,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeTyreOverheatReadoutText() } returns flowOf("温度{celsius}℃、{unknown}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("温度100℃、{unknown}", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.TyreOverheat(100), VOLUME)
+            speaker(SpeechEvent.LmuWindowsTyreOverheat(100), VOLUME)
             verify(exactly = 1) { observeTyreOverheatReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("温度100℃、{unknown}", volume = VOLUME) }
@@ -285,8 +285,8 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `過熱警告の空白文言ではTTSを確認せず読み上げない`() =
         runTest {
             every { observeTyreOverheatReadoutText() } returns flowOf(" ")
-            assertNull(speaker.readoutText(SpeechEvent.TyreOverheat(100)))
-            speaker(SpeechEvent.TyreOverheat(100), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsTyreOverheat(100)))
+            speaker(SpeechEvent.LmuWindowsTyreOverheat(100), VOLUME)
             verify(exactly = 2) { observeTyreOverheatReadoutText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
@@ -298,8 +298,8 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeTyreOverheatReadoutText() } returns flowOf("残り{percent}%")
             coEvery { checkTextToSpeechAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.TyreOverheat(100)))
-            speaker(SpeechEvent.TyreOverheat(100), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsTyreOverheat(100)))
+            speaker(SpeechEvent.LmuWindowsTyreOverheat(100), VOLUME)
             verify(exactly = 2) { observeTyreOverheatReadoutText() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText("残り{percent}%", volume = VOLUME) }
@@ -311,7 +311,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeTyreOverheatReadoutText() } returns flowOf("タイヤを冷やして")
             coEvery { checkTextToSpeechAvailable() } returns true
-            assertEquals("タイヤを冷やして", speaker.readoutText(SpeechEvent.TyreOverheat(100)))
+            assertEquals("タイヤを冷やして", speaker.readoutText(SpeechEvent.LmuWindowsTyreOverheat(100)))
             verify(exactly = 1) { observeTyreOverheatReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
@@ -358,7 +358,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeSectorYellow() } returns flowOf("")
 
-            speaker(SpeechEvent.YellowFlag(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsYellowFlag(), VOLUME)
             verify(exactly = 1) { observeSectorYellow() }
             confirmAllMocksVerified()
         }
@@ -369,7 +369,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeSectorYellow() } returns flowOf("イエロー、前方注意")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.YellowFlag(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsYellowFlag(), VOLUME)
             verify(exactly = 1) { observeSectorYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
@@ -382,7 +382,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("イエロー、前方注意", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.YellowFlag(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsYellowFlag(), VOLUME)
             verify(exactly = 1) { observeSectorYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("イエロー、前方注意", volume = VOLUME) }
@@ -396,7 +396,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("ブルー、譲って", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.BlueFlag(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsBlueFlag(), VOLUME)
             verify(exactly = 1) { observeBlue() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("ブルー、譲って", volume = VOLUME) }
@@ -408,7 +408,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeBlue() } returns flowOf(" ")
 
-            speaker(SpeechEvent.BlueFlag(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsBlueFlag(), VOLUME)
             verify(exactly = 1) { observeBlue() }
             confirmAllMocksVerified()
         }
@@ -420,7 +420,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("フルコースイエロー、減速", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.FullCourseYellow(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsFullCourseYellow(), VOLUME)
             verify(exactly = 1) { observeFullCourseYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("フルコースイエロー、減速", volume = VOLUME) }
@@ -432,7 +432,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeFullCourseYellow() } returns flowOf("")
 
-            speaker(SpeechEvent.FullCourseYellow(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsFullCourseYellow(), VOLUME)
             verify(exactly = 1) { observeFullCourseYellow() }
             confirmAllMocksVerified()
         }
@@ -444,7 +444,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("赤旗、停止", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.RedFlag(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsRedFlag(), VOLUME)
 
             verify(exactly = 1) { observeRed() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -457,7 +457,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeRed() } returns flowOf("")
 
-            speaker(SpeechEvent.RedFlag(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsRedFlag(), VOLUME)
             verify(exactly = 1) { observeRed() }
             confirmAllMocksVerified()
         }
@@ -468,7 +468,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeRed() } returns flowOf("赤旗、停止")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.RedFlag(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsRedFlag(), VOLUME)
             verify(exactly = 1) { observeRed() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
@@ -480,7 +480,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeFullCourseYellow() } returns flowOf("フルコースイエロー")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            speaker(SpeechEvent.FullCourseYellow(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsFullCourseYellow(), VOLUME)
 
             verify(exactly = 1) { observeFullCourseYellow() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -494,7 +494,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("残り1周", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.PitTimingWarning(1, PitTimingSource.VirtualEnergy), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPitTimingWarning(1, PitTimingSource.VirtualEnergy), VOLUME)
 
             verify(exactly = 1) { observePitTimingVirtualEnergyReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -509,7 +509,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("残り5周", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.PitTimingWarning(5, PitTimingSource.VirtualEnergy), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPitTimingWarning(5, PitTimingSource.VirtualEnergy), VOLUME)
 
             verify(exactly = 1) { observePitTimingVirtualEnergyReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -522,7 +522,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observePitTimingVirtualEnergyReadoutText() } returns flowOf("  ")
 
-            val event = SpeechEvent.PitTimingWarning(1, PitTimingSource.VirtualEnergy)
+            val event = SpeechEvent.LmuWindowsPitTimingWarning(1, PitTimingSource.VirtualEnergy)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -536,7 +536,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observePitTimingVirtualEnergyReadoutText() } returns flowOf("ピットイン")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val event = SpeechEvent.PitTimingWarning(1, PitTimingSource.VirtualEnergy)
+            val event = SpeechEvent.LmuWindowsPitTimingWarning(1, PitTimingSource.VirtualEnergy)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -552,7 +552,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.PitTimingWarning(0, PitTimingSource.VirtualEnergy), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy), VOLUME)
 
             verify(exactly = 1) { observePitTimingVirtualEnergyImminentReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -567,7 +567,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.PitTimingWarning(-1, PitTimingSource.VirtualEnergy), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPitTimingWarning(-1, PitTimingSource.VirtualEnergy), VOLUME)
 
             verify(exactly = 1) { observePitTimingVirtualEnergyImminentReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -580,7 +580,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observePitTimingVirtualEnergyImminentReadoutText() } returns flowOf("  ")
 
-            val event = SpeechEvent.PitTimingWarning(0, PitTimingSource.VirtualEnergy)
+            val event = SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -594,7 +594,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observePitTimingVirtualEnergyImminentReadoutText() } returns flowOf("ピットイン")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val event = SpeechEvent.PitTimingWarning(0, PitTimingSource.VirtualEnergy)
+            val event = SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -610,7 +610,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("残り1周", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.PitTimingWarning(1, PitTimingSource.TyreWear), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPitTimingWarning(1, PitTimingSource.TyreWear), VOLUME)
 
             verify(exactly = 1) { observePitTimingTyreWearReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -625,7 +625,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("残り5周", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.PitTimingWarning(5, PitTimingSource.TyreWear), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPitTimingWarning(5, PitTimingSource.TyreWear), VOLUME)
 
             verify(exactly = 1) { observePitTimingTyreWearReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -638,7 +638,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observePitTimingTyreWearReadoutText() } returns flowOf("  ")
 
-            val event = SpeechEvent.PitTimingWarning(1, PitTimingSource.TyreWear)
+            val event = SpeechEvent.LmuWindowsPitTimingWarning(1, PitTimingSource.TyreWear)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -652,7 +652,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observePitTimingTyreWearReadoutText() } returns flowOf("ピットイン")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val event = SpeechEvent.PitTimingWarning(1, PitTimingSource.TyreWear)
+            val event = SpeechEvent.LmuWindowsPitTimingWarning(1, PitTimingSource.TyreWear)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -668,7 +668,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.PitTimingWarning(0, PitTimingSource.TyreWear), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear), VOLUME)
 
             verify(exactly = 1) { observePitTimingTyreWearImminentReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -683,7 +683,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
 
-            speaker(SpeechEvent.PitTimingWarning(-1, PitTimingSource.TyreWear), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPitTimingWarning(-1, PitTimingSource.TyreWear), VOLUME)
 
             verify(exactly = 1) { observePitTimingTyreWearImminentReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -696,7 +696,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observePitTimingTyreWearImminentReadoutText() } returns flowOf("  ")
 
-            val event = SpeechEvent.PitTimingWarning(0, PitTimingSource.TyreWear)
+            val event = SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -710,7 +710,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observePitTimingTyreWearImminentReadoutText() } returns flowOf("ピットイン")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val event = SpeechEvent.PitTimingWarning(0, PitTimingSource.TyreWear)
+            val event = SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -736,7 +736,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeTyreColdReadoutText() } returns flowOf("温度{celsius}℃、{unknown}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("温度60℃、{unknown}", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.TyreCold(60), VOLUME)
+            speaker(SpeechEvent.LmuWindowsTyreCold(60), VOLUME)
             verify(exactly = 1) { observeTyreColdReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("温度60℃、{unknown}", volume = VOLUME) }
@@ -747,8 +747,8 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `低温警告の空白文言ではTTSを確認せず読み上げない`() =
         runTest {
             every { observeTyreColdReadoutText() } returns flowOf(" ")
-            assertNull(speaker.readoutText(SpeechEvent.TyreCold(60)))
-            speaker(SpeechEvent.TyreCold(60), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsTyreCold(60)))
+            speaker(SpeechEvent.LmuWindowsTyreCold(60), VOLUME)
             verify(exactly = 2) { observeTyreColdReadoutText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
@@ -760,8 +760,8 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeTyreColdReadoutText() } returns flowOf("残り{percent}%")
             coEvery { checkTextToSpeechAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.TyreCold(60)))
-            speaker(SpeechEvent.TyreCold(60), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsTyreCold(60)))
+            speaker(SpeechEvent.LmuWindowsTyreCold(60), VOLUME)
             verify(exactly = 2) { observeTyreColdReadoutText() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText("残り{percent}%", volume = VOLUME) }
@@ -773,7 +773,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeTyreColdReadoutText() } returns flowOf("タイヤを温めて")
             coEvery { checkTextToSpeechAvailable() } returns true
-            assertEquals("タイヤを温めて", speaker.readoutText(SpeechEvent.TyreCold(60)))
+            assertEquals("タイヤを温めて", speaker.readoutText(SpeechEvent.LmuWindowsTyreCold(60)))
             verify(exactly = 1) { observeTyreColdReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             confirmAllMocksVerified()
@@ -787,8 +787,8 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("冷やして", volume = VOLUME) } just Runs
             coEvery { speakText("温めて60", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.TyreOverheat(100), VOLUME)
-            speaker(SpeechEvent.TyreCold(60), VOLUME)
+            speaker(SpeechEvent.LmuWindowsTyreOverheat(100), VOLUME)
+            speaker(SpeechEvent.LmuWindowsTyreCold(60), VOLUME)
             verify(exactly = 1) { observeTyreOverheatReadoutText() }
             verify(exactly = 1) { observeTyreColdReadoutText() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
@@ -800,7 +800,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `過熱警告は解決済み文言を保存値より優先する`() =
         runTest {
-            val event = SpeechEvent.TyreOverheat(100, resolvedText = "判定時{celsius}")
+            val event = SpeechEvent.LmuWindowsTyreOverheat(100, resolvedText = "判定時{celsius}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("判定時{celsius}", volume = VOLUME) } just Runs
             assertEquals("判定時{celsius}", speaker.readoutText(event))
@@ -814,7 +814,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `低温警告は解決済み文言を保存値より優先する`() =
         runTest {
-            val event = SpeechEvent.TyreCold(60, resolvedText = "判定時{celsius}")
+            val event = SpeechEvent.LmuWindowsTyreCold(60, resolvedText = "判定時{celsius}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("判定時{celsius}", volume = VOLUME) } just Runs
             assertEquals("判定時{celsius}", speaker.readoutText(event))
@@ -835,7 +835,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeOverheatReadoutText() } returns flowOf("自由文言{literal}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("自由文言{literal}", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.Overheating(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsOverheating(), VOLUME)
             verify(exactly = 1) { observeOverheatReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("自由文言{literal}", volume = VOLUME) }
@@ -847,7 +847,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("解決済み", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.Overheating(resolvedText = "解決済み"), VOLUME)
+            speaker(SpeechEvent.LmuWindowsOverheating(resolvedText = "解決済み"), VOLUME)
             verify(exactly = 0) { observeOverheatReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
@@ -858,8 +858,8 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `オーバーヒートの空白文言ではTTSを確認せず読み上げない`() =
         runTest {
             every { observeOverheatReadoutText() } returns flowOf(" ")
-            assertNull(speaker.readoutText(SpeechEvent.Overheating()))
-            speaker(SpeechEvent.Overheating(), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsOverheating()))
+            speaker(SpeechEvent.LmuWindowsOverheating(), VOLUME)
             verify(exactly = 2) { observeOverheatReadoutText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
@@ -871,8 +871,8 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeOverheatReadoutText() } returns flowOf("自由文言")
             coEvery { checkTextToSpeechAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.Overheating()))
-            speaker(SpeechEvent.Overheating(), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsOverheating()))
+            speaker(SpeechEvent.LmuWindowsOverheating(), VOLUME)
             verify(exactly = 2) { observeOverheatReadoutText() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText("自由文言", volume = VOLUME) }
@@ -882,7 +882,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `オーバーヒートの解決済み空白文言は既定文言へ戻さず読み上げない`() =
         runTest {
-            val event = SpeechEvent.Overheating(resolvedText = " ")
+            val event = SpeechEvent.LmuWindowsOverheating(resolvedText = " ")
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
             verify(exactly = 0) { observeOverheatReadoutText() }
@@ -959,7 +959,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observePartDetachedReadoutText() } returns flowOf("自由文言{literal}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("自由文言{literal}", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.PartDetached(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPartDetached(), VOLUME)
             verify(exactly = 1) { observePartDetachedReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("自由文言{literal}", volume = VOLUME) }
@@ -971,7 +971,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("解決済み", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.PartDetached(resolvedText = "解決済み"), VOLUME)
+            speaker(SpeechEvent.LmuWindowsPartDetached(resolvedText = "解決済み"), VOLUME)
             verify(exactly = 0) { observePartDetachedReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
@@ -982,8 +982,8 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `部品脱落の空白文言ではTTSを確認せず読み上げない`() =
         runTest {
             every { observePartDetachedReadoutText() } returns flowOf(" ")
-            assertNull(speaker.readoutText(SpeechEvent.PartDetached()))
-            speaker(SpeechEvent.PartDetached(), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsPartDetached()))
+            speaker(SpeechEvent.LmuWindowsPartDetached(), VOLUME)
             verify(exactly = 2) { observePartDetachedReadoutText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
@@ -995,8 +995,8 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observePartDetachedReadoutText() } returns flowOf("自由文言")
             coEvery { checkTextToSpeechAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.PartDetached()))
-            speaker(SpeechEvent.PartDetached(), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsPartDetached()))
+            speaker(SpeechEvent.LmuWindowsPartDetached(), VOLUME)
             verify(exactly = 2) { observePartDetachedReadoutText() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText("自由文言", volume = VOLUME) }
@@ -1006,7 +1006,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `部品脱落の解決済み空白文言は既定文言へ戻さず読み上げない`() =
         runTest {
-            val event = SpeechEvent.PartDetached(resolvedText = " ")
+            val event = SpeechEvent.LmuWindowsPartDetached(resolvedText = " ")
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
             verify(exactly = 0) { observePartDetachedReadoutText() }
@@ -1021,7 +1021,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observeTyreDetachedReadoutText() } returns flowOf("自由文言{literal}")
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("自由文言{literal}", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.TyreDetached(), VOLUME)
+            speaker(SpeechEvent.LmuWindowsTyreDetached(), VOLUME)
             verify(exactly = 1) { observeTyreDetachedReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("自由文言{literal}", volume = VOLUME) }
@@ -1033,7 +1033,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("解決済み", volume = VOLUME) } just Runs
-            speaker(SpeechEvent.TyreDetached(resolvedText = "解決済み"), VOLUME)
+            speaker(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "解決済み"), VOLUME)
             verify(exactly = 0) { observeTyreDetachedReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
             coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
@@ -1044,8 +1044,8 @@ class LmuWindowsReadoutTextSpeakerTest {
     fun `タイヤ脱落の空白文言ではTTSを確認せず読み上げない`() =
         runTest {
             every { observeTyreDetachedReadoutText() } returns flowOf(" ")
-            assertNull(speaker.readoutText(SpeechEvent.TyreDetached()))
-            speaker(SpeechEvent.TyreDetached(), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsTyreDetached()))
+            speaker(SpeechEvent.LmuWindowsTyreDetached(), VOLUME)
             verify(exactly = 2) { observeTyreDetachedReadoutText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
@@ -1057,8 +1057,8 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeTyreDetachedReadoutText() } returns flowOf("自由文言")
             coEvery { checkTextToSpeechAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.TyreDetached()))
-            speaker(SpeechEvent.TyreDetached(), VOLUME)
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsTyreDetached()))
+            speaker(SpeechEvent.LmuWindowsTyreDetached(), VOLUME)
             verify(exactly = 2) { observeTyreDetachedReadoutText() }
             coVerify(exactly = 2) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText("自由文言", volume = VOLUME) }
@@ -1068,7 +1068,7 @@ class LmuWindowsReadoutTextSpeakerTest {
     @Test
     fun `タイヤ脱落の解決済み空白文言は既定文言へ戻さず読み上げない`() =
         runTest {
-            val event = SpeechEvent.TyreDetached(resolvedText = " ")
+            val event = SpeechEvent.LmuWindowsTyreDetached(resolvedText = " ")
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
             verify(exactly = 0) { observeTyreDetachedReadoutText() }

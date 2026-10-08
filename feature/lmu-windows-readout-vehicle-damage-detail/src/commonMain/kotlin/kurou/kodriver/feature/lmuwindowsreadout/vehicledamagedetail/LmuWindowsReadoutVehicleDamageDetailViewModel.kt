@@ -85,7 +85,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     }
 
     fun onOverheatReadoutTextPreviewClicked(text: String) {
-        preview(SpeechEvent.Overheating(resolvedText = text), text)
+        preview(SpeechEvent.LmuWindowsOverheating(resolvedText = text), text)
     }
 
     fun onPartDetachedEnabledChanged(enabled: Boolean) {
@@ -99,7 +99,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     }
 
     fun onPartDetachedReadoutTextPreviewClicked(text: String) {
-        preview(SpeechEvent.PartDetached(resolvedText = text), text)
+        preview(SpeechEvent.LmuWindowsPartDetached(resolvedText = text), text)
     }
 
     fun onTyreDetachedEnabledChanged(enabled: Boolean) {
@@ -113,7 +113,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     }
 
     fun onTyreDetachedReadoutTextPreviewClicked(text: String) {
-        preview(SpeechEvent.TyreDetached(resolvedText = text), text)
+        preview(SpeechEvent.LmuWindowsTyreDetached(resolvedText = text), text)
     }
 
     /** 空白文言・TTS利用不可・音量ゼロでは再生しない。 */

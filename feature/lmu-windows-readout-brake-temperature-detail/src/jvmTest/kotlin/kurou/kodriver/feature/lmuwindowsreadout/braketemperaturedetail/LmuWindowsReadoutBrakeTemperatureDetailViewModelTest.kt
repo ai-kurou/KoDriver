@@ -276,8 +276,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
                 )
             every { vehicleClassRepository.observeHighThresholdCelsius() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
-            every { playSpeechEvent(SpeechEvent.BrakeOverheat(800, "残り800℃")) } returns Unit
-            every { playSpeechEvent(SpeechEvent.BrakeOverheat(650, "残り650℃")) } returns Unit
+            every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "残り800℃")) } returns Unit
+            every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(650, "残り650℃")) } returns Unit
             val viewModel = createViewModel()
             val collection =
                 backgroundScope.launch(
@@ -291,8 +291,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             threshold.update { mapOf(LmuWindowsVehicleClassData.Gte to 650) }
             selection.update { LmuWindowsVehicleClassData.Gte }
             viewModel.onReadoutTextPreviewClicked("残り{celsius}℃")
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.BrakeOverheat(800, "残り800℃")) }
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.BrakeOverheat(650, "残り650℃")) }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "残り800℃")) }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(650, "残り650℃")) }
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
@@ -309,7 +309,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
                 MutableStateFlow(mapOf(LmuWindowsVehicleClassData.Hypercar to 800))
             createViewModel().onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.BrakeOverheat(800, " ")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, " ")) }
             confirmVerified(observeVolume, playSpeechEvent)
         }
 
@@ -325,7 +325,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.BrakeOverheat(800, "注意")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "注意")) }
             confirmVerified(observeVolume, playSpeechEvent)
         }
 
@@ -344,7 +344,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             volume.update { -1 }
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.BrakeOverheat(800, "注意")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "注意")) }
             confirmVerified(observeVolume, playSpeechEvent)
         }
 
@@ -356,11 +356,11 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             every { vehicleClassRepository.observeSelectedVehicleClass() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.Gte)
             every { observeVolume() } returns MutableStateFlow(60)
-            every { playSpeechEvent(SpeechEvent.BrakeOverheat(800, "温度800℃")) } returns Unit
+            every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "温度800℃")) } returns Unit
             val viewModel = createViewModel()
             assertEquals(LmuWindowsVehicleClassData.Gte, viewModel.uiState.first().selectedVehicleClass)
             viewModel.onReadoutTextPreviewClicked("温度{celsius}℃")
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.BrakeOverheat(800, "温度800℃")) }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "温度800℃")) }
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable)

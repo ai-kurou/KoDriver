@@ -81,7 +81,7 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
         viewModelScope.launch {
             previewHelper.preview(
                 formattedText,
-                SpeechEvent.TyreWearWarning(
+                SpeechEvent.LmuWindowsTyreWearWarning(
                     percentage = percentage,
                     resolvedText = formattedText,
                 ),

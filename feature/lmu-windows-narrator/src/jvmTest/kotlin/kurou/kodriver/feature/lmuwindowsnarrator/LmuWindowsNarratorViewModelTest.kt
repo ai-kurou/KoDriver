@@ -127,9 +127,9 @@ class LmuWindowsNarratorViewModelTest {
 
     /** 判定時に解決済みの文言を持つ状態で TTS エンジンへ渡される残量警告。 */
     private val resolvedWarning =
-        SpeechEvent.RemainingVirtualEnergyWarning(
+        SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(
             percentage = 50,
-            resolvedText = SpeechEvent.RemainingVirtualEnergyWarning(50).narratedText,
+            resolvedText = SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50).narratedText,
         )
 
     private val vehicleApproachRepository: LmuWindowsVehicleApproachRepository = mockk(relaxUnitFun = true)
@@ -492,17 +492,20 @@ class LmuWindowsNarratorViewModelTest {
                                 myBestLapReadoutText?.let { template ->
                                     formatLmuWindowsMyBestLapReadoutText(template, it.lapTimeMs)
                                 }
-                            } else if (it is SpeechEvent.Overheating) {
+                            } else if (it is SpeechEvent.LmuWindowsOverheating) {
                                 overheatReadoutText
-                            } else if (it is SpeechEvent.PartDetached) {
+                            } else if (it is SpeechEvent.LmuWindowsPartDetached) {
                                 partDetachedReadoutText
-                            } else if (it is SpeechEvent.TyreDetached) {
+                            } else if (it is SpeechEvent.LmuWindowsTyreDetached) {
                                 tyreDetachedReadoutText
-                            } else if (it is SpeechEvent.TyreOverheat) {
+                            } else if (it is SpeechEvent.LmuWindowsTyreOverheat) {
                                 tyreOverheatReadoutText
-                            } else if (it is SpeechEvent.TyreCold) {
+                            } else if (it is SpeechEvent.LmuWindowsTyreCold) {
                                 tyreColdReadoutText
-                            } else if (it is SpeechEvent.PitTimingWarning && it.source == PitTimingSource.TyreWear) {
+                            } else if (
+                                it is SpeechEvent.LmuWindowsPitTimingWarning &&
+                                it.source == PitTimingSource.TyreWear
+                            ) {
                                 "タイヤ交換へ"
                             } else {
                                 it.narratedText
@@ -612,7 +615,7 @@ class LmuWindowsNarratorViewModelTest {
                 flagChannel = channel,
                 ttsEngine = tts,
                 readoutTextOverride = {
-                    if (it is SpeechEvent.BlueFlag) error("preference error")
+                    if (it is SpeechEvent.LmuWindowsBlueFlag) error("preference error")
                     "復旧"
                 },
             )
@@ -621,9 +624,9 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
             channel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.RedFlag("復旧")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsRedFlag("復旧")), spokenTexts)
             verify(exactly = 1) { tts.currentReadoutItemKey }
-            verify(exactly = 1) { tts.speak(SpeechEvent.RedFlag("復旧"), false) }
+            verify(exactly = 1) { tts.speak(SpeechEvent.LmuWindowsRedFlag("復旧"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -818,7 +821,7 @@ class LmuWindowsNarratorViewModelTest {
             fakeTime = 50L
             vehicleApproachChannel.send(leftVehicleApproach(vehicleId = 1))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft(resolvedText = "カーレフト")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト")), spokenTexts)
         }
 
     @Test
@@ -842,8 +845,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.CarLeft(resolvedText = "カーレフト"),
-                    SpeechEvent.CarLeftSustained(resolvedText = "キープライト"),
+                    SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト"),
+                    SpeechEvent.LmuWindowsCarLeftSustained(resolvedText = "キープライト"),
                 ),
                 spokenTexts,
             )
@@ -869,7 +872,7 @@ class LmuWindowsNarratorViewModelTest {
             fakeTime = 7_000L
             channel.send(leftVehicleApproach(vehicleId = 1))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft(resolvedText = "カーレフト")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト")), spokenTexts)
         }
 
     @Test
@@ -974,7 +977,7 @@ class LmuWindowsNarratorViewModelTest {
             flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
             assertEquals(true, tts.stopCalled)
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag(resolvedText = "ブルーフラッグ")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsBlueFlag(resolvedText = "ブルーフラッグ")), spokenTexts)
         }
 
     @Test
@@ -1001,7 +1004,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(leftVehicleApproach(vehicleId = 1))
 
             assertEquals(true, tts.stopCalled)
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft(resolvedText = "カーレフト")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト")), spokenTexts)
         }
 
     @Test
@@ -1060,7 +1063,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(leftVehicleApproach(vehicleId = 1))
 
             assertEquals(false, tts.stopCalled)
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft(resolvedText = "カーレフト")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト")), spokenTexts)
         }
 
     // --- オーバーヒート / 旗 ---
@@ -1101,7 +1104,7 @@ class LmuWindowsNarratorViewModelTest {
             damageChannel.send(noDamage())
             damageChannel.send(noDamage(overheating = true))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating(resolvedText = "オーバーヒート")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsOverheating(resolvedText = "オーバーヒート")), spokenTexts)
         }
 
     @Test
@@ -1118,7 +1121,7 @@ class LmuWindowsNarratorViewModelTest {
             )
             channel.send(noDamage())
             channel.send(noDamage(overheating = true))
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating(resolvedText = "カスタム")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsOverheating(resolvedText = "カスタム")), spokenTexts)
         }
 
     @Test
@@ -1223,7 +1226,7 @@ class LmuWindowsNarratorViewModelTest {
             )
             channel.send(noDamage())
             channel.send(noDamage(partDetached = true))
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.PartDetached(resolvedText = "カスタム")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsPartDetached(resolvedText = "カスタム")), spokenTexts)
         }
 
     @Test
@@ -1274,7 +1277,7 @@ class LmuWindowsNarratorViewModelTest {
             )
             channel.send(noTyreDetached())
             channel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreDetached(resolvedText = "カスタム")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "カスタム")), spokenTexts)
         }
 
     @Test
@@ -1326,7 +1329,7 @@ class LmuWindowsNarratorViewModelTest {
             damageChannel.send(noDamage())
             damageChannel.send(noDamage(partDetached = true))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.PartDetached(resolvedText = "部品脱落")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsPartDetached(resolvedText = "部品脱落")), spokenTexts)
         }
 
     @Test
@@ -1366,7 +1369,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreDetachedChannel.send(noTyreDetached())
             tyreDetachedChannel.send(noTyreDetached(WheelIndex.FRONT_LEFT))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreDetached(resolvedText = "タイヤ脱落")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "タイヤ脱落")), spokenTexts)
         }
 
     @Test
@@ -1487,7 +1490,7 @@ class LmuWindowsNarratorViewModelTest {
             flagChannel.send(clearFlags())
             flagChannel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.RedFlag(resolvedText = "レッドフラッグ")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsRedFlag(resolvedText = "レッドフラッグ")), spokenTexts)
         }
 
     @Test
@@ -1518,8 +1521,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.BlueFlag(resolvedText = "ブルーフラッグ"),
-                    SpeechEvent.RedFlag(resolvedText = "レッドフラッグ"),
+                    SpeechEvent.LmuWindowsBlueFlag(resolvedText = "ブルーフラッグ"),
+                    SpeechEvent.LmuWindowsRedFlag(resolvedText = "レッドフラッグ"),
                 ),
                 spokenTexts,
             )
@@ -1578,7 +1581,7 @@ class LmuWindowsNarratorViewModelTest {
 
             channel.send(tyreTemperature(fl = 95.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat(95, "タイヤを冷やして")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsTyreOverheat(95, "タイヤを冷やして")), spokenTexts)
         }
 
     @Test
@@ -1625,7 +1628,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(tyreTemperature(fl = 95.0))
             channel.send(tyreTemperature(fl = 95.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat(95, "タイヤを冷やして")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsTyreOverheat(95, "タイヤを冷やして")), spokenTexts)
         }
 
     @Test
@@ -1650,8 +1653,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.TyreOverheat(95, "タイヤを冷やして"),
-                    SpeechEvent.TyreOverheat(95, "タイヤを冷やして"),
+                    SpeechEvent.LmuWindowsTyreOverheat(95, "タイヤを冷やして"),
+                    SpeechEvent.LmuWindowsTyreOverheat(95, "タイヤを冷やして"),
                 ),
                 spokenTexts,
             )
@@ -1801,7 +1804,7 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"overheatState":{""")
             assertContains(log.telemetryJson, """"finalState":{""")
-            verify(exactly = 0) { tts.speak(SpeechEvent.TyreOverheat(95, "タイヤを冷やして"), queue = false) }
+            verify(exactly = 0) { tts.speak(SpeechEvent.LmuWindowsTyreOverheat(95, "タイヤを冷やして"), queue = false) }
             verify(exactly = 0) { tts.currentReadoutItemKey }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
@@ -1834,7 +1837,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(tyreWear(fl = 0.4))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.TyreWearWarning(50, resolvedText = "タイヤ残存率50%以下")),
+                listOf<SpeechEvent>(SpeechEvent.LmuWindowsTyreWearWarning(50, resolvedText = "タイヤ残存率50%以下")),
                 spokenTexts,
             )
         }
@@ -1856,7 +1859,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(tyreWear(fl = 0.4))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.TyreWearWarning(50, resolvedText = "タイヤ残存率50%以下")),
+                listOf<SpeechEvent>(SpeechEvent.LmuWindowsTyreWearWarning(50, resolvedText = "タイヤ残存率50%以下")),
                 spokenTexts,
             )
         }
@@ -1880,8 +1883,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.TyreWearWarning(50, resolvedText = "タイヤ残存率50%以下"),
-                    SpeechEvent.TyreWearWarning(50, resolvedText = "タイヤ残存率50%以下"),
+                    SpeechEvent.LmuWindowsTyreWearWarning(50, resolvedText = "タイヤ残存率50%以下"),
+                    SpeechEvent.LmuWindowsTyreWearWarning(50, resolvedText = "タイヤ残存率50%以下"),
                 ),
                 spokenTexts,
             )
@@ -1953,7 +1956,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(brakeTemperature(fl = 850.0))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.BrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上")),
+                listOf<SpeechEvent>(SpeechEvent.LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上")),
                 spokenTexts,
             )
         }
@@ -1974,7 +1977,7 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(brakeTemperature(fl = 850.0))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.BrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上")),
+                listOf<SpeechEvent>(SpeechEvent.LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上")),
                 spokenTexts,
             )
         }
@@ -1997,8 +2000,8 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.BrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上"),
-                    SpeechEvent.BrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上"),
+                    SpeechEvent.LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上"),
+                    SpeechEvent.LmuWindowsBrakeOverheat(800, resolvedText = "ブレーキ温度800℃以上"),
                 ),
                 spokenTexts,
             )
@@ -2201,7 +2204,7 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
@@ -2355,7 +2358,11 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear, resolvedText = "タイヤ交換へ"),
+                    SpeechEvent.LmuWindowsPitTimingWarning(
+                        0,
+                        source = PitTimingSource.TyreWear,
+                        resolvedText = "タイヤ交換へ",
+                    ),
                 ),
                 spokenTexts,
             )
@@ -2410,12 +2417,12 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
                     ),
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
@@ -2474,8 +2481,16 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear, resolvedText = "タイヤ交換へ"),
-                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear, resolvedText = "タイヤ交換へ"),
+                    SpeechEvent.LmuWindowsPitTimingWarning(
+                        0,
+                        source = PitTimingSource.TyreWear,
+                        resolvedText = "タイヤ交換へ",
+                    ),
+                    SpeechEvent.LmuWindowsPitTimingWarning(
+                        0,
+                        source = PitTimingSource.TyreWear,
+                        resolvedText = "タイヤ交換へ",
+                    ),
                 ),
                 spokenTexts,
             )
@@ -2521,7 +2536,7 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
@@ -2570,7 +2585,11 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear, resolvedText = "タイヤ交換へ"),
+                    SpeechEvent.LmuWindowsPitTimingWarning(
+                        0,
+                        source = PitTimingSource.TyreWear,
+                        resolvedText = "タイヤ交換へ",
+                    ),
                 ),
                 spokenTexts,
             )
@@ -2614,7 +2633,7 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
@@ -2662,7 +2681,7 @@ class LmuWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
@@ -2679,12 +2698,16 @@ class LmuWindowsNarratorViewModelTest {
 
             val expectedEvents =
                 listOf<SpeechEvent>(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         0,
                         source = PitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
                     ),
-                    SpeechEvent.PitTimingWarning(0, source = PitTimingSource.TyreWear, resolvedText = "タイヤ交換へ"),
+                    SpeechEvent.LmuWindowsPitTimingWarning(
+                        0,
+                        source = PitTimingSource.TyreWear,
+                        resolvedText = "タイヤ交換へ",
+                    ),
                 )
             assertEquals(expectedEvents, spokenTexts)
 
@@ -2766,7 +2789,7 @@ class LmuWindowsNarratorViewModelTest {
 
             flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreCold(55, "タイヤを温めて")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsTyreCold(55, "タイヤを温めて")), spokenTexts)
         }
 
     @Test
@@ -2914,7 +2937,7 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"observedAtMs":123""")
             assertContains(log.telemetryJson, """"overheatState":{""")
             assertContains(log.telemetryJson, """"finalState":{""")
-            verify(exactly = 0) { tts.speak(SpeechEvent.TyreCold(55, "タイヤを温めて"), queue = false) }
+            verify(exactly = 0) { tts.speak(SpeechEvent.LmuWindowsTyreCold(55, "タイヤを温めて"), queue = false) }
             verify(exactly = 0) { tts.currentReadoutItemKey }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(

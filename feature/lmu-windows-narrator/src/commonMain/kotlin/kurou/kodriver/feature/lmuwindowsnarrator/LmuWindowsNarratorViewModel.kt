@@ -639,7 +639,7 @@ internal class LmuWindowsNarratorViewModel(
                     )
                 narratorState =
                     pitTimingEvents
-                        .filterIsInstance<SpeechEvent.PitTimingWarning>()
+                        .filterIsInstance<SpeechEvent.LmuWindowsPitTimingWarning>()
                         .fold(tyreWearDecision.state) { finalState, event ->
                             narratorUseCases.determineReadout.recordPitTimingAnnounced(finalState, event)
                         }
@@ -688,8 +688,9 @@ private fun selectLowerPitTimingEvent(
     virtualEnergyEvents: List<SpeechEvent>,
     tyreWearEvents: List<SpeechEvent>,
 ): List<SpeechEvent> {
-    val virtualEnergyEvent = virtualEnergyEvents.filterIsInstance<SpeechEvent.PitTimingWarning>().firstOrNull()
-    val tyreWearEvent = tyreWearEvents.filterIsInstance<SpeechEvent.PitTimingWarning>().firstOrNull()
+    val virtualEnergyEvent =
+        virtualEnergyEvents.filterIsInstance<SpeechEvent.LmuWindowsPitTimingWarning>().firstOrNull()
+    val tyreWearEvent = tyreWearEvents.filterIsInstance<SpeechEvent.LmuWindowsPitTimingWarning>().firstOrNull()
     return when {
         virtualEnergyEvent != null && tyreWearEvent != null -> {
             if (virtualEnergyEvent.laps <= tyreWearEvent.laps) listOf(virtualEnergyEvent) else listOf(tyreWearEvent)

@@ -27,7 +27,7 @@ class LmuWindowsReadoutTyreWearDetailPaneNarratedTextConsistencyTest {
         rule.onNode(hasSetTextAction()).assertTextContains(LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT)
         assertEquals(
             formatLmuWindowsTyreWearReadoutText(LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT, 50),
-            SpeechEvent.TyreWearWarning(50).narratedText,
+            SpeechEvent.LmuWindowsTyreWearWarning(50).narratedText,
         )
     }
 }

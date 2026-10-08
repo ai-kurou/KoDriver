@@ -40,12 +40,12 @@ class Gt7Ps5NarratorEngineTest {
 
     @Test
     fun `speakはNarratorEngineのspeakへ委譲する`() {
-        every { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) } just Runs
+        every { wavNarratorEngine.speak(SpeechEvent.LmuWindowsCarLeft(), queue = true) } just Runs
         val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
-        engine.speak(SpeechEvent.CarLeft(), queue = true)
+        engine.speak(SpeechEvent.LmuWindowsCarLeft(), queue = true)
 
-        verify(exactly = 1) { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) }
+        verify(exactly = 1) { wavNarratorEngine.speak(SpeechEvent.LmuWindowsCarLeft(), queue = true) }
         confirmVerified(wavNarratorEngine)
     }
 

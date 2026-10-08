@@ -29,7 +29,7 @@ class ReadoutSpeechEventPreviewHelperTest {
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
     private val playSpeechEvent: PlaySpeechEventUseCase = mockk()
-    private val event = SpeechEvent.TyreWearWarning(50, "残り50%")
+    private val event = SpeechEvent.LmuWindowsTyreWearWarning(50, "残り50%")
 
     private fun TestScope.helper() =
         ReadoutSpeechEventPreviewHelper(backgroundScope, checkAvailable, observeVolume, playSpeechEvent)

@@ -207,8 +207,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             val threshold = MutableStateFlow(50)
             every { repository.observeThresholdPercentage() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
-            every { playSpeechEvent(SpeechEvent.TyreWearWarning(50, "残り50%")) } returns Unit
-            every { playSpeechEvent(SpeechEvent.TyreWearWarning(70, "残り70%")) } returns Unit
+            every { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "残り50%")) } returns Unit
+            every { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(70, "残り70%")) } returns Unit
             val viewModel = createViewModel()
             val collection =
                 backgroundScope.launch(
@@ -218,8 +218,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             threshold.update { 70 }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.TyreWearWarning(50, "残り50%")) }
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.TyreWearWarning(70, "残り70%")) }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "残り50%")) }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(70, "残り70%")) }
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
@@ -233,7 +233,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             every { repository.observeThresholdPercentage() } returns MutableStateFlow(50)
             createViewModel().onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreWearWarning(50, " ")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, " ")) }
             confirmVerified(observeVolume, playSpeechEvent)
         }
 
@@ -246,7 +246,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreWearWarning(50, "注意")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "注意")) }
             confirmVerified(observeVolume, playSpeechEvent)
         }
 
@@ -262,7 +262,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             volume.update { -1 }
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreWearWarning(50, "注意")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "注意")) }
             confirmVerified(observeVolume, playSpeechEvent)
         }
 }

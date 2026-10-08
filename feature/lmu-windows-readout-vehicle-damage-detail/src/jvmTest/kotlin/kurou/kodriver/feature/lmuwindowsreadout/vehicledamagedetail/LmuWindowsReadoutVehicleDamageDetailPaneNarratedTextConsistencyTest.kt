@@ -25,9 +25,9 @@ class LmuWindowsReadoutVehicleDamageDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.Overheating().narratedText,
-            SpeechEvent.PartDetached().narratedText,
-            SpeechEvent.TyreDetached().narratedText,
+            SpeechEvent.LmuWindowsOverheating().narratedText,
+            SpeechEvent.LmuWindowsPartDetached().narratedText,
+            SpeechEvent.LmuWindowsTyreDetached().narratedText,
         ).forEach { narratedText ->
             rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText, substring = true)
         }

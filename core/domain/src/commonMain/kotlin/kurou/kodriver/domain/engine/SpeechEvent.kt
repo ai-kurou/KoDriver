@@ -75,110 +75,110 @@ sealed interface SpeechEvent {
      */
     val narratedText: String
 
-    data class CarLeft(
+    data class LmuWindowsCarLeft(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): CarLeft = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsCarLeft = copy(resolvedText = text)
     }
 
-    data class CarRight(
+    data class LmuWindowsCarRight(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): CarRight = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsCarRight = copy(resolvedText = text)
     }
 
-    data class CarLeftSustained(
+    data class LmuWindowsCarLeftSustained(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): CarLeftSustained = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsCarLeftSustained = copy(resolvedText = text)
     }
 
-    data class CarRightSustained(
+    data class LmuWindowsCarRightSustained(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): CarRightSustained = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsCarRightSustained = copy(resolvedText = text)
     }
 
-    data class BlueFlag(
+    data class LmuWindowsBlueFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
         override val narratedText = LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): BlueFlag = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsBlueFlag = copy(resolvedText = text)
     }
 
-    data class YellowFlag(
+    data class LmuWindowsYellowFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
         override val narratedText = LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): YellowFlag = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsYellowFlag = copy(resolvedText = text)
     }
 
-    data class FullCourseYellow(
+    data class LmuWindowsFullCourseYellow(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
         override val narratedText = LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): FullCourseYellow = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsFullCourseYellow = copy(resolvedText = text)
     }
 
-    data class RedFlag(
+    data class LmuWindowsRedFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
         override val narratedText = LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): RedFlag = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsRedFlag = copy(resolvedText = text)
     }
 
-    data class Overheating(
+    data class LmuWindowsOverheating(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): Overheating = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsOverheating = copy(resolvedText = text)
     }
 
-    data class PartDetached(
+    data class LmuWindowsPartDetached(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): PartDetached = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsPartDetached = copy(resolvedText = text)
     }
 
-    data class TyreDetached(
+    data class LmuWindowsTyreDetached(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 
-        override fun withResolvedText(text: String): TyreDetached = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsTyreDetached = copy(resolvedText = text)
     }
 
     /**
      * タイヤ過熱警告。[celsius] は判定時の全輪の最高カーカス温度を整数に丸めた摂氏温度。
      * [resolvedText] は判定時に解決済みの読み上げ文言。キュー待機中に設定が変わってもログと発話内容を一致させる。
      */
-    data class TyreOverheat(
+    data class LmuWindowsTyreOverheat(
         val celsius: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
@@ -189,14 +189,14 @@ sealed interface SpeechEvent {
                 celsius,
             )
 
-        override fun withResolvedText(text: String): TyreOverheat = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsTyreOverheat = copy(resolvedText = text)
     }
 
     /**
      * タイヤ低温警告。[celsius] は判定時の全輪の最高カーカス温度を整数に丸めた摂氏温度。
      * [resolvedText] は判定時に解決済みの読み上げ文言。キュー待機中に設定が変わってもログと発話内容を一致させる。
      */
-    data class TyreCold(
+    data class LmuWindowsTyreCold(
         val celsius: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
@@ -207,14 +207,14 @@ sealed interface SpeechEvent {
                 celsius,
             )
 
-        override fun withResolvedText(text: String): TyreCold = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsTyreCold = copy(resolvedText = text)
     }
 
     /**
      * タイヤ摩耗警告。[percentage] は実際の残存率ではなく設定した閾値（%）。
      * [resolvedText] は判定時に解決済みの読み上げ文言。キュー待機中に設定が変わっても、ログと発話内容を一致させるために使う。
      */
-    data class TyreWearWarning(
+    data class LmuWindowsTyreWearWarning(
         val percentage: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
@@ -225,14 +225,14 @@ sealed interface SpeechEvent {
                 percentage,
             )
 
-        override fun withResolvedText(text: String): TyreWearWarning = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsTyreWearWarning = copy(resolvedText = text)
     }
 
     /**
      * ブレーキ過熱警告。[celsius] は実測ではなく設定した閾値（℃）。
      * [resolvedText] は判定時に解決済みの文言。キュー待機中もログと発話を一致させる。
      */
-    data class BrakeOverheat(
+    data class LmuWindowsBrakeOverheat(
         val celsius: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
@@ -243,14 +243,14 @@ sealed interface SpeechEvent {
                 celsius,
             )
 
-        override fun withResolvedText(text: String): BrakeOverheat = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsBrakeOverheat = copy(resolvedText = text)
     }
 
     /**
      * バーチャルエナジー残量警告。[percentage] は実際の残量ではなく設定した閾値（%）。
      * [resolvedText] は判定時に解決済みの読み上げ文言。キュー待機中に設定が変わっても、ログと発話内容を一致させるために使う。
      */
-    data class RemainingVirtualEnergyWarning(
+    data class LmuWindowsRemainingVirtualEnergyWarning(
         val percentage: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
@@ -261,7 +261,7 @@ sealed interface SpeechEvent {
                 percentage,
             )
 
-        override fun withResolvedText(text: String): RemainingVirtualEnergyWarning = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsRemainingVirtualEnergyWarning = copy(resolvedText = text)
     }
 
     data class LmuWindowsMyBestLap(
@@ -337,7 +337,7 @@ sealed interface SpeechEvent {
      * LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。
      * [narratedText] はログ用の既定文言。実際の読み上げ文言はソースごとの設定値から取得する。
      */
-    data class PitTimingWarning(
+    data class LmuWindowsPitTimingWarning(
         val laps: Int,
         val source: PitTimingSource,
         override val resolvedText: String? = null,
@@ -345,7 +345,7 @@ sealed interface SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root
         override val narratedText = defaultLmuWindowsPitTimingReadoutText(source, laps)
 
-        override fun withResolvedText(text: String): PitTimingWarning = copy(resolvedText = text)
+        override fun withResolvedText(text: String): LmuWindowsPitTimingWarning = copy(resolvedText = text)
     }
 
     /** ACE の残燃料で走行可能な周回数。解決済み文言は判定時の発話・ログ内容を保持する。 */
@@ -487,7 +487,7 @@ sealed interface SpeechEvent {
     /**
      * ACE の周辺車両接近を読み上げるイベント。
      *
-     * ACE の共有メモリには自車の向きに相当するフィールドが存在せず、LMU（[CarLeft]/[CarRight] 等）のような
+     * ACE の共有メモリには自車の向きに相当するフィールドが存在せず、LMU（[LmuWindowsCarLeft]/[LmuWindowsCarRight] 等）のような
      * 左右を区別した接近アナウンスができないため、左右を区別しない汎用の接近アナウンスとして1種類のみ用意する。
      */
     data class AceWindowsVehicleApproach(
