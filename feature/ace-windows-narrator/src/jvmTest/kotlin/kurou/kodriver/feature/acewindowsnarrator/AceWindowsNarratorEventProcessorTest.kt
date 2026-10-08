@@ -435,7 +435,10 @@ class AceWindowsNarratorEventProcessorTest {
             )
 
             assertEquals(true, telemetryJsons.single().contains("\"previousBestLapTime\":null"))
-            assertEquals(true, telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000}"""))
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000,"currentLap":0}"""),
+            )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) }
             coVerify(exactly = 1) {
@@ -488,8 +491,14 @@ class AceWindowsNarratorEventProcessorTest {
             )
 
             assertEquals(1, telemetryJsons.size)
-            assertEquals(true, telemetryJsons.single().contains(""""previousBestLapTime":{"bestLapTimeMs":90000}"""))
-            assertEquals(true, telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000}"""))
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""previousBestLapTime":{"bestLapTimeMs":90000,"currentLap":0}"""),
+            )
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000,"currentLap":0}"""),
+            )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) }
             coVerify(exactly = 1) {

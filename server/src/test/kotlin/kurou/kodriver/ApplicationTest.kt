@@ -3378,9 +3378,9 @@ private class FakeAceWindowsBestLapTimeRepository : AceWindowsBestLapTimeReposit
     }
 }
 
-private val aceBestLapTimeData = AceWindowsBestLapTimeData(bestLapTimeMs = 95_123)
+private val aceBestLapTimeData = AceWindowsBestLapTimeData(bestLapTimeMs = 95_123, currentLap = 3)
 
-private const val ACE_BEST_LAP_TIME_JSON = """{"bestLapTimeMs":95123}"""
+private const val ACE_BEST_LAP_TIME_JSON = """{"bestLapTimeMs":95123,"currentLap":3}"""
 
 private class FakeAceWindowsRemainingFuelLapsRepository : AceWindowsRemainingFuelLapsRepository {
     private val channel = Channel<AceWindowsRemainingFuelLapsData>(capacity = Channel.UNLIMITED)

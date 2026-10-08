@@ -32,6 +32,8 @@ data class AceWindowsNarratorState(
     val vehicleApproaching: Boolean = false,
     val personalBestMs: Int = Int.MAX_VALUE,
     val previousBestLapTimeMs: Int? = null,
+    /** 直近に観測した現在ラップ番号。減少を新しいセッションの開始とみなし、自己ベストの状態をリセットする。 */
+    val previousLapCount: Int? = null,
     /** 直近に読み上げた（または給油後に基準とした）燃料残り周回数。閾値を上回っている間は null。 */
     val lastRemainingFuelLaps: Int? = null,
 )
@@ -79,14 +81,21 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
         val current = data.bestLapTimeMs
-        val stateWithCurrentBestLap = state.copy(previousBestLapTimeMs = current)
-        val previous = state.previousBestLapTimeMs
+        val currentLap = data.currentLap
+        val sessionState =
+            if (state.previousLapCount != null && currentLap < state.previousLapCount) {
+                state.copy(personalBestMs = Int.MAX_VALUE, previousBestLapTimeMs = null)
+            } else {
+                state
+            }
+        val stateWithCurrentBestLap = sessionState.copy(previousBestLapTimeMs = current, previousLapCount = currentLap)
+        val previous = sessionState.previousBestLapTimeMs
         if (previous == null) return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         if (current <= 0) return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         if (previous > 0 && current >= previous) {
             return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (current >= state.personalBestMs) {
+        if (current >= sessionState.personalBestMs) {
             return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
         if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.Root) ||

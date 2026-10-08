@@ -24,6 +24,85 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineAceWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `周回数が減少したら自己ベストをリセットして新セッションの更新を読み上げる`() {
+        val first =
+            useCase.determineMyBestLap(
+                state =
+                    AceWindowsNarratorState(
+                        personalBestMs = 59_000,
+                        previousBestLapTimeMs = 59_000,
+                        previousLapCount = 5,
+                    ),
+                data = bestLapTime(bestLapTimeMs = 69_000, currentLap = 1),
+                settings = myBestLapSettings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), first.events)
+        assertEquals(Int.MAX_VALUE, first.state.personalBestMs)
+        assertEquals(69_000, first.state.previousBestLapTimeMs)
+        assertEquals(1, first.state.previousLapCount)
+
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                data = bestLapTime(bestLapTimeMs = 68_000, currentLap = 2),
+                settings = myBestLapSettings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLapFormal), second.events)
+        assertEquals(68_000, second.state.personalBestMs)
+        assertEquals(2, second.state.previousLapCount)
+    }
+
+    @Test
+    fun `周回数が同じか増加した場合は自己ベストをリセットしない`() {
+        for (currentLap in listOf(5, 6)) {
+            val decision =
+                useCase.determineMyBestLap(
+                    state =
+                        AceWindowsNarratorState(
+                            personalBestMs = 59_000,
+                            previousBestLapTimeMs = 69_000,
+                            previousLapCount = 5,
+                        ),
+                    data = bestLapTime(bestLapTimeMs = 68_000, currentLap = currentLap),
+                    settings = myBestLapSettings(),
+                )
+
+            assertEquals(emptyList<SpeechEvent>(), decision.events)
+            assertEquals(59_000, decision.state.personalBestMs)
+            assertEquals(68_000, decision.state.previousBestLapTimeMs)
+            assertEquals(currentLap, decision.state.previousLapCount)
+        }
+    }
+
+    @Test
+    fun `自己ベスト判定の各経路で現在の周回数を記録する`() {
+        val initialState = AceWindowsNarratorState(previousBestLapTimeMs = 60_000, previousLapCount = 1)
+        val cases =
+            listOf<Triple<AceWindowsNarratorState, Int, Map<ReadoutItemKey, Boolean>>>(
+                Triple(AceWindowsNarratorState(), 59_000, emptyMap()),
+                Triple(initialState, 0, emptyMap()),
+                Triple(initialState, 60_000, emptyMap()),
+                Triple(initialState.copy(personalBestMs = 58_000), 59_000, emptyMap()),
+                Triple(initialState, 59_000, mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to false)),
+                Triple(initialState, 59_000, mapOf(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled to false)),
+                Triple(initialState, 59_000, emptyMap()),
+            )
+        for ((state, current, enabledOverrides) in cases) {
+            val decision =
+                useCase.determineMyBestLap(
+                    state = state,
+                    data = bestLapTime(bestLapTimeMs = current, currentLap = 2),
+                    settings = myBestLapSettings(enabledOverrides = enabledOverrides),
+                )
+
+            assertEquals(current, decision.state.previousBestLapTimeMs)
+            assertEquals(2, decision.state.previousLapCount)
+        }
+    }
+
+    @Test
     fun `初回の自己ベスト値では読み上げない`() {
         val decision =
             useCase.determineMyBestLap(
@@ -854,7 +933,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         assertEquals(true, decision.state.vehicleApproaching)
     }
 
-    private fun bestLapTime(bestLapTimeMs: Int) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs)
+    private fun bestLapTime(
+        bestLapTimeMs: Int,
+        currentLap: Int = 0,
+    ) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs, currentLap = currentLap)
 
     private fun myBestLapSettings(
         myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,

@@ -105,6 +105,8 @@ internal object AceWindowsMapper {
     private const val OFF_LAPS_POSSIBLE_WITH_FUEL = 1464
     private const val OFF_BEST_LAPTIME_MS = 2400
     private const val OFF_FLAG = 2404
+    private const val OFF_SESSION_STATE = 2476
+    private const val OFF_SESSION_STATE_CURRENT_LAP = 72
     private const val OFF_CAR_COORDINATES = 3124
     private const val CAR_COORDINATES_STRIDE = 12
     private const val OFF_ACTIVE_CARS = 3852
@@ -141,6 +143,7 @@ internal object AceWindowsMapper {
     fun mapBestLapTime(buffer: ByteBuffer): AceWindowsBestLapTimeData =
         AceWindowsBestLapTimeData(
             bestLapTimeMs = buffer.getInt(OFF_BEST_LAPTIME_MS),
+            currentLap = buffer.getInt(OFF_SESSION_STATE + OFF_SESSION_STATE_CURRENT_LAP),
         )
 
     fun mapFlag(buffer: ByteBuffer): AceWindowsFlagData =
