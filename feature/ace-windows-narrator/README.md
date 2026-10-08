@@ -13,7 +13,7 @@ ACE (Assetto Corsa EVO) Windows版のWAV音声再生・自由文言TTSとアナ�
 Processorで解決した本文をイベントの `resolvedText` に保持し、キュー待機中の設定変更後も発話とログを一致させる。
 空白・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` をログに保存する。
 開始音・優先度・キューは `RemainingFuel.Root` を維持する。`remaining_fuel_caution.wav` は廃止し、WAVフォールバックは行わない。
-自由文言の入力UI・試聴対応はPR3で追加する。本PRの既存試聴は画面の閾値をサンプル残量としてイベントに渡す。
+詳細画面では自由文言の編集・既定値へのリセット・`{percent}` の末尾挿入と未知プレースホルダーの警告を提供する。試聴は画面に表示中の残量閾値を使い、`RemainingFuel.Root` の開始音とOS標準TTSで再生する。空白文言・TTS利用不可・音量ゼロ以下では開始音も本文も再生しない。
 イベント→WAVファイルパスのマップと `Res::readBytes` は `AceWindowsNarratorModule.kt` で定義する。
 `SoundPlayer` 等の音声再生基盤の実装は `:core:narrator` を参照。
 
