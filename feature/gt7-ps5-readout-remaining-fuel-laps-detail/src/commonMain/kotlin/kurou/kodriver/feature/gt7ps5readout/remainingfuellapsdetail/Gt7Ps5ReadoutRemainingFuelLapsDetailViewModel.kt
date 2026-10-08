@@ -82,9 +82,12 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
         viewModelScope.launch { readout.saveText(text) }
     }
 
-    /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
-    fun onReadoutTextPreviewClicked(text: String) {
-        val formattedText = formatGt7Ps5RemainingFuelLapsReadoutText(text, uiState.value.remainingFuelLaps)
+    /** 画面に表示中の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
+    fun onReadoutTextPreviewClicked(
+        text: String,
+        remainingFuelLaps: Int,
+    ) {
+        val formattedText = formatGt7Ps5RemainingFuelLapsReadoutText(text, remainingFuelLaps)
         previewText(formattedText)
     }
 

@@ -14,6 +14,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -85,11 +88,12 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
     onReadoutTextChanged: (String) -> Unit = {},
     onEmptyReadoutTextChanged: (String) -> Unit = {},
     onEmptyReadoutTextPreviewClicked: (String) -> Unit = {},
-    onReadoutTextPreviewClicked: (String) -> Unit = {},
+    onReadoutTextPreviewClicked: (String, Int) -> Unit = { _, _ -> },
     onRemainingFuelLapsChanged: (Int) -> Unit = {},
     onResetRemainingFuelLaps: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    var remainingFuelLaps by remember(uiState.remainingFuelLaps) { mutableIntStateOf(uiState.remainingFuelLaps) }
     Column(
         modifier =
             modifier
@@ -116,7 +120,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
                                 text = uiState.readoutText,
                                 available = uiState.isTextToSpeechAvailable,
                                 onTextChanged = onReadoutTextChanged,
-                                onPreviewClick = onReadoutTextPreviewClicked,
+                                onPreviewClick = { onReadoutTextPreviewClicked(it, remainingFuelLaps) },
                             )
                         }
                         RemainingFuelLapsReadoutField(
@@ -137,13 +141,17 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
                             ),
                     )
                     ThresholdSlider(
-                        value = uiState.remainingFuelLaps.toFloat(),
+                        value = remainingFuelLaps.toFloat(),
                         valueRange = THRESHOLD_MIN..THRESHOLD_MAX,
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { thresholdLabelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onRemainingFuelLapsChanged(it.roundToInt()) },
                         defaultValue = GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT.toFloat(),
-                        onResetToDefault = onResetRemainingFuelLaps,
+                        onResetToDefault = {
+                            remainingFuelLaps = GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
+                            onResetRemainingFuelLaps()
+                        },
+                        onValueChange = { remainingFuelLaps = it.roundToInt() },
                         resetContentDescription = stringResource(Res.string.remaining_fuel_laps_reset_to_default),
                     )
                 }

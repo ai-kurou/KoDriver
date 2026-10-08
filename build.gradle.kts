@@ -595,6 +595,7 @@ dependencies {
     kover(project(":feature:ace-windows-connection"))
     kover(project(":feature:ace-windows-narrator"))
     kover(project(":feature:ace-windows-readout-remaining-fuel-detail"))
+    kover(project(":feature:ace-windows-readout-remaining-fuel-laps-detail"))
     kover(project(":feature:ace-windows-readout-flag-detail"))
     kover(project(":feature:ace-windows-readout-tyre-temperature-detail"))
     kover(project(":feature:ace-windows-readout-vehicle-approach-detail"))

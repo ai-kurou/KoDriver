@@ -97,7 +97,11 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             every { repository.observeThresholdLaps() } returns MutableStateFlow(3)
             val viewModel = createViewModel()
             assertEquals(AceWindowsReadoutRemainingFuelLapsDetailUiState(), viewModel.uiState.value)
@@ -121,7 +125,11 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `onRemainingFuelLapsChangedを呼ぶとuiStateのremainingFuelLapsが更新される`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             val thresholdFlow = MutableStateFlow(4)
             every { repository.observeThresholdLaps() } returns thresholdFlow
             coEvery { repository.saveThresholdLaps(3) } answers { thresholdFlow.update { 3 } }
@@ -141,7 +149,11 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `onResetRemainingFuelLapsを呼ぶとremainingFuelLapsがデフォルト値3に戻る`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             val thresholdFlow = MutableStateFlow(4)
             every { repository.observeThresholdLaps() } returns thresholdFlow
             coEvery { repository.saveThresholdLaps(3) } answers { thresholdFlow.update { 3 } }
@@ -161,7 +173,11 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `onEnabledChangedにfalseを渡すとuiStateのenabledがfalseになる`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             every { repository.observeThresholdLaps() } returns MutableStateFlow(3)
             coEvery {
                 readoutPreferencesRepository.saveReadoutEnabledState(
@@ -193,18 +209,14 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             confirmVerified(repository, readoutPreferencesRepository)
         }
 
-    private fun stubReadout(available: Boolean = true) {
-        every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
-            enabledStatesFlow
-        every { repository.observeReadoutText() } returns textFlow
-        every { repository.observeEmptyReadoutText() } returns emptyTextFlow
-        coEvery { checkAvailable() } returns available
-    }
-
     @Test
     fun `文言の監視と保存をUiStateに反映する`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             every { repository.observeThresholdLaps() } returns MutableStateFlow(4)
             coEvery { repository.saveReadoutText("残り{laps}周") } answers { textFlow.update { "残り{laps}周" } }
             val viewModel = createViewModel()
@@ -219,9 +231,13 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
         }
 
     @Test
-    fun `現在の閾値に置換して開始音の後に試聴する`() =
+    fun `保存値と異なっても画面に表示中の閾値に置換して開始音の後に試聴する`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             val threshold = MutableStateFlow(4)
             every { repository.observeThresholdLaps() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
@@ -234,9 +250,10 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
                     UnconfinedTestDispatcher(testScheduler),
                 ) { viewModel.uiState.collect {} }
             assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
-            viewModel.onReadoutTextPreviewClicked("残り{laps}周")
-            threshold.update { 5 }
-            viewModel.onReadoutTextPreviewClicked("残り{laps}周")
+            viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
+            // 保存済みの閾値が4周のままでも、画面に表示中の5周で試聴する。
+            viewModel.onReadoutTextPreviewClicked("残り{laps}周", 5)
+            assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
             coVerify(exactly = 2) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
             coVerify(exactly = 1) { speakText("残り4周", volume = 60) }
             coVerify(exactly = 1) { speakText("残り5周", volume = 60) }
@@ -254,10 +271,14 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `空白文言では音量を取得せず試聴しない`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             every { repository.observeThresholdLaps() } returns MutableStateFlow(4)
             val viewModel = createViewModel()
-            viewModel.onReadoutTextPreviewClicked(" ")
+            viewModel.onReadoutTextPreviewClicked(" ", 4)
             viewModel.onEmptyReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
             coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
@@ -268,11 +289,15 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `TTS利用不可を反映し試聴しない`() =
         runTest {
-            stubReadout(available = false)
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns false
             every { repository.observeThresholdLaps() } returns MutableStateFlow(4)
             val viewModel = createViewModel()
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
-            viewModel.onReadoutTextPreviewClicked("注意")
+            viewModel.onReadoutTextPreviewClicked("注意", 4)
             viewModel.onEmptyReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
             coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
@@ -283,15 +308,19 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `音量ゼロ以下では開始音も本文も試聴しない`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             every { repository.observeThresholdLaps() } returns MutableStateFlow(4)
             val volume = MutableStateFlow(0)
             every { observeVolume() } returns volume
             val viewModel = createViewModel()
-            viewModel.onReadoutTextPreviewClicked("注意")
+            viewModel.onReadoutTextPreviewClicked("注意", 4)
             viewModel.onEmptyReadoutTextPreviewClicked("注意")
             volume.update { -1 }
-            viewModel.onReadoutTextPreviewClicked("注意")
+            viewModel.onReadoutTextPreviewClicked("注意", 4)
             viewModel.onEmptyReadoutTextPreviewClicked("注意")
             verify(exactly = 4) { observeVolume() }
             coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
@@ -302,7 +331,11 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `燃料なし用の文言を保存して反映する`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             every { repository.observeThresholdLaps() } returns MutableStateFlow(3)
             coEvery { repository.saveEmptyReadoutText("燃料切れ") } answers { emptyTextFlow.update { "燃料切れ" } }
             val viewModel = createViewModel()
@@ -319,7 +352,11 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
     @Test
     fun `燃料なし用の文言は置換せず開始音の後に試聴する`() =
         runTest {
-            stubReadout()
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
             every { repository.observeThresholdLaps() } returns MutableStateFlow(3)
             every { observeVolume() } returns MutableStateFlow(60)
             coEvery { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) } returns Unit
