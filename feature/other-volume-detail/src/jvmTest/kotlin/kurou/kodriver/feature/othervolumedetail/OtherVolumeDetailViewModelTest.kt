@@ -120,6 +120,36 @@ class OtherVolumeDetailViewModelTest {
         }
 
     @Test
+    fun `OS側で音量が変更された後に同じ値を再要求すると再度書き込まれる`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            var deviceVolume = 60
+            coEvery { deviceVolumeRepository.getVolume() } answers { deviceVolume }
+            coEvery { deviceVolumeRepository.setVolume(50) } coAnswers { deviceVolume = 50 }
+            val viewModel = createViewModel()
+            viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+
+            viewModel.onDeviceVolumeChanged(50)
+            runCurrent()
+            assertEquals(50, viewModel.uiState.first().deviceVolume)
+
+            deviceVolume = 30
+            advanceTimeBy(500)
+            runCurrent()
+            assertEquals(30, viewModel.uiState.first().deviceVolume)
+
+            viewModel.onDeviceVolumeChanged(50)
+            runCurrent()
+            assertEquals(50, viewModel.uiState.first().deviceVolume)
+
+            verify(exactly = 1) { soundVolumeRepository.volume() }
+            coVerify(exactly = 4) { deviceVolumeRepository.getVolume() }
+            coVerify(exactly = 2) { deviceVolumeRepository.setVolume(50) }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+        }
+
+    @Test
     fun `端末のマスター音量を連続して変更すると書き込みが直列に実行される`() =
         runTest {
             every { soundVolumeRepository.volume() } returns volumeFlow
