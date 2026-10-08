@@ -54,6 +54,12 @@ Windows 版 KoDriver をあらかじめ起動しておいてください。LMU �
 
 [Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の APK をダウンロードしてインストールしてください。
 
+読み上げには、日本語に対応した音声合成（TTS）エンジンと日本語の音声データが必要です。利用できない場合は「その他」に表示される「音声合成アプリをインストール」または「音声合成の日本語データを設定」から準備してください。「その他 → 読み上げ音声」で音声を選択・試聴できます。
+
+Android 17（API 37）以降では、起動時に求められるローカルネットワークへのアクセスを許可してください。許可しないとWindows版KoDriverやPS5・SimHubとの通信ができません。拒否した場合は「その他 → ローカルネットワークへのアクセス許可」からアプリの設定を開き、許可を変更できます。
+
+LMU / ACEとの接続先の設定は、[Windows版のインストール手順](docs/windows-install.md#android-アプリと連携する場合)を参照してください。
+
 ## GT7 (PS5) 接続設定
 
 GT7 (PS5) と接続する場合は、PS5 へ直接接続する構成と SimHub の UDP フォワーディングを利用する構成があります。
@@ -63,14 +69,6 @@ GT7 (PS5) と接続する場合は、PS5 へ直接接続する構成と SimHub �
 
 このプロジェクトはプルリクエストを受け付けていません。
 [GPL-3.0 ライセンス](LICENSE) の範囲内で自由にフォーク・改変・再配布できます。
-
-## クレジット
-
-このアプリは音声合成ソフトウェア `VOICEVOX` を利用しています。
-
-- VOICEVOX 公式サイト: <https://voicevox.hiroshiba.jp/>
-- VOICEVOX ソフトウェア利用規約: <https://voicevox.hiroshiba.jp/term/>
-- 剣崎雌雄 利用規約: <https://voicevox.hiroshiba.jp/product/kenzaki_mesuo/>
 
 ## ライセンス
 
