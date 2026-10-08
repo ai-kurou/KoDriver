@@ -32,7 +32,7 @@
 ミリ秒は3桁固定、60分以上も時間にせず分で表す。解決した文言は `resolvedText` に保持し、キュー待機中も発話とログを一致させる。
 判定条件と `MyBestLap.Root` / `DetailEnabled` の有効状態は従来どおり。開始音・優先度・キューは `MyBestLap.Root` を参照する。
 空白文言・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` を記録する。formal/casual の収録WAVは削除し、
-WAVへフォールバックしない。共有protoの `voiceType` はLMU/ACEと旧データの互換性のため残し、GT7のみ `readoutText` を使用する。
+WAVへフォールバックしない。共有protoの `voiceType` は旧データの互換性のため残すが、どのシミュレーターも参照せず、GT7は `readoutText` を使用する。
 
 `Gt7Ps5NarratorEventProcessor.process` のログ用コンテキストは必須。呼び出し側が判定前の状態・
 判定に使った設定・判定後の状態を渡し、既定の空設定による誤解を招くログを防ぐ。
