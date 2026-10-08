@@ -306,7 +306,7 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             every { repository.observeThresholdLaps() } returns MutableStateFlow(3)
             coEvery { repository.saveEmptyReadoutText("燃料切れ") } answers { emptyTextFlow.update { "燃料切れ" } }
             val viewModel = createViewModel()
-            assertEquals("燃料がありません", viewModel.uiState.first().emptyReadoutText)
+            assertEquals("燃料残り1周未満", viewModel.uiState.first().emptyReadoutText)
             viewModel.onEmptyReadoutTextChanged(" 燃料切れ ")
             assertEquals("燃料切れ", viewModel.uiState.first().emptyReadoutText)
             verify(exactly = 1) { repository.observeReadoutText() }
