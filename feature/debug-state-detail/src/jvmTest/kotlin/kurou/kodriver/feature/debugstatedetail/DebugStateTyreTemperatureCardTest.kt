@@ -6,6 +6,9 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
+import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -27,7 +30,7 @@ class DebugStateTyreTemperatureCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
+    fun `GT7テレメトリがnullの場合はLMUデータがあっても未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -128,6 +131,49 @@ class DebugStateTyreTemperatureCardTest {
         rule.onNodeWithText("FR 86.0℃").assertIsDisplayed()
         rule.onNodeWithText("RL 87.0℃").assertIsDisplayed()
         rule.onNodeWithText("RR 88.0℃").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがGT7の場合は4輪の温度を小数第1位の摂氏で表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            gt7Ps5Telemetry =
+                                Gt7Ps5TelemetryData(
+                                    lapCount = 3,
+                                    lapsInRace = 5,
+                                    bestLapTimeMs = 90_000,
+                                    gasLevel = Gt7Ps5FuelUnit(20f),
+                                    gasCapacity = Gt7Ps5FuelUnit(50f),
+                                    tyreTemperature =
+                                        Gt7Ps5TyreTemperatureData(
+                                            frontLeftCelsius = CelsiusReading(65.24f),
+                                            frontRightCelsius = CelsiusReading(85.36f),
+                                            rearLeftCelsius = CelsiusReading(105.0f),
+                                            rearRightCelsius = CelsiusReading(115.0f),
+                                        ),
+                                ),
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(45.0)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ表面温度").assertIsDisplayed()
+        rule.onNodeWithText("FL 65.2℃").assertIsDisplayed()
+        rule.onNodeWithText("FR 85.4℃").assertIsDisplayed()
+        rule.onNodeWithText("RL 105.0℃").assertIsDisplayed()
+        rule.onNodeWithText("RR 115.0℃").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertDoesNotExist()
     }
 
     private fun sampleWheel(surfaceTemperatureCelsius: Double) =

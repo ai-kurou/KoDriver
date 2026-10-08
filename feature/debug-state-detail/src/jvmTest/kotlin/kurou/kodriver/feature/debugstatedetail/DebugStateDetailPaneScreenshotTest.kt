@@ -13,8 +13,10 @@ import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
@@ -167,6 +169,40 @@ class DebugStateDetailPaneScreenshotTest {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             DebugStateDetailPaneContent(
                                 uiState = DebugStateDetailUiState(),
+                                canNavigateBack = true,
+                                onBack = {},
+                            )
+                        }
+                    }
+                }
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `GT7のタイヤ表面温度を4段階の色で表示する`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            DebugStateDetailPaneContent(
+                                uiState =
+                                    DebugStateDetailUiState(
+                                        selectedSimulator = Simulator.Gt7Ps5,
+                                        gt7Ps5Telemetry =
+                                            sampleGt7Ps5Telemetry.copy(
+                                                tyreTemperature =
+                                                    Gt7Ps5TyreTemperatureData(
+                                                        frontLeftCelsius = CelsiusReading(65.2f),
+                                                        frontRightCelsius = CelsiusReading(85.4f),
+                                                        rearLeftCelsius = CelsiusReading(105f),
+                                                        rearRightCelsius = CelsiusReading(115f),
+                                                    ),
+                                            ),
+                                        cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                                        enabledCardKeys = setOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                                    ),
                                 canNavigateBack = true,
                                 onBack = {},
                             )

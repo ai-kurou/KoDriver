@@ -185,7 +185,13 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
             )
         },
         DebugStateCardKey.TYRE_TEMPERATURE to
-            { uiState -> TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry) },
+            { uiState ->
+                TyreTemperatureContent(
+                    uiState.selectedSimulator,
+                    uiState.lmuWindowsTelemetry,
+                    uiState.gt7Ps5Telemetry,
+                )
+            },
         DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
             { uiState ->
                 TyreCarcassTemperatureContent(

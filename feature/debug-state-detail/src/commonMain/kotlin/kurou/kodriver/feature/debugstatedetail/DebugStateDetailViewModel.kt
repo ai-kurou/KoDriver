@@ -108,6 +108,7 @@ private val gt7Ps5SupportedCardKeys =
         DebugStateCardKey.VEHICLE_CLASS,
         DebugStateCardKey.CURRENT_LAP,
         DebugStateCardKey.BEST_LAP,
+        DebugStateCardKey.TYRE_TEMPERATURE,
         DebugStateCardKey.FUEL_CONSUMPTION,
     )
 
@@ -317,6 +318,7 @@ internal class DebugStateDetailViewModel(
                         Simulator.Gt7Ps5,
                         DebugStateCardKey.CURRENT_LAP,
                         DebugStateCardKey.BEST_LAP,
+                        DebugStateCardKey.TYRE_TEMPERATURE,
                         DebugStateCardKey.FUEL_CONSUMPTION,
                     )
                 }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
