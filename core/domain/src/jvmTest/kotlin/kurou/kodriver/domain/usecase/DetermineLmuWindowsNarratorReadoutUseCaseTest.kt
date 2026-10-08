@@ -2158,6 +2158,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         currentLapStartedAtMs = 100_000L,
                         currentLapStartValue = 0.4,
                         currentValue = 0.2,
+                        refillBaselineValue = 0.2,
                         bestLapTimeMs = 90_000L,
                         observedAtMs = 150_000L,
                     ),
@@ -2198,10 +2199,12 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 10_000L,
             )
 
+        assertEquals(0.16, qualifyingDecision.state.pitTimingVirtualEnergyTrackingState.refillBaselineValue)
         val trackingState = raceDecision.state.pitTimingVirtualEnergyTrackingState
         assertEquals(emptyList<SpeechEvent>(), raceDecision.events)
         assertEquals(10, trackingState.session)
         assertEquals(1.0, trackingState.currentLapStartValue)
+        assertEquals(1.0, trackingState.refillBaselineValue)
         assertEquals(-1, raceDecision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
         assertEquals(-1, raceDecision.state.lastPitTimingVirtualEnergyEvaluationLap)
     }
@@ -2374,6 +2377,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         assertEquals(emptyList<SpeechEvent>(), tyreChangedDecision.events)
         assertEquals(-1, tyreChangedDecision.state.lastAnnouncedPitTimingTyreWearLaps)
         assertEquals(true, tyreChangedDecision.state.pitTimingTyreWearTrackingState.currentLapHasRefilled)
+        assertEquals(true, tyreChangedDecision.state.pitTimingTyreWearTrackingState.hasRefilled)
+        assertEquals(1.0, tyreChangedDecision.state.pitTimingTyreWearTrackingState.refillBaselineValue)
     }
 
     @Test
@@ -2432,6 +2437,84 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `複数ポーリングの補充を累積検出し補充周を除外して次周に再度読み上げる`() {
+        var state = pitTimingBoundaryState()
+        // 完走周の消費量0.1を記録し、ラップ2で残り0周を読み上げる。
+        listOf(1 to 1.0, 1 to 0.9, 2 to 0.85, 2 to 0.05).forEachIndexed { index, (lap, value) ->
+            val decision =
+                useCase.determinePitTimingVirtualEnergy(
+                    state = state,
+                    telemetry = lapTelemetry(currentLap = lap, bestLapTimeMs = 100_000L),
+                    virtualEnergy = remainingVirtualEnergy(remainingRatio = value),
+                    settings = settings(),
+                    observedAtMs = index * 100_000L,
+                )
+            state = decision.state
+            if (index == 3) {
+                val warning = SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy)
+                assertEquals(listOf(warning), decision.events)
+                state = useCase.recordPitTimingAnnounced(state, warning)
+            }
+        }
+        listOf(0.052, 0.054, 0.056).forEachIndexed { index, value ->
+            val decision =
+                useCase.determinePitTimingVirtualEnergy(
+                    state = state,
+                    telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
+                    virtualEnergy = remainingVirtualEnergy(remainingRatio = value),
+                    settings = settings(),
+                    observedAtMs = 300_016L + index * 16L,
+                )
+            state = decision.state
+            val tracking = state.pitTimingVirtualEnergyTrackingState
+            assertEquals(index == 2, tracking.hasRefilled)
+            assertEquals(index == 2, tracking.currentLapHasRefilled)
+            assertEquals(if (index == 2) value else 0.05, tracking.refillBaselineValue, 1e-9)
+            assertEquals(if (index == 2) -1 else 0, state.lastAnnouncedPitTimingVirtualEnergyLaps)
+            assertEquals(emptyList<SpeechEvent>(), decision.events)
+        }
+        val nextLap =
+            useCase.determinePitTimingVirtualEnergy(
+                state = state,
+                telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 100_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
+                settings = settings(),
+                observedAtMs = 400_000L,
+            )
+        assertEquals(0.1, nextLap.state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption ?: 0.0, 1e-9)
+        assertEquals(0.05, nextLap.state.pitTimingVirtualEnergyTrackingState.refillBaselineValue, 1e-9)
+        val warning =
+            useCase.determinePitTimingVirtualEnergy(
+                state = nextLap.state,
+                telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 100_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.04),
+                settings = settings(),
+                observedAtMs = 470_000L,
+            )
+        assertEquals(listOf(SpeechEvent.PitTimingWarning(0, source = PitTimingSource.VirtualEnergy)), warning.events)
+    }
+
+    @Test
+    fun `閾値未満の単発ジッタは補充とみなさず消費時に基準値を更新する`() {
+        var state = pitTimingBoundaryState()
+        listOf(0.8, 0.802, 0.79).forEachIndexed { index, value ->
+            val decision =
+                useCase.determinePitTimingVirtualEnergy(
+                    state = state,
+                    telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
+                    virtualEnergy = remainingVirtualEnergy(remainingRatio = value),
+                    settings = settings(),
+                    observedAtMs = index * 16L,
+                )
+            state = decision.state
+            val tracking = state.pitTimingVirtualEnergyTrackingState
+            assertEquals(false, tracking.hasRefilled)
+            assertEquals(false, tracking.currentLapHasRefilled)
+            assertEquals(if (index == 2) 0.79 else 0.8, tracking.refillBaselineValue, 1e-9)
+        }
+    }
+
+    @Test
     fun `周回番号が飛んだ区間とその直後の周は消費量に採用しない`() {
         var state = pitTimingBoundaryState()
         listOf(1 to 0.9, 3 to 0.7, 4 to 0.6).forEachIndexed { index, (lap, value) ->
@@ -2473,10 +2556,16 @@ private fun pitTimingBoundaryState(): LmuWindowsNarratorState =
                 session = 0,
                 currentLap = 0,
                 currentValue = 1.0,
+                refillBaselineValue = 1.0,
                 currentLapStartValue = 1.0,
             ),
         pitTimingTyreWearTrackingState =
-            LmuWindowsPitTimingTrackingState(currentLap = 0, currentValue = 1.0, currentLapStartValue = 1.0),
+            LmuWindowsPitTimingTrackingState(
+                currentLap = 0,
+                currentValue = 1.0,
+                refillBaselineValue = 1.0,
+                currentLapStartValue = 1.0,
+            ),
     )
 
 private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
