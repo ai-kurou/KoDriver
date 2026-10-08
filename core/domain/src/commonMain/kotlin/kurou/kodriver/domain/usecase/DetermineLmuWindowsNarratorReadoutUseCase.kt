@@ -65,6 +65,8 @@ data class LmuWindowsPitTimingTrackingState(
     /** 周回境界から計測を開始した周だけを消費量の推定に使う。 */
     val currentLapStartedAtBoundary: Boolean = false,
     val currentValue: Double = 0.0,
+    /** 閾値未満の増加を累積して給油・タイヤ交換を検出するための基準値。 */
+    val refillBaselineValue: Double = 0.0,
     /** 直近に完走した（給油・タイヤ交換なしの）ラップの消費量。まだ存在しなければ null。 */
     val lastValidLapConsumption: Double? = null,
     val bestLapTimeMs: Long = -1L,
@@ -743,6 +745,13 @@ private data class PitTimingRemainingLapsEvaluation(
     val remainingLaps: Int?,
 )
 
+/** 補充を検出した、または値が基準より下がった場合だけ基準値を現在値へ更新し、閾値未満の増加では据え置く。 */
+private fun nextRefillBaselineValue(
+    baselineValue: Double,
+    currentValue: Double,
+    refilled: Double,
+): Double = if (refilled > 0.0 || currentValue < baselineValue) currentValue else baselineValue
+
 /**
  * ピットタイミング（バーチャルエナジー・タイヤ摩耗）共通の追跡状態更新。
  * 直近に完走した（給油・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う。
@@ -764,6 +773,7 @@ private fun trackPitTimingValue(
                 currentLapStartValue = currentValue,
                 currentLapHasRefilled = false,
                 currentValue = currentValue,
+                refillBaselineValue = currentValue,
                 lastValidLapConsumption = null,
                 bestLapTimeMs = bestLapTimeMs,
                 hasRefilled = false,
@@ -780,6 +790,7 @@ private fun trackPitTimingValue(
                 currentLapStartValue = currentValue,
                 currentLapHasRefilled = false,
                 currentValue = currentValue,
+                refillBaselineValue = currentValue,
                 lastValidLapConsumption = null,
                 bestLapTimeMs = bestLapTimeMs,
                 hasRefilled = false,
@@ -790,9 +801,10 @@ private fun trackPitTimingValue(
 
         else -> {
             // 共有メモリの値は微小な上振れ（ジッタ・torn read）を含みうるため、
-            // 閾値未満の増加は給油・タイヤ交換とみなさず消費量の推定から除外する。
-            val delta = currentValue - state.currentValue
+            // 閾値未満の増加は基準値を据え置き、複数ポーリングに分かれた補充を累積で検出する。
+            val delta = currentValue - state.refillBaselineValue
             val refilled = if (delta >= PIT_TIMING_REFILL_DETECTION_MIN_RATIO) delta else 0.0
+            val refillBaselineValue = nextRefillBaselineValue(state.refillBaselineValue, currentValue, refilled)
             if (currentLap != state.currentLap) {
                 // ラップが変わるタイミングで、直前のラップが給油・タイヤ交換なしで完走していれば
                 // その消費量を今後の残り周回数推定の基準として採用する。
@@ -817,6 +829,7 @@ private fun trackPitTimingValue(
                     currentLapHasRefilled = refilled > 0.0,
                     currentLapStartedAtBoundary = currentLap == state.currentLap + 1,
                     currentValue = currentValue,
+                    refillBaselineValue = refillBaselineValue,
                     lastValidLapConsumption = lastValidLapConsumption,
                     bestLapTimeMs = bestLapTimeMs,
                     hasRefilled = refilled > 0.0,
@@ -828,6 +841,7 @@ private fun trackPitTimingValue(
                     session = session,
                     currentLapHasRefilled = state.currentLapHasRefilled || refilled > 0.0,
                     currentValue = currentValue,
+                    refillBaselineValue = refillBaselineValue,
                     bestLapTimeMs = bestLapTimeMs,
                     hasRefilled = refilled > 0.0,
                     isNewSession = false,
