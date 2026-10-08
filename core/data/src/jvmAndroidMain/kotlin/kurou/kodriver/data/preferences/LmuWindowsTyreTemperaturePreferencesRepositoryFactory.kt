@@ -1,13 +1,15 @@
 package kurou.kodriver.data.preferences
 
-import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
-
 /**
- * LmuWindowsTyreTemperaturePreferences Repository の永続化実装を生成する。
+ * タイヤ温度の設定・文言 Repository の永続化実装を生成する。
+ * 同一ファイルに DataStore を複数作れないため、1つの DataStore を両 Repository で共有する。
  */
 fun createLmuWindowsTyreTemperaturePreferencesRepository(
     directory: String,
-): LmuWindowsTyreTemperaturePreferencesRepository =
-    LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
-        createLmuWindowsTyreTemperaturePreferencesDataStore(directory),
+): LmuWindowsTyreTemperaturePreferencesRepositories {
+    val dataStore = createLmuWindowsTyreTemperaturePreferencesDataStore(directory)
+    return LmuWindowsTyreTemperaturePreferencesRepositories(
+        preferences = LmuWindowsTyreTemperaturePreferencesRepositoryImpl(dataStore),
+        readoutText = LmuWindowsTyreTemperatureReadoutTextPreferencesRepositoryImpl(dataStore),
     )
+}

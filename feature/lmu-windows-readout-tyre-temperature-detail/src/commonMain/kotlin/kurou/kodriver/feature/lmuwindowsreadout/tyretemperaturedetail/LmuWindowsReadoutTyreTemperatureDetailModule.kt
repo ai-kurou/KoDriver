@@ -25,7 +25,7 @@ import org.koin.dsl.module
  *
  * 提供: LmuWindowsReadoutTyreTemperatureDetailViewModel、この feature 内で定義した
  *   UseCase 集約 data class（TyreTemperatureUseCases / TyreTemperatureReadoutUseCases）、それが束ねる各ドメイン UseCase。
- * 消費（get で解決）: LmuWindowsTyreTemperaturePreferencesRepository・TextToSpeechRepository・
+ * 消費（get で解決）: LmuWindowsTyreTemperaturePreferencesRepository・LmuWindowsTyreTemperatureReadoutTextPreferencesRepository・TextToSpeechRepository・
  *   SoundVolumePreferencesRepository（:core:data）、試聴用の named(Simulator.LmuWindows.id) の
  *   SpeakTextUseCase・PlayStartSoundForKeyUseCase（:feature:lmu-windows-narrator で登録）。
  */

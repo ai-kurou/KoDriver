@@ -7,12 +7,12 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCaseTest {
-    private val repository: LmuWindowsTyreTemperaturePreferencesRepository = mockk()
+    private val repository: LmuWindowsTyreTemperatureReadoutTextPreferencesRepository = mockk()
 
     @Test
     fun `タイヤ過熱警告の読み上げ文言を監視できる`() =

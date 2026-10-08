@@ -7,6 +7,7 @@ import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
 import kurou.kodriver.data.preferences.LmuWindowsPitTimingPreferencesRepositories
+import kurou.kodriver.data.preferences.LmuWindowsTyreTemperaturePreferencesRepositories
 import kurou.kodriver.data.preferences.LmuWindowsVehicleApproachPreferencesRepositories
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsFlagReadoutTextPreferencesRepository
@@ -76,6 +77,7 @@ import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
@@ -206,8 +208,14 @@ val desktopDataModule =
         single<HapticFeedbackAvailabilityRepository> { JvmHapticFeedbackAvailabilityRepository() }
         // ACCESS_LOCAL_NETWORK 権限（プラットフォーム固有実装。Desktop はこの権限自体が存在しないため常に許可済み扱い）
         single<AccessLocalNetworkPermissionRepository> { JvmAccessLocalNetworkPermissionRepository() }
-        single<LmuWindowsTyreTemperaturePreferencesRepository> {
+        single {
             createLmuWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsTyreTemperaturePreferencesRepository> {
+            get<LmuWindowsTyreTemperaturePreferencesRepositories>().preferences
+        }
+        single<LmuWindowsTyreTemperatureReadoutTextPreferencesRepository> {
+            get<LmuWindowsTyreTemperaturePreferencesRepositories>().readoutText
         }
         single<LmuWindowsVehicleClassTyreTemperaturePreferencesRepository> {
             createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
