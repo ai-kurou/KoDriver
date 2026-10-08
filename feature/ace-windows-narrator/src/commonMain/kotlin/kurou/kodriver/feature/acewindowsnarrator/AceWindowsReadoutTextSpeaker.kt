@@ -102,9 +102,9 @@ internal class AceWindowsReadoutTextSpeaker(
                 event.resolvedText
                     ?: formatAceWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
             } else {
-                (event as? ReadoutTextEvent)?.resolvedText ?: savedReadoutText(event) ?: return null
+                (event as ReadoutTextEvent).resolvedText ?: savedReadoutText(event) ?: return null
             }
-        return ReadoutText(text, event is ReadoutTextEvent && event.resolvedText != null)
+        return ReadoutText(text, (event as ReadoutTextEvent).resolvedText != null)
     }
 
     /** 保存済み固定文言（フラッグ・車両接近）。対象外イベントは null。 */

@@ -60,7 +60,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -97,7 +97,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -134,7 +134,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -171,7 +171,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -208,7 +208,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -245,7 +245,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
