@@ -2,11 +2,15 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -167,6 +171,9 @@ internal data class DebugStateCardOrderUseCases(
     val saveCardOrder: SaveDebugStateCardOrderUseCase,
 )
 
+private const val SIDE_BY_SIDE_TICK_INTERVAL_MS = 100L
+
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class DebugStateDetailViewModel(
     observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     lmuWindowsUseCases: LmuWindowsDebugStateUseCases,
@@ -174,6 +181,7 @@ internal class DebugStateDetailViewModel(
     aceWindowsUseCases: AceWindowsDebugStateUseCases,
     cardOrderUseCases: DebugStateCardOrderUseCases,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
+    private val sideBySideTickIntervalMs: Long = SIDE_BY_SIDE_TICK_INTERVAL_MS,
 ) : ViewModel() {
     private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases.saveCardOrder
@@ -190,8 +198,19 @@ internal class DebugStateDetailViewModel(
         lmuWindowsUseCases.observeVehicleApproach().shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
     private val _lmuWindowsSideBySideDurations: StateFlow<LmuWindowsSideBySideDurations?> =
         _lmuWindowsVehicleApproach
-            .map { sideBySideDurationTracker.update(it, currentTimeMs()) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+            .flatMapLatest { data ->
+                if (data.sideBySideLeftVehicleIds.isEmpty() && data.sideBySideRightVehicleIds.isEmpty()) {
+                    flowOf(sideBySideDurationTracker.update(data, currentTimeMs()))
+                } else {
+                    // サーバー側の distinctUntilChanged で同一データが再送されないため、並走中は周期的に経過時間を再計算する
+                    flow {
+                        while (true) {
+                            emit(sideBySideDurationTracker.update(data, currentTimeMs()))
+                            delay(sideBySideTickIntervalMs)
+                        }
+                    }
+                }
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val _raceStateBase: StateFlow<RaceState> =
         combine(
