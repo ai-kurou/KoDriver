@@ -153,7 +153,8 @@ class MainActivityTest {
         clickItemAndVerifyDescription(
             "燃料残り周回数",
             "ACEが算出する残燃料で走行可能な周回数をもとに判定し、設定した周回数以下になると" +
-                "1周減るごとに音声でお知らせします。",
+                "1周減るごとに音声でお知らせします。\n" +
+                "読み上げる文言は下の欄で設定できます。",
         )
         clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }

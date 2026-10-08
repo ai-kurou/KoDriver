@@ -89,12 +89,14 @@ class AceWindowsWavNarratorEngineTest {
         }
 
     @Test
-    fun `フラッグと車両接近とタイヤ過熱と燃料残量はRoot開始音の後にTTS本文を再生しWAVにフォールバックしない`() =
+    fun `フラッグと車両接近とタイヤ過熱と燃料残量と残り周回数はRoot開始音の後にTTS本文を再生しWAVにフォールバックしない`() =
         runTest {
             val events =
                 listOf(
                     SpeechEvent.AceWindowsVehicleApproach,
                     SpeechEvent.AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"),
+                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(2, "残り2周"),
+                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(0, "燃料なし"),
                     SpeechEvent.AceWindowsTyreOverheat(110, "タイヤ過熱 110度"),
                     SpeechEvent.AceWindowsCheckeredFlag,
                     SpeechEvent.AceWindowsWhiteFlag,

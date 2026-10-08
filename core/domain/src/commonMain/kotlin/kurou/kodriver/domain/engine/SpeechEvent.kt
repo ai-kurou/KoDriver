@@ -8,6 +8,8 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
@@ -38,6 +40,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
@@ -343,12 +346,20 @@ sealed interface SpeechEvent {
         override fun withResolvedText(text: String): PitTimingWarning = copy(resolvedText = text)
     }
 
-    /** ACE の残燃料で走行可能な周回数を読み上げるイベント。文言・WAV は GT7 の [Gt7Ps5RemainingFuelLapsWarning] と共通。 */
+    /** ACE の残燃料で走行可能な周回数。解決済み文言は判定時の発話・ログ内容を保持する。 */
     data class AceWindowsRemainingFuelLapsWarning(
         val laps: Int,
-    ) : SpeechEvent {
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
-        override val narratedText = if (laps <= 0) "燃料がありません" else "燃料は残り約${laps}周"
+        override val narratedText =
+            if (laps <= 0) {
+                ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+            } else {
+                formatAceWindowsRemainingFuelLapsReadoutText(ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT, laps)
+            }
+
+        override fun withResolvedText(text: String): AceWindowsRemainingFuelLapsWarning = copy(resolvedText = text)
     }
 
     /**

@@ -22,6 +22,8 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCas
 import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
@@ -48,6 +50,8 @@ class AceWindowsReadoutTextSpeakerTest {
     private val observeTyreOverheat: ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeVehicleApproach: ObserveAceWindowsVehicleApproachReadoutTextUseCase = mockk()
     private val observeRemainingFuel: ObserveAceWindowsRemainingFuelReadoutTextUseCase = mockk()
+    private val observeRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase = mockk()
+    private val observeEmptyFuelLaps: ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase = mockk()
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -65,6 +69,8 @@ class AceWindowsReadoutTextSpeakerTest {
             observeVehicleApproach,
             observeTyreOverheat,
             observeRemainingFuel,
+            observeRemainingFuelLaps,
+            observeEmptyFuelLaps,
             checkAvailable,
             speakText,
         )
@@ -680,5 +686,113 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("残り20%", volume = 42) }
             confirmVerified(observeRemainingFuel, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `燃料残り周回数は保存文言の残量を整形して読み上げる`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            every { observeRemainingFuelLaps() } returns flowOf("残り{laps}周、{laps}")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("残り20周、20", volume = 42) } just Runs
+            assertEquals("残り20周、20", speaker.readoutText(event))
+            speaker(event, 42)
+            assertEquals(true, isAceWindowsCustomSpeakEvent(event))
+            verify(exactly = 2) { observeRemainingFuelLaps() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("残り20周、20", volume = 42) }
+            confirmVerified(observeRemainingFuelLaps, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `燃料残り周回数の解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20, "判定時の本文")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("判定時の本文", volume = 42) } just Runs
+            assertEquals("判定時の本文", speaker.readoutText(event))
+            coEvery { checkAvailable() } returns false
+            speaker(event, 42)
+            verify(exactly = 0) { observeRemainingFuelLaps() }
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("判定時の本文", volume = 42) }
+            confirmVerified(observeRemainingFuelLaps, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `燃料残り周回数は空白の保存文言や解決済み本文を読み上げない`() =
+        runTest {
+            every { observeRemainingFuelLaps() } returns flowOf(" ")
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            assertNull(speaker.readoutText(event))
+            speaker(event, 42)
+            speaker(event.withResolvedText(" "), 42)
+            verify(exactly = 2) { observeRemainingFuelLaps() }
+            coVerify(exactly = 0) { checkAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = 42) }
+            confirmVerified(observeRemainingFuelLaps, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `燃料残り周回数はTTS利用不可なら読み上げない`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            every { observeRemainingFuelLaps() } returns flowOf("残り{laps}周")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(event))
+            speaker(event, 42)
+            verify(exactly = 2) { observeRemainingFuelLaps() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("残り20周", volume = 42) }
+            confirmVerified(observeRemainingFuelLaps, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `0周以下は燃料なし用文言をそのまま読み上げる`() =
+        runTest {
+            every { observeEmptyFuelLaps() } returns flowOf("燃料なし {laps}")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("燃料なし {laps}", volume = 42) } just Runs
+            listOf(0, -1).forEach { laps ->
+                val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps)
+                assertEquals("燃料なし {laps}", speaker.readoutText(event))
+                speaker(event, 42)
+            }
+            verify(exactly = 4) { observeEmptyFuelLaps() }
+            verify(exactly = 0) { observeRemainingFuelLaps() }
+            coVerify(exactly = 4) { checkAvailable() }
+            coVerify(exactly = 2) { speakText("燃料なし {laps}", volume = 42) }
+            confirmVerified(observeEmptyFuelLaps, observeRemainingFuelLaps, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `0周用の空白文言はTTSを確認せずスキップしTTS不可の文言も読み上げない`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(0)
+            every { observeEmptyFuelLaps() } returns flowOf(" ")
+            assertNull(speaker.readoutText(event))
+            speaker(event, 42)
+            every { observeEmptyFuelLaps() } returns flowOf("燃料なし")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(event))
+            speaker(event, 42)
+            verify(exactly = 4) { observeEmptyFuelLaps() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = 42) }
+            coVerify(exactly = 0) { speakText("燃料なし", volume = 42) }
+            confirmVerified(observeEmptyFuelLaps, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `0周用も解決済み本文を優先する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(0, "確定した燃料なし")
+            coEvery { speakText("確定した燃料なし", volume = 42) } just Runs
+            speaker(event, 42)
+            verify(exactly = 0) { observeEmptyFuelLaps() }
+            verify(exactly = 0) { observeRemainingFuelLaps() }
+            coVerify(exactly = 0) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("確定した燃料なし", volume = 42) }
+            confirmVerified(observeEmptyFuelLaps, observeRemainingFuelLaps, checkAvailable, speakText)
         }
 }

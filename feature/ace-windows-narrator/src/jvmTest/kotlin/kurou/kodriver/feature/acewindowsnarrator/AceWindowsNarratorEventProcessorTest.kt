@@ -536,7 +536,7 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
-            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2, "燃料は残り約2周"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -560,7 +560,9 @@ class AceWindowsNarratorEventProcessorTest {
             assertEquals(true, telemetryJsons.single().contains("\"previousRemainingFuelLaps\":null"))
             assertEquals(true, telemetryJsons.single().contains(""""remainingFuelLaps":{"remainingLaps":2.5}"""))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2, "燃料は残り約2周"), false)
+            }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -581,7 +583,7 @@ class AceWindowsNarratorEventProcessorTest {
             every { ttsEngine.currentReadoutItemKey } returns null
             val processor = createProcessor()
             val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
-            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2, "燃料は残り約2周"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
@@ -617,7 +619,9 @@ class AceWindowsNarratorEventProcessorTest {
             )
             assertEquals(true, telemetryJsons.single().contains(""""remainingFuelLaps":{"remainingLaps":2.5}"""))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2), false) }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2, "燃料は残り約2周"), false)
+            }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
@@ -1781,6 +1785,258 @@ class AceWindowsNarratorEventProcessorTest {
                 )
             }
             verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning(20), false) }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `燃料残り周回数は保存文言をRootのログに記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event.withResolvedText("残り20周"), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り20周",
+                    NarrationOutcome.SPOKEN,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    "残り20周"
+                }
+            processor.processRemainingFuelLaps(
+                remainingFuelLaps(20.0f),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(event.withResolvedText("残り20周"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り20周",
+                    NarrationOutcome.SPOKEN,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `燃料残り周回数処理は自由文言イベント以外も解決した本文でログに記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsMyBestLapFormal
+            val key = ReadoutItemKey.AceWindows.MyBestLap.Root
+            val json = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(event, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り20周",
+                    NarrationOutcome.SPOKEN,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    "残り20周"
+                }
+            processor.processRemainingFuelLaps(
+                remainingFuelLaps(20.0f),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(event, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "残り20周",
+                    NarrationOutcome.SPOKEN,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `燃料残り周回数はTTS不可の解決結果なら開始音を要求せず空文字でSKIPPEDを記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    null
+                }
+            processor.processRemainingFuelLaps(
+                remainingFuelLaps(20.0f),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event.withResolvedText("残り20周"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `燃料残り周回数は空白の解決結果なら開始音を要求せず空文字でSKIPPEDを記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    " "
+                }
+            processor.processRemainingFuelLaps(
+                remainingFuelLaps(20.0f),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event.withResolvedText("残り20周"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `燃料残り周回数は文言解決に失敗しても空文字でSKIPPEDを記録する`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            val key = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+            val json = slot<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(json),
+                )
+            } just Runs
+            val resolvedEvents = mutableListOf<SpeechEvent>()
+            val processor =
+                createProcessor {
+                    resolvedEvents += it
+                    error("preference error")
+                }
+            processor.processRemainingFuelLaps(
+                remainingFuelLaps(20.0f),
+                listOf(event),
+                listOf(key),
+                emptyMap(),
+                0L,
+                logContext(),
+            )
+            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 0) { ttsEngine.speak(event.withResolvedText("残り20周"), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    json.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
+    @Test
+    fun `燃料残り周回数の文言解決キャンセルは読み上げとログを要求せず伝播する`() =
+        runTest {
+            val processor = createProcessor { throw CancellationException("cancelled") }
+            assertFailsWith<CancellationException> {
+                processor.processRemainingFuelLaps(
+                    remainingFuelLaps(20.0f),
+                    listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)),
+                    listOf(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root),
+                    emptyMap(),
+                    0L,
+                    logContext(),
+                )
+            }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(20), false) }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
