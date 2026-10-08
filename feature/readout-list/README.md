@@ -12,6 +12,8 @@
 - `ReadoutListItemType.kt`: 一覧に表示する行の種別（通常項目 / 見出し等）を表す型。
 - `ReadoutListHints.kt`: 一覧画面のヒント表示（初回操作案内等）。
 
+読み上げ優先度のヘルプでは、キューOFF時の割り込み・省略条件と、キューON時は優先順位に関係なく順番待ちすることを説明する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

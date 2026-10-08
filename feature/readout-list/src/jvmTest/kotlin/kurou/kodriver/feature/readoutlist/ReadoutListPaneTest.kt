@@ -50,6 +50,34 @@ class ReadoutListPaneTest {
     }
 
     @Test
+    fun `ヘルプを開くと優先度とキューの関係を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                    ReadoutListPane(
+                        uiState = ReadoutListUiState(),
+                        onMove = { _, _ -> },
+                        onReadoutEnabledChanged = { _, _ -> },
+                        onQueueEnabledChanged = { _, _ -> },
+                        onStartSoundEnabledChanged = { _, _ -> },
+                        onItemClick = {},
+                    )
+                }
+            }
+        }
+
+        val priorityDescription =
+            "一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。"
+        rule.onNodeWithContentDescription(priorityDescription).performClick()
+
+        rule.onNodeWithText(priorityDescription).assertIsDisplayed()
+        rule
+            .onNodeWithText(
+                "キューアイコンがONの項目は、優先順位に関係なく、割り込まずに順番待ちします。優先度が高い項目でも、キューがONなら順番待ちになります。",
+            ).assertIsDisplayed()
+    }
+
+    @Test
     fun `読み上げ項目をタップするとonItemClickが呼ばれる`() {
         val clicked = mutableListOf<ReadoutItemKey>()
         rule.setContent {

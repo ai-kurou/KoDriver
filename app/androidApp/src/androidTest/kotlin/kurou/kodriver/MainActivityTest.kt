@@ -438,7 +438,7 @@ class MainActivityTest {
 
     private companion object {
         const val READOUT_PRIORITY_HELP_DESCRIPTION =
-            "上位の項目は読み上げ中でも割り込みます。読み上げ中の下位の項目は無視されます"
+            "一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。"
         var isFakeTelemetryLogListModuleLoaded = false
         var isFakeOtherListModuleLoaded = false
 
