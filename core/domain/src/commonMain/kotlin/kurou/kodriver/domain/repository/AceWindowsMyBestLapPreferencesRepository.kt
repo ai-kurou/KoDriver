@@ -1,10 +1,9 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 
 interface AceWindowsMyBestLapPreferencesRepository {
-    fun observeVoiceType(): Flow<MyBestLapVoiceType>
+    fun observeReadoutText(): Flow<String>
 
-    suspend fun saveVoiceType(type: MyBestLapVoiceType)
+    suspend fun saveReadoutText(text: String)
 }

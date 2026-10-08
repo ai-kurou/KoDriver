@@ -55,11 +55,18 @@ internal class AceWindowsNarratorEventProcessor(
     ) {
         val previous = previousBestLapTime
         events.forEach { event ->
-            val narrationOutcome = speakWithPriority(event, readoutOrder, queueEnabledStates)
+            val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
+            val narrationOutcome =
+                if (text == null) {
+                    NarrationOutcome.SKIPPED
+                } else {
+                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
+                }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
                 readoutItemKey = event.readoutItemKey,
-                narratedText = event.narratedText,
+                narratedText = text.orEmpty(),
                 narrationOutcome = narrationOutcome,
                 telemetryJson =
                     buildMyBestLapTelemetryLogJson(

@@ -7,36 +7,62 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
-import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
+/**
+ * ACE 自己ベストラップアナウンス詳細設定の ViewModel。
+ *
+ * 自己ベストラップ更新の有効/無効・文言はいずれも DataStore に永続化される。
+ */
 internal data class MyBestLapUseCases(
-    val observeVoiceType: ObserveAceWindowsMyBestLapVoiceTypeUseCase,
-    val saveVoiceType: SaveAceWindowsMyBestLapVoiceTypeUseCase,
-    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveEnabledState: SaveReadoutEnabledStateUseCase,
+)
+
+internal data class MyBestLapReadoutUseCases(
+    val observeText: ObserveAceWindowsMyBestLapReadoutTextUseCase,
+    val saveText: SaveAceWindowsMyBestLapReadoutTextUseCase,
+    val speakText: SpeakTextUseCase,
+    val playStartSoundForKey: PlayStartSoundForKeyUseCase,
+    val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
 
 internal class AceWindowsReadoutMyBestLapDetailViewModel(
     private val myBestLapUseCases: MyBestLapUseCases,
-    private val playSpeechEvent: PlaySpeechEventUseCase,
+    private val readout: MyBestLapReadoutUseCases,
 ) : ViewModel() {
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
+
     val uiState: StateFlow<AceWindowsReadoutMyBestLapDetailUiState> =
         combine(
-            myBestLapUseCases.observeVoiceType(),
-            myBestLapUseCases.observeReadoutEnabledStates(Simulator.AceWindows.id),
-        ) { voiceType, enabledStates ->
+            myBestLapUseCases.observeEnabledStates(Simulator.AceWindows.id),
+            readout.observeText(),
+            preview.textToSpeechAvailable,
+        ) { states, text, available ->
             AceWindowsReadoutMyBestLapDetailUiState(
-                voiceType = voiceType,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled),
+                enabled = states.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled),
+                readoutText = text,
+                isTextToSpeechAvailable = available,
             )
         }.stateIn(
             viewModelScope,
@@ -44,15 +70,9 @@ internal class AceWindowsReadoutMyBestLapDetailViewModel(
             AceWindowsReadoutMyBestLapDetailUiState(),
         )
 
-    fun onVoiceTypeChanged(type: MyBestLapVoiceType) {
-        viewModelScope.launch {
-            myBestLapUseCases.saveVoiceType(type)
-        }
-    }
-
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            myBestLapUseCases.saveReadoutEnabledState(
+            myBestLapUseCases.saveEnabledState(
                 Simulator.AceWindows.id,
                 ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled,
                 enabled,
@@ -60,12 +80,17 @@ internal class AceWindowsReadoutMyBestLapDetailViewModel(
         }
     }
 
-    fun onPreviewClicked(type: MyBestLapVoiceType) {
-        val event =
-            when (type) {
-                MyBestLapVoiceType.FORMAL -> SpeechEvent.AceWindowsMyBestLapFormal
-                MyBestLapVoiceType.CASUAL -> SpeechEvent.AceWindowsMyBestLapCasual
-            }
-        playSpeechEvent(event)
+    fun onReadoutTextChanged(text: String) {
+        viewModelScope.launch { readout.saveText(text) }
+    }
+
+    /** サンプルタイムに置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
+    fun onReadoutTextPreviewClicked(text: String) {
+        val formattedText = formatAceWindowsMyBestLapReadoutText(text, 83_456)
+        previewText(formattedText)
+    }
+
+    private fun previewText(text: String) {
+        viewModelScope.launch { preview.preview(text, ReadoutItemKey.AceWindows.MyBestLap.Root) }
     }
 }

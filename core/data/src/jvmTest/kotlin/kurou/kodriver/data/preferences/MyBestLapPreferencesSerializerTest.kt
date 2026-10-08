@@ -2,9 +2,9 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -15,7 +15,7 @@ class MyBestLapPreferencesSerializerTest {
     @Test
     fun `デフォルト値は初期設定を返す`() {
         assertEquals(
-            MyBestLapPreferences(voiceType = MY_BEST_LAP_VOICE_TYPE_DEFAULT.id),
+            MyBestLapPreferences(),
             MyBestLapPreferencesSerializer.defaultValue,
         )
     }
@@ -28,6 +28,7 @@ class MyBestLapPreferencesSerializerTest {
                     voiceType = "casual",
                     readoutText = "GT7更新{laptime}",
                     lmuWindowsReadoutText = "LMU更新{laptime}",
+                    aceWindowsReadoutText = "ACE更新{laptime}",
                 )
             val output = ByteArrayOutputStream()
             MyBestLapPreferencesSerializer.writeTo(original, output)
@@ -46,12 +47,14 @@ class MyBestLapPreferencesSerializerTest {
             assertEquals("casual", restored.voiceType)
             assertEquals(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT, restored.readoutText)
             assertEquals(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, restored.lmuWindowsReadoutText)
+            assertEquals(ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, restored.aceWindowsReadoutText)
         }
 
     @Test
     fun `空白文言もそのまま復元される`() =
         runTest {
-            val original = MyBestLapPreferences(readoutText = " ", lmuWindowsReadoutText = " ")
+            val original =
+                MyBestLapPreferences(readoutText = " ", lmuWindowsReadoutText = " ", aceWindowsReadoutText = " ")
             val output = ByteArrayOutputStream()
             MyBestLapPreferencesSerializer.writeTo(original, output)
             assertEquals(original, MyBestLapPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())))

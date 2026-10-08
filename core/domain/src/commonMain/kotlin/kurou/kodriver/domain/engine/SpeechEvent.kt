@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEF
 import kurou.kodriver.domain.model.ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
@@ -40,6 +41,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
+import kurou.kodriver.domain.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsTyreTemperatureReadoutText
@@ -453,19 +455,16 @@ sealed interface SpeechEvent {
         override val narratedText = ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
     }
 
-    /**
-     * ACE の自己ベストラップ更新を読み上げるイベント（フォーマル / カジュアルの2種）。
-     *
-     * ACE専用の WAV 音源を再生する。
-     */
-    data object AceWindowsMyBestLapFormal : SpeechEvent {
+    /** ACE の更新後の自己ベストタイム。解決済み文言は判定時の発話・ログ内容を保持する。 */
+    data class AceWindowsMyBestLap(
+        val lapTimeMs: Int,
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root
-        override val narratedText = "自己ベストラップ更新"
-    }
+        override val narratedText =
+            formatAceWindowsMyBestLapReadoutText(ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
 
-    data object AceWindowsMyBestLapCasual : SpeechEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root
-        override val narratedText = "ベストラップ"
+        override fun withResolvedText(text: String): AceWindowsMyBestLap = copy(resolvedText = text)
     }
 }
 

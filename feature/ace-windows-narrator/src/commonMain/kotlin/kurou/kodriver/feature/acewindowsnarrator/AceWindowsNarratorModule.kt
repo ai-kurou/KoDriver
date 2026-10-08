@@ -20,7 +20,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
@@ -69,7 +69,7 @@ import org.koin.dsl.module
  *   それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・
  *   TextToSpeechEngine・SpeakTextUseCase・
- *   ObserveVoiceUseCase・CheckTextToSpeechAvailableUseCase・フラッグ・車両接近・タイヤ過熱・燃料残量・残り周回数文言Observe UseCase）、
+ *   ObserveVoiceUseCase・CheckTextToSpeechAvailableUseCase・フラッグ・車両接近・タイヤ過熱・燃料残量・残り周回数・自己ベストラップ文言Observe UseCase）、
  *   および自由文言TTSの AceWindowsReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）・TextToSpeechRepository（:core:text-to-speech-data）。
@@ -82,7 +82,7 @@ val aceWindowsNarratorModule: Module =
         viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-        factory { MyBestLapUseCases(get(), get()) }
+        factory { MyBestLapUseCases(get()) }
         factory { RemainingFuelUseCases(get(), get()) }
         factory { RemainingFuelLapsUseCases(get(), get()) }
         factory { SimulatorUseCases(get()) }
@@ -102,7 +102,6 @@ val aceWindowsNarratorModule: Module =
         factory { DetermineAceWindowsNarratorReadoutUseCase() }
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveAceWindowsBestLapTimeUseCase(get()) }
-        factory { ObserveAceWindowsMyBestLapVoiceTypeUseCase(get()) }
         factory { ObserveAceWindowsFuelUseCase(get()) }
         factory { ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(get()) }
         factory { ObserveAceWindowsRemainingFuelLapsUseCase(get()) }
@@ -138,11 +137,13 @@ val aceWindowsNarratorModule: Module =
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRemainingFuelReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsMyBestLapReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveVoiceUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { CheckTextToSpeechAvailableUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { SpeakTextUseCase(get(), get(named(Simulator.AceWindows.id))) }
         factory {
             AceWindowsReadoutTextSpeaker(
+                get(named(Simulator.AceWindows.id)),
                 get(named(Simulator.AceWindows.id)),
                 get(named(Simulator.AceWindows.id)),
                 get(named(Simulator.AceWindows.id)),
@@ -190,11 +191,8 @@ val aceWindowsNarratorModule: Module =
         factory(named(Simulator.AceWindows.id)) { PlaySpeechEventUseCase(get(named(Simulator.AceWindows.id))) }
     }
 
-private val aceWindowsEventToFile: Map<SpeechEvent, String> =
-    buildMap {
-        put(SpeechEvent.AceWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
-        put(SpeechEvent.AceWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
-    }
+// ACE の読み上げ項目はすべて自由文言のOS標準TTSへ移行済みのため、イベントごとのWAVは持たない。
+private val aceWindowsEventToFile: Map<SpeechEvent, String> = emptyMap()
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(

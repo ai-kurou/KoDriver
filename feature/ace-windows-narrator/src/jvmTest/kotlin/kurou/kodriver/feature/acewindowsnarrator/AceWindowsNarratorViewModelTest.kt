@@ -33,7 +33,6 @@ import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -42,7 +41,6 @@ import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
-import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -59,7 +57,6 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
@@ -85,8 +82,6 @@ class AceWindowsNarratorViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val bestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
-
-    private val myBestLapPreferencesRepository: AceWindowsMyBestLapPreferencesRepository = mockk()
 
     private val fuelRepository: AceWindowsFuelRepository = mockk()
 
@@ -156,10 +151,6 @@ class AceWindowsNarratorViewModelTest {
             myBestLapUseCases =
                 MyBestLapUseCases(
                     observeBestLapTime = ObserveAceWindowsBestLapTimeUseCase(bestLapTimeRepository),
-                    observeMyBestLapVoiceType =
-                        ObserveAceWindowsMyBestLapVoiceTypeUseCase(
-                            myBestLapPreferencesRepository,
-                        ),
                 ),
             remainingFuelUseCases =
                 RemainingFuelUseCases(
@@ -511,11 +502,9 @@ class AceWindowsNarratorViewModelTest {
                 ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to true,
             ),
         vehicleApproachThresholdMeters: Double = 10.0,
-        myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         remainingFuelLapsThreshold: Int = 3,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
-        every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(myBestLapVoiceType)
         every {
             readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
         } returns MutableStateFlow(enabledOverrides)
@@ -1096,32 +1085,10 @@ class AceWindowsNarratorViewModelTest {
             bestLapTimeChannel.send(bestLapTime(90_000))
             bestLapTimeChannel.send(bestLapTime(89_000))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsMyBestLapFormal), spokenTexts)
-        }
-
-    @Test
-    fun `声種別がCASUALならAceWindowsMyBestLapCasualを読み上げる`() =
-        runTest(testDispatcher) {
-            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-            val bestLapTimeChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val ttsEngine = mockTts(spokenTexts)
-            stubReadoutDefaults(
-                thresholdPercentage = 30,
-                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true),
-                orderOverride = listOf(ReadoutItemKey.AceWindows.MyBestLap.Root),
-                myBestLapVoiceType = MyBestLapVoiceType.CASUAL,
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.AceWindowsMyBestLap(89_000, "自己ベストラップ更新 1分29秒000")),
+                spokenTexts,
             )
-            createViewModel(
-                fuelChannel = fuelChannel,
-                ttsEngine = ttsEngine,
-                bestLapTimeChannel = bestLapTimeChannel,
-            )
-
-            bestLapTimeChannel.send(bestLapTime(90_000))
-            bestLapTimeChannel.send(bestLapTime(89_000))
-
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsMyBestLapCasual), spokenTexts)
         }
 
     @Test
@@ -1165,7 +1132,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.MyBestLap.Root,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
@@ -1195,7 +1162,7 @@ class AceWindowsNarratorViewModelTest {
                     123_456L,
                     Simulator.AceWindows,
                     ReadoutItemKey.AceWindows.MyBestLap.Root,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
