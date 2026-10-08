@@ -103,7 +103,7 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     /** 現在の読み上げ文言。空欄・TTS利用不可・対象外イベントは null。 */
     suspend fun readoutText(event: SpeechEvent): String? {
-        val text = (event as? ReadoutTextEvent)?.resolvedText ?: eventText(event) ?: return null
+        val text = (event as ReadoutTextEvent).resolvedText ?: eventText(event) ?: return null
         return text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
     }
 

@@ -244,6 +244,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
                 listOf(
                     SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L),
                     SpeechEvent.AceWindowsRemainingFuelLapsWarning(3),
+                    SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L, resolvedText = "解決済み文言"),
+                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(3, resolvedText = "解決済み文言"),
                 )
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))

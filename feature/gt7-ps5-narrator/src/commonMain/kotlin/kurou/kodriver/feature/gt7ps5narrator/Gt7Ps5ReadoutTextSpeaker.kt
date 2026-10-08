@@ -1,7 +1,6 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
 import kotlinx.coroutines.flow.first
-import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
@@ -47,9 +46,8 @@ internal class Gt7Ps5ReadoutTextSpeaker(
         val isResolved: Boolean,
     )
 
-    private suspend fun eventText(event: SpeechEvent): ReadoutText? {
-        if (event !is ReadoutTextEvent) return null
-        return when (event) {
+    private suspend fun eventText(event: SpeechEvent): ReadoutText? =
+        when (event) {
             is SpeechEvent.Gt7Ps5RemainingFuelWarning -> {
                 ReadoutText(
                     remainingFuelText(event),
@@ -82,7 +80,6 @@ internal class Gt7Ps5ReadoutTextSpeaker(
                 null
             }
         }
-    }
 
     private suspend fun remainingFuelText(event: SpeechEvent.Gt7Ps5RemainingFuelWarning): String =
         event.resolvedText
