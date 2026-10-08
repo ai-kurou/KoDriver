@@ -22,13 +22,13 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:windows-startup-data` | OS起動時のKoDriver自動起動設定（Windowsレジストリ）のリポジトリ実装 | [図](graphs/core-windows-startup-data.svg) |
 | `:core:windows-shared-memory` | Windows共有メモリI/Oの汎用基盤（`lmu-windows-data` / `ace-windows-data` が共通利用） | [図](graphs/core-windows-shared-memory.svg) |
 | `:core:designsystem` | アプリ全体で共有する Composable コンポーネント | [図](graphs/core-designsystem.svg) |
-| `:core:narrator` | WAV音声再生の共通基盤（lmu/gt7/ace の各narrator featureが共通利用） | [図](graphs/core-narrator.svg) |
+| `:core:narrator` | 開始音のWAV再生・TTS読み上げ制御の共通基盤（lmu/gt7/ace の各narrator featureが共通利用） | [図](graphs/core-narrator.svg) |
 | `:feature:desktop-splash` | デスクトップ起動中スプラッシュの初期化進捗管理・画面表示 | [図](graphs/feature-desktop-splash.svg) |
 | `:feature:debug-state-detail` | 走行データのデバッグ表示（燃料消費・タイヤ摩耗・タイヤ温度・ピットタイミング等） | [図](graphs/feature-debug-state-detail.svg) |
 | `:feature:lmu-windows-connection` | LMU との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-lmu-windows-connection.svg) |
 | `:feature:main` | アプリ全体のメイン画面状態管理 | [図](graphs/feature-main.svg) |
 | `:feature:server-connection` | KoDriver サーバー（Ktor）への接続状態確認を担当する | [図](graphs/feature-server-connection.svg) |
-| `:feature:lmu-windows-narrator` | フラッグ本文・車両接近(開始時・継続時)・ピットタイミングの自由文字列のOS標準TTS読み上げ・その他のWAV音声再生とアナウンス制御を担当する | [図](graphs/feature-lmu-windows-narrator.svg) |
+| `:feature:lmu-windows-narrator` | 全読み上げ項目の自由文言によるOS標準TTS読み上げ・開始音のWAV再生とアナウンス制御を担当する | [図](graphs/feature-lmu-windows-narrator.svg) |
 | `:feature:other-license-detail` | その他画面のライセンス詳細表示 | [図](graphs/feature-other-license-detail.svg) |
 | `:feature:other-list` | その他画面の一覧表示・選択状態管理 | [図](graphs/feature-other-list.svg) |
 | `:feature:other-readout-start-sound-detail` | その他画面の読み上げ開始音設定詳細 | [図](graphs/feature-other-readout-start-sound-detail.svg) |
@@ -57,7 +57,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:gt7-ps5-readout-remaining-fuel-laps-detail` | GT7 燃料残り周回数アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-readout-remaining-fuel-laps-detail.svg) |
 | `:feature:gt7-ps5-readout-tyre-temperature-detail` | GT7 タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-readout-tyre-temperature-detail.svg) |
 | `:feature:ace-windows-connection` | ACE (Assetto Corsa EVO) との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-ace-windows-connection.svg) |
-| `:feature:ace-windows-narrator` | ACE (Assetto Corsa EVO) 向け WAV 音声ファイルの再生とアナウンス制御を担当する | [図](graphs/feature-ace-windows-narrator.svg) |
+| `:feature:ace-windows-narrator` | ACE (Assetto Corsa EVO) 向け WAV開始音・OS標準TTS本文の音声再生とアナウンス制御を担当する | [図](graphs/feature-ace-windows-narrator.svg) |
 | `:feature:ace-windows-readout-remaining-fuel-detail` | ACE 燃料残量アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-remaining-fuel-detail.svg) |
 | `:feature:ace-windows-readout-flag-detail` | ACE フラッグアナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-flag-detail.svg) |
 | `:feature:ace-windows-readout-tyre-temperature-detail` | ACE タイヤ温度アナウンスの詳細設定 UI | [図](graphs/feature-ace-windows-readout-tyre-temperature-detail.svg) |

@@ -1,7 +1,7 @@
 # narrator
 
-WAV 音声を読み上げる narrator feature（`feature:lmu-windows-narrator` / `feature:gt7-ps5-narrator` /
-`feature:ace-windows-narrator`）が共通で利用する、WAV 音声再生の基盤モジュールです。
+開始音の再生と TTS 読み上げを制御する narrator feature（`feature:lmu-windows-narrator` / `feature:gt7-ps5-narrator` /
+`feature:ace-windows-narrator`）が共通で利用する、開始音の WAV 再生基盤モジュールです（読み上げ本文は各 feature が OS 標準 TTS で処理します）。
 
 `SoundPlayer` はプラットフォームごとに JVM（`javax.sound.sampled`）/ Android（`SoundPool`）/ Js / WasmJs の
 実装を提供します。JVM/Android 実装は Bluetooth A2DP 接続時の音切れ対策（末尾への無音追記・アンロードタイミングの調整）を
