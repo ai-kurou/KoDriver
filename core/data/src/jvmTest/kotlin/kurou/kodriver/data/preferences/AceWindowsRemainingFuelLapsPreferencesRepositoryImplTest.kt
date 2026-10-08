@@ -6,6 +6,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -56,6 +58,32 @@ class AceWindowsRemainingFuelLapsPreferencesRepositoryImplTest {
             repository.saveThresholdLaps(1)
             repository.saveThresholdLaps(5)
 
+            assertEquals(5, repository.observeThresholdLaps().first())
+        }
+
+    @Test
+    fun `文言の初期値はドメインの既定値`() =
+        runTest {
+            assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
+            assertEquals(
+                ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT,
+                repository.observeEmptyReadoutText().first(),
+            )
+        }
+
+    @Test
+    fun `文言を独立して上書き保存でき空欄も維持する`() =
+        runTest {
+            repository.saveThresholdLaps(5)
+            repository.saveReadoutText("残り{laps}周")
+            repository.saveEmptyReadoutText("燃料なし")
+            assertEquals("残り{laps}周", repository.observeReadoutText().first())
+            assertEquals("燃料なし", repository.observeEmptyReadoutText().first())
+            repository.saveReadoutText("")
+            assertEquals("", repository.observeReadoutText().first())
+            assertEquals("燃料なし", repository.observeEmptyReadoutText().first())
+            repository.saveEmptyReadoutText("")
+            assertEquals("", repository.observeEmptyReadoutText().first())
             assertEquals(5, repository.observeThresholdLaps().first())
         }
 }

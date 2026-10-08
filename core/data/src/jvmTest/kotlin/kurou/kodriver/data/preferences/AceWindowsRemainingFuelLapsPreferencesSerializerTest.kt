@@ -2,6 +2,8 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -11,9 +13,13 @@ import kotlin.test.assertFailsWith
 
 class AceWindowsRemainingFuelLapsPreferencesSerializerTest {
     @Test
-    fun `デフォルト値は3周`() {
+    fun `デフォルト値は3周と既定文言`() {
         assertEquals(
-            AceWindowsRemainingFuelLapsPreferences(thresholdLaps = ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT),
+            AceWindowsRemainingFuelLapsPreferences(
+                thresholdLaps = ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT,
+                readoutText = ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT,
+                emptyReadoutText = ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT,
+            ),
             AceWindowsRemainingFuelLapsPreferencesSerializer.defaultValue,
         )
     }
@@ -21,7 +27,12 @@ class AceWindowsRemainingFuelLapsPreferencesSerializerTest {
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = AceWindowsRemainingFuelLapsPreferences(thresholdLaps = 5)
+            val original =
+                AceWindowsRemainingFuelLapsPreferences(
+                    thresholdLaps = 5,
+                    readoutText = "残り{laps}周",
+                    emptyReadoutText = "燃料なし",
+                )
             val output = ByteArrayOutputStream()
             AceWindowsRemainingFuelLapsPreferencesSerializer.writeTo(original, output)
 
@@ -41,5 +52,29 @@ class AceWindowsRemainingFuelLapsPreferencesSerializerTest {
             assertFailsWith<CorruptionException> {
                 AceWindowsRemainingFuelLapsPreferencesSerializer.readFrom(corrupt)
             }
+        }
+
+    @Test
+    fun `文言がない旧データは既定文言を使用する`() =
+        runTest {
+            val restored =
+                AceWindowsRemainingFuelLapsPreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(0x08, 0x05)))
+
+            assertEquals(5, restored.thresholdLaps)
+            assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT, restored.readoutText)
+            assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT, restored.emptyReadoutText)
+        }
+
+    @Test
+    fun `空欄文言は読み出しても既定値に戻らない`() =
+        runTest {
+            val original = AceWindowsRemainingFuelLapsPreferences(readoutText = "", emptyReadoutText = "")
+            val output = ByteArrayOutputStream()
+            AceWindowsRemainingFuelLapsPreferencesSerializer.writeTo(original, output)
+
+            assertEquals(
+                original,
+                AceWindowsRemainingFuelLapsPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())),
+            )
         }
 }

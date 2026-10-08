@@ -24,6 +24,8 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutTextUseCase
@@ -61,6 +63,28 @@ import kotlin.test.assertNotNull
  *   Desktop 構成にも含まれ、グラフ検証のためにここで補う。
  */
 class DesktopKoinModuleGraphTest {
+    @Test
+    fun `ACE燃料残り周回数の文言Observeを名前付きで解決できる`() {
+        val application =
+            koinApplication {
+                modules(listOf(desktopDataModule) + featureModules)
+            }
+        try {
+            assertNotNull(
+                application.koin.get<ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase>(
+                    named(Simulator.AceWindows.id),
+                ),
+            )
+            assertNotNull(
+                application.koin.get<ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase>(
+                    named(Simulator.AceWindows.id),
+                ),
+            )
+        } finally {
+            application.close()
+        }
+    }
+
     @Test
     fun `ACE車両接近文言UseCaseをNarratorと詳細の両構成で解決できる`() {
         val application =

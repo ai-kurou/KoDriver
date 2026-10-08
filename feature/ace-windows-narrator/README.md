@@ -14,6 +14,13 @@ Processorで解決した本文をイベントの `resolvedText` に保持し、�
 空白・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` をログに保存する。
 開始音・優先度・キューは `RemainingFuel.Root` を維持する。`remaining_fuel_caution.wav` は廃止し、WAVフォールバックは行わない。
 詳細画面では自由文言の編集・既定値へのリセット・`{percent}` の末尾挿入と未知プレースホルダーの警告を提供する。試聴は画面に表示中の残量閾値を使い、`RemainingFuel.Root` の開始音とOS標準TTSで再生する。空白文言・TTS利用不可・音量ゼロ以下では開始音も本文も再生しない。
+
+燃料残り周回数（`SpeechEvent.AceWindowsRemainingFuelLapsWarning`）も同様に、保存した自由文言をOS標準TTSで読み上げる。
+保存先は `AceWindowsRemainingFuelLapsPreferences` のフィールド2（`readoutText`、既定「燃料は残り約{laps}周」）と
+フィールド3（`emptyReadoutText`、0周以下用、既定「燃料がありません」）。`{laps}` は判定時の整数周回数に置換する。
+Processorで解決した本文を `resolvedText` に保持し、空白・TTS利用不可では開始音も本文も要求せず `SKIPPED` を記録する。
+開始音・優先度・キューは `RemainingFuelLaps.Root` を維持する。`remaining_fuel_laps_0.wav`〜`remaining_fuel_laps_5.wav` は廃止し、WAVフォールバックは行わない。
+詳細画面の入力UI・試聴対応は別PRで追加する（それまで試聴は不可）。
 イベント→WAVファイルパスのマップと `Res::readBytes` は `AceWindowsNarratorModule.kt` で定義する。
 `SoundPlayer` 等の音声再生基盤の実装は `:core:narrator` を参照。
 

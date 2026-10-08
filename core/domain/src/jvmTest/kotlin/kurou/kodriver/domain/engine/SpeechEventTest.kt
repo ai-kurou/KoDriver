@@ -337,4 +337,13 @@ class SpeechEventTest {
         assertEquals(null, event.resolvedText)
         assertEquals(SpeechEvent.AceWindowsRemainingFuelWarning(30, "残り30%"), event.withResolvedText("残り30%"))
     }
+
+    @Test
+    fun `ACE燃料残り周回数は解決済み文言を保持し既定文言を維持する`() {
+        val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(3)
+        assertEquals(null, event.resolvedText)
+        val resolved = event.withResolvedText("残り3周")
+        assertEquals(SpeechEvent.AceWindowsRemainingFuelLapsWarning(3, "残り3周"), resolved)
+        assertEquals("燃料は残り約3周", resolved.narratedText)
+    }
 }

@@ -407,8 +407,8 @@ class AceWindowsNarratorViewModelTest {
 
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(2),
-                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(1),
+                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(2, "燃料は残り約2周"),
+                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(1, "燃料は残り約1周"),
                 ),
                 spokenTexts,
             )
