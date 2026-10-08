@@ -4,7 +4,6 @@ import kurou.kodriver.core.designsystem.readStartSoundBytes
 import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
-import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
@@ -53,7 +52,6 @@ import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
-import kurou.kodriver.feature.acewindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -172,9 +170,7 @@ val aceWindowsNarratorModule: Module =
                     soundPlayer = get(named(Simulator.AceWindows.id)),
                     resources =
                         WavResources(
-                            eventToFile = aceWindowsEventToFile,
                             startSoundTypeToFile = aceWindowsStartSoundTypeToFile,
-                            resourceLoader = Res::readBytes,
                             startSoundResourceLoader = ::readStartSoundBytes,
                         ),
                     customSpeak = get<AceWindowsReadoutTextSpeaker>()::invoke,
@@ -190,9 +186,6 @@ val aceWindowsNarratorModule: Module =
         factory(named(Simulator.AceWindows.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.AceWindows.id))) }
         factory(named(Simulator.AceWindows.id)) { PlaySpeechEventUseCase(get(named(Simulator.AceWindows.id))) }
     }
-
-// ACE の読み上げ項目はすべて自由文言のOS標準TTSへ移行済みのため、イベントごとのWAVは持たない。
-private val aceWindowsEventToFile: Map<SpeechEvent, String> = emptyMap()
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(

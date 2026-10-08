@@ -5,7 +5,6 @@ import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.Gt7Ps5ReadoutTextEvent
-import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
@@ -35,7 +34,6 @@ import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
-import kurou.kodriver.feature.gt7ps5narrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -121,9 +119,7 @@ val gt7Ps5NarratorModule: Module =
                     soundPlayer = get(named(Simulator.Gt7Ps5.id)),
                     resources =
                         WavResources(
-                            eventToFile = gt7Ps5EventToFile,
                             startSoundTypeToFile = gt7Ps5StartSoundTypeToFile,
-                            resourceLoader = Res::readBytes,
                             startSoundResourceLoader = ::readStartSoundBytes,
                         ),
                     customSpeak = get<Gt7Ps5ReadoutTextSpeaker>()::invoke,
@@ -139,8 +135,6 @@ val gt7Ps5NarratorModule: Module =
         factory(named(Simulator.Gt7Ps5.id)) { PlayStartSoundForKeyUseCase(get(named(Simulator.Gt7Ps5.id))) }
         factory(named(Simulator.Gt7Ps5.id)) { PlaySpeechEventUseCase(get(named(Simulator.Gt7Ps5.id))) }
     }
-
-private val gt7Ps5EventToFile: Map<SpeechEvent, String> = emptyMap()
 
 private val gt7Ps5StartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(

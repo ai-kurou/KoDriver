@@ -92,13 +92,11 @@ class LmuWindowsNarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.RemainingVirtualEnergyWarning(30) to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -131,13 +129,11 @@ class LmuWindowsNarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.TyreWearWarning(30) to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -170,13 +166,11 @@ class LmuWindowsNarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.BrakeOverheat(700) to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -209,13 +203,11 @@ class LmuWindowsNarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.TyreOverheat(100) to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -243,13 +235,11 @@ class LmuWindowsNarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.TyreCold(60) to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -277,13 +267,11 @@ class LmuWindowsNarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.Overheating() to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -316,13 +304,11 @@ class LmuWindowsNarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.LmuWindowsMyBestLap(83_456L) to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -355,13 +341,11 @@ class LmuWindowsNarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.PartDetached() to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -394,13 +378,11 @@ class LmuWindowsNarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.TyreDetached() to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },

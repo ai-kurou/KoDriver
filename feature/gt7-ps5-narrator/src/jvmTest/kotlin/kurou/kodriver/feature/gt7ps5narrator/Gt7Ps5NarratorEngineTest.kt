@@ -88,13 +88,11 @@ class Gt7Ps5NarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3, "あと3周") to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -127,13 +125,11 @@ class Gt7Ps5NarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(30, "あと30%") to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -166,13 +162,11 @@ class Gt7Ps5NarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.Gt7Ps5TyreOverheat(107, "タイヤ107度") to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -208,13 +202,11 @@ class Gt7Ps5NarratorEngineTest {
         runTest {
             val customEvents = mutableListOf<SpeechEvent>()
             val engine =
-                WavNarratorEngine(
+                WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                     soundPlayer = soundPlayer,
                     resources =
-                        WavResources<SpeechEvent, ReadoutStartSoundType>(
-                            eventToFile = mapOf(SpeechEvent.Gt7Ps5MyBestLap(83_456, "更新1分23秒456") to "warning.wav"),
+                        WavResources<ReadoutStartSoundType>(
                             startSoundTypeToFile = emptyMap(),
-                            resourceLoader = { byteArrayOf(1) },
                             startSoundResourceLoader = { error("開始音は設定しない") },
                         ),
                     eventToKey = { it.readoutItemKey },

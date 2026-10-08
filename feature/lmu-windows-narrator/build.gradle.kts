@@ -31,10 +31,6 @@ kotlin {
     }
 }
 
-compose.resources {
-    packageOfResClass = "kurou.kodriver.feature.lmuwindowsnarrator.generated.resources"
-}
-
 dependencies {
     testFixturesImplementation(projects.core.domain)
     testFixturesImplementation(platform(libs.koin.bom))

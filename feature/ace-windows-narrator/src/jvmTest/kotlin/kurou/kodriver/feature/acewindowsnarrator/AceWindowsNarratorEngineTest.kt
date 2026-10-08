@@ -114,13 +114,11 @@ class AceWindowsNarratorEngineTest {
                 val calls = mutableListOf<String>()
                 coEvery { soundPlayer.play(startSound, 42) } answers { calls += "start" }
                 val engine =
-                    WavNarratorEngine(
+                    WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>(
                         soundPlayer = soundPlayer,
                         resources =
-                            WavResources<SpeechEvent, ReadoutStartSoundType>(
-                                eventToFile = emptyMap(),
+                            WavResources<ReadoutStartSoundType>(
                                 startSoundTypeToFile = mapOf(ReadoutStartSoundType.FORMULA_RADIO to "start.wav"),
-                                resourceLoader = { error("WAV fallback requested: $it") },
                                 startSoundResourceLoader = { startSound },
                             ),
                         eventToKey = { it.readoutItemKey },

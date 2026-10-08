@@ -1,8 +1,8 @@
 # text-to-speech-data
 
 OS標準の音声合成（TTS）で任意のテキストを読み上げるRepositoryを実装するJVM / Androidマルチプラットフォームモジュールです。
-収録済みWAVを再生する`:core:narrator`とは異なり、ラップタイムのように事前収録では表現しきれない動的な文言を
-読み上げるための代替手段を提供します。
+開始音のWAVを再生する`:core:narrator`とは別に、ラップタイムのような動的な自由文言の本文を
+読み上げる手段を提供します。
 
 - jvmMain: PowerShellの`System.Speech.Synthesis.SpeechSynthesizer`経由でWindows標準の音声合成（SAPI）を呼び出す
   `WindowsTextToSpeechRepository`。JVMには音声合成の標準APIが無く、SAPIのCOMインターフェースをJNAで直接扱うには

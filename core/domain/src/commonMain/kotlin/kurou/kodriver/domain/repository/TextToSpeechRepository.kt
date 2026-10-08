@@ -7,7 +7,7 @@ import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
  * OS標準の音声合成（TTS）で任意のテキストを読み上げるRepository。
  *
  * LMUフラッグの自由文字列や、ラップタイムなどの動的な文言をOSのTTSで読み上げる。
- * 収録済みWAVの再生は `:core:narrator` が担当する。
+ * 開始音のWAV再生は `:core:narrator` が担当する。
  * 実装はWindows（デスクトップ）とAndroidのみで、それ以外のプラットフォームでは
  * [isAvailable] が `false` を返すNo-Op実装にフォールバックする。
  */
@@ -27,7 +27,7 @@ interface TextToSpeechRepository {
 
     /**
      * [text] を読み上げる。実装は読み上げが実際に完了する（または [stop] やコルーチンのキャンセルで
-     * 打ち切られる）まで suspend すること。`:core:narrator` の `WavNarratorEngine` はWAV再生と同じ
+     * 打ち切られる）まで suspend すること。`:core:narrator` の `WavNarratorEngine` は開始音と同じ
      * コルーチン上で完了・優先度判定・割り込みを扱う前提でこのRepositoryを呼び出すため、
      * 即座に返ってしまうと読み上げ中に次のイベントの音声が重なって再生されてしまう。
      *
