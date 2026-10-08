@@ -2010,6 +2010,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.VEHICLE_CLASS,
                     DebugStateCardKey.CURRENT_LAP,
                     DebugStateCardKey.BEST_LAP,
+                    DebugStateCardKey.TYRE_TEMPERATURE,
                     DebugStateCardKey.FUEL_CONSUMPTION,
                 ),
                 enabledCardKeys,

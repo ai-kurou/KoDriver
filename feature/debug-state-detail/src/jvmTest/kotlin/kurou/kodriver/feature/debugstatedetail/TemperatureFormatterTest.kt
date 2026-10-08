@@ -36,6 +36,12 @@ class TemperatureFormatterTest {
         assertEquals("-", wheelCarcassTemperatureText(emptyMap(), WheelIndex.FRONT_LEFT))
     }
 
+    @Test
+    fun `摂氏の読み取り値を小数第1位に丸める`() {
+        assertEquals("65.2", formatCelsius(CelsiusReading(65.24f)))
+        assertEquals("85.4", formatCelsius(CelsiusReading(85.36f)))
+    }
+
     private fun sampleWheel(surfaceTemperature: CelsiusReading) =
         LmuWindowsTyreWheelData(
             surfaceTemperature = surfaceTemperature,

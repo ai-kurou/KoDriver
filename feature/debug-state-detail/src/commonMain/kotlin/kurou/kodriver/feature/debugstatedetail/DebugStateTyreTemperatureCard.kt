@@ -6,8 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
@@ -22,21 +23,44 @@ import org.jetbrains.compose.resources.stringResource
 internal fun TyreTemperatureContent(
     selectedSimulator: Simulator,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
+    gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
 ) {
-    val wheels = lmuWindowsTelemetry?.tyres?.wheels
-    if (selectedSimulator !is Simulator.LmuWindows || wheels == null) {
+    val wheels =
+        when (selectedSimulator) {
+            is Simulator.LmuWindows -> {
+                lmuWindowsTelemetry?.tyres?.wheels?.mapValues { it.value.surfaceTemperature }
+            }
+
+            is Simulator.Gt7Ps5 -> {
+                gt7Ps5Telemetry?.tyreTemperature?.let {
+                    mapOf(
+                        WheelIndex.FRONT_LEFT to it.frontLeftCelsius,
+                        WheelIndex.FRONT_RIGHT to it.frontRightCelsius,
+                        WheelIndex.REAR_LEFT to it.rearLeftCelsius,
+                        WheelIndex.REAR_RIGHT to it.rearRightCelsius,
+                    )
+                }
+            }
+
+            is Simulator.AceWindows -> {
+                null
+            }
+        }
+    if (wheels == null) {
         DebugStateUnavailableContent()
         return
     }
     Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
         Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
             WheelTemperatureText(
+                selectedSimulator,
                 wheels,
                 WheelIndex.FRONT_LEFT,
                 Res.string.debug_state_tyre_temperature_fl,
                 Modifier.weight(1f),
             )
             WheelTemperatureText(
+                selectedSimulator,
                 wheels,
                 WheelIndex.FRONT_RIGHT,
                 Res.string.debug_state_tyre_temperature_fr,
@@ -45,12 +69,14 @@ internal fun TyreTemperatureContent(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
             WheelTemperatureText(
+                selectedSimulator,
                 wheels,
                 WheelIndex.REAR_LEFT,
                 Res.string.debug_state_tyre_temperature_rl,
                 Modifier.weight(1f),
             )
             WheelTemperatureText(
+                selectedSimulator,
                 wheels,
                 WheelIndex.REAR_RIGHT,
                 Res.string.debug_state_tyre_temperature_rr,
@@ -64,14 +90,16 @@ internal fun TyreTemperatureContent(
 @Suppress("UnstableCollections")
 @Composable
 private fun WheelTemperatureText(
-    wheels: Map<WheelIndex, LmuWindowsTyreWheelData>,
+    selectedSimulator: Simulator,
+    wheels: Map<WheelIndex, CelsiusReading>,
     wheelIndex: WheelIndex,
     labelRes: StringResource,
     modifier: Modifier = Modifier,
 ) {
     DebugStateHeatTile(
-        text = stringResource(labelRes, wheelTemperatureText(wheels, wheelIndex)),
-        celsius = wheels[wheelIndex]?.surfaceTemperature?.value?.toDouble(),
+        text = stringResource(labelRes, wheels[wheelIndex]?.let { formatCelsius(it) } ?: "-"),
+        celsius = wheels[wheelIndex]?.value?.toDouble(),
         modifier = modifier,
+        heatLevel = wheels[wheelIndex]?.value?.toDouble()?.let { tyreTemperatureHeatLevel(it, selectedSimulator) },
     )
 }
