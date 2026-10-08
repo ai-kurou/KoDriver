@@ -4,6 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kotlin.test.Test
@@ -16,7 +17,7 @@ class SaveAceWindowsYellowFlagReadoutTextUseCaseTest {
         runTest {
             SaveAceWindowsYellowFlagReadoutTextUseCase(repository)("  イエローフラッグ  ")
 
-            coVerify(exactly = 1) { repository.saveYellowFlagText("イエローフラッグ") }
+            coVerify(exactly = 1) { repository.saveText(AceWindowsFlagReadoutTextKey.YELLOW, "イエローフラッグ") }
             confirmVerified(repository)
         }
 
@@ -25,7 +26,7 @@ class SaveAceWindowsYellowFlagReadoutTextUseCaseTest {
         runTest {
             SaveAceWindowsYellowFlagReadoutTextUseCase(repository)("   ")
 
-            coVerify(exactly = 1) { repository.saveYellowFlagText("") }
+            coVerify(exactly = 1) { repository.saveText(AceWindowsFlagReadoutTextKey.YELLOW, "") }
             confirmVerified(repository)
         }
 
@@ -37,7 +38,7 @@ class SaveAceWindowsYellowFlagReadoutTextUseCaseTest {
             SaveAceWindowsYellowFlagReadoutTextUseCase(repository)(text)
 
             coVerify(exactly = 1) {
-                repository.saveYellowFlagText("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH))
+                repository.saveText(AceWindowsFlagReadoutTextKey.YELLOW, "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH))
             }
             confirmVerified(repository)
         }

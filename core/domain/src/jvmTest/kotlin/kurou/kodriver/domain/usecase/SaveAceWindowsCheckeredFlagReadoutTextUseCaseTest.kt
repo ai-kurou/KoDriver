@@ -4,6 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kotlin.test.Test
@@ -16,7 +17,7 @@ class SaveAceWindowsCheckeredFlagReadoutTextUseCaseTest {
         runTest {
             SaveAceWindowsCheckeredFlagReadoutTextUseCase(repository)("  チェッカー、完走  ")
 
-            coVerify(exactly = 1) { repository.saveCheckeredFlagText("チェッカー、完走") }
+            coVerify(exactly = 1) { repository.saveText(AceWindowsFlagReadoutTextKey.CHECKERED, "チェッカー、完走") }
             confirmVerified(repository)
         }
 
@@ -25,7 +26,7 @@ class SaveAceWindowsCheckeredFlagReadoutTextUseCaseTest {
         runTest {
             SaveAceWindowsCheckeredFlagReadoutTextUseCase(repository)("   ")
 
-            coVerify(exactly = 1) { repository.saveCheckeredFlagText("") }
+            coVerify(exactly = 1) { repository.saveText(AceWindowsFlagReadoutTextKey.CHECKERED, "") }
             confirmVerified(repository)
         }
 
@@ -37,7 +38,7 @@ class SaveAceWindowsCheckeredFlagReadoutTextUseCaseTest {
             SaveAceWindowsCheckeredFlagReadoutTextUseCase(repository)(text)
 
             coVerify(exactly = 1) {
-                repository.saveCheckeredFlagText("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH))
+                repository.saveText(AceWindowsFlagReadoutTextKey.CHECKERED, "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH))
             }
             confirmVerified(repository)
         }

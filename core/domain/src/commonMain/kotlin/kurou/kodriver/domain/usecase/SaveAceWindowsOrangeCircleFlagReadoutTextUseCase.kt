@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 
@@ -13,6 +14,9 @@ class SaveAceWindowsOrangeCircleFlagReadoutTextUseCase(
     private val repository: AceWindowsFlagReadoutTextPreferencesRepository,
 ) {
     suspend operator fun invoke(text: String) {
-        repository.saveOrangeCircleFlagText(text.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH))
+        repository.saveText(
+            AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE,
+            text.trim().take(READOUT_CUSTOM_TEXT_MAX_LENGTH),
+        )
     }
 }

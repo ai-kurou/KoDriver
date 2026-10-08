@@ -7,6 +7,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,13 +18,13 @@ class ObserveAceWindowsWhiteFlagReadoutTextUseCaseTest {
     @Test
     fun `Repositoryの値をそのまま流す`() =
         runTest {
-            every { repository.observeWhiteFlagText() } returns flowOf("ホワイトフラッグ")
+            every { repository.observeText(AceWindowsFlagReadoutTextKey.WHITE) } returns flowOf("ホワイトフラッグ")
 
             assertEquals(
                 "ホワイトフラッグ",
                 ObserveAceWindowsWhiteFlagReadoutTextUseCase(repository)().first(),
             )
-            verify(exactly = 1) { repository.observeWhiteFlagText() }
+            verify(exactly = 1) { repository.observeText(AceWindowsFlagReadoutTextKey.WHITE) }
             confirmVerified(repository)
         }
 }
