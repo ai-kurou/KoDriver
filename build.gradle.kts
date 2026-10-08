@@ -35,10 +35,13 @@ fun BaseYarnRootExtension.configureDependencyResolutions() {
     resolution("js-yaml", "5.4.3")
     resolution("qs", "6.16.0")
     resolution("shell-quote", "1.12.0")
+    resolution("socket.io", "4.8.4")
+    resolution("engine.io", "6.6.11")
     resolution("socket.io-parser", "4.2.7")
     resolution("uuid", "14.0.2")
     resolution("webpack-dev-server", "6.0.0")
     resolution("webpack", "5.111.1")
+    resolution("webpack-cli", "7.2.3")
     resolution("ws", "8.22.0")
 }
 
@@ -56,6 +59,7 @@ plugins.withType<WasmYarnPlugin> {
 
 plugins.withType<NodeJsRootPlugin> {
     extensions.configure<NodeJsRootExtension> {
+        versions.webpackCli.version = "7.2.3"
         versions.webpack.version = "5.111.1"
         versions.webpackDevServer.version = "6.0.0"
     }
