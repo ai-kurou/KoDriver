@@ -6,7 +6,7 @@ ACE (Assetto Corsa EVO) Windows版のWAV音声再生・自由文言TTSとアナ�
 `AceWindowsNarratorViewModel` が `ObserveAceWindowsFuelUseCase` の燃料残量と
 `ObserveAceWindowsRemainingFuelThresholdPercentageUseCase` の閾値を監視し、
 `AceWindowsNarratorEventProcessor` を通じて `SpeechEvent.AceWindowsRemainingFuelWarning` を
-`TextToSpeechEngine` 実装の `AceWindowsWavNarratorEngine`（`:core:narrator` の `WavNarratorEngine` に委譲する薄いアダプタ）に
+`TextToSpeechEngine` 実装の `AceWindowsNarratorEngine`（`:core:narrator` の `WavNarratorEngine` に委譲する薄いアダプタ）に
 渡して、`AceWindowsReadoutTextSpeaker` の自由文言をOS標準TTSで読み上げる。
 保存先は `AceWindowsRemainingFuelPreferences` のフィールド2（`readoutText`）、既定文言は「燃料は残り{percent}パーセント」。
 `{percent}` は判定時の実残量を四捨五入した整数（0〜100）に置換する。閾値・有効判定は従来どおり。

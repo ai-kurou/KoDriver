@@ -22,7 +22,7 @@ Js / WasmJs では例外文字列とスタックトレースを `console.error` 
 イベント→WAVファイルパスのマップ・開始音タイプ→ファイルパスのマップ・WAV を読み込む `resourceLoader`（各 narrator
 feature 自身の compose resources `Res::readBytes`）・イベントからキーへの変換関数 `eventToKey` をコンストラクタで
 受け取ることで、3つの narrator feature がそのまま利用できます。各 feature は `TextToSpeechEngine` を実装する薄い
-アダプタ（`LmuWindowsWavNarratorEngine` など）でこのエンジンをラップします。優先度の高いイベントで割り込む際の
+アダプタ（`LmuWindowsNarratorEngine` など）でこのエンジンをラップします。優先度の高いイベントで割り込む際の
 `stop()` → `speak()` の連続呼び出しに対しても、直前にキャンセルした再生ジョブの停止処理が完了するまで新しい再生を
 始めないよう `lastCancelledPlayback` で待ち合わせます。
 

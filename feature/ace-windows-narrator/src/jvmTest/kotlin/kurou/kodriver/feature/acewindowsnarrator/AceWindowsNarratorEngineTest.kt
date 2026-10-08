@@ -24,14 +24,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AceWindowsWavNarratorEngineTest {
+class AceWindowsNarratorEngineTest {
     private val soundPlayer: SoundPlayer = mockk()
     private val wavNarratorEngine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 
     @Test
     fun `currentReadoutItemKeyはWavNarratorEngineのcurrentKeyを返す`() {
         every { wavNarratorEngine.currentKey } returns ReadoutItemKey.AceWindows.VehicleApproach.Root
-        val engine = AceWindowsWavNarratorEngine(wavNarratorEngine)
+        val engine = AceWindowsNarratorEngine(wavNarratorEngine)
 
         assertEquals(ReadoutItemKey.AceWindows.VehicleApproach.Root, engine.currentReadoutItemKey)
 
@@ -42,7 +42,7 @@ class AceWindowsWavNarratorEngineTest {
     @Test
     fun `speakはWavNarratorEngineのspeakへ委譲する`() {
         every { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) } just Runs
-        val engine = AceWindowsWavNarratorEngine(wavNarratorEngine)
+        val engine = AceWindowsNarratorEngine(wavNarratorEngine)
 
         engine.speak(SpeechEvent.CarLeft(), queue = true)
 
@@ -53,7 +53,7 @@ class AceWindowsWavNarratorEngineTest {
     @Test
     fun `stopはWavNarratorEngineのstopへ委譲する`() {
         every { wavNarratorEngine.stop() } just Runs
-        val engine = AceWindowsWavNarratorEngine(wavNarratorEngine)
+        val engine = AceWindowsNarratorEngine(wavNarratorEngine)
 
         engine.stop()
 
@@ -64,7 +64,7 @@ class AceWindowsWavNarratorEngineTest {
     @Test
     fun `previewStartSoundはWavNarratorEngineのpreviewStartSoundへ委譲する`() {
         every { wavNarratorEngine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO) } just Runs
-        val engine = AceWindowsWavNarratorEngine(wavNarratorEngine)
+        val engine = AceWindowsNarratorEngine(wavNarratorEngine)
 
         engine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO)
 
@@ -78,7 +78,7 @@ class AceWindowsWavNarratorEngineTest {
             coEvery {
                 wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.AceWindows.VehicleApproach.Root)
             } just Runs
-            val engine = AceWindowsWavNarratorEngine(wavNarratorEngine)
+            val engine = AceWindowsNarratorEngine(wavNarratorEngine)
 
             engine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root)
 
@@ -143,7 +143,7 @@ class AceWindowsWavNarratorEngineTest {
                         scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                     )
                 runCurrent()
-                AceWindowsWavNarratorEngine(engine).speak(target)
+                AceWindowsNarratorEngine(engine).speak(target)
                 runCurrent()
                 assertEquals(listOf("start", "text"), calls)
                 coVerify(exactly = index + 1) { soundPlayer.play(startSound, 42) }

@@ -23,14 +23,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LmuWindowsWavNarratorEngineTest {
+class LmuWindowsNarratorEngineTest {
     private val soundPlayer: SoundPlayer = mockk()
     private val wavNarratorEngine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 
     @Test
     fun `currentReadoutItemKeyはWavNarratorEngineのcurrentKeyを返す`() {
         every { wavNarratorEngine.currentKey } returns ReadoutItemKey.LmuWindows.VehicleApproach.Root
-        val engine = LmuWindowsWavNarratorEngine(wavNarratorEngine)
+        val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
 
         assertEquals(ReadoutItemKey.LmuWindows.VehicleApproach.Root, engine.currentReadoutItemKey)
 
@@ -41,7 +41,7 @@ class LmuWindowsWavNarratorEngineTest {
     @Test
     fun `speakはWavNarratorEngineのspeakへ委譲する`() {
         every { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) } just Runs
-        val engine = LmuWindowsWavNarratorEngine(wavNarratorEngine)
+        val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
 
         engine.speak(SpeechEvent.CarLeft(), queue = true)
 
@@ -52,7 +52,7 @@ class LmuWindowsWavNarratorEngineTest {
     @Test
     fun `stopはWavNarratorEngineのstopへ委譲する`() {
         every { wavNarratorEngine.stop() } just Runs
-        val engine = LmuWindowsWavNarratorEngine(wavNarratorEngine)
+        val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
 
         engine.stop()
 
@@ -63,7 +63,7 @@ class LmuWindowsWavNarratorEngineTest {
     @Test
     fun `previewStartSoundはWavNarratorEngineのpreviewStartSoundへ委譲する`() {
         every { wavNarratorEngine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO) } just Runs
-        val engine = LmuWindowsWavNarratorEngine(wavNarratorEngine)
+        val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
 
         engine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO)
 
@@ -77,7 +77,7 @@ class LmuWindowsWavNarratorEngineTest {
             coEvery {
                 wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
             } just Runs
-            val engine = LmuWindowsWavNarratorEngine(wavNarratorEngine)
+            val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
 
             engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
 
@@ -110,7 +110,7 @@ class LmuWindowsWavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = LmuWindowsWavNarratorEngine(engine)
+            val narrator = LmuWindowsNarratorEngine(engine)
             narrator.speak(SpeechEvent.RemainingVirtualEnergyWarning(30))
             runCurrent()
             narrator.speak(SpeechEvent.RemainingVirtualEnergyWarning(70))
@@ -149,7 +149,7 @@ class LmuWindowsWavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = LmuWindowsWavNarratorEngine(engine)
+            val narrator = LmuWindowsNarratorEngine(engine)
             narrator.speak(SpeechEvent.TyreWearWarning(30))
             runCurrent()
             narrator.speak(SpeechEvent.TyreWearWarning(70))
@@ -188,7 +188,7 @@ class LmuWindowsWavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = LmuWindowsWavNarratorEngine(engine)
+            val narrator = LmuWindowsNarratorEngine(engine)
             narrator.speak(SpeechEvent.BrakeOverheat(700))
             runCurrent()
             narrator.speak(SpeechEvent.BrakeOverheat(900))
@@ -225,7 +225,7 @@ class LmuWindowsWavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = LmuWindowsWavNarratorEngine(engine)
+            val narrator = LmuWindowsNarratorEngine(engine)
             narrator.speak(SpeechEvent.TyreOverheat(100))
             runCurrent()
             assertEquals(
@@ -259,7 +259,7 @@ class LmuWindowsWavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = LmuWindowsWavNarratorEngine(engine)
+            val narrator = LmuWindowsNarratorEngine(engine)
             narrator.speak(SpeechEvent.TyreCold(60))
             runCurrent()
             assertEquals(
@@ -295,7 +295,7 @@ class LmuWindowsWavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = LmuWindowsWavNarratorEngine(engine)
+            val narrator = LmuWindowsNarratorEngine(engine)
             narrator.speak(SpeechEvent.Overheating())
             runCurrent()
             narrator.speak(SpeechEvent.Overheating("カスタム"))
@@ -334,7 +334,7 @@ class LmuWindowsWavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = LmuWindowsWavNarratorEngine(engine)
+            val narrator = LmuWindowsNarratorEngine(engine)
             narrator.speak(SpeechEvent.LmuWindowsMyBestLap(83_456L))
             runCurrent()
             narrator.speak(SpeechEvent.LmuWindowsMyBestLap(23_005L, "カスタム"))
@@ -373,7 +373,7 @@ class LmuWindowsWavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = LmuWindowsWavNarratorEngine(engine)
+            val narrator = LmuWindowsNarratorEngine(engine)
             narrator.speak(SpeechEvent.PartDetached())
             runCurrent()
             narrator.speak(SpeechEvent.PartDetached("カスタム"))
@@ -412,7 +412,7 @@ class LmuWindowsWavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = LmuWindowsWavNarratorEngine(engine)
+            val narrator = LmuWindowsNarratorEngine(engine)
             narrator.speak(SpeechEvent.TyreDetached())
             runCurrent()
             narrator.speak(SpeechEvent.TyreDetached("カスタム"))

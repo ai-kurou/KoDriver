@@ -10,7 +10,7 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
  * `:core:narrator` の [WavNarratorEngine]（`SpeechEvent` / `ReadoutStartSoundType` / `ReadoutItemKey` を
  * 知らない汎用実装）を [TextToSpeechEngine] として公開するための薄いアダプタ。
  */
-internal class Gt7Ps5WavNarratorEngine(
+internal class Gt7Ps5NarratorEngine(
     private val engine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>,
 ) : TextToSpeechEngine {
     override val currentReadoutItemKey: ReadoutItemKey?
