@@ -26,6 +26,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
+import kurou.kodriver.core.designsystem.rememberPendingThreshold
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_MAX
@@ -85,11 +86,12 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
     onReadoutTextChanged: (String) -> Unit = {},
     onEmptyReadoutTextChanged: (String) -> Unit = {},
     onEmptyReadoutTextPreviewClicked: (String) -> Unit = {},
-    onReadoutTextPreviewClicked: (String) -> Unit = {},
+    onReadoutTextPreviewClicked: (String, Int) -> Unit = { _, _ -> },
     onRemainingFuelLapsChanged: (Int) -> Unit = {},
     onResetRemainingFuelLaps: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val thresholdState = rememberPendingThreshold(uiState.remainingFuelLaps)
     Column(
         modifier =
             modifier
@@ -116,7 +118,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
                                 text = uiState.readoutText,
                                 available = uiState.isTextToSpeechAvailable,
                                 onTextChanged = onReadoutTextChanged,
-                                onPreviewClick = onReadoutTextPreviewClicked,
+                                onPreviewClick = { onReadoutTextPreviewClicked(it, thresholdState.currentValue) },
                             )
                         }
                         RemainingFuelLapsReadoutField(
@@ -137,13 +139,21 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
                             ),
                     )
                     ThresholdSlider(
-                        value = uiState.remainingFuelLaps.toFloat(),
+                        value = thresholdState.currentValue.toFloat(),
                         valueRange = THRESHOLD_MIN..THRESHOLD_MAX,
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { thresholdLabelTemplate.formatSliderLabel(it.roundToInt()) },
-                        onValueChangeFinished = { onRemainingFuelLapsChanged(it.roundToInt()) },
+                        onValueChangeFinished = {
+                            val laps = it.roundToInt()
+                            thresholdState.finishChange(laps)
+                            onRemainingFuelLapsChanged(laps)
+                        },
                         defaultValue = GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT.toFloat(),
-                        onResetToDefault = onResetRemainingFuelLaps,
+                        onResetToDefault = {
+                            thresholdState.finishChange(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT)
+                            onResetRemainingFuelLaps()
+                        },
+                        onValueChange = { thresholdState.change(it.roundToInt()) },
                         resetContentDescription = stringResource(Res.string.remaining_fuel_laps_reset_to_default),
                     )
                 }

@@ -80,7 +80,10 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
                             isTextToSpeechAvailable = true,
                         ),
                     onReadoutTextChanged = { changed += it },
-                    onReadoutTextPreviewClicked = { previews += it },
+                    onReadoutTextPreviewClicked = { text, laps ->
+                        previews += text
+                        assertEquals(3, laps)
+                    },
                 )
             }
         }

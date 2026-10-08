@@ -40,6 +40,7 @@ fun ThresholdSlider(
     defaultValue: Float? = null,
     onResetToDefault: (() -> Unit)? = null,
     resetContentDescription: String? = null,
+    onValueChange: (Float) -> Unit = {},
 ) {
     val haptic = LocalHapticFeedback.current
     var sliderValue by remember(value) { mutableFloatStateOf(value) }
@@ -72,7 +73,10 @@ fun ThresholdSlider(
         }
         Slider(
             value = sliderValue,
-            onValueChange = { sliderValue = it },
+            onValueChange = {
+                sliderValue = it
+                onValueChange(it)
+            },
             valueRange = valueRange,
             steps = steps,
             onValueChangeFinished = { onValueChangeFinished(sliderValue) },
