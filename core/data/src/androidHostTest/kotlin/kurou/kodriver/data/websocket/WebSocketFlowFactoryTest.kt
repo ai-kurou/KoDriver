@@ -14,6 +14,7 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import java.io.EOFException
 import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketException
@@ -239,6 +240,7 @@ class WebSocketFlowFactoryTest {
         assertTrue(ConnectException("x").isExpectedNetworkFailure())
         assertTrue(UnknownHostException("x").isExpectedNetworkFailure())
         assertTrue(SocketException("x").isExpectedNetworkFailure())
+        assertTrue(EOFException("x").isExpectedNetworkFailure())
         assertFalse(IOException("x").isExpectedNetworkFailure())
         assertFalse(IllegalStateException("x").isExpectedNetworkFailure())
     }
