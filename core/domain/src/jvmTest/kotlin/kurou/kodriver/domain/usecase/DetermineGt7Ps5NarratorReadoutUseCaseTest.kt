@@ -17,6 +17,85 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     private val useCase = DetermineGt7Ps5NarratorReadoutUseCase()
 
     @Test
+    fun `周回数が減少したら自己ベストをリセットして新セッションの更新を読み上げる`() {
+        val first =
+            useCase.determineMyBestLap(
+                state =
+                    Gt7Ps5NarratorState(
+                        personalBestMs = 89_000,
+                        previousBestLapTimeMs = 89_000,
+                        previousLapCount = 5,
+                    ),
+                telemetry = telemetry(bestLapTimeMs = 99_000, lapCount = 1),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), first.events)
+        assertEquals(Int.MAX_VALUE, first.state.personalBestMs)
+        assertEquals(99_000, first.state.previousBestLapTimeMs)
+        assertEquals(1, first.state.previousLapCount)
+
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = telemetry(bestLapTimeMs = 98_000, lapCount = 2),
+                settings = settings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLap(98_000)), second.events)
+        assertEquals(98_000, second.state.personalBestMs)
+        assertEquals(2, second.state.previousLapCount)
+    }
+
+    @Test
+    fun `周回数が同じか増加した場合は自己ベストをリセットしない`() {
+        for (currentLap in listOf(5, 6)) {
+            val decision =
+                useCase.determineMyBestLap(
+                    state =
+                        Gt7Ps5NarratorState(
+                            personalBestMs = 89_000,
+                            previousBestLapTimeMs = 99_000,
+                            previousLapCount = 5,
+                        ),
+                    telemetry = telemetry(bestLapTimeMs = 98_000, lapCount = currentLap),
+                    settings = settings(),
+                )
+
+            assertEquals(emptyList<SpeechEvent>(), decision.events)
+            assertEquals(89_000, decision.state.personalBestMs)
+            assertEquals(98_000, decision.state.previousBestLapTimeMs)
+            assertEquals(currentLap, decision.state.previousLapCount)
+        }
+    }
+
+    @Test
+    fun `自己ベスト判定の各経路で現在の周回数を記録する`() {
+        val initialState = Gt7Ps5NarratorState(previousBestLapTimeMs = 90_000, previousLapCount = 1)
+        val cases =
+            listOf<Triple<Gt7Ps5NarratorState, Int, Map<ReadoutItemKey, Boolean>>>(
+                Triple(Gt7Ps5NarratorState(), 89_000, emptyMap()),
+                Triple(initialState, 0, emptyMap()),
+                Triple(initialState, 90_000, emptyMap()),
+                Triple(initialState.copy(personalBestMs = 88_000), 89_000, emptyMap()),
+                Triple(initialState, 89_000, mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false)),
+                Triple(initialState, 89_000, mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled to false)),
+                Triple(initialState, 89_000, emptyMap()),
+            )
+        for ((state, current, enabledStates) in cases) {
+            val decision =
+                useCase.determineMyBestLap(
+                    state = state,
+                    telemetry = telemetry(bestLapTimeMs = current, lapCount = 2),
+                    settings = settings(enabledStates = enabledStates),
+                )
+
+            assertEquals(current, decision.state.previousBestLapTimeMs)
+            assertEquals(2, decision.state.previousLapCount)
+        }
+    }
+
+    @Test
     fun `enabledStatesが空でも例外にならずデフォルトtrueで読み上げる`() {
         val initialDecision =
             useCase.determineMyBestLap(

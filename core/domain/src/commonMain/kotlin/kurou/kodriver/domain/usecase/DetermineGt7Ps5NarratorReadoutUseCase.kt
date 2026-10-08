@@ -13,10 +13,12 @@ import kotlin.math.roundToInt
  *
  * 自己ベスト、燃料警告、残り燃料周回数の重複読み上げを避けるため、
  * 前回までの判定結果と燃料消費の追跡状態を保持する。
+ * 自己ベストの状態は周回数の減少による新セッション検出時にリセットする。
  */
 data class Gt7Ps5NarratorState(
     val personalBestMs: Int = Int.MAX_VALUE,
     val previousBestLapTimeMs: Int? = null,
+    val previousLapCount: Int? = null,
     val lastAnnouncedRemainingLaps: Int = -1,
     val lastFuelEvaluationLap: Int = -1,
     val remainingFuelWarned: Boolean = false,
@@ -68,14 +70,23 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         settings: Gt7Ps5NarratorReadoutSettings,
     ): Gt7Ps5NarratorReadoutDecision {
         val current = telemetry.bestLapTimeMs
-        val stateWithCurrentBestLap = state.copy(previousBestLapTimeMs = current)
-        val previous = state.previousBestLapTimeMs
+        val currentLap = telemetry.lapCount
+        val sessionState =
+            if (state.previousLapCount != null && currentLap < state.previousLapCount) {
+                state.copy(personalBestMs = Int.MAX_VALUE, previousBestLapTimeMs = null)
+            } else {
+                state
+            }
+        val stateWithCurrentBestLap = sessionState.copy(previousBestLapTimeMs = current, previousLapCount = currentLap)
+        val previous = sessionState.previousBestLapTimeMs
         if (previous == null) return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         if (current <= 0) return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         if (previous > 0 && current >= previous) {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (current >= state.personalBestMs) return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        if (current >= sessionState.personalBestMs) {
+            return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        }
         if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) ||
             !settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled)
         ) {

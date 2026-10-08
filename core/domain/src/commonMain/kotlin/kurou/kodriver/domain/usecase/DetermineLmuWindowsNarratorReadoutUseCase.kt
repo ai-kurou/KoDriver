@@ -26,6 +26,7 @@ import kotlin.math.roundToInt
  *
  * 旗、車両接近、自己ベスト、温度・摩耗・ピットタイミングなどの重複読み上げを避けるため、
  * 前回までの入力と判定結果を保持する。
+ * 自己ベストの状態は周回数の減少による新セッション検出時にリセットする。
  */
 @Serializable
 data class LmuWindowsNarratorState(
@@ -35,6 +36,7 @@ data class LmuWindowsNarratorState(
     val previousTyreDetached: LmuWindowsTyreDetachedData? = null,
     val personalBestMs: Long = Long.MAX_VALUE,
     val previousBestLapTimeMs: Long? = null,
+    val previousLapCount: Int? = null,
     val tyreOverheating: Boolean = false,
     val tyreWearWarned: Boolean = false,
     val brakeOverheating: Boolean = false,
@@ -138,14 +140,21 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
         val current = telemetry.timing.bestLapTimeMs
-        val stateWithCurrentBestLap = state.copy(previousBestLapTimeMs = current)
-        val previous = state.previousBestLapTimeMs
+        val currentLap = telemetry.timing.currentLap
+        val sessionState =
+            if (state.previousLapCount != null && currentLap < state.previousLapCount) {
+                state.copy(personalBestMs = Long.MAX_VALUE, previousBestLapTimeMs = null)
+            } else {
+                state
+            }
+        val stateWithCurrentBestLap = sessionState.copy(previousBestLapTimeMs = current, previousLapCount = currentLap)
+        val previous = sessionState.previousBestLapTimeMs
         if (previous == null) return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         if (current <= 0L) return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         if (previous > 0L && current >= previous) {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (current >= state.personalBestMs) {
+        if (current >= sessionState.personalBestMs) {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
         if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.MyBestLap.Root) ||
