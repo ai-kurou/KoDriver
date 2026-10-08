@@ -58,7 +58,7 @@ import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 /**
  * 音声エンジンへ渡す読み上げイベント。
  *
- * 各イベントは、WAVまたはOS標準TTSによる読み上げの種類と、読み上げ可否を判定する
+ * 各イベントは、OS標準TTSによる読み上げの種類と、読み上げ可否を判定する
  * [ReadoutItemKey] を結び付ける。キューイング可否はイベント単位ではなく
  * [readoutItemKey] のトップレベル項目で判定する。
  */
@@ -68,7 +68,7 @@ sealed interface SpeechEvent {
 
     /**
      * テレメトリログに記録するイベントの既定文言。
-     * WAVイベントでは収録音声・チップ表示と一致する。LMUの自由文字列イベントでは既定文言を参照し、
+     * LMUの自由文字列イベントでは既定文言を参照し、
      * 判定時の実際の本文は [FreeTextSpeechEvent.resolvedText] に保持する。
      * ACEフラッグの既定文言は定数を参照し、判定時に解決した実際の本文は [AceWindowsReadoutTextEvent.resolvedText] に保持する。
      * ドメイン層はCompose Resourcesに依存しないため、表示文言の変更時はここも更新する。

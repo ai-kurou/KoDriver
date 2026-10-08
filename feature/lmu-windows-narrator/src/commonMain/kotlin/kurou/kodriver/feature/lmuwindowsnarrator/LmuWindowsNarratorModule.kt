@@ -5,7 +5,6 @@ import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.FreeTextSpeechEvent
-import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
@@ -68,7 +67,6 @@ import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.SpeakTextUseCase
-import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -242,9 +240,7 @@ val lmuWindowsNarratorModule: Module =
                     soundPlayer = get(named(Simulator.LmuWindows.id)),
                     resources =
                         WavResources(
-                            eventToFile = lmuWindowsEventToFile,
                             startSoundTypeToFile = lmuWindowsStartSoundTypeToFile,
-                            resourceLoader = Res::readBytes,
                             startSoundResourceLoader = ::readStartSoundBytes,
                         ),
                     eventToKey = { it.readoutItemKey },
@@ -258,8 +254,6 @@ val lmuWindowsNarratorModule: Module =
             )
         }
     }
-
-private val lmuWindowsEventToFile: Map<SpeechEvent, String> = emptyMap()
 
 private val lmuWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(

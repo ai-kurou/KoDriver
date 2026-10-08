@@ -31,10 +31,6 @@ kotlin {
     }
 }
 
-compose.resources {
-    packageOfResClass = "kurou.kodriver.feature.gt7ps5narrator.generated.resources"
-}
-
 dependencies {
     testFixturesImplementation(projects.core.domain)
     testFixturesImplementation(platform(libs.koin.bom))

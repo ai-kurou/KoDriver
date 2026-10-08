@@ -29,7 +29,3 @@ kotlin {
         }
     }
 }
-
-compose.resources {
-    packageOfResClass = "kurou.kodriver.feature.acewindowsnarrator.generated.resources"
-}

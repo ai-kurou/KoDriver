@@ -205,27 +205,10 @@ class WavNarratorEngineTest {
         }
 
     @Test
-    fun `イベント音声が未ロードなら音声を再生しない`() =
+    fun `isCustomSpeakEventがfalseのイベントは開始音も再生しない`() =
         runTest {
             val player = FakeSoundPlayer()
-            val engine =
-                createEngine(
-                    player = player,
-                    resourceLoader = { error("load failed") },
-                )
-            runCurrent()
-
-            engine.speak(CAR_LEFT)
-            runCurrent()
-
-            assertEquals(emptyList(), player.playedSounds)
-        }
-
-    @Test
-    fun `eventToFileに存在しないイベントは音声を再生しない`() =
-        runTest {
-            val player = FakeSoundPlayer()
-            val engine = createEngine(player)
+            val engine = createEngine(player, isCustomSpeakEvent = { it != UNKNOWN_EVENT })
             runCurrent()
 
             engine.speak(UNKNOWN_EVENT)
@@ -641,14 +624,13 @@ class WavNarratorEngineTest {
         }
 
     @Test
-    fun `customSpeakEventsのイベントはWAVを再生せず開始音のみ再生してcustomSpeakで読み上げる`() =
+    fun `開始音を再生してからcustomSpeakで読み上げる`() =
         runTest {
             val player = FakeSoundPlayer()
             var spoken = 0
             val engine =
                 createEngine(
                     player,
-                    customSpeakEvents = setOf(TTS_ONLY),
                     customSpeak = { _, _ -> spoken++ },
                 )
             runCurrent()
@@ -657,77 +639,6 @@ class WavNarratorEngineTest {
             runCurrent()
 
             assertEquals(1, spoken)
-            assertEquals(1, player.playedSounds.size)
-            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
-        }
-
-    @Test
-    fun `述語がtrueならWAV本文を再生せずcustomSpeakで読み上げる`() =
-        runTest {
-            val player = FakeSoundPlayer()
-            var spoken = 0
-            val engine =
-                createEngine(
-                    player,
-                    isCustomSpeakEvent = { it == CAR_LEFT },
-                    customSpeak = { _, _ -> spoken++ },
-                )
-            runCurrent()
-
-            engine.speak(CAR_LEFT)
-            runCurrent()
-
-            assertEquals(1, spoken)
-            assertEquals(1, player.playedSounds.size)
-            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
-        }
-
-    @Test
-    fun `述語がtrueでもフックがなければWAV本文へフォールバックしない`() =
-        runTest {
-            val player = FakeSoundPlayer()
-            val engine = createEngine(player, isCustomSpeakEvent = { it == CAR_LEFT })
-            runCurrent()
-
-            engine.speak(CAR_LEFT)
-            runCurrent()
-
-            assertEquals(1, player.playedSounds.size)
-            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
-        }
-
-    @Test
-    fun `customSpeakEventsに含まれないイベントはcustomSpeakを呼ばずWAVで再生する`() =
-        runTest {
-            val player = FakeSoundPlayer()
-            var spoken = 0
-            val engine =
-                createEngine(
-                    player,
-                    customSpeakEvents = setOf(TTS_ONLY),
-                    customSpeak = { _, _ -> spoken++ },
-                )
-            runCurrent()
-
-            engine.speak(CAR_LEFT)
-            runCurrent()
-
-            assertEquals(0, spoken)
-            assertEquals(2, player.playedSounds.size)
-            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
-            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
-        }
-
-    @Test
-    fun `customSpeakEventsのイベントでもcustomSpeakを渡していなければ開始音のみ再生する`() =
-        runTest {
-            val player = FakeSoundPlayer()
-            val engine = createEngine(player, customSpeakEvents = setOf(TTS_ONLY))
-            runCurrent()
-
-            engine.speak(TTS_ONLY)
-            runCurrent()
-
             assertEquals(1, player.playedSounds.size)
             assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
         }
@@ -740,7 +651,6 @@ class WavNarratorEngineTest {
             val engine =
                 createEngine(
                     player,
-                    customSpeakEvents = setOf(TTS_ONLY),
                     customSpeak = { event, _ -> receivedEvents += event },
                 )
             runCurrent()
@@ -760,7 +670,6 @@ class WavNarratorEngineTest {
                 createEngine(
                     player,
                     volumeFlow = flowOf(35),
-                    customSpeakEvents = setOf(TTS_ONLY),
                     customSpeak = { _, volume -> receivedVolumes += volume },
                 )
             runCurrent()
@@ -779,7 +688,6 @@ class WavNarratorEngineTest {
             val engine =
                 createEngine(
                     player,
-                    customSpeakEvents = setOf(TTS_ONLY),
                     customSpeak = { _, _ ->
                         try {
                             awaitCancellation()
@@ -806,7 +714,7 @@ class WavNarratorEngineTest {
         }
 
     @Test
-    fun `WAVのないTTS専用イベントも音量と開始音を伴ってキュー再生する`() =
+    fun `TTS専用イベントも音量と開始音を伴ってキュー再生する`() =
         runTest {
             val player = FakeSoundPlayer()
             val calls = mutableListOf<Pair<String, Int>>()
@@ -814,7 +722,6 @@ class WavNarratorEngineTest {
                 createEngine(
                     player,
                     volumeFlow = flowOf(42),
-                    customSpeakEvents = setOf(TTS_ONLY),
                     customSpeak = { event, volume -> calls.add(event to volume) },
                 )
             runCurrent()
@@ -827,13 +734,12 @@ class WavNarratorEngineTest {
         }
 
     @Test
-    fun `TTS専用イベントを処理できなくてもWAV本文にフォールバックしない`() =
+    fun `開始音が無効ならcustomSpeakが何もしなくても音声を再生しない`() =
         runTest {
             val player = FakeSoundPlayer()
             val engine =
                 createEngine(
                     player,
-                    customSpeakEvents = setOf(TTS_ONLY),
                     customSpeak = { _, _ -> },
                     startSoundEnabledStatesFlow = flowOf(mapOf(TTS_ONLY_KEY to false)),
                 )
@@ -851,8 +757,9 @@ class WavNarratorEngineTest {
             val engine =
                 createEngine(
                     player,
-                    customSpeakEvents = setOf(TTS_ONLY),
-                    customSpeak = { _, _ -> speechFinished.await() },
+                    customSpeak = { event, volume ->
+                        if (event == TTS_ONLY) speechFinished.await() else player.play(bodySound(event), volume)
+                    },
                 )
             runCurrent()
 
@@ -880,10 +787,13 @@ class WavNarratorEngineTest {
             val engine =
                 createEngine(
                     player,
-                    customSpeakEvents = setOf(TTS_ONLY),
-                    customSpeak = { _, _ ->
+                    customSpeak = { event, volume ->
                         try {
-                            awaitCancellation()
+                            if (event != TTS_ONLY) {
+                                player.play(bodySound(event), volume)
+                            } else {
+                                awaitCancellation()
+                            }
                         } catch (e: CancellationException) {
                             wasCancelled = true
                             throw e
@@ -911,17 +821,8 @@ class WavNarratorEngineTest {
         volumeFlow: Flow<Int> = flowOf(100),
         startSoundTypeFlow: Flow<String> = flowOf(FORMULA_RADIO),
         startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
-        customSpeakEvents: Set<String> = emptySet(),
-        isCustomSpeakEvent: (String) -> Boolean = { false },
-        customSpeak: (suspend (String, Int) -> Unit)? = null,
-        resourceLoader: suspend (String) -> ByteArray = { path ->
-            when (path) {
-                CAR_LEFT_PATH -> CAR_LEFT_SOUND
-                LEFT_APPROACH_PATH -> LEFT_APPROACH_SOUND
-                RED_FLAG_PATH -> RED_FLAG_SOUND
-                else -> error("unexpected path: $path")
-            }
-        },
+        isCustomSpeakEvent: (String) -> Boolean = { true },
+        customSpeak: (suspend (String, Int) -> Unit)? = { event, volume -> player.play(bodySound(event), volume) },
         startSoundResourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
                 FORMULA_RADIO_PATH -> FORMULA_RADIO_SOUND
@@ -934,18 +835,11 @@ class WavNarratorEngineTest {
             soundPlayer = player,
             resources =
                 WavResources(
-                    eventToFile =
-                        mapOf(
-                            CAR_LEFT to CAR_LEFT_PATH,
-                            LEFT_APPROACH to LEFT_APPROACH_PATH,
-                            RED_FLAG to RED_FLAG_PATH,
-                        ),
                     startSoundTypeToFile =
                         mapOf(
                             FORMULA_RADIO to FORMULA_RADIO_PATH,
                             ELECTRONIC_NOISE to ELECTRONIC_NOISE_PATH,
                         ),
-                    resourceLoader = resourceLoader,
                     startSoundResourceLoader = startSoundResourceLoader,
                 ),
             eventToKey = { event -> "${event}_key" },
@@ -954,10 +848,17 @@ class WavNarratorEngineTest {
             startSoundTypeFlow = startSoundTypeFlow,
             startSoundEnabledStatesFlow = startSoundEnabledStatesFlow,
             customSpeak = customSpeak,
-            customSpeakEvents = customSpeakEvents,
             isCustomSpeakEvent = isCustomSpeakEvent,
             scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
         )
+
+    private fun bodySound(event: String): ByteArray =
+        when (event) {
+            CAR_LEFT -> CAR_LEFT_SOUND
+            LEFT_APPROACH -> LEFT_APPROACH_SOUND
+            RED_FLAG -> RED_FLAG_SOUND
+            else -> error("unexpected event: $event")
+        }
 
     private companion object {
         const val TTS_ONLY = "tts_only"
@@ -969,9 +870,6 @@ class WavNarratorEngineTest {
         const val FORMULA_RADIO = "formula_radio"
         const val ELECTRONIC_NOISE = "electronic_noise"
         const val CAR_LEFT_KEY = "car_left_key"
-        const val CAR_LEFT_PATH = "files/car_left.wav"
-        const val LEFT_APPROACH_PATH = "files/left_approach.wav"
-        const val RED_FLAG_PATH = "files/red_flag.wav"
         const val FORMULA_RADIO_PATH = "files/formula_radio.wav"
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
         val CAR_LEFT_SOUND = byteArrayOf(1)

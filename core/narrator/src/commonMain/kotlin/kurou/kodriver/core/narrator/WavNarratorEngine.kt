@@ -11,22 +11,20 @@ import kotlinx.coroutines.launch
 import kotlin.concurrent.Volatile
 
 /**
- * [WavNarratorEngine] が読み込む WAV リソース群。イベント→WAVファイルパスのマップ・開始音タイプ→ファイルパスの
- * マップ・それぞれを読み込む resourceLoader をまとめたもの。
+ * [WavNarratorEngine] が読み込む開始音のリソース群。開始音タイプ→ファイルパスのマップと、
+ * それを読み込む startSoundResourceLoader をまとめたもの。
  */
-data class WavResources<EVENT, START_TYPE>(
-    val eventToFile: Map<EVENT, String>,
+data class WavResources<START_TYPE>(
     val startSoundTypeToFile: Map<START_TYPE, String>,
-    val resourceLoader: suspend (String) -> ByteArray,
     val startSoundResourceLoader: suspend (String) -> ByteArray,
 )
 
 /**
- * WAV 音声とカスタム読み上げを扱うエンジンの共通実装。
+ * 開始音のWAV再生とカスタム読み上げ（OS標準TTS）を扱うエンジンの共通実装。
  *
- * LMU / GT7 / ACE の各 narrator feature は、[resources] にイベント→WAVファイルパスのマップと
- * 自身の compose resources（`Res::readBytes`）を渡す。TTS専用イベントは [customSpeakEvents] に
- * 登録するか [isCustomSpeakEvent] で判定し、[customSpeak] で本文を読み上げる。
+ * LMU / GT7 / ACE の各 narrator feature は、[resources] に開始音タイプ→WAVファイルパスのマップと
+ * 読み込み関数を渡す。読み上げ対象のイベントは [isCustomSpeakEvent] で判定し、[customSpeak] で本文を読み上げる。
+ * 本文のWAVはもう持たないため、[isCustomSpeakEvent] が false のイベントは再生対象外となる。
  * `domain.engine.TextToSpeechEngine` を実装する型（[EVENT] に `SpeechEvent`、[START_TYPE] に
  * `ReadoutStartSoundType`、[KEY] に `ReadoutItemKey` を割り当てたもの）は、`:core:domain` に依存する
  * 呼び出し側（各 narrator feature）が薄いアダプタとして用意する。core:narrator が `:core:domain` へ
@@ -35,23 +33,20 @@ data class WavResources<EVENT, START_TYPE>(
 @Suppress("LongParameterList")
 class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     private val soundPlayer: SoundPlayer,
-    private val resources: WavResources<EVENT, START_TYPE>,
+    private val resources: WavResources<START_TYPE>,
     private val eventToKey: (EVENT) -> KEY,
     defaultStartSoundType: START_TYPE,
     volumeFlow: Flow<Int> = flowOf(100),
     startSoundTypeFlow: Flow<START_TYPE> = flowOf(defaultStartSoundType),
     startSoundEnabledStatesFlow: Flow<Map<KEY, Boolean>> = flowOf(emptyMap()),
     /**
-     * [customSpeakEvents] または [isCustomSpeakEvent] で指定したイベントについて、WAV の代わりに本文を読み上げるフック。
-     * [event] とアプリの読み上げ音量（0〜100）を渡す。開始音は通常通り再生した上でこの関数を呼び、
-     * 読み上げなかった場合（本文が空など）でもWAVへはフォールバックしない。
+     * [isCustomSpeakEvent] で指定したイベントについて、本文を読み上げるフック。
+     * [event] とアプリの読み上げ音量（0〜100）を渡す。開始音は通常通り再生した上でこの関数を呼ぶ。
      * 再生中・優先度判定・割り込み（[currentKey] / [stop]）は呼び出し元の [play] と同じコルーチン上で
      * 実行されるため、WAVと同じ仕組みでそのまま扱える。
      */
     private val customSpeak: (suspend (EVENT, Int) -> Unit)? = null,
-    /** WAV本文を持たず、[customSpeak] のみで処理するイベント。[isCustomSpeakEvent] でも対象を指定できる。 */
-    private val customSpeakEvents: Set<EVENT> = emptySet(),
-    /** 値を持つイベントなど、[customSpeakEvents] に列挙できないTTS本文の判定。 */
+    /** [customSpeak] で本文を読み上げるイベントの判定。false のイベントは再生対象外。 */
     private val isCustomSpeakEvent: (EVENT) -> Boolean = { false },
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) {
@@ -63,9 +58,6 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
 
     @Volatile
     private var currentStartSoundEnabledStates: Map<KEY, Boolean> = emptyMap()
-
-    @Volatile
-    private var sounds: Map<EVENT, ByteArray> = emptyMap()
 
     @Volatile
     private var startSounds: Map<START_TYPE, ByteArray> = emptyMap()
@@ -93,18 +85,6 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
         scope.launch { startSoundTypeFlow.collect { currentStartSoundType = it } }
         scope.launch { startSoundEnabledStatesFlow.collect { currentStartSoundEnabledStates = it } }
         scope.launch {
-            val loaded = mutableMapOf<EVENT, ByteArray>()
-            resources.eventToFile.forEach { (event, path) ->
-                try {
-                    loaded[event] = resources.resourceLoader(path)
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    captureNarratorError(e)
-                }
-            }
-            // ロード完了後は不変のマップに差し替えるため、読み取り競合は無害
-            sounds = loaded
             val loadedStartSounds = mutableMapOf<START_TYPE, ByteArray>()
             resources.startSoundTypeToFile.forEach { (type, path) ->
                 try {
@@ -115,6 +95,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
                     captureNarratorError(e)
                 }
             }
+            // ロード完了後は不変のマップに差し替えるため、読み取り競合は無害
             startSounds = loadedStartSounds
         }
     }
@@ -148,15 +129,12 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     }
 
     /**
-     * [event] の本編（開始音の後に再生するもの）。[customSpeakEvents] または [isCustomSpeakEvent] の対象は [customSpeak] による読み上げ、
-     * それ以外は対応するWAV。どちらも無いイベントは再生対象外として null を返す。引数は読み上げ音量（0〜100）。
+     * [event] の本編（開始音の後に再生するもの）。[isCustomSpeakEvent] の対象は [customSpeak] による読み上げ。
+     * 対象外のイベントは再生対象外として null を返す。引数は読み上げ音量（0〜100）。
      */
     private fun playbackBody(event: EVENT): (suspend (Int) -> Unit)? {
-        if (event in customSpeakEvents || isCustomSpeakEvent(event)) {
-            return { volume -> customSpeak?.invoke(event, volume) }
-        }
-        val sound = sounds[event] ?: return null
-        return { volume -> soundPlayer.play(sound, volume) }
+        if (!isCustomSpeakEvent(event)) return null
+        return { volume -> customSpeak?.invoke(event, volume) }
     }
 
     private suspend fun play(

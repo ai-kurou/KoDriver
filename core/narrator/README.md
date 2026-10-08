@@ -16,17 +16,16 @@ Js / WasmJs では例外文字列とスタックトレースを `console.error` 
 なるのを避けるためフォールバックの待ち時間を使います。プラットフォーム非依存の純粋なバイト列解析なので
 `commonMain` に置き、`jvmTest` でテストしています（`androidMain` の `private companion object` に置くとテストできません）。
 
-`WavNarratorEngine<EVENT, START_TYPE, KEY>` は WAV 読み上げロジックの共通実装です。`:core:domain` の
+`WavNarratorEngine<EVENT, START_TYPE, KEY>` は開始音の WAV 再生とカスタム読み上げ（OS標準TTS）の共通実装です。`:core:domain` の
 `SpeechEvent` / `ReadoutStartSoundType` / `ReadoutItemKey` を型パラメータとして受け取る形にすることで、
 `:core:narrator` 自体は `:core:domain` に依存しません（`moduleGraphAssert` の `maxHeight` 制約を超えないため）。
-イベント→WAVファイルパスのマップ・開始音タイプ→ファイルパスのマップ・WAV を読み込む `resourceLoader`（各 narrator
-feature 自身の compose resources `Res::readBytes`）・イベントからキーへの変換関数 `eventToKey` をコンストラクタで
+開始音タイプ→ファイルパスのマップ・開始音を読み込む `startSoundResourceLoader`・イベントからキーへの変換関数 `eventToKey` をコンストラクタで
 受け取ることで、3つの narrator feature がそのまま利用できます。各 feature は `TextToSpeechEngine` を実装する薄い
 アダプタ（`LmuWindowsNarratorEngine` など）でこのエンジンをラップします。優先度の高いイベントで割り込む際の
 `stop()` → `speak()` の連続呼び出しに対しても、直前にキャンセルした再生ジョブの停止処理が完了するまで新しい再生を
 始めないよう `lastCancelledPlayback` で待ち合わせます。
 
-`WavNarratorEngine` の `customSpeakEvents` または `isCustomSpeakEvent` で指定したイベントは、開始音の後に `customSpeak` へ本文と音量を渡す。フックがない場合や本文を読み上げない場合もWAV本文へのフォールバックは行わない。
+`WavNarratorEngine` の `isCustomSpeakEvent` が true のイベントは、開始音の後に `customSpeak` へ本文と音量を渡す。false のイベントは再生対象外で、イベント別のWAV本文は持たない。
 
 `platformSoundModule(qualifier)` は `SoundPlayer` のプラットフォーム実装を、呼び出し側が指定した Koin の named
 修飾子付きでバインドする expect/actual です。3つの narrator feature は同一の Koin コンテナに同時にロードされるため、
