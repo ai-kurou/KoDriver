@@ -248,32 +248,35 @@ class SpeechEventTest {
     @Test
     fun `ACEフラッグ系のnarratedTextは画面と同じ既定文言を返す`() {
         assertEquals("燃料は残り20パーセント", SpeechEvent.AceWindowsRemainingFuelWarning(20).narratedText)
-        assertEquals("ホワイトフラッグ", SpeechEvent.AceWindowsWhiteFlag.narratedText)
-        assertEquals("グリーンフラッグ", SpeechEvent.AceWindowsGreenFlag.narratedText)
-        assertEquals("レッドフラッグ", SpeechEvent.AceWindowsRedFlag.narratedText)
-        assertEquals("ブルーフラッグ", SpeechEvent.AceWindowsBlueFlag.narratedText)
-        assertEquals("イエローフラッグ", SpeechEvent.AceWindowsYellowFlag.narratedText)
-        assertEquals("ブラックフラッグ", SpeechEvent.AceWindowsBlackFlag.narratedText)
-        assertEquals("ブラック・ホワイトフラッグ", SpeechEvent.AceWindowsBlackWhiteFlag.narratedText)
-        assertEquals("チェッカーフラッグ", SpeechEvent.AceWindowsCheckeredFlag.narratedText)
-        assertEquals(ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsCheckeredFlag.narratedText)
-        assertEquals(ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsWhiteFlag.narratedText)
-        assertEquals(ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsGreenFlag.narratedText)
-        assertEquals(ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsRedFlag.narratedText)
-        assertEquals(ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsBlueFlag.narratedText)
-        assertEquals(ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsYellowFlag.narratedText)
-        assertEquals(ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsBlackFlag.narratedText)
+        assertEquals("ホワイトフラッグ", SpeechEvent.AceWindowsWhiteFlag().narratedText)
+        assertEquals("グリーンフラッグ", SpeechEvent.AceWindowsGreenFlag().narratedText)
+        assertEquals("レッドフラッグ", SpeechEvent.AceWindowsRedFlag().narratedText)
+        assertEquals("ブルーフラッグ", SpeechEvent.AceWindowsBlueFlag().narratedText)
+        assertEquals("イエローフラッグ", SpeechEvent.AceWindowsYellowFlag().narratedText)
+        assertEquals("ブラックフラッグ", SpeechEvent.AceWindowsBlackFlag().narratedText)
+        assertEquals("ブラック・ホワイトフラッグ", SpeechEvent.AceWindowsBlackWhiteFlag().narratedText)
+        assertEquals("チェッカーフラッグ", SpeechEvent.AceWindowsCheckeredFlag().narratedText)
+        assertEquals(
+            ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT,
+            SpeechEvent.AceWindowsCheckeredFlag().narratedText,
+        )
+        assertEquals(ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsWhiteFlag().narratedText)
+        assertEquals(ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsGreenFlag().narratedText)
+        assertEquals(ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsRedFlag().narratedText)
+        assertEquals(ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsBlueFlag().narratedText)
+        assertEquals(ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsYellowFlag().narratedText)
+        assertEquals(ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsBlackFlag().narratedText)
         assertEquals(
             ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT,
-            SpeechEvent.AceWindowsBlackWhiteFlag.narratedText,
+            SpeechEvent.AceWindowsBlackWhiteFlag().narratedText,
         )
         assertEquals(
             ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT,
-            SpeechEvent.AceWindowsOrangeCircleFlag.narratedText,
+            SpeechEvent.AceWindowsOrangeCircleFlag().narratedText,
         )
         assertEquals(
             ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT,
-            SpeechEvent.AceWindowsRedYellowStripesFlag.narratedText,
+            SpeechEvent.AceWindowsRedYellowStripesFlag().narratedText,
         )
     }
 
@@ -282,11 +285,11 @@ class SpeechEventTest {
         assertEquals("タイヤ過熱 110度", SpeechEvent.AceWindowsTyreOverheat(110).narratedText)
         assertEquals(
             ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT,
-            SpeechEvent.AceWindowsVehicleApproach.narratedText,
+            SpeechEvent.AceWindowsVehicleApproach().narratedText,
         )
         assertEquals(
             ReadoutItemKey.AceWindows.VehicleApproach.Root,
-            SpeechEvent.AceWindowsVehicleApproach.readoutItemKey,
+            SpeechEvent.AceWindowsVehicleApproach().readoutItemKey,
         )
     }
 
@@ -350,5 +353,33 @@ class SpeechEventTest {
         val resolved = event.withResolvedText("残り3周")
         assertEquals(SpeechEvent.AceWindowsRemainingFuelLapsWarning(3, "残り3周"), resolved)
         assertEquals("燃料は残り約3周", resolved.narratedText)
+    }
+
+    @Test
+    fun `ACEフラッグと車両接近は解決済み本文を保持し既定文言を維持する`() {
+        val events =
+            listOf<AceWindowsReadoutTextEvent>(
+                SpeechEvent.AceWindowsCheckeredFlag(),
+                SpeechEvent.AceWindowsWhiteFlag(),
+                SpeechEvent.AceWindowsGreenFlag(),
+                SpeechEvent.AceWindowsRedFlag(),
+                SpeechEvent.AceWindowsBlueFlag(),
+                SpeechEvent.AceWindowsYellowFlag(),
+                SpeechEvent.AceWindowsBlackFlag(),
+                SpeechEvent.AceWindowsBlackWhiteFlag(),
+                SpeechEvent.AceWindowsOrangeCircleFlag(),
+                SpeechEvent.AceWindowsRedYellowStripesFlag(),
+                SpeechEvent.AceWindowsVehicleApproach(),
+            )
+        events.forEach { event ->
+            assertEquals(null, event.resolvedText)
+            val resolved = event.withResolvedText("判定時の本文")
+            assertEquals(event::class, resolved::class)
+            assertEquals("判定時の本文", resolved.resolvedText)
+            assertEquals(event.narratedText, resolved.narratedText)
+            assertEquals(event.readoutItemKey, resolved.readoutItemKey)
+            assertEquals("変更後の本文", resolved.withResolvedText("変更後の本文").resolvedText)
+            assertEquals("", resolved.withResolvedText("").resolvedText)
+        }
     }
 }

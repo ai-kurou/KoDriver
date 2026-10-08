@@ -225,50 +225,50 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(vehicleApproaching = isApproaching),
-            events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsVehicleApproach) else emptyList(),
+            events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsVehicleApproach()) else emptyList(),
         )
     }
 
     private fun flagEvent(flag: AceWindowsFlagType): Pair<ReadoutItemKey, SpeechEvent>? =
         when (flag) {
             AceWindowsFlagType.WHITE_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag
+                ReadoutItemKey.AceWindows.Flag.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag()
             }
 
             AceWindowsFlagType.GREEN_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.GreenFlag to SpeechEvent.AceWindowsGreenFlag
+                ReadoutItemKey.AceWindows.Flag.GreenFlag to SpeechEvent.AceWindowsGreenFlag()
             }
 
             AceWindowsFlagType.RED_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.RedFlag to SpeechEvent.AceWindowsRedFlag
+                ReadoutItemKey.AceWindows.Flag.RedFlag to SpeechEvent.AceWindowsRedFlag()
             }
 
             AceWindowsFlagType.BLUE_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.BlueFlag to SpeechEvent.AceWindowsBlueFlag
+                ReadoutItemKey.AceWindows.Flag.BlueFlag to SpeechEvent.AceWindowsBlueFlag()
             }
 
             AceWindowsFlagType.YELLOW_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.YellowFlag to SpeechEvent.AceWindowsYellowFlag
+                ReadoutItemKey.AceWindows.Flag.YellowFlag to SpeechEvent.AceWindowsYellowFlag()
             }
 
             AceWindowsFlagType.BLACK_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.BlackFlag to SpeechEvent.AceWindowsBlackFlag
+                ReadoutItemKey.AceWindows.Flag.BlackFlag to SpeechEvent.AceWindowsBlackFlag()
             }
 
             AceWindowsFlagType.BLACK_WHITE_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to SpeechEvent.AceWindowsBlackWhiteFlag
+                ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to SpeechEvent.AceWindowsBlackWhiteFlag()
             }
 
             AceWindowsFlagType.CHECKERED_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.CheckeredFlag to SpeechEvent.AceWindowsCheckeredFlag
+                ReadoutItemKey.AceWindows.Flag.CheckeredFlag to SpeechEvent.AceWindowsCheckeredFlag()
             }
 
             AceWindowsFlagType.ORANGE_CIRCLE_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to SpeechEvent.AceWindowsOrangeCircleFlag
+                ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to SpeechEvent.AceWindowsOrangeCircleFlag()
             }
 
             AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to SpeechEvent.AceWindowsRedYellowStripesFlag
+                ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to SpeechEvent.AceWindowsRedYellowStripesFlag()
             }
 
             AceWindowsFlagType.NO_FLAG, AceWindowsFlagType.UNKNOWN -> {

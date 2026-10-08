@@ -286,7 +286,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(20)), fuelDecision.events)
-        assertEquals(listOf(SpeechEvent.AceWindowsBlueFlag), flagDecision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsBlueFlag()), flagDecision.events)
     }
 
     @Test
@@ -545,7 +545,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = flagSettings(),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsBlueFlag), decision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsBlueFlag()), decision.events)
         assertEquals(AceWindowsFlagType.BLUE_FLAG, decision.state.previousFlag)
     }
 
@@ -626,16 +626,16 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     fun `各フラグ種別に対応するイベントを読み上げる`() {
         val expected =
             mapOf(
-                AceWindowsFlagType.WHITE_FLAG to SpeechEvent.AceWindowsWhiteFlag,
-                AceWindowsFlagType.GREEN_FLAG to SpeechEvent.AceWindowsGreenFlag,
-                AceWindowsFlagType.RED_FLAG to SpeechEvent.AceWindowsRedFlag,
-                AceWindowsFlagType.BLUE_FLAG to SpeechEvent.AceWindowsBlueFlag,
-                AceWindowsFlagType.YELLOW_FLAG to SpeechEvent.AceWindowsYellowFlag,
-                AceWindowsFlagType.BLACK_FLAG to SpeechEvent.AceWindowsBlackFlag,
-                AceWindowsFlagType.BLACK_WHITE_FLAG to SpeechEvent.AceWindowsBlackWhiteFlag,
-                AceWindowsFlagType.CHECKERED_FLAG to SpeechEvent.AceWindowsCheckeredFlag,
-                AceWindowsFlagType.ORANGE_CIRCLE_FLAG to SpeechEvent.AceWindowsOrangeCircleFlag,
-                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG to SpeechEvent.AceWindowsRedYellowStripesFlag,
+                AceWindowsFlagType.WHITE_FLAG to SpeechEvent.AceWindowsWhiteFlag(),
+                AceWindowsFlagType.GREEN_FLAG to SpeechEvent.AceWindowsGreenFlag(),
+                AceWindowsFlagType.RED_FLAG to SpeechEvent.AceWindowsRedFlag(),
+                AceWindowsFlagType.BLUE_FLAG to SpeechEvent.AceWindowsBlueFlag(),
+                AceWindowsFlagType.YELLOW_FLAG to SpeechEvent.AceWindowsYellowFlag(),
+                AceWindowsFlagType.BLACK_FLAG to SpeechEvent.AceWindowsBlackFlag(),
+                AceWindowsFlagType.BLACK_WHITE_FLAG to SpeechEvent.AceWindowsBlackWhiteFlag(),
+                AceWindowsFlagType.CHECKERED_FLAG to SpeechEvent.AceWindowsCheckeredFlag(),
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG to SpeechEvent.AceWindowsOrangeCircleFlag(),
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG to SpeechEvent.AceWindowsRedYellowStripesFlag(),
             )
 
         expected.forEach { (flagType, event) ->
@@ -801,7 +801,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = vehicleApproachSettings(thresholdMeters = 10.0),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsVehicleApproach), decision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsVehicleApproach()), decision.events)
         assertEquals(true, decision.state.vehicleApproaching)
     }
 
@@ -857,7 +857,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, departedState.vehicleApproaching)
-        assertEquals(listOf(SpeechEvent.AceWindowsVehicleApproach), reapproachDecision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsVehicleApproach()), reapproachDecision.events)
     }
 
     @Test

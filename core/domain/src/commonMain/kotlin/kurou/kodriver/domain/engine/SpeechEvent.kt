@@ -70,7 +70,7 @@ sealed interface SpeechEvent {
      * テレメトリログに記録するイベントの既定文言。
      * WAVイベントでは収録音声・チップ表示と一致する。LMUの自由文字列イベントでは既定文言を参照し、
      * 判定時の実際の本文は [FreeTextSpeechEvent.resolvedText] に保持する。
-     * ACEフラッグは自由文字列を読み上げるため、実際の本文ではなく既定文言の定数を参照する。
+     * ACEフラッグの既定文言は定数を参照し、判定時に解決した実際の本文は [AceWindowsReadoutTextEvent.resolvedText] に保持する。
      * ドメイン層はCompose Resourcesに依存しないため、表示文言の変更時はここも更新する。
      */
     val narratedText: String
@@ -379,54 +379,94 @@ sealed interface SpeechEvent {
         override fun withResolvedText(text: String): AceWindowsRemainingFuelWarning = copy(resolvedText = text)
     }
 
-    data object AceWindowsWhiteFlag : SpeechEvent {
+    data class AceWindowsWhiteFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsWhiteFlag = copy(resolvedText = text)
     }
 
-    data object AceWindowsGreenFlag : SpeechEvent {
+    data class AceWindowsGreenFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsGreenFlag = copy(resolvedText = text)
     }
 
-    data object AceWindowsRedFlag : SpeechEvent {
+    data class AceWindowsRedFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsRedFlag = copy(resolvedText = text)
     }
 
-    data object AceWindowsBlueFlag : SpeechEvent {
+    data class AceWindowsBlueFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsBlueFlag = copy(resolvedText = text)
     }
 
-    data object AceWindowsYellowFlag : SpeechEvent {
+    data class AceWindowsYellowFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsYellowFlag = copy(resolvedText = text)
     }
 
-    data object AceWindowsBlackFlag : SpeechEvent {
+    data class AceWindowsBlackFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsBlackFlag = copy(resolvedText = text)
     }
 
-    data object AceWindowsBlackWhiteFlag : SpeechEvent {
+    data class AceWindowsBlackWhiteFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsBlackWhiteFlag = copy(resolvedText = text)
     }
 
-    data object AceWindowsCheckeredFlag : SpeechEvent {
+    data class AceWindowsCheckeredFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsCheckeredFlag = copy(resolvedText = text)
     }
 
-    data object AceWindowsOrangeCircleFlag : SpeechEvent {
+    data class AceWindowsOrangeCircleFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsOrangeCircleFlag = copy(resolvedText = text)
     }
 
-    data object AceWindowsRedYellowStripesFlag : SpeechEvent {
+    data class AceWindowsRedYellowStripesFlag(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
         override val narratedText = ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsRedYellowStripesFlag = copy(resolvedText = text)
     }
 
     /** 判定時点の最大カーカス温度と解決済み本文を保持するタイヤ過熱イベント。 */
@@ -450,9 +490,13 @@ sealed interface SpeechEvent {
      * ACE の共有メモリには自車の向きに相当するフィールドが存在せず、LMU（[CarLeft]/[CarRight] 等）のような
      * 左右を区別した接近アナウンスができないため、左右を区別しない汎用の接近アナウンスとして1種類のみ用意する。
      */
-    data object AceWindowsVehicleApproach : SpeechEvent {
+    data class AceWindowsVehicleApproach(
+        override val resolvedText: String? = null,
+    ) : AceWindowsReadoutTextEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.VehicleApproach.Root
         override val narratedText = ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
+
+        override fun withResolvedText(text: String): AceWindowsVehicleApproach = copy(resolvedText = text)
     }
 
     /** ACE の更新後の自己ベストタイム。解決済み文言は判定時の発話・ログ内容を保持する。 */

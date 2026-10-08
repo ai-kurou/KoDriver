@@ -92,17 +92,13 @@ internal class AceWindowsNarratorEventProcessor(
     ) {
         val previous = previousFlag
         events.forEach { event ->
-            val text =
-                if (isAceWindowsCustomSpeakEvent(event)) {
-                    readoutTextSafely(event)?.takeIf { it.isNotBlank() }
-                } else {
-                    event.narratedText
-                }
+            val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    speakWithPriority(event, readoutOrder, queueEnabledStates)
+                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,
@@ -244,17 +240,13 @@ internal class AceWindowsNarratorEventProcessor(
     ) {
         val previous = previousVehicleApproach
         events.forEach { event ->
-            val text =
-                if (isAceWindowsCustomSpeakEvent(event)) {
-                    readoutTextSafely(event)?.takeIf { it.isNotBlank() }
-                } else {
-                    event.narratedText
-                }
+            val text = readoutTextSafely(event)?.takeIf { it.isNotBlank() }
             val narrationOutcome =
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    speakWithPriority(event, readoutOrder, queueEnabledStates)
+                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
                 createdAt = observedAtMs,

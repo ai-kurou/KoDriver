@@ -22,16 +22,16 @@ class AceWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.AceWindowsWhiteFlag.narratedText,
-            SpeechEvent.AceWindowsGreenFlag.narratedText,
-            SpeechEvent.AceWindowsRedFlag.narratedText,
-            SpeechEvent.AceWindowsBlueFlag.narratedText,
-            SpeechEvent.AceWindowsYellowFlag.narratedText,
-            SpeechEvent.AceWindowsBlackFlag.narratedText,
-            SpeechEvent.AceWindowsBlackWhiteFlag.narratedText,
-            SpeechEvent.AceWindowsCheckeredFlag.narratedText,
-            SpeechEvent.AceWindowsOrangeCircleFlag.narratedText,
-            SpeechEvent.AceWindowsRedYellowStripesFlag.narratedText,
+            SpeechEvent.AceWindowsWhiteFlag().narratedText,
+            SpeechEvent.AceWindowsGreenFlag().narratedText,
+            SpeechEvent.AceWindowsRedFlag().narratedText,
+            SpeechEvent.AceWindowsBlueFlag().narratedText,
+            SpeechEvent.AceWindowsYellowFlag().narratedText,
+            SpeechEvent.AceWindowsBlackFlag().narratedText,
+            SpeechEvent.AceWindowsBlackWhiteFlag().narratedText,
+            SpeechEvent.AceWindowsCheckeredFlag().narratedText,
+            SpeechEvent.AceWindowsOrangeCircleFlag().narratedText,
+            SpeechEvent.AceWindowsRedYellowStripesFlag().narratedText,
         ).forEachIndexed { index, narratedText ->
             rule
                 .onAllNodesWithText(narratedText)[if (index < 8) 1 else 0]

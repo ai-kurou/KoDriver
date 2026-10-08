@@ -93,21 +93,21 @@ class AceWindowsNarratorEngineTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.AceWindowsVehicleApproach,
+                    SpeechEvent.AceWindowsVehicleApproach(),
                     SpeechEvent.AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"),
                     SpeechEvent.AceWindowsRemainingFuelLapsWarning(2, "残り2周"),
                     SpeechEvent.AceWindowsRemainingFuelLapsWarning(0, "燃料なし"),
                     SpeechEvent.AceWindowsTyreOverheat(110, "タイヤ過熱 110度"),
-                    SpeechEvent.AceWindowsCheckeredFlag,
-                    SpeechEvent.AceWindowsWhiteFlag,
-                    SpeechEvent.AceWindowsGreenFlag,
-                    SpeechEvent.AceWindowsRedFlag,
-                    SpeechEvent.AceWindowsBlueFlag,
-                    SpeechEvent.AceWindowsYellowFlag,
-                    SpeechEvent.AceWindowsBlackFlag,
-                    SpeechEvent.AceWindowsBlackWhiteFlag,
-                    SpeechEvent.AceWindowsOrangeCircleFlag,
-                    SpeechEvent.AceWindowsRedYellowStripesFlag,
+                    SpeechEvent.AceWindowsCheckeredFlag(),
+                    SpeechEvent.AceWindowsWhiteFlag(),
+                    SpeechEvent.AceWindowsGreenFlag(),
+                    SpeechEvent.AceWindowsRedFlag(),
+                    SpeechEvent.AceWindowsBlueFlag(),
+                    SpeechEvent.AceWindowsYellowFlag(),
+                    SpeechEvent.AceWindowsBlackFlag(),
+                    SpeechEvent.AceWindowsBlackWhiteFlag(),
+                    SpeechEvent.AceWindowsOrangeCircleFlag(),
+                    SpeechEvent.AceWindowsRedYellowStripesFlag(),
                 )
             val startSound = byteArrayOf(2)
             events.forEachIndexed { index, target ->

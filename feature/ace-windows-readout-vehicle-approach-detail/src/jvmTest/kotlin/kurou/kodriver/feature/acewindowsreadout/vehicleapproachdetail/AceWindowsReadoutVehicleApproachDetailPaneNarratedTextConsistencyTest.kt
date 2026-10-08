@@ -21,7 +21,7 @@ class AceWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
             }
         }
 
-        val narratedText = SpeechEvent.AceWindowsVehicleApproach.narratedText
+        val narratedText = SpeechEvent.AceWindowsVehicleApproach().narratedText
         rule.onAllNodesWithText(narratedText)[0].assertTextContains(narratedText, substring = true)
     }
 }
