@@ -11,7 +11,7 @@
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20-7F52FF?logo=kotlin)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ai-kurou/KoDriver)
 
-Le Mans Ultimate（LMU）、Gran Turismo 7（GT7 PS5）、Assetto Corsa EVO（ACE）の走行情報に応じて、WAV 音声ファイルの再生や OS 標準の音声合成（TTS）による読み上げをリアルタイムに行う Compose Multiplatform アプリ。
+Le Mans Ultimate（LMU）、Gran Turismo 7（GT7 PS5）、Assetto Corsa EVO（ACE）の走行情報に応じて、開始音の WAV 再生や OS 標準の音声合成（TTS）による自由文言の読み上げをリアルタイムに行う Compose Multiplatform アプリ。
 
 https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
@@ -21,7 +21,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
 - アナウンスする項目の選択・有効/無効の切り替え
 - アナウンス優先度のドラッグ＆ドロップによる並び替え
-- WAV 音声ファイルと OS 標準 TTS（LMU のフラッグ・車両接近・ピットタイミングは自由文言）によるリアルタイムアナウンス
+- 開始音の WAV 再生と、全項目の OS 標準 TTS（自由文言）によるリアルタイムアナウンス
 - 読み上げ音声（Windows / Android）の選択と試聴
 - LMU / ACE 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
 - GT7 PS5 のテレメトリを UDP で直接受信（Android / Windows 対応、SimHub 経由も可）

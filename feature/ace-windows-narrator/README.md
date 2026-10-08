@@ -1,6 +1,6 @@
 # ace-windows-narrator
 
-ACE (Assetto Corsa EVO) Windows版のWAV音声再生・自由文言TTSとアナウンス制御。`feature:lmu-windows-narrator` /
+ACE (Assetto Corsa EVO) Windows版の開始音WAV再生・自由文言TTSとアナウンス制御。`feature:lmu-windows-narrator` /
 `feature:gt7-ps5-narrator` に相当する ACE 版。
 
 `AceWindowsNarratorViewModel` が `ObserveAceWindowsFuelUseCase` の燃料残量と
@@ -21,7 +21,7 @@ Processorで解決した本文をイベントの `resolvedText` に保持し、�
 Processorで解決した本文を `resolvedText` に保持し、空白・TTS利用不可では開始音も本文も要求せず `SKIPPED` を記録する。
 開始音・優先度・キューは `RemainingFuelLaps.Root` を維持する。`remaining_fuel_laps_0.wav`〜`remaining_fuel_laps_5.wav` は廃止し、WAVフォールバックは行わない。
 詳細画面では通常文言・0周以下用文言の自由文言編集と既定値へのリセットを提供し、通常文言には `{laps}` の末尾挿入と未知プレースホルダーの警告を表示する。試聴は通常文言を画面に表示中の閾値周回数で置換し、0周以下用文言はそのまま使い、`RemainingFuelLaps.Root` の開始音とOS標準TTSで再生する。空白文言・TTS利用不可・音量ゼロ以下では開始音も本文も再生しない。
-イベント→WAVファイルパスのマップと `Res::readBytes` は `AceWindowsNarratorModule.kt` で定義する。
+イベント別のWAVは持たず（イベント→WAVのマップは空）、WAVは開始音のみ。開始音のパスと `Res::readBytes` は `AceWindowsNarratorModule.kt` で定義する。
 `SoundPlayer` 等の音声再生基盤の実装は `:core:narrator` を参照。
 
 Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes の全10種は、`AceWindowsReadoutTextSpeaker` が保存文言（既定値は各SpeechEventのnarratedTextと同じ）を
@@ -41,7 +41,12 @@ Narratorで都度文言を解決し、空白・TTS利用不可では開始音も
 Processorで解決した本文を `SpeechEvent.AceWindowsTyreOverheat.resolvedText` に保持し、発話とログを一致させる。
 空白・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` をログに保存する。
 開始音・優先度・キューは `TyreTemperature.Root` を維持し、`tyre_overheat.wav` を廃止する。WAVフォールバックは行わない。
-自由文言の入力UI・試聴対応はPR3で追加する。
+
+自己ベストラップ更新（`SpeechEvent.AceWindowsMyBestLap`）も保存した自由文言をOS標準TTSで読み上げる。
+保存先は共有 `MyBestLapPreferences` の `@ProtoNumber(4) aceWindowsReadoutText`、既定文言は「自己ベストラップ更新 {laptime}」。
+`{laptime}` は更新後の `bestLapTimeMs` を「1分23秒456」形式に置換する。旧口調設定（`voiceType`）は読み取らない。
+Processorで解決した本文を `resolvedText` に保持し、空白・TTS利用不可では開始音も本文も要求せず `SKIPPED` を記録する。
+開始音・優先度・キューは `MyBestLap.Root` を使う。WAVへのフォールバックは行わない。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

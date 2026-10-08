@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 
-Le Mans Ultimate（LMU）・Assetto Corsa EVO（ACE）から Windows 共有メモリ経由で、Gran Turismo 7（GT7 PS5）から UDP 経由でテレメトリデータを取得し、Compose Multiplatform アプリで表示・OS標準TTSによる自由文言の読み上げとWAV音声（開始音・収録音声）の再生によるアナウンスを行う。デスクトップアプリ内で Ktor サーバーも起動し、LMU / ACE 由来の走行情報を WebSocket で配信する。
+Le Mans Ultimate（LMU）・Assetto Corsa EVO（ACE）から Windows 共有メモリ経由で、Gran Turismo 7（GT7 PS5）から UDP 経由でテレメトリデータを取得し、Compose Multiplatform アプリで表示・OS標準TTSによる自由文言の読み上げと開始音のWAV再生によるアナウンスを行う。デスクトップアプリ内で Ktor サーバーも起動し、LMU / ACE 由来の走行情報を WebSocket で配信する。
 
 ---
 
