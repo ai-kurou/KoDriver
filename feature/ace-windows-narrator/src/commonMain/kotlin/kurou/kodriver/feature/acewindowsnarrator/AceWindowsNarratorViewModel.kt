@@ -15,7 +15,6 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEF
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -27,7 +26,6 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
@@ -45,7 +43,6 @@ import kotlin.time.ExperimentalTime
 
 internal data class MyBestLapUseCases(
     val observeBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
-    val observeMyBestLapVoiceType: ObserveAceWindowsMyBestLapVoiceTypeUseCase,
 )
 
 internal data class RemainingFuelUseCases(
@@ -136,11 +133,6 @@ internal class AceWindowsNarratorViewModel(
             .observeQueueEnabledStates()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
-    private val voiceType =
-        myBestLapUseCases
-            .observeMyBestLapVoiceType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, MY_BEST_LAP_VOICE_TYPE_DEFAULT)
-
     private val remainingFuelThreshold =
         remainingFuelUseCases
             .observeThresholdPercentage()
@@ -178,7 +170,6 @@ internal class AceWindowsNarratorViewModel(
                 remainingFuelThresholdPercentage = remainingFuelThreshold.value,
                 tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThreshold.value,
                 vehicleApproachThresholdMeters = vehicleApproachThreshold.value,
-                myBestLapVoiceType = voiceType.value,
                 remainingFuelLapsThreshold = remainingFuelLapsThreshold.value,
             )
 

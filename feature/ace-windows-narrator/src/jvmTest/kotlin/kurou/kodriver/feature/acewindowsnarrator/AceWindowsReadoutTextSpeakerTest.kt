@@ -19,6 +19,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextU
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
@@ -52,6 +53,7 @@ class AceWindowsReadoutTextSpeakerTest {
     private val observeRemainingFuel: ObserveAceWindowsRemainingFuelReadoutTextUseCase = mockk()
     private val observeRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase = mockk()
     private val observeEmptyFuelLaps: ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase = mockk()
+    private val observeMyBestLap: ObserveAceWindowsMyBestLapReadoutTextUseCase = mockk()
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
     private val speaker =
@@ -71,6 +73,7 @@ class AceWindowsReadoutTextSpeakerTest {
             observeRemainingFuel,
             observeRemainingFuelLaps,
             observeEmptyFuelLaps,
+            observeMyBestLap,
             checkAvailable,
             speakText,
         )
@@ -745,6 +748,65 @@ class AceWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("残り20周", volume = 42) }
             confirmVerified(observeRemainingFuelLaps, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `自己ベストラップは保存文言のラップタイムを整形して読み上げる`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsMyBestLap(83_456)
+            every { observeMyBestLap() } returns flowOf("更新 {laptime}、{laptime}")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("更新 1分23秒456、1分23秒456", volume = 42) } just Runs
+            assertEquals("更新 1分23秒456、1分23秒456", speaker.readoutText(event))
+            speaker(event, 42)
+            assertEquals(true, isAceWindowsCustomSpeakEvent(event))
+            verify(exactly = 2) { observeMyBestLap() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("更新 1分23秒456、1分23秒456", volume = 42) }
+            confirmVerified(observeMyBestLap, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `自己ベストラップの解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsMyBestLap(83_456, "判定時の本文")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText("判定時の本文", volume = 42) } just Runs
+            assertEquals("判定時の本文", speaker.readoutText(event))
+            coEvery { checkAvailable() } returns false
+            speaker(event, 42)
+            verify(exactly = 0) { observeMyBestLap() }
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 1) { speakText("判定時の本文", volume = 42) }
+            confirmVerified(observeMyBestLap, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `自己ベストラップは空白の保存文言や解決済み本文を読み上げない`() =
+        runTest {
+            every { observeMyBestLap() } returns flowOf(" ")
+            val event = SpeechEvent.AceWindowsMyBestLap(83_456)
+            assertNull(speaker.readoutText(event))
+            speaker(event, 42)
+            speaker(event.withResolvedText(" "), 42)
+            verify(exactly = 2) { observeMyBestLap() }
+            coVerify(exactly = 0) { checkAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = 42) }
+            confirmVerified(observeMyBestLap, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `自己ベストラップはTTS利用不可なら読み上げない`() =
+        runTest {
+            val event = SpeechEvent.AceWindowsMyBestLap(83_456)
+            every { observeMyBestLap() } returns flowOf("更新 {laptime}")
+            coEvery { checkAvailable() } returns false
+            assertNull(speaker.readoutText(event))
+            speaker(event, 42)
+            verify(exactly = 2) { observeMyBestLap() }
+            coVerify(exactly = 2) { checkAvailable() }
+            coVerify(exactly = 0) { speakText("更新 1分23秒456", volume = 42) }
+            confirmVerified(observeMyBestLap, checkAvailable, speakText)
         }
 
     @Test

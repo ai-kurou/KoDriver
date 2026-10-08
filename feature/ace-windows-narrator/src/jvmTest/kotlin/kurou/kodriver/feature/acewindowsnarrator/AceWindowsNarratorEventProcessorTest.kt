@@ -429,13 +429,15 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val key = ReadoutItemKey.AceWindows.MyBestLap.Root
-            every { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) } just Runs
+            val event = SpeechEvent.AceWindowsMyBestLap(89_000)
+            val resolvedEvent = event.withResolvedText("自己ベストラップ更新 1分29秒000")
+            every { ttsEngine.speak(resolvedEvent, false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
@@ -443,7 +445,7 @@ class AceWindowsNarratorEventProcessorTest {
 
             createProcessor().processMyBestLap(
                 bestLapTime = bestLapTime(89_000),
-                events = listOf(SpeechEvent.AceWindowsMyBestLapFormal),
+                events = listOf(event),
                 readoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -456,13 +458,13 @@ class AceWindowsNarratorEventProcessorTest {
                 telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000,"currentLap":0}"""),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) }
+            verify(exactly = 1) { ttsEngine.speak(resolvedEvent, false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
                     key,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
                 )
@@ -477,13 +479,15 @@ class AceWindowsNarratorEventProcessorTest {
             every { ttsEngine.currentReadoutItemKey } returns null
             val processor = createProcessor()
             val key = ReadoutItemKey.AceWindows.MyBestLap.Root
-            every { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) } just Runs
+            val event = SpeechEvent.AceWindowsMyBestLap(89_000)
+            val resolvedEvent = event.withResolvedText("自己ベストラップ更新 1分29秒000")
+            every { ttsEngine.speak(resolvedEvent, false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
                 )
@@ -499,7 +503,7 @@ class AceWindowsNarratorEventProcessorTest {
             )
             processor.processMyBestLap(
                 bestLapTime(89_000),
-                listOf(SpeechEvent.AceWindowsMyBestLapFormal),
+                listOf(event),
                 listOf(key),
                 emptyMap(),
                 200L,
@@ -516,15 +520,57 @@ class AceWindowsNarratorEventProcessorTest {
                 telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000,"currentLap":0}"""),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsMyBestLapFormal, false) }
+            verify(exactly = 1) { ttsEngine.speak(resolvedEvent, false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
                     Simulator.AceWindows,
                     key,
-                    "自己ベストラップ更新",
+                    "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `自己ベストラップの本文が空白または取得できない場合は読み上げずSKIPPEDで保存する`() =
+        runTest {
+            val key = ReadoutItemKey.AceWindows.MyBestLap.Root
+            val event = SpeechEvent.AceWindowsMyBestLap(89_000)
+            val jsons = mutableListOf<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(jsons),
+                )
+            } just Runs
+
+            listOf<suspend (SpeechEvent) -> String?>({ " " }, { null }).forEach { readoutText ->
+                createProcessor(readoutText).processMyBestLap(
+                    bestLapTime = bestLapTime(89_000),
+                    events = listOf(event),
+                    readoutOrder = listOf(key),
+                    queueEnabledStates = emptyMap(),
+                    observedAtMs = 0L,
+                    logContext = logContext(),
+                )
+            }
+
+            assertEquals(2, jsons.size)
+            coVerify(exactly = 2) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    jsons.first(),
                 )
             }
             confirmVerified(telemetryLogRepository, ttsEngine)

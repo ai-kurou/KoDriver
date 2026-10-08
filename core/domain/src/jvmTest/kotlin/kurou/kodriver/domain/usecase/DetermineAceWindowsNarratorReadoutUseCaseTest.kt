@@ -12,7 +12,6 @@ import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.FuelPercent
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
@@ -49,7 +48,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = myBestLapSettings(),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLapFormal), second.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLap(lapTimeMs = 68_000)), second.events)
         assertEquals(68_000, second.state.personalBestMs)
         assertEquals(2, second.state.previousLapCount)
     }
@@ -116,40 +115,22 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `自己ベストが更新されたら設定された声種別で読み上げる`() {
+    fun `自己ベストが更新されたら更新後のラップタイムを持つイベントを読み上げる`() {
         val initialDecision =
             useCase.determineMyBestLap(
                 state = AceWindowsNarratorState(),
                 data = bestLapTime(bestLapTimeMs = 90_000),
-                settings = myBestLapSettings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+                settings = myBestLapSettings(),
             )
         val decision =
             useCase.determineMyBestLap(
                 state = initialDecision.state,
                 data = bestLapTime(bestLapTimeMs = 89_000),
-                settings = myBestLapSettings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+                settings = myBestLapSettings(),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLapCasual), decision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLap(lapTimeMs = 89_000)), decision.events)
         assertEquals(89_000, decision.state.personalBestMs)
-    }
-
-    @Test
-    fun `自己ベストが更新されFORMALならAceWindowsMyBestLapFormalを読み上げる`() {
-        val initialDecision =
-            useCase.determineMyBestLap(
-                state = AceWindowsNarratorState(),
-                data = bestLapTime(bestLapTimeMs = 90_000),
-                settings = myBestLapSettings(myBestLapVoiceType = MyBestLapVoiceType.FORMAL),
-            )
-        val decision =
-            useCase.determineMyBestLap(
-                state = initialDecision.state,
-                data = bestLapTime(bestLapTimeMs = 89_000),
-                settings = myBestLapSettings(myBestLapVoiceType = MyBestLapVoiceType.FORMAL),
-            )
-
-        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLapFormal), decision.events)
     }
 
     @Test
@@ -185,7 +166,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = myBestLapSettings(),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLapFormal), second.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLap(lapTimeMs = 89_000)), second.events)
     }
 
     @Test
@@ -938,14 +919,11 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         currentLap: Int = 0,
     ) = AceWindowsBestLapTimeData(bestLapTimeMs = bestLapTimeMs, currentLap = currentLap)
 
-    private fun myBestLapSettings(
-        myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-        enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-    ) = AceWindowsNarratorReadoutSettings(
-        enabledStates = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true) + enabledOverrides,
-        remainingFuelThresholdPercentage = 0,
-        myBestLapVoiceType = myBestLapVoiceType,
-    )
+    private fun myBestLapSettings(enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap()) =
+        AceWindowsNarratorReadoutSettings(
+            enabledStates = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true) + enabledOverrides,
+            remainingFuelThresholdPercentage = 0,
+        )
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))
 

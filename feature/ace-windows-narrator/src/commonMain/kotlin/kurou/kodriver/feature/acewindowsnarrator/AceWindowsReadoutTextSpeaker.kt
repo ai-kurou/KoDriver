@@ -3,6 +3,7 @@ package kurou.kodriver.feature.acewindowsnarrator
 import kotlinx.coroutines.flow.first
 import kurou.kodriver.domain.engine.AceWindowsReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsTyreTemperatureReadoutText
@@ -12,6 +13,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextU
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsCheckeredFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsGreenFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsOrangeCircleFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadoutTextUseCase
@@ -27,7 +29,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
 /**
  * ACE の保存した自由文言をOS標準TTSで読み上げる。空白・TTS利用不可なら読み上げない。
  * 対象イベント: Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes・
- * VehicleApproach・TyreOverheat・RemainingFuelWarning・RemainingFuelLapsWarning。
+ * VehicleApproach・TyreOverheat・RemainingFuelWarning・RemainingFuelLapsWarning・MyBestLap。
  */
 @Suppress("LongParameterList")
 internal class AceWindowsReadoutTextSpeaker(
@@ -46,6 +48,7 @@ internal class AceWindowsReadoutTextSpeaker(
     private val observeRemainingFuelReadoutText: ObserveAceWindowsRemainingFuelReadoutTextUseCase,
     private val observeRemainingFuelLapsReadoutText: ObserveAceWindowsRemainingFuelLapsReadoutTextUseCase,
     private val observeRemainingFuelLapsEmptyReadoutText: ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase,
+    private val observeMyBestLapReadoutText: ObserveAceWindowsMyBestLapReadoutTextUseCase,
     private val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     private val speakText: SpeakTextUseCase,
 ) {
@@ -95,6 +98,9 @@ internal class AceWindowsReadoutTextSpeaker(
                             event.laps,
                         )
                     }
+            } else if (event is SpeechEvent.AceWindowsMyBestLap) {
+                event.resolvedText
+                    ?: formatAceWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
             } else {
                 savedReadoutText(event) ?: return null
             }
@@ -138,6 +144,7 @@ internal fun isAceWindowsCustomSpeakEvent(event: SpeechEvent): Boolean =
         is SpeechEvent.AceWindowsTyreOverheat,
         is SpeechEvent.AceWindowsRemainingFuelWarning,
         is SpeechEvent.AceWindowsRemainingFuelLapsWarning,
+        is SpeechEvent.AceWindowsMyBestLap,
         -> true
 
         else -> false
