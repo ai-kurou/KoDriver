@@ -2,70 +2,45 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 
-@Suppress("TooManyFunctions")
 internal class AceWindowsFlagReadoutTextPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsFlagReadoutTextPreferences>,
 ) : AceWindowsFlagReadoutTextPreferencesRepository {
-    override fun observeCheckeredFlagText(): Flow<String> = dataStore.observeProperty { it.checkeredFlagText }
+    override fun observeText(key: AceWindowsFlagReadoutTextKey): Flow<String> =
+        dataStore.observeProperty { prefs ->
+            when (key) {
+                AceWindowsFlagReadoutTextKey.CHECKERED -> prefs.checkeredFlagText
+                AceWindowsFlagReadoutTextKey.WHITE -> prefs.whiteFlagText
+                AceWindowsFlagReadoutTextKey.GREEN -> prefs.greenFlagText
+                AceWindowsFlagReadoutTextKey.RED -> prefs.redFlagText
+                AceWindowsFlagReadoutTextKey.BLUE -> prefs.blueFlagText
+                AceWindowsFlagReadoutTextKey.YELLOW -> prefs.yellowFlagText
+                AceWindowsFlagReadoutTextKey.BLACK -> prefs.blackFlagText
+                AceWindowsFlagReadoutTextKey.BLACK_WHITE -> prefs.blackWhiteFlagText
+                AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE -> prefs.orangeCircleFlagText
+                AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES -> prefs.redYellowStripesFlagText
+            }
+        }
 
-    override suspend fun saveCheckeredFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(checkeredFlagText = value) }
-    }
-
-    override fun observeWhiteFlagText(): Flow<String> = dataStore.observeProperty { it.whiteFlagText }
-
-    override suspend fun saveWhiteFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(whiteFlagText = value) }
-    }
-
-    override fun observeGreenFlagText(): Flow<String> = dataStore.observeProperty { it.greenFlagText }
-
-    override suspend fun saveGreenFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(greenFlagText = value) }
-    }
-
-    override fun observeRedFlagText(): Flow<String> = dataStore.observeProperty { it.redFlagText }
-
-    override suspend fun saveRedFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(redFlagText = value) }
-    }
-
-    override fun observeBlueFlagText(): Flow<String> = dataStore.observeProperty { it.blueFlagText }
-
-    override suspend fun saveBlueFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(blueFlagText = value) }
-    }
-
-    override fun observeYellowFlagText(): Flow<String> = dataStore.observeProperty { it.yellowFlagText }
-
-    override suspend fun saveYellowFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(yellowFlagText = value) }
-    }
-
-    override fun observeBlackFlagText(): Flow<String> = dataStore.observeProperty { it.blackFlagText }
-
-    override suspend fun saveBlackFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(blackFlagText = value) }
-    }
-
-    override fun observeBlackWhiteFlagText(): Flow<String> = dataStore.observeProperty { it.blackWhiteFlagText }
-
-    override suspend fun saveBlackWhiteFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(blackWhiteFlagText = value) }
-    }
-
-    override fun observeOrangeCircleFlagText(): Flow<String> = dataStore.observeProperty { it.orangeCircleFlagText }
-
-    override suspend fun saveOrangeCircleFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(orangeCircleFlagText = value) }
-    }
-
-    override fun observeRedYellowStripesFlagText(): Flow<String> =
-        dataStore.observeProperty { it.redYellowStripesFlagText }
-
-    override suspend fun saveRedYellowStripesFlagText(text: String) {
-        dataStore.saveProperty(text) { prefs, value -> prefs.copy(redYellowStripesFlagText = value) }
+    override suspend fun saveText(
+        key: AceWindowsFlagReadoutTextKey,
+        text: String,
+    ) {
+        dataStore.saveProperty(text) { prefs, value ->
+            when (key) {
+                AceWindowsFlagReadoutTextKey.CHECKERED -> prefs.copy(checkeredFlagText = value)
+                AceWindowsFlagReadoutTextKey.WHITE -> prefs.copy(whiteFlagText = value)
+                AceWindowsFlagReadoutTextKey.GREEN -> prefs.copy(greenFlagText = value)
+                AceWindowsFlagReadoutTextKey.RED -> prefs.copy(redFlagText = value)
+                AceWindowsFlagReadoutTextKey.BLUE -> prefs.copy(blueFlagText = value)
+                AceWindowsFlagReadoutTextKey.YELLOW -> prefs.copy(yellowFlagText = value)
+                AceWindowsFlagReadoutTextKey.BLACK -> prefs.copy(blackFlagText = value)
+                AceWindowsFlagReadoutTextKey.BLACK_WHITE -> prefs.copy(blackWhiteFlagText = value)
+                AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE -> prefs.copy(orangeCircleFlagText = value)
+                AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES -> prefs.copy(redYellowStripesFlagText = value)
+            }
+        }
     }
 }

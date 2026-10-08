@@ -1,10 +1,11 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 
 class ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase(
     private val repository: AceWindowsFlagReadoutTextPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<String> = repository.observeBlackWhiteFlagText()
+    operator fun invoke(): Flow<String> = repository.observeText(AceWindowsFlagReadoutTextKey.BLACK_WHITE)
 }

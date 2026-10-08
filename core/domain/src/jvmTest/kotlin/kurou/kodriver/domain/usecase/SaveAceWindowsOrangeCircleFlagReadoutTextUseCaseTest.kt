@@ -4,6 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import kotlin.test.Test
@@ -16,7 +17,9 @@ class SaveAceWindowsOrangeCircleFlagReadoutTextUseCaseTest {
         runTest {
             SaveAceWindowsOrangeCircleFlagReadoutTextUseCase(repository)("  オレンジボールフラッグ、車両に不具合があります  ")
 
-            coVerify(exactly = 1) { repository.saveOrangeCircleFlagText("オレンジボールフラッグ、車両に不具合があります") }
+            coVerify(
+                exactly = 1,
+            ) { repository.saveText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE, "オレンジボールフラッグ、車両に不具合があります") }
             confirmVerified(repository)
         }
 
@@ -25,7 +28,7 @@ class SaveAceWindowsOrangeCircleFlagReadoutTextUseCaseTest {
         runTest {
             SaveAceWindowsOrangeCircleFlagReadoutTextUseCase(repository)("   ")
 
-            coVerify(exactly = 1) { repository.saveOrangeCircleFlagText("") }
+            coVerify(exactly = 1) { repository.saveText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE, "") }
             confirmVerified(repository)
         }
 
@@ -37,7 +40,10 @@ class SaveAceWindowsOrangeCircleFlagReadoutTextUseCaseTest {
             SaveAceWindowsOrangeCircleFlagReadoutTextUseCase(repository)(text)
 
             coVerify(exactly = 1) {
-                repository.saveOrangeCircleFlagText("あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH))
+                repository.saveText(
+                    AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE,
+                    "あ".repeat(READOUT_CUSTOM_TEXT_MAX_LENGTH),
+                )
             }
             confirmVerified(repository)
         }

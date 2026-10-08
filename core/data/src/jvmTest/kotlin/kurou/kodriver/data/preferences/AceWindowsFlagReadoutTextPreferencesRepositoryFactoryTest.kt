@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -30,8 +31,8 @@ class AceWindowsFlagReadoutTextPreferencesRepositoryFactoryTest {
         runTest {
             val repository = createAceWindowsFlagReadoutTextPreferencesRepository(tempDir.absolutePath)
 
-            repository.saveCheckeredFlagText("チェッカー、完走")
+            repository.saveText(AceWindowsFlagReadoutTextKey.CHECKERED, "チェッカー、完走")
 
-            assertEquals("チェッカー、完走", repository.observeCheckeredFlagText().first())
+            assertEquals("チェッカー、完走", repository.observeText(AceWindowsFlagReadoutTextKey.CHECKERED).first())
         }
 }

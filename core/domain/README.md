@@ -16,3 +16,10 @@ GT7の燃料残り周回数・燃料残量・タイヤ温度・自己ベスト�
 
 `ReadoutSpeechEventPreviewHelper` は同じ判定を使用し、LMUのタイヤ摩耗・ブレーキ温度・車両損傷の詳細ViewModelから受け取ったイベントを `PlaySpeechEventUseCase` へ渡す。
 文言の置換とイベント生成は各ViewModelが担当し、イベント経由の開始音・TTS再生を維持する。
+
+## ACEフラッグの読み上げ文言設定
+
+`AceWindowsFlagReadoutTextPreferencesRepository` は `AceWindowsFlagReadoutTextKey` を指定する
+`observeText` / `saveText` で、設定可能な10種類のフラッグ文言を取得・保存する。
+フラッグなし・不明は設定対象に含めない。フラッグ別のUseCaseは対応するキーを指定し、
+保存時の空白除去・最大文字数制限を維持する。
