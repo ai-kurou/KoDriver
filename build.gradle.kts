@@ -25,7 +25,7 @@ plugins {
 
 plugins.withType<YarnPlugin> {
     extensions.configure<YarnRootExtension> {
-        resolution("body-parser", "1.20.6")
+        resolution("karma/body-parser", "1.20.6")
         resolution("brace-expansion", "5.0.12")
         resolution("diff", "8.0.3")
         resolution("serialize-javascript", "7.0.5")
@@ -35,16 +35,16 @@ plugins.withType<YarnPlugin> {
         resolution("shell-quote", "1.10.0")
         resolution("socket.io-parser", "4.2.7")
         resolution("uuid", "11.1.1")
-        resolution("webpack-dev-server", "5.2.6")
-        resolution("webpack", "5.104.1")
+        resolution("webpack-dev-server", "6.0.0")
+        resolution("webpack", "5.111.1")
         resolution("ws", "8.21.0")
     }
 }
 
 plugins.withType<NodeJsRootPlugin> {
     extensions.configure<NodeJsRootExtension> {
-        versions.webpack.version = "5.104.1"
-        versions.webpackDevServer.version = "5.2.6"
+        versions.webpack.version = "5.111.1"
+        versions.webpackDevServer.version = "6.0.0"
     }
 }
 
