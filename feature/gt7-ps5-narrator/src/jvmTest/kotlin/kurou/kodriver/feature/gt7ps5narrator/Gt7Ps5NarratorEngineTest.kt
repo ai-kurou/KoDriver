@@ -23,14 +23,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class Gt7Ps5WavNarratorEngineTest {
+class Gt7Ps5NarratorEngineTest {
     private val soundPlayer: SoundPlayer = mockk()
     private val wavNarratorEngine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey> = mockk()
 
     @Test
     fun `currentReadoutItemKeyはWavNarratorEngineのcurrentKeyを返す`() {
         every { wavNarratorEngine.currentKey } returns ReadoutItemKey.Gt7Ps5.MyBestLap.Root
-        val engine = Gt7Ps5WavNarratorEngine(wavNarratorEngine)
+        val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
         assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, engine.currentReadoutItemKey)
 
@@ -41,7 +41,7 @@ class Gt7Ps5WavNarratorEngineTest {
     @Test
     fun `speakはWavNarratorEngineのspeakへ委譲する`() {
         every { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) } just Runs
-        val engine = Gt7Ps5WavNarratorEngine(wavNarratorEngine)
+        val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
         engine.speak(SpeechEvent.CarLeft(), queue = true)
 
@@ -52,7 +52,7 @@ class Gt7Ps5WavNarratorEngineTest {
     @Test
     fun `stopはWavNarratorEngineのstopへ委譲する`() {
         every { wavNarratorEngine.stop() } just Runs
-        val engine = Gt7Ps5WavNarratorEngine(wavNarratorEngine)
+        val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
         engine.stop()
 
@@ -63,7 +63,7 @@ class Gt7Ps5WavNarratorEngineTest {
     @Test
     fun `previewStartSoundはWavNarratorEngineのpreviewStartSoundへ委譲する`() {
         every { wavNarratorEngine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO) } just Runs
-        val engine = Gt7Ps5WavNarratorEngine(wavNarratorEngine)
+        val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
         engine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO)
 
@@ -75,7 +75,7 @@ class Gt7Ps5WavNarratorEngineTest {
     fun `playStartSoundはWavNarratorEngineのplayStartSoundForKeyへ委譲する`() =
         runTest {
             coEvery { wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) } just Runs
-            val engine = Gt7Ps5WavNarratorEngine(wavNarratorEngine)
+            val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
             engine.playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
 
@@ -106,7 +106,7 @@ class Gt7Ps5WavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = Gt7Ps5WavNarratorEngine(engine)
+            val narrator = Gt7Ps5NarratorEngine(engine)
             narrator.speak(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3, "あと3周"))
             runCurrent()
             narrator.speak(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, "燃料なし"))
@@ -145,7 +145,7 @@ class Gt7Ps5WavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = Gt7Ps5WavNarratorEngine(engine)
+            val narrator = Gt7Ps5NarratorEngine(engine)
             narrator.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning(30, "あと30%"))
             runCurrent()
             narrator.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning(10, "あと10%"))
@@ -184,7 +184,7 @@ class Gt7Ps5WavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = Gt7Ps5WavNarratorEngine(engine)
+            val narrator = Gt7Ps5NarratorEngine(engine)
             narrator.speak(SpeechEvent.Gt7Ps5TyreOverheat(107, "タイヤ107度"))
             runCurrent()
             narrator.speak(SpeechEvent.Gt7Ps5TyreOverheat(95, "タイヤ95度"))
@@ -226,7 +226,7 @@ class Gt7Ps5WavNarratorEngineTest {
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
-            val narrator = Gt7Ps5WavNarratorEngine(engine)
+            val narrator = Gt7Ps5NarratorEngine(engine)
             narrator.speak(SpeechEvent.Gt7Ps5MyBestLap(83_456, "更新1分23秒456"))
             runCurrent()
             narrator.speak(SpeechEvent.Gt7Ps5MyBestLap(59_000, "更新59秒000"))

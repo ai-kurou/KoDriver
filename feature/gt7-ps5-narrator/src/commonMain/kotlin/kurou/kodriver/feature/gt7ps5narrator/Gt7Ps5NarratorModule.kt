@@ -116,7 +116,7 @@ val gt7Ps5NarratorModule: Module =
         // 音声再生（named "gt7_ps5" で LMU/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
         includes(platformSoundModule(named(Simulator.Gt7Ps5.id)))
         single<TextToSpeechEngine>(named(Simulator.Gt7Ps5.id)) {
-            Gt7Ps5WavNarratorEngine(
+            Gt7Ps5NarratorEngine(
                 WavNarratorEngine(
                     soundPlayer = get(named(Simulator.Gt7Ps5.id)),
                     resources =

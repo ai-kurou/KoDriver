@@ -167,7 +167,7 @@ val aceWindowsNarratorModule: Module =
         // 音声再生（named "ace_windows" で LMU/GT7 と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
         includes(platformSoundModule(named(Simulator.AceWindows.id)))
         single<TextToSpeechEngine>(named(Simulator.AceWindows.id)) {
-            AceWindowsWavNarratorEngine(
+            AceWindowsNarratorEngine(
                 WavNarratorEngine(
                     soundPlayer = get(named(Simulator.AceWindows.id)),
                     resources =

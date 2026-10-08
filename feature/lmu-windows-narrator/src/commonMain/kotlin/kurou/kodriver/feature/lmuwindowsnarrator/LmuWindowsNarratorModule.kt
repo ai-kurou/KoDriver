@@ -237,7 +237,7 @@ val lmuWindowsNarratorModule: Module =
         }
 
         single<TextToSpeechEngine>(named(Simulator.LmuWindows.id)) {
-            LmuWindowsWavNarratorEngine(
+            LmuWindowsNarratorEngine(
                 WavNarratorEngine(
                     soundPlayer = get(named(Simulator.LmuWindows.id)),
                     resources =
