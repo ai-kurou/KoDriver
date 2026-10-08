@@ -59,14 +59,53 @@ class AceWindowsReadoutRemainingFuelLapsDetailPanePreviewTest {
             .performSemanticsAction(SemanticsActions.SetProgress) { it(4f) }
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performScrollTo().performClick()
         assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT to 4, previews.last())
+        rule.runOnIdle { savedLaps = 5 }
+        rule.onNodeWithText("残り約: 4 周").performScrollTo().assertIsDisplayed()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performScrollTo().performClick()
+        assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT to 4, previews.last())
+        rule.runOnIdle { savedLaps = 4 }
         rule.onAllNodesWithContentDescription("デフォルトに戻す")[2].performScrollTo().performClick()
         rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performScrollTo().performClick()
         assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT to 3, previews.last())
         assertEquals(1, resets)
 
+        rule.runOnIdle { savedLaps = 3 }
+        rule.waitForIdle()
         rule.runOnIdle { savedLaps = 2 }
         rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performScrollTo().performClick()
         assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT to 2, previews.last())
+    }
+
+    @Test
+    fun `リセット後に途中の保存通知が届いても表示と試聴を巻き戻さない`() {
+        var savedLaps by mutableIntStateOf(3)
+        val previews = mutableListOf<Int>()
+        rule.setContent {
+            KoDriverTheme {
+                AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
+                    uiState =
+                        AceWindowsReadoutRemainingFuelLapsDetailUiState(
+                            remainingFuelLaps = savedLaps,
+                            isTextToSpeechAvailable = true,
+                        ),
+                    onReadoutTextPreviewClicked = { _, laps -> previews += laps },
+                )
+            }
+        }
+        rule
+            .onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo(3f, 1f..5f, 3)))
+            .performScrollTo()
+            .performSemanticsAction(SemanticsActions.SetProgress) { it(5f) }
+        rule.onAllNodesWithContentDescription("デフォルトに戻す")[2].performScrollTo().performClick()
+        rule.runOnIdle { savedLaps = 5 }
+        rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performScrollTo().performClick()
+        assertEquals(listOf(3), previews)
+        rule.runOnIdle { savedLaps = 3 }
+        rule.waitForIdle()
+        rule.runOnIdle { savedLaps = 2 }
+        rule.onAllNodesWithContentDescription("入力した文言を再生")[0].performScrollTo().performClick()
+        assertEquals(listOf(3, 2), previews)
     }
 }

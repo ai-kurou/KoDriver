@@ -14,9 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +26,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.core.designsystem.rememberPendingText
+import kurou.kodriver.core.designsystem.rememberPendingThreshold
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_MAX
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_MIN
@@ -93,7 +91,7 @@ internal fun AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
     onResetRemainingFuelLaps: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var remainingFuelLaps by remember(uiState.remainingFuelLaps) { mutableIntStateOf(uiState.remainingFuelLaps) }
+    val thresholdState = rememberPendingThreshold(uiState.remainingFuelLaps)
     Column(
         modifier =
             modifier
@@ -120,7 +118,7 @@ internal fun AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
                                 text = uiState.readoutText,
                                 available = uiState.isTextToSpeechAvailable,
                                 onTextChanged = onReadoutTextChanged,
-                                onPreviewClick = { onReadoutTextPreviewClicked(it, remainingFuelLaps) },
+                                onPreviewClick = { onReadoutTextPreviewClicked(it, thresholdState.currentValue) },
                             )
                         }
                         RemainingFuelLapsReadoutField(
@@ -141,17 +139,21 @@ internal fun AceWindowsReadoutRemainingFuelLapsDetailPaneContent(
                             ),
                     )
                     ThresholdSlider(
-                        value = remainingFuelLaps.toFloat(),
+                        value = thresholdState.currentValue.toFloat(),
                         valueRange = THRESHOLD_MIN..THRESHOLD_MAX,
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { thresholdLabelTemplate.formatSliderLabel(it.roundToInt()) },
-                        onValueChangeFinished = { onRemainingFuelLapsChanged(it.roundToInt()) },
+                        onValueChangeFinished = {
+                            val laps = it.roundToInt()
+                            thresholdState.finishChange(laps)
+                            onRemainingFuelLapsChanged(laps)
+                        },
                         defaultValue = ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT.toFloat(),
                         onResetToDefault = {
-                            remainingFuelLaps = ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
+                            thresholdState.finishChange(ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT)
                             onResetRemainingFuelLaps()
                         },
-                        onValueChange = { remainingFuelLaps = it.roundToInt() },
+                        onValueChange = { thresholdState.change(it.roundToInt()) },
                         resetContentDescription = stringResource(Res.string.remaining_fuel_laps_reset_to_default),
                     )
                 }
