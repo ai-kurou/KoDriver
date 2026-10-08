@@ -2,6 +2,9 @@ import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
+import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnPlugin
+import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootExtension
+import org.jetbrains.kotlin.gradle.targets.web.yarn.BaseYarnRootExtension
 
 plugins {
     // 各サブプロジェクトのクラスローダーでプラグインが多重に読み込まれるのを避けるため、
@@ -23,21 +26,31 @@ plugins {
     alias(libs.plugins.androidxBaselineProfile) apply false
 }
 
+fun BaseYarnRootExtension.configureDependencyResolutions() {
+    resolution("body-parser", "2.3.0")
+    resolution("brace-expansion", "5.0.12")
+    resolution("diff", "9.0.0")
+    resolution("serialize-javascript", "7.1.2")
+    resolution("fast-uri", "4.2.1")
+    resolution("js-yaml", "5.4.3")
+    resolution("qs", "6.16.0")
+    resolution("shell-quote", "1.12.0")
+    resolution("socket.io-parser", "4.2.7")
+    resolution("uuid", "14.0.2")
+    resolution("webpack-dev-server", "6.0.0")
+    resolution("webpack", "5.111.1")
+    resolution("ws", "8.22.0")
+}
+
 plugins.withType<YarnPlugin> {
     extensions.configure<YarnRootExtension> {
-        resolution("karma/body-parser", "1.20.6")
-        resolution("brace-expansion", "5.0.12")
-        resolution("diff", "8.0.3")
-        resolution("serialize-javascript", "7.0.5")
-        resolution("fast-uri", "3.1.8")
-        resolution("js-yaml", "4.3.2")
-        resolution("qs", "6.16.0")
-        resolution("shell-quote", "1.10.0")
-        resolution("socket.io-parser", "4.2.7")
-        resolution("uuid", "11.1.1")
-        resolution("webpack-dev-server", "6.0.0")
-        resolution("webpack", "5.111.1")
-        resolution("ws", "8.21.0")
+        configureDependencyResolutions()
+    }
+}
+
+plugins.withType<WasmYarnPlugin> {
+    extensions.configure<WasmYarnRootExtension> {
+        configureDependencyResolutions()
     }
 }
 
