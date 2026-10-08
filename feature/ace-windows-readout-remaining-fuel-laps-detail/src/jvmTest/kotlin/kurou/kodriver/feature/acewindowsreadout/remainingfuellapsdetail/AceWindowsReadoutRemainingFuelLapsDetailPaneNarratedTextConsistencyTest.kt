@@ -4,21 +4,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
-import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import org.junit.Rule
 import org.junit.Test
 
-/**
- * [SpeechEvent.narratedText] は WAV と同じ内容を Chip 表示文言から複製したものであるため、
- * Chip側の文言変更を検知できるよう実際の表示テキストと突き合わせる（#1527）。
- */
+/** 自由文言の初期表示はドメインの既定値と一致する。 */
 class AceWindowsReadoutRemainingFuelLapsDetailPaneNarratedTextConsistencyTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `Chip表示文言がSpeechEventのnarratedTextと一致する`() {
+    fun `入力欄が通常と燃料なしの既定文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 AceWindowsReadoutRemainingFuelLapsDetailPaneContent()
@@ -26,12 +23,10 @@ class AceWindowsReadoutRemainingFuelLapsDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.AceWindowsRemainingFuelLapsWarning(ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT),
-            SpeechEvent.AceWindowsRemainingFuelLapsWarning(0),
-        ).forEach { event ->
-            rule
-                .onAllNodesWithText(event.narratedText, substring = true)[0]
-                .assertTextContains(event.narratedText, substring = true)
+            ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT,
+            ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT,
+        ).forEach { text ->
+            rule.onAllNodesWithText(text)[0].assertTextContains(text, substring = true)
         }
     }
 }
