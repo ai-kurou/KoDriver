@@ -65,6 +65,6 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
     }
 
     fun onPreviewClicked() {
-        playSpeechEvent(SpeechEvent.AceWindowsRemainingFuelWarning)
+        playSpeechEvent(SpeechEvent.AceWindowsRemainingFuelWarning(uiState.value.thresholdPercentage))
     }
 }

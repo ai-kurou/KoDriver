@@ -242,7 +242,7 @@ class SpeechEventTest {
 
     @Test
     fun `ACEフラッグ系のnarratedTextは画面と同じ既定文言を返す`() {
-        assertEquals("残り燃料警告", SpeechEvent.AceWindowsRemainingFuelWarning.narratedText)
+        assertEquals("燃料は残り20パーセント", SpeechEvent.AceWindowsRemainingFuelWarning(20).narratedText)
         assertEquals("ホワイトフラッグ", SpeechEvent.AceWindowsWhiteFlag.narratedText)
         assertEquals("グリーンフラッグ", SpeechEvent.AceWindowsGreenFlag.narratedText)
         assertEquals("レッドフラッグ", SpeechEvent.AceWindowsRedFlag.narratedText)
@@ -327,5 +327,14 @@ class SpeechEventTest {
         assertEquals(111, resolved.celsius)
         assertEquals("過熱注意", resolved.resolvedText)
         assertEquals("タイヤ過熱 111度", resolved.narratedText)
+    }
+
+    @Test
+    fun `ACE燃料残量イベントは既定文言とRootキーと解決済み本文を保持する`() {
+        val event = SpeechEvent.AceWindowsRemainingFuelWarning(30)
+        assertEquals("燃料は残り30パーセント", event.narratedText)
+        assertEquals(ReadoutItemKey.AceWindows.RemainingFuel.Root, event.readoutItemKey)
+        assertEquals(null, event.resolvedText)
+        assertEquals(SpeechEvent.AceWindowsRemainingFuelWarning(30, "残り30%"), event.withResolvedText("残り30%"))
     }
 }

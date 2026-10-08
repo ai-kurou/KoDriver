@@ -26,6 +26,6 @@ class AceWindowsReadoutRemainingFuelDetailPaneNarratedTextConsistencyTest {
         }
 
         rule.onNodeWithText("燃料残量警告").assertIsDisplayed()
-        assertEquals("残り燃料警告", SpeechEvent.AceWindowsRemainingFuelWarning.narratedText)
+        assertEquals("燃料は残り20パーセント", SpeechEvent.AceWindowsRemainingFuelWarning(20).narratedText)
     }
 }

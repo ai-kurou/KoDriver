@@ -225,7 +225,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                     ),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning), fuelDecision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(20)), fuelDecision.events)
         assertEquals(listOf(SpeechEvent.AceWindowsBlueFlag), flagDecision.events)
     }
 
@@ -238,7 +238,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = settings(thresholdPercentage = 30),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning), decision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(20)), decision.events)
         assertEquals(true, decision.state.remainingFuelWarned)
     }
 
@@ -251,7 +251,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = settings(thresholdPercentage = 30),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning), decision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(30)), decision.events)
     }
 
     @Test
@@ -295,7 +295,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, recoveredState.remainingFuelWarned)
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning), rewarnedDecision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(20)), rewarnedDecision.events)
     }
 
     @Test
@@ -963,6 +963,33 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                     settings = tyreTemperatureSettings(highThresholdCelsius = 90),
                 )
             assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat(expected)), decision.events)
+        }
+    }
+
+    @Test
+    fun `燃料残量は判定時の実残量を四捨五入してイベントに保持する`() {
+        listOf(29.6 to 30, 0.4 to 0, 30.0 to 30, 29.5 to 30, 29.4 to 29).forEach { (remaining, percent) ->
+            val decision =
+                useCase.determineRemainingFuel(
+                    state = AceWindowsNarratorState(),
+                    data = fuel(remainingPercent = remaining),
+                    settings = settings(thresholdPercentage = 30),
+                )
+            assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(percent)), decision.events)
+            assertEquals(true, decision.state.remainingFuelWarned)
+        }
+    }
+
+    @Test
+    fun `燃料残量イベントのパーセントは100を上限にする`() {
+        listOf(99.6, 100.0, 100.6).forEach { remaining ->
+            val decision =
+                useCase.determineRemainingFuel(
+                    state = AceWindowsNarratorState(),
+                    data = fuel(remainingPercent = remaining),
+                    settings = settings(thresholdPercentage = 101),
+                )
+            assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(100)), decision.events)
         }
     }
 }

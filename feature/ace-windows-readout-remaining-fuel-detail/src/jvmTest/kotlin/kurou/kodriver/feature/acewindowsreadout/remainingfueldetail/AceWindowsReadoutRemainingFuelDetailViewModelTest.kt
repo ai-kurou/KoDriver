@@ -152,14 +152,15 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
     @Test
     fun `onPreviewClickedを呼ぶと燃料残量警告イベントが再生される`() =
         runTest {
-            every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
+            every { repository.observeThresholdPercentage() } returns MutableStateFlow(45)
             val viewModel = createViewModel()
 
+            assertEquals(45, viewModel.uiState.first().thresholdPercentage)
             viewModel.onPreviewClicked()
 
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id) }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning(45), false) }
             confirmVerified(repository, readoutPreferencesRepository, ttsEngine)
         }
 }
