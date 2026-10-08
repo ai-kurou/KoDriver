@@ -1178,8 +1178,14 @@ class AceWindowsNarratorViewModelTest {
             bestLapTimeChannel.send(bestLapTime(89_000))
 
             assertEquals(1, telemetryJsons.size)
-            assertEquals(true, telemetryJsons.single().contains(""""previousBestLapTime":{"bestLapTimeMs":90000}"""))
-            assertEquals(true, telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000}"""))
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""previousBestLapTime":{"bestLapTimeMs":90000,"currentLap":0}"""),
+            )
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(""""bestLapTime":{"bestLapTimeMs":89000,"currentLap":0}"""),
+            )
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(

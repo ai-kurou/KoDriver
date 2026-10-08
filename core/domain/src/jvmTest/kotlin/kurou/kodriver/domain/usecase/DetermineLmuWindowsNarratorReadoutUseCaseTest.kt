@@ -38,6 +38,85 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `周回数が減少したら自己ベストをリセットして新セッションの更新を読み上げる`() {
+        val first =
+            useCase.determineMyBestLap(
+                state =
+                    LmuWindowsNarratorState(
+                        personalBestMs = 59_000L,
+                        previousBestLapTimeMs = 59_000L,
+                        previousLapCount = 5,
+                    ),
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 69_000L),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), first.events)
+        assertEquals(Long.MAX_VALUE, first.state.personalBestMs)
+        assertEquals(69_000L, first.state.previousBestLapTimeMs)
+        assertEquals(1, first.state.previousLapCount)
+
+        val second =
+            useCase.determineMyBestLap(
+                state = first.state,
+                telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 68_000L),
+                settings = settings(),
+            )
+
+        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLap(68_000L)), second.events)
+        assertEquals(68_000L, second.state.personalBestMs)
+        assertEquals(2, second.state.previousLapCount)
+    }
+
+    @Test
+    fun `周回数が同じか増加した場合は自己ベストをリセットしない`() {
+        for (currentLap in listOf(5, 6)) {
+            val decision =
+                useCase.determineMyBestLap(
+                    state =
+                        LmuWindowsNarratorState(
+                            personalBestMs = 59_000L,
+                            previousBestLapTimeMs = 69_000L,
+                            previousLapCount = 5,
+                        ),
+                    telemetry = lapTelemetry(currentLap = currentLap, bestLapTimeMs = 68_000L),
+                    settings = settings(),
+                )
+
+            assertEquals(emptyList<SpeechEvent>(), decision.events)
+            assertEquals(59_000L, decision.state.personalBestMs)
+            assertEquals(68_000L, decision.state.previousBestLapTimeMs)
+            assertEquals(currentLap, decision.state.previousLapCount)
+        }
+    }
+
+    @Test
+    fun `自己ベスト判定の各経路で現在の周回数を記録する`() {
+        val initialState = LmuWindowsNarratorState(previousBestLapTimeMs = 60_000L, previousLapCount = 1)
+        val cases =
+            listOf<Triple<LmuWindowsNarratorState, Long, Map<ReadoutItemKey, Boolean>>>(
+                Triple(LmuWindowsNarratorState(), 59_000L, emptyMap()),
+                Triple(initialState, 0L, emptyMap()),
+                Triple(initialState, 60_000L, emptyMap()),
+                Triple(initialState.copy(personalBestMs = 58_000L), 59_000L, emptyMap()),
+                Triple(initialState, 59_000L, mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to false)),
+                Triple(initialState, 59_000L, mapOf(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false)),
+                Triple(initialState, 59_000L, emptyMap()),
+            )
+        for ((state, current, enabledStates) in cases) {
+            val decision =
+                useCase.determineMyBestLap(
+                    state = state,
+                    telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = current),
+                    settings = settings(enabledStates = enabledStates),
+                )
+
+            assertEquals(current, decision.state.previousBestLapTimeMs)
+            assertEquals(2, decision.state.previousLapCount)
+        }
+    }
+
+    @Test
     fun `enabledStatesが空でも例外にならずデフォルト値で判定する`() {
         val emptySettings = settings(enabledStates = emptyMap())
 

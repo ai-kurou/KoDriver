@@ -75,6 +75,7 @@ class WebSocketAceWindowsBestLapTimeRepositoryTest {
             val result = buildRepository().bestLapTimeStream().first()
 
             assertEquals(95_123, result.bestLapTimeMs)
+            assertEquals(3, result.currentLap)
             assertEquals("/ws/ace_windows/my_best_lap", server.takeRequest().path)
         }
 
@@ -182,4 +183,4 @@ private class FakeAceBestLapTimeServerIpPreferencesRepository(
     }
 }
 
-private const val BEST_LAP_TIME_JSON = """{"bestLapTimeMs": 95123}"""
+private const val BEST_LAP_TIME_JSON = """{"bestLapTimeMs": 95123, "currentLap": 3}"""

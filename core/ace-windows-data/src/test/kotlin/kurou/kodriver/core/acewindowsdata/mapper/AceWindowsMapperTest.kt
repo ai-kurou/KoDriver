@@ -26,6 +26,7 @@ class AceWindowsMapperTest {
         const val OFF_LAPS_POSSIBLE_WITH_FUEL = 1464
         const val OFF_BEST_LAPTIME_MS = 2400
         const val OFF_FLAG = 2404
+        const val OFF_SESSION_STATE_CURRENT_LAP = 2548
         const val OFF_CAR_COORDINATES = 3124
         const val CAR_COORDINATES_STRIDE = 12
         const val OFF_ACTIVE_CARS = 3852
@@ -81,9 +82,13 @@ class AceWindowsMapperTest {
             it.putFloat(OFF_LAPS_POSSIBLE_WITH_FUEL, lapsPossibleWithFuel)
         }
 
-    private fun bestLapTimeBuffer(bestLapTimeMs: Int): ByteBuffer =
+    private fun bestLapTimeBuffer(
+        bestLapTimeMs: Int,
+        currentLap: Int = 0,
+    ): ByteBuffer =
         ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
             it.putInt(OFF_BEST_LAPTIME_MS, bestLapTimeMs)
+            it.putInt(OFF_SESSION_STATE_CURRENT_LAP, currentLap)
         }
 
     private fun flagBuffer(flagRawValue: Int): ByteBuffer =
@@ -158,6 +163,13 @@ class AceWindowsMapperTest {
         val result = AceWindowsMapper.mapBestLapTime(bestLapTimeBuffer(91_234))
 
         assertEquals(91_234, result.bestLapTimeMs)
+    }
+
+    @Test
+    fun `session_state の current_lap をcurrentLapとして取得する`() {
+        val result = AceWindowsMapper.mapBestLapTime(bestLapTimeBuffer(bestLapTimeMs = 91_234, currentLap = 7))
+
+        assertEquals(7, result.currentLap)
     }
 
     @Test
