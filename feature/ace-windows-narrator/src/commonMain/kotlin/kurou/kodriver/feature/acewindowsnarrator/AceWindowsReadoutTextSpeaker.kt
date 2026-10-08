@@ -57,8 +57,8 @@ internal class AceWindowsReadoutTextSpeaker(
 
     /** 現在の読み上げ文言。空白・TTS利用不可・対象外イベントは null。 */
     suspend fun readoutText(event: SpeechEvent): String? {
-        val text = eventText(event)?.text ?: return null
-        return text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
+        val readout = eventText(event) ?: return null
+        return readout.text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
     }
 
     private data class ReadoutText(
