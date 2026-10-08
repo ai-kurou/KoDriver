@@ -512,7 +512,7 @@ acevo-shared-memory（公式ヘッダ転記）による定義。各構造体は�
 | int32 | `time_left_ms` | 残り時間（ms） |
 | char[15] | `wait_time` | 開始までの待機時間（書式済み） |
 | int32 | `total_lap` | セッション予定ラップ数 |
-| int32 | `current_lap` | 現在ラップ番号 |
+| int32 | `current_lap` | 現在ラップ番号（`session_state` 先頭から +72、Graphics 先頭から +2548）。自己ベスト読み上げの新セッション検出（減少）に使う。実機での値は未検証 |
 | int32 | `lights_on` | 点灯中のスタートライト数 |
 | int32 | `lights_mode` | スタートライトシーケンスモード |
 | float | `lap_length_km` | ラップ長（km） |
