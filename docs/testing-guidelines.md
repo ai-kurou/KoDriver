@@ -91,3 +91,9 @@ Kover でカバレッジを計測する。新しいモジュールを追加し�
 # ローカルでカバレッジレポート生成
 ./gradlew koverXmlReport
 ```
+
+### Compose の生成分岐と Pane の配線
+
+Compose コンパイラが生成する変更フラグ・デフォルト引数マスクなどの分岐は、ソースの条件分岐と区別する。Kover の Composable 宣言行に残る部分カバーだけを埋めるために、生成マスクの組合せを網羅するテストは追加しない。ソースに記述した条件分岐や UI の振る舞いは引き続きテスト対象とする。
+
+`koinViewModel()` と `collectAsStateWithLifecycle()` を使う Pane のラッパーも、一律にテスト対象外にはしない。PaneContent の表示・操作テストに加え、Koin で取得した ViewModel の状態表示と、選択・試聴・再読み込みなどのコールバック配線を Pane 経由で検証する。`OtherVoiceDetailPaneWiringTest` がその例となる。
