@@ -7,16 +7,22 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
+import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
+import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 
 internal data class RemainingFuelUseCases(
     val observeThresholdPercentage: ObserveAceWindowsRemainingFuelThresholdPercentageUseCase,
@@ -25,17 +31,39 @@ internal data class RemainingFuelUseCases(
     val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
 )
 
+internal data class RemainingFuelReadoutUseCases(
+    val observeText: ObserveAceWindowsRemainingFuelReadoutTextUseCase,
+    val saveText: SaveAceWindowsRemainingFuelReadoutTextUseCase,
+    val speakText: SpeakTextUseCase,
+    val playStartSoundForKey: PlayStartSoundForKeyUseCase,
+    val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
+    val observeSoundVolume: ObserveSoundVolumeUseCase,
+)
+
 internal class AceWindowsReadoutRemainingFuelDetailViewModel(
     private val remainingFuelUseCases: RemainingFuelUseCases,
-    private val playSpeechEvent: PlaySpeechEventUseCase,
+    private val readout: RemainingFuelReadoutUseCases,
 ) : ViewModel() {
+    private val preview =
+        ReadoutTextPreviewHelper(
+            viewModelScope,
+            readout.checkTextToSpeechAvailable,
+            readout.observeSoundVolume,
+            readout.playStartSoundForKey,
+            readout.speakText,
+        )
+
     val uiState: StateFlow<AceWindowsReadoutRemainingFuelDetailUiState> =
         combine(
             remainingFuelUseCases.observeThresholdPercentage(),
             remainingFuelUseCases.observeReadoutEnabledStates(Simulator.AceWindows.id),
-        ) { thresholdPercentage, enabledStates ->
+            readout.observeText(),
+            preview.textToSpeechAvailable,
+        ) { thresholdPercentage, enabledStates, text, available ->
             AceWindowsReadoutRemainingFuelDetailUiState(
                 thresholdPercentage = thresholdPercentage,
+                readoutText = text,
+                isTextToSpeechAvailable = available,
                 enabled = enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled),
             )
         }.stateIn(
@@ -44,14 +72,25 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
             AceWindowsReadoutRemainingFuelDetailUiState(),
         )
 
+    fun onReadoutTextChanged(text: String) {
+        viewModelScope.launch { readout.saveText(text) }
+    }
+
+    /** 保存反映待ちの旧値を避けるため、画面に表示中の残量閾値を呼び出し側から受け取る。 */
+    fun onReadoutTextPreviewClicked(
+        text: String,
+        percent: Int,
+    ) {
+        val resolvedText = formatAceWindowsRemainingFuelReadoutText(text, percent)
+        viewModelScope.launch { preview.preview(resolvedText, ReadoutItemKey.AceWindows.RemainingFuel.Root) }
+    }
+
     fun onThresholdChanged(percentage: Int) {
         viewModelScope.launch { remainingFuelUseCases.saveThresholdPercentage(percentage) }
     }
 
     fun onThresholdReset() {
-        viewModelScope.launch {
-            remainingFuelUseCases.saveThresholdPercentage(ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
-        }
+        onThresholdChanged(ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
     }
 
     fun onEnabledChanged(enabled: Boolean) {
@@ -62,9 +101,5 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
                 enabled,
             )
         }
-    }
-
-    fun onPreviewClicked() {
-        playSpeechEvent(SpeechEvent.AceWindowsRemainingFuelWarning(uiState.value.thresholdPercentage))
     }
 }

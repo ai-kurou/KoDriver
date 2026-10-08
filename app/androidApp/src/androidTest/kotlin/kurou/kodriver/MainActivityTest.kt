@@ -147,7 +147,8 @@ class MainActivityTest {
         )
         clickItemAndVerifyDescription(
             "燃料残量",
-            "燃料残量が設定した閾値以下になった場合に、音声でお知らせします。",
+            "燃料残量が設定した閾値以下になった場合に、音声でお知らせします。\n" +
+                "読み上げる文言は下の欄で設定できます。",
         )
         clickItemAndVerifyDescription(
             "燃料残り周回数",
