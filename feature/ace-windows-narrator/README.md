@@ -10,6 +10,7 @@ ACE (Assetto Corsa EVO) Windows版の開始音WAV再生・自由文言TTSとア�
 渡して、`AceWindowsReadoutTextSpeaker` の自由文言をOS標準TTSで読み上げる。
 保存先は `AceWindowsRemainingFuelPreferences` のフィールド2（`readoutText`）、既定文言は「燃料は残り{percent}パーセント」。
 `{percent}` は判定時の実残量を四捨五入した整数（0〜100）に置換する。閾値・有効判定は従来どおり。
+ACEの自由文言イベントは共通の `ReadoutTextEvent` を実装する。
 Processorで解決した本文をイベントの `resolvedText` に保持し、キュー待機中の設定変更後も発話とログを一致させる。
 空白・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` をログに保存する。
 開始音・優先度・キューは `RemainingFuel.Root` を維持する。`remaining_fuel_caution.wav` は廃止し、WAVフォールバックは行わない。

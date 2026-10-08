@@ -4,7 +4,7 @@ import kurou.kodriver.core.designsystem.readStartSoundBytes
 import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
-import kurou.kodriver.domain.engine.FreeTextSpeechEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
@@ -249,7 +249,7 @@ val lmuWindowsNarratorModule: Module =
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
                     startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
                     customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
-                    isCustomSpeakEvent = { it is FreeTextSpeechEvent },
+                    isCustomSpeakEvent = { it is ReadoutTextEvent },
                 ),
             )
         }

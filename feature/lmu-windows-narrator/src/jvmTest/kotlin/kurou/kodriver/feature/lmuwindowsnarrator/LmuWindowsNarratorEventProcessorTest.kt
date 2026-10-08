@@ -22,7 +22,7 @@ import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
-import kurou.kodriver.domain.engine.FreeTextSpeechEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
@@ -2602,7 +2602,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsons = mutableListOf<String>()
             val events =
-                listOf<FreeTextSpeechEvent>(
+                listOf<ReadoutTextEvent>(
                     SpeechEvent.BlueFlag(),
                     SpeechEvent.YellowFlag(),
                     SpeechEvent.FullCourseYellow(),
@@ -2682,7 +2682,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsons = mutableListOf<String>()
             val events =
-                listOf<FreeTextSpeechEvent>(
+                listOf<ReadoutTextEvent>(
                     SpeechEvent.CarLeft(),
                     SpeechEvent.CarRight(),
                     SpeechEvent.CarLeftSustained(),
@@ -2762,7 +2762,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsons = mutableListOf<String>()
             val events =
-                listOf<FreeTextSpeechEvent>(
+                listOf<ReadoutTextEvent>(
                     SpeechEvent.PitTimingWarning(2, PitTimingSource.VirtualEnergy),
                     SpeechEvent.PitTimingWarning(0, PitTimingSource.VirtualEnergy),
                     SpeechEvent.PitTimingWarning(2, PitTimingSource.TyreWear),

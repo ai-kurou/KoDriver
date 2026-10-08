@@ -9,7 +9,7 @@ import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
-import kurou.kodriver.domain.engine.FreeTextSpeechEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
@@ -298,7 +298,7 @@ internal class LmuWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = (event as FreeTextSpeechEvent).withResolvedText(text)
+                    val resolvedEvent = (event as ReadoutTextEvent).withResolvedText(text)
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
