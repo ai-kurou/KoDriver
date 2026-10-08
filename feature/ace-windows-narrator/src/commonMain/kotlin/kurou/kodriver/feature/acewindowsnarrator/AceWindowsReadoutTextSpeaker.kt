@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
 import kotlinx.coroutines.flow.first
-import kurou.kodriver.domain.engine.AceWindowsReadoutTextEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelLapsReadoutText
@@ -102,9 +102,9 @@ internal class AceWindowsReadoutTextSpeaker(
                 event.resolvedText
                     ?: formatAceWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
             } else {
-                (event as? AceWindowsReadoutTextEvent)?.resolvedText ?: savedReadoutText(event) ?: return null
+                (event as? ReadoutTextEvent)?.resolvedText ?: savedReadoutText(event) ?: return null
             }
-        return ReadoutText(text, event is AceWindowsReadoutTextEvent && event.resolvedText != null)
+        return ReadoutText(text, event is ReadoutTextEvent && event.resolvedText != null)
     }
 
     /** 保存済み固定文言（フラッグ・車両接近）。対象外イベントは null。 */

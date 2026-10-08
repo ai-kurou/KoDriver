@@ -11,7 +11,7 @@ import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
-import kurou.kodriver.domain.engine.Gt7Ps5ReadoutTextEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -47,7 +47,7 @@ internal class Gt7Ps5NarratorEventProcessor(
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
             val text =
-                if (event is Gt7Ps5ReadoutTextEvent) {
+                if (event is ReadoutTextEvent) {
                     readoutTextSafely(event)?.takeIf { it.isNotBlank() }
                 } else {
                     event.narratedText
@@ -57,7 +57,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                     NarrationOutcome.SKIPPED
                 } else {
                     val resolvedEvent =
-                        if (event is Gt7Ps5ReadoutTextEvent) event.withResolvedText(text) else event
+                        if (event is ReadoutTextEvent) event.withResolvedText(text) else event
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(

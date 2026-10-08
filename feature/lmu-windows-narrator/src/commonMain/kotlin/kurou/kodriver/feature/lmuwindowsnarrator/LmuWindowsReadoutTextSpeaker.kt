@@ -2,7 +2,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kurou.kodriver.domain.engine.FreeTextSpeechEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
@@ -103,7 +103,7 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     /** 現在の読み上げ文言。空欄・TTS利用不可・対象外イベントは null。 */
     suspend fun readoutText(event: SpeechEvent): String? {
-        val text = (event as? FreeTextSpeechEvent)?.resolvedText ?: eventText(event) ?: return null
+        val text = (event as? ReadoutTextEvent)?.resolvedText ?: eventText(event) ?: return null
         return text.takeIf { it.isNotBlank() && checkTextToSpeechAvailable() }
     }
 

@@ -27,7 +27,7 @@ class SpeechEventTest {
     @Test
     fun `全自由文字列イベントは本文を置き換えて型と既定文言とキーを維持する`() {
         val events =
-            listOf<FreeTextSpeechEvent>(
+            listOf<ReadoutTextEvent>(
                 SpeechEvent.CarLeft(),
                 SpeechEvent.CarRight(),
                 SpeechEvent.CarLeftSustained(),
@@ -48,7 +48,7 @@ class SpeechEventTest {
                 SpeechEvent.PitTimingWarning(2, PitTimingSource.TyreWear),
             )
         val expected =
-            listOf<FreeTextSpeechEvent>(
+            listOf<ReadoutTextEvent>(
                 SpeechEvent.CarLeft("判定時の本文"),
                 SpeechEvent.CarRight("判定時の本文"),
                 SpeechEvent.CarLeftSustained("判定時の本文"),
@@ -358,7 +358,7 @@ class SpeechEventTest {
     @Test
     fun `ACEフラッグと車両接近は解決済み本文を保持し既定文言を維持する`() {
         val events =
-            listOf<AceWindowsReadoutTextEvent>(
+            listOf<ReadoutTextEvent>(
                 SpeechEvent.AceWindowsCheckeredFlag(),
                 SpeechEvent.AceWindowsWhiteFlag(),
                 SpeechEvent.AceWindowsGreenFlag(),

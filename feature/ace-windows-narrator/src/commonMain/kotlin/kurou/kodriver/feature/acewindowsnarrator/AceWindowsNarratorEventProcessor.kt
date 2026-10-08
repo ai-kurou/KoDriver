@@ -11,7 +11,7 @@ import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
-import kurou.kodriver.domain.engine.AceWindowsReadoutTextEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
@@ -60,7 +60,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -97,7 +97,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -134,7 +134,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -171,7 +171,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -208,7 +208,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(
@@ -245,7 +245,7 @@ internal class AceWindowsNarratorEventProcessor(
                 if (text == null) {
                     NarrationOutcome.SKIPPED
                 } else {
-                    val resolvedEvent = if (event is AceWindowsReadoutTextEvent) event.withResolvedText(text) else event
+                    val resolvedEvent = if (event is ReadoutTextEvent) event.withResolvedText(text) else event
                     speakWithPriority(resolvedEvent, readoutOrder, queueEnabledStates)
                 }
             saveTelemetryLogSafely(

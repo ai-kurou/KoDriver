@@ -4,7 +4,7 @@ import kurou.kodriver.core.designsystem.readStartSoundBytes
 import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
-import kurou.kodriver.domain.engine.Gt7Ps5ReadoutTextEvent
+import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
@@ -123,7 +123,7 @@ val gt7Ps5NarratorModule: Module =
                             startSoundResourceLoader = ::readStartSoundBytes,
                         ),
                     customSpeak = get<Gt7Ps5ReadoutTextSpeaker>()::invoke,
-                    isCustomSpeakEvent = { it is Gt7Ps5ReadoutTextEvent },
+                    isCustomSpeakEvent = { it is ReadoutTextEvent },
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
