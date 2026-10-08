@@ -376,8 +376,8 @@ class Gt7Ps5NarratorViewModelTest {
             )
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
                 ),
                 refuelSpokenTexts,
             )
@@ -397,8 +397,8 @@ class Gt7Ps5NarratorViewModelTest {
             )
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料がありません"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
+                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
                 ),
                 lapResetSpokenTexts,
             )
