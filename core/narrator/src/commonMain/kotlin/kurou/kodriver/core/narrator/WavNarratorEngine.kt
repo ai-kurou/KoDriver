@@ -45,7 +45,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
      * 再生中・優先度判定・割り込み（[currentKey] / [stop]）は呼び出し元の [play] と同じコルーチン上で
      * 実行されるため、WAVと同じ仕組みでそのまま扱える。
      */
-    private val customSpeak: (suspend (EVENT, Int) -> Unit)? = null,
+    private val customSpeak: suspend (EVENT, Int) -> Unit,
     /** [customSpeak] で本文を読み上げるイベントの判定。false のイベントは再生対象外。 */
     private val isCustomSpeakEvent: (EVENT) -> Boolean = { false },
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
@@ -134,7 +134,7 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
      */
     private fun playbackBody(event: EVENT): (suspend (Int) -> Unit)? {
         if (!isCustomSpeakEvent(event)) return null
-        return { volume -> customSpeak?.invoke(event, volume) }
+        return { volume -> customSpeak(event, volume) }
     }
 
     private suspend fun play(

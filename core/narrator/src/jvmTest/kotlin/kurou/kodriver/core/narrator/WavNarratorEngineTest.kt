@@ -822,7 +822,7 @@ class WavNarratorEngineTest {
         startSoundTypeFlow: Flow<String> = flowOf(FORMULA_RADIO),
         startSoundEnabledStatesFlow: Flow<Map<String, Boolean>> = flowOf(emptyMap()),
         isCustomSpeakEvent: (String) -> Boolean = { true },
-        customSpeak: (suspend (String, Int) -> Unit)? = { event, volume -> player.play(bodySound(event), volume) },
+        customSpeak: suspend (String, Int) -> Unit = { event, volume -> player.play(bodySound(event), volume) },
         startSoundResourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
                 FORMULA_RADIO_PATH -> FORMULA_RADIO_SOUND
