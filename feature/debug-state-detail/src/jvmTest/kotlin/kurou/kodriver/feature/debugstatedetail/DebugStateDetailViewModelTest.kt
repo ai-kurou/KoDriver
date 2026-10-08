@@ -164,8 +164,9 @@ class DebugStateDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() =
+    private fun createViewModel(currentTimeMs: () -> Long = { 0L }) =
         DebugStateDetailViewModel(
+            currentTimeMs = currentTimeMs,
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
             lmuWindowsUseCases =
                 LmuWindowsDebugStateUseCases(
@@ -805,6 +806,91 @@ class DebugStateDetailViewModelTest {
             val state = viewModel.uiState.first()
 
             assertEquals(true, state.vehicleApproach?.isSideBySideLeft)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
+            verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
+            verify(exactly = 1) { aceWindowsStatusRepository.statusStream() }
+            verify(exactly = 1) { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { aceWindowsVehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { aceWindowsBestLapTimeRepository.bestLapTimeStream() }
+            verify(exactly = 1) { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() }
+            verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
+            verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
+                vehicleClassRepository,
+                aceWindowsStatusRepository,
+                aceWindowsTyreCarcassTemperatureRepository,
+                aceWindowsVehicleApproachRepository,
+                aceWindowsBestLapTimeRepository,
+                aceWindowsRemainingFuelLapsRepository,
+                lmuWindowsPitStatusRepository,
+                vehicleDamageRepository,
+                tyreDetachedRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `並走時間を注入した時計で計測して uiState に反映する`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            val approach = MutableStateFlow(sampleVehicleApproach(setOf(1)))
+            every { vehicleApproachRepository.vehicleApproachStream() } returns approach
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+                MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
+            every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
+            every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
+            every { aceWindowsTyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+                MutableStateFlow(sampleAceWindowsTyreCarcassTemperature())
+            every { aceWindowsVehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleAceWindowsVehicleApproach())
+            every { aceWindowsBestLapTimeRepository.bestLapTimeStream() } returns
+                MutableStateFlow(sampleAceWindowsBestLapTime())
+            every { aceWindowsRemainingFuelLapsRepository.remainingFuelLapsStream() } returns
+                MutableStateFlow(sampleAceWindowsRemainingFuelLaps())
+            every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
+            every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            var nowMs = 1_000L
+            val viewModel = createViewModel { nowMs }
+
+            val state = viewModel.uiState.first()
+
+            assertEquals(LmuWindowsSideBySideDurations(0, null), state.lmuWindowsSideBySideDurations)
+            nowMs = 2_250L
+            approach.update { it.copy(lateralDistanceLeftMeters = LateralDistanceMeters(1.5)) }
+            val continued = viewModel.uiState.first { it.lmuWindowsSideBySideDurations?.leftMillis == 1_250L }
+            assertEquals(LmuWindowsSideBySideDurations(1_250, null), continued.lmuWindowsSideBySideDurations)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }

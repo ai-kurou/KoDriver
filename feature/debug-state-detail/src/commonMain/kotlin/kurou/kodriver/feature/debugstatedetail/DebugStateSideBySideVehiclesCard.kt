@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicle_distance
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_none
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by_side_duration
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by_side_left
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by_side_none
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by_side_right
@@ -37,9 +38,10 @@ internal fun SideBySideVehiclesContent(
     selectedSimulator: Simulator,
     vehicleApproach: LmuWindowsVehicleApproachData?,
     aceWindowsVehicleApproach: AceWindowsVehicleApproachData?,
+    durations: LmuWindowsSideBySideDurations?,
 ) {
     when (selectedSimulator) {
-        is Simulator.LmuWindows -> LmuWindowsSideBySideVehiclesContent(vehicleApproach)
+        is Simulator.LmuWindows -> LmuWindowsSideBySideVehiclesContent(vehicleApproach, durations)
         is Simulator.AceWindows -> AceWindowsNearbyVehiclesContent(aceWindowsVehicleApproach)
         is Simulator.Gt7Ps5 -> DebugStateUnavailableContent()
     }
@@ -69,7 +71,10 @@ private fun AceWindowsNearbyVehiclesContent(vehicleApproach: AceWindowsVehicleAp
 }
 
 @Composable
-private fun LmuWindowsSideBySideVehiclesContent(vehicleApproach: LmuWindowsVehicleApproachData?) {
+private fun LmuWindowsSideBySideVehiclesContent(
+    vehicleApproach: LmuWindowsVehicleApproachData?,
+    durations: LmuWindowsSideBySideDurations?,
+) {
     if (vehicleApproach == null) {
         DebugStateUnavailableContent()
         return
@@ -79,29 +84,35 @@ private fun LmuWindowsSideBySideVehiclesContent(vehicleApproach: LmuWindowsVehic
         return
     }
     Row {
-        Text(
-            text =
-                if (vehicleApproach.isSideBySideLeft) {
-                    stringResource(
-                        Res.string.debug_state_side_by_side_left,
-                        formatMeters(vehicleApproach.lateralDistanceLeftMeters),
-                    )
-                } else {
-                    ""
-                },
-            modifier = Modifier.width(SIDE_BY_SIDE_COLUMN_WIDTH),
-        )
-        Text(
-            text =
-                if (vehicleApproach.isSideBySideRight) {
-                    stringResource(
-                        Res.string.debug_state_side_by_side_right,
-                        formatMeters(vehicleApproach.lateralDistanceRightMeters),
-                    )
-                } else {
-                    ""
-                },
-            modifier = Modifier.width(SIDE_BY_SIDE_COLUMN_WIDTH),
-        )
+        Column(modifier = Modifier.width(SIDE_BY_SIDE_COLUMN_WIDTH)) {
+            if (vehicleApproach.isSideBySideLeft) {
+                Text(
+                    text =
+                        stringResource(
+                            Res.string.debug_state_side_by_side_left,
+                            formatMeters(vehicleApproach.lateralDistanceLeftMeters),
+                        ),
+                )
+                durations?.leftMillis?.let { SideBySideDurationContent(it) }
+            }
+        }
+        Column(modifier = Modifier.width(SIDE_BY_SIDE_COLUMN_WIDTH)) {
+            if (vehicleApproach.isSideBySideRight) {
+                Text(
+                    text =
+                        stringResource(
+                            Res.string.debug_state_side_by_side_right,
+                            formatMeters(vehicleApproach.lateralDistanceRightMeters),
+                        ),
+                )
+                durations?.rightMillis?.let { SideBySideDurationContent(it) }
+            }
+        }
     }
+}
+
+@Composable
+private fun SideBySideDurationContent(millis: Long) {
+    val seconds = round(millis / 100.0) / 10
+    Text(text = stringResource(Res.string.debug_state_side_by_side_duration, seconds.toString()))
 }

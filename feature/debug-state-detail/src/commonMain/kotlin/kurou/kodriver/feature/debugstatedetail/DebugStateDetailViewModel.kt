@@ -6,7 +6,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -55,6 +57,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
+import kotlin.time.Clock
 
 private data class RaceState(
     val raceFlags: LmuWindowsRaceFlagsData?,
@@ -170,6 +173,7 @@ internal class DebugStateDetailViewModel(
     gt7Ps5UseCases: Gt7Ps5DebugStateUseCases,
     aceWindowsUseCases: AceWindowsDebugStateUseCases,
     cardOrderUseCases: DebugStateCardOrderUseCases,
+    private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
     private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases.saveCardOrder
@@ -180,6 +184,14 @@ internal class DebugStateDetailViewModel(
             .onEach { simulator ->
                 markCardsReceived(simulator, DebugStateCardKey.SIMULATOR)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
+
+    private val sideBySideDurationTracker = LmuWindowsSideBySideDurationTracker()
+    private val _lmuWindowsVehicleApproach =
+        lmuWindowsUseCases.observeVehicleApproach().shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+    private val _lmuWindowsSideBySideDurations: StateFlow<LmuWindowsSideBySideDurations?> =
+        _lmuWindowsVehicleApproach
+            .map { sideBySideDurationTracker.update(it, currentTimeMs()) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val _raceStateBase: StateFlow<RaceState> =
         combine(
@@ -203,8 +215,7 @@ internal class DebugStateDetailViewModel(
                         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                     )
                 },
-            lmuWindowsUseCases
-                .observeVehicleApproach()
+            _lmuWindowsVehicleApproach
                 .onEach {
                     markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.SIDE_BY_SIDE_VEHICLES)
                 },
@@ -412,7 +423,7 @@ internal class DebugStateDetailViewModel(
             OptionalTelemetry(null, null, null, null, null, null, null, null, null),
         )
 
-    val uiState: StateFlow<DebugStateDetailUiState> =
+    private val _uiStateBase: StateFlow<DebugStateDetailUiState> =
         combine(
             _selectedSimulator,
             _raceState,
@@ -445,6 +456,11 @@ internal class DebugStateDetailViewModel(
                     receivedCardKeys[selectedSimulator].orEmpty() intersect supportedCardKeys(selectedSimulator),
                 cardOrder = cardOrder,
             )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DebugStateDetailUiState())
+
+    val uiState: StateFlow<DebugStateDetailUiState> =
+        combine(_uiStateBase, _lmuWindowsSideBySideDurations) { base, durations ->
+            base.copy(lmuWindowsSideBySideDurations = durations)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DebugStateDetailUiState())
 
     fun moveCard(

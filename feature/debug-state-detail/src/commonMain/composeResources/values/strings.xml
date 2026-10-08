@@ -114,4 +114,5 @@
     <string name="debug_state_vehicle_damage_tyre_detached_fr">タイヤ脱落 FR: %1$s</string>
     <string name="debug_state_vehicle_damage_tyre_detached_rl">タイヤ脱落 RL: %1$s</string>
     <string name="debug_state_vehicle_damage_tyre_detached_rr">タイヤ脱落 RR: %1$s</string>
+    <string name="debug_state_side_by_side_duration">%1$s秒</string>
 </resources>
