@@ -6,6 +6,7 @@ import kurou.kodriver.data.feedback.SentryFeedbackSenderRepository
 import kurou.kodriver.data.preferences.JvmDynamicColorEnabledRepository
 import kurou.kodriver.data.preferences.JvmHapticFeedbackEnabledRepository
 import kurou.kodriver.data.preferences.JvmKeepScreenOnEnabledRepository
+import kurou.kodriver.data.preferences.LmuWindowsPitTimingPreferencesRepositories
 import kurou.kodriver.data.preferences.LmuWindowsVehicleApproachPreferencesRepositories
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsFlagReadoutTextPreferencesRepository
@@ -72,6 +73,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
@@ -237,8 +239,14 @@ val desktopDataModule =
         single<AceWindowsVehicleApproachPreferencesRepository> {
             createAceWindowsVehicleApproachPreferencesRepository(directory = kodriverDirectory)
         }
-        single<LmuWindowsPitTimingPreferencesRepository> {
+        single {
             createLmuWindowsPitTimingPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsPitTimingPreferencesRepository> {
+            get<LmuWindowsPitTimingPreferencesRepositories>().preferences
+        }
+        single<LmuWindowsPitTimingReadoutTextPreferencesRepository> {
+            get<LmuWindowsPitTimingPreferencesRepositories>().readoutText
         }
         // テレメトリログ（Room データベース）
         single<TelemetryLogRepository> {

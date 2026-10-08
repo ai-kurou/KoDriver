@@ -26,7 +26,7 @@ import org.koin.dsl.module
  * ピットタイミングアナウンス詳細設定（lmu-windows-readout-pit-timing-detail feature）の Koin モジュール。
  *
  * 提供: LmuWindowsReadoutPitTimingDetailViewModel と、予想残り周回数・有効状態・両ソースの文言の Observe/Save UseCase。
- * UseCase が依存する LmuWindowsPitTimingPreferencesRepository は :core:data の
+ * UseCase が依存する設定・文言の Repository は :core:data の
  * desktopDataModule / androidDataModule で束ねられる。試聴用の named(Simulator.LmuWindows.id) の
  * PlayStartSoundForKeyUseCase・SpeakTextUseCase は :feature:lmu-windows-narrator で登録される。
  * 消費: TextToSpeechRepository・SoundVolumePreferencesRepository と既存のピットタイミング設定Repository。

@@ -12,6 +12,7 @@ import kurou.kodriver.data.preferences.AndroidKeepScreenOnEnabledRepository
 import kurou.kodriver.data.preferences.AndroidReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
+import kurou.kodriver.data.preferences.LmuWindowsPitTimingPreferencesRepositories
 import kurou.kodriver.data.preferences.LmuWindowsVehicleApproachPreferencesRepositories
 import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
 import kurou.kodriver.data.preferences.createAceWindowsFlagReadoutTextPreferencesRepository
@@ -106,6 +107,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
@@ -404,8 +406,14 @@ private fun androidDataModuleThresholdPreferences(context: Context) =
         single<AceWindowsVehicleApproachPreferencesRepository> {
             createAceWindowsVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
         }
-        single<LmuWindowsPitTimingPreferencesRepository> {
+        single {
             createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsPitTimingPreferencesRepository> {
+            get<LmuWindowsPitTimingPreferencesRepositories>().preferences
+        }
+        single<LmuWindowsPitTimingReadoutTextPreferencesRepository> {
+            get<LmuWindowsPitTimingPreferencesRepositories>().readoutText
         }
         single<ReadoutStartSoundEnabledPreferencesRepository> {
             createReadoutStartSoundEnabledPreferencesRepository(context.filesDir.absolutePath)
