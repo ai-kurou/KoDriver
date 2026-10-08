@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kurou.kodriver.core.designsystem.readStartSoundBytes
-import kurou.kodriver.core.narrator.WavNarratorEngine
+import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.ReadoutTextEvent
@@ -85,7 +85,7 @@ import org.koin.dsl.module
  *   各フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミング・自己ベストの読み上げ文言の Observe UseCase・TextToSpeechEngine）、
  *   および LmuWindowsReadoutTextSpeaker
  *   （フラッグ・車両接近・VE残量警告・タイヤ過熱警告・VEピットタイミング・自己ベストの読み上げ時に
- *   自由文字列をOS標準TTSで読み上げるフック。WavNarratorEngine の customSpeak に渡す）。
+ *   自由文字列をOS標準TTSで読み上げるフック。NarratorEngine の customSpeak に渡す）。
  * 音声設定監視用の ObserveVoiceUseCase を提供し、VoicePreferencesRepository（:core:data）を消費する。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）、unqualified の CheckTextToSpeechAvailableUseCase
@@ -236,7 +236,7 @@ val lmuWindowsNarratorModule: Module =
 
         single<TextToSpeechEngine>(named(Simulator.LmuWindows.id)) {
             LmuWindowsNarratorEngine(
-                WavNarratorEngine(
+                NarratorEngine(
                     soundPlayer = get(named(Simulator.LmuWindows.id)),
                     resources =
                         WavResources(

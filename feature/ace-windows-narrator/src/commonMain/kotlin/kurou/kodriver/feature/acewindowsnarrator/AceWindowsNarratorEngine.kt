@@ -1,17 +1,17 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
-import kurou.kodriver.core.narrator.WavNarratorEngine
+import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 
 /**
- * `:core:narrator` の [WavNarratorEngine]（`SpeechEvent` / `ReadoutStartSoundType` / `ReadoutItemKey` を
+ * `:core:narrator` の [NarratorEngine]（`SpeechEvent` / `ReadoutStartSoundType` / `ReadoutItemKey` を
  * 知らない汎用実装）を [TextToSpeechEngine] として公開するための薄いアダプタ。
  */
 internal class AceWindowsNarratorEngine(
-    private val engine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>,
+    private val engine: NarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>,
 ) : TextToSpeechEngine {
     override val currentReadoutItemKey: ReadoutItemKey?
         get() = engine.currentKey

@@ -6,7 +6,7 @@ ACE (Assetto Corsa EVO) Windows版の開始音WAV再生・自由文言TTSとア�
 `AceWindowsNarratorViewModel` が `ObserveAceWindowsFuelUseCase` の燃料残量と
 `ObserveAceWindowsRemainingFuelThresholdPercentageUseCase` の閾値を監視し、
 `AceWindowsNarratorEventProcessor` を通じて `SpeechEvent.AceWindowsRemainingFuelWarning` を
-`TextToSpeechEngine` 実装の `AceWindowsNarratorEngine`（`:core:narrator` の `WavNarratorEngine` に委譲する薄いアダプタ）に
+`TextToSpeechEngine` 実装の `AceWindowsNarratorEngine`（`:core:narrator` の `NarratorEngine` に委譲する薄いアダプタ）に
 渡して、`AceWindowsReadoutTextSpeaker` の自由文言をOS標準TTSで読み上げる。
 保存先は `AceWindowsRemainingFuelPreferences` のフィールド2（`readoutText`）、既定文言は「燃料は残り{percent}パーセント」。
 `{percent}` は判定時の実残量を四捨五入した整数（0〜100）に置換する。閾値・有効判定は従来どおり。
@@ -26,7 +26,7 @@ Processorで解決した本文を `resolvedText` に保持し、空白・TTS利�
 `SoundPlayer` 等の音声再生基盤の実装は `:core:narrator` を参照。
 
 Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCircle・RedYellowStripes の全10種は、`AceWindowsReadoutTextSpeaker` が保存文言（既定値は各SpeechEventのnarratedTextと同じ）を
-OS標準TTSで読み上げる。`WavNarratorEngine` の `customSpeak` 経路を使い、WAVへフォールバックしない。
+OS標準TTSで読み上げる。`NarratorEngine` の `customSpeak` 経路を使い、WAVへフォールバックしない。
 空白文言・TTS利用不可では本文も開始音も要求せず、テレメトリログに空文字と `SKIPPED` を記録する。
 開始音・優先度・キューは `ReadoutItemKey.AceWindows.Flag.Root` を参照する。全フラッグが自由文言のOS標準TTSで、フラッグのWAVは使用しない。
 判定時に解決した本文を `resolvedText` に保持し、キュー待機中に設定が変わっても発話とログを一致させる。

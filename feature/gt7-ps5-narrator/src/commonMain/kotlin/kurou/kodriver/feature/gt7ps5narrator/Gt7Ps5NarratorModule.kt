@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
 import kurou.kodriver.core.designsystem.readStartSoundBytes
-import kurou.kodriver.core.narrator.WavNarratorEngine
+import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.ReadoutTextEvent
@@ -115,7 +115,7 @@ val gt7Ps5NarratorModule: Module =
         includes(platformSoundModule(named(Simulator.Gt7Ps5.id)))
         single<TextToSpeechEngine>(named(Simulator.Gt7Ps5.id)) {
             Gt7Ps5NarratorEngine(
-                WavNarratorEngine(
+                NarratorEngine(
                     soundPlayer = get(named(Simulator.Gt7Ps5.id)),
                     resources =
                         WavResources(
