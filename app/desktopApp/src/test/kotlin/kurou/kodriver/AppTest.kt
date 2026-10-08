@@ -219,7 +219,11 @@ class AppTest {
                 "読み上げる文言は下の欄で設定できます。",
         )
         scrollToItem("自己ベストラップ")
-        clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
+        clickItemAndVerifyDescription(
+            "自己ベストラップ",
+            "自己ベストラップを更新したときに音声でお知らせします。\n" +
+                "読み上げる文言は下の欄で設定できます。",
+        )
     }
 
     @Test

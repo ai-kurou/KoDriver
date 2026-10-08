@@ -191,11 +191,8 @@ val aceWindowsNarratorModule: Module =
         factory(named(Simulator.AceWindows.id)) { PlaySpeechEventUseCase(get(named(Simulator.AceWindows.id))) }
     }
 
-private val aceWindowsEventToFile: Map<SpeechEvent, String> =
-    buildMap {
-        put(SpeechEvent.AceWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
-        put(SpeechEvent.AceWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
-    }
+// ACE の読み上げ項目はすべて自由文言のOS標準TTSへ移行済みのため、イベントごとのWAVは持たない。
+private val aceWindowsEventToFile: Map<SpeechEvent, String> = emptyMap()
 
 private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
     mapOf(

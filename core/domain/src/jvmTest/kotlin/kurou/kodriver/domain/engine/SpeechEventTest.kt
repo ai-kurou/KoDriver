@@ -146,8 +146,6 @@ class SpeechEventTest {
         assertEquals(null, aceEvent.resolvedText)
         assertEquals("更新済み", aceEvent.withResolvedText("更新済み").resolvedText)
         assertEquals("自己ベストラップ更新 1分23秒456", aceEvent.withResolvedText("更新済み").narratedText)
-        assertEquals("自己ベストラップ更新", SpeechEvent.AceWindowsMyBestLapFormal.narratedText)
-        assertEquals("ベストラップ", SpeechEvent.AceWindowsMyBestLapCasual.narratedText)
     }
 
     @Test

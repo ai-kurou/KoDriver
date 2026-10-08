@@ -5,7 +5,6 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -16,7 +15,7 @@ class MyBestLapPreferencesSerializerTest {
     @Test
     fun `デフォルト値は初期設定を返す`() {
         assertEquals(
-            MyBestLapPreferences(voiceType = MY_BEST_LAP_VOICE_TYPE_DEFAULT.id),
+            MyBestLapPreferences(),
             MyBestLapPreferencesSerializer.defaultValue,
         )
     }

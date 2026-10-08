@@ -126,7 +126,7 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.AceWindowsMyBestLapFormal,
+                    SpeechEvent.BlueFlag(),
                 )
             events.forEach { event ->
                 assertFalse(isAceWindowsCustomSpeakEvent(event))
