@@ -15,6 +15,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
+import kurou.kodriver.domain.engine.AceWindowsReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
@@ -687,7 +688,7 @@ class AceWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             val key = ReadoutItemKey.AceWindows.Flag.Root
-            every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag("ブルーフラッグ"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -701,7 +702,7 @@ class AceWindowsNarratorEventProcessorTest {
 
             createProcessor().processFlag(
                 flag = flag(AceWindowsFlagType.BLUE_FLAG),
-                events = listOf(SpeechEvent.AceWindowsBlueFlag),
+                events = listOf(SpeechEvent.AceWindowsBlueFlag()),
                 readoutOrder = listOf(key),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -711,7 +712,7 @@ class AceWindowsNarratorEventProcessorTest {
             assertEquals(true, telemetryJsons.single().contains("\"previousFlag\":null"))
             assertEquals(true, telemetryJsons.single().contains(""""flag":{"flag":"BLUE_FLAG"}"""))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag("ブルーフラッグ"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -732,7 +733,7 @@ class AceWindowsNarratorEventProcessorTest {
             every { ttsEngine.currentReadoutItemKey } returns null
             val processor = createProcessor()
             val key = ReadoutItemKey.AceWindows.Flag.Root
-            every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag("ブルーフラッグ"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
@@ -754,7 +755,7 @@ class AceWindowsNarratorEventProcessorTest {
             )
             processor.processFlag(
                 flag(AceWindowsFlagType.BLUE_FLAG),
-                listOf(SpeechEvent.AceWindowsBlueFlag),
+                listOf(SpeechEvent.AceWindowsBlueFlag()),
                 listOf(key),
                 emptyMap(),
                 200L,
@@ -765,7 +766,7 @@ class AceWindowsNarratorEventProcessorTest {
             assertEquals(true, telemetryJsons.single().contains(""""previousFlag":{"flag":"NO_FLAG"}"""))
             assertEquals(true, telemetryJsons.single().contains(""""flag":{"flag":"BLUE_FLAG"}"""))
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag("ブルーフラッグ"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     200L,
@@ -890,17 +891,17 @@ class AceWindowsNarratorEventProcessorTest {
     fun `自由文言10種の保存文言を読み上げログに記録する`() =
         runTest {
             val events =
-                listOf(
-                    SpeechEvent.AceWindowsCheckeredFlag,
-                    SpeechEvent.AceWindowsWhiteFlag,
-                    SpeechEvent.AceWindowsGreenFlag,
-                    SpeechEvent.AceWindowsRedFlag,
-                    SpeechEvent.AceWindowsBlueFlag,
-                    SpeechEvent.AceWindowsYellowFlag,
-                    SpeechEvent.AceWindowsBlackFlag,
-                    SpeechEvent.AceWindowsBlackWhiteFlag,
-                    SpeechEvent.AceWindowsOrangeCircleFlag,
-                    SpeechEvent.AceWindowsRedYellowStripesFlag,
+                listOf<AceWindowsReadoutTextEvent>(
+                    SpeechEvent.AceWindowsCheckeredFlag(),
+                    SpeechEvent.AceWindowsWhiteFlag(),
+                    SpeechEvent.AceWindowsGreenFlag(),
+                    SpeechEvent.AceWindowsRedFlag(),
+                    SpeechEvent.AceWindowsBlueFlag(),
+                    SpeechEvent.AceWindowsYellowFlag(),
+                    SpeechEvent.AceWindowsBlackFlag(),
+                    SpeechEvent.AceWindowsBlackWhiteFlag(),
+                    SpeechEvent.AceWindowsOrangeCircleFlag(),
+                    SpeechEvent.AceWindowsRedYellowStripesFlag(),
                 )
             val readouts = mutableListOf<SpeechEvent>()
             val processor =
@@ -912,7 +913,7 @@ class AceWindowsNarratorEventProcessorTest {
             events.forEach { event ->
                 val jsons = mutableListOf<String>()
                 val text: String? = "完走"
-                every { ttsEngine.speak(event, false) } just Runs
+                every { ttsEngine.speak(event.withResolvedText("完走"), false) } just Runs
                 coEvery {
                     telemetryLogRepository.saveTelemetryLog(
                         0L,
@@ -926,16 +927,16 @@ class AceWindowsNarratorEventProcessorTest {
                 processor.processFlag(
                     flag(
                         when (event) {
-                            SpeechEvent.AceWindowsCheckeredFlag -> AceWindowsFlagType.CHECKERED_FLAG
-                            SpeechEvent.AceWindowsWhiteFlag -> AceWindowsFlagType.WHITE_FLAG
-                            SpeechEvent.AceWindowsGreenFlag -> AceWindowsFlagType.GREEN_FLAG
-                            SpeechEvent.AceWindowsRedFlag -> AceWindowsFlagType.RED_FLAG
-                            SpeechEvent.AceWindowsBlueFlag -> AceWindowsFlagType.BLUE_FLAG
-                            SpeechEvent.AceWindowsYellowFlag -> AceWindowsFlagType.YELLOW_FLAG
-                            SpeechEvent.AceWindowsBlackFlag -> AceWindowsFlagType.BLACK_FLAG
-                            SpeechEvent.AceWindowsBlackWhiteFlag -> AceWindowsFlagType.BLACK_WHITE_FLAG
-                            SpeechEvent.AceWindowsOrangeCircleFlag -> AceWindowsFlagType.ORANGE_CIRCLE_FLAG
-                            SpeechEvent.AceWindowsRedYellowStripesFlag -> AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG
+                            SpeechEvent.AceWindowsCheckeredFlag() -> AceWindowsFlagType.CHECKERED_FLAG
+                            SpeechEvent.AceWindowsWhiteFlag() -> AceWindowsFlagType.WHITE_FLAG
+                            SpeechEvent.AceWindowsGreenFlag() -> AceWindowsFlagType.GREEN_FLAG
+                            SpeechEvent.AceWindowsRedFlag() -> AceWindowsFlagType.RED_FLAG
+                            SpeechEvent.AceWindowsBlueFlag() -> AceWindowsFlagType.BLUE_FLAG
+                            SpeechEvent.AceWindowsYellowFlag() -> AceWindowsFlagType.YELLOW_FLAG
+                            SpeechEvent.AceWindowsBlackFlag() -> AceWindowsFlagType.BLACK_FLAG
+                            SpeechEvent.AceWindowsBlackWhiteFlag() -> AceWindowsFlagType.BLACK_WHITE_FLAG
+                            SpeechEvent.AceWindowsOrangeCircleFlag() -> AceWindowsFlagType.ORANGE_CIRCLE_FLAG
+                            SpeechEvent.AceWindowsRedYellowStripesFlag() -> AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG
                             else -> error("Unexpected flag event")
                         },
                     ),
@@ -945,7 +946,7 @@ class AceWindowsNarratorEventProcessorTest {
                     0L,
                     logContext(),
                 )
-                verify(exactly = 1) { ttsEngine.speak(event, false) }
+                verify(exactly = 1) { ttsEngine.speak(event.withResolvedText("完走"), false) }
                 coVerify(exactly = 1) {
                     telemetryLogRepository.saveTelemetryLog(
                         0L,
@@ -957,7 +958,7 @@ class AceWindowsNarratorEventProcessorTest {
                     )
                 }
             }
-            assertEquals(events, readouts)
+            assertEquals<List<SpeechEvent>>(events, readouts)
             verify(exactly = events.size) { ttsEngine.currentReadoutItemKey }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -967,16 +968,16 @@ class AceWindowsNarratorEventProcessorTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.AceWindowsCheckeredFlag,
-                    SpeechEvent.AceWindowsWhiteFlag,
-                    SpeechEvent.AceWindowsGreenFlag,
-                    SpeechEvent.AceWindowsRedFlag,
-                    SpeechEvent.AceWindowsBlueFlag,
-                    SpeechEvent.AceWindowsYellowFlag,
-                    SpeechEvent.AceWindowsBlackFlag,
-                    SpeechEvent.AceWindowsBlackWhiteFlag,
-                    SpeechEvent.AceWindowsOrangeCircleFlag,
-                    SpeechEvent.AceWindowsRedYellowStripesFlag,
+                    SpeechEvent.AceWindowsCheckeredFlag(),
+                    SpeechEvent.AceWindowsWhiteFlag(),
+                    SpeechEvent.AceWindowsGreenFlag(),
+                    SpeechEvent.AceWindowsRedFlag(),
+                    SpeechEvent.AceWindowsBlueFlag(),
+                    SpeechEvent.AceWindowsYellowFlag(),
+                    SpeechEvent.AceWindowsBlackFlag(),
+                    SpeechEvent.AceWindowsBlackWhiteFlag(),
+                    SpeechEvent.AceWindowsOrangeCircleFlag(),
+                    SpeechEvent.AceWindowsRedYellowStripesFlag(),
                 )
             val readouts = mutableListOf<SpeechEvent>()
             val processor =
@@ -1002,16 +1003,16 @@ class AceWindowsNarratorEventProcessorTest {
                 processor.processFlag(
                     flag(
                         when (event) {
-                            SpeechEvent.AceWindowsCheckeredFlag -> AceWindowsFlagType.CHECKERED_FLAG
-                            SpeechEvent.AceWindowsWhiteFlag -> AceWindowsFlagType.WHITE_FLAG
-                            SpeechEvent.AceWindowsGreenFlag -> AceWindowsFlagType.GREEN_FLAG
-                            SpeechEvent.AceWindowsRedFlag -> AceWindowsFlagType.RED_FLAG
-                            SpeechEvent.AceWindowsBlueFlag -> AceWindowsFlagType.BLUE_FLAG
-                            SpeechEvent.AceWindowsYellowFlag -> AceWindowsFlagType.YELLOW_FLAG
-                            SpeechEvent.AceWindowsBlackFlag -> AceWindowsFlagType.BLACK_FLAG
-                            SpeechEvent.AceWindowsBlackWhiteFlag -> AceWindowsFlagType.BLACK_WHITE_FLAG
-                            SpeechEvent.AceWindowsOrangeCircleFlag -> AceWindowsFlagType.ORANGE_CIRCLE_FLAG
-                            SpeechEvent.AceWindowsRedYellowStripesFlag -> AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG
+                            SpeechEvent.AceWindowsCheckeredFlag() -> AceWindowsFlagType.CHECKERED_FLAG
+                            SpeechEvent.AceWindowsWhiteFlag() -> AceWindowsFlagType.WHITE_FLAG
+                            SpeechEvent.AceWindowsGreenFlag() -> AceWindowsFlagType.GREEN_FLAG
+                            SpeechEvent.AceWindowsRedFlag() -> AceWindowsFlagType.RED_FLAG
+                            SpeechEvent.AceWindowsBlueFlag() -> AceWindowsFlagType.BLUE_FLAG
+                            SpeechEvent.AceWindowsYellowFlag() -> AceWindowsFlagType.YELLOW_FLAG
+                            SpeechEvent.AceWindowsBlackFlag() -> AceWindowsFlagType.BLACK_FLAG
+                            SpeechEvent.AceWindowsBlackWhiteFlag() -> AceWindowsFlagType.BLACK_WHITE_FLAG
+                            SpeechEvent.AceWindowsOrangeCircleFlag() -> AceWindowsFlagType.ORANGE_CIRCLE_FLAG
+                            SpeechEvent.AceWindowsRedYellowStripesFlag() -> AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG
                             else -> error("Unexpected flag event")
                         },
                     ),
@@ -1033,7 +1034,7 @@ class AceWindowsNarratorEventProcessorTest {
                     )
                 }
             }
-            assertEquals(events, readouts)
+            assertEquals<List<SpeechEvent>>(events, readouts)
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             confirmVerified(telemetryLogRepository, ttsEngine)
         }
@@ -1041,7 +1042,7 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `自由文言の文言が空白なら読み上げず空文字とSKIPPEDを記録する`() =
         runTest {
-            val event = SpeechEvent.AceWindowsGreenFlag
+            val event = SpeechEvent.AceWindowsGreenFlag()
             val jsons = mutableListOf<String>()
             val processor =
                 AceWindowsNarratorEventProcessor(ttsEngine, SaveTelemetryLogUseCase(telemetryLogRepository)) { "  " }
@@ -1091,9 +1092,9 @@ class AceWindowsNarratorEventProcessorTest {
     fun `文言解決に失敗しても同じ入力の後続イベントと次回処理を継続する`() =
         runTest {
             val key = ReadoutItemKey.AceWindows.Flag.Root
-            val failedEvent = SpeechEvent.AceWindowsBlueFlag
-            val nextEvent = SpeechEvent.AceWindowsRedFlag
-            val resolvedEvent = SpeechEvent.AceWindowsRedFlag
+            val failedEvent = SpeechEvent.AceWindowsBlueFlag()
+            val nextEvent = SpeechEvent.AceWindowsRedFlag()
+            val resolvedEvent = SpeechEvent.AceWindowsRedFlag("復旧")
             val skippedJson = slot<String>()
             val spokenJsons = mutableListOf<String>()
             val resolvedEvents = mutableListOf<SpeechEvent>()
@@ -1182,7 +1183,7 @@ class AceWindowsNarratorEventProcessorTest {
     fun `文言解決のキャンセルは再スローしログ保存と後続処理を行わない`() =
         runTest {
             val key = ReadoutItemKey.AceWindows.Flag.Root
-            val event = SpeechEvent.AceWindowsBlueFlag
+            val event = SpeechEvent.AceWindowsBlueFlag()
             val cancellation = CancellationException("cancelled")
             val resolvedEvents = mutableListOf<SpeechEvent>()
             val processor =
@@ -1195,7 +1196,7 @@ class AceWindowsNarratorEventProcessorTest {
                 assertFailsWith<CancellationException> {
                     processor.processFlag(
                         flag = flag(AceWindowsFlagType.BLUE_FLAG),
-                        events = listOf(event, SpeechEvent.AceWindowsRedFlag),
+                        events = listOf(event, SpeechEvent.AceWindowsRedFlag()),
                         readoutOrder = listOf(key),
                         queueEnabledStates = emptyMap(),
                         observedAtMs = 100L,
@@ -1223,11 +1224,11 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `車両接近は保存文言をRootのログに記録する`() =
         runTest {
-            val event = SpeechEvent.AceWindowsVehicleApproach
+            val event = SpeechEvent.AceWindowsVehicleApproach()
             val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(event, false) } just Runs
+            every { ttsEngine.speak(event.withResolvedText("周囲に注意"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -1254,7 +1255,7 @@ class AceWindowsNarratorEventProcessorTest {
             )
             assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(event, false) }
+            verify(exactly = 1) { ttsEngine.speak(event.withResolvedText("周囲に注意"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -1271,53 +1272,55 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `車両接近は空白またはTTS不可の解決結果なら開始音を要求せず空文字でSKIPPEDを記録する`() =
         runTest {
-            val event = SpeechEvent.AceWindowsVehicleApproach
-            val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
-            val json = slot<String>()
-            coEvery {
-                telemetryLogRepository.saveTelemetryLog(
+            listOf<String?>(null, "  ").forEachIndexed { index, text ->
+                val event = SpeechEvent.AceWindowsVehicleApproach()
+                val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
+                val json = slot<String>()
+                coEvery {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        key,
+                        "",
+                        NarrationOutcome.SKIPPED,
+                        capture(json),
+                    )
+                } just Runs
+                val resolvedEvents = mutableListOf<SpeechEvent>()
+                val processor =
+                    createProcessor {
+                        resolvedEvents += it
+                        text
+                    }
+                processor.processVehicleApproach(
+                    AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(5.0))),
+                    listOf(event),
+                    listOf(key),
+                    emptyMap(),
                     0L,
-                    Simulator.AceWindows,
-                    key,
-                    "",
-                    NarrationOutcome.SKIPPED,
-                    capture(json),
+                    logContext(),
                 )
-            } just Runs
-            val resolvedEvents = mutableListOf<SpeechEvent>()
-            val processor =
-                createProcessor {
-                    resolvedEvents += it
-                    null
+                assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
+                verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 0) { ttsEngine.speak(event, false) }
+                coVerify(exactly = index + 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        0L,
+                        Simulator.AceWindows,
+                        key,
+                        "",
+                        NarrationOutcome.SKIPPED,
+                        json.captured,
+                    )
                 }
-            processor.processVehicleApproach(
-                AceWindowsVehicleApproachData(nearbyVehicles = listOf(AceWindowsNearbyVehicleData(5.0))),
-                listOf(event),
-                listOf(key),
-                emptyMap(),
-                0L,
-                logContext(),
-            )
-            assertEquals(listOf<SpeechEvent>(event), resolvedEvents)
-            verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(event, false) }
-            coVerify(exactly = 1) {
-                telemetryLogRepository.saveTelemetryLog(
-                    0L,
-                    Simulator.AceWindows,
-                    key,
-                    "",
-                    NarrationOutcome.SKIPPED,
-                    json.captured,
-                )
+                confirmVerified(ttsEngine, telemetryLogRepository)
             }
-            confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
     @Test
     fun `車両接近は文言解決に失敗しても空文字でSKIPPEDを記録する`() =
         runTest {
-            val event = SpeechEvent.AceWindowsVehicleApproach
+            val event = SpeechEvent.AceWindowsVehicleApproach()
             val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
             val json = slot<String>()
             coEvery {
@@ -1367,14 +1370,14 @@ class AceWindowsNarratorEventProcessorTest {
             assertFailsWith<CancellationException> {
                 processor.processVehicleApproach(
                     AceWindowsVehicleApproachData(nearbyVehicles = emptyList()),
-                    listOf(SpeechEvent.AceWindowsVehicleApproach),
+                    listOf(SpeechEvent.AceWindowsVehicleApproach()),
                     listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
                     emptyMap(),
                     0L,
                     logContext(),
                 )
             }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach(), false) }
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
@@ -1633,8 +1636,8 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `燃料残量処理は自由文言イベント以外も解決した本文でログに記録する`() =
         runTest {
-            val event = SpeechEvent.AceWindowsVehicleApproach
-            val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
+            val event = SpeechEvent.CarLeft()
+            val key = ReadoutItemKey.LmuWindows.VehicleApproach.Root
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             every { ttsEngine.speak(event, false) } just Runs
@@ -1885,8 +1888,8 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `燃料残り周回数処理は自由文言イベント以外も解決した本文でログに記録する`() =
         runTest {
-            val event = SpeechEvent.AceWindowsVehicleApproach
-            val key = ReadoutItemKey.AceWindows.VehicleApproach.Root
+            val event = SpeechEvent.CarLeft()
+            val key = ReadoutItemKey.LmuWindows.VehicleApproach.Root
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             every { ttsEngine.speak(event, false) } just Runs

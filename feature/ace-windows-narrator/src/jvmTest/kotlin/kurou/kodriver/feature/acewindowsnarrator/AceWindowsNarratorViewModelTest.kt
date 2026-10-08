@@ -243,7 +243,7 @@ class AceWindowsNarratorViewModelTest {
                 flagChannel = channel,
                 ttsEngine = tts,
                 readoutText = {
-                    if (it == SpeechEvent.AceWindowsBlueFlag) error("preference error")
+                    if (it == SpeechEvent.AceWindowsBlueFlag()) error("preference error")
                     "復旧"
                 },
             )
@@ -252,9 +252,9 @@ class AceWindowsNarratorViewModelTest {
             channel.send(flag(AceWindowsFlagType.BLUE_FLAG))
             channel.send(flag(AceWindowsFlagType.RED_FLAG))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsRedFlag), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsRedFlag("復旧")), spokenTexts)
             verify(exactly = 1) { tts.currentReadoutItemKey }
-            verify(exactly = 1) { tts.speak(SpeechEvent.AceWindowsRedFlag, false) }
+            verify(exactly = 1) { tts.speak(SpeechEvent.AceWindowsRedFlag("復旧"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -568,17 +568,17 @@ class AceWindowsNarratorViewModelTest {
                 flagChannel.send(flag(type))
             }
 
-            assertEquals(
+            assertEquals<List<SpeechEvent>>(
                 listOf(
-                    SpeechEvent.AceWindowsWhiteFlag,
-                    SpeechEvent.AceWindowsGreenFlag,
-                    SpeechEvent.AceWindowsRedFlag,
-                    SpeechEvent.AceWindowsBlueFlag,
-                    SpeechEvent.AceWindowsYellowFlag,
-                    SpeechEvent.AceWindowsBlackFlag,
-                    SpeechEvent.AceWindowsBlackWhiteFlag,
-                    SpeechEvent.AceWindowsOrangeCircleFlag,
-                    SpeechEvent.AceWindowsRedYellowStripesFlag,
+                    SpeechEvent.AceWindowsWhiteFlag("ホワイトフラッグ"),
+                    SpeechEvent.AceWindowsGreenFlag("グリーンフラッグ"),
+                    SpeechEvent.AceWindowsRedFlag("レッドフラッグ"),
+                    SpeechEvent.AceWindowsBlueFlag("ブルーフラッグ"),
+                    SpeechEvent.AceWindowsYellowFlag("イエローフラッグ"),
+                    SpeechEvent.AceWindowsBlackFlag("ブラックフラッグ"),
+                    SpeechEvent.AceWindowsBlackWhiteFlag("ブラック・ホワイトフラッグ"),
+                    SpeechEvent.AceWindowsOrangeCircleFlag("オレンジボールフラッグ、車両に不具合があります"),
+                    SpeechEvent.AceWindowsRedYellowStripesFlag("レッド・イエローストライプフラッグ、路面が滑りやすいです"),
                 ),
                 spokenTexts,
             )
@@ -799,7 +799,7 @@ class AceWindowsNarratorViewModelTest {
 
             vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach("車両接近")), spokenTexts)
         }
 
     @Test
@@ -833,9 +833,9 @@ class AceWindowsNarratorViewModelTest {
 
             vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach("周囲に注意")), spokenTexts)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach("周囲に注意"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -882,7 +882,7 @@ class AceWindowsNarratorViewModelTest {
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach, false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach("車両接近"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -980,7 +980,7 @@ class AceWindowsNarratorViewModelTest {
             vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
             vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach("車両接近")), spokenTexts)
         }
 
     @Test
@@ -1002,7 +1002,10 @@ class AceWindowsNarratorViewModelTest {
             vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.AceWindowsVehicleApproach, SpeechEvent.AceWindowsVehicleApproach),
+                listOf<SpeechEvent>(
+                    SpeechEvent.AceWindowsVehicleApproach("車両接近"),
+                    SpeechEvent.AceWindowsVehicleApproach("車両接近"),
+                ),
                 spokenTexts,
             )
         }

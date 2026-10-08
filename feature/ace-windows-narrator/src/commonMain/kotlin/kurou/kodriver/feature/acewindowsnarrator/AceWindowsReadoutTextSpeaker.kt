@@ -102,43 +102,78 @@ internal class AceWindowsReadoutTextSpeaker(
                 event.resolvedText
                     ?: formatAceWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
             } else {
-                savedReadoutText(event) ?: return null
+                (event as? AceWindowsReadoutTextEvent)?.resolvedText ?: savedReadoutText(event) ?: return null
             }
         return ReadoutText(text, event is AceWindowsReadoutTextEvent && event.resolvedText != null)
     }
 
-    /** 判定時の解決を伴わない、保存済み固定文言（フラッグ・車両接近）。対象外イベントは null。 */
+    /** 保存済み固定文言（フラッグ・車両接近）。対象外イベントは null。 */
     private suspend fun savedReadoutText(event: SpeechEvent): String? =
         when (event) {
-            SpeechEvent.AceWindowsCheckeredFlag -> observeCheckeredFlagReadoutText().first()
-            SpeechEvent.AceWindowsWhiteFlag -> observeWhiteFlagReadoutText().first()
-            SpeechEvent.AceWindowsGreenFlag -> observeGreenFlagReadoutText().first()
-            SpeechEvent.AceWindowsRedFlag -> observeRedFlagReadoutText().first()
-            SpeechEvent.AceWindowsBlueFlag -> observeBlueFlagReadoutText().first()
-            SpeechEvent.AceWindowsYellowFlag -> observeYellowFlagReadoutText().first()
-            SpeechEvent.AceWindowsBlackFlag -> observeBlackFlagReadoutText().first()
-            SpeechEvent.AceWindowsBlackWhiteFlag -> observeBlackWhiteFlagReadoutText().first()
-            SpeechEvent.AceWindowsOrangeCircleFlag -> observeOrangeCircleFlagReadoutText().first()
-            SpeechEvent.AceWindowsRedYellowStripesFlag -> observeRedYellowStripesFlagReadoutText().first()
-            SpeechEvent.AceWindowsVehicleApproach -> observeVehicleApproachReadoutText().first()
-            else -> null
+            is SpeechEvent.AceWindowsCheckeredFlag -> {
+                observeCheckeredFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsWhiteFlag -> {
+                observeWhiteFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsGreenFlag -> {
+                observeGreenFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsRedFlag -> {
+                observeRedFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsBlueFlag -> {
+                observeBlueFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsYellowFlag -> {
+                observeYellowFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsBlackFlag -> {
+                observeBlackFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsBlackWhiteFlag -> {
+                observeBlackWhiteFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsOrangeCircleFlag -> {
+                observeOrangeCircleFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsRedYellowStripesFlag -> {
+                observeRedYellowStripesFlagReadoutText().first()
+            }
+
+            is SpeechEvent.AceWindowsVehicleApproach -> {
+                observeVehicleApproachReadoutText().first()
+            }
+
+            else -> {
+                null
+            }
         }
 }
 
 /** 自由文言対象の判定をNarratorと本文再生で共有する。 */
 internal fun isAceWindowsCustomSpeakEvent(event: SpeechEvent): Boolean =
     when (event) {
-        SpeechEvent.AceWindowsWhiteFlag,
-        SpeechEvent.AceWindowsGreenFlag,
-        SpeechEvent.AceWindowsRedFlag,
-        SpeechEvent.AceWindowsBlueFlag,
-        SpeechEvent.AceWindowsYellowFlag,
-        SpeechEvent.AceWindowsBlackFlag,
-        SpeechEvent.AceWindowsBlackWhiteFlag,
-        SpeechEvent.AceWindowsOrangeCircleFlag,
-        SpeechEvent.AceWindowsRedYellowStripesFlag,
-        SpeechEvent.AceWindowsCheckeredFlag,
-        SpeechEvent.AceWindowsVehicleApproach,
+        is SpeechEvent.AceWindowsWhiteFlag,
+        is SpeechEvent.AceWindowsGreenFlag,
+        is SpeechEvent.AceWindowsRedFlag,
+        is SpeechEvent.AceWindowsBlueFlag,
+        is SpeechEvent.AceWindowsYellowFlag,
+        is SpeechEvent.AceWindowsBlackFlag,
+        is SpeechEvent.AceWindowsBlackWhiteFlag,
+        is SpeechEvent.AceWindowsOrangeCircleFlag,
+        is SpeechEvent.AceWindowsRedYellowStripesFlag,
+        is SpeechEvent.AceWindowsCheckeredFlag,
+        is SpeechEvent.AceWindowsVehicleApproach,
         -> true
 
         is SpeechEvent.AceWindowsTyreOverheat,
