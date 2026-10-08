@@ -119,6 +119,7 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
+                            lmuWindowsSideBySideDurations = LmuWindowsSideBySideDurations(1_000, 0),
                             vehicleApproach =
                                 LmuWindowsVehicleApproachData(
                                     sideBySideLeftVehicleIds = emptySet(),
@@ -135,6 +136,8 @@ class DebugStateSideBySideVehiclesCardTest {
         }
 
         rule.onNodeWithText("右2.1m").assertIsDisplayed()
+        rule.onNodeWithText("0.0秒").assertIsDisplayed()
+        rule.onNodeWithText("1.0秒").assertDoesNotExist()
     }
 
     @Test
@@ -162,6 +165,42 @@ class DebugStateSideBySideVehiclesCardTest {
 
         rule.onNodeWithText("左0.5m").assertIsDisplayed()
         rule.onNodeWithText("右0.8m").assertIsDisplayed()
+    }
+
+    @Test
+    fun `LMUで左右両方に並走車両がいる場合は両側の距離の下に秒数を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            lmuWindowsSideBySideDurations = LmuWindowsSideBySideDurations(1_240, 2_060),
+                            vehicleApproach =
+                                LmuWindowsVehicleApproachData(
+                                    sideBySideLeftVehicleIds = setOf(1),
+                                    sideBySideRightVehicleIds = setOf(2),
+                                    lateralDistanceLeftMeters = LateralDistanceMeters(0.5),
+                                    lateralDistanceRightMeters = LateralDistanceMeters(0.76),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("左0.5m").assertIsDisplayed()
+        rule.onNodeWithText("右0.8m").assertIsDisplayed()
+        rule.onNodeWithText("1.2秒").assertIsDisplayed()
+        rule.onNodeWithText("2.1秒").assertIsDisplayed()
+        val leftDistanceTop = topOf("左0.5m")
+        val leftDurationTop = topOf("1.2秒")
+        val rightDistanceTop = topOf("右0.8m")
+        val rightDurationTop = topOf("2.1秒")
+        assertTrue(leftDurationTop > leftDistanceTop)
+        assertTrue(rightDurationTop > rightDistanceTop)
     }
 
     @Test
@@ -243,5 +282,10 @@ class DebugStateSideBySideVehiclesCardTest {
                 .fetchSemanticsNode()
                 .boundsInRoot.top
         assertTrue(nearerTop < fartherTop)
+    }
+
+    private fun topOf(text: String): Float {
+        val node = rule.onNodeWithText(text).fetchSemanticsNode()
+        return node.boundsInRoot.top
     }
 }

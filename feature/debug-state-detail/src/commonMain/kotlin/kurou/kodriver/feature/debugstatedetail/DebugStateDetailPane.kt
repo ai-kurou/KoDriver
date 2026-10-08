@@ -174,6 +174,7 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
                     uiState.selectedSimulator,
                     uiState.vehicleApproach,
                     uiState.aceWindowsVehicleApproach,
+                    uiState.lmuWindowsSideBySideDurations,
                 )
             },
         DebugStateCardKey.BEST_LAP to { uiState ->

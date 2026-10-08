@@ -56,6 +56,7 @@ data class DebugStateDetailUiState(
     val aceWindowsBestLapTime: AceWindowsBestLapTimeData? = null,
     val aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData? = null,
     val lmuWindowsPitStatus: LmuWindowsPitStatusData? = null,
+    val lmuWindowsSideBySideDurations: LmuWindowsSideBySideDurations? = null,
     val vehicleApproach: LmuWindowsVehicleApproachData? = null,
     val aceWindowsVehicleApproach: AceWindowsVehicleApproachData? = null,
     val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData? = null,
