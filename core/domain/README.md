@@ -23,3 +23,10 @@ GT7の燃料残り周回数・燃料残量・タイヤ温度・自己ベスト�
 `observeText` / `saveText` で、設定可能な10種類のフラッグ文言を取得・保存する。
 フラッグなし・不明は設定対象に含めない。フラッグ別のUseCaseは対応するキーを指定し、
 保存時の空白除去・最大文字数制限を維持する。
+
+## LMUピットタイミング設定
+
+`LmuWindowsPitTimingPreferencesRepository` は予想残り周回数・読み上げ有効状態、
+`LmuWindowsPitTimingReadoutTextPreferencesRepository` は予告・直前の読み上げ文言を扱う。
+Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStoreを共有する。
+既存の保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。

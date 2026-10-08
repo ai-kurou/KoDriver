@@ -5,11 +5,11 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
 import kotlin.test.Test
 
 class SaveLmuWindowsPitTimingVirtualEnergyImminentReadoutTextUseCaseTest {
-    private val repository: LmuWindowsPitTimingPreferencesRepository = mockk(relaxUnitFun = true)
+    private val repository: LmuWindowsPitTimingReadoutTextPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
     fun `前後の空白を除去して保存する`() =

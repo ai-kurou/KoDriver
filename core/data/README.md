@@ -22,3 +22,10 @@ LMU自己ベストラップの自由文言は、共有 `MyBestLapPreferences` �
 ACEフラッグ文言は `AceWindowsFlagReadoutTextKey` ごとに既存のフィールドを取得・更新する。
 保存ファイルと `AceWindowsFlagReadoutTextPreferences` のフィールド・ProtoNumberは維持し、
 他フラッグの保存値を残して対象文言のみ更新する。
+
+## LMUピットタイミング設定
+
+`LmuWindowsPitTimingPreferencesRepository` は予想残り周回数・読み上げ有効状態、
+`LmuWindowsPitTimingReadoutTextPreferencesRepository` は予告・直前の読み上げ文言を扱う。
+Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStoreを共有する。
+既存の保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。

@@ -7,12 +7,12 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveLmuWindowsPitTimingTyreWearReadoutTextUseCaseTest {
-    private val repository: LmuWindowsPitTimingPreferencesRepository = mockk()
+    private val repository: LmuWindowsPitTimingReadoutTextPreferencesRepository = mockk()
 
     @Test
     fun `タイヤ摩耗読み上げ文言を監視できる`() =

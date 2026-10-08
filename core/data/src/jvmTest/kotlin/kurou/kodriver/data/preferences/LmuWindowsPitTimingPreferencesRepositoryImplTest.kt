@@ -3,15 +3,12 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -32,6 +29,7 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
 
     @AfterTest
     fun tearDown() {
+        dataStoreScope.cancel()
         tempDir.deleteRecursively()
     }
 
@@ -106,54 +104,12 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `VirtualEnergyReadoutTextの既定値と保存した空文字や文言を取得できる`() =
+    fun `有効状態の未知のキーを除外して既知のキーを取得する`() =
         runTest {
-            assertEquals(
-                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
-                repository.observeVirtualEnergyReadoutText().first(),
-            )
-            listOf("", " ", "残り{laps}周").forEach { text ->
-                repository.saveVirtualEnergyReadoutText(text)
-                assertEquals(text, repository.observeVirtualEnergyReadoutText().first())
+            val key = ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy
+            pitTimingDataStore.updateData {
+                it.copy(enabledStates = mapOf(key.value to false, "future_pit_timing" to true))
             }
-        }
-
-    @Test
-    fun `VirtualEnergyImminentReadoutTextの既定値と保存した空文字や文言を取得できる`() =
-        runTest {
-            assertEquals(
-                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
-                repository.observeVirtualEnergyImminentReadoutText().first(),
-            )
-            listOf("", " ", "残り{laps}周").forEach { text ->
-                repository.saveVirtualEnergyImminentReadoutText(text)
-                assertEquals(text, repository.observeVirtualEnergyImminentReadoutText().first())
-            }
-        }
-
-    @Test
-    fun `TyreWearReadoutTextの既定値と保存した空文字や文言を取得できる`() =
-        runTest {
-            assertEquals(
-                LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT,
-                repository.observeTyreWearReadoutText().first(),
-            )
-            listOf("", " ", "残り{laps}周").forEach { text ->
-                repository.saveTyreWearReadoutText(text)
-                assertEquals(text, repository.observeTyreWearReadoutText().first())
-            }
-        }
-
-    @Test
-    fun `TyreWearImminentReadoutTextの既定値と保存した空文字や文言を取得できる`() =
-        runTest {
-            assertEquals(
-                LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
-                repository.observeTyreWearImminentReadoutText().first(),
-            )
-            listOf("", " ", "残り{laps}周").forEach { text ->
-                repository.saveTyreWearImminentReadoutText(text)
-                assertEquals(text, repository.observeTyreWearImminentReadoutText().first())
-            }
+            assertEquals(mapOf<ReadoutItemKey, Boolean>(key to false), repository.observeEnabledStates().first())
         }
 }
