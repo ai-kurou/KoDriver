@@ -108,6 +108,8 @@ private fun handleOtherItemClick(
     onOpenTtsEngineInPlayStore: () -> Unit,
 ) {
     when (itemType) {
+        OtherListItemType.VoiceSpeed -> Unit
+
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
 
         OtherListItemType.Theme -> onOpenThemeDialog()

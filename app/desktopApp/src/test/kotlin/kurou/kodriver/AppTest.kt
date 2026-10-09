@@ -268,6 +268,8 @@ class AppTest {
             .onNode(hasText("システム既定") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
             .performClick()
         rule.waitForIdle()
+        scrollToItem("読み上げ速度")
+        clickItem("読み上げ速度")
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
         // 「テレメトリ受信中は画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
