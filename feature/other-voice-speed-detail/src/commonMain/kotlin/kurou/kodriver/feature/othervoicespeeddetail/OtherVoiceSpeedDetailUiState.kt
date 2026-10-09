@@ -7,4 +7,5 @@ import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
  */
 data class OtherVoiceSpeedDetailUiState(
     val speed: Float = VOICE_SPEED_DEFAULT,
+    val isPreviewing: Boolean = false,
 )

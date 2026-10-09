@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.othervoicespeeddetail
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
@@ -59,11 +62,16 @@ class OtherVoiceSpeedDetailPaneWiringTest {
         every { viewModel.uiState } returns MutableStateFlow(OtherVoiceSpeedDetailUiState(speed = 1.5f))
         every { viewModel.onSpeedChanged(2.0f) } returns Unit
         every { viewModel.onSpeedChanged(1.0f) } returns Unit
+        every { viewModel.onPreviewClicked("これは読み上げ速度の試聴です。") } returns Unit
+        every { viewModel.onPreviewStopped() } returns Unit
         every { onBack() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
+            var showPane by mutableStateOf(true)
             rule.setContent {
-                KoDriverTheme { OtherVoiceSpeedDetailPane(true, onBack, Modifier.testTag("voice-speed-pane")) }
+                KoDriverTheme {
+                    if (showPane) OtherVoiceSpeedDetailPane(true, onBack, Modifier.testTag("voice-speed-pane"))
+                }
             }
             rule.onNodeWithTag("voice-speed-pane").assertExists()
             rule.onNodeWithText("1.5倍").assertExists()
@@ -74,10 +82,15 @@ class OtherVoiceSpeedDetailPaneWiringTest {
                     },
                 ).performSemanticsAction(SemanticsActions.SetProgress) { it(2.0f) }
             rule.onNodeWithContentDescription("読み上げ速度をデフォルトに戻す").performClick()
+            rule.onNodeWithText("試聴").performClick()
             rule.onNodeWithContentDescription("戻る").performClick()
+            showPane = false
+            rule.waitForIdle()
             verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.onPreviewStopped() }
             verify(exactly = 1) { viewModel.onSpeedChanged(2.0f) }
             verify(exactly = 1) { viewModel.onSpeedChanged(1.0f) }
+            verify(exactly = 1) { viewModel.onPreviewClicked("これは読み上げ速度の試聴です。") }
             verify(exactly = 1) { onBack() }
             confirmVerified(viewModel, onBack)
         } finally {
