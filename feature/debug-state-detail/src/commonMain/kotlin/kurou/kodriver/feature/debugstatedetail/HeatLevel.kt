@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKNOWN_DEFAULT
@@ -48,7 +49,14 @@ internal fun tyreTemperatureHeatLevel(
             )
         }
 
-        is Simulator.LmuWindows, is Simulator.Gt7Ps5 -> {
+        is Simulator.Gt7Ps5 -> {
+            temperatureHeatLevel(
+                celsius = celsius,
+                warmThreshold = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value.toDouble(),
+            )
+        }
+
+        is Simulator.LmuWindows -> {
             temperatureHeatLevel(celsius)
         }
     }

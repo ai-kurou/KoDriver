@@ -19,7 +19,7 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は95度`() =
+    fun `デフォルト値は100度`() =
         runTest {
             val repository =
                 createGt7Ps5TyreTemperaturePreferencesRepository(

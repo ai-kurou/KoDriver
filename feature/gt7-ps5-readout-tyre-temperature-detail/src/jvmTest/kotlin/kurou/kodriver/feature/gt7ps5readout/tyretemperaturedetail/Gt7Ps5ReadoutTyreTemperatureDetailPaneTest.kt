@@ -90,7 +90,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailPaneTest {
         }
         rule.onNodeWithText("過熱警告").assertIsDisplayed()
         rule.onNodeWithText("高温閾値設定").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithText("高温閾値: 95°C").assertIsDisplayed()
+        rule.onNodeWithText("高温閾値: 100°C").assertIsDisplayed()
         rule.onNodeWithText("タイヤ過熱警告の文言").assertIsDisplayed()
         rule.onNodeWithText(DEFAULT_TEXT).assertIsDisplayed()
         rule.onNodeWithText("{celsius} は判定時の全輪の最高タイヤ温度（摂氏）に置き換わります（整数に丸めます）").assertIsDisplayed()
@@ -369,7 +369,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailPaneTest {
 
         rule
             .onNode(
-                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 95f, range = 90f..110f, steps = 19)),
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 100f, range = 90f..110f, steps = 19)),
             ).performScrollTo()
             .performSemanticsAction(SemanticsActions.SetProgress) {
                 it(105f)
