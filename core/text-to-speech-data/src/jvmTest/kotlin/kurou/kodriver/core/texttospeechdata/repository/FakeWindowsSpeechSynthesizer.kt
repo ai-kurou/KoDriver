@@ -29,6 +29,8 @@ class FakeWindowsSpeechSynthesizer(
 
     var isAvailableCallCount = 0
         private set
+    var warmUpCount = 0
+        private set
 
     var listVoicesCallCount = 0
         private set
@@ -47,6 +49,10 @@ class FakeWindowsSpeechSynthesizer(
     override fun isAvailable(): Boolean {
         isAvailableCallCount++
         return available
+    }
+
+    override fun warmUp() {
+        warmUpCount++
     }
 
     override fun speak(
