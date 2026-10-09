@@ -21,6 +21,8 @@ class OtherThemeDetailViewModel internal constructor(
     observeThemeMode: ObserveThemeModeUseCase,
     private val saveThemeMode: SaveThemeModeUseCase,
 ) : ViewModel() {
+    private var previewRequest = 0
+
     private val pendingThemeMode = MutableStateFlow<ThemeMode?>(null)
 
     internal val uiState =
@@ -32,11 +34,13 @@ class OtherThemeDetailViewModel internal constructor(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherThemeDetailUiState())
 
     internal fun onPendingThemeModeSelected(themeMode: ThemeMode) {
+        previewRequest++
         pendingThemeMode.update { themeMode }
     }
 
     internal fun onConfirm() {
         val themeMode = pendingThemeMode.value ?: return
+        val request = ++previewRequest
         viewModelScope.launch {
             try {
                 saveThemeMode(themeMode)
@@ -47,12 +51,14 @@ class OtherThemeDetailViewModel internal constructor(
             } catch (_: Exception) {
                 // 保存に失敗しても未保存のテーマを表示し続けず、保存済みの設定へ戻す。
             } finally {
-                pendingThemeMode.update { pending -> if (pending == themeMode) null else pending }
+                // 同じテーマを選び直した場合も、後続の選択・保存処理には触れない。
+                if (previewRequest == request) pendingThemeMode.update { null }
             }
         }
     }
 
     internal fun onDismiss() {
+        previewRequest++
         pendingThemeMode.update { null }
     }
 }

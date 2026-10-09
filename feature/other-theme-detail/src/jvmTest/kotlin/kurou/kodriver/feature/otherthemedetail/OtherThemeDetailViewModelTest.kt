@@ -285,4 +285,92 @@ class OtherThemeDetailViewModelTest {
             coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.DARK) }
             confirmVerified(repository)
         }
+
+    @Test
+    fun `保存失敗時も同じテーマを選び直した新しいプレビューは解除しない`() =
+        runTest(dispatcher) {
+            every { repository.observeThemeMode() } returns themeModeFlow
+            val saveCompleted = CompletableDeferred<Unit>()
+            coEvery { repository.saveThemeMode(ThemeMode.DARK) } coAnswers {
+                saveCompleted.await()
+                throw IOException("保存失敗")
+            }
+            val viewModel = createViewModel()
+            backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
+            viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
+            viewModel.onConfirm()
+            viewModel.onPendingThemeModeSelected(ThemeMode.LIGHT)
+            viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
+
+            saveCompleted.complete(Unit)
+
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first().pendingThemeMode)
+            assertEquals(ThemeMode.SYSTEM, themeModeFlow.first())
+            viewModel.onDismiss()
+            assertEquals(ThemeMode.SYSTEM, viewModel.uiState.first().pendingThemeMode)
+            verify(exactly = 1) { repository.observeThemeMode() }
+            coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.DARK) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `先行する保存の失敗は同じテーマの後続の保存プレビューを解除しない`() =
+        runTest(dispatcher) {
+            every { repository.observeThemeMode() } returns themeModeFlow
+            val firstSave = CompletableDeferred<Unit>()
+            val secondSave = CompletableDeferred<Unit>()
+            var saveCount = 0
+            coEvery { repository.saveThemeMode(ThemeMode.DARK) } coAnswers {
+                if (++saveCount == 1) {
+                    firstSave.await()
+                    throw IOException("先行保存の失敗")
+                }
+                secondSave.await()
+                themeModeFlow.update { ThemeMode.DARK }
+            }
+            val viewModel = createViewModel()
+            backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
+            viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
+            viewModel.onConfirm()
+            viewModel.onConfirm()
+
+            firstSave.complete(Unit)
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first().pendingThemeMode)
+            assertEquals(ThemeMode.SYSTEM, themeModeFlow.first())
+            secondSave.complete(Unit)
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first().selectedThemeMode)
+            themeModeFlow.update { ThemeMode.LIGHT }
+            assertEquals(ThemeMode.LIGHT, viewModel.uiState.first().pendingThemeMode)
+            verify(exactly = 1) { repository.observeThemeMode() }
+            coVerify(exactly = 2) { repository.saveThemeMode(ThemeMode.DARK) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `先行する保存のキャンセルも同じテーマの新しいプレビューを解除しない`() =
+        runTest(dispatcher) {
+            every { repository.observeThemeMode() } returns themeModeFlow
+            val saveCompleted = CompletableDeferred<Unit>()
+            val saveJob = CompletableDeferred<Job>()
+            coEvery { repository.saveThemeMode(ThemeMode.DARK) } coAnswers {
+                saveJob.complete(currentCoroutineContext().job)
+                saveCompleted.await()
+                throw CancellationException("先行保存のキャンセル")
+            }
+            val viewModel = createViewModel()
+            backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
+            viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
+            viewModel.onConfirm()
+            viewModel.onPendingThemeModeSelected(ThemeMode.LIGHT)
+            viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
+
+            saveCompleted.complete(Unit)
+
+            assertTrue(saveJob.await().isCancelled)
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first().pendingThemeMode)
+            assertEquals(ThemeMode.SYSTEM, themeModeFlow.first())
+            verify(exactly = 1) { repository.observeThemeMode() }
+            coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.DARK) }
+            confirmVerified(repository)
+        }
 }
