@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherthemedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -37,10 +38,17 @@ class OtherThemeDetailViewModel internal constructor(
     internal fun onConfirm() {
         val themeMode = pendingThemeMode.value ?: return
         viewModelScope.launch {
-            saveThemeMode(themeMode)
-            // 保存済み状態への反映を待ち、確定時に元のテーマが一瞬表示されるのを防ぐ。
-            uiState.first { it.selectedThemeMode == themeMode }
-            pendingThemeMode.update { pending -> if (pending == themeMode) null else pending }
+            try {
+                saveThemeMode(themeMode)
+                // 保存済み状態への反映を待ち、確定時に元のテーマが一瞬表示されるのを防ぐ。
+                uiState.first { it.selectedThemeMode == themeMode }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // 保存に失敗しても未保存のテーマを表示し続けず、保存済みの設定へ戻す。
+            } finally {
+                pendingThemeMode.update { pending -> if (pending == themeMode) null else pending }
+            }
         }
     }
 
