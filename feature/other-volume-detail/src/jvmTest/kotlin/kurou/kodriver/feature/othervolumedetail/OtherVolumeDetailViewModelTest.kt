@@ -6,8 +6,14 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -20,19 +26,21 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
+import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OtherVolumeDetailViewModelTest {
@@ -42,7 +50,7 @@ class OtherVolumeDetailViewModelTest {
 
     private val deviceVolumeRepository: DeviceVolumeRepository = mockk()
 
-    private val ttsEngine: TextToSpeechEngine = mockk()
+    private val speakText: SpeakTextUseCase = mockk()
 
     private val volumeFlow = MutableStateFlow(80)
 
@@ -68,7 +76,7 @@ class OtherVolumeDetailViewModelTest {
                     getDeviceVolume = GetDeviceVolumeUseCase(deviceVolumeRepository),
                     setDeviceVolume = SetDeviceVolumeUseCase(deviceVolumeRepository),
                 ),
-            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+            speakText = speakText,
         )
 
     @Test
@@ -176,19 +184,143 @@ class OtherVolumeDetailViewModelTest {
         }
 
     @Test
-    fun `onPreviewClickedを呼ぶと既定文言を解決済みのLmuWindowsMyBestLapイベントが再生される`() {
-        val previewEvent =
-            SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L, resolvedText = "自己ベストラップ更新 1分23秒456")
-        every { soundVolumeRepository.volume() } returns volumeFlow
-        every { ttsEngine.speak(previewEvent, false) } returns Unit
-        val viewModel = createViewModel()
+    fun `試聴は既定文言と保存済み音量を使い完了後に停止状態へ戻る`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            val finished = CompletableDeferred<Unit>()
+            coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } coAnswers { finished.await() }
+            val viewModel = createViewModel()
+            viewModel.uiState.launchIn(backgroundScope)
 
-        viewModel.onPreviewClicked()
+            viewModel.onPreviewClicked()
+            assertTrue(viewModel.uiState.first().isPreviewing)
+            finished.complete(Unit)
+            runCurrent()
+            assertFalse(viewModel.uiState.first().isPreviewing)
 
-        verify(exactly = 1) { soundVolumeRepository.volume() }
-        verify(exactly = 1) { ttsEngine.speak(previewEvent, false) }
-        confirmVerified(soundVolumeRepository, ttsEngine)
-    }
+            coVerify(exactly = 1) { speakText("自己ベストラップ更新 1分23秒456", volume = 80) }
+            confirmVerified(speakText)
+        }
+
+    @Test
+    fun `試聴中の再タップとペイン離脱で再生をキャンセルする`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            var cancelled = 0
+            coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } coAnswers {
+                try {
+                    awaitCancellation()
+                } finally {
+                    cancelled++
+                }
+            }
+            val viewModel = createViewModel()
+            viewModel.uiState.launchIn(backgroundScope)
+
+            viewModel.onPreviewClicked()
+            assertTrue(viewModel.uiState.first().isPreviewing)
+            viewModel.onPreviewClicked()
+            assertFalse(viewModel.uiState.first().isPreviewing)
+            viewModel.onPreviewClicked()
+            viewModel.onPreviewStopped()
+            assertFalse(viewModel.uiState.first().isPreviewing)
+            assertEquals(2, cancelled)
+
+            coVerify(exactly = 2) { speakText("自己ベストラップ更新 1分23秒456", volume = 80) }
+            confirmVerified(speakText)
+        }
+
+    @Test
+    fun `音量ゼロでは試聴せず失敗時も停止状態へ戻る`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } throws IOException("失敗")
+            val viewModel = createViewModel()
+            viewModel.uiState.launchIn(backgroundScope)
+            volumeFlow.update { 0 }
+            viewModel.onPreviewClicked()
+            assertFalse(viewModel.uiState.first().isPreviewing)
+            coVerify(exactly = 0) { speakText("自己ベストラップ更新 1分23秒456", volume = 0) }
+
+            volumeFlow.update { 80 }
+            viewModel.onPreviewClicked()
+            assertFalse(viewModel.uiState.first().isPreviewing)
+            coVerify(exactly = 1) { speakText("自己ベストラップ更新 1分23秒456", volume = 80) }
+            confirmVerified(speakText)
+        }
+
+    @Test
+    fun `直前の音量保存が終わってから変更後の音量で試聴する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            val saved = CompletableDeferred<Unit>()
+            coEvery { soundVolumeRepository.saveVolume(40) } coAnswers {
+                saved.await()
+                volumeFlow.update { 40 }
+            }
+            coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 40) } returns Unit
+            val viewModel = createViewModel()
+            viewModel.onVolumeChanged(40)
+            viewModel.onPreviewClicked()
+            coVerify(exactly = 0) { speakText("自己ベストラップ更新 1分23秒456", volume = 40) }
+            saved.complete(Unit)
+            runCurrent()
+
+            coVerify(exactly = 1) { soundVolumeRepository.saveVolume(40) }
+            coVerify(exactly = 1) { speakText("自己ベストラップ更新 1分23秒456", volume = 40) }
+            verify(exactly = 2) { soundVolumeRepository.volume() }
+            confirmVerified(soundVolumeRepository, speakText)
+        }
+
+    @Test
+    fun `試聴のキャンセル例外を再スローして停止状態へ戻る`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            val cancelled = CancellationException("キャンセル")
+            var completion: Throwable? = null
+            coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } coAnswers {
+                currentCoroutineContext()[Job]!!.invokeOnCompletion { completion = it }
+                throw cancelled
+            }
+            val viewModel = createViewModel()
+            viewModel.onPreviewClicked()
+            assertEquals(cancelled, completion)
+            assertFalse(viewModel.uiState.first().isPreviewing)
+            coVerify(exactly = 1) { speakText("自己ベストラップ更新 1分23秒456", volume = 80) }
+            confirmVerified(speakText)
+        }
+
+    @Test
+    fun `古い試聴の終了が新しい試聴の状態を解除しない`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            val oldFinished = CompletableDeferred<Unit>()
+            var count = 0
+            coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } coAnswers {
+                if (++count == 1) {
+                    // 外部処理がキャンセルに協調せず、停止後に正常終了する状況を再現する。
+                    withContext(NonCancellable) { oldFinished.await() }
+                } else {
+                    awaitCancellation()
+                }
+            }
+            val viewModel = createViewModel()
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onPreviewClicked()
+            viewModel.onPreviewStopped()
+            viewModel.onPreviewClicked()
+            oldFinished.complete(Unit)
+            runCurrent()
+            assertTrue(viewModel.uiState.first().isPreviewing)
+            viewModel.onPreviewStopped()
+            coVerify(exactly = 2) { speakText("自己ベストラップ更新 1分23秒456", volume = 80) }
+            confirmVerified(speakText)
+        }
 
     @Test
     fun `detailPane表示中は一定間隔で端末のマスター音量を再取得する`() =
