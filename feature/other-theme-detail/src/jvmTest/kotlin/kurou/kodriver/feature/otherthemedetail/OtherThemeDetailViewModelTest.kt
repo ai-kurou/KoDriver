@@ -6,12 +6,15 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -153,6 +156,58 @@ class OtherThemeDetailViewModelTest {
                 viewModel.uiState.first(),
             )
             verify(exactly = 1) { repository.observeThemeMode() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `確定後も保存済み状態へ反映されるまでプレビューを維持する`() =
+        runTest(dispatcher) {
+            every { repository.observeThemeMode() } returns themeModeFlow
+            val saveCompleted = CompletableDeferred<Unit>()
+            coEvery { repository.saveThemeMode(ThemeMode.DARK) } coAnswers { saveCompleted.await() }
+            val viewModel = createViewModel()
+            backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
+
+            viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
+            viewModel.onConfirm()
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first().pendingThemeMode)
+            assertEquals(ThemeMode.SYSTEM, viewModel.uiState.first().selectedThemeMode)
+
+            saveCompleted.complete(Unit)
+            advanceUntilIdle()
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first().pendingThemeMode)
+            assertEquals(ThemeMode.SYSTEM, viewModel.uiState.first().selectedThemeMode)
+
+            themeModeFlow.update { ThemeMode.DARK }
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first().pendingThemeMode)
+            // プレビュー解除後は保存済み設定の変更に追従する。
+            themeModeFlow.update { ThemeMode.LIGHT }
+            assertEquals(ThemeMode.LIGHT, viewModel.uiState.first().pendingThemeMode)
+            verify(exactly = 1) { repository.observeThemeMode() }
+            coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.DARK) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `保存待ちの間に選び直したプレビューを以前の確定処理で解除しない`() =
+        runTest(dispatcher) {
+            every { repository.observeThemeMode() } returns themeModeFlow
+            val saveCompleted = CompletableDeferred<Unit>()
+            coEvery { repository.saveThemeMode(ThemeMode.DARK) } coAnswers { saveCompleted.await() }
+            val viewModel = createViewModel()
+            backgroundScope.launch(dispatcher) { viewModel.uiState.collect {} }
+
+            viewModel.onPendingThemeModeSelected(ThemeMode.DARK)
+            viewModel.onConfirm()
+            viewModel.onPendingThemeModeSelected(ThemeMode.LIGHT)
+            saveCompleted.complete(Unit)
+            themeModeFlow.update { ThemeMode.DARK }
+
+            assertEquals(ThemeMode.LIGHT, viewModel.uiState.first().pendingThemeMode)
+            viewModel.onDismiss()
+            assertEquals(ThemeMode.DARK, viewModel.uiState.first().pendingThemeMode)
+            verify(exactly = 1) { repository.observeThemeMode() }
+            coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.DARK) }
             confirmVerified(repository)
         }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,8 +36,12 @@ class OtherThemeDetailViewModel internal constructor(
 
     internal fun onConfirm() {
         val themeMode = pendingThemeMode.value ?: return
-        viewModelScope.launch { saveThemeMode(themeMode) }
-        pendingThemeMode.update { null }
+        viewModelScope.launch {
+            saveThemeMode(themeMode)
+            // 保存済み状態への反映を待ち、確定時に元のテーマが一瞬表示されるのを防ぐ。
+            uiState.first { it.selectedThemeMode == themeMode }
+            pendingThemeMode.update { pending -> if (pending == themeMode) null else pending }
+        }
     }
 
     internal fun onDismiss() {

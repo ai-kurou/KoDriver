@@ -15,7 +15,7 @@ fun rememberOtherThemeDarkTheme(
 ): Boolean {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     return resolveDarkTheme(
-        themeMode = uiState.value.selectedThemeMode,
+        themeMode = uiState.value.pendingThemeMode,
         systemDarkTheme = systemDarkTheme,
     )
 }
