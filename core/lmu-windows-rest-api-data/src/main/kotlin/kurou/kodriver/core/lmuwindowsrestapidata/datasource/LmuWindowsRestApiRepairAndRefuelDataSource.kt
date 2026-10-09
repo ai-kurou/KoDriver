@@ -2,6 +2,7 @@ package kurou.kodriver.core.lmuwindowsrestapidata.datasource
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.get
 import kotlinx.serialization.json.Json
 import kurou.kodriver.core.lmuwindowsrestapidata.dto.RepairAndRefuelResponseDto
@@ -17,7 +18,11 @@ internal class LmuWindowsRestApiRepairAndRefuelDataSource(
     private val baseUrl: String = DEFAULT_BASE_URL,
 ) {
     suspend fun fetchRepairAndRefuel(): RepairAndRefuelResponseDto {
-        val text = client.get("$baseUrl$REPAIR_AND_REFUEL_PATH").body<String>()
+        val text =
+            client
+                .get("$baseUrl$REPAIR_AND_REFUEL_PATH") {
+                    expectSuccess = true
+                }.body<String>()
         return json.decodeFromString(text)
     }
 
