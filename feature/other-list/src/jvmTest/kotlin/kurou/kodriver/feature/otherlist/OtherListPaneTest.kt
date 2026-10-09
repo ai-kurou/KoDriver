@@ -40,7 +40,7 @@ class OtherListPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `読み上げ速度をタップしてもハプティックフィードバックを発生させない`() {
+    fun `読み上げ速度をタップするとハプティックフィードバックを発生させる`() {
         val haptic = FakeHapticFeedback()
 
         rule.setContent {
@@ -59,7 +59,7 @@ class OtherListPaneTest {
 
         rule.onNodeWithText("読み上げ速度").performClick()
 
-        assertEquals(emptyList(), haptic.performedTypes)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
     }
 
     @Test

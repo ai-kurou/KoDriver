@@ -2,10 +2,12 @@ package kurou.kodriver.feature.otherlist
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Rule
@@ -18,7 +20,8 @@ class OtherListPaneVoiceSpeedTest {
     private val onItemClick: (OtherListItemType) -> Unit = mockk()
 
     @Test
-    fun `読み上げ設定に既定速度を表示しタップしても選択を通知しない`() {
+    fun `読み上げ設定に既定速度を表示しタップすると選択を通知する`() {
+        every { onItemClick(OtherListItemType.VoiceSpeed) } returns Unit
         setPane(OtherListUiState(items = listOf(OtherListItemType.VoiceSpeed)))
 
         rule.onNodeWithText("読み上げ設定").assertIsDisplayed()
@@ -30,7 +33,7 @@ class OtherListPaneVoiceSpeedTest {
             .performClick()
         rule.onNodeWithText("読み上げ速度").assertIsNotSelected()
 
-        verify(exactly = 0) { onItemClick(OtherListItemType.VoiceSpeed) }
+        verify(exactly = 1) { onItemClick(OtherListItemType.VoiceSpeed) }
         confirmVerified(onItemClick)
     }
 
@@ -47,6 +50,19 @@ class OtherListPaneVoiceSpeedTest {
         setPane(OtherListUiState(items = listOf(OtherListItemType.VoiceSpeed), voiceSpeed = 2f))
 
         rule.onNodeWithText("2.0倍").assertIsDisplayed()
+        confirmVerified(onItemClick)
+    }
+
+    @Test
+    fun `選択された読み上げ速度を強調する`() {
+        setPane(
+            OtherListUiState(
+                items = listOf(OtherListItemType.VoiceSpeed),
+                selectedItem = OtherListItemType.VoiceSpeed,
+            ),
+        )
+
+        rule.onNodeWithText("読み上げ速度").assertIsSelected()
         confirmVerified(onItemClick)
     }
 

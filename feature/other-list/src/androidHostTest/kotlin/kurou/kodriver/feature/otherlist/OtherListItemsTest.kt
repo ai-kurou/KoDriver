@@ -14,6 +14,13 @@ import kotlin.test.assertTrue
 @Config(sdk = [36])
 class OtherListItemsTest {
     @Test
+    fun `読み上げ速度を読み上げ音声の直後に含める`() {
+        val items = buildOtherListItems()
+
+        assertEquals(OtherListItemType.VoiceSpeed, items[items.indexOf(OtherListItemType.Voice) + 1])
+    }
+
+    @Test
     fun `AndroidではAndroid向けTTS案内と読み上げ音声が一覧に含まれる`() {
         val items = buildOtherListItems()
 

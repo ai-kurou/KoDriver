@@ -1305,7 +1305,7 @@ class OtherListViewModelTest {
         }
 
     @Test
-    fun `読み上げ速度をタップしても選択項目は変わらない`() =
+    fun `読み上げ速度をタップすると選択し再タップで解除する`() =
         runTest {
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
@@ -1318,12 +1318,14 @@ class OtherListViewModelTest {
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
             viewModel.onItemSelected(OtherListItemType.VoiceSpeed)
-            assertNull(viewModel.uiState.first().selectedItem)
+            assertEquals(OtherListItemType.VoiceSpeed, viewModel.uiState.first().selectedItem)
 
             viewModel.onItemSelected(OtherListItemType.Volume)
             assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
             viewModel.onItemSelected(OtherListItemType.VoiceSpeed)
-            assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
+            assertEquals(OtherListItemType.VoiceSpeed, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoiceSpeed)
+            assertNull(viewModel.uiState.first().selectedItem)
         }
 
     @Test
