@@ -211,7 +211,7 @@ moduleGraphAssert {
         ":core:.*data -> :core:domain",
         // Windows共有メモリ系データモジュール → core:windows-shared-memory（Windows共有メモリI/Oの共通基盤）
         ":core:.*windows.*data -> :core:windows-shared-memory",
-        // narrator系featureモジュール → core:narrator（開始音のWAV再生・TTS読み上げ制御・SoundPlayer・WavNarratorEngineの共通基盤。
+        // narrator系featureモジュール → core:narrator（開始音のWAV再生・TTS読み上げ制御・SoundPlayer・NarratorEngineの共通基盤。
         // core:narrator自体はcore:domainに依存させず、SpeechEvent等はfeature側が型パラメータとして渡す）
         ":feature:.*narrator -> :core:narrator",
         ":server -> :core:domain",
