@@ -11,6 +11,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
@@ -82,6 +83,7 @@ class OtherListPaneTest {
             )
         }
 
+        rule.onNodeWithText("読み上げ内容（順番待ちを含む）を、最前面の小さなウィンドウに表示します").assertIsDisplayed()
         rule.onNode(hasText("オーバーレイを表示")).performClick()
 
         assertEquals(false, overlayVisible)
@@ -107,6 +109,7 @@ class OtherListPaneTest {
             )
         }
 
+        rule.onNodeWithText("読み上げ内容（順番待ちを含む）を、最前面の小さなウィンドウに表示します").assertIsDisplayed()
         rule.onNode(hasText("オーバーレイを表示")).performClick()
 
         assertEquals(true, overlayVisible)

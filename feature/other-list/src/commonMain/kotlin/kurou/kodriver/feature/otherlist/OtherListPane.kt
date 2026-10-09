@@ -87,6 +87,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_license
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_size
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible
+import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kurou.kodriver.feature.otherlist.generated.resources.item_release_page
 import kurou.kodriver.feature.otherlist.generated.resources.item_server_ip
@@ -477,6 +478,10 @@ private fun otherListItemSupportingContent(
     when (item) {
         OtherListItemType.GitHubRepository -> {
             { Text(stringResource(Res.string.item_github_repository_star_request)) }
+        }
+
+        OtherListItemType.OverlayVisible -> {
+            { Text(stringResource(Res.string.item_overlay_visible_summary)) }
         }
 
         OtherListItemType.Volume -> {

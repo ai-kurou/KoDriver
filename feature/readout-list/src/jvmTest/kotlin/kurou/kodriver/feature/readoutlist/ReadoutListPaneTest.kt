@@ -2,7 +2,9 @@ package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -16,7 +18,9 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -47,6 +51,53 @@ class ReadoutListPaneTest {
         }
 
         rule.onNodeWithText("読み上げ優先度").assertIsDisplayed()
+    }
+
+    @Test
+    fun `ヘルプを開くと優先度とキューの関係を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                    ReadoutListPane(
+                        uiState = ReadoutListUiState(),
+                        onMove = { _, _ -> },
+                        onReadoutEnabledChanged = { _, _ -> },
+                        onQueueEnabledChanged = { _, _ -> },
+                        onStartSoundEnabledChanged = { _, _ -> },
+                        onItemClick = {},
+                    )
+                }
+            }
+        }
+
+        val priorityDescription =
+            "一覧の上にある項目ほど優先度が高くなります。キューがOFFの項目は、読み上げ中の項目より優先度が高ければ割り込み、同じか低ければ読み上げを省略します。読み上げ中の項目がなければ、そのまま読み上げます。"
+        rule.onNodeWithContentDescription(priorityDescription).performClick()
+
+        rule.onNodeWithText(priorityDescription).assertIsDisplayed()
+        rule
+            .onNodeWithText(
+                "キューアイコンがONの項目は、優先順位に関係なく、割り込まずに順番待ちします。優先度が高い項目でも、キューがONなら順番待ちになります。",
+            ).assertIsDisplayed()
+    }
+
+    @Test
+    fun `高さが小さく文字が大きいヘルプでも開始音の説明までスクロールできる`() {
+        rule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale = 2f)) {
+                KoDriverTheme {
+                    Box(modifier = Modifier.requiredSize(360.dp, 160.dp)) {
+                        PriorityHintSheetContent()
+                    }
+                }
+            }
+        }
+
+        rule
+            .onNodeWithText("読み上げ開始音アイコンをONにすると、その項目の読み上げ前に開始音を鳴らします")
+            .performScrollTo()
+            .assertIsDisplayed()
     }
 
     @Test

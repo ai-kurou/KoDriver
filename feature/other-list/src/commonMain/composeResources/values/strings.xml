@@ -8,6 +8,7 @@
     <string name="item_tts_language_data_missing">音声合成の日本語データを設定</string>
     <string name="item_windows_speech_unavailable">Windowsの日本語音声を設定</string>
     <string name="item_overlay_visible">オーバーレイを表示</string>
+    <string name="item_overlay_visible_summary">読み上げ内容（順番待ちを含む）を、最前面の小さなウィンドウに表示します</string>
     <string name="item_overlay_text_size">文字サイズ</string>
     <string name="item_overlay_background_opacity">背景の透明度</string>
     <string name="item_theme">テーマ</string>
