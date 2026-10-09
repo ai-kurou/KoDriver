@@ -8,4 +8,5 @@ import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 data class OtherVolumeDetailUiState(
     val volume: Int = 100,
     val deviceVolume: Int = DEVICE_VOLUME_MIN,
+    val isPreviewing: Boolean = false,
 )

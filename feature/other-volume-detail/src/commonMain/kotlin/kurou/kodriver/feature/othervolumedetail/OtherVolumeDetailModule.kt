@@ -1,14 +1,13 @@
 package kurou.kodriver.feature.othervolumedetail
 
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
-import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
-import kurou.kodriver.domain.usecase.StopSpeechUseCase
+import kurou.kodriver.domain.usecase.SpeakTextUseCase
 import org.koin.core.module.dsl.viewModelOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -17,7 +16,7 @@ import org.koin.dsl.module
  * 提供: OtherVolumeDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: SoundVolumePreferencesRepository（:core:data で登録）、
  * DeviceVolumeRepository（:core:device-volume-data で登録）、および試聴用の
- * named(Simulator.LmuWindows.id) の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
+ * TextToSpeechRepository（:core:text-to-speech-data で登録）と音声・速度の設定Repository（:core:data で登録）。
  */
 val otherVolumeDetailModule =
     module {
@@ -32,7 +31,8 @@ val otherVolumeDetailModule =
         factory { SoundVolumeUseCases(get(), get()) }
         factory { DeviceVolumeUseCases(get(), get()) }
 
-        // 試聴再生（named(Simulator.LmuWindows.id) の TextToSpeechEngine に依存）
-        factory { StopSpeechUseCase(get(named(Simulator.LmuWindows.id))) }
-        factory { PlaySpeechEventUseCase(get(named(Simulator.LmuWindows.id))) }
+        // 試聴再生（読み上げ速度の試聴と同じ、キャンセル可能なTTS）
+        factory { ObserveVoiceUseCase(get()) }
+        factory { ObserveVoiceSpeedUseCase(get()) }
+        factory { SpeakTextUseCase(get(), get(), get()) }
     }
