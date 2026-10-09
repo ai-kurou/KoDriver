@@ -522,6 +522,23 @@ class NarratorEngineTest {
         }
 
     @Test
+    fun `playStartSoundForKeyの呼び出し元をキャンセルすると再生中の開始音も止まる`() =
+        runTest {
+            val player = FakeSoundPlayer(blockingSound = FORMULA_RADIO_SOUND)
+            val engine = createEngine(player)
+            runCurrent()
+
+            val startSoundJob = launch { engine.playStartSoundForKey(CAR_LEFT_KEY) }
+            runCurrent()
+            assertEquals(0, player.cancelledCount)
+
+            startSoundJob.cancel()
+            runCurrent()
+
+            assertEquals(1, player.cancelledCount)
+        }
+
+    @Test
     fun `playStartSoundForKeyは開始音が無効なキーなら何も再生しない`() =
         runTest {
             val player = FakeSoundPlayer()
@@ -887,6 +904,7 @@ private class FakeSoundPlayer(
 ) : SoundPlayer {
     val playedSounds = mutableListOf<ByteArray>()
     val playedVolumes = mutableListOf<Int>()
+    var cancelledCount = 0
 
     override suspend fun play(
         bytes: ByteArray,
@@ -898,6 +916,7 @@ private class FakeSoundPlayer(
             try {
                 awaitCancellation()
             } finally {
+                cancelledCount++
                 withContext(NonCancellable) {
                     cancellationSignal?.await()
                 }
