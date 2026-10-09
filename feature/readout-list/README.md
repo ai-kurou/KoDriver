@@ -21,3 +21,5 @@
 
 ![Module Graph](../../docs/graphs/feature-readout-list.svg)
 <!-- MODULE-GRAPH-END -->
+
+ACEのデフォルト優先度は、フラッグ → 車両接近 → 燃料残り周回数 → 燃料残量 → タイヤ温度 → 自己ベストラップの順。保存済みの並び順がある場合はそちらを優先し、一覧とNarratorで同じ実効順序を使用する。
