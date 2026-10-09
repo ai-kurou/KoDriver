@@ -38,12 +38,12 @@ class HeatLevelTest {
     }
 
     @Test
-    fun `タイヤ内部温度の警告境界はACEが90度でLMUとGT7が95度`() {
+    fun `タイヤ内部温度の警告境界はACEが90度でLMUが95度でGT7が100度`() {
         assertEquals(HeatLevel.OK, tyreTemperatureHeatLevel(89.9, Simulator.AceWindows))
         assertEquals(HeatLevel.WARM, tyreTemperatureHeatLevel(90.0, Simulator.AceWindows))
         assertEquals(HeatLevel.OK, tyreTemperatureHeatLevel(94.9, Simulator.LmuWindows))
         assertEquals(HeatLevel.WARM, tyreTemperatureHeatLevel(95.0, Simulator.LmuWindows))
-        assertEquals(HeatLevel.OK, tyreTemperatureHeatLevel(94.9, Simulator.Gt7Ps5))
-        assertEquals(HeatLevel.WARM, tyreTemperatureHeatLevel(95.0, Simulator.Gt7Ps5))
+        assertEquals(HeatLevel.OK, tyreTemperatureHeatLevel(99.9, Simulator.Gt7Ps5))
+        assertEquals(HeatLevel.WARM, tyreTemperatureHeatLevel(100.0, Simulator.Gt7Ps5))
     }
 }

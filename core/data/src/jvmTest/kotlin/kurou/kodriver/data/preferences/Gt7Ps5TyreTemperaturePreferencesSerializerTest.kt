@@ -36,6 +36,32 @@ class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
         }
 
     @Test
+    fun `閾値が省略された旧データは95度を維持する`() =
+        runTest {
+            // 旧デフォルト値のみの空データと、フィールド3に文言だけを保存した旧データ。
+            for ((bytes, text) in listOf(
+                byteArrayOf() to GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
+                byteArrayOf(0x1A, 0x04, 0x74, 0x65, 0x73, 0x74) to "test",
+            )) {
+                val restored = Gt7Ps5TyreTemperaturePreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
+                assertEquals(95, restored.highThresholdCelsius)
+                assertEquals(text, restored.overheatReadoutText)
+            }
+        }
+
+    @Test
+    fun `新規設定の100度は書き込み後も維持する`() =
+        runTest {
+            val original = Gt7Ps5TyreTemperaturePreferencesSerializer.defaultValue
+            val output = ByteArrayOutputStream()
+            Gt7Ps5TyreTemperaturePreferencesSerializer.writeTo(original, output)
+            assertEquals(
+                original,
+                Gt7Ps5TyreTemperaturePreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())),
+            )
+        }
+
+    @Test
     fun `不正なバイト列で CorruptionException が発生する`() =
         runTest {
             val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))

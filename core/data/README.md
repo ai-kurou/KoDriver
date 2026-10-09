@@ -36,3 +36,7 @@ Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStor
 `LmuWindowsTyreTemperatureReadoutTextPreferencesRepository` は過熱・低温警告の文言を扱う。
 Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共有する。
 保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
+
+## GT7タイヤ温度の保存互換性
+
+`Gt7Ps5TyreTemperaturePreferences` の閾値フィールドのデコード既定値は、旧ProtoBufで省略された95℃を復元するために固定する。新規ファイルの初期値はSerializerの `defaultValue` でドメイン定数の100℃を指定する。100℃はフィールドに保存されるため、再読み込み後も維持される。既存ファイル・フィールド番号は変更しない。
