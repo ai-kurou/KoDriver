@@ -151,7 +151,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.CarLeft(resolvedText = "カーレフト"), queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -174,7 +174,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(SpeechEvent.CarLeft()),
+                events = listOf(SpeechEvent.LmuWindowsCarLeft()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -188,7 +188,7 @@ class LmuWindowsNarratorEventProcessorTest {
             assertContains(telemetryJson, """"lateralDistanceLeftMeters":3.0""")
             assertContains(telemetryJson, """"observedAtMs":200""")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeft(resolvedText = "カーレフト"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -210,7 +210,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val narratedText = "カーレフト"
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.CarLeft(resolvedText = "カーレフト"), queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = observedAtMs,
@@ -224,7 +224,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             createProcessor().processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(SpeechEvent.CarLeft()),
+                events = listOf(SpeechEvent.LmuWindowsCarLeft()),
                 readoutOrder = listOf(readoutItemKey),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = observedAtMs,
@@ -232,7 +232,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
 
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeft(resolvedText = "カーレフト"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = observedAtMs,
@@ -252,7 +252,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             every {
-                ttsEngine.speak(SpeechEvent.TyreWearWarning(50, resolvedText = "閾値50%です"), queue = false)
+                ttsEngine.speak(SpeechEvent.LmuWindowsTyreWearWarning(50, resolvedText = "閾値50%です"), queue = false)
             } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -276,7 +276,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             processor.processTyreWear(
                 tyreWear = tyreWear(frontLeft = 0.4),
-                events = listOf(SpeechEvent.TyreWearWarning(50)),
+                events = listOf(SpeechEvent.LmuWindowsTyreWearWarning(50)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -301,7 +301,9 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertContains(telemetryJson, """"observedAtMs":200""")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreWearWarning(50, resolvedText = "閾値50%です"), false) }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.LmuWindowsTyreWearWarning(50, resolvedText = "閾値50%です"), false)
+            }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -321,7 +323,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             every {
-                ttsEngine.speak(SpeechEvent.BrakeOverheat(700, resolvedText = "閾値700℃です"), queue = false)
+                ttsEngine.speak(SpeechEvent.LmuWindowsBrakeOverheat(700, resolvedText = "閾値700℃です"), queue = false)
             } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -345,7 +347,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             processor.processBrakeTemperature(
                 brakeTemperature = brakeTemperature(frontLeft = 950.0),
-                events = listOf(SpeechEvent.BrakeOverheat(700)),
+                events = listOf(SpeechEvent.LmuWindowsBrakeOverheat(700)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -370,7 +372,9 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertContains(telemetryJson, """"observedAtMs":200""")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BrakeOverheat(700, resolvedText = "閾値700℃です"), false) }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.LmuWindowsBrakeOverheat(700, resolvedText = "閾値700℃です"), false)
+            }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -390,7 +394,10 @@ class LmuWindowsNarratorEventProcessorTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
             every {
-                ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50, resolvedText = "閾値50%です"), queue = false)
+                ttsEngine.speak(
+                    SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50, resolvedText = "閾値50%です"),
+                    queue = false,
+                )
             } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -420,7 +427,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     LmuWindowsVirtualEnergyData(
                         remainingRatio = LmuWindowsVirtualEnergyRatio(0.3),
                     ),
-                events = listOf(SpeechEvent.RemainingVirtualEnergyWarning(50)),
+                events = listOf(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -437,7 +444,10 @@ class LmuWindowsNarratorEventProcessorTest {
             assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) {
-                ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50, resolvedText = "閾値50%です"), false)
+                ttsEngine.speak(
+                    SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50, resolvedText = "閾値50%です"),
+                    false,
+                )
             }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
@@ -457,7 +467,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.BlueFlag(resolvedText = "ブルーフラッグ"), queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsBlueFlag(resolvedText = "ブルーフラッグ"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -480,7 +490,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             processor.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
-                events = listOf(SpeechEvent.BlueFlag()),
+                events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -493,7 +503,7 @@ class LmuWindowsNarratorEventProcessorTest {
             assertEquals("BLUE", root["raceFlags"]!!.jsonObject["playerFlag"]!!.jsonPrimitive.content)
             assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BlueFlag(resolvedText = "ブルーフラッグ"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsBlueFlag(resolvedText = "ブルーフラッグ"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -512,7 +522,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.BlueFlag(resolvedText = "ブルーフラッグ"), queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsBlueFlag(resolvedText = "ブルーフラッグ"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -526,7 +536,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             createProcessor().processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
-                events = listOf(SpeechEvent.BlueFlag()),
+                events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -535,7 +545,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             assertContains(telemetryJsonSlot.captured, "\"previousRaceFlags\":null")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BlueFlag(resolvedText = "ブルーフラッグ"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsBlueFlag(resolvedText = "ブルーフラッグ"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -600,7 +610,9 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.Overheating(resolvedText = "オーバーヒート"), queue = false) } just Runs
+            every {
+                ttsEngine.speak(SpeechEvent.LmuWindowsOverheating(resolvedText = "オーバーヒート"), queue = false)
+            } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -614,7 +626,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             createProcessor().processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(SpeechEvent.Overheating()),
+                events = listOf(SpeechEvent.LmuWindowsOverheating()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -623,7 +635,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             assertContains(telemetryJsonSlot.captured, "\"previousVehicleDamage\":null")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Overheating(resolvedText = "オーバーヒート"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsOverheating(resolvedText = "オーバーヒート"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -642,7 +654,9 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.Overheating(resolvedText = "オーバーヒート"), queue = false) } just Runs
+            every {
+                ttsEngine.speak(SpeechEvent.LmuWindowsOverheating(resolvedText = "オーバーヒート"), queue = false)
+            } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -665,7 +679,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             processor.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(SpeechEvent.Overheating()),
+                events = listOf(SpeechEvent.LmuWindowsOverheating()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -678,7 +692,7 @@ class LmuWindowsNarratorEventProcessorTest {
             assertEquals(true, root["vehicleDamage"]!!.jsonObject["overheating"]!!.jsonPrimitive.boolean)
             assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Overheating(resolvedText = "オーバーヒート"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsOverheating(resolvedText = "オーバーヒート"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -697,7 +711,9 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.TyreDetached(resolvedText = "タイヤ脱落"), queue = false) } just Runs
+            every {
+                ttsEngine.speak(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "タイヤ脱落"), queue = false)
+            } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -720,7 +736,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             processor.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
-                events = listOf(SpeechEvent.TyreDetached()),
+                events = listOf(SpeechEvent.LmuWindowsTyreDetached()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -745,7 +761,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreDetached(resolvedText = "タイヤ脱落"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "タイヤ脱落"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -766,7 +782,7 @@ class LmuWindowsNarratorEventProcessorTest {
             every { ttsEngine.currentReadoutItemKey } returns null
             every {
                 ttsEngine.speak(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         laps = 2,
                         source = PitTimingSource.TyreWear,
                         resolvedText = "タイヤ交換まであと2周",
@@ -788,7 +804,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             processor.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
-                events = listOf(SpeechEvent.PitTimingWarning(laps = 2, source = PitTimingSource.TyreWear)),
+                events = listOf(SpeechEvent.LmuWindowsPitTimingWarning(laps = 2, source = PitTimingSource.TyreWear)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -808,7 +824,7 @@ class LmuWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) {
                 ttsEngine.speak(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         laps = 2,
                         source = PitTimingSource.TyreWear,
                         resolvedText = "タイヤ交換まであと2周",
@@ -836,7 +852,7 @@ class LmuWindowsNarratorEventProcessorTest {
             every { ttsEngine.currentReadoutItemKey } returns null
             every {
                 ttsEngine.speak(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         laps = 2,
                         source = PitTimingSource.VirtualEnergy,
                         resolvedText = "あと2周でピットへ",
@@ -858,7 +874,10 @@ class LmuWindowsNarratorEventProcessorTest {
 
             processor.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
-                events = listOf(SpeechEvent.PitTimingWarning(laps = 2, source = PitTimingSource.VirtualEnergy)),
+                events =
+                    listOf(
+                        SpeechEvent.LmuWindowsPitTimingWarning(laps = 2, source = PitTimingSource.VirtualEnergy),
+                    ),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -878,7 +897,7 @@ class LmuWindowsNarratorEventProcessorTest {
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) {
                 ttsEngine.speak(
-                    SpeechEvent.PitTimingWarning(
+                    SpeechEvent.LmuWindowsPitTimingWarning(
                         laps = 2,
                         source = PitTimingSource.VirtualEnergy,
                         resolvedText = "あと2周でピットへ",
@@ -916,7 +935,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             createProcessor { null }.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
-                events = listOf(SpeechEvent.PitTimingWarning(0, PitTimingSource.VirtualEnergy)),
+                events = listOf(SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -953,7 +972,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             createProcessor { null }.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
-                events = listOf(SpeechEvent.PitTimingWarning(0, PitTimingSource.TyreWear)),
+                events = listOf(SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -978,7 +997,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val json = slot<String>()
             val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
-            val newEvent = SpeechEvent.CarLeft()
+            val newEvent = SpeechEvent.LmuWindowsCarLeft()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -1026,7 +1045,7 @@ class LmuWindowsNarratorEventProcessorTest {
     fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() =
         runTest {
             val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
-            val newEvent = SpeechEvent.CarLeft()
+            val newEvent = SpeechEvent.LmuWindowsCarLeft()
             every { ttsEngine.speak(newEvent.withResolvedText("カーレフト"), queue = true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
@@ -1068,7 +1087,7 @@ class LmuWindowsNarratorEventProcessorTest {
     fun `優先度の低い項目を再生中なら停止して読み上げる`() =
         runTest {
             val currentKey = ReadoutItemKey.LmuWindows.TyreWear.Root
-            val newEvent = SpeechEvent.CarLeft()
+            val newEvent = SpeechEvent.LmuWindowsCarLeft()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             every { ttsEngine.stop() } just Runs
             every { ttsEngine.speak(newEvent.withResolvedText("カーレフト"), queue = false) } just Runs
@@ -1143,7 +1162,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 4.0),
-                events = listOf(SpeechEvent.CarLeft()),
+                events = listOf(SpeechEvent.LmuWindowsCarLeft()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
@@ -1151,17 +1170,20 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(SpeechEvent.CarLeft()),
+                events = listOf(SpeechEvent.LmuWindowsCarLeft()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft("カーレフト"), SpeechEvent.CarLeft("カーレフト")), spokenEvents)
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.LmuWindowsCarLeft("カーレフト"), SpeechEvent.LmuWindowsCarLeft("カーレフト")),
+                spokenEvents,
+            )
             assertEquals(2, saveCount)
             verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 2) { ttsEngine.speak(SpeechEvent.CarLeft(resolvedText = "カーレフト"), false) }
+            verify(exactly = 2) { ttsEngine.speak(SpeechEvent.LmuWindowsCarLeft(resolvedText = "カーレフト"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 100L,
@@ -1190,7 +1212,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.BlueFlag(resolvedText = "後続に譲ってください"), false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsBlueFlag(resolvedText = "後続に譲ってください"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1203,14 +1225,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { "後続に譲ってください" }.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
-                events = listOf(SpeechEvent.BlueFlag()),
+                events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BlueFlag(resolvedText = "後続に譲ってください"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsBlueFlag(resolvedText = "後続に譲ってください"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1240,7 +1262,7 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { null }.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
-                events = listOf(SpeechEvent.BlueFlag()),
+                events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -1264,7 +1286,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.CarRight(resolvedText = "後続に譲ってください"), false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsCarRight(resolvedText = "後続に譲ってください"), false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1277,14 +1299,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { "後続に譲ってください" }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(SpeechEvent.CarRight()),
+                events = listOf(SpeechEvent.LmuWindowsCarRight()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarRight(resolvedText = "後続に譲ってください"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsCarRight(resolvedText = "後続に譲ってください"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1314,7 +1336,7 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { null }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(SpeechEvent.CarRight()),
+                events = listOf(SpeechEvent.LmuWindowsCarRight()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -1338,7 +1360,9 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.CarLeftSustained(resolvedText = "後続に譲ってください"), false) } just Runs
+            every {
+                ttsEngine.speak(SpeechEvent.LmuWindowsCarLeftSustained(resolvedText = "後続に譲ってください"), false)
+            } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1351,14 +1375,16 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { "後続に譲ってください" }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(SpeechEvent.CarLeftSustained()),
+                events = listOf(SpeechEvent.LmuWindowsCarLeftSustained()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeftSustained(resolvedText = "後続に譲ってください"), false) }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.LmuWindowsCarLeftSustained(resolvedText = "後続に譲ってください"), false)
+            }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1388,7 +1414,7 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { null }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(SpeechEvent.CarLeftSustained()),
+                events = listOf(SpeechEvent.LmuWindowsCarLeftSustained()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -1412,7 +1438,9 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val json = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.CarRightSustained(resolvedText = "後続に譲ってください"), false) } just Runs
+            every {
+                ttsEngine.speak(SpeechEvent.LmuWindowsCarRightSustained(resolvedText = "後続に譲ってください"), false)
+            } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1425,14 +1453,16 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { "後続に譲ってください" }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(SpeechEvent.CarRightSustained()),
+                events = listOf(SpeechEvent.LmuWindowsCarRightSustained()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarRightSustained(resolvedText = "後続に譲ってください"), false) }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.LmuWindowsCarRightSustained(resolvedText = "後続に譲ってください"), false)
+            }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1462,7 +1492,7 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { null }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
-                events = listOf(SpeechEvent.CarRightSustained()),
+                events = listOf(SpeechEvent.LmuWindowsCarRightSustained()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -1500,13 +1530,13 @@ class LmuWindowsNarratorEventProcessorTest {
                     LmuWindowsVirtualEnergyData(
                         remainingRatio = LmuWindowsVirtualEnergyRatio(0.3),
                     ),
-                events = listOf(SpeechEvent.RemainingVirtualEnergyWarning(50)),
+                events = listOf(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
             )
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning(50), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1536,13 +1566,13 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { null }.processTyreWear(
                 tyreWear = tyreWear(frontLeft = 0.3),
-                events = listOf(SpeechEvent.TyreWearWarning(50)),
+                events = listOf(SpeechEvent.LmuWindowsTyreWearWarning(50)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
             )
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreWearWarning(50), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreWearWarning(50), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1572,13 +1602,13 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { null }.processBrakeTemperature(
                 brakeTemperature = brakeTemperature(frontLeft = 950.0),
-                events = listOf(SpeechEvent.BrakeOverheat(700)),
+                events = listOf(SpeechEvent.LmuWindowsBrakeOverheat(700)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
             )
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.BrakeOverheat(700), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsBrakeOverheat(700), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
@@ -1597,7 +1627,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.TyreOverheat(100, "タイヤを冷やして"), queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsTyreOverheat(100, "タイヤを冷やして"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -1618,7 +1648,7 @@ class LmuWindowsNarratorEventProcessorTest {
                             ),
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
-                events = listOf(SpeechEvent.TyreOverheat(100)),
+                events = listOf(SpeechEvent.LmuWindowsTyreOverheat(100)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -1632,7 +1662,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreOverheat(100, "タイヤを冷やして"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreOverheat(100, "タイヤを冷やして"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -1670,7 +1700,7 @@ class LmuWindowsNarratorEventProcessorTest {
                             ),
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
-                events = listOf(SpeechEvent.TyreOverheat(100)),
+                events = listOf(SpeechEvent.LmuWindowsTyreOverheat(100)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -1684,7 +1714,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreOverheat(100, "タイヤを冷やして"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreOverheat(100, "タイヤを冷やして"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -1722,7 +1752,7 @@ class LmuWindowsNarratorEventProcessorTest {
                             ),
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
-                events = listOf(SpeechEvent.TyreOverheat(100)),
+                events = listOf(SpeechEvent.LmuWindowsTyreOverheat(100)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -1736,7 +1766,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreOverheat(100, "タイヤを冷やして"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreOverheat(100, "タイヤを冷やして"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -1755,7 +1785,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.TyreCold(60, "タイヤを温めて"), queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsTyreCold(60, "タイヤを温めて"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -1776,7 +1806,7 @@ class LmuWindowsNarratorEventProcessorTest {
                             ),
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
-                events = listOf(SpeechEvent.TyreCold(60)),
+                events = listOf(SpeechEvent.LmuWindowsTyreCold(60)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -1790,7 +1820,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreCold(60, "タイヤを温めて"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreCold(60, "タイヤを温めて"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -1828,7 +1858,7 @@ class LmuWindowsNarratorEventProcessorTest {
                             ),
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
-                events = listOf(SpeechEvent.TyreCold(60)),
+                events = listOf(SpeechEvent.LmuWindowsTyreCold(60)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -1842,7 +1872,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreCold(60, "タイヤを温めて"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreCold(60, "タイヤを温めて"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -1880,7 +1910,7 @@ class LmuWindowsNarratorEventProcessorTest {
                             ),
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
-                events = listOf(SpeechEvent.TyreCold(60)),
+                events = listOf(SpeechEvent.LmuWindowsTyreCold(60)),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
@@ -1894,7 +1924,7 @@ class LmuWindowsNarratorEventProcessorTest {
             )
             assertContains(telemetryJsonSlot.captured, "\"observedAtMs\":200")
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreCold(60, "タイヤを温めて"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreCold(60, "タイヤを温めて"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -1915,9 +1945,9 @@ class LmuWindowsNarratorEventProcessorTest {
             val template = MutableStateFlow("警告{celsius}℃")
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsonSlot = slot<String>()
-            val events = listOf(SpeechEvent.TyreOverheat(100), SpeechEvent.TyreCold(60))
+            val events = listOf(SpeechEvent.LmuWindowsTyreOverheat(100), SpeechEvent.LmuWindowsTyreCold(60))
             val resolvedEvents =
-                listOf(SpeechEvent.TyreOverheat(100, "警告100℃"), SpeechEvent.TyreCold(60, "警告60℃"))
+                listOf(SpeechEvent.LmuWindowsTyreOverheat(100, "警告100℃"), SpeechEvent.LmuWindowsTyreCold(60, "警告60℃"))
             every { observeTyreOverheatReadoutText() } returns template
             every { observeTyreColdReadoutText() } returns template
             coEvery { checkTextToSpeechAvailable() } returns true
@@ -1996,7 +2026,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.Overheating("カスタム"), queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsOverheating("カスタム"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2009,14 +2039,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { "カスタム" }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(SpeechEvent.Overheating()),
+                events = listOf(SpeechEvent.LmuWindowsOverheating()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Overheating("カスタム"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsOverheating("カスタム"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2046,14 +2076,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { " " }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(SpeechEvent.Overheating()),
+                events = listOf(SpeechEvent.LmuWindowsOverheating()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.Overheating("カスタム"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsOverheating("カスタム"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2083,14 +2113,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { null }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(SpeechEvent.Overheating()),
+                events = listOf(SpeechEvent.LmuWindowsOverheating()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.Overheating("カスタム"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsOverheating("カスタム"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2222,7 +2252,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.PartDetached("カスタム"), queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsPartDetached("カスタム"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2235,14 +2265,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { "カスタム" }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(SpeechEvent.PartDetached()),
+                events = listOf(SpeechEvent.LmuWindowsPartDetached()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PartDetached("カスタム"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsPartDetached("カスタム"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2272,14 +2302,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { " " }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(SpeechEvent.PartDetached()),
+                events = listOf(SpeechEvent.LmuWindowsPartDetached()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.PartDetached("カスタム"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsPartDetached("カスタム"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2309,14 +2339,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { null }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
-                events = listOf(SpeechEvent.PartDetached()),
+                events = listOf(SpeechEvent.LmuWindowsPartDetached()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.PartDetached("カスタム"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsPartDetached("カスタム"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2335,7 +2365,7 @@ class LmuWindowsNarratorEventProcessorTest {
         runTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
-            every { ttsEngine.speak(SpeechEvent.TyreDetached("カスタム"), queue = false) } just Runs
+            every { ttsEngine.speak(SpeechEvent.LmuWindowsTyreDetached("カスタム"), queue = false) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2348,14 +2378,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { "カスタム" }.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
-                events = listOf(SpeechEvent.TyreDetached()),
+                events = listOf(SpeechEvent.LmuWindowsTyreDetached()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreDetached("カスタム"), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreDetached("カスタム"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2385,14 +2415,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { " " }.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
-                events = listOf(SpeechEvent.TyreDetached()),
+                events = listOf(SpeechEvent.LmuWindowsTyreDetached()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreDetached("カスタム"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreDetached("カスタム"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2422,14 +2452,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { null }.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
-                events = listOf(SpeechEvent.TyreDetached()),
+                events = listOf(SpeechEvent.LmuWindowsTyreDetached()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.TyreDetached("カスタム"), false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsTyreDetached("カスタム"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2450,12 +2480,17 @@ class LmuWindowsNarratorEventProcessorTest {
             val template = MutableStateFlow("判定時の本文")
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsons = mutableListOf<String>()
-            val events = listOf(SpeechEvent.Overheating(), SpeechEvent.PartDetached(), SpeechEvent.TyreDetached())
+            val events =
+                listOf(
+                    SpeechEvent.LmuWindowsOverheating(),
+                    SpeechEvent.LmuWindowsPartDetached(),
+                    SpeechEvent.LmuWindowsTyreDetached(),
+                )
             val resolvedEvents =
                 listOf(
-                    SpeechEvent.Overheating("判定時の本文"),
-                    SpeechEvent.PartDetached("判定時の本文"),
-                    SpeechEvent.TyreDetached("判定時の本文"),
+                    SpeechEvent.LmuWindowsOverheating("判定時の本文"),
+                    SpeechEvent.LmuWindowsPartDetached("判定時の本文"),
+                    SpeechEvent.LmuWindowsTyreDetached("判定時の本文"),
                 )
             every { observeOverheatReadoutText() } returns template
             every { observePartDetachedReadoutText() } returns template
@@ -2603,10 +2638,10 @@ class LmuWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             val events =
                 listOf<ReadoutTextEvent>(
-                    SpeechEvent.BlueFlag(),
-                    SpeechEvent.YellowFlag(),
-                    SpeechEvent.FullCourseYellow(),
-                    SpeechEvent.RedFlag(),
+                    SpeechEvent.LmuWindowsBlueFlag(),
+                    SpeechEvent.LmuWindowsYellowFlag(),
+                    SpeechEvent.LmuWindowsFullCourseYellow(),
+                    SpeechEvent.LmuWindowsRedFlag(),
                 )
             val resolvedEvents = events.map { it.withResolvedText("判定時の本文") }
             every { observeBlue() } returns template
@@ -2683,10 +2718,10 @@ class LmuWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             val events =
                 listOf<ReadoutTextEvent>(
-                    SpeechEvent.CarLeft(),
-                    SpeechEvent.CarRight(),
-                    SpeechEvent.CarLeftSustained(),
-                    SpeechEvent.CarRightSustained(),
+                    SpeechEvent.LmuWindowsCarLeft(),
+                    SpeechEvent.LmuWindowsCarRight(),
+                    SpeechEvent.LmuWindowsCarLeftSustained(),
+                    SpeechEvent.LmuWindowsCarRightSustained(),
                 )
             val resolvedEvents = events.map { it.withResolvedText("判定時の本文") }
             every { observeLeft() } returns template
@@ -2763,10 +2798,10 @@ class LmuWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             val events =
                 listOf<ReadoutTextEvent>(
-                    SpeechEvent.PitTimingWarning(2, PitTimingSource.VirtualEnergy),
-                    SpeechEvent.PitTimingWarning(0, PitTimingSource.VirtualEnergy),
-                    SpeechEvent.PitTimingWarning(2, PitTimingSource.TyreWear),
-                    SpeechEvent.PitTimingWarning(0, PitTimingSource.TyreWear),
+                    SpeechEvent.LmuWindowsPitTimingWarning(2, PitTimingSource.VirtualEnergy),
+                    SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy),
+                    SpeechEvent.LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
+                    SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear),
                 )
             val resolvedEvents = events.map { it.withResolvedText("判定時の本文") }
             every { observePitTimingVirtualEnergyReadoutText() } returns template
@@ -2850,14 +2885,14 @@ class LmuWindowsNarratorEventProcessorTest {
             } just Runs
             createProcessor { " \t\n" }.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
-                events = listOf(SpeechEvent.BlueFlag()),
+                events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
                 readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
             )
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
-            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.BlueFlag(" \t\n"), queue = false) }
+            verify(exactly = 0) { ttsEngine.speak(SpeechEvent.LmuWindowsBlueFlag(" \t\n"), queue = false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
@@ -2875,9 +2910,9 @@ class LmuWindowsNarratorEventProcessorTest {
     fun `文言解決に失敗しても同じ入力の後続イベントと次回処理を継続する`() =
         runTest {
             val key = ReadoutItemKey.LmuWindows.Flag.Root
-            val failedEvent = SpeechEvent.BlueFlag()
-            val nextEvent = SpeechEvent.RedFlag()
-            val resolvedEvent = SpeechEvent.RedFlag("復旧")
+            val failedEvent = SpeechEvent.LmuWindowsBlueFlag()
+            val nextEvent = SpeechEvent.LmuWindowsRedFlag()
+            val resolvedEvent = SpeechEvent.LmuWindowsRedFlag("復旧")
             val skippedJson = slot<String>()
             val spokenJsons = mutableListOf<String>()
             val resolvedEvents = mutableListOf<SpeechEvent>()
@@ -2966,7 +3001,7 @@ class LmuWindowsNarratorEventProcessorTest {
     fun `文言解決のキャンセルは再スローしログ保存と後続処理を行わない`() =
         runTest {
             val key = ReadoutItemKey.LmuWindows.Flag.Root
-            val event = SpeechEvent.BlueFlag()
+            val event = SpeechEvent.LmuWindowsBlueFlag()
             val cancellation = CancellationException("cancelled")
             val resolvedEvents = mutableListOf<SpeechEvent>()
             val processor =
@@ -2979,7 +3014,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 assertFailsWith<CancellationException> {
                     processor.processRaceFlags(
                         raceFlags = raceFlags(PrimaryFlag.BLUE),
-                        events = listOf(event, SpeechEvent.RedFlag()),
+                        events = listOf(event, SpeechEvent.LmuWindowsRedFlag()),
                         readoutOrder = listOf(key),
                         queueEnabledStates = emptyMap(),
                         observedAtMs = 100L,

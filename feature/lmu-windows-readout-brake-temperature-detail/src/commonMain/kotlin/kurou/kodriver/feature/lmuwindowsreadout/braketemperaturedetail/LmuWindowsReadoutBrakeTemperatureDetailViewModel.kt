@@ -91,7 +91,7 @@ internal class LmuWindowsReadoutBrakeTemperatureDetailViewModel(
         viewModelScope.launch {
             previewHelper.preview(
                 formattedText,
-                SpeechEvent.BrakeOverheat(
+                SpeechEvent.LmuWindowsBrakeOverheat(
                     celsius = celsius,
                     resolvedText = formattedText,
                 ),

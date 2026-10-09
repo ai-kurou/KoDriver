@@ -165,12 +165,12 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             stubSettings()
             enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false) }
             every { observeVolume() } returns MutableStateFlow(40)
-            every { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "編集中")) } returns Unit
+            every { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = "編集中")) } returns Unit
             val viewModel = createViewModel()
             viewModel.onOverheatReadoutTextPreviewClicked("編集中")
             verifySettings()
             verify(exactly = 1) { observeVolume() }
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "編集中")) }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = "編集中")) }
             confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
         }
 
@@ -211,12 +211,12 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             stubSettings()
             enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false) }
             every { observeVolume() } returns MutableStateFlow(40)
-            every { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "編集中")) } returns Unit
+            every { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = "編集中")) } returns Unit
             val viewModel = createViewModel()
             viewModel.onPartDetachedReadoutTextPreviewClicked("編集中")
             verifySettings()
             verify(exactly = 1) { observeVolume() }
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "編集中")) }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = "編集中")) }
             confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
         }
 
@@ -257,12 +257,12 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             stubSettings()
             enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false) }
             every { observeVolume() } returns MutableStateFlow(40)
-            every { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "編集中")) } returns Unit
+            every { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "編集中")) } returns Unit
             val viewModel = createViewModel()
             viewModel.onTyreDetachedReadoutTextPreviewClicked("編集中")
             verifySettings()
             verify(exactly = 1) { observeVolume() }
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "編集中")) }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "編集中")) }
             confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
         }
 
@@ -279,9 +279,9 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             viewModel.onPartDetachedReadoutTextPreviewClicked("\t\n")
             viewModel.onTyreDetachedReadoutTextPreviewClicked("\t\n")
             verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = " ")) }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = " ")) }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = " ")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = " ")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = " ")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = " ")) }
             confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
         }
 
@@ -296,9 +296,9 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             verifySettings()
             verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "入力中")) }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "入力中")) }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "入力中")) }
             confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
         }
 
@@ -313,9 +313,9 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             viewModel.onTyreDetachedReadoutTextPreviewClicked("入力中")
             verifySettings()
             verify(exactly = 3) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "入力中")) }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "入力中")) }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "入力中")) }
             confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
         }
 
@@ -330,9 +330,9 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             viewModel.onTyreDetachedReadoutTextPreviewClicked("入力中")
             verifySettings()
             verify(exactly = 3) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.Overheating(resolvedText = "入力中")) }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.PartDetached(resolvedText = "入力中")) }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.TyreDetached(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = "入力中")) }
+            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "入力中")) }
             confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
         }
 }

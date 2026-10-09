@@ -40,12 +40,12 @@ class LmuWindowsNarratorEngineTest {
 
     @Test
     fun `speakはNarratorEngineのspeakへ委譲する`() {
-        every { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) } just Runs
+        every { wavNarratorEngine.speak(SpeechEvent.LmuWindowsCarLeft(), queue = true) } just Runs
         val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
 
-        engine.speak(SpeechEvent.CarLeft(), queue = true)
+        engine.speak(SpeechEvent.LmuWindowsCarLeft(), queue = true)
 
-        verify(exactly = 1) { wavNarratorEngine.speak(SpeechEvent.CarLeft(), queue = true) }
+        verify(exactly = 1) { wavNarratorEngine.speak(SpeechEvent.LmuWindowsCarLeft(), queue = true) }
         confirmVerified(wavNarratorEngine)
     }
 
@@ -102,21 +102,22 @@ class LmuWindowsNarratorEngineTest {
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.RemainingVirtualEnergyWarning
+                        it is SpeechEvent.LmuWindowsPitTimingWarning ||
+                            it is SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning
                     },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsNarratorEngine(engine)
-            narrator.speak(SpeechEvent.RemainingVirtualEnergyWarning(30))
+            narrator.speak(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(30))
             runCurrent()
-            narrator.speak(SpeechEvent.RemainingVirtualEnergyWarning(70))
+            narrator.speak(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(70))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.RemainingVirtualEnergyWarning(30),
-                    SpeechEvent.RemainingVirtualEnergyWarning(70),
+                    SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(30),
+                    SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(70),
                 ),
                 customEvents,
             )
@@ -139,21 +140,21 @@ class LmuWindowsNarratorEngineTest {
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.TyreWearWarning
+                        it is SpeechEvent.LmuWindowsPitTimingWarning || it is SpeechEvent.LmuWindowsTyreWearWarning
                     },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsNarratorEngine(engine)
-            narrator.speak(SpeechEvent.TyreWearWarning(30))
+            narrator.speak(SpeechEvent.LmuWindowsTyreWearWarning(30))
             runCurrent()
-            narrator.speak(SpeechEvent.TyreWearWarning(70))
+            narrator.speak(SpeechEvent.LmuWindowsTyreWearWarning(70))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.TyreWearWarning(30),
-                    SpeechEvent.TyreWearWarning(70),
+                    SpeechEvent.LmuWindowsTyreWearWarning(30),
+                    SpeechEvent.LmuWindowsTyreWearWarning(70),
                 ),
                 customEvents,
             )
@@ -176,21 +177,21 @@ class LmuWindowsNarratorEngineTest {
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.BrakeOverheat
+                        it is SpeechEvent.LmuWindowsPitTimingWarning || it is SpeechEvent.LmuWindowsBrakeOverheat
                     },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsNarratorEngine(engine)
-            narrator.speak(SpeechEvent.BrakeOverheat(700))
+            narrator.speak(SpeechEvent.LmuWindowsBrakeOverheat(700))
             runCurrent()
-            narrator.speak(SpeechEvent.BrakeOverheat(900))
+            narrator.speak(SpeechEvent.LmuWindowsBrakeOverheat(900))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.BrakeOverheat(700),
-                    SpeechEvent.BrakeOverheat(900),
+                    SpeechEvent.LmuWindowsBrakeOverheat(700),
+                    SpeechEvent.LmuWindowsBrakeOverheat(900),
                 ),
                 customEvents,
             )
@@ -212,17 +213,17 @@ class LmuWindowsNarratorEngineTest {
                         ),
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
-                    isCustomSpeakEvent = { it is SpeechEvent.TyreOverheat },
+                    isCustomSpeakEvent = { it is SpeechEvent.LmuWindowsTyreOverheat },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsNarratorEngine(engine)
-            narrator.speak(SpeechEvent.TyreOverheat(100))
+            narrator.speak(SpeechEvent.LmuWindowsTyreOverheat(100))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.TyreOverheat(100),
+                    SpeechEvent.LmuWindowsTyreOverheat(100),
                 ),
                 customEvents,
             )
@@ -244,17 +245,17 @@ class LmuWindowsNarratorEngineTest {
                         ),
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
-                    isCustomSpeakEvent = { it is SpeechEvent.TyreCold },
+                    isCustomSpeakEvent = { it is SpeechEvent.LmuWindowsTyreCold },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsNarratorEngine(engine)
-            narrator.speak(SpeechEvent.TyreCold(60))
+            narrator.speak(SpeechEvent.LmuWindowsTyreCold(60))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.TyreCold(60),
+                    SpeechEvent.LmuWindowsTyreCold(60),
                 ),
                 customEvents,
             )
@@ -277,21 +278,21 @@ class LmuWindowsNarratorEngineTest {
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.Overheating
+                        it is SpeechEvent.LmuWindowsPitTimingWarning || it is SpeechEvent.LmuWindowsOverheating
                     },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsNarratorEngine(engine)
-            narrator.speak(SpeechEvent.Overheating())
+            narrator.speak(SpeechEvent.LmuWindowsOverheating())
             runCurrent()
-            narrator.speak(SpeechEvent.Overheating("カスタム"))
+            narrator.speak(SpeechEvent.LmuWindowsOverheating("カスタム"))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.Overheating(),
-                    SpeechEvent.Overheating("カスタム"),
+                    SpeechEvent.LmuWindowsOverheating(),
+                    SpeechEvent.LmuWindowsOverheating("カスタム"),
                 ),
                 customEvents,
             )
@@ -314,7 +315,7 @@ class LmuWindowsNarratorEngineTest {
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.LmuWindowsMyBestLap
+                        it is SpeechEvent.LmuWindowsPitTimingWarning || it is SpeechEvent.LmuWindowsMyBestLap
                     },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
@@ -351,21 +352,21 @@ class LmuWindowsNarratorEngineTest {
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.PartDetached
+                        it is SpeechEvent.LmuWindowsPitTimingWarning || it is SpeechEvent.LmuWindowsPartDetached
                     },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsNarratorEngine(engine)
-            narrator.speak(SpeechEvent.PartDetached())
+            narrator.speak(SpeechEvent.LmuWindowsPartDetached())
             runCurrent()
-            narrator.speak(SpeechEvent.PartDetached("カスタム"))
+            narrator.speak(SpeechEvent.LmuWindowsPartDetached("カスタム"))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.PartDetached(),
-                    SpeechEvent.PartDetached("カスタム"),
+                    SpeechEvent.LmuWindowsPartDetached(),
+                    SpeechEvent.LmuWindowsPartDetached("カスタム"),
                 ),
                 customEvents,
             )
@@ -388,21 +389,21 @@ class LmuWindowsNarratorEngineTest {
                     eventToKey = { it.readoutItemKey },
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     isCustomSpeakEvent = {
-                        it is SpeechEvent.PitTimingWarning || it is SpeechEvent.TyreDetached
+                        it is SpeechEvent.LmuWindowsPitTimingWarning || it is SpeechEvent.LmuWindowsTyreDetached
                     },
                     customSpeak = { event, _ -> customEvents += event },
                     scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
                 )
             runCurrent()
             val narrator = LmuWindowsNarratorEngine(engine)
-            narrator.speak(SpeechEvent.TyreDetached())
+            narrator.speak(SpeechEvent.LmuWindowsTyreDetached())
             runCurrent()
-            narrator.speak(SpeechEvent.TyreDetached("カスタム"))
+            narrator.speak(SpeechEvent.LmuWindowsTyreDetached("カスタム"))
             runCurrent()
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.TyreDetached(),
-                    SpeechEvent.TyreDetached("カスタム"),
+                    SpeechEvent.LmuWindowsTyreDetached(),
+                    SpeechEvent.LmuWindowsTyreDetached("カスタム"),
                 ),
                 customEvents,
             )

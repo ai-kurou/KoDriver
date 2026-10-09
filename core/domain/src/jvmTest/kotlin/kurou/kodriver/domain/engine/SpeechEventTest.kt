@@ -28,45 +28,45 @@ class SpeechEventTest {
     fun `全自由文字列イベントは本文を置き換えて型と既定文言とキーを維持する`() {
         val events =
             listOf<ReadoutTextEvent>(
-                SpeechEvent.CarLeft(),
-                SpeechEvent.CarRight(),
-                SpeechEvent.CarLeftSustained(),
-                SpeechEvent.CarRightSustained(),
-                SpeechEvent.BlueFlag(),
-                SpeechEvent.YellowFlag(),
-                SpeechEvent.FullCourseYellow(),
-                SpeechEvent.RedFlag(),
-                SpeechEvent.Overheating(),
-                SpeechEvent.PartDetached(),
-                SpeechEvent.TyreDetached(),
-                SpeechEvent.TyreOverheat(100),
-                SpeechEvent.TyreCold(60),
-                SpeechEvent.TyreWearWarning(50),
-                SpeechEvent.BrakeOverheat(700),
-                SpeechEvent.RemainingVirtualEnergyWarning(50),
+                SpeechEvent.LmuWindowsCarLeft(),
+                SpeechEvent.LmuWindowsCarRight(),
+                SpeechEvent.LmuWindowsCarLeftSustained(),
+                SpeechEvent.LmuWindowsCarRightSustained(),
+                SpeechEvent.LmuWindowsBlueFlag(),
+                SpeechEvent.LmuWindowsYellowFlag(),
+                SpeechEvent.LmuWindowsFullCourseYellow(),
+                SpeechEvent.LmuWindowsRedFlag(),
+                SpeechEvent.LmuWindowsOverheating(),
+                SpeechEvent.LmuWindowsPartDetached(),
+                SpeechEvent.LmuWindowsTyreDetached(),
+                SpeechEvent.LmuWindowsTyreOverheat(100),
+                SpeechEvent.LmuWindowsTyreCold(60),
+                SpeechEvent.LmuWindowsTyreWearWarning(50),
+                SpeechEvent.LmuWindowsBrakeOverheat(700),
+                SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50),
                 SpeechEvent.LmuWindowsMyBestLap(83_456L),
-                SpeechEvent.PitTimingWarning(2, PitTimingSource.TyreWear),
+                SpeechEvent.LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
             )
         val expected =
             listOf<ReadoutTextEvent>(
-                SpeechEvent.CarLeft("判定時の本文"),
-                SpeechEvent.CarRight("判定時の本文"),
-                SpeechEvent.CarLeftSustained("判定時の本文"),
-                SpeechEvent.CarRightSustained("判定時の本文"),
-                SpeechEvent.BlueFlag("判定時の本文"),
-                SpeechEvent.YellowFlag("判定時の本文"),
-                SpeechEvent.FullCourseYellow("判定時の本文"),
-                SpeechEvent.RedFlag("判定時の本文"),
-                SpeechEvent.Overheating("判定時の本文"),
-                SpeechEvent.PartDetached("判定時の本文"),
-                SpeechEvent.TyreDetached("判定時の本文"),
-                SpeechEvent.TyreOverheat(100, "判定時の本文"),
-                SpeechEvent.TyreCold(60, "判定時の本文"),
-                SpeechEvent.TyreWearWarning(50, "判定時の本文"),
-                SpeechEvent.BrakeOverheat(700, "判定時の本文"),
-                SpeechEvent.RemainingVirtualEnergyWarning(50, "判定時の本文"),
+                SpeechEvent.LmuWindowsCarLeft("判定時の本文"),
+                SpeechEvent.LmuWindowsCarRight("判定時の本文"),
+                SpeechEvent.LmuWindowsCarLeftSustained("判定時の本文"),
+                SpeechEvent.LmuWindowsCarRightSustained("判定時の本文"),
+                SpeechEvent.LmuWindowsBlueFlag("判定時の本文"),
+                SpeechEvent.LmuWindowsYellowFlag("判定時の本文"),
+                SpeechEvent.LmuWindowsFullCourseYellow("判定時の本文"),
+                SpeechEvent.LmuWindowsRedFlag("判定時の本文"),
+                SpeechEvent.LmuWindowsOverheating("判定時の本文"),
+                SpeechEvent.LmuWindowsPartDetached("判定時の本文"),
+                SpeechEvent.LmuWindowsTyreDetached("判定時の本文"),
+                SpeechEvent.LmuWindowsTyreOverheat(100, "判定時の本文"),
+                SpeechEvent.LmuWindowsTyreCold(60, "判定時の本文"),
+                SpeechEvent.LmuWindowsTyreWearWarning(50, "判定時の本文"),
+                SpeechEvent.LmuWindowsBrakeOverheat(700, "判定時の本文"),
+                SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50, "判定時の本文"),
                 SpeechEvent.LmuWindowsMyBestLap(83_456L, "判定時の本文"),
-                SpeechEvent.PitTimingWarning(2, PitTimingSource.TyreWear, "判定時の本文"),
+                SpeechEvent.LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear, "判定時の本文"),
             )
         assertEquals(expected, events.map { it.withResolvedText("判定時の本文") })
         events.forEach { event ->
@@ -83,40 +83,40 @@ class SpeechEventTest {
 
     @Test
     fun `LMU車両接近系のnarratedTextは既定文言を返す`() {
-        assertEquals("カーレフト", SpeechEvent.CarLeft().narratedText)
-        assertEquals("カーライト", SpeechEvent.CarRight().narratedText)
-        assertEquals("キープレフト", SpeechEvent.CarRightSustained().narratedText)
-        assertEquals("キープライト", SpeechEvent.CarLeftSustained().narratedText)
+        assertEquals("カーレフト", SpeechEvent.LmuWindowsCarLeft().narratedText)
+        assertEquals("カーライト", SpeechEvent.LmuWindowsCarRight().narratedText)
+        assertEquals("キープレフト", SpeechEvent.LmuWindowsCarRightSustained().narratedText)
+        assertEquals("キープライト", SpeechEvent.LmuWindowsCarLeftSustained().narratedText)
     }
 
     @Test
     fun `LMUフラッグ系のnarratedTextは既定文言を返す`() {
-        assertEquals("ブルーフラッグ", SpeechEvent.BlueFlag().narratedText)
-        assertEquals("イエローフラッグ", SpeechEvent.YellowFlag().narratedText)
-        assertEquals("フルコースイエロー", SpeechEvent.FullCourseYellow().narratedText)
-        assertEquals("レッドフラッグ", SpeechEvent.RedFlag().narratedText)
+        assertEquals("ブルーフラッグ", SpeechEvent.LmuWindowsBlueFlag().narratedText)
+        assertEquals("イエローフラッグ", SpeechEvent.LmuWindowsYellowFlag().narratedText)
+        assertEquals("フルコースイエロー", SpeechEvent.LmuWindowsFullCourseYellow().narratedText)
+        assertEquals("レッドフラッグ", SpeechEvent.LmuWindowsRedFlag().narratedText)
     }
 
     @Test
     fun `LMU車両故障系のnarratedTextは既定文言を返す`() {
-        assertEquals("オーバーヒート", SpeechEvent.Overheating().narratedText)
-        assertEquals("部品脱落", SpeechEvent.PartDetached().narratedText)
-        assertEquals("タイヤ脱落", SpeechEvent.TyreDetached().narratedText)
+        assertEquals("オーバーヒート", SpeechEvent.LmuWindowsOverheating().narratedText)
+        assertEquals("部品脱落", SpeechEvent.LmuWindowsPartDetached().narratedText)
+        assertEquals("タイヤ脱落", SpeechEvent.LmuWindowsTyreDetached().narratedText)
     }
 
     @Test
     fun `LMUタイヤ・エナジー系のnarratedTextはChipと同じ文言を返す`() {
-        assertEquals("ブレーキ温度800℃以上", SpeechEvent.BrakeOverheat(800).narratedText)
-        assertEquals("タイヤ過熱 100度", SpeechEvent.TyreOverheat(100).narratedText)
-        assertEquals("タイヤ低温 60度", SpeechEvent.TyreCold(60).narratedText)
-        assertEquals("タイヤ残存率50%以下", SpeechEvent.TyreWearWarning(50).narratedText)
-        assertEquals("バーチャルエナジー残量50%以下", SpeechEvent.RemainingVirtualEnergyWarning(50).narratedText)
+        assertEquals("ブレーキ温度800℃以上", SpeechEvent.LmuWindowsBrakeOverheat(800).narratedText)
+        assertEquals("タイヤ過熱 100度", SpeechEvent.LmuWindowsTyreOverheat(100).narratedText)
+        assertEquals("タイヤ低温 60度", SpeechEvent.LmuWindowsTyreCold(60).narratedText)
+        assertEquals("タイヤ残存率50%以下", SpeechEvent.LmuWindowsTyreWearWarning(50).narratedText)
+        assertEquals("バーチャルエナジー残量50%以下", SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
     }
 
     @Test
     fun `タイヤ温度警告は温度と解決済み文言を保持し既定文言とキーを維持する`() {
-        val overheat = SpeechEvent.TyreOverheat(100)
-        val cold = SpeechEvent.TyreCold(60)
+        val overheat = SpeechEvent.LmuWindowsTyreOverheat(100)
+        val cold = SpeechEvent.LmuWindowsTyreCold(60)
         assertEquals(null, overheat.resolvedText)
         assertEquals(null, cold.resolvedText)
         assertEquals(100, overheat.celsius)
@@ -191,7 +191,7 @@ class SpeechEventTest {
         listOf(1, 3).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT.replace("{laps}", laps.toString()),
-                SpeechEvent.PitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
+                SpeechEvent.LmuWindowsPitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
             )
         }
     }
@@ -201,7 +201,7 @@ class SpeechEventTest {
         listOf(0, -1).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
-                SpeechEvent.PitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
+                SpeechEvent.LmuWindowsPitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
             )
         }
     }
@@ -211,7 +211,7 @@ class SpeechEventTest {
         listOf(1, 3).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT.replace("{laps}", laps.toString()),
-                SpeechEvent.PitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
+                SpeechEvent.LmuWindowsPitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
             )
         }
     }
@@ -221,7 +221,7 @@ class SpeechEventTest {
         listOf(0, -1).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
-                SpeechEvent.PitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
+                SpeechEvent.LmuWindowsPitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
             )
         }
     }
@@ -315,13 +315,13 @@ class SpeechEventTest {
     fun `車両故障イベントは解決済み文言を保持し既定文言とRootキーを維持する`() {
         val events =
             listOf(
-                SpeechEvent.Overheating("カスタム"),
-                SpeechEvent.PartDetached("カスタム"),
-                SpeechEvent.TyreDetached("カスタム"),
+                SpeechEvent.LmuWindowsOverheating("カスタム"),
+                SpeechEvent.LmuWindowsPartDetached("カスタム"),
+                SpeechEvent.LmuWindowsTyreDetached("カスタム"),
             )
-        assertEquals("カスタム", (events[0] as SpeechEvent.Overheating).resolvedText)
-        assertEquals("カスタム", (events[1] as SpeechEvent.PartDetached).resolvedText)
-        assertEquals("カスタム", (events[2] as SpeechEvent.TyreDetached).resolvedText)
+        assertEquals("カスタム", (events[0] as SpeechEvent.LmuWindowsOverheating).resolvedText)
+        assertEquals("カスタム", (events[1] as SpeechEvent.LmuWindowsPartDetached).resolvedText)
+        assertEquals("カスタム", (events[2] as SpeechEvent.LmuWindowsTyreDetached).resolvedText)
         assertEquals(listOf("オーバーヒート", "部品脱落", "タイヤ脱落"), events.map { it.narratedText })
         events.forEach { assertEquals(ReadoutItemKey.LmuWindows.VehicleDamage.Root, it.readoutItemKey) }
     }

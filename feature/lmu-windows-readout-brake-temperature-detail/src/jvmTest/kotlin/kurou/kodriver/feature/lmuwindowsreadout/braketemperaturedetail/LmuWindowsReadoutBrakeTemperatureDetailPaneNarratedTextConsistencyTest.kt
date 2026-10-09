@@ -27,7 +27,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailPaneNarratedTextConsistencyTest {
         rule.onNode(hasSetTextAction()).assertTextContains(LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT)
         assertEquals(
             formatLmuWindowsBrakeTemperatureReadoutText(LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT, 800),
-            SpeechEvent.BrakeOverheat(800).narratedText,
+            SpeechEvent.LmuWindowsBrakeOverheat(800).narratedText,
         )
     }
 }

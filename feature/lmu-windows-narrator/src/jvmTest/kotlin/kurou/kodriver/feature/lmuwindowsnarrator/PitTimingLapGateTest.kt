@@ -9,7 +9,7 @@ class PitTimingLapGateTest {
     private val gate = PitTimingLapGate()
 
     private fun warning(laps: Int) =
-        listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(laps, source = PitTimingSource.TyreWear))
+        listOf<SpeechEvent>(SpeechEvent.LmuWindowsPitTimingWarning(laps, source = PitTimingSource.TyreWear))
 
     @Test
     fun `イベントが無ければ空を返す`() {
@@ -20,7 +20,7 @@ class PitTimingLapGateTest {
     fun `PitTimingWarning以外のイベントは通さない`() {
         assertEquals(
             emptyList<SpeechEvent>(),
-            gate.filter(currentLap = 1, events = listOf(SpeechEvent.RedFlag())),
+            gate.filter(currentLap = 1, events = listOf(SpeechEvent.LmuWindowsRedFlag())),
         )
     }
 
@@ -50,7 +50,10 @@ class PitTimingLapGateTest {
 
     @Test
     fun `通過したイベントは算出元を維持する`() {
-        val virtualEnergy = listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(3, PitTimingSource.VirtualEnergy))
+        val virtualEnergy =
+            listOf<SpeechEvent>(
+                SpeechEvent.LmuWindowsPitTimingWarning(3, PitTimingSource.VirtualEnergy),
+            )
         val tyreWear = warning(2)
 
         assertEquals(virtualEnergy, gate.filter(currentLap = 1, events = virtualEnergy))
