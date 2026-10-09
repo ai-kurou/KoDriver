@@ -8,6 +8,8 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
+import kurou.kodriver.domain.model.VOICE_SPEED_MAX
+import kurou.kodriver.domain.model.VOICE_SPEED_MIN
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
@@ -50,6 +52,7 @@ internal class AndroidTextToSpeechRepository(
     private val mutex = Mutex()
     private val voiceLock = Any()
     private var appliedVoiceId: String? = null
+    private var appliedSpeed: Float? = null
     private var defaultVoiceIdValue: String? = null
 
     /** 日本語の初期化で選ばれた音声ID。試聴や個別の音声指定では変えない。 */
@@ -92,6 +95,7 @@ internal class AndroidTextToSpeechRepository(
         queue: Boolean,
         volume: Int,
         voiceId: String,
+        speed: Float,
     ) {
         if (text.isBlank()) return
         val engine = ensureInitialized() ?: return
@@ -106,6 +110,7 @@ internal class AndroidTextToSpeechRepository(
         val result =
             synchronized(voiceLock) {
                 applyVoice(engine, voiceId)
+                applySpeed(engine, speed.coerceIn(VOICE_SPEED_MIN, VOICE_SPEED_MAX))
                 engine.speak(
                     text,
                     if (queue) TextToSpeech.QUEUE_ADD else TextToSpeech.QUEUE_FLUSH,
@@ -163,6 +168,17 @@ internal class AndroidTextToSpeechRepository(
         appliedVoiceId = voiceId
     }
 
+    /** 速度は成功した値だけを保持し、変更時または失敗後に再適用する。 */
+    private fun applySpeed(
+        engine: TextToSpeech,
+        speed: Float,
+    ) {
+        if (appliedSpeed == speed) return
+        if (engine.setSpeechRate(speed) == TextToSpeech.SUCCESS) {
+            appliedSpeed = speed
+        }
+    }
+
     override suspend fun stop() {
         mutex.withLock {
             textToSpeech?.stop()
@@ -191,9 +207,10 @@ internal class AndroidTextToSpeechRepository(
             unavailableReason = null
             val initStatus = CompletableDeferred<Int>()
             val engine = textToSpeechFactory { status -> initStatus.complete(status) }
-            // 再初期化したエンジンには前の声が引き継がれないため、適用済みのIDを破棄する。
+            // 再初期化したエンジンには前の声・速度が引き継がれないため、適用済みの値を破棄する。
             synchronized(voiceLock) {
                 appliedVoiceId = null
+                appliedSpeed = null
                 defaultVoiceIdValue = null
             }
             val status =

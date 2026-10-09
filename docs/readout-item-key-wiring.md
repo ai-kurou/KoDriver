@@ -73,3 +73,5 @@ LMUの全自由文字列イベント（フラッグ・車両接近・ピット�
 `LmuWindowsNarratorModule` は `isCustomSpeakEvent = { it is ReadoutTextEvent }` で対象を判定する。
 ピットタイミングの周回ゲートとソース選択は本文ではなく `laps` を使い続ける。
 読み上げ済みの周回数は、ソース選択と周回ゲートを通過した警告のみViewModelで記録する。
+
+自由文言TTSの本文と詳細画面の試聴は`SpeakTextUseCase`を通し、呼び出し時点の保存済み音声ID・読み上げ速度を使う。音声IDを明示した試聴でも速度は保存値を使用する。`TextToSpeechRepository.speak(text, queue, volume, voiceId, speed)`の`speed`は既定1.0、範囲0.5〜2.0で、Android・Windows実装で範囲外を制限する。開始音のWAVには速度を適用しない。

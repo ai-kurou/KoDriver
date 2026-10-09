@@ -8,6 +8,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadou
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
@@ -23,7 +24,8 @@ import org.koin.dsl.module
  * フラグアナウンス詳細設定（lmu-windows-readout-flag-detail feature）の Koin モジュール。
  *
  * 提供: LmuWindowsReadoutFlagDetailViewModel と、それが使うドメイン UseCase。
- * 音声設定監視用の ObserveVoiceUseCase を提供し、VoicePreferencesRepository（:core:data）を消費する。
+ * 音声・速度設定監視用の ObserveVoiceUseCase・ObserveVoiceSpeedUseCase を提供し、
+ * VoicePreferencesRepository・VoiceSpeedPreferencesRepository（:core:data）を消費する。
  * 消費（get で解決）: LmuWindowsFlagPreferencesRepository・
  *   LmuWindowsFlagReadoutTextPreferencesRepository・TextToSpeechRepository（:core:data /
  *   :core:text-to-speech-data）、試聴用の named(Simulator.LmuWindows.id) の
@@ -44,6 +46,7 @@ val lmuWindowsReadoutFlagDetailModule =
         }
 
         factory { ObserveVoiceUseCase(get()) }
+        factory { ObserveVoiceSpeedUseCase(get()) }
         factory { FlagSettingsUseCases(get(), get(), get()) }
         factory { FlagReadoutTextUseCases(get(), get(), get(), get(), get(), get(), get(), get()) }
 
@@ -59,6 +62,6 @@ val lmuWindowsReadoutFlagDetailModule =
         factory { ObserveLmuWindowsRedFlagReadoutTextUseCase(get()) }
         factory { SaveLmuWindowsRedFlagReadoutTextUseCase(get()) }
         factory { ObserveSoundVolumeUseCase(get()) }
-        factory { SpeakTextUseCase(get(), get()) }
+        factory { SpeakTextUseCase(get(), get(), get()) }
         factory { CheckTextToSpeechAvailableUseCase(get()) }
     }

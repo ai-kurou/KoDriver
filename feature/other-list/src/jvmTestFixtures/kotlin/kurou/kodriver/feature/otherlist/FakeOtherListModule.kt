@@ -59,6 +59,7 @@ class FakeTextToSpeechRepository : TextToSpeechRepository {
         queue: Boolean,
         volume: Int,
         voiceId: String,
+        speed: Float,
     ) = Unit
 
     override suspend fun stop() = Unit

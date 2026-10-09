@@ -39,6 +39,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadou
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsBlackFlagReadoutTextUseCase
@@ -71,6 +72,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
     private val texts: AceWindowsFlagReadoutTextPreferencesRepository = mockk()
     private val tts: TextToSpeechRepository = mockk()
     private val observeVoice: ObserveVoiceUseCase = mockk()
+    private val observeVoiceSpeed: ObserveVoiceSpeedUseCase = mockk()
     private val volumes: SoundVolumePreferencesRepository = mockk()
 
     @BeforeTest
@@ -112,7 +114,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
                         SaveAceWindowsRedYellowStripesFlagReadoutTextUseCase(texts),
                     ),
                 ),
-            speakText = SpeakTextUseCase(tts, observeVoice),
+            speakText = SpeakTextUseCase(tts, observeVoice, observeVoiceSpeed),
             playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),
             checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(tts),
             observeSoundVolume = ObserveSoundVolumeUseCase(volumes),
@@ -278,6 +280,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
                 flowOf("レッド・イエローストライプフラッグ、路面が滑りやすいです")
             coEvery { tts.isAvailable() } returns true
             every { volumes.volume() } returns flowOf(42)
+            every { observeVoiceSpeed() } returns flowOf(1.0f)
             every { observeVoice() } returns flowOf("voice-a")
             val calls = mutableListOf<String>()
             val startSoundCompleted = CompletableDeferred<Unit>()
@@ -285,19 +288,20 @@ class AceWindowsReadoutFlagDetailViewModelTest {
                 calls += "start"
                 startSoundCompleted.await()
             }
-            coEvery { tts.speak("完走", false, 42, "voice-a") } answers { calls += "text" }
+            coEvery { tts.speak("完走", false, 42, "voice-a", 1.0f) } answers { calls += "text" }
             val vm = createViewModel()
             vm.onFlagTextPreviewClicked("完走")
             assertEquals(listOf("start"), calls)
-            coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a") }
+            coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a", 1.0f) }
             startSoundCompleted.complete(Unit)
             assertEquals(listOf("start", "text"), calls)
             coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
-            coVerify(exactly = 1) { tts.speak("完走", false, 42, "voice-a") }
+            coVerify(exactly = 1) { tts.speak("完走", false, 42, "voice-a", 1.0f) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 1) { volumes.volume() }
             verify(exactly = 1) { observeVoice() }
-            confirmVerified(ttsEngine, tts, volumes, observeVoice)
+            verify(exactly = 1) { observeVoiceSpeed() }
+            confirmVerified(ttsEngine, tts, volumes, observeVoice, observeVoiceSpeed)
         }
 
     @Test
@@ -322,7 +326,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             vm.onFlagTextPreviewClicked("   ")
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 0) { volumes.volume() }
-            confirmVerified(tts, ttsEngine, volumes, observeVoice)
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
         }
 
     @Test
@@ -347,7 +351,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             vm.onFlagTextPreviewClicked("完走")
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 0) { volumes.volume() }
-            confirmVerified(tts, ttsEngine, volumes, observeVoice)
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
         }
 
     @Test
@@ -373,7 +377,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             vm.onFlagTextPreviewClicked("完走")
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 2) { volumes.volume() }
-            confirmVerified(tts, ttsEngine, volumes, observeVoice)
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
         }
 
     @Test
