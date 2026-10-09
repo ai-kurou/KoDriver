@@ -42,6 +42,10 @@ jobs:
           echo "date=$(TZ=Asia/Tokyo date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           echo "weekday=$(TZ=Asia/Tokyo date +%A)" >> "$GITHUB_OUTPUT"
 
+      - name: Set up build environment for weekday analysis
+        if: steps.jst.outputs.weekday == 'Tuesday' || steps.jst.outputs.weekday == 'Wednesday'
+        uses: ./.github/actions/setup
+
       - name: Run Claude Code to file improvement issues
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -52,10 +56,17 @@ jobs:
           diagnostics="$RUNNER_TEMP/nightly-todo"
           mkdir -p "$diagnostics"
           printf '# 夜間調査: 未完了\n\n実行中、または結果を取得できませんでした。\n' > "$diagnostics/summary.md"
+          allowed_tools="Read,Grep,Glob,WebSearch,WebFetch,Bash(gh issue list:*),Bash(gh issue view:*),Bash(gh issue create:*),Bash(gh run list:*),Bash(gh api repos/*/actions/runs*)"
+          case "$JST_WEEKDAY" in
+            Tuesday) allowed_tools+=",Bash(./gradlew koverXmlReport)" ;;
+            Wednesday) allowed_tools+=",Bash(./gradlew detekt),Bash(./gradlew ktlintCheck)" ;;
+          esac
           prompt="$(cat <<PROMPT
           KoDriverの夜間調査を行ってください。日付: ${JST_DATE}、JST曜日: ${JST_WEEKDAY}。
           docs/nightly-todo-list.mdを読み、毎晩実行する全項目と当日の曜日ローテーション項目だけを調査してください。
           ページ送り・日時判定・いいね数など、同ドキュメントの共通ルールも遵守してください。
+          火曜のカバレッジ確認では ./gradlew koverXmlReport、水曜の静的解析では ./gradlew detekt と ./gradlew ktlintCheck を別々に実行してください。
+          Gradleの通常のビルド成果物・レポート生成は許可されていますが、ソースや設定の変更・自動整形は行いません。
           改善案は対象コードを読んで適用可能性を確認し、gh issue list --state all --searchで重複を確認します。
           必要ならgh issue viewで本文を確認し、重複がなければgh issue createで日本語のIssueをラベルなしで起票します。
           このバッチはユーザーが承認したIssue起票の自動処理です。起票の追加確認は不要です。
@@ -69,7 +80,7 @@ jobs:
           schema='{"type":"object","additionalProperties":false,"properties":{"status":{"type":"string","enum":["completed","blocked"]},"summary":{"type":"string","minLength":1},"issue_urls":{"type":"array","items":{"type":"string"}}},"required":["status","summary","issue_urls"]}'
           exit_code=0
           claude -p "$prompt" \
-            --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Bash(gh issue list:*),Bash(gh issue view:*),Bash(gh issue create:*),Bash(gh run list:*),Bash(gh api repos/*/actions/runs*)" \
+            --allowedTools "$allowed_tools" \
             --disallowedTools "Edit,Write" \
             --permission-mode dontAsk \
             --model sonnet --effort low \
