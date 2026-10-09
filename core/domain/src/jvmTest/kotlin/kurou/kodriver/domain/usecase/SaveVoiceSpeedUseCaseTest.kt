@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
@@ -16,6 +17,9 @@ class SaveVoiceSpeedUseCaseTest {
     @Test
     fun `0_5から2_0の値を保存できる`() =
         runTest {
+            coEvery { repository.saveVoiceSpeed(VOICE_SPEED_MIN) } returns Unit
+            coEvery { repository.saveVoiceSpeed(1.25f) } returns Unit
+            coEvery { repository.saveVoiceSpeed(VOICE_SPEED_MAX) } returns Unit
             val useCase = SaveVoiceSpeedUseCase(repository)
 
             useCase(VOICE_SPEED_MIN)
