@@ -1,5 +1,11 @@
 package kurou.kodriver.feature.readoutlist
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +29,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -58,6 +65,10 @@ internal fun ReadoutDetailPane(
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     content: @Composable () -> Unit,
 ) {
+    val contentAlpha by animateFloatAsState(
+        targetValue = if (rootEnabled) 1f else READOUT_DETAIL_ROOT_DISABLED_ALPHA,
+        label = "contentAlpha",
+    )
     Scaffold(
         modifier =
             modifier
@@ -82,7 +93,11 @@ internal fun ReadoutDetailPane(
         },
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            if (!rootEnabled) {
+            AnimatedVisibility(
+                visible = !rootEnabled,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut(),
+            ) {
                 RootDisabledBanner(itemName = rootItemName, onEnableRoot = onEnableRoot)
             }
             // 操作は可能なまま、読み上げられないことを視覚的に示すため薄く表示する。
@@ -90,7 +105,7 @@ internal fun ReadoutDetailPane(
                 modifier =
                     Modifier
                         .weight(1f)
-                        .alpha(if (rootEnabled) 1f else READOUT_DETAIL_ROOT_DISABLED_ALPHA),
+                        .alpha(contentAlpha),
             ) {
                 content()
             }

@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.Role
@@ -20,6 +21,7 @@ import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
@@ -195,6 +197,36 @@ class ReadoutDetailPaneTest {
 
         rule.onNodeWithText("「タイヤ温度」がOFFのため、読み上げられません").assertIsDisplayed()
         rule.onNodeWithText("ONにする").assertIsDisplayed()
+        rule.onNodeWithText("詳細内容").assertIsDisplayed()
+    }
+
+    @Test
+    fun `rootEnabledをfalseからtrueに切り替えるとアニメーション完了後にバナーが消える`() {
+        val rootEnabled = mutableStateOf(false)
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutDetailPane(
+                    title = "タイヤ温度",
+                    canNavigateBack = true,
+                    onBack = {},
+                    rootEnabled = rootEnabled.value,
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        val bannerMessage = "「タイヤ温度」がOFFのため、読み上げられません"
+        rule.onNodeWithText(bannerMessage).assertIsDisplayed()
+
+        rule.runOnIdle { rootEnabled.value = true }
+        rule.waitForIdle()
+        rule.waitUntil {
+            rule.onAllNodesWithText(bannerMessage).fetchSemanticsNodes().isEmpty()
+        }
+
+        rule.onNodeWithText(bannerMessage).assertDoesNotExist()
+        rule.onNodeWithText("ONにする").assertDoesNotExist()
         rule.onNodeWithText("詳細内容").assertIsDisplayed()
     }
 
