@@ -33,7 +33,7 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値は95度`() =
+    fun `初期値は100度`() =
         runTest {
             assertEquals(
                 GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,

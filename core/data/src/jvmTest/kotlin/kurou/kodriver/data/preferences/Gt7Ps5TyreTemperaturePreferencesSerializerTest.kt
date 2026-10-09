@@ -2,7 +2,6 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -12,10 +11,10 @@ import kotlin.test.assertFailsWith
 
 class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
     @Test
-    fun `デフォルト値は95度`() {
+    fun `デフォルト値は100度`() {
         assertEquals(
             Gt7Ps5TyreTemperaturePreferences(
-                highThresholdCelsius = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value,
+                highThresholdCelsius = 100,
             ),
             Gt7Ps5TyreTemperaturePreferencesSerializer.defaultValue,
         )
@@ -24,7 +23,7 @@ class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = Gt7Ps5TyreTemperaturePreferences(highThresholdCelsius = 100)
+            val original = Gt7Ps5TyreTemperaturePreferences(highThresholdCelsius = 95)
             val output = ByteArrayOutputStream()
             Gt7Ps5TyreTemperaturePreferencesSerializer.writeTo(original, output)
 

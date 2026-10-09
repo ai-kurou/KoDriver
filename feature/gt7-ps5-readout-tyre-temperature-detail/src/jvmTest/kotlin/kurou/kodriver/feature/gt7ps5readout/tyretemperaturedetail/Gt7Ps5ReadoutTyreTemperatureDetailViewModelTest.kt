@@ -158,7 +158,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             viewModel.onHighThresholdReset()
 
             assertEquals(
-                GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.value,
+                100,
                 viewModel.uiState.first().highThresholdCelsius,
             )
             verify(exactly = 1) { repository.observeEnabledStates() }

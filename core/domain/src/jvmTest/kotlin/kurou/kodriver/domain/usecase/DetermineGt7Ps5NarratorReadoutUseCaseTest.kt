@@ -1211,7 +1211,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                             telemetry(
                                 tyreTemperature = Gt7Ps5TyreTemperatureData(wheels[0], wheels[1], wheels[2], wheels[3]),
                             ),
-                        settings = settings(),
+                        settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
                     )
                 assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat(rounded)), decision.events)
             }
