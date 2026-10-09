@@ -22,7 +22,8 @@ import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPaneContent
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailUiState
-import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPane
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPaneContent
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailUiState
 import org.junit.Test
@@ -105,7 +106,8 @@ class OtherContentScreenshotTest {
                                 scaffoldDirective = twoPaneDirective,
                                 detailContent = { itemType, canNavigateBack, onBack, _, _ ->
                                     if (itemType == OtherListItemType.VoiceSpeed) {
-                                        OtherVoiceSpeedDetailPane(
+                                        OtherVoiceSpeedDetailPaneContent(
+                                            uiState = OtherVoiceSpeedDetailUiState(),
                                             canNavigateBack = canNavigateBack,
                                             onBack = onBack,
                                         )

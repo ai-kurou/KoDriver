@@ -19,7 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
-import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPane
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPaneContent
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailUiState
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -58,7 +59,11 @@ class OtherContentTest {
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
                 detailContent = { item, canNavigateBack, onBack, _, _ ->
                     if (item == OtherListItemType.VoiceSpeed) {
-                        OtherVoiceSpeedDetailPane(canNavigateBack, onBack)
+                        OtherVoiceSpeedDetailPaneContent(
+                            uiState = OtherVoiceSpeedDetailUiState(),
+                            canNavigateBack = canNavigateBack,
+                            onBack = onBack,
+                        )
                     }
                 },
             )

@@ -2,4 +2,6 @@
     <string name="voice_speed_title">読み上げ速度</string>
     <string name="voice_speed_description">読み上げの速さを設定します。</string>
     <string name="navigate_back">戻る</string>
+    <string name="voice_speed_label">%1$.1f倍</string>
+    <string name="voice_speed_reset">読み上げ速度をデフォルトに戻す</string>
 </resources>
