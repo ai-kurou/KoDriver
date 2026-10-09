@@ -107,6 +107,8 @@ internal class OtherVolumeDetailViewModel(
         previewJob?.cancel()
         isPreviewing.update { false }
         if (stopPreview) return
+        // 保存・音量取得待ちも停止できるよう、要求した時点から試聴中として扱う。
+        isPreviewing.update { true }
         previewJob =
             viewModelScope.launch {
                 try {
@@ -114,7 +116,6 @@ internal class OtherVolumeDetailViewModel(
                     saveJob?.join()
                     val volume = soundVolumeUseCases.observeSoundVolume().first()
                     if (volume <= 0) return@launch
-                    isPreviewing.update { true }
                     // 自己ベスト文言が空欄でも、従来の既定文言で音量を確認できるようにする。
                     val sample = SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = PREVIEW_LAP_TIME_MS)
                     speakText(sample.narratedText, volume = volume)
@@ -123,9 +124,14 @@ internal class OtherVolumeDetailViewModel(
                 } catch (_: Exception) {
                     // 試聴に失敗しても画面の操作を続けられるようにする。
                 } finally {
-                    if (previewRequest == request) isPreviewing.update { false }
+                    finishPreview(request)
                 }
             }
+    }
+
+    // 古い試聴の終了で新しい試聴状態を解除しない。
+    private fun finishPreview(request: Int) {
+        if (previewRequest == request) isPreviewing.update { false }
     }
 
     fun onDeviceVolumeChanged(volume: Int) {

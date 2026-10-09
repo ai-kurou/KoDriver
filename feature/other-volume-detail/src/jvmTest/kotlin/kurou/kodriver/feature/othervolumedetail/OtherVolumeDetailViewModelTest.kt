@@ -15,6 +15,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -273,6 +274,81 @@ class OtherVolumeDetailViewModelTest {
             coVerify(exactly = 1) { speakText("自己ベストラップ更新 1分23秒456", volume = 40) }
             verify(exactly = 2) { soundVolumeRepository.volume() }
             confirmVerified(soundVolumeRepository, speakText)
+        }
+
+    @Test
+    fun `音量保存待ちも停止表示になり再タップ後は保存が完了しても再生しない`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            val saved = CompletableDeferred<Unit>()
+            coEvery { soundVolumeRepository.saveVolume(40) } coAnswers {
+                saved.await()
+                volumeFlow.update { 40 }
+            }
+            val viewModel = createViewModel()
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onVolumeChanged(40)
+            viewModel.onPreviewClicked()
+            assertTrue(viewModel.uiState.first().isPreviewing)
+            viewModel.onPreviewClicked()
+            assertFalse(viewModel.uiState.first().isPreviewing)
+            saved.complete(Unit)
+            runCurrent()
+            assertEquals(40, viewModel.uiState.first().volume)
+            assertFalse(viewModel.uiState.first().isPreviewing)
+            coVerify(exactly = 1) { soundVolumeRepository.saveVolume(40) }
+            verify(exactly = 1) { soundVolumeRepository.volume() }
+            coVerify(exactly = 0) { speakText("自己ベストラップ更新 1分23秒456", volume = 40) }
+            confirmVerified(soundVolumeRepository, speakText)
+        }
+
+    @Test
+    fun `音量取得待ちも再タップで停止し後から値が届いても再生しない`() =
+        runTest {
+            val pendingVolume = MutableSharedFlow<Int>()
+            every { soundVolumeRepository.volume() } returnsMany listOf(volumeFlow, pendingVolume)
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            val viewModel = createViewModel()
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onPreviewClicked()
+            assertTrue(viewModel.uiState.first().isPreviewing)
+            viewModel.onPreviewClicked()
+            assertFalse(viewModel.uiState.first().isPreviewing)
+            pendingVolume.emit(80)
+            runCurrent()
+            assertFalse(viewModel.uiState.first().isPreviewing)
+            verify(exactly = 2) { soundVolumeRepository.volume() }
+            coVerify(exactly = 0) { speakText("自己ベストラップ更新 1分23秒456", volume = 80) }
+            confirmVerified(soundVolumeRepository, speakText)
+        }
+
+    @Test
+    fun `停止した古い試聴の遅延失敗が新しい試聴状態を解除しない`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns volumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            val oldFinished = CompletableDeferred<Unit>()
+            var count = 0
+            coEvery { speakText("自己ベストラップ更新 1分23秒456", volume = 80) } coAnswers {
+                if (++count == 1) {
+                    withContext(NonCancellable) { oldFinished.await() }
+                    throw IOException("遅延した失敗")
+                } else {
+                    awaitCancellation()
+                }
+            }
+            val viewModel = createViewModel()
+            viewModel.uiState.launchIn(backgroundScope)
+            viewModel.onPreviewClicked()
+            viewModel.onPreviewClicked()
+            viewModel.onPreviewClicked()
+            oldFinished.complete(Unit)
+            runCurrent()
+            assertTrue(viewModel.uiState.first().isPreviewing)
+            viewModel.onPreviewStopped()
+            coVerify(exactly = 2) { speakText("自己ベストラップ更新 1分23秒456", volume = 80) }
+            confirmVerified(speakText)
         }
 
     @Test
