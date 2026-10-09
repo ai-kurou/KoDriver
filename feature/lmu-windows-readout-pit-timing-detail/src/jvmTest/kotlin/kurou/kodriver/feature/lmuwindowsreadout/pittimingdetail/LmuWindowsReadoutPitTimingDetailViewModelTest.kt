@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -378,4 +379,40 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyReadoutText() }
         verify(exactly = 1) { readoutTextRepository.observeVirtualEnergyImminentReadoutText() }
     }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            stubRepository()
+            every { observeVolume() } returns MutableStateFlow(60)
+            val viewModel = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
+            viewModel.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
+            coVerify(exactly = 0) { speakText("残り5周", volume = 60) }
+            verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
+        }
+
+    @Test
+    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
+        runTest {
+            stubRepository()
+            every { observeVolume() } returns MutableStateFlow(60)
+            val viewModel = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
+            viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
+            coVerify(exactly = 0) { speakText("残り5周", volume = 60) }
+            verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
+        }
 }

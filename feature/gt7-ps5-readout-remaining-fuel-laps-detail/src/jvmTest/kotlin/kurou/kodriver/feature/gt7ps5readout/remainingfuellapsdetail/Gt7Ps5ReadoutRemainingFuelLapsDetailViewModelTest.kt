@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -370,5 +371,65 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
             }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
+        }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
+            val threshold = MutableStateFlow(4)
+            every { repository.observeRemainingFuelLaps() } returns threshold
+            every { observeVolume() } returns MutableStateFlow(60)
+            val viewModel = createViewModel()
+            val collection =
+                backgroundScope.launch(
+                    UnconfinedTestDispatcher(testScheduler),
+                ) { viewModel.uiState.collect {} }
+            assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
+            viewModel.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root) }
+            coVerify(exactly = 0) { speakText("残り4周", volume = 60) }
+            verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
+            collection.cancel()
+        }
+
+    @Test
+    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
+        runTest {
+            every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id) } returns
+                enabledStatesFlow
+            every { repository.observeReadoutText() } returns textFlow
+            every { repository.observeEmptyReadoutText() } returns emptyTextFlow
+            coEvery { checkAvailable() } returns true
+            val threshold = MutableStateFlow(4)
+            every { repository.observeRemainingFuelLaps() } returns threshold
+            every { observeVolume() } returns MutableStateFlow(60)
+            val viewModel = createViewModel()
+            val collection =
+                backgroundScope.launch(
+                    UnconfinedTestDispatcher(testScheduler),
+                ) { viewModel.uiState.collect {} }
+            assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
+            viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root) }
+            coVerify(exactly = 0) { speakText("残り4周", volume = 60) }
+            verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
+            collection.cancel()
         }
 }

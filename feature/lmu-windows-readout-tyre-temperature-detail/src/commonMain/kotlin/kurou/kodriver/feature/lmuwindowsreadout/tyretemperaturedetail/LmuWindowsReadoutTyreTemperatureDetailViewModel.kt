@@ -96,6 +96,9 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
             LmuWindowsReadoutTyreTemperatureDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
             tyreTemperatureUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, enabled)
@@ -118,7 +121,7 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     }
 
     private fun previewReadoutText(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.LmuWindows.TyreTemperature.Root)
     }
 
     fun onLowWarningEnabledChanged(enabled: Boolean) {

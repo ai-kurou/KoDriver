@@ -78,6 +78,9 @@ internal class AceWindowsReadoutRemainingFuelLapsDetailViewModel(
             AceWindowsReadoutRemainingFuelLapsDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onReadoutTextChanged(text: String) {
         viewModelScope.launch { readout.saveText(text) }
     }
@@ -100,7 +103,7 @@ internal class AceWindowsReadoutRemainingFuelLapsDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.AceWindows.RemainingFuelLaps.Root)
     }
 
     fun onRemainingFuelLapsChanged(laps: Int) {

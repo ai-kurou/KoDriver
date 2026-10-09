@@ -70,6 +70,9 @@ internal class LmuWindowsReadoutMyBestLapDetailViewModel(
             LmuWindowsReadoutMyBestLapDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
             myBestLapUseCases.saveEnabledState(
@@ -91,6 +94,6 @@ internal class LmuWindowsReadoutMyBestLapDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.LmuWindows.MyBestLap.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.LmuWindows.MyBestLap.Root)
     }
 }

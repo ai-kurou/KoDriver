@@ -13,6 +13,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +61,9 @@ import kotlin.math.roundToInt
 fun Gt7Ps5ReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
     val viewModel: Gt7Ps5ReadoutTyreTemperatureDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onPreviewStopped() }
+    }
     Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
         uiState = uiState,
         onOverheatWarningEnabledChanged = viewModel::onOverheatWarningEnabledChanged,

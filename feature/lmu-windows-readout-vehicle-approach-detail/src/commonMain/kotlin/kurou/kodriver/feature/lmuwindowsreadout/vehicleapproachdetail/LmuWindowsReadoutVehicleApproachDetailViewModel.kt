@@ -94,6 +94,9 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
             LmuWindowsReadoutVehicleApproachDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onLateralThresholdChanged(meters: Double) {
         viewModelScope.launch { thresholds.saveLateralThresholdMeters(meters) }
     }
@@ -206,6 +209,6 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
 
     /** 空白文言・TTS利用不可・音量ゼロでは試聴せず、実際の読み上げと同じRootキーで開始音を鳴らす。 */
     private fun playStartReadoutPreview(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.LmuWindows.VehicleApproach.Root)
     }
 }

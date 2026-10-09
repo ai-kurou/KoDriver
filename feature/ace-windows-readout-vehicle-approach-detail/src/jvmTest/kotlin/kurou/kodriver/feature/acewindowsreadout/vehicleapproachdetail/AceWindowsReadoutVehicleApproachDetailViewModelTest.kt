@@ -6,6 +6,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -279,4 +280,40 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
         coVerify(exactly = 1) { checkAvailable() }
         confirmVerified(repository, checkAvailable)
     }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            stubSettings()
+            every { observeVolume() } returns flowOf(42)
+            val viewModel = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onPreviewClicked("周囲に注意")
+            viewModel.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            verify(exactly = 1) { observeVolume() }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) }
+            coVerify(exactly = 0) { speakText("周囲に注意", volume = 42) }
+            confirmVerified(observeVolume, ttsEngine, speakText)
+        }
+
+    @Test
+    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
+        runTest {
+            stubSettings()
+            every { observeVolume() } returns flowOf(42)
+            val viewModel = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onPreviewClicked("周囲に注意")
+            viewModel.onPreviewClicked("周囲に注意")
+            pendingStartSound.complete(Unit)
+            verify(exactly = 1) { observeVolume() }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) }
+            coVerify(exactly = 0) { speakText("周囲に注意", volume = 42) }
+            confirmVerified(observeVolume, ttsEngine, speakText)
+        }
 }

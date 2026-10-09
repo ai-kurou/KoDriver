@@ -76,6 +76,9 @@ internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
             AceWindowsReadoutTyreTemperatureDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
             tyreTemperatureUseCases.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, enabled)
@@ -100,6 +103,6 @@ internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
         celsius: Int,
     ) {
         val resolvedText = formatAceWindowsTyreTemperatureReadoutText(text, celsius)
-        viewModelScope.launch { preview.preview(resolvedText, ReadoutItemKey.AceWindows.TyreTemperature.Root) }
+        preview.onPreviewClicked(resolvedText, ReadoutItemKey.AceWindows.TyreTemperature.Root)
     }
 }
