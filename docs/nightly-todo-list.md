@@ -1,6 +1,6 @@
 # Nightly TODO List
 
-毎晩 JST 4:03を予定時刻として（GitHubの混雑により遅延する場合あり）、Claude Code がこのファイルを読み取り、内容を GitHub Issueとして起票する運用メモです。
+毎晩 JST 午前5時ごろ、Claude Code がこのファイルを読み取り、内容を GitHub Issueとして起票する運用メモです。
 
 ## 使い方
 
