@@ -2,7 +2,6 @@ package kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -14,7 +13,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearInvestigationData
+import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
+import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -46,30 +48,27 @@ class LmuWindowsReadoutBrakeWearDetailPaneWiringTest {
     private val viewModel: LmuWindowsReadoutBrakeWearDetailViewModel = mockk()
 
     @Test
-    fun `PaneはKoinの状態を表示し基準の設定とクリアを通知する`() {
+    fun `PaneはKoinのViewModelの状態を表示する`() {
         every { viewModel.uiState } returns
             MutableStateFlow(
                 LmuWindowsReadoutBrakeWearDetailUiState(
-                    current =
-                        LmuWindowsBrakeWearInvestigationData(
-                            wearablesBrakes = listOf(0.036, 0.035, 0.032, 0.031),
+                    remaining =
+                        LmuWindowsBrakeWearRemainingData(
+                            wheels =
+                                mapOf(
+                                    WheelIndex.FRONT_LEFT to
+                                        LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.0305f), 50),
+                                ),
                         ),
-                    baseline = LmuWindowsBrakeWearInvestigationData(wearablesBrakes = listOf(0.04)),
                 ),
             )
-        every { viewModel.onBaselineSet() } returns Unit
-        every { viewModel.onBaselineCleared() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
             rule.setContent { KoDriverTheme { LmuWindowsReadoutBrakeWearDetailPane() } }
 
-            rule.onNodeWithText("FL: 0.03600000（基準との差 -0.00400000）").assertExists()
-            rule.onNodeWithText("現在値を基準にする").performClick()
-            rule.onNodeWithText("基準をクリア").performClick()
+            rule.onNodeWithText("FL: 50%（30.5 mm）").assertExists()
 
             verify(exactly = 1) { viewModel.uiState }
-            verify(exactly = 1) { viewModel.onBaselineSet() }
-            verify(exactly = 1) { viewModel.onBaselineCleared() }
             confirmVerified(viewModel)
         } finally {
             stopKoin()

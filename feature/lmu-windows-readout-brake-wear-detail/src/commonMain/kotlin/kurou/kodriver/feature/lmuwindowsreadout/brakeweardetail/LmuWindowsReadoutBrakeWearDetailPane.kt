@@ -1,17 +1,12 @@
 package kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,45 +19,35 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearInvestigationData
+import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.Res
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_brake_info_title
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_clear_baseline
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_description
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_set_baseline
+import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_remaining_title
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_unavailable
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wearables_title
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_front_left
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_front_right
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_other
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_rear_left
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_rear_right
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_row
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_row_with_delta
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * ブレーキ摩耗の調査用に、REST API の生の配列値を表示する Composable。
+ * ブレーキ摩耗（4輪の残量%と厚さ）を表示する Composable。
  */
 @Composable
 fun LmuWindowsReadoutBrakeWearDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsReadoutBrakeWearDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LmuWindowsReadoutBrakeWearDetailPaneContent(
-        uiState = uiState,
-        onBaselineSet = viewModel::onBaselineSet,
-        onBaselineCleared = viewModel::onBaselineCleared,
-        modifier = modifier,
-    )
+    LmuWindowsReadoutBrakeWearDetailPaneContent(uiState = uiState, modifier = modifier)
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun LmuWindowsReadoutBrakeWearDetailPaneContent(
     uiState: LmuWindowsReadoutBrakeWearDetailUiState = LmuWindowsReadoutBrakeWearDetailUiState(),
-    onBaselineSet: () -> Unit = {},
-    onBaselineCleared: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -72,81 +57,51 @@ internal fun LmuWindowsReadoutBrakeWearDetailPaneContent(
                 .verticalScroll(rememberScrollState()),
     ) {
         DetailPaneDescription(text = stringResource(Res.string.brake_wear_description))
-        FlowRow(
-            modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.extraSmall),
-            horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-        ) {
-            Button(onClick = onBaselineSet, enabled = uiState.hasCurrentValues) {
-                Text(stringResource(Res.string.brake_wear_set_baseline))
-            }
-            OutlinedButton(onClick = onBaselineCleared, enabled = uiState.baseline != null) {
-                Text(stringResource(Res.string.brake_wear_clear_baseline))
-            }
-        }
-        BrakeWearValuesCard(
-            title = stringResource(Res.string.brake_wear_wearables_title),
-            values = uiState.current.wearablesBrakes,
-            baseline = uiState.baseline?.wearablesBrakes,
-        )
-        BrakeWearValuesCard(
-            title = stringResource(Res.string.brake_wear_brake_info_title),
-            values = uiState.current.brakeInfo,
-            baseline = uiState.baseline?.brakeInfo,
+        DetailPaneCard(
+            title = stringResource(Res.string.brake_wear_remaining_title),
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
+            bottomContent = {
+                Column(modifier = Modifier.fillMaxWidth().padding(bottom = KoDriverSpacing.small)) {
+                    val remaining = uiState.remaining
+                    if (remaining == null) {
+                        DetailPaneBodyText(text = stringResource(Res.string.brake_wear_unavailable))
+                    } else {
+                        WheelIndex.entries.forEach { wheel ->
+                            remaining.wheels[wheel]?.let { WheelRemainingRow(wheel, it) }
+                        }
+                    }
+                }
+            },
         )
     }
 }
 
-// 4輪分（数要素）の配列のため、ImmutableList化のコストに見合わない。
-@Suppress("UnstableCollections")
 @Composable
-private fun BrakeWearValuesCard(
-    title: String,
-    values: List<Double>?,
-    baseline: List<Double>?,
+private fun WheelRemainingRow(
+    wheel: WheelIndex,
+    remaining: LmuWindowsBrakeWearWheelRemaining,
 ) {
-    DetailPaneCard(
-        title = title,
-        modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
-        bottomContent = {
-            Column(modifier = Modifier.fillMaxWidth().padding(bottom = KoDriverSpacing.small)) {
-                if (values == null) {
-                    DetailPaneBodyText(text = stringResource(Res.string.brake_wear_unavailable))
-                } else {
-                    values.forEachIndexed { index, value ->
-                        val label = wheelLabel(index)
-                        val base = baseline?.getOrNull(index)
-                        Text(
-                            style = koDriverNumericTextStyle(MaterialTheme.typography.bodyMedium),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(vertical = KoDriverSpacing.extraSmall),
-                            text =
-                                if (base == null) {
-                                    stringResource(Res.string.brake_wear_wheel_row, label, formatBrakeWearValue(value))
-                                } else {
-                                    stringResource(
-                                        Res.string.brake_wear_wheel_row_with_delta,
-                                        label,
-                                        formatBrakeWearValue(value),
-                                        formatBrakeWearDelta(value - base),
-                                    )
-                                },
-                        )
-                    }
-                }
-            }
-        },
+    Text(
+        text =
+            stringResource(
+                Res.string.brake_wear_wheel_row,
+                wheelLabel(wheel),
+                formatBrakeWearPercent(remaining.remainingPercent),
+                formatBrakeThicknessMillimeters(remaining.thickness),
+            ),
+        style = koDriverNumericTextStyle(MaterialTheme.typography.bodyMedium),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(vertical = KoDriverSpacing.extraSmall),
     )
 }
 
-/** 配列は FL, FR, RL, RR の順と推測されている。4輪を超える要素は番号で表示する。 */
 @Composable
-private fun wheelLabel(index: Int): String =
-    when (index) {
-        0 -> stringResource(Res.string.brake_wear_wheel_front_left)
-        1 -> stringResource(Res.string.brake_wear_wheel_front_right)
-        2 -> stringResource(Res.string.brake_wear_wheel_rear_left)
-        3 -> stringResource(Res.string.brake_wear_wheel_rear_right)
-        else -> stringResource(Res.string.brake_wear_wheel_other, index + 1)
+private fun wheelLabel(wheel: WheelIndex): String =
+    when (wheel) {
+        WheelIndex.FRONT_LEFT -> stringResource(Res.string.brake_wear_wheel_front_left)
+        WheelIndex.FRONT_RIGHT -> stringResource(Res.string.brake_wear_wheel_front_right)
+        WheelIndex.REAR_LEFT -> stringResource(Res.string.brake_wear_wheel_rear_left)
+        WheelIndex.REAR_RIGHT -> stringResource(Res.string.brake_wear_wheel_rear_right)
     }
 
 @Preview(showBackground = true)
@@ -156,10 +111,19 @@ private fun LmuWindowsReadoutBrakeWearDetailPanePreview() {
         LmuWindowsReadoutBrakeWearDetailPaneContent(
             uiState =
                 LmuWindowsReadoutBrakeWearDetailUiState(
-                    current =
-                        LmuWindowsBrakeWearInvestigationData(
-                            wearablesBrakes = listOf(0.036, 0.035, 0.032, 0.031),
-                            brakeInfo = listOf(0.036, 0.036, 0.032, 0.032),
+                    remaining =
+                        LmuWindowsBrakeWearRemainingData(
+                            wheels =
+                                mapOf(
+                                    WheelIndex.FRONT_LEFT to
+                                        LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.0305f), 50),
+                                    WheelIndex.FRONT_RIGHT to
+                                        LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.0310f), 55),
+                                    WheelIndex.REAR_LEFT to
+                                        LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.0330f), 73),
+                                    WheelIndex.REAR_RIGHT to
+                                        LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.0335f), 77),
+                                ),
                         ),
                 ),
         )

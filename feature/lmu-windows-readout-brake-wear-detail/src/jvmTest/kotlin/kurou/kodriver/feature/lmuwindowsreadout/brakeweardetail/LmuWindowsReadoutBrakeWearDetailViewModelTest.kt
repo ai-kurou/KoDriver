@@ -6,17 +6,22 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearInvestigationData
-import kurou.kodriver.domain.repository.LmuWindowsBrakeWearInvestigationRepository
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearInvestigationUseCase
+import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -26,14 +31,8 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsReadoutBrakeWearDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val repository: LmuWindowsBrakeWearInvestigationRepository = mockk()
-    private val dataFlow = MutableStateFlow(LmuWindowsBrakeWearInvestigationData())
-
-    private val first =
-        LmuWindowsBrakeWearInvestigationData(
-            wearablesBrakes = listOf(0.036, 0.035, 0.032, 0.031),
-            brakeInfo = listOf(0.036, 0.036, 0.032, 0.032),
-        )
+    private val wearRepository: LmuWindowsBrakeWearRepository = mockk()
+    private val classRepository: LmuWindowsVehicleClassRepository = mockk()
 
     @BeforeTest
     fun setUp() {
@@ -46,83 +45,47 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
     }
 
     private fun createViewModel() =
-        LmuWindowsReadoutBrakeWearDetailViewModel(ObserveLmuWindowsBrakeWearInvestigationUseCase(repository))
+        LmuWindowsReadoutBrakeWearDetailViewModel(
+            ObserveLmuWindowsBrakeWearRemainingUseCase(wearRepository, classRepository),
+        )
+
+    private fun wear(thickness: Float) =
+        LmuWindowsBrakeWearData(wheels = WheelIndex.entries.associateWith { BrakeThicknessMeters(thickness) })
 
     @Test
-    fun `初期状態は値なしで基準も未設定`() =
+    fun `値を取得するまではremainingがnull`() =
         runTest {
-            every { repository.investigationStream() } returns dataFlow
+            every { wearRepository.brakeWearStream() } returns MutableSharedFlow()
+            every { classRepository.vehicleClassStream() } returns flowOf(LmuWindowsVehicleClassData.Hypercar)
             val viewModel = createViewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
+            runCurrent()
 
-            assertEquals(LmuWindowsReadoutBrakeWearDetailUiState(), viewModel.uiState.value)
-            verify(exactly = 1) { repository.investigationStream() }
-            confirmVerified(repository)
+            assertNull(viewModel.uiState.value.remaining)
+            verify(exactly = 1) { wearRepository.brakeWearStream() }
+            verify(exactly = 1) { classRepository.vehicleClassStream() }
+            confirmVerified(wearRepository, classRepository)
         }
 
     @Test
-    fun `取得した生の値がuiStateのcurrentに反映される`() =
+    fun `取得した厚さから計算した残量がuiStateに反映される`() =
         runTest {
-            every { repository.investigationStream() } returns dataFlow
+            val wears = MutableSharedFlow<LmuWindowsBrakeWearData>()
+            every { wearRepository.brakeWearStream() } returns wears
+            every { classRepository.vehicleClassStream() } returns flowOf(LmuWindowsVehicleClassData.Hypercar)
             val viewModel = createViewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
+            runCurrent()
 
-            dataFlow.update { first }
+            wears.emit(wear(0.036f))
+            wears.emit(wear(0.0305f))
 
-            assertEquals(first, viewModel.uiState.first().current)
-            assertNull(viewModel.uiState.first().baseline)
-            verify(exactly = 1) { repository.investigationStream() }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `基準に設定すると以降の値が変わっても基準は保持される`() =
-        runTest {
-            every { repository.investigationStream() } returns dataFlow
-            val viewModel = createViewModel()
-            backgroundScope.launch { viewModel.uiState.collect {} }
-            dataFlow.update { first }
-            viewModel.uiState.first { it.current == first }
-
-            viewModel.onBaselineSet()
-            val next = first.copy(wearablesBrakes = listOf(0.034, 0.033, 0.03, 0.029))
-            dataFlow.update { next }
-
-            val state = viewModel.uiState.first { it.current == next }
-            assertEquals(first, state.baseline)
-            verify(exactly = 1) { repository.investigationStream() }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `値を1つも取得できていないときは基準に設定しない`() =
-        runTest {
-            every { repository.investigationStream() } returns dataFlow
-            val viewModel = createViewModel()
-            backgroundScope.launch { viewModel.uiState.collect {} }
-
-            viewModel.onBaselineSet()
-
-            assertNull(viewModel.uiState.first().baseline)
-            verify(exactly = 1) { repository.investigationStream() }
-            confirmVerified(repository)
-        }
-
-    @Test
-    fun `基準をクリアすると基準が未設定に戻る`() =
-        runTest {
-            every { repository.investigationStream() } returns dataFlow
-            val viewModel = createViewModel()
-            backgroundScope.launch { viewModel.uiState.collect {} }
-            dataFlow.update { first }
-            viewModel.uiState.first { it.current == first }
-            viewModel.onBaselineSet()
-            viewModel.uiState.first { it.baseline == first }
-
-            viewModel.onBaselineCleared()
-
-            assertNull(viewModel.uiState.first().baseline)
-            verify(exactly = 1) { repository.investigationStream() }
-            confirmVerified(repository)
+            val state = viewModel.uiState.first { it.remaining != null }
+            val frontLeft = state.remaining?.wheels?.get(WheelIndex.FRONT_LEFT)
+            assertEquals(50, frontLeft?.remainingPercent)
+            assertEquals(BrakeThicknessMeters(0.0305f), frontLeft?.thickness)
+            verify(exactly = 1) { wearRepository.brakeWearStream() }
+            verify(exactly = 1) { classRepository.vehicleClassStream() }
+            confirmVerified(wearRepository, classRepository)
         }
 }

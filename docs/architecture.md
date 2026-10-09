@@ -14,7 +14,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
 | `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-lmu-windows-data.svg) |
-| `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗の調査用に `RepairAndRefuel` / `brakeinfo` の DataSource・生値ポーリング Repository と Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |
+| `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗用に `RepairAndRefuel` の DataSource・`wearables.brakes` のポーリング Repository と Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |
 | `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |
 | `:core:ace-windows-data` | Assetto Corsa EVO Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-ace-windows-data.svg) |
 | `:core:device-volume-data` | 端末（OS）のマスター音量取得・設定のリポジトリ実装 | [図](graphs/core-device-volume-data.svg) |
@@ -49,7 +49,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-readout-remaining-virtual-energy-detail` | バーチャルエナジー残量アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-remaining-virtual-energy-detail.svg) |
 | `:feature:lmu-windows-readout-tyre-wear-detail` | タイヤ摩耗アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-tyre-wear-detail.svg) |
 | `:feature:lmu-windows-readout-brake-temperature-detail` | ブレーキ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-brake-temperature-detail.svg) |
-| `:feature:lmu-windows-readout-brake-wear-detail` | ブレーキ摩耗の実機調査用の詳細画面（LMU REST APIの`wearables.brakes`と`brakeinfo`の生値表示） | [図](graphs/feature-lmu-windows-readout-brake-wear-detail.svg) |
+| `:feature:lmu-windows-readout-brake-wear-detail` | ブレーキ摩耗の詳細画面（LMU REST APIの`wearables.brakes`から4輪の残量%と厚さを表示） | [図](graphs/feature-lmu-windows-readout-brake-wear-detail.svg) |
 | `:feature:lmu-windows-readout-pit-timing-detail` | ピットタイミングアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-pit-timing-detail.svg) |
 | `:feature:gt7-ps5-connection` | GT7 PS5 との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-gt7-ps5-connection.svg) |
 | `:feature:gt7-ps5-narrator` | GT7 PS5 向け WAV開始音・OS標準TTS本文の音声再生とアナウンス制御を担当する | [図](graphs/feature-gt7-ps5-narrator.svg) |

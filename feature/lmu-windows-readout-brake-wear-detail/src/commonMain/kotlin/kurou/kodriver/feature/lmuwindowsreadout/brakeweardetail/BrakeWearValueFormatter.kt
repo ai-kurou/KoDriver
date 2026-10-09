@@ -1,21 +1,16 @@
 package kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail
 
-import kotlin.math.abs
+import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kotlin.math.roundToLong
 
-private const val FRACTION_DIGITS = 8
-private const val SCALE = 100_000_000L
+private const val MILLIMETERS_PER_METER = 1000.0
+private const val TENTHS_PER_MILLIMETER = 10L
 
-/** 生の値の小さな変化も読み取れるよう、指数表記にならない固定小数点（小数8桁）で整形する。 */
-internal fun formatBrakeWearValue(value: Double): String {
-    val scaled = (abs(value) * SCALE).roundToLong()
-    val sign = if (value < 0.0 && scaled != 0L) "-" else ""
-    val fraction = (scaled % SCALE).toString().padStart(FRACTION_DIGITS, '0')
-    return "$sign${scaled / SCALE}.$fraction"
+/** ブレーキの厚さをミリメートル（小数1桁）で整形する。負の値は 0 として扱う。 */
+internal fun formatBrakeThicknessMillimeters(thickness: BrakeThicknessMeters): String {
+    val tenths = (thickness.value.toDouble() * MILLIMETERS_PER_METER * TENTHS_PER_MILLIMETER).roundToLong()
+    val clamped = tenths.coerceAtLeast(0L)
+    return "${clamped / TENTHS_PER_MILLIMETER}.${clamped % TENTHS_PER_MILLIMETER}"
 }
 
-/** [formatBrakeWearValue] に、増加が分かる `+` を付ける（0 に丸まる場合は付けない）。 */
-internal fun formatBrakeWearDelta(delta: Double): String {
-    val formatted = formatBrakeWearValue(delta)
-    return if (delta > 0.0 && formatted != formatBrakeWearValue(0.0)) "+$formatted" else formatted
-}
+internal fun formatBrakeWearPercent(percent: Int): String = "$percent%"

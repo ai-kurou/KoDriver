@@ -1,15 +1,10 @@
 <resources>
-    <string name="brake_wear_description">ブレーキ摩耗の調査用に、LMUのREST APIから取得した値をそのまま表示します。ブレーキ交換や周回後に値がどう変わるかを見て、どちらが摩耗を表すかを確認してください。\nデスクトップ版でLMUを起動しているときのみ取得できます。</string>
-    <string name="brake_wear_wearables_title">wearables.brakes</string>
-    <string name="brake_wear_brake_info_title">brakeinfo</string>
+    <string name="brake_wear_description">ブレーキの残量を4輪それぞれ%と厚さ（mm）で表示します。LMUのREST APIから取得するため、デスクトップ版でLMUを起動しているときのみ取得できます。\n新品時の厚さは取得できないため、観測した最大の厚さを100%とします。摩耗した状態で観測を始めた場合、実際より多く表示されます。</string>
+    <string name="brake_wear_remaining_title">ブレーキ残量</string>
     <string name="brake_wear_unavailable">取得できません</string>
-    <string name="brake_wear_wheel_row">%1$s: %2$s</string>
-    <string name="brake_wear_wheel_row_with_delta">%1$s: %2$s（基準との差 %3$s）</string>
+    <string name="brake_wear_wheel_row">%1$s: %2$s（%3$s mm）</string>
     <string name="brake_wear_wheel_front_left">FL</string>
     <string name="brake_wear_wheel_front_right">FR</string>
     <string name="brake_wear_wheel_rear_left">RL</string>
     <string name="brake_wear_wheel_rear_right">RR</string>
-    <string name="brake_wear_wheel_other">#%1$d</string>
-    <string name="brake_wear_set_baseline">現在値を基準にする</string>
-    <string name="brake_wear_clear_baseline">基準をクリア</string>
 </resources>

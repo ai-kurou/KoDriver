@@ -1,161 +1,88 @@
 package kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearInvestigationData
+import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
+import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class LmuWindowsReadoutBrakeWearDetailPaneTest {
     @get:Rule
     val rule = createComposeRule()
 
-    private val current =
-        LmuWindowsBrakeWearInvestigationData(
-            wearablesBrakes = listOf(0.036, 0.035, 0.032, 0.031),
-            brakeInfo = listOf(0.041, 0.042, 0.043, 0.044, 0.5),
+    private val remaining =
+        LmuWindowsBrakeWearRemainingData(
+            wheels =
+                mapOf(
+                    WheelIndex.FRONT_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.0305f), 50),
+                    WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.0310f), 55),
+                    WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.0330f), 73),
+                    WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.0335f), 77),
+                ),
         )
 
     @Test
-    fun `説明文と2つの取得元のタイトルが表示される`() {
+    fun `説明文とカードのタイトルが表示される`() {
         rule.setContent { KoDriverTheme { LmuWindowsReadoutBrakeWearDetailPaneContent() } }
 
         rule
             .onNodeWithText(
-                "ブレーキ摩耗の調査用に、LMUのREST APIから取得した値をそのまま表示します。" +
-                    "ブレーキ交換や周回後に値がどう変わるかを見て、どちらが摩耗を表すかを確認してください。\n" +
-                    "デスクトップ版でLMUを起動しているときのみ取得できます。",
+                "ブレーキの残量を4輪それぞれ%と厚さ（mm）で表示します。" +
+                    "LMUのREST APIから取得するため、デスクトップ版でLMUを起動しているときのみ取得できます。\n" +
+                    "新品時の厚さは取得できないため、観測した最大の厚さを100%とします。" +
+                    "摩耗した状態で観測を始めた場合、実際より多く表示されます。",
             ).assertIsDisplayed()
-        rule.onNodeWithText("wearables.brakes").assertIsDisplayed()
-        rule.onNodeWithText("brakeinfo").assertIsDisplayed()
+        rule.onNodeWithText("ブレーキ残量").assertIsDisplayed()
     }
 
     @Test
-    fun `値を取得できない場合は両方とも取得できませんと表示する`() {
+    fun `値を取得できない場合は取得できませんと表示する`() {
         rule.setContent { KoDriverTheme { LmuWindowsReadoutBrakeWearDetailPaneContent() } }
 
-        rule.onAllNodesWithText("取得できません").assertCountEquals(2)
+        rule.onNodeWithText("取得できません").assertIsDisplayed()
     }
 
     @Test
-    fun `4輪の値は輪ごとのラベルで表示し5要素目以降は番号で表示する`() {
+    fun `4輪の残量と厚さを輪ごとのラベルで表示する`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutBrakeWearDetailPaneContent(
-                    uiState = LmuWindowsReadoutBrakeWearDetailUiState(current = current),
+                    uiState = LmuWindowsReadoutBrakeWearDetailUiState(remaining = remaining),
                 )
             }
         }
 
-        rule.onNodeWithText("FL: 0.03600000").assertIsDisplayed()
-        rule.onNodeWithText("FR: 0.03500000").assertIsDisplayed()
-        rule.onNodeWithText("RL: 0.03200000").assertIsDisplayed()
-        rule.onNodeWithText("RR: 0.03100000").assertIsDisplayed()
-        rule.onNodeWithText("FL: 0.04100000").assertIsDisplayed()
-        rule.onNodeWithText("#5: 0.50000000").assertIsDisplayed()
+        rule.onNodeWithText("FL: 50%（30.5 mm）").assertIsDisplayed()
+        rule.onNodeWithText("FR: 55%（31.0 mm）").assertIsDisplayed()
+        rule.onNodeWithText("RL: 73%（33.0 mm）").assertIsDisplayed()
+        rule.onNodeWithText("RR: 77%（33.5 mm）").assertIsDisplayed()
     }
 
     @Test
-    fun `基準が設定されていると基準との差を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsReadoutBrakeWearDetailPaneContent(
-                    uiState =
-                        LmuWindowsReadoutBrakeWearDetailUiState(
-                            current = LmuWindowsBrakeWearInvestigationData(wearablesBrakes = listOf(0.034)),
-                            baseline = LmuWindowsBrakeWearInvestigationData(wearablesBrakes = listOf(0.036)),
-                        ),
-                )
-            }
-        }
-
-        rule.onNodeWithText("FL: 0.03400000（基準との差 -0.00200000）").assertIsDisplayed()
-    }
-
-    @Test
-    fun `基準側に対応する要素がない場合は差を表示しない`() {
+    fun `一部の輪の値がない場合は取得できた輪だけ表示する`() {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutBrakeWearDetailPaneContent(
                     uiState =
                         LmuWindowsReadoutBrakeWearDetailUiState(
-                            current = LmuWindowsBrakeWearInvestigationData(wearablesBrakes = listOf(0.034, 0.033)),
-                            baseline = LmuWindowsBrakeWearInvestigationData(wearablesBrakes = listOf(0.036)),
+                            remaining =
+                                LmuWindowsBrakeWearRemainingData(
+                                    wheels =
+                                        mapOf(
+                                            WheelIndex.REAR_RIGHT to remaining.wheels.getValue(WheelIndex.REAR_RIGHT),
+                                        ),
+                                ),
                         ),
                 )
             }
         }
 
-        rule.onNodeWithText("FR: 0.03300000").assertIsDisplayed()
-    }
-
-    @Test
-    fun `基準未設定ではクリアボタンが無効で設定済みなら有効になる`() {
-        var state by mutableStateOf(LmuWindowsReadoutBrakeWearDetailUiState())
-        rule.setContent {
-            KoDriverTheme { LmuWindowsReadoutBrakeWearDetailPaneContent(uiState = state) }
-        }
-        rule.onNodeWithText("基準をクリア").assertIsNotEnabled()
-
-        state = LmuWindowsReadoutBrakeWearDetailUiState(baseline = LmuWindowsBrakeWearInvestigationData())
-
-        rule.onNodeWithText("基準をクリア").assertIsEnabled()
-    }
-
-    @Test
-    fun `値を取得できていないときは基準にするボタンが無効で片方でも取得できれば有効になる`() {
-        var state by mutableStateOf(LmuWindowsReadoutBrakeWearDetailUiState())
-        rule.setContent {
-            KoDriverTheme { LmuWindowsReadoutBrakeWearDetailPaneContent(uiState = state) }
-        }
-        rule.onNodeWithText("現在値を基準にする").assertIsNotEnabled()
-
-        state =
-            LmuWindowsReadoutBrakeWearDetailUiState(
-                current = LmuWindowsBrakeWearInvestigationData(brakeInfo = listOf(0.036)),
-            )
-        rule.onNodeWithText("現在値を基準にする").assertIsEnabled()
-
-        state =
-            LmuWindowsReadoutBrakeWearDetailUiState(
-                current = LmuWindowsBrakeWearInvestigationData(wearablesBrakes = listOf(0.036)),
-            )
-        rule.onNodeWithText("現在値を基準にする").assertIsEnabled()
-    }
-
-    @Test
-    fun `ボタン押下でコールバックが呼ばれる`() {
-        var setCount = 0
-        var clearedCount = 0
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsReadoutBrakeWearDetailPaneContent(
-                    uiState =
-                        LmuWindowsReadoutBrakeWearDetailUiState(
-                            current = current,
-                            baseline = LmuWindowsBrakeWearInvestigationData(),
-                        ),
-                    onBaselineSet = { setCount++ },
-                    onBaselineCleared = { clearedCount++ },
-                )
-            }
-        }
-
-        rule.onNodeWithText("現在値を基準にする").performClick()
-        rule.onNodeWithText("基準をクリア").performClick()
-
-        assertEquals(1, setCount)
-        assertEquals(1, clearedCount)
+        rule.onNodeWithText("RR: 77%（33.5 mm）").assertIsDisplayed()
+        rule.onNodeWithText("FL: 50%（30.5 mm）").assertDoesNotExist()
     }
 }

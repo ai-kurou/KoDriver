@@ -9,7 +9,10 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearInvestigationData
+import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
+import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Test
 
 class LmuWindowsReadoutBrakeWearDetailPaneScreenshotTest {
@@ -29,7 +32,7 @@ class LmuWindowsReadoutBrakeWearDetailPaneScreenshotTest {
         }
 
     @Test
-    fun `基準との差を表示する`() =
+    fun `4輪の残量を表示する`() =
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
@@ -38,15 +41,15 @@ class LmuWindowsReadoutBrakeWearDetailPaneScreenshotTest {
                             LmuWindowsReadoutBrakeWearDetailPaneContent(
                                 uiState =
                                     LmuWindowsReadoutBrakeWearDetailUiState(
-                                        current =
-                                            LmuWindowsBrakeWearInvestigationData(
-                                                wearablesBrakes = listOf(0.034, 0.033, 0.03, 0.029),
-                                                brakeInfo = listOf(0.036, 0.036, 0.032, 0.032),
-                                            ),
-                                        baseline =
-                                            LmuWindowsBrakeWearInvestigationData(
-                                                wearablesBrakes = listOf(0.036, 0.035, 0.032, 0.031),
-                                                brakeInfo = listOf(0.036, 0.036, 0.032, 0.032),
+                                        remaining =
+                                            LmuWindowsBrakeWearRemainingData(
+                                                wheels =
+                                                    mapOf(
+                                                        WheelIndex.FRONT_LEFT to wheel(0.0305f, 50),
+                                                        WheelIndex.FRONT_RIGHT to wheel(0.0310f, 55),
+                                                        WheelIndex.REAR_LEFT to wheel(0.0330f, 73),
+                                                        WheelIndex.REAR_RIGHT to wheel(0.0335f, 77),
+                                                    ),
                                             ),
                                     ),
                             )
@@ -56,4 +59,9 @@ class LmuWindowsReadoutBrakeWearDetailPaneScreenshotTest {
             }
             onRoot().captureRoboImage()
         }
+
+    private fun wheel(
+        thickness: Float,
+        percent: Int,
+    ) = LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(thickness), percent)
 }
