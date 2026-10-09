@@ -49,9 +49,49 @@ jobs:
           JST_DATE: ${{ steps.jst.outputs.date }}
           JST_WEEKDAY: ${{ steps.jst.outputs.weekday }}
         run: |
-          python3 scripts/nightly_todo.py \
-            --date "$JST_DATE" --weekday "$JST_WEEKDAY" \
-            --output-dir "$RUNNER_TEMP/nightly-todo"
+          diagnostics="$RUNNER_TEMP/nightly-todo"
+          mkdir -p "$diagnostics"
+          printf '# 夜間調査: 未完了\n\n実行中、または結果を取得できませんでした。\n' > "$diagnostics/summary.md"
+          prompt="$(cat <<PROMPT
+          KoDriverの夜間調査を行ってください。日付: ${JST_DATE}、JST曜日: ${JST_WEEKDAY}。
+          docs/nightly-todo-list.mdを読み、毎晩実行する全項目と当日の曜日ローテーション項目だけを調査してください。
+          ページ送り・日時判定・いいね数など、同ドキュメントの共通ルールも遵守してください。
+          改善案は対象コードを読んで適用可能性を確認し、gh issue list --state all --searchで重複を確認します。
+          必要ならgh issue viewで本文を確認し、重複がなければgh issue createで日本語のIssueをラベルなしで起票します。
+          このバッチはユーザーが承認したIssue起票の自動処理です。起票の追加確認は不要です。
+          リポジトリのファイルは変更しません。承認が必要になった場合は人間の返答を求めずblockedを報告してください。
+          全対象項目の調査が完了した場合のみstatusをcompletedとし、未調査・アクセス失敗・承認待ちがあればblockedにしてください。
+          summaryには各項目の確認内容、起票した/しなかった判断と理由（起票した場合は番号）を記入してください。
+          Zenn・Qiitaで過去24時間以内に確認した全記事のURLと1行要約も含めてください。
+          issue_urlsは今回実際に起票したIssueのURLだけとし、起票ゼロなら空配列にしてください。
+          PROMPT
+          )"
+          schema='{"type":"object","additionalProperties":false,"properties":{"status":{"type":"string","enum":["completed","blocked"]},"summary":{"type":"string","minLength":1},"issue_urls":{"type":"array","items":{"type":"string"}}},"required":["status","summary","issue_urls"]}'
+          exit_code=0
+          claude -p "$prompt" \
+            --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Bash(gh issue list:*),Bash(gh issue view:*),Bash(gh issue create:*),Bash(gh run list:*),Bash(gh api repos/*/actions/runs*)" \
+            --disallowedTools "Edit,Write" \
+            --permission-mode dontAsk \
+            --model sonnet --effort low \
+            --output-format json --json-schema "$schema" \
+            > "$diagnostics/response.json" 2> "$diagnostics/stderr.log" || exit_code=$?
+          printf '%s\n' "$exit_code" > "$diagnostics/exit-code.txt"
+          if [ "$exit_code" -ne 0 ] || ! jq -e -s '
+            length == 1 and (.[0] | type == "object" and .type == "result" and .subtype == "success" and .is_error == false
+            and ((.permission_denials // []) | length == 0)
+            and (.structured_output | type == "object"
+              and .status == "completed"
+              and (.summary | type == "string" and test("\\S"))
+              and (.issue_urls | type == "array"
+                and all(.[]; type == "string" and test("^https://github.com/ai-kurou/KoDriver/issues/[0-9]+$"))
+                and length == (unique | length))))
+          ' "$diagnostics/response.json" > /dev/null; then
+            printf '# 夜間調査: 未完了\n\nCLI終了コード: %s。エラー・権限拒否・結果欠落・未完了の有無は診断Artifactを確認してください。\n\n起票件数: 未確認（途中で起票された可能性があります）。\n' "$exit_code" > "$diagnostics/summary.md"
+            echo "::error::Nightly investigation did not complete successfully"
+            exit 1
+          fi
+          jq -r '.structured_output | "# 夜間調査: 完了\n\n起票件数: \(.issue_urls | length)\n\n\(.summary)\n\n## 起票Issue\n" + (if (.issue_urls | length) == 0 then "なし" else (.issue_urls | join("\n")) end)' \
+            "$diagnostics/response.json" > "$diagnostics/summary.md"
 
       - name: Verify no repository files changed
         if: always()
