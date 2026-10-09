@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -201,27 +203,29 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun PriorityHintSheetContent(modifier: Modifier = Modifier) {
-    Text(
-        text = stringResource(Res.string.priority_hint_description),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.padding(horizontal = KoDriverSpacing.large),
-    )
-    Text(
-        text = stringResource(Res.string.queue_hint_description),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = KoDriverSpacing.large).padding(top = KoDriverSpacing.small),
-    )
-    Text(
-        text = stringResource(Res.string.start_sound_hint_description),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier =
-            Modifier
-                .padding(horizontal = KoDriverSpacing.large)
-                .padding(top = KoDriverSpacing.small, bottom = KoDriverSpacing.extraLarge),
-    )
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+        Text(
+            text = stringResource(Res.string.priority_hint_description),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
+        )
+        Text(
+            text = stringResource(Res.string.queue_hint_description),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = KoDriverSpacing.large).padding(top = KoDriverSpacing.small),
+        )
+        Text(
+            text = stringResource(Res.string.start_sound_hint_description),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier =
+                Modifier
+                    .padding(horizontal = KoDriverSpacing.large)
+                    .padding(top = KoDriverSpacing.small, bottom = KoDriverSpacing.extraLarge),
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

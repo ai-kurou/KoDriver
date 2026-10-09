@@ -83,7 +83,7 @@ class OtherListPaneTest {
             )
         }
 
-        rule.onNodeWithText("読み上げた内容を、最前面の小さなウィンドウに表示します").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ内容（順番待ちを含む）を、最前面の小さなウィンドウに表示します").assertIsDisplayed()
         rule.onNode(hasText("オーバーレイを表示")).performClick()
 
         assertEquals(false, overlayVisible)
@@ -109,7 +109,7 @@ class OtherListPaneTest {
             )
         }
 
-        rule.onNodeWithText("読み上げた内容を、最前面の小さなウィンドウに表示します").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ内容（順番待ちを含む）を、最前面の小さなウィンドウに表示します").assertIsDisplayed()
         rule.onNode(hasText("オーバーレイを表示")).performClick()
 
         assertEquals(true, overlayVisible)
