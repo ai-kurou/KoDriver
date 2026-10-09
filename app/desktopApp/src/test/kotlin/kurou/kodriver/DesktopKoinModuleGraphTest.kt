@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
+import kurou.kodriver.core.lmuwindowsrestapidata.lmuWindowsRestApiDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.desktopDataModule
@@ -52,6 +53,7 @@ import kotlin.test.assertNotNull
  * ときに追随して更新すること。
  *
  * 以下の実体はダミー実装で置き換える（`AppTest` と同じ方針。理由は各項目のコメントを参照）。
+ * - `:core:lmu-windows-rest-api-data` の `lmuWindowsRestApiDataModule` は実体をそのまま使う（HttpClient を生成するだけで通信しない）。
  * - `:core:lmu-windows-data` の `lmuWindowsDataModule` → `fakeLmuWindowsNarratorModule`（`AppTest` でも使用）。
  * - `:core:ace-windows-data` の `aceWindowsDataModule` → このファイル内のダミー実装。
  *   どちらも共有メモリ読み取り用の JNA（kernel32）バインディングが、コンストラクタのデフォルト引数
@@ -167,6 +169,7 @@ class DesktopKoinModuleGraphTest {
                 deviceVolumeDataModule,
                 textToSpeechDataModule,
                 windowsStartupDataModule,
+                lmuWindowsRestApiDataModule,
             ) +
                 featureModules +
                 listOf(

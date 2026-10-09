@@ -4,7 +4,7 @@ Le Mans Ultimateが内蔵するローカルREST API（`http://localhost:6397`）
 
 ## 現状
 
-`GET /rest/garage/UIScreen/RepairAndRefuel` から `wearables.brakes`（ブレーキ残り厚さ、4輪、単位: meters）を取得する DataSource（`LmuWindowsRestApiRepairAndRefuelDataSource`）と、ドメインモデル `LmuWindowsBrakeWearData` へ変換する Mapper（`LmuWindowsRestApiBrakeWearMapper`）を実装済み。Repository・UseCase・Koinモジュールは未実装。
+`GET /rest/garage/UIScreen/RepairAndRefuel` から `wearables.brakes`（ブレーキ残り厚さ、4輪、単位: meters）を取得する DataSource（`LmuWindowsRestApiRepairAndRefuelDataSource`）と、ドメインモデル `LmuWindowsBrakeWearData` へ変換する Mapper（`LmuWindowsRestApiBrakeWearMapper`）を実装済み。加えて、実機調査用に `GET /rest/garage/brakeinfo` の DataSource（`LmuWindowsRestApiBrakeInfoDataSource`）と、両エンドポイントの生の配列値を1秒間隔でポーリングする `LmuWindowsRestApiBrakeWearInvestigationRepository`、Koinモジュール（`lmuWindowsRestApiDataModule`。デスクトップ版のみで束ねる）を実装済み。ブレーキ摩耗として読み上げに使う Repository・UseCase は、摩耗を表す値が確定してから実装する。
 
 LMU の REST API は `Content-Type: text/plain`（charset なし）で返すため、DataSource はボディを文字列として読み取り自前で JSON デコードする。調査結果・エンドポイント仕様は [`docs/lmu-windows-rest-api.md`](../../docs/lmu-windows-rest-api.md) を参照。
 

@@ -20,13 +20,16 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.data.desktopDataModule
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearInvestigationData
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.repository.LmuWindowsBrakeWearInvestigationRepository
 import kurou.kodriver.feature.gt7ps5narrator.fakeGt7Ps5DataModule
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.main.fakeMainModule
@@ -48,6 +51,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import kotlin.test.BeforeTest
 
 class AppTest {
@@ -79,6 +83,14 @@ class AppTest {
                             fakeOtherVolumeDetailModule,
                             fakeOtherVoiceDetailModule,
                             fakeOtherListModule,
+                            module {
+                                single<LmuWindowsBrakeWearInvestigationRepository> {
+                                    object : LmuWindowsBrakeWearInvestigationRepository {
+                                        override fun investigationStream() =
+                                            flowOf(LmuWindowsBrakeWearInvestigationData())
+                                    }
+                                }
+                            },
                         ),
                 )
             }
@@ -124,7 +136,12 @@ class AppTest {
                 "読み上げる文言は下の欄で設定できます。",
         )
         scrollToItem("ブレーキ摩耗")
-        waitUntilDisplayed("ブレーキ摩耗")
+        clickItemAndVerifyDescription(
+            "ブレーキ摩耗",
+            "ブレーキ摩耗の調査用に、LMUのREST APIから取得した値をそのまま表示します。" +
+                "ブレーキ交換や周回後に値がどう変わるかを見て、どちらが摩耗を表すかを確認してください。\n" +
+                "デスクトップ版でLMUを起動しているときのみ取得できます。",
+        )
         scrollToItem("車両接近")
         clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
         scrollToItem("ピットタイミング")
