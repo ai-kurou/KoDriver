@@ -172,6 +172,8 @@ class ReadoutListViewModel(
     fun onItemSelected(item: ReadoutItemKey) {
         val simulator = _selectedSimulator.value
         val type = ReadoutListItemType.fromId(simulator, item) ?: return
+        // ブレーキ摩耗の detailPane は未実装のため、空画面への遷移を避けて選択しない。
+        if (type == ReadoutListItemType.LmuWindows.BrakeWear) return
         _selectedItem.update { if (it == type) null else type }
     }
 

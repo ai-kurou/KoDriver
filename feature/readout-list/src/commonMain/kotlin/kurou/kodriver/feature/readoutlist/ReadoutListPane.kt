@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.PlaylistRemove
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.ButtonDefaults
@@ -127,6 +128,7 @@ private fun lmuWindowsItemIcon(itemId: ReadoutItemKey.LmuWindows): ImageVector =
         is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.LmuWindows.TyreWear -> Icons.Filled.DonutLarge
         is ReadoutItemKey.LmuWindows.BrakeTemperature -> Icons.Filled.DeviceThermostat
+        is ReadoutItemKey.LmuWindows.BrakeWear -> Icons.Filled.Speed
         is ReadoutItemKey.LmuWindows.MyBestLap -> Icons.Filled.Timer
     }
 

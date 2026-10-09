@@ -133,6 +133,9 @@ data class TyreTemperatureReadoutInput(
 
 /**
  * LMU の共有メモリ由来データから、今回読み上げるべき音声イベントを決定する UseCase。
+ *
+ * ブレーキ摩耗（[ReadoutItemKey.LmuWindows.BrakeWear.Root]）は listPane への項目追加のみ対応済みで、
+ * 読み上げ判定はこのUseCaseにまだ配線していない（follow-up PRで対応予定）。
  */
 @Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCase {

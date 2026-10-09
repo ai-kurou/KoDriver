@@ -73,3 +73,5 @@ LMUの全自由文字列イベント（フラッグ・車両接近・ピット�
 `LmuWindowsNarratorModule` は `isCustomSpeakEvent = { it is ReadoutTextEvent }` で対象を判定する。
 ピットタイミングの周回ゲートとソース選択は本文ではなく `laps` を使い続ける。
 読み上げ済みの周回数は、ソース選択と周回ゲートを通過した警告のみViewModelで記録する。
+
+LMUブレーキ摩耗（`ReadoutItemKey.LmuWindows.BrakeWear.Root`）は listPane のスイッチ（既定OFF）・開始音（既定ON）・キュー（既定ON）の設定永続化のみ対応する。detailPane・Narratorの読み上げ判定・SpeechEvent・RESTは未配線で、follow-up PRで対応予定。

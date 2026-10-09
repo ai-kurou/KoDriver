@@ -123,6 +123,8 @@ class AppTest {
                 "一度警告を読み上げた後は、4輪すべてが閾値より約100℃低い温度まで下がるまで再度読み上げません。\n" +
                 "読み上げる文言は下の欄で設定できます。",
         )
+        scrollToItem("ブレーキ摩耗")
+        waitUntilDisplayed("ブレーキ摩耗")
         scrollToItem("車両接近")
         clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
         scrollToItem("ピットタイミング")

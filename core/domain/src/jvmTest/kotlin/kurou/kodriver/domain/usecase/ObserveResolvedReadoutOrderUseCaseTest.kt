@@ -52,4 +52,17 @@ class ObserveResolvedReadoutOrderUseCaseTest {
             verify(exactly = 1) { repository.observeReadoutOrder(Simulator.Gt7Ps5.id) }
             confirmVerified(repository)
         }
+
+    @Test
+    fun `LMUの保存済み順序にブレーキ摩耗がなければ末尾に補完する`() =
+        runTest {
+            val persisted = defaultReadoutOrder(Simulator.LmuWindows) - ReadoutItemKey.LmuWindows.BrakeWear.Root
+            every { repository.observeReadoutOrder(Simulator.LmuWindows.id) } returns flowOf(persisted)
+
+            val result = useCase(Simulator.LmuWindows).first()
+
+            assertEquals(persisted + ReadoutItemKey.LmuWindows.BrakeWear.Root, result)
+            verify(exactly = 1) { repository.observeReadoutOrder(Simulator.LmuWindows.id) }
+            confirmVerified(repository)
+        }
 }

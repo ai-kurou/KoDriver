@@ -10,6 +10,15 @@ class ReadoutOrderDefaultsTest {
 
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root, order.first())
         assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, order.last())
+        assertEquals(
+            listOf(
+                ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                ReadoutItemKey.LmuWindows.BrakeWear.Root,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+            ),
+            order.drop(6),
+        )
         assertEquals(ReadoutItemKey.entries.filterIsInstance<ReadoutItemKey.LmuWindows.TopLevel>().size, order.size)
     }
 
