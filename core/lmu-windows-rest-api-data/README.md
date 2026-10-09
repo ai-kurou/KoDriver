@@ -4,7 +4,9 @@ Le Mans Ultimateが内蔵するローカルREST API（`http://localhost:6397`）
 
 ## 現状
 
-天気予報（`/rest/sessions/weather`）の実装（UseCase・Repository・DataSource・Mapper・Koinモジュール）は削除済み。本モジュールには現時点で実装コードが無い。調査結果・エンドポイント仕様は [`docs/lmu-windows-rest-api.md`](../../docs/lmu-windows-rest-api.md) を参照。
+`GET /rest/garage/UIScreen/RepairAndRefuel` から `wearables.brakes`（ブレーキ残り厚さ、4輪、単位: meters）を取得する DataSource（`LmuWindowsRestApiRepairAndRefuelDataSource`）と、ドメインモデル `LmuWindowsBrakeWearData` へ変換する Mapper（`LmuWindowsRestApiBrakeWearMapper`）を実装済み。Repository・UseCase・Koinモジュールは未実装。
+
+LMU の REST API は `Content-Type: text/plain`（charset なし）で返すため、DataSource はボディを文字列として読み取り自前で JSON デコードする。調査結果・エンドポイント仕様は [`docs/lmu-windows-rest-api.md`](../../docs/lmu-windows-rest-api.md) を参照。
 
 ## 想定する依存関係
 
