@@ -11,6 +11,7 @@ import kurou.kodriver.domain.model.SOUND_VOLUME_DEFAULT
 import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
+import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 
 /**
  * OtherList 画面の表示状態。
@@ -32,6 +33,7 @@ data class OtherListUiState(
     val deviceVolume: Int = DEVICE_VOLUME_MIN,
     val readoutStartSoundType: ReadoutStartSoundType = READOUT_START_SOUND_TYPE_DEFAULT,
     val voiceId: String = VOICE_ID_UNSPECIFIED,
+    val voiceSpeed: Float = VOICE_SPEED_DEFAULT,
     val themeMode: ThemeMode = THEME_MODE_DEFAULT,
     val ttsUnavailableGuidance: TtsUnavailableGuidance? = null,
     val startupEnabled: Boolean = false,

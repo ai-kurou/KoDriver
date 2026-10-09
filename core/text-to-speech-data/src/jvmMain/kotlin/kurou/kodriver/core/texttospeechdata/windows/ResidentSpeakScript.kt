@@ -2,6 +2,8 @@ package kurou.kodriver.core.texttospeechdata.windows
 
 import kurou.kodriver.domain.model.TTS_CULTURE_NAME
 import java.util.Base64
+import kotlin.math.ln
+import kotlin.math.roundToInt
 
 /** 常駐スクリプトが読み上げ完了（または中断）ごとに標準出力へ書く応答行。 */
 internal const val SPEAK_RESPONSE_DONE = "DONE"
@@ -13,7 +15,7 @@ internal const val SPEAK_REQUEST_STOP = "STOP"
  * 常駐PowerShellプロセスで実行するスクリプトを組み立てる。
  *
  * `SpeechSynthesizer` を1度だけ生成して使い回し、標準入力から次の要求行を受け取る。
- * - `SPEAK <音量> <音声IDのBase64> <テキストのBase64>`: 読み上げて、完了後に [SPEAK_RESPONSE_DONE] を出力する。
+ * - `SPEAK <音量> <Rate> <音声IDのBase64> <テキストのBase64>`: 読み上げて、完了後に [SPEAK_RESPONSE_DONE] を出力する。
  *   音声IDが空なら日本語音声を選び、指定音声が選べない場合も日本語音声へフォールバックする。
  * - [SPEAK_REQUEST_STOP]: 読み上げ中なら打ち切る（打ち切られた読み上げも [SPEAK_RESPONSE_DONE] を出力する）。
  *   読み上げ中でなければ無視する。
@@ -46,8 +48,9 @@ internal fun buildResidentSpeakScript(): String =
         try {
             ${'$'}parts = ${'$'}line.Split(' ')
             ${'$'}s.Volume = [int]${'$'}parts[1]
-            ${'$'}voiceId = ${'$'}utf8.GetString([Convert]::FromBase64String(${'$'}parts[2]))
-            ${'$'}text = ${'$'}utf8.GetString([Convert]::FromBase64String(${'$'}parts[3]))
+            ${'$'}s.Rate = [int]${'$'}parts[2]
+            ${'$'}voiceId = ${'$'}utf8.GetString([Convert]::FromBase64String(${'$'}parts[3]))
+            ${'$'}text = ${'$'}utf8.GetString([Convert]::FromBase64String(${'$'}parts[4]))
             if (${'$'}voiceId.Length -eq 0) { Select-JaVoice } else { try { ${'$'}s.SelectVoice(${'$'}voiceId) } catch { Select-JaVoice } }
             Get-Event -SourceIdentifier KoDriverSpeakDone -ErrorAction SilentlyContinue | Remove-Event
             ${'$'}s.SpeakAsync(${'$'}text) | Out-Null
@@ -80,9 +83,13 @@ internal fun buildSpeakRequest(
     text: String,
     volume: Int,
     voiceId: String,
+    rate: Int,
 ): String {
     val encoder = Base64.getEncoder()
-    return "SPEAK $volume " +
+    return "SPEAK $volume $rate " +
         encoder.encodeToString(voiceId.toByteArray(Charsets.UTF_8)) + " " +
         encoder.encodeToString(text.toByteArray(Charsets.UTF_8))
 }
+
+/** 倍率をSAPIの対数スケールの速度（-10〜10）へ変換する。 */
+internal fun speedToSapiRate(speed: Float): Int = (10 * ln(speed.toDouble()) / ln(3.0)).roundToInt().coerceIn(-10, 10)

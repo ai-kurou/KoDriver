@@ -104,6 +104,7 @@ import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoun
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
 import kurou.kodriver.feature.othervoicedetail.OtherVoiceDetailPane
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPane
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
@@ -320,6 +321,10 @@ private fun DefaultOtherContent(
 
                 OtherListItemType.Volume -> {
                     OtherVolumeDetailPane(canNavigateBack, onBack)
+                }
+
+                OtherListItemType.VoiceSpeed -> {
+                    OtherVoiceSpeedDetailPane(canNavigateBack, onBack)
                 }
 
                 OtherListItemType.Voice -> {

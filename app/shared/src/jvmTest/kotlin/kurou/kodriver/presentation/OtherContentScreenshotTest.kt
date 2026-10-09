@@ -22,6 +22,8 @@ import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPaneContent
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailUiState
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPaneContent
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailUiState
 import org.junit.Test
@@ -76,6 +78,36 @@ class OtherContentScreenshotTest {
                                     if (itemType == OtherListItemType.Volume) {
                                         OtherVolumeDetailPaneContent(
                                             uiState = OtherVolumeDetailUiState(volume = 80),
+                                            canNavigateBack = canNavigateBack,
+                                            onBack = onBack,
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `読み上げ速度詳細を表示`() =
+        composeScreenshotTest {
+            setContent {
+                AppTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                            OtherContent(
+                                uiState = OtherListUiState(selectedItem = OtherListItemType.VoiceSpeed),
+                                onItemSelected = {},
+                                onClearSelectedItem = {},
+                                scaffoldDirective = twoPaneDirective,
+                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                    if (itemType == OtherListItemType.VoiceSpeed) {
+                                        OtherVoiceSpeedDetailPaneContent(
+                                            uiState = OtherVoiceSpeedDetailUiState(),
                                             canNavigateBack = canNavigateBack,
                                             onBack = onBack,
                                         )

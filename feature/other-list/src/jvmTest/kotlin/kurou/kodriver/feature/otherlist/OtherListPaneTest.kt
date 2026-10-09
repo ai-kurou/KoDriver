@@ -40,6 +40,29 @@ class OtherListPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `読み上げ速度をタップするとハプティックフィードバックを発生させる`() {
+        val haptic = FakeHapticFeedback()
+
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherListPane(
+                    uiState = OtherListUiState(items = listOf(OtherListItemType.VoiceSpeed)),
+                    onItemClick = {},
+                    onOverlayVisibleChange = {},
+                    onKeepScreenOnChange = {},
+                    onDynamicColorEnabledChange = {},
+                    onHapticFeedbackEnabledChange = {},
+                    onStartupEnabledChange = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("読み上げ速度").performClick()
+
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
+    }
+
+    @Test
     fun `通常項目をクリックすると項目クリックコールバックを呼ぶ`() {
         var clickedItem: OtherListItemType? = null
 

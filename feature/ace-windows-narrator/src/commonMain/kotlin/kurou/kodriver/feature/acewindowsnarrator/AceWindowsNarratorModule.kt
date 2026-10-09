@@ -46,6 +46,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
@@ -67,10 +68,11 @@ import org.koin.dsl.module
  *   それらが束ねる各ドメイン UseCase、および
  *   named(Simulator.AceWindows.id) の音声再生系（PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・
  *   TextToSpeechEngine・SpeakTextUseCase・
- *   ObserveVoiceUseCase・CheckTextToSpeechAvailableUseCase・フラッグ・車両接近・タイヤ過熱・燃料残量・残り周回数・自己ベストラップ文言Observe UseCase）、
+ *   ObserveVoiceUseCase・ObserveVoiceSpeedUseCase・CheckTextToSpeechAvailableUseCase・フラッグ・車両接近・タイヤ過熱・燃料残量・残り周回数・自己ベストラップ文言Observe UseCase）、
  *   および自由文言TTSの AceWindowsReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）・TextToSpeechRepository（:core:text-to-speech-data）。
+ * 音声・速度設定の VoicePreferencesRepository・VoiceSpeedPreferencesRepository（:core:data）を消費する。
  * 音声系は LMU/GT7 と区別するため named(Simulator.AceWindows.id) で登録している。
  */
 @OptIn(ExperimentalResourceApi::class)
@@ -137,8 +139,11 @@ val aceWindowsNarratorModule: Module =
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsMyBestLapReadoutTextUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { ObserveVoiceUseCase(get()) }
+        factory(named(Simulator.AceWindows.id)) { ObserveVoiceSpeedUseCase(get()) }
         factory(named(Simulator.AceWindows.id)) { CheckTextToSpeechAvailableUseCase(get()) }
-        factory(named(Simulator.AceWindows.id)) { SpeakTextUseCase(get(), get(named(Simulator.AceWindows.id))) }
+        factory(named(Simulator.AceWindows.id)) {
+            SpeakTextUseCase(get(), get(named(Simulator.AceWindows.id)), get(named(Simulator.AceWindows.id)))
+        }
         factory {
             AceWindowsReadoutTextSpeaker(
                 get(named(Simulator.AceWindows.id)),
