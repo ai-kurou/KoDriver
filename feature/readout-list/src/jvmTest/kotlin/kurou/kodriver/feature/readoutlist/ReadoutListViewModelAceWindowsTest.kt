@@ -49,7 +49,7 @@ class ReadoutListViewModelAceWindowsTest {
     }
 
     @Test
-    fun `ace_windowsを選択するとlistPaneにフラッグと車両接近とタイヤ温度と燃料残量と燃料残り周回数と自己ベストラップアイテムが表示される`() =
+    fun `ace_windowsを選択するとlistPaneにフラッグと車両接近と燃料残り周回数と燃料残量とタイヤ温度と自己ベストラップアイテムが表示される`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.AceWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -71,9 +71,9 @@ class ReadoutListViewModelAceWindowsTest {
                 listOf(
                     ReadoutItemKey.AceWindows.Flag.Root,
                     ReadoutItemKey.AceWindows.VehicleApproach.Root,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root,
-                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
                     ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    ReadoutItemKey.AceWindows.TyreTemperature.Root,
                     ReadoutItemKey.AceWindows.MyBestLap.Root,
                 ),
                 state.items,
