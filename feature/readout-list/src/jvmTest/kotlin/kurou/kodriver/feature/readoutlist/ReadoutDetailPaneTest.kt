@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.ui.Modifier
@@ -43,6 +44,25 @@ class ReadoutDetailPaneTest {
 
         rule.onNodeWithText("フラッグ").assertIsDisplayed()
         rule.onNodeWithText("詳細内容").assertIsDisplayed()
+    }
+
+    @Test
+    fun `バナーの項目名はrootItemNameで指定できる`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutDetailPane(
+                    title = "タイトル",
+                    canNavigateBack = true,
+                    onBack = {},
+                    rootEnabled = false,
+                    rootItemName = "タイヤ温度",
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        rule.onNodeWithText("「タイヤ温度」がOFFのため、読み上げられません").assertIsDisplayed()
     }
 
     @Test
@@ -129,6 +149,89 @@ class ReadoutDetailPaneTest {
         rule.onNode(hasScrollAction()).performTouchInput { swipeDown() }
         rule.waitForIdle()
         assertEquals(0f, scrollBehavior.state.heightOffset)
+    }
+
+    @Test
+    fun `rootEnabledがtrueの場合はバナーを表示しない`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutDetailPane(
+                    title = "タイヤ温度",
+                    canNavigateBack = true,
+                    onBack = {},
+                    rootEnabled = true,
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        rule.onNodeWithText("「タイヤ温度」がOFFのため、読み上げられません").assertDoesNotExist()
+        rule.onNodeWithText("ONにする").assertDoesNotExist()
+        rule.onNodeWithText("詳細内容").assertIsDisplayed()
+    }
+
+    @Test
+    fun `rootEnabledがfalseの場合はバナーを表示し内容も表示し続ける`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutDetailPane(
+                    title = "タイヤ温度",
+                    canNavigateBack = true,
+                    onBack = {},
+                    rootEnabled = false,
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        rule.onNodeWithText("「タイヤ温度」がOFFのため、読み上げられません").assertIsDisplayed()
+        rule.onNodeWithText("ONにする").assertIsDisplayed()
+        rule.onNodeWithText("詳細内容").assertIsDisplayed()
+    }
+
+    @Test
+    fun `ONにするをタップするとonEnableRootが呼ばれる`() {
+        var enableCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutDetailPane(
+                    title = "タイヤ温度",
+                    canNavigateBack = true,
+                    onBack = {},
+                    rootEnabled = false,
+                    onEnableRoot = { enableCount++ },
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        rule.onNodeWithText("ONにする").performClick()
+
+        assertEquals(1, enableCount)
+    }
+
+    @Test
+    fun `rootEnabledがfalseでも内容の操作は可能`() {
+        var clickCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutDetailPane(
+                    title = "タイヤ温度",
+                    canNavigateBack = true,
+                    onBack = {},
+                    rootEnabled = false,
+                ) {
+                    TextButton(onClick = { clickCount++ }) { Text("試聴") }
+                }
+            }
+        }
+
+        rule.onNodeWithText("試聴").performClick()
+
+        assertEquals(1, clickCount)
     }
 
     private companion object {

@@ -11,4 +11,6 @@
     <string name="queue_toggle_description">キュー</string>
     <string name="scroll_to_top">先頭へ</string>
     <string name="navigate_back">戻る</string>
+    <string name="root_disabled_banner_message">「%1$s」がOFFのため、読み上げられません</string>
+    <string name="root_disabled_banner_enable">ONにする</string>
 </resources>

@@ -33,6 +33,7 @@ import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.readoutEnabled
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -181,8 +182,11 @@ internal fun ReadoutContent(
                 Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
                     ReadoutDetailPane(
                         title = itemDisplayName(selectedItem.id),
+                        rootItemName = itemDisplayName(selectedItem.id),
                         canNavigateBack = navigator.canNavigateBack(),
                         onBack = { navigateBack() },
+                        rootEnabled = uiState.readoutEnabledStates.readoutEnabled(selectedItem.id),
+                        onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
                         content = { detailContent(selectedItem) },
                     )
                 }
