@@ -55,6 +55,17 @@ class WindowsTextToSpeechRepositoryTest {
             assertNull(repository.unavailableReason())
 
             assertEquals(1, synthesizer.isAvailableCallCount)
+            assertEquals(1, synthesizer.warmUpCount)
+        }
+
+    @Test
+    fun `利用できない間は読み上げの準備を行わない`() =
+        runTest {
+            val synthesizer = FakeWindowsSpeechSynthesizer(available = false)
+
+            WindowsTextToSpeechRepository(synthesizer, isWindows = true).isAvailable()
+
+            assertEquals(0, synthesizer.warmUpCount)
         }
 
     @Test

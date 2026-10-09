@@ -6,8 +6,12 @@ OS標準の音声合成（TTS）で任意のテキストを読み上げるReposi
 
 - jvmMain: PowerShellの`System.Speech.Synthesis.SpeechSynthesizer`経由でWindows標準の音声合成（SAPI）を呼び出す
   `WindowsTextToSpeechRepository`。JVMには音声合成の標準APIが無く、SAPIのCOMインターフェースをJNAで直接扱うには
-  型ライブラリのバインディングが必要になるため、1回の読み上げごとにPowerShellプロセスを起動し、読み上げの中断は
-  プロセスの破棄で行う（`SapiSpeechSynthesizer`）。非Windowsでは`isAvailable()`が`false`を返し、読み上げも行わない。
+  型ライブラリのバインディングが必要になるため、PowerShellプロセスを1つ常駐させて`SpeechSynthesizer`を使い回す
+  （`SapiSpeechSynthesizer`、`ResidentSpeechSession`）。読み上げごとにプロセスを起動するとPowerShellと.NETの起動・
+  `System.Speech`のロードが毎回かかって発話が遅れるため。標準入力へ`SPEAK <音量> <音声IDのBase64> <テキストのBase64>`の
+  要求行を送り、完了（打ち切りを含む）は標準出力の`DONE`行で受け取る。読み上げの中断は`STOP`行で行い、
+  常駐プロセスが終了していれば次の読み上げで起動し直す。利用可否の判定でWindows音声が使えると分かった時点で
+  `warmUp()`により常駐プロセスを先に起動する。非Windowsでは`isAvailable()`が`false`を返し、読み上げも行わない。
   Windowsでは`isAvailable()`が、有効な日本語（`ja-JP`）音声がSAPIに1つ以上あるかをPowerShellで判定する（外部プロセスの
   起動を伴うため、利用できると判明した後は結果を保持する）。利用できない場合、`unavailableReason()`は
   `WindowsSpeechUnavailable`を返し、その他タブにWindowsの音声設定への案内が表示される。非Windowsでは`null`を返す。
@@ -27,7 +31,7 @@ Windowsの読み上げは保存済みの`voiceId`を`SelectVoice`へ渡します
 Androidは`voiceId`を`Voice.name`として検索して`setVoice`で反映します。未指定・音声が見つからない場合・
 `setVoice`が失敗した場合は`setLanguage`で既定の日本語音声へ戻します。同じIDは再適用せず、初回未指定時は
 初期化済みの言語設定を使います。設定はエンジン全体に残るため、キュー待ちの発話にも新しい声が適用される可能性があります。
-スクリプト生成は純粋関数`buildSpeakScript`として切り出し、音声選択・フォールバック・エスケープをテストします。
+常駐スクリプトと要求行の生成は純粋関数`buildResidentSpeakScript` / `buildSpeakRequest`として切り出してテストします。
 
 Windows専用の`WindowsVoiceListRepository`は、有効なSAPI音声のID（`VoiceInfo.Name`）、表示名
 （`VoiceInfo.Description`）、言語を取得します。取得はIOスレッド上で排他し、一覧はキャッシュせず毎回取得します。

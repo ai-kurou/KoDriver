@@ -3,8 +3,10 @@ package kurou.kodriver.core.texttospeechdata.windows
 import io.sentry.Sentry
 import kurou.kodriver.domain.model.TTS_CULTURE_NAME
 import kurou.kodriver.domain.model.TextToSpeechVoice
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 /**
@@ -12,12 +14,15 @@ import java.util.concurrent.TimeUnit
  * 呼び出す [WindowsSpeechSynthesizer] の実装。
  *
  * JVMには音声合成の標準APIが無く、SAPIのCOMインターフェースをJNAで直接叩くには
- * 型ライブラリのバインディングが必要になるため、1回の読み上げごとにPowerShellプロセスを
- * 起動する方式を採る。[speak] はプロセスの終了（＝読み上げ完了）まで [Process.waitFor] で
- * ブロックする。呼び出し元（[WindowsTextToSpeechRepository]）は `runInterruptible` でこの呼び出しを
- * 包んでおり、コルーチンのキャンセルはスレッド割り込み → [InterruptedException] としてここへ伝わるため、
- * その際はプロセスを破棄（[destroyProcess]）してから例外を再送出し、読み上げを実際に打ち切る。
- * 読み上げの明示的な中断（[stop]）も同じくプロセスの破棄で行う。
+ * 型ライブラリのバインディングが必要になるため、PowerShellプロセスを1つ常駐させて使い回す。
+ * 読み上げのたびにプロセスを起動すると、PowerShellと.NETの起動・`System.Speech`のロード・
+ * `SpeechSynthesizer`の生成が毎回かかって発話が遅れるため、これらは最初の1回（[warmUp] または最初の [speak]）
+ * だけにして、以降は標準入力へ要求行を送るだけにする（[ResidentSpeechSession]、[buildResidentSpeakScript]）。
+ * [speak] は読み上げの完了（応答行の受信）まで [CompletableFuture.get] でブロックする。
+ * 呼び出し元（[WindowsTextToSpeechRepository]）は `runInterruptible` でこの呼び出しを包んでおり、
+ * コルーチンのキャンセルはスレッド割り込み → [InterruptedException] としてここへ伝わるため、
+ * その際は読み上げの打ち切り要求を送ってから例外を再送出する。明示的な中断（[stop]）も同じ要求で行う。
+ * 常駐プロセスが終了した場合は、次の [speak] で起動し直す。アプリ終了時は標準入力が閉じられて常駐プロセスも終了する。
  *
  * Windows専用の外部プロセスを起動するためユニットテストの対象外とし、
  * 読み上げ制御のロジックは [WindowsSpeechSynthesizer] を差し替えられる呼び出し側で検証する。
@@ -27,11 +32,11 @@ import java.util.concurrent.TimeUnit
  * 前の発話が自然に終わるまで割り込めなくなってしまう（`runInterruptible` によるコルーチンの
  * キャンセル伝播の意味がなくなる）。ただし [lock] を保持しない間に別スレッドの [speak] 呼び出しが
  * 割り込んでいる可能性があるため、待機後は [requestToken] で自分がまだ最新の要求かを確認し、
- * 既に別の呼び出しに追い越されていれば新しいプロセスは起動しない（起動すると音声が重なってしまう）。
+ * 既に別の呼び出しに追い越されていれば要求を送らない。
  */
 internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     private val lock = Any()
-    private var process: Process? = null
+    private var session: ResidentSpeechSession? = null
     private var requestToken = 0L
 
     override fun isAvailable(): Boolean {
@@ -106,6 +111,11 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
         }
     }
 
+    override fun warmUp() {
+        if (!IS_WINDOWS) return
+        synchronized(lock) { usableSession() }
+    }
+
     override fun speak(
         text: String,
         queue: Boolean,
@@ -114,48 +124,66 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
     ) {
         if (!IS_WINDOWS) return
         val token = synchronized(lock) { ++requestToken }
-        if (queue) {
-            awaitInterruptibly(synchronized(lock) { process })
-        } else {
-            synchronized(lock) { destroyProcess() }
-        }
-        val started =
-            synchronized(lock) {
-                // 待機中に別スレッドの新しい呼び出しへ追い越されていたら、今さら発話を開始しない。
-                if (token != requestToken) return
-                val script = buildSpeakScript(text, volume, voiceId)
-                val newProcess =
-                    ProcessBuilder(POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", script)
-                        .redirectErrorStream(true)
-                        .start()
-                process = newProcess
-                newProcess
-            }
-        try {
-            started.waitFor()
-        } catch (e: InterruptedException) {
-            synchronized(lock) { if (process === started) destroyProcess() }
-            throw e
+        val request = buildSpeakRequest(text, volume, voiceId)
+        val future = enqueue(token, request, queue) ?: return
+        await(future)
+    }
+
+    /**
+     * [request] を常駐プロセスへ送り、その完了を表す [CompletableFuture] を返す。
+     * [queue] が `true` で読み上げ中なら、その完了を [lock] の外で待ってから送り直す。
+     * 待機中に新しい呼び出しへ追い越された場合、またはプロセスを起動できない場合は `null` を返す。
+     */
+    private fun enqueue(
+        token: Long,
+        request: String,
+        queue: Boolean,
+    ): CompletableFuture<Unit>? {
+        while (true) {
+            val blocker =
+                synchronized(lock) {
+                    if (token != requestToken) return null
+                    val current = usableSession() ?: return null
+                    if (!queue) current.stop()
+                    val last = if (queue) current.lastOutstanding() else null
+                    if (last == null) return current.send(request)
+                    last
+                }
+            await(blocker)
         }
     }
 
-    /** [lock] を保持せずに [target] の終了を待つ。割り込まれた場合は、まだ現在の発話であれば破棄する。 */
-    private fun awaitInterruptibly(target: Process?) {
+    /** [lock] を保持せずに [target] の完了を待つ。割り込まれた場合は、まだ現在の読み上げであれば打ち切る。 */
+    private fun await(target: CompletableFuture<Unit>) {
         try {
-            target?.waitFor()
+            target.get()
         } catch (e: InterruptedException) {
-            synchronized(lock) { if (process === target) destroyProcess() }
+            synchronized(lock) { session?.stopIfCurrent(target) }
             throw e
         }
     }
 
     override fun stop() {
-        synchronized(lock) { destroyProcess() }
+        synchronized(lock) { session?.stop() }
     }
 
-    private fun destroyProcess() {
-        process?.destroy()
-        process = null
+    /** 常駐プロセスが使えなければ起動し直す。起動に失敗したら `null`。呼び出し元が [lock] を保持していること。 */
+    private fun usableSession(): ResidentSpeechSession? {
+        session?.takeIf { it.isUsable }?.let { return it }
+        return try {
+            val process =
+                ProcessBuilder(
+                    POWERSHELL,
+                    "-NoProfile",
+                    "-NonInteractive",
+                    "-EncodedCommand",
+                    encodeResidentSpeakScript(),
+                ).redirectErrorStream(true).start()
+            ResidentSpeechSession(process, lock).also { session = it }
+        } catch (e: IOException) {
+            Sentry.captureException(e)
+            null
+        }
     }
 
     private companion object {

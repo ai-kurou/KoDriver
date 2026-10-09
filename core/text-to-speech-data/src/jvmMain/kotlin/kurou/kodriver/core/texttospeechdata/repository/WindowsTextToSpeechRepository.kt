@@ -16,6 +16,8 @@ import kurou.kodriver.domain.repository.TextToSpeechRepository
  * 実際の音声合成の呼び出しは [WindowsSpeechSynthesizer] に切り出しており、ここでは
  * 読み上げ不要なテキストの除外とスレッド（[Dispatchers.IO]）の切り替えのみを担う。
  *
+ * 利用できると判明した時点で [WindowsSpeechSynthesizer.warmUp] を呼び、最初の読み上げが遅れないようにする。
+ *
  * [speak] は [WindowsSpeechSynthesizer.speak] が読み上げ完了までブロックする実装（[SapiSpeechSynthesizer]）
  * であることを前提に、その呼び出しを [runInterruptible] で包む。これにより、
  * 呼び出し元のコルーチンがキャンセルされるとブロック中のスレッドへ割り込みが送られ、
@@ -35,7 +37,10 @@ internal class WindowsTextToSpeechRepository(
     override suspend fun isAvailable(): Boolean =
         availabilityMutex.withLock {
             if (!availableConfirmed) {
-                availableConfirmed = withContext(Dispatchers.IO) { synthesizer.isAvailable() }
+                availableConfirmed =
+                    withContext(Dispatchers.IO) {
+                        synthesizer.isAvailable().also { if (it) synthesizer.warmUp() }
+                    }
             }
             availableConfirmed
         }
