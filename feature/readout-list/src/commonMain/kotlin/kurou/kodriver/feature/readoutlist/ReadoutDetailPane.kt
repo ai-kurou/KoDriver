@@ -1,7 +1,6 @@
 package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -104,11 +105,14 @@ private fun RootDisabledBanner(
 ) {
     val contentColor = KoDriverExtendedColors.current.onWarningContainer
     Surface(
+        onClick = onEnableRoot,
         modifier =
-            Modifier.fillMaxWidth().padding(
-                horizontal = KoDriverSpacing.large,
-                vertical = KoDriverSpacing.small,
-            ),
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = KoDriverSpacing.large,
+                    vertical = KoDriverSpacing.small,
+                ).semantics { role = Role.Button },
         shape = MaterialTheme.shapes.medium,
         color = KoDriverExtendedColors.current.warningContainer,
         contentColor = contentColor,
@@ -126,7 +130,6 @@ private fun RootDisabledBanner(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Row(
-                modifier = Modifier.clickable(role = Role.Button, onClick = onEnableRoot),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
