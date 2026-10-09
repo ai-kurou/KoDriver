@@ -5,7 +5,7 @@
 ## 主要なファイルの役割
 
 - `ReadoutListPane.kt` / `ReadoutContent.kt`: 一覧画面のUI。`ReadoutContent.kt` は `Material3 Adaptive` の `ListDetailPaneScaffold` と `ReadoutNavigationState`（Navigation 3の `NavBackStack`）を組み合わせて list/detail ペインの表示切り替えを行う（詳細パターンは `docs/list-detail-navigation-pattern.md` を参照）。
-- `ReadoutDetailPane.kt`: 選択した読み上げ項目の詳細設定画面。一覧側の Root スイッチ（`ReadoutItemKey.*.Root`）がOFFの場合は、画面上部に警告バナー（「ONにする」で Root を有効化）を表示し、詳細内容全体を薄く表示する（操作は可能なまま、保存値は変更しない）。各 detail モジュール側の変更は不要。
+- `ReadoutDetailPane.kt`: 選択した読み上げ項目の詳細設定画面。一覧側の Root スイッチ（`ReadoutItemKey.*.Root`）がOFFの場合は、画面上部に警告バナー（左端に縦方向中央の警告アイコン、中央にメッセージ、右端に Root を有効化する「ONにする」リンク）を表示し、詳細内容全体を薄く表示する（操作は可能なまま、保存値は変更しない）。各 detail モジュール側の変更は不要。
 - `ReadoutListViewModel.kt`: シミュレーターごとの読み上げ項目一覧・並び順・有効状態を `StateFlow` で公開する。並び替え中はローカルの `LocalOrderState` で楽観的に状態を保持し、確定時に `SaveReadoutOrderUseCase` へ反映する。
 - `ReadoutListModule.kt`: この feature の Koin モジュール定義。
 - `ReadoutItemDisplayName.kt`: `ReadoutItemKey`（ASCIIの内部ID）から画面表示名への変換。

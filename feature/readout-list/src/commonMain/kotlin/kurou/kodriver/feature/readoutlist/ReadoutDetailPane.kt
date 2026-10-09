@@ -117,24 +117,24 @@ private fun RootDisabledBanner(
         Row(
             modifier = Modifier.padding(KoDriverSpacing.medium),
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.medium),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(Icons.Filled.WarningAmber, contentDescription = null)
-            Column(verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small)) {
+            Text(
+                text = stringResource(Res.string.root_disabled_banner_message, itemName),
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Row(
+                modifier = Modifier.clickable(role = Role.Button, onClick = onEnableRoot),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
-                    text = stringResource(Res.string.root_disabled_banner_message, itemName),
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = stringResource(Res.string.root_disabled_banner_enable),
+                    style = MaterialTheme.typography.labelLarge,
+                    textDecoration = TextDecoration.Underline,
                 )
-                Row(
-                    modifier = Modifier.clickable(role = Role.Button, onClick = onEnableRoot),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = stringResource(Res.string.root_disabled_banner_enable),
-                        style = MaterialTheme.typography.labelLarge,
-                        textDecoration = TextDecoration.Underline,
-                    )
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
-                }
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
             }
         }
     }
