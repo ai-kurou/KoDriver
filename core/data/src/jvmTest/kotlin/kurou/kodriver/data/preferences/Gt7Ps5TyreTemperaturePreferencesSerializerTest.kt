@@ -36,7 +36,7 @@ class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
         }
 
     @Test
-    fun `閾値が省略された旧データは95度を維持する`() =
+    fun `閾値が省略されたデータは100度を使う`() =
         runTest {
             // 旧デフォルト値のみの空データと、フィールド3に文言だけを保存した旧データ。
             for ((bytes, text) in listOf(
@@ -44,7 +44,7 @@ class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
                 byteArrayOf(0x1A, 0x04, 0x74, 0x65, 0x73, 0x74) to "test",
             )) {
                 val restored = Gt7Ps5TyreTemperaturePreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
-                assertEquals(95, restored.highThresholdCelsius)
+                assertEquals(100, restored.highThresholdCelsius)
                 assertEquals(text, restored.overheatReadoutText)
             }
         }
