@@ -288,6 +288,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
         OtherListItemType.Voice,
+        OtherListItemType.VoiceSpeed,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.Feedback,
         OtherListItemType.License,
@@ -299,7 +300,6 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.OverlayTextSize,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
 
-        OtherListItemType.VoiceSpeed,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
@@ -621,9 +621,7 @@ private fun OtherListItem(
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
                 .clickable {
-                    if (item != OtherListItemType.VoiceSpeed) {
-                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    }
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     handleOtherListItemClick(
                         item = item,
                         uiState = uiState,
@@ -654,10 +652,6 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
-        OtherListItemType.VoiceSpeed -> {
-            Unit
-        }
-
         OtherListItemType.OverlayVisible -> {
             onOverlayVisibleChange(!uiState.overlayVisible)
         }
@@ -694,6 +688,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
         OtherListItemType.Voice,
+        OtherListItemType.VoiceSpeed,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.Theme,

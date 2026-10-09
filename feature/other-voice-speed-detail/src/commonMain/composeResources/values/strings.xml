@@ -1,0 +1,5 @@
+<resources>
+    <string name="voice_speed_title">読み上げ速度</string>
+    <string name="voice_speed_description">読み上げの速さを設定します。</string>
+    <string name="navigate_back">戻る</string>
+</resources>

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPane
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -43,7 +44,7 @@ class OtherContentTest {
         )
 
     @Test
-    fun `読み上げ速度をタップしても選択せず詳細ペインを開かない`() {
+    fun `読み上げ速度をタップすると選択して詳細ペインを開く`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false
 
@@ -55,16 +56,20 @@ class OtherContentTest {
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { item, _, _, _, _ -> Text("Detail: ${item.id}") },
+                detailContent = { item, canNavigateBack, onBack, _, _ ->
+                    if (item == OtherListItemType.VoiceSpeed) {
+                        OtherVoiceSpeedDetailPane(canNavigateBack, onBack)
+                    }
+                },
             )
         }
 
         rule.onNodeWithText("読み上げ速度").assertExists().performClick()
         rule.waitForIdle()
 
-        assertEquals(null, selectedItem)
-        assertFalse(backEnabled)
-        rule.onNodeWithText("Detail: voice_speed").assertDoesNotExist()
+        assertEquals(OtherListItemType.VoiceSpeed, selectedItem)
+        assertTrue(backEnabled)
+        rule.onNodeWithText("読み上げの速さを設定します。").assertExists()
     }
 
     @Test

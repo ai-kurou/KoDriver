@@ -185,7 +185,6 @@ class OtherListViewModel(
 
     fun onItemSelected(itemType: OtherListItemType) {
         if (
-            itemType == OtherListItemType.VoiceSpeed ||
             itemType == OtherListItemType.GitHubRepository ||
             itemType == OtherListItemType.ReleasePage ||
             itemType == OtherListItemType.AccessLocalNetworkPermission
