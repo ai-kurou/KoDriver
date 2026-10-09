@@ -12,7 +12,6 @@
 - `nightly-todo.yml`: 毎日 JST 4:03 を予定時刻として起動する（GitHubの混雑により遅延あり。`workflow_dispatch`でも手動実行可）。`scripts/nightly_todo.py` が `docs/nightly-todo-list.md` の各情報源と当日の曜日ローテーションを選び、Claude Code CLI（2.1.226、`CLAUDE_CODE_OAUTH_TOKEN`で認証、Pro/Maxサブスクリプション枠）へ調査とIssue起票を依頼する。`gh issue list --state all --search`で重複確認し、`gh issue view`で既存Issueの本文を確認できる。許可するBashは `gh issue list/view/create`、`gh run list`、`gh api repos/*/actions/runs*` に限定する。`dontAsk`で無人実行し、Edit/Writeは明示的に禁止する。GitHub操作は `GITHUB_TOKEN`（`issues: write`）を使用する。
   - `--output-format json --json-schema`で各対象IDの確認内容・判断理由・完了状態、全体サマリー、今回起票したIssueのURLを取得する。CLI終了コード、エラー、権限拒否、結果欠落、対象IDの不一致、blocked項目を検証し、いずれかがあればジョブを失敗にする。起票ゼロでも全調査が完了していれば成功。完了判定はモデルの報告を検証するもので、調査内容の正しさを保証するものではない。
   - 結果JSON・stderr・終了コード・対象一覧・サマリーは `$RUNNER_TEMP/nightly-todo/` に保存し、成功・失敗を問わずジョブサマリーと7日保持の `nightly-todo-diagnostics` Artifactを公開する。開始前の失敗はその旨を表示する。未完了時の起票件数は断定しない（途中で起票された可能性があるため）。リポジトリに変更がないことも `if: always()` で検証する。
-  - `on-pull-request.yml` の `nightly-todo-script-test` で、実際のClaude呼び出しやIssue起票を行わず、完了判定・曜日選定・診断保存を検証する。ローカルでは `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=scripts python3 -m unittest discover -s scripts/tests -v` を実行する。
 
 ### 定期実行系機能の使い分け
 
