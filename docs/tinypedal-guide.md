@@ -4,9 +4,9 @@ TinyPedal は、レーシングシミュレーター向けの無料・オープ�
 
 - 公式リポジトリ: https://github.com/TinyPedal/TinyPedal
 - 公式 Wiki(User Guide / FAQ / Appendix): https://github.com/TinyPedal/TinyPedal/wiki
-- 本ドキュメントの情報は v2.48.0(2026年7月4日リリース)時点の公式 README・Wiki に基づく。
+- 本ドキュメントの情報は v2.51.0(2026年10月3日リリース)時点の公式 README・Wiki に基づく。
 
-> **KoDriver との関連**: TinyPedal は LMU の共有メモリへ `pyLMUSharedMemory` でアクセスしており、KoDriver の `:core:lmu-windows-data`(`LmuWindowsMapper`)が参照している ctypes レイアウトと同じデータソースを使う先行事例である。機能設計・データ解釈(燃料計算、デルタタイム、セクタータイム等)の参考になる。
+> **KoDriver との関連**: TinyPedal は LMU の共有メモリへ `pyLMUSharedMemory` でアクセスしており、KoDriver の `:core:lmu-windows-data`(`LmuWindowsMapper`)が参照している ctypes レイアウトと同じデータソースを使う先行事例である。機能設計・データ解釈(燃料計算、デルタタイム、セクタータイム等)の参考になる。なお v2.51.0 で対応した Assetto Corsa Competizione(ACC)は、KoDriver が対応する Assetto Corsa EVO(ACE)とは別タイトルで、共有メモリのレイアウトも異なる。
 
 ---
 
@@ -21,7 +21,7 @@ TinyPedal は、レーシングシミュレーター向けの無料・オープ�
 7. [全体設定](#全体設定)
 8. [テレメトリ API 設定](#テレメトリ-api-設定)
 9. [データモジュール(13種)](#データモジュール13種)
-10. [ウィジェット(全74種)](#ウィジェット全74種)
+10. [ウィジェット(全78種)](#ウィジェット全78種)
 11. [ツール群](#ツール群)
 12. [相対給油と絶対給油](#相対給油と絶対給油)
 13. [FAQ・トラブルシューティング](#faqトラブルシューティング)
@@ -36,7 +36,7 @@ TinyPedal は 2022年3月に初版がリリースされ、以降コミュニテ�
 
 - **ミニマリストデザイン**: 走行の邪魔にならない簡素な表示
 - **軽量・高効率**: CPU のみで動作し、データモジュールは高度に最適化されている
-- **広範なカスタマイズ性**: 74 種のウィジェットと 13 種のデータモジュールをすべて個別に設定可能
+- **広範なカスタマイズ性**: 78 種のウィジェットと 13 種のデータモジュールをすべて個別に設定可能
 - **データ分析**: 高機能な燃料計算機、ドライバー統計、トラックマップ分析などの編集・分析ツールを同梱
 
 動作の仕組みは「読み取り専用」であり、ゲームに一切干渉しない。
@@ -59,6 +59,7 @@ LMU の REST API アクセスも HTTP GET のみを使用しており、ゲー�
 
 | API | Windows | Linux |
 |:--|:--|:--|
+| Assetto Corsa Competizione(ACC) | プラグイン不要(内蔵 API。追加データには UDP API の手動有効化が必要) | サードパーティプラグインが必要 |
 | Le Mans Ultimate(LMU) | プラグイン不要(内蔵 API) | サードパーティプラグインが必要 |
 | rFactor 2(RF2) | rF2SharedMemoryMapPlugin が必要 | rF2SharedMemoryMapPlugin(Wine フォーク版)が必要 |
 
@@ -73,7 +74,7 @@ LMU の REST API アクセスも HTTP GET のみを使用しており、ゲー�
 ### ソースから実行する場合の依存関係
 
 - Python 3.8 / 3.9 / 3.10(PySide6 利用時はコマンドライン引数 `--pyside 6` で新しい Python にも対応)
-- PySide2、psutil、pyLMUSharedMemory、pyRfactor2SharedMemory(Linux は追加で pyxdg)
+- PySide2、psutil、pyACCSharedMemory、pyLMUSharedMemory、pyRfactor2SharedMemory(Linux は追加で pyxdg)
 
 ---
 
@@ -88,6 +89,16 @@ LMU の REST API アクセスも HTTP GET のみを使用しており、ゲー�
 バージョン更新・ダウングレードは、新しい ZIP の中身を既存フォルダへ上書き展開するだけでよい。初回起動時に古いユーザー設定は自動でマイグレーションされる(念のため手動バックアップ推奨)。
 
 配布バイナリは GitHub Actions で自動ビルドされており、リリースノートに SHA256 ハッシュが記載されている。アンチウイルスの誤検知が心配な場合はハッシュ検証またはソースからの実行が可能。
+
+### ACC 向けセットアップ
+
+- **Windows**: 内蔵の共有メモリ API はプラグイン不要で読み取れる
+- **Linux**: 内蔵 API を選択できるが、アクセスにはサードパーティプラグインが必要になる場合がある
+- ACC の共有メモリ API は LMU / RF2 より提供データが少ないため、一部のデータは欠落またはゼロ表示になる
+- ドライバー名・ラップタイム・順位表などの追加データは ACC の **UDP API**(ブロードキャスト API)から取得する。UDP API はゲーム側で既定無効のため、次の手順で有効化する
+  1. ゲームを終了した状態で `Documents\Assetto Corsa Competizione\Config\broadcasting.json` を開く(ファイルがなければゲームを一度起動すると生成される)
+  2. `"updListenerPort"` の値(既定 `0`)を `9000` に変更して保存する(`9000` 以外にする場合は TinyPedal の `API` 設定の `URL Port` と一致させる)
+  3. `"connectionPassword"` と `"commandPassword"` は空のままにし、ゲームを再起動する
 
 ### LMU 向けセットアップ
 
@@ -145,7 +156,7 @@ git clone --recursive https://github.com/TinyPedal/TinyPedal.git
 
 ### メインウィンドウの構成
 
-- **Widget タブ**: 74 種のウィジェットの有効/無効切り替えと個別設定(`Config` ダイアログ)
+- **Widget タブ**: 78 種のウィジェットの有効/無効切り替えと個別設定(`Config` ダイアログ)
 - **Module タブ**: 13 種のデータモジュールの有効/無効(後述の通り無効化は非推奨)
 - **Preset タブ**: プリセット(設定一式)の管理
 - **Spectate タブ**: 観戦モード。プレイヤーリストから他ドライバーを選ぶ(または `Anonymous` を選択)と、そのドライバー視点のテレメトリを表示できる。手動リフレッシュあり。**観戦モードが有効のままだと自走時にオーバーレイが出ないので注意**
@@ -162,6 +173,8 @@ git clone --recursive https://github.com/TinyPedal/TinyPedal.git
 - **転送(Preset Transfer)**: 設定の一部を別プリセットへコピー
 - **自動バックアップ**: JSON 保存時に自動バックアップを生成
 - **自動読み込み**: ゲーム(API)ごとに自動で読み込むプリセットを指定可能
+- **バックアップの復元**: `Preset` タブの `Restore` ボタンで `Restore Backup` ダイアログを開き、自動・手動バックアップを管理・復元できる。右クリックメニューの `Backup Preset` で任意のタイミングに手動バックアップを作れる
+- **読み込みリトライ**: グローバル設定の `maximum_loading_attempts` で、プリセット読み込みに失敗したときの最大リトライ回数を設定できる
 
 ### 特殊プリセット(共有設定ファイル)
 
@@ -228,7 +241,10 @@ git clone --recursive https://github.com/TinyPedal/TinyPedal.git
 | 距離 | メートル / フィート |
 | 燃料 | リットル / ガロン |
 | オドメーター | km / マイル / メートル |
+| 重量 | kg / lb |
+| 出力 | kW / hp / PS |
 | 速度 | km/h / mph / m/s |
+| 風速 | 速度と同じ単位系(既定 m/s) |
 | 温度 | 摂氏 / 華氏 |
 | タイヤ圧 | kPa / psi / bar |
 
@@ -252,7 +268,8 @@ git clone --recursive https://github.com/TinyPedal/TinyPedal.git
 
 Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあっても効く。割り当て可能な操作:
 
-- オーバーレイの表示/非表示、ロック/アンロック
+- オーバーレイの表示/非表示、ロック/アンロック、Auto Hide の有効/無効
+- Deltabest ウィジェットに表示するデルタ基準の切り替え(`Cycle Deltabest Source`)
 - API 再起動・切り替え
 - プリセット読み込み・切り替え
 - 観戦モードの有効/無効
@@ -267,7 +284,7 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 
 `Config` メニューの `Telemetry API` ダイアログで設定する。
 
-- `api_name`: 使用する API(LMU / RF2)の選択
+- `api_name`: 使用する API(ACC / LMU / RF2)の選択
 - `access_mode`: 共有メモリへのアクセス方式(コピー / ダイレクト)
 - `character_encoding`: テキストエンコーディング
 - `enable_auto_backup_car_setup`: 車両セットアップの自動バックアップ
@@ -277,9 +294,13 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 天候予報・ガレージ情報・ブランド名などの追加データはゲームの REST API(WebUI)から取得する。
 
 - ホストアドレス・URL ポート・接続タイムアウト・リトライ回数
-- 取得対象(エネルギー・ガレージ・セッション・車両・天候)の個別有効化
+- 取得対象(ガレージ・セッション・車両・天候など)の個別有効化。LMU の残りエネルギーは v2.50.0 から共有メモリ(ネイティブ API)から読むようになり、REST API の `enable_energy_remaining` は廃止された
 - **ポート番号はゲーム側設定と一致させる必要がある**。LMU は `UserData\player\Settings.JSON`、RF2 は `UserData\player\player.JSON` の WebUI ポート値を確認する
 - ファイアウォールやアンチウイルスがローカルネットワークアクセスをブロックしていないことを確認する
+
+### UDP API 設定(ACC)
+
+ACC では REST API の代わりに UDP API(ブロードキャスト API)から追加データを取得する。`URL Port` はゲーム側 `broadcasting.json` の `updListenerPort` と一致させる(設定手順は[ACC 向けセットアップ](#acc-向けセットアップ)を参照)。
 
 ---
 
@@ -291,22 +312,22 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 |:--|:--|
 | Delta Module | ベストラップとのタイム差計算。最小記録距離(推奨 5〜10m)、スムージング(デフォルト 30 サンプル)、ペース計算(6 サンプル平均)を設定可能 |
 | Force Module | G フォース・ダウンフォース・制動力の計算。重力加速度値、最大 G 値のリセット遅延、平均 G の算出 |
-| Fuel Module | 燃料・バーチャルエナジー消費の追跡と給油量推定。記録距離間隔を設定可能 |
+| Fuel Module | 燃料・バーチャルエナジー消費の追跡と給油量推定。記録距離間隔、燃料重量計算用の燃料密度(`fuel_density`)を設定可能 |
 | Hybrid Module | ハイブリッド車のバッテリー・電動モーター監視 |
-| Mapping Module | 走行ルートからトラックマップを自動記録・生成(SVG)。Track map / Navigation ウィジェットの元データ |
+| Mapping Module | 走行ルートからトラックマップを自動記録・生成(SVG)。Track map / Navigation ウィジェットの元データ。ノード間の最小記録距離(`minimum_node_distance`)を設定可能 |
 | Notes Module | ペースノート・トラックノートの読み込みと位置照合 |
 | Relative Module | 相対位置・順位・クラス分類の計算 |
 | Sectors Module | セクタータイムの計測・ベスト記録 |
 | Stats Module | ドライバー統計の記録。車両分類(クラス/ブランド/車両)、クラス別表彰台集計。プレイヤーインデックスオーバーライド無効かつシングルインスタンスモード時のみ記録 |
 | Stint Module | ラップ・スティント履歴。最小スティント時間、ピットストップ閾値、コールドラップ除外用のタイヤ温度閾値 |
-| Vehicles Module | 車両データの加工(ラップ差分閾値、適応的レース長計算のための完走時間差分閾値) |
-| Wheels Module | 車軸回転・タイヤ摩耗・ブレーキ摩耗の監視 |
+| Vehicles Module | 車両データの加工(ラップ差分閾値、適応的レース長計算のための完走時間差分閾値)。時間制レースの追加最終ラップ予測も計算する |
+| Wheels Module | 車軸回転・タイヤ摩耗・ブレーキ摩耗の監視。モーションレシオ、推定車重(ばね下重量の設定値を使用)、ホイール切れ角、タイヤ半径・トレッド・ホイールベースの実測(`enable_wheel_dimension_measurement`。トレッド・ホイールベースは ACC のみ)も計算する |
 
 (上記 12 種に加え、内部基底 `_base` を持つ。)
 
 ---
 
-## ウィジェット(全74種)
+## ウィジェット(全78種)
 
 すべてのウィジェットに共通する設定項目:
 
@@ -314,7 +335,7 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 - 位置、不透明度(0.0〜1.0)
 - フォント(名前・サイズ・太さ)、色、テキスト配置、パディング・ギャップ
 
-以下、v2.48.0 のソースコード(`tinypedal/widget/`)に存在する全ウィジェットの一覧と機能。
+以下、v2.51.0 のソースコード(`tinypedal/widget/`)に存在する全ウィジェットの一覧と機能。
 
 ### オーバーレイの配置イメージ
 
@@ -331,22 +352,23 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 | <img src="images/tinypedal/widget-deltabest.svg" width="400"> | Deltabest | ベストラップとのリアルタイムタイム差(デルタバー) |
 | <img src="images/tinypedal/widget-deltabest-extended.svg" width="400"> | Deltabest extended | 複数のラップタイムソース(セッションベスト・オールタイムベスト等)に対するデルタ表示 |
 | <img src="images/tinypedal/widget-lap-time-history.svg" width="400"> | Lap time history | 過去のラップタイム履歴一覧 |
-| <img src="images/tinypedal/widget-laps-and-position.svg" width="400"> | Laps and position | ラップ数、総合順位、クラス内順位 |
+| <img src="images/tinypedal/widget-laps-and-position.svg" width="400"> | Laps and position | ラップ数、総合順位、クラス内順位。`show_predicted_extra_laps` で時間制レースの追加最終ラップ予測(例: `12.45(+1)`)を表示 |
 | <img src="images/tinypedal/widget-sectors.svg" width="400"> | Sectors | セクタータイム(現在/ベスト比較) |
-| <img src="images/tinypedal/widget-session.svg" width="400"> | Session | システム時計、セッション名、残り時間、ラップ数、総合順位 |
+| <img src="images/tinypedal/widget-session.svg" width="400"> | Session | システム時計、セッション名、残り時間、ラップ数、総合順位。Laps and position と同じ追加最終ラップ予測を表示可能 |
 | <img src="images/tinypedal/widget-timing.svg" width="400"> | Timing | ラップタイム情報(現在・ベスト・前ラップ等) |
-| <img src="images/tinypedal/widget-relative.svg" width="400"> | Relative | 前後の車両との相対順位・ギャップ一覧(いわゆるリラティブ表示) |
+| <img src="images/tinypedal/widget-relative.svg" width="400"> | Relative | 前後の車両との相対順位・ギャップ一覧(いわゆるリラティブ表示)。LMU ではトラックリミット違反ポイントも表示可能(`show_track_limits_points`) |
 | <img src="images/tinypedal/widget-relative-finish-order.svg" width="400"> | Relative finish order | リーダーと自車の推定フィニッシュ順序と必要給油量をテーブル表示。レース終盤の「追加最終ラップ」発生予測に使う(詳細は[相対給油と絶対給油](#相対給油と絶対給油)) |
-| <img src="images/tinypedal/widget-rivals.svg" width="400"> | Rivals | 同クラスの前後ライバルとの順位・比較情報 |
-| <img src="images/tinypedal/widget-standings.svg" width="400"> | Standings | 全体順位表(ブランドロゴ表示対応) |
+| <img src="images/tinypedal/widget-rivals.svg" width="400"> | Rivals | 同クラスの前後ライバルとの順位・比較情報(LMU ではトラックリミット違反ポイントも表示可能) |
+| <img src="images/tinypedal/widget-standings.svg" width="400"> | Standings | 全体順位表(ブランドロゴ表示対応。LMU ではトラックリミット違反ポイントも表示可能) |
 | <img src="images/tinypedal/widget-traffic.svg" width="400"> | Traffic | 周回遅れ・接近車両などのトラフィック情報 |
 | <img src="images/tinypedal/widget-track-map.svg" width="400"> | Track map | 記録済みトラックマップ上に順位・位置を表示(有効な1周の走行記録が必要。未記録時は円形マップ) |
 | <img src="images/tinypedal/widget-navigation.svg" width="400"> | Navigation | 自車中心のズームナビゲーションマップ(有効な1周の走行記録が必要) |
 | <img src="images/tinypedal/widget-elevation.svg" width="400"> | Elevation | 標高プロット(トラックマップと同時に記録) |
 | <img src="images/tinypedal/widget-track-clock.svg" width="400"> | Track clock | ゲーム内時刻、タイムスケール、日照フェーズ |
 | <img src="images/tinypedal/widget-weather.svg" width="400"> | Weather | 現在の天候情報 |
+| — | Wind direction | 自車の進行方向に対する風向きの矢印と風速(v2.51.0 で追加)。風速しきい値で矢印を色分けし、無風に近いときは円で表示する。**現状 ACC のみ有効**(LMU / RF2 は風のシミュレーションがなく常にゼロ) |
 | <img src="images/tinypedal/widget-weather-forecast.svg" width="400"> | Weather forecast | 天候予報(REST API 接続が必要) |
-| <img src="images/tinypedal/widget-flag.svg" width="400"> | Flag | 旗(イエロー/ブルー等)、ピット状態、警告、スタートシグナル |
+| <img src="images/tinypedal/widget-flag.svg" width="400"> | Flag | 旗(イエロー/ブルー等)、ピット状態、警告、スタートシグナル。LMU ではダメージ修理が予定されているときに修理予定と推定修理時間を表示可能(`show_scheduled_repairs`) |
 | <img src="images/tinypedal/widget-track-notes.svg" width="400"> | Track notes | トラックノート(コメント・デバッグ情報) |
 | <img src="images/tinypedal/widget-pace-notes.svg" width="400"> | Pace notes | ペースノートの表示(音声再生と連動) |
 
@@ -359,7 +381,7 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 | <img src="images/tinypedal/widget-fuel-energy-saver.svg" width="400"> | Fuel energy saver | 燃料またはバーチャルエナジーの節約目標情報 |
 | <img src="images/tinypedal/widget-battery.svg" width="400"> | Battery | バッテリー使用量 |
 | <img src="images/tinypedal/widget-electric-motor.svg" width="400"> | Electric motor | 電動モーターの使用状況 |
-| <img src="images/tinypedal/widget-pit-stop-estimate.svg" width="400"> | Pit stop estimate | 推定ピットストップ所要時間と補給量 |
+| <img src="images/tinypedal/widget-pit-stop-estimate.svg" width="400"> | Pit stop estimate | 推定ピットストップ所要時間と補給量。`show_estimated_laps_and_minutes` で、MFD の給油設定どおりに補給した場合の次スティントの走行可能ラップ数・分数を表示 |
 | <img src="images/tinypedal/widget-push-to-pass.svg" width="400"> | Push to pass | P2P(プッシュ・トゥ・パス)の使用状況 |
 | <img src="images/tinypedal/widget-drs.svg" width="400"> | DRS | DRS(リアフラップ)の使用状況 |
 
@@ -367,17 +389,18 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 
 | 図解 | ウィジェット | 表示内容 |
 |:--|:--|:--|
-| <img src="images/tinypedal/widget-damage.svg" width="400"> | Damage | 車体ダメージの視覚化(RF2 API の制約で「どのパーツが脱落したか」までは表示不可) |
+| <img src="images/tinypedal/widget-damage.svg" width="400"> | Damage | 車体ダメージの視覚化(RF2 API の制約で「どのパーツが脱落したか」までは表示不可)。パンクしたタイヤは赤い枠線で強調される |
 | <img src="images/tinypedal/widget-damage-stats.svg" width="400"> | Damage stats | ダメージ統計 |
-| <img src="images/tinypedal/widget-engine.svg" width="400"> | Engine | エンジン使用状況(回転数・温度など) |
-| <img src="images/tinypedal/widget-engine-temperature.svg" width="400"> | Engine temperature | 追加のエンジン温度情報(油温・水温) |
-| <img src="images/tinypedal/widget-instrument.svg" width="400"> | Instrument | 車両計器情報(ヘッドライト、イグニッション、クラッチ、ホイールロック/スリップ等) |
-| <img src="images/tinypedal/widget-onboard-setting.svg" width="400"> | Onboard setting | 車載設定(ブレーキバイアス等の現在値) |
+| <img src="images/tinypedal/widget-engine.svg" width="400"> | Engine | エンジン使用状況(回転数など)。推定パワーウェイトレシオ、エンジンと駆動輪の回転比(`show_drive_ratio`)を表示可能。油温・水温は v2.51.0 で Engine temperature へ移った |
+| <img src="images/tinypedal/widget-engine-temperature.svg" width="400"> | Engine temperature | エンジン温度情報(油温・水温。排気温度は ACC のみ) |
+| <img src="images/tinypedal/widget-instrument.svg" width="400"> | Instrument | 車両計器情報(ヘッドライト、イグニッション、クラッチ、ホイールロック/スリップ等)。イグニッションとエンジンが両方オフのときは赤で警告 |
+| <img src="images/tinypedal/widget-onboard-setting.svg" width="400"> | Onboard setting | 車載設定(ブレーキバイアス等の現在値。ワイパー状態も表示可能) |
 | <img src="images/tinypedal/widget-differential.svg" width="400"> | Differential | デフのロック状態 |
-| <img src="images/tinypedal/widget-steering.svg" width="400"> | Steering | ステアリング入力 |
+| <img src="images/tinypedal/widget-steering.svg" width="400"> | Steering meter | ステアリング入力(v2.50.0 で Steering から改名。旧設定は自動移行) |
+| — | Steering angle | ステアリング角、前輪の平均切れ角、ステアリングレシオ、アッカーマン率、前後スリップアングル差(アンダー/オーバーの色分け)、ヨーレート、回転半径(v2.50.0 で追加) |
 | <img src="images/tinypedal/widget-steering-wheel.svg" width="400"> | Steering wheel | バーチャルステアリングホイール表示 |
 | <img src="images/tinypedal/widget-pedal.svg" width="400"> | Pedal | ペダル入力と FFB(フォースフィードバック)情報 |
-| <img src="images/tinypedal/widget-trailing.svg" width="400"> | Trailing | ペダル・ステアリング入力・FFB の時系列プロット(トレース表示) |
+| <img src="images/tinypedal/widget-trailing.svg" width="400"> | Trailing | ペダル・ステアリング入力・FFB の時系列プロット(トレース表示)。前後スリップアングル差のプロットも表示可能(中央線より上がアンダー傾向、下がオーバー傾向) |
 | <img src="images/tinypedal/widget-gear.svg" width="400"> | Gear | ギア、RPM、速度、バッテリー |
 | <img src="images/tinypedal/widget-rpm-led.svg" width="400"> | RPM LED | RPM に連動する LED バー |
 | <img src="images/tinypedal/widget-lift-and-coast-led.svg" width="400"> | Lift and coast LED | リフト&コースト、TC/ABS 作動、ホイールスリップ/ロックの LED 表示 |
@@ -390,18 +413,19 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 
 | 図解 | ウィジェット | 表示内容 |
 |:--|:--|:--|
-| <img src="images/tinypedal/widget-force.svg" width="400"> | Force | G フォースとダウンフォース |
+| <img src="images/tinypedal/widget-force.svg" width="400"> | Force | G フォースとダウンフォース。停車中に測った推定車重、燃料抜きの最小車重、走行中の推定車重、搭載燃料による加速低下率も表示可能(精度はゲーム API のデータ次第) |
 | <img src="images/tinypedal/widget-friction-circle.svg" width="400"> | Friction circle | G フォースの円形ダイアグラム(フリクションサークル) |
 | <img src="images/tinypedal/widget-acceleration.svg" width="400"> | Acceleration | 指定した速度区間の加速タイム計測 |
 | <img src="images/tinypedal/widget-rake-angle.svg" width="400"> | Rake angle | レーキ角 |
 | <img src="images/tinypedal/widget-roll-angle.svg" width="400"> | Roll angle | 前後のロール角 |
-| <img src="images/tinypedal/widget-ride-height.svg" width="400"> | Ride height | 車高の視覚化 |
+| <img src="images/tinypedal/widget-ride-height.svg" width="400"> | Ride height | 車高の視覚化(ACC では静的車高 `static_height_front` / `static_height_rear` の手動設定が必要。Rake angle・Roll angle と共有) |
 | <img src="images/tinypedal/widget-suspension-force.svg" width="400"> | Suspension force | サスペンション荷重と比率の視覚化 |
 | <img src="images/tinypedal/widget-suspension-position.svg" width="400"> | Suspension position | サスペンションポジションの視覚化 |
-| <img src="images/tinypedal/widget-suspension-travel.svg" width="400"> | Suspension travel | サスペンショントラベル |
+| <img src="images/tinypedal/widget-suspension-travel.svg" width="400"> | Suspension travel | サスペンショントラベル。推定モーションレシオ(サスペンションとホイールのストローク比)も表示可能 |
 | <img src="images/tinypedal/widget-weight-distribution.svg" width="400"> | Weight distribution | 重量配分 |
 | <img src="images/tinypedal/widget-wheel-camber.svg" width="400"> | Wheel camber | キャンバー角 |
 | <img src="images/tinypedal/widget-wheel-toe.svg" width="400"> | Wheel toe | トー角 |
+| — | Wheel dimension | 前後の平均タイヤ半径、前後トレッド、ホイールベースの実測値(トレッド・ホイールベースは ACC のみ。v2.51.0 で追加) |
 
 ### タイヤ・ブレーキ系
 
@@ -415,6 +439,7 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 | <img src="images/tinypedal/widget-tyre-wear.svg" width="400"> | Tyre wear | タイヤ摩耗率・残り寿命 |
 | <img src="images/tinypedal/widget-tyre-deflection.svg" width="400"> | Tyre deflection | タイヤの垂直たわみの視覚化 |
 | <img src="images/tinypedal/widget-slip-ratio.svg" width="400"> | Slip ratio | スリップ率の視覚化 |
+| — | Slip angle | スリップアングル(度)の視覚化。ニュートラル/オーバー/アンダーを色分けし、最近の最大横 G 下でのピークスリップアングル範囲も表示可能(v2.50.0 で追加) |
 | <img src="images/tinypedal/widget-brake-bias.svg" width="400"> | Brake bias | ブレーキバイアス |
 | <img src="images/tinypedal/widget-brake-pressure.svg" width="400"> | Brake pressure | ブレーキ圧の視覚化(パーセンテージ) |
 | <img src="images/tinypedal/widget-brake-temperature.svg" width="400"> | Brake temperature | ブレーキ温度(ヒートマップ表示対応) |
@@ -428,7 +453,7 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 | <img src="images/tinypedal/widget-radar.svg" width="400"> | Radar | 周囲の車両レーダー(接近警告。サイズは専用の scale オプションで調整) |
 | <img src="images/tinypedal/widget-stint-history.svg" width="400"> | Stint history | スティント履歴(タイヤ・燃料・ラップ数など) |
 
-> 注: ウィジェット名は画面上の表示順ではなくカテゴリ別に整理した。ソースコード上のモジュール名は 74 個(`acceleration`〜`wheel_toe`)。各ウィジェットの全設定項目は公式 User Guide の該当セクションを参照。
+> 注: ウィジェット名は画面上の表示順ではなくカテゴリ別に整理した。ソースコード上のモジュール名は 78 個(`acceleration`〜`wind_direction`)。各ウィジェットの全設定項目は公式 User Guide の該当セクションを参照。図解が「—」のウィジェットは v2.48.0 より後に追加されたもので、イメージ図は未作成。
 
 ---
 
@@ -450,7 +475,7 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 
 ### 車両ブランドエディタ(Vehicle Brand Editor)
 
-車両名とブランド名のマッピングを編集する。ゲームの REST API からのインポート、JSON ファイルインポート、一括置換に対応。Standings ウィジェットのブランドロゴ表示に必要。
+車両名とブランド名のマッピングを編集する。JSON ファイルインポート、一括置換に対応(RF2 は REST API からのインポートにも対応。LMU 向けの REST API インポートは v2.51.0 で廃止)。LMU と ACC では車両モデル名でブランドを照合する。Standings ウィジェットのブランドロゴ表示に必要。
 
 ### 車両クラスエディタ(Vehicle Class Editor)
 
@@ -462,7 +487,7 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 
 ### トラック情報エディタ(Track Info Editor)
 
-ピットイン/アウト位置、ピット速度制限、スピードトラップ位置、日出・日没時刻をトラックごとに設定する。
+ピットイン/アウト位置、ピット速度制限、スピードトラップ位置、日出・日没時刻、Track map ウィジェットの表示向き(`Orient (°)`。ウィジェット側の `display_orientation` に加算される)をトラックごとに設定する。
 
 ### タイヤコンパウンドエディタ(Tyre Compound Editor)
 
@@ -470,7 +495,7 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 
 ### ヒートマップエディタ(Heatmap Editor)
 
-温度と色のマッピングを編集する。値オフセット・スケール機能、カスタムプリセット作成、組み込みプリセットのリセットに対応。
+温度と色のマッピングを編集する。値オフセット・スケール機能、カスタムプリセット作成、組み込みプリセットのリセットに対応。v2.51.0 から新規コンパウンドの既定ヒートマップはタイヤが `tyre_optimal_80`、ブレーキが `brake_optimal_400` になった(旧 `tyre_default` 相当は `thermal_infrared` として残る。既存プリセットは変わらない)。
 
 ### トラックマップビューア(Track Map Viewer)
 
@@ -515,6 +540,8 @@ RF2 は「今の残量に**追加で**何 L 入れるか」(相対給油)、LMU 
 
 時間制レースでは、タイマーが 0 になる直前にリーダーが最終ラップへ入ると、自分にも追加の1周(と燃料)が必要になる。Relative finish order ウィジェットは、リーダーと自車の「タイマー終了時点の推定ラップ進行位置」とラップタイム差を比較し、マルチクラスやピット所要時間も考慮して追加ラップの可能性を予測する。自車の推定進行位置がリーダーより大きければ追加ラップが発生する、という読み方をする。
 
+v2.49.0 からは Laps and position / Session ウィジェットでも `show_predicted_extra_laps` で追加最終ラップの予測数を表示できる(例: `12.45(+1)` は推定 12.45 ラップに加えて最終ラップが 1 周増える見込み)。この予測値は推定ラップ数や燃料計算には加算されない。
+
 ---
 
 ## FAQ・トラブルシューティング
@@ -526,7 +553,8 @@ RF2 は「今の残量に**追加で**何 L 入れるか」(相対給油)、LMU 
 | オーバーレイが表示されない | ゲームが Fullscreen になっていないか確認(Borderless / Windowed 必須)。必要なプラグインの導入・有効化を確認。Spectate モードが有効のままになっていないか確認 |
 | Track map / Navigation にマップが出ない | マップはゲームから提供されず走行ルートから記録される。**ピットアウトラップを除く有効な1周**の完走が必要。Mapping Module が有効か確認 |
 | REST API に接続できない / 天候予報が出ない | `Enable RestAPI Access` と対象データのオプションを確認。URL ポートがゲーム設定ファイルの WebUI ポートと一致しているか確認。ファイアウォールを確認 |
-| 順位表にブランドロゴが出ない | REST API 接続を確認し、Vehicle Brand Editor でブランドデータをインポート。ロゴ画像ファイルを用意する |
+| 順位表にブランドロゴが出ない | Vehicle Brand Editor でブランドデータを用意する(RF2 は REST API からインポート可能)。ロゴ画像ファイルを用意する |
+| ACC で一部の値がゼロ・空欄になる | ACC の API は LMU / RF2 より提供データが少ないため。ドライバー名・ラップタイム・順位表が出ない場合は UDP API の有効化と `URL Port` の一致を確認 |
 | ホットキーが効かない | ゲームが管理者権限で動いていないか確認 |
 | 他ドライバーの燃料が 0 表示 | ゲーム側が対戦相手の燃料情報を意図的に無効化しているため表示不可(仕様) |
 | 一部車両でテレメトリが出ない | DLC 等の一部車両はゲーム API 側でデータが無効化されている |
@@ -589,7 +617,7 @@ RF2 は「今の残量に**追加で**何 L 入れるか」(相対給油)、LMU 
 ### 技術構成
 
 - **言語/フレームワーク**: Python(3.8〜3.10)+ PySide2(Qt。`--pyside 6` で PySide6 も選択可)
-- **データ取得**: [pyLMUSharedMemory](https://github.com/TinyPedal/pyLMUSharedMemory)(LMU 共有メモリ)、[pyRfactor2SharedMemory](https://github.com/TinyPedal/pyRfactor2SharedMemory)(RF2 共有メモリ)、HTTP GET による REST API アクセス
+- **データ取得**: [pyACCSharedMemory](https://github.com/TinyPedal/pyACCSharedMemory)(ACC 共有メモリ)、[pyLMUSharedMemory](https://github.com/TinyPedal/pyLMUSharedMemory)(LMU 共有メモリ)、[pyRfactor2SharedMemory](https://github.com/TinyPedal/pyRfactor2SharedMemory)(RF2 共有メモリ)、HTTP GET による REST API アクセス
 - **Windows ビルド**: py2exe(GitHub Actions で自動ビルド、SHA256 検証可能)
 
 ### ライセンス
