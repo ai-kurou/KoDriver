@@ -8,7 +8,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -23,6 +25,7 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.READOUT_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
@@ -194,6 +197,39 @@ class ReadoutListPaneTest {
 
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to true, queueChanges.single())
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to false, readoutChanges.single())
+    }
+
+    @Test
+    fun `有効状態が未読み込みの場合はRootのスイッチをデフォルト値で表示する`() {
+        val items = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.LmuWindows.VehicleDamage.Root)
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = items,
+                            readoutEnabledStates = emptyMap(),
+                        ),
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onStartSoundEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+
+        rule.onAllNodes(hasSwitchRole()).assertCountEquals(items.size)
+        items.forEachIndexed { index, item ->
+            val enabled = READOUT_ENABLED_STATE_DEFAULT.getValue(Simulator.LmuWindows).getValue(item)
+            rule.onAllNodes(hasSwitchRole())[index].assert(
+                SemanticsMatcher.expectValue(
+                    SemanticsProperties.ToggleableState,
+                    if (enabled) ToggleableState.On else ToggleableState.Off,
+                ),
+            )
+        }
     }
 
     @Test
