@@ -20,7 +20,7 @@ internal const val SPEAK_REQUEST_STOP = "STOP"
  * 標準入力が閉じられたら終了する。
  *
  * 読み上げ中も次の要求行を読めるよう `SpeakAsync` と非同期の行読み込みを併用し、
- * 完了は `SpeakCompleted` イベントで検知する。要求行はBase64でASCIIに限定し、
+ * 完了は `SpeakCompleted` イベントを `Start-Sleep` で間隔を空けて確認して検知する（`Wait-Event -Timeout` は整数秒のため使わない）。要求行はBase64でASCIIに限定し、
  * エスケープ処理を不要にしている。コマンドライン引数の引用符欠落を避けるため、
  * スクリプトは `-EncodedCommand` で渡す（[encodeResidentSpeakScript]）。
  */
@@ -54,8 +54,8 @@ internal fun buildResidentSpeakScript(): String =
             ${'$'}pending = ${'$'}in.ReadLineAsync()
             ${'$'}completed = ${'$'}false
             while (-not ${'$'}completed -and -not ${'$'}pending.IsCompleted) {
-                ${'$'}e = Wait-Event -SourceIdentifier KoDriverSpeakDone -Timeout 0.02
-                if (${'$'}e) { Remove-Event -EventIdentifier ${'$'}e.EventIdentifier; ${'$'}completed = ${'$'}true }
+                ${'$'}e = Get-Event -SourceIdentifier KoDriverSpeakDone -ErrorAction SilentlyContinue
+                if (${'$'}e) { ${'$'}e | Remove-Event; ${'$'}completed = ${'$'}true } else { Start-Sleep -Milliseconds 20 }
             }
             if (-not ${'$'}completed) {
                 ${'$'}eof = ${'$'}pending.Result -eq ${'$'}null

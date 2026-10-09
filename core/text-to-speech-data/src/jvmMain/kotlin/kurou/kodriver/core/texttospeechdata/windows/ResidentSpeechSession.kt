@@ -52,10 +52,15 @@ internal class ResidentSpeechSession(
         }
     }
 
-    /** [target] が現在の読み上げ（先頭の未完了要求）であれば打ち切る。 */
+    /**
+     * [target] が現在の読み上げ（先頭の未完了要求）かつ最後に送った要求であれば打ち切る。
+     * 後続の要求が送られていれば、その送信時にすでに打ち切り済みなので、
+     * 古い呼び出しの打ち切りで新しい読み上げを止めない。
+     */
     fun stopIfCurrent(target: CompletableFuture<Unit>) {
         synchronized(lock) {
-            if (outstanding.firstOrNull() === target) writeLine(SPEAK_REQUEST_STOP)
+            val isOnlyOutstanding = outstanding.firstOrNull() === target && outstanding.lastOrNull() === target
+            if (isOnlyOutstanding) writeLine(SPEAK_REQUEST_STOP)
         }
     }
 
