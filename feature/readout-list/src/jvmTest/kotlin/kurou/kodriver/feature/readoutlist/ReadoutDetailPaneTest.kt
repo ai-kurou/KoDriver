@@ -9,7 +9,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -208,9 +215,40 @@ class ReadoutDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("ONにする").performClick()
+        rule.onNodeWithText("ONにする", useUnmergedTree = true).performTouchInput { click() }
 
         assertEquals(1, enableCount)
+    }
+
+    @Test
+    fun `バナーはボタンロールを持ちメッセージと左端の余白のタップでonEnableRootが呼ばれる`() {
+        var enableCount = 0
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutDetailPane(
+                    title = "タイヤ温度",
+                    canNavigateBack = true,
+                    onBack = {},
+                    rootEnabled = false,
+                    onEnableRoot = { enableCount++ },
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        val banner = rule.onNodeWithText("「タイヤ温度」がOFFのため、読み上げられません")
+        banner.assertHasClickAction()
+        banner.assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
+        rule
+            .onNodeWithText(
+                "「タイヤ温度」がOFFのため、読み上げられません",
+                useUnmergedTree = true,
+            ).performTouchInput { click() }
+        assertEquals(1, enableCount)
+
+        banner.performTouchInput { click(Offset(1f, center.y)) }
+        assertEquals(2, enableCount)
     }
 
     @Test
