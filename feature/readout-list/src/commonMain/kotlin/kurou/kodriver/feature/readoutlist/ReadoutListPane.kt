@@ -95,6 +95,7 @@ import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
 import kurou.kodriver.feature.readoutlist.generated.resources.drag_handle
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_description
@@ -307,7 +308,7 @@ internal fun ReadoutListPane(
                         label = "cardContainerColor",
                     )
                     val itemName = itemDisplayName(item)
-                    val readoutEnabled = uiState.readoutEnabledStates[item] ?: false
+                    val readoutEnabled = uiState.readoutEnabledStates.readoutEnabled(item)
                     ReadoutListItemCard(
                         item = item,
                         index = index,

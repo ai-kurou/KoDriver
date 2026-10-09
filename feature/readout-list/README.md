@@ -14,6 +14,8 @@
 
 読み上げ優先度のヘルプでは、キューOFF時の割り込み・省略条件と、キューON時は優先順位に関係なく順番待ちすることを説明する。ヘルプ全体は縦スクロールに対応し、低い画面や大きな文字設定でも末尾まで読める。
 
+読み上げ有効状態が未読み込み、または設定にRootキーが存在しない場合は、一覧のスイッチと詳細画面のRoot有効状態に `:core:domain` の `READOUT_ENABLED_STATE_DEFAULT` を使用する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
