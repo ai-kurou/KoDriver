@@ -126,4 +126,35 @@ class OtherVoiceSpeedDetailPaneTest {
 
         rule.onNode(hasContentDescription("読み上げ速度をデフォルトに戻す")).assertIsNotEnabled()
     }
+
+    @Test
+    fun `試聴ボタンを押すと試聴用の文言を通知する`() {
+        var previewText: String? = null
+        rule.setContent {
+            KoDriverTheme {
+                OtherVoiceSpeedDetailPaneContent(
+                    uiState = OtherVoiceSpeedDetailUiState(),
+                    onPreviewClicked = { previewText = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("試聴").performClick()
+
+        assertEquals("これは読み上げ速度の試聴です。", previewText)
+    }
+
+    @Test
+    fun `試聴中は停止ボタンを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                OtherVoiceSpeedDetailPaneContent(
+                    uiState = OtherVoiceSpeedDetailUiState(isPreviewing = true),
+                )
+            }
+        }
+
+        rule.onNodeWithText("試聴を停止").assertIsDisplayed()
+        rule.onNodeWithText("試聴").assertDoesNotExist()
+    }
 }
