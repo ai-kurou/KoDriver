@@ -503,13 +503,14 @@ class AceWindowsNarratorViewModelTest {
             ),
         vehicleApproachThresholdMeters: Double = 10.0,
         remainingFuelLapsThreshold: Int = 3,
+        selectedSimulator: Simulator = Simulator.AceWindows,
     ) {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
+        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(selectedSimulator)
         every {
-            readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            readoutPreferencesRepository.observeReadoutEnabledStates(selectedSimulator.id)
         } returns MutableStateFlow(enabledOverrides)
         every {
-            readoutPreferencesRepository.observeReadoutOrder(Simulator.AceWindows.id)
+            readoutPreferencesRepository.observeReadoutOrder(selectedSimulator.id)
         } returns MutableStateFlow(orderOverride)
         every {
             remainingFuelPreferencesRepository.observeThresholdPercentage()
@@ -542,6 +543,57 @@ class AceWindowsNarratorViewModelTest {
             )
         } just Runs
     }
+
+    @Test
+    fun `ACE以外のシミュレーターを選択中は各テレメトリを読み上げない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+            val tyreCarcassTemperatureChannel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val vehicleApproachChannel = Channel<AceWindowsVehicleApproachData>(Channel.UNLIMITED)
+            val bestLapTimeChannel = Channel<AceWindowsBestLapTimeData>(Channel.UNLIMITED)
+            val remainingFuelLapsChannel = Channel<AceWindowsRemainingFuelLapsData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true),
+                remainingFuelLapsThreshold = 2,
+                selectedSimulator = Simulator.LmuWindows,
+            )
+            createViewModel(
+                fuelChannel = fuelChannel,
+                ttsEngine = ttsEngine,
+                flagChannel = flagChannel,
+                tyreCarcassTemperatureChannel = tyreCarcassTemperatureChannel,
+                vehicleApproachChannel = vehicleApproachChannel,
+                bestLapTimeChannel = bestLapTimeChannel,
+                remainingFuelLapsChannel = remainingFuelLapsChannel,
+            )
+
+            fuelChannel.send(fuel(50.0))
+            fuelChannel.send(fuel(20.0))
+            flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+            flagChannel.send(flag(AceWindowsFlagType.WHITE_FLAG))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 85.0f))
+            tyreCarcassTemperatureChannel.send(tyreCarcassTemperature(fl = 95.0f))
+            vehicleApproachChannel.send(vehicleApproach(distanceMeters = 5.0))
+            bestLapTimeChannel.send(bestLapTime(90_000))
+            bestLapTimeChannel.send(bestLapTime(89_000))
+            remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 3.5f))
+            remainingFuelLapsChannel.send(AceWindowsRemainingFuelLapsData(remainingLaps = 2.5f))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            verify(exactly = 0) {
+                ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"), false)
+                ttsEngine.speak(SpeechEvent.AceWindowsWhiteFlag("ホワイトフラッグ"), false)
+                ttsEngine.speak(SpeechEvent.AceWindowsTyreOverheat(95, "タイヤ過熱 95度"), false)
+                ttsEngine.speak(SpeechEvent.AceWindowsVehicleApproach("車両接近"), false)
+                ttsEngine.speak(SpeechEvent.AceWindowsMyBestLap(89_000, "自己ベストラップ更新 1分29秒000"), false)
+                ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2, "燃料は残り約2周"), false)
+            }
+            confirmVerified(ttsEngine)
+        }
 
     @Test
     fun `フラグが変化すると読み上げる`() =
