@@ -9,24 +9,25 @@ import kotlin.test.assertTrue
 
 class ResidentSpeakScriptTest {
     @Test
-    fun `要求行は音量と音声IDとテキストをBase64で並べる`() {
-        val request = buildSpeakRequest("It's a lap\n試聴", 30, "voice 'a'")
+    fun `要求行は音量とRateとBase64の音声IDとテキストを並べる`() {
+        val request = buildSpeakRequest("It's a lap\n試聴", 30, "voice 'a'", 6)
 
         val parts = request.split(" ")
-        assertEquals(4, parts.size)
+        assertEquals(5, parts.size)
         assertEquals("SPEAK", parts[0])
         assertEquals("30", parts[1])
-        assertEquals("voice 'a'", String(Base64.getDecoder().decode(parts[2]), Charsets.UTF_8))
-        assertEquals("It's a lap\n試聴", String(Base64.getDecoder().decode(parts[3]), Charsets.UTF_8))
+        assertEquals("6", parts[2])
+        assertEquals("voice 'a'", String(Base64.getDecoder().decode(parts[3]), Charsets.UTF_8))
+        assertEquals("It's a lap\n試聴", String(Base64.getDecoder().decode(parts[4]), Charsets.UTF_8))
         assertFalse(request.contains("\n"))
     }
 
     @Test
     fun `音声未指定の要求行は音声ID欄が空になる`() {
-        val parts = buildSpeakRequest("試聴", 100, VOICE_ID_UNSPECIFIED).split(" ")
+        val parts = buildSpeakRequest("試聴", 100, VOICE_ID_UNSPECIFIED, 0).split(" ")
 
-        assertEquals(4, parts.size)
-        assertEquals("", parts[2])
+        assertEquals(5, parts.size)
+        assertEquals("", parts[3])
     }
 
     @Test
@@ -38,6 +39,9 @@ class ResidentSpeakScriptTest {
         assertTrue(script.contains("WriteLine('$SPEAK_RESPONSE_DONE')"))
         assertTrue(script.contains("StartsWith('SPEAK ')"))
         assertTrue(script.contains("SpeakAsyncCancelAll"))
+        assertTrue(script.contains("${'$'}s.Rate = [int]${'$'}parts[2]"))
+        assertTrue(script.contains("FromBase64String(${'$'}parts[3])"))
+        assertTrue(script.contains("FromBase64String(${'$'}parts[4])"))
     }
 
     @Test
@@ -53,5 +57,14 @@ class ResidentSpeakScriptTest {
             buildResidentSpeakScript(),
             String(Base64.getDecoder().decode(encodeResidentSpeakScript()), Charsets.UTF_16LE),
         )
+    }
+
+    @Test
+    fun `速度倍率は対数スケールの整数Rateへ変換し上下限に丸める`() {
+        assertEquals(-6, speedToSapiRate(0.5f))
+        assertEquals(0, speedToSapiRate(1.0f))
+        assertEquals(6, speedToSapiRate(2.0f))
+        assertEquals(-10, speedToSapiRate(0.1f))
+        assertEquals(10, speedToSapiRate(10.0f))
     }
 }
