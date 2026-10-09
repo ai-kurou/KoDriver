@@ -97,10 +97,19 @@ class ReadoutListItemTypeFromIdTest {
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                ReadoutItemKey.LmuWindows.BrakeWear.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+        )
+    }
+
+    @Test
+    fun `lmu_windows の brake_wear は LmuWindows_BrakeWear を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.BrakeWear,
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.BrakeWear.Root),
         )
     }
 

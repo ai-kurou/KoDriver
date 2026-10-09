@@ -797,15 +797,44 @@ internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
 @Composable
 private fun LmuWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.LmuWindows) {
     when (itemType) {
-        ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
-        ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
-        ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
-        ReadoutListItemType.LmuWindows.TyreTemperature -> LmuWindowsReadoutTyreTemperatureDetailPane()
-        ReadoutListItemType.LmuWindows.PitTiming -> LmuWindowsReadoutPitTimingDetailPane()
-        ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
-        ReadoutListItemType.LmuWindows.TyreWear -> LmuWindowsReadoutTyreWearDetailPane()
-        ReadoutListItemType.LmuWindows.BrakeTemperature -> LmuWindowsReadoutBrakeTemperatureDetailPane()
-        ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
+        ReadoutListItemType.LmuWindows.VehicleApproach -> {
+            LmuWindowsReadoutVehicleApproachDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.Flag -> {
+            LmuWindowsReadoutFlagDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.VehicleDamage -> {
+            LmuWindowsReadoutVehicleDamageDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.TyreTemperature -> {
+            LmuWindowsReadoutTyreTemperatureDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.PitTiming -> {
+            LmuWindowsReadoutPitTimingDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> {
+            LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.TyreWear -> {
+            LmuWindowsReadoutTyreWearDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.BrakeTemperature -> {
+            LmuWindowsReadoutBrakeTemperatureDetailPane()
+        }
+
+        // detailPane は未実装（listPaneの項目追加のみ対応）。
+        ReadoutListItemType.LmuWindows.BrakeWear -> {}
+
+        ReadoutListItemType.LmuWindows.MyBestLap -> {
+            LmuWindowsReadoutMyBestLapDetailPane()
+        }
     }
 }
 

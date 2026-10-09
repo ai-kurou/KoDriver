@@ -116,12 +116,16 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 ),
                 state.items,
             )
             assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.VehicleDamage.Root])
+            assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root])
+            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root])
+            assertEquals(true, state.startSoundEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root])
             assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.MyBestLap.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             confirmVerified(simulatorRepository)
@@ -144,6 +148,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 )
@@ -165,6 +170,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 ),
@@ -181,6 +187,7 @@ class ReadoutListViewModelTest {
                         ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                         ReadoutItemKey.LmuWindows.TyreWear.Root,
                         ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                        ReadoutItemKey.LmuWindows.BrakeWear.Root,
                         ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                         ReadoutItemKey.LmuWindows.MyBestLap.Root,
                     ),
@@ -240,6 +247,50 @@ class ReadoutListViewModelTest {
         }
 
     @Test
+    fun `ブレーキ摩耗のonReadoutEnabledChangedでON_OFF状態がRepositoryに保存される`() =
+        runTest {
+            val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { simulatorRepository.selectedSimulator() } returns simulatorFlow
+            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns enabledStatesFlow
+            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
+            coEvery {
+                readoutRepository.saveReadoutEnabledState(
+                    "lmu_windows",
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
+                    true,
+                )
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.BrakeWear.Root to true) }
+            }
+            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
+
+            simulatorFlow.update { Simulator.LmuWindows }
+            viewModel.onReadoutEnabledChanged(ReadoutItemKey.LmuWindows.BrakeWear.Root, true)
+
+            assertEquals(
+                true,
+                viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root],
+            )
+            coVerify(exactly = 1) {
+                readoutRepository.saveReadoutEnabledState(
+                    "lmu_windows",
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
+                    true,
+                )
+            }
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
+            verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+            verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
+            confirmVerified(readoutRepository, simulatorRepository, queueRepository, startSoundRepository)
+        }
+
+    @Test
     fun `シミュレータを選択するとRepositoryから永続化済みのON_OFF状態が読み込まれる`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
@@ -284,6 +335,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 ),
@@ -309,6 +361,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 )
@@ -332,6 +385,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 ),
@@ -356,6 +410,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 )
@@ -368,6 +423,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 )
@@ -391,6 +447,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                     ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 ),
