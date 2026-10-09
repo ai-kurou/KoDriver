@@ -52,7 +52,7 @@ data class LmuWindowsNarratorState(
 
 /**
  * ピットタイミング（バーチャルエナジー・タイヤ摩耗の予想残り周回数）の推定に使う追跡状態。
- * 直近に完走した（給油・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う
+ * 直近に完走した（バーチャルエナジー補充・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う
  * 直近完走ラップ基準の方式。
  */
 @Serializable
@@ -65,9 +65,9 @@ data class LmuWindowsPitTimingTrackingState(
     /** 周回境界から計測を開始した周だけを消費量の推定に使う。 */
     val currentLapStartedAtBoundary: Boolean = false,
     val currentValue: Double = 0.0,
-    /** 閾値未満の増加を累積して給油・タイヤ交換を検出するための基準値。 */
+    /** 閾値未満の増加を累積してバーチャルエナジー補充・タイヤ交換を検出するための基準値。 */
     val refillBaselineValue: Double = 0.0,
-    /** 直近に完走した（給油・タイヤ交換なしの）ラップの消費量。まだ存在しなければ null。 */
+    /** 直近に完走した（バーチャルエナジー補充・タイヤ交換なしの）ラップの消費量。まだ存在しなければ null。 */
     val lastValidLapConsumption: Double? = null,
     val bestLapTimeMs: Long = -1L,
     val hasRefilled: Boolean = false,
@@ -746,7 +746,7 @@ private fun determineBlueFlagEvent(
 
 private const val PIT_TIMING_READOUT_BEFORE_BEST_LAP_MS = 30_000L
 
-/** これ未満の残量増加はジッタとみなし、給油・タイヤ交換として扱わない（割合 0.0〜1.0 に対する値）。 */
+/** これ未満の残量増加はジッタとみなし、バーチャルエナジー補充・タイヤ交換として扱わない（割合 0.0〜1.0 に対する値）。 */
 private const val PIT_TIMING_REFILL_DETECTION_MIN_RATIO = 0.005
 
 private data class PitTimingRemainingLapsEvaluation(
@@ -763,7 +763,7 @@ private fun nextRefillBaselineValue(
 
 /**
  * ピットタイミング（バーチャルエナジー・タイヤ摩耗）共通の追跡状態更新。
- * 直近に完走した（給油・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う。
+ * 直近に完走した（バーチャルエナジー補充・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う。
  */
 private fun trackPitTimingValue(
     state: LmuWindowsPitTimingTrackingState,
@@ -815,7 +815,7 @@ private fun trackPitTimingValue(
             val refilled = if (delta >= PIT_TIMING_REFILL_DETECTION_MIN_RATIO) delta else 0.0
             val refillBaselineValue = nextRefillBaselineValue(state.refillBaselineValue, currentValue, refilled)
             if (currentLap != state.currentLap) {
-                // ラップが変わるタイミングで、直前のラップが給油・タイヤ交換なしで完走していれば
+                // ラップが変わるタイミングで、直前のラップがバーチャルエナジー補充・タイヤ交換なしで完走していれば
                 // その消費量を今後の残り周回数推定の基準として採用する。
                 val completedLapConsumption = state.currentLapStartValue - state.currentValue
                 val lastValidLapConsumption =
