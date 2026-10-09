@@ -15,6 +15,7 @@ class OtherListItemsTest {
                 OtherListItemType.Volume,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Voice,
+                OtherListItemType.VoiceSpeed,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.OverlayTextSize,

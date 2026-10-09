@@ -200,6 +200,7 @@ class MainActivityTest {
         clickItemAndNavigateBack("Windows版KoDriverへ接続するIPアドレス")
         clickItemAndNavigateBack("ゲーム機・SimHubへ接続するIPアドレス")
         clickItemAndNavigateBack("音量")
+        clickScrollableItem("読み上げ速度")
         clickScrollableItem("読み上げ開始音")
         clickItem("キャンセル")
         clickScrollableItem("テレメトリ受信中は画面をスリープさせない")

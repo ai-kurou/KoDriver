@@ -17,28 +17,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.automirrored.outlined.VolumeUp
-import androidx.compose.material.icons.outlined.BedtimeOff
-import androidx.compose.material.icons.outlined.BrightnessHigh
 import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.Computer
-import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Feedback
-import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Layers
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.NewReleases
-import androidx.compose.material.icons.outlined.Opacity
-import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.PowerSettingsNew
-import androidx.compose.material.icons.outlined.RecordVoiceOver
-import androidx.compose.material.icons.outlined.SportsEsports
-import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.outlined.Vibration
-import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.HorizontalDivider
@@ -60,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.selected
@@ -96,6 +77,8 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_theme
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_engine_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_language_data_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice
+import kurou.kodriver.feature.otherlist.generated.resources.item_voice_speed
+import kurou.kodriver.feature.otherlist.generated.resources.item_voice_speed_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
@@ -111,6 +94,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.theme_light
 import kurou.kodriver.feature.otherlist.generated.resources.theme_system
 import kurou.kodriver.feature.otherlist.generated.resources.voice_system_default
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.round
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
@@ -141,6 +125,7 @@ private fun OtherListItemType.section(): OtherListSection =
 
         OtherListItemType.Volume,
         OtherListItemType.Voice,
+        OtherListItemType.VoiceSpeed,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -185,6 +170,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
 
         OtherListItemType.Volume,
         OtherListItemType.Voice,
+        OtherListItemType.VoiceSpeed,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -235,6 +221,7 @@ private fun otherReadoutSettingsItemDisplayName(itemType: OtherListItemType): St
     when (itemType) {
         OtherListItemType.Volume -> stringResource(Res.string.item_volume)
         OtherListItemType.Voice -> stringResource(Res.string.item_voice)
+        OtherListItemType.VoiceSpeed -> stringResource(Res.string.item_voice_speed)
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
         OtherListItemType.TtsEngineMissing -> stringResource(Res.string.item_tts_engine_missing)
         OtherListItemType.TtsLanguageDataMissing -> stringResource(Res.string.item_tts_language_data_missing)
@@ -270,65 +257,6 @@ private fun otherListSectionTitle(section: OtherListSection): String =
         OtherListSection.OverlaySettings -> stringResource(Res.string.section_overlay_settings)
         OtherListSection.AppSettings -> stringResource(Res.string.section_app_settings)
         OtherListSection.Information -> stringResource(Res.string.section_information)
-    }
-
-private fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
-    when (itemType) {
-        OtherListItemType.AccessLocalNetworkPermission -> Icons.Outlined.Wifi
-
-        OtherListItemType.ServerIp -> Icons.Outlined.Computer
-
-        OtherListItemType.ConsoleIp -> Icons.Outlined.SportsEsports
-
-        OtherListItemType.Volume -> Icons.AutoMirrored.Outlined.VolumeUp
-
-        OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
-
-        OtherListItemType.Voice,
-        OtherListItemType.TtsEngineMissing,
-        OtherListItemType.TtsLanguageDataMissing,
-        OtherListItemType.WindowsSpeechUnavailable,
-        -> Icons.Outlined.RecordVoiceOver
-
-        OtherListItemType.OverlayVisible,
-        OtherListItemType.OverlayTextSize,
-        OtherListItemType.OverlayBackgroundOpacity,
-        -> otherOverlaySettingsItemLeadingIconVector(itemType)
-
-        OtherListItemType.KeepScreenOn,
-        OtherListItemType.Theme,
-        OtherListItemType.DynamicColor,
-        OtherListItemType.HapticFeedback,
-        OtherListItemType.Startup,
-        -> otherAppSettingsItemLeadingIconVector(itemType)
-
-        OtherListItemType.GitHubRepository -> Icons.Outlined.Star
-
-        OtherListItemType.ReleasePage -> Icons.Outlined.NewReleases
-
-        OtherListItemType.Feedback -> Icons.Outlined.Feedback
-
-        OtherListItemType.License -> Icons.Outlined.Description
-
-        OtherListItemType.DebugState -> Icons.Outlined.Code
-    }
-
-private fun otherOverlaySettingsItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
-    when (itemType) {
-        OtherListItemType.OverlayVisible -> Icons.Outlined.Layers
-        OtherListItemType.OverlayTextSize -> Icons.Outlined.FormatSize
-        OtherListItemType.OverlayBackgroundOpacity -> Icons.Outlined.Opacity
-        else -> error("unexpected item type: $itemType")
-    }
-
-private fun otherAppSettingsItemLeadingIconVector(itemType: OtherListItemType): ImageVector =
-    when (itemType) {
-        OtherListItemType.KeepScreenOn -> Icons.Outlined.BedtimeOff
-        OtherListItemType.Theme -> Icons.Outlined.BrightnessHigh
-        OtherListItemType.DynamicColor -> Icons.Outlined.Palette
-        OtherListItemType.HapticFeedback -> Icons.Outlined.Vibration
-        OtherListItemType.Startup -> Icons.Outlined.PowerSettingsNew
-        else -> error("unexpected item type: $itemType")
     }
 
 @Composable
@@ -371,6 +299,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.OverlayTextSize,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
 
+        OtherListItemType.VoiceSpeed,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
@@ -471,6 +400,39 @@ private fun OtherListSectionHeader(section: OtherListSection) {
     )
 }
 
+private fun otherVoiceSettingsItemSupportingContent(
+    item: OtherListItemType,
+    uiState: OtherListUiState,
+): @Composable () -> Unit =
+    when (item) {
+        OtherListItemType.Volume -> {
+            { Text(stringResource(Res.string.item_volume_summary, uiState.soundVolume, uiState.deviceVolume)) }
+        }
+
+        OtherListItemType.VoiceSpeed -> {
+            {
+                val speed = (round(uiState.voiceSpeed * 10) / 10).toString()
+                Text(stringResource(Res.string.item_voice_speed_summary, speed))
+            }
+        }
+
+        OtherListItemType.Voice -> {
+            {
+                Text(
+                    if (uiState.voiceId == VOICE_ID_UNSPECIFIED) {
+                        stringResource(Res.string.voice_system_default)
+                    } else {
+                        uiState.voiceId
+                    },
+                )
+            }
+        }
+
+        else -> {
+            error("unexpected item type: $item")
+        }
+    }
+
 private fun otherListItemSupportingContent(
     item: OtherListItemType,
     uiState: OtherListUiState,
@@ -484,20 +446,11 @@ private fun otherListItemSupportingContent(
             { Text(stringResource(Res.string.item_overlay_visible_summary)) }
         }
 
-        OtherListItemType.Volume -> {
-            { Text(stringResource(Res.string.item_volume_summary, uiState.soundVolume, uiState.deviceVolume)) }
-        }
-
-        OtherListItemType.Voice -> {
-            {
-                Text(
-                    if (uiState.voiceId == VOICE_ID_UNSPECIFIED) {
-                        stringResource(Res.string.voice_system_default)
-                    } else {
-                        uiState.voiceId
-                    },
-                )
-            }
+        OtherListItemType.Volume,
+        OtherListItemType.VoiceSpeed,
+        OtherListItemType.Voice,
+        -> {
+            otherVoiceSettingsItemSupportingContent(item, uiState)
         }
 
         OtherListItemType.Theme -> {
@@ -642,6 +595,7 @@ private fun OtherListItem(
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
                 OtherListItemType.Voice,
+                OtherListItemType.VoiceSpeed,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
@@ -667,7 +621,9 @@ private fun OtherListItem(
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
                 .clickable {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    if (item != OtherListItemType.VoiceSpeed) {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    }
                     handleOtherListItemClick(
                         item = item,
                         uiState = uiState,
@@ -698,6 +654,10 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
+        OtherListItemType.VoiceSpeed -> {
+            Unit
+        }
+
         OtherListItemType.OverlayVisible -> {
             onOverlayVisibleChange(!uiState.overlayVisible)
         }

@@ -5,12 +5,14 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
+import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import org.koin.dsl.module
 
 /**
@@ -26,6 +28,7 @@ val fakeSpeechSettingsSenderRepository = FakeSpeechSettingsSenderRepository()
 
 val fakeOtherListModule =
     module {
+        single<VoiceSpeedPreferencesRepository> { FakeVoiceSpeedPreferencesRepository() }
         single<ReadoutStartSoundPreferencesRepository> { FakeReadoutStartSoundPreferencesRepository() }
         single<StartupEnabledRepository> { FakeStartupEnabledRepository() }
         single<HapticFeedbackAvailabilityRepository> { FakeHapticFeedbackAvailabilityRepository() }
@@ -88,5 +91,15 @@ class FakeReadoutStartSoundPreferencesRepository : ReadoutStartSoundPreferencesR
 
     override suspend fun saveType(type: ReadoutStartSoundType) {
         this.type.update { type }
+    }
+}
+
+class FakeVoiceSpeedPreferencesRepository : VoiceSpeedPreferencesRepository {
+    private val speed = MutableStateFlow(VOICE_SPEED_DEFAULT)
+
+    override fun voiceSpeed() = speed
+
+    override suspend fun saveVoiceSpeed(voiceSpeed: Float) {
+        speed.update { voiceSpeed }
     }
 }

@@ -6,6 +6,7 @@ import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayVisibleUseCase
@@ -54,6 +55,7 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
+                get(),
             )
         }
 
@@ -63,6 +65,7 @@ val otherListModule =
         // オーバーレイ表示ON/OFF（:core:domain。get() は :core:data の Repository を解決）
         factory { ObserveOverlayVisibleUseCase(get()) }
         factory { ObserveVoiceUseCase(get()) }
+        factory { ObserveVoiceSpeedUseCase(get()) }
         factory { ObserveReadoutStartSoundTypeUseCase(get()) }
         factory { ObserveSoundVolumeUseCase(get()) }
         factory { SaveOverlayVisibleUseCase(get()) }

@@ -43,6 +43,31 @@ class OtherContentTest {
         )
 
     @Test
+    fun `読み上げ速度をタップしても選択せず詳細ペインを開かない`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+        var backEnabled = false
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.VoiceSpeed), selectedItem = selectedItem),
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { item, _, _, _, _ -> Text("Detail: ${item.id}") },
+            )
+        }
+
+        rule.onNodeWithText("読み上げ速度").assertExists().performClick()
+        rule.waitForIdle()
+
+        assertEquals(null, selectedItem)
+        assertFalse(backEnabled)
+        rule.onNodeWithText("Detail: voice_speed").assertDoesNotExist()
+    }
+
+    @Test
     fun `Windows音声設定の案内をクリックするとコールバックを呼ぶ`() {
         var opened = 0
         var selected = false
