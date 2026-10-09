@@ -67,7 +67,7 @@ class ReadoutListViewModelSelectionTest {
         }
 
     @Test
-    fun `detailPane未実装のブレーキ摩耗を選択しても選択状態は変わらない`() =
+    fun `ブレーキ摩耗を選択すると選択状態になる`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -82,7 +82,7 @@ class ReadoutListViewModelSelectionTest {
             simulatorFlow.update { Simulator.LmuWindows }
             viewModel.onItemSelected(ReadoutItemKey.LmuWindows.BrakeWear.Root)
 
-            assertNull(viewModel.uiState.first().selectedItem)
+            assertEquals(ReadoutListItemType.LmuWindows.BrakeWear, viewModel.uiState.first().selectedItem)
         }
 
     @Test

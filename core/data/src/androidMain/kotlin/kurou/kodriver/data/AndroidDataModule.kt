@@ -53,6 +53,7 @@ import kurou.kodriver.data.preferences.createThemePreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.release.HttpServerVersionRepository
+import kurou.kodriver.data.restapi.UnavailableLmuWindowsBrakeWearInvestigationRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsBestLapTimeRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsFlagRepository
@@ -102,6 +103,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeWearInvestigationRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -201,6 +203,7 @@ fun androidDataModule(context: Context) =
         single<LmuWindowsTyreCarcassTemperatureRepository> {
             WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
         }
+        single<LmuWindowsBrakeWearInvestigationRepository> { UnavailableLmuWindowsBrakeWearInvestigationRepository() }
         single<LmuWindowsBrakeTemperatureRepository> {
             WebSocketLmuWindowsBrakeTemperatureRepository(serverIpRepository = get(), client = get())
         }
