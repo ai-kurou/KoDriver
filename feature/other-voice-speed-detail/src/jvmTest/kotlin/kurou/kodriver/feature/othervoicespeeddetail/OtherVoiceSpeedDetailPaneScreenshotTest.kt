@@ -19,7 +19,8 @@ class OtherVoiceSpeedDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            OtherVoiceSpeedDetailPane(
+                            OtherVoiceSpeedDetailPaneContent(
+                                uiState = OtherVoiceSpeedDetailUiState(),
                                 canNavigateBack = true,
                                 onBack = {},
                             )
