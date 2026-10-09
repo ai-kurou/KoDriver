@@ -14,6 +14,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +51,9 @@ fun OtherVoiceSpeedDetailPane(
 ) {
     val viewModel: OtherVoiceSpeedDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onPreviewStopped() }
+    }
     OtherVoiceSpeedDetailPaneContent(
         uiState = uiState,
         onSpeedChanged = viewModel::onSpeedChanged,

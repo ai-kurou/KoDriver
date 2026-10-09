@@ -26,6 +26,7 @@ internal class OtherVoiceSpeedDetailViewModel(
 ) : ViewModel() {
     private val isPreviewing = MutableStateFlow(false)
     private var previewJob: Job? = null
+    private var saveJob: Job? = null
     private var previewRequest = 0
 
     val uiState: StateFlow<OtherVoiceSpeedDetailUiState> =
@@ -38,7 +39,14 @@ internal class OtherVoiceSpeedDetailViewModel(
         )
 
     fun onSpeedChanged(speed: Float) {
-        viewModelScope.launch { saveVoiceSpeed((speed * 10).roundToInt() / 10f) }
+        saveJob = viewModelScope.launch { saveVoiceSpeed((speed * 10).roundToInt() / 10f) }
+    }
+
+    /** ペインを離れたときに、再生中の試聴を止める。 */
+    fun onPreviewStopped() {
+        previewRequest++
+        previewJob?.cancel()
+        isPreviewing.update { false }
     }
 
     /** 試聴中に呼ぶと停止し、停止中に呼ぶと保存済みの速度とボイスで [text] を読み上げる。 */
@@ -51,6 +59,8 @@ internal class OtherVoiceSpeedDetailViewModel(
         previewJob =
             viewModelScope.launch {
                 try {
+                    // 保存済みの速度を読み直すため、直前のスライダー操作の保存が終わってから読み上げる。
+                    saveJob?.join()
                     val volume = observeSoundVolume().first()
                     if (volume <= 0) return@launch
                     isPreviewing.update { true }

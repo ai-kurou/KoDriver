@@ -274,4 +274,74 @@ class OtherVoiceSpeedDetailViewModelTest {
             coVerify(exactly = 2) { speakText("試聴", volume = 42) }
             confirmVerified(repository, observeSoundVolume, speakText)
         }
+
+    @Test
+    fun `スライダー操作の保存が終わってから試聴を始める`() =
+        runTest {
+            every { repository.voiceSpeed() } returns speedFlow
+            every { observeSoundVolume() } returns flowOf(42)
+            val saveFinish = CompletableDeferred<Unit>()
+            coEvery { repository.saveVoiceSpeed(1.2f) } coAnswers { saveFinish.await() }
+            coEvery { speakText("試聴", volume = 42) } returns Unit
+            val viewModel = createViewModel()
+
+            viewModel.onSpeedChanged(1.2f)
+            viewModel.onPreviewClicked("試聴")
+            runCurrent()
+            coVerify(exactly = 0) { speakText("試聴", volume = 42) }
+            saveFinish.complete(Unit)
+            runCurrent()
+
+            verify(exactly = 1) { repository.voiceSpeed() }
+            coVerify(exactly = 1) { repository.saveVoiceSpeed(1.2f) }
+            verify(exactly = 1) { observeSoundVolume() }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42) }
+            confirmVerified(repository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `ペインを離れると再生中の試聴を止める`() =
+        runTest {
+            every { repository.voiceSpeed() } returns speedFlow
+            every { observeSoundVolume() } returns flowOf(42)
+            var speakJob: Job? = null
+            coEvery { speakText("試聴", volume = 42) } coAnswers {
+                speakJob = currentCoroutineContext()[Job]
+                CompletableDeferred<Unit>().await()
+            }
+            val viewModel = createViewModel()
+            val subscription = viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+            viewModel.onPreviewClicked("試聴")
+            runCurrent()
+            assertTrue(viewModel.uiState.value.isPreviewing)
+
+            viewModel.onPreviewStopped()
+            runCurrent()
+
+            assertFalse(viewModel.uiState.value.isPreviewing)
+            assertTrue(requireNotNull(speakJob).isCancelled)
+            subscription.cancel()
+            verify(exactly = 1) { repository.voiceSpeed() }
+            verify(exactly = 1) { observeSoundVolume() }
+            coVerify(exactly = 1) { speakText("試聴", volume = 42) }
+            confirmVerified(repository, observeSoundVolume, speakText)
+        }
+
+    @Test
+    fun `試聴していないときにペインを離れても何も起きない`() =
+        runTest {
+            every { repository.voiceSpeed() } returns speedFlow
+            val viewModel = createViewModel()
+            val subscription = viewModel.uiState.launchIn(backgroundScope)
+            runCurrent()
+
+            viewModel.onPreviewStopped()
+            runCurrent()
+
+            assertFalse(viewModel.uiState.value.isPreviewing)
+            subscription.cancel()
+            verify(exactly = 1) { repository.voiceSpeed() }
+            confirmVerified(repository, observeSoundVolume, speakText)
+        }
 }
