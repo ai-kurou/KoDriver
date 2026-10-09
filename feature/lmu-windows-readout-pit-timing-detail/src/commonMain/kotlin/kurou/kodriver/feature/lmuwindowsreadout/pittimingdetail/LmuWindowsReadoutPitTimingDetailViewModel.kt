@@ -100,6 +100,9 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
             LmuWindowsReadoutPitTimingDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onVirtualEnergyEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
             pitTimingUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, enabled)
@@ -158,6 +161,6 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
 
     /** 空白文言・TTS利用不可・音量ゼロでは開始音も本文も再生しない。 */
     private fun playReadoutPreview(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.LmuWindows.PitTiming.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.LmuWindows.PitTiming.Root)
     }
 }

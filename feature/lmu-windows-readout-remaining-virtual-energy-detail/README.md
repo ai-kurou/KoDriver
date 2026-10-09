@@ -13,3 +13,5 @@ LMU のバーチャルエナジー残量を読み上げる機能の詳細設定�
 
 ![Module Graph](../../docs/graphs/feature-lmu-windows-readout-remaining-virtual-energy-detail.svg)
 <!-- MODULE-GRAPH-END -->
+
+試聴中に試聴ボタンを再押しすると停止する。詳細ペインを離れたときも試聴を停止する。

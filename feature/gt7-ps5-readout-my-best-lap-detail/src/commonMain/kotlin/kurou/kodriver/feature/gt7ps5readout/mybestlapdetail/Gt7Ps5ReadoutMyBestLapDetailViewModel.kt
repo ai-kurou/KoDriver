@@ -70,6 +70,9 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
             Gt7Ps5ReadoutMyBestLapDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
             myBestLapUseCases.saveEnabledState(
@@ -91,6 +94,6 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
     }
 }

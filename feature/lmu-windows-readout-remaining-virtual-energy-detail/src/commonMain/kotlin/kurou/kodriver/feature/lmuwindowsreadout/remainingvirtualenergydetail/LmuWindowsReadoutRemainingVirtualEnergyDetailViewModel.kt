@@ -72,6 +72,9 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
             LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onReadoutTextChanged(text: String) {
         viewModelScope.launch { readout.saveText(text) }
     }
@@ -79,7 +82,7 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
     /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
     fun onReadoutTextPreviewClicked(text: String) {
         val formattedText = formatLmuWindowsRemainingVirtualEnergyReadoutText(text, uiState.value.thresholdPercentage)
-        viewModelScope.launch { preview.preview(formattedText, ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) }
+        preview.onPreviewClicked(formattedText, ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
     }
 
     fun onThresholdChanged(percentage: Int) {

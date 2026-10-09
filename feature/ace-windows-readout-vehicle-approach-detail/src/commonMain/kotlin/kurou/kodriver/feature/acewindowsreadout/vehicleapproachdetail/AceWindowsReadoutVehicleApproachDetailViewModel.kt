@@ -69,6 +69,9 @@ internal class AceWindowsReadoutVehicleApproachDetailViewModel(
             AceWindowsReadoutVehicleApproachDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onThresholdChanged(meters: Double) {
         viewModelScope.launch { thresholds.saveThresholdMeters(meters) }
     }
@@ -92,6 +95,6 @@ internal class AceWindowsReadoutVehicleApproachDetailViewModel(
     }
 
     fun onPreviewClicked(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.AceWindows.VehicleApproach.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.AceWindows.VehicleApproach.Root)
     }
 }

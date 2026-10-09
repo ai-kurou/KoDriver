@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -219,5 +220,49 @@ class AceWindowsReadoutMyBestLapDetailViewModelTest {
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             coVerify(exactly = 0) { speakText("注意", volume = -1) }
             confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            every {
+                enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every { repository.observeReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns true
+            every { observeVolume() } returns MutableStateFlow(60)
+            val viewModel = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
+            viewModel.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root) }
+            coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
+            verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
+        }
+
+    @Test
+    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
+        runTest {
+            every {
+                enabledRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every { repository.observeReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns true
+            every { observeVolume() } returns MutableStateFlow(60)
+            val viewModel = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
+            viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.MyBestLap.Root) }
+            coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
+            verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
         }
 }

@@ -136,6 +136,9 @@ internal class AceWindowsReadoutFlagDetailViewModel(
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsReadoutFlagDetailUiState())
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onFlagEnabledChanged(
         item: FlagReadoutItem,
         enabled: Boolean,
@@ -161,6 +164,6 @@ internal class AceWindowsReadoutFlagDetailViewModel(
      * 実際の読み上げもそのキーで判定するため、試聴でも個別フラッグのキーではなくそれを渡す。
      */
     fun onFlagTextPreviewClicked(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.AceWindows.Flag.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.AceWindows.Flag.Root)
     }
 }

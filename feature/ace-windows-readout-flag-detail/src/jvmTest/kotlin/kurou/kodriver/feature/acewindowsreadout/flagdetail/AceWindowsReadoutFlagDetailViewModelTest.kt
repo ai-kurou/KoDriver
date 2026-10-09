@@ -388,4 +388,76 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             assertTrue(state.hasReadoutText(item))
         }
     }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf("完走")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.WHITE) } returns flowOf("ホワイトフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.GREEN) } returns flowOf("グリーンフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.RED) } returns flowOf("レッドフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLUE) } returns flowOf("ブルーフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.YELLOW) } returns flowOf("イエローフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK) } returns flowOf("ブラックフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK_WHITE) } returns flowOf("ブラック・ホワイトフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE) } returns
+                flowOf("オレンジボールフラッグ、車両に不具合があります")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES) } returns
+                flowOf("レッド・イエローストライプフラッグ、路面が滑りやすいです")
+            coEvery { tts.isAvailable() } returns true
+            every { volumes.volume() } returns flowOf(42)
+            every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoice() } returns flowOf("voice-a")
+            val vm = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) } coAnswers
+                { pendingStartSound.await() }
+            vm.onFlagTextPreviewClicked("完走")
+            vm.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a", 1.0f) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
+            coVerify(exactly = 1) { tts.isAvailable() }
+            verify(exactly = 1) { volumes.volume() }
+            verify(exactly = 0) { observeVoice() }
+            verify(exactly = 0) { observeVoiceSpeed() }
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
+        }
+
+    @Test
+    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf("完走")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.WHITE) } returns flowOf("ホワイトフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.GREEN) } returns flowOf("グリーンフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.RED) } returns flowOf("レッドフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLUE) } returns flowOf("ブルーフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.YELLOW) } returns flowOf("イエローフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK) } returns flowOf("ブラックフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK_WHITE) } returns flowOf("ブラック・ホワイトフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE) } returns
+                flowOf("オレンジボールフラッグ、車両に不具合があります")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES) } returns
+                flowOf("レッド・イエローストライプフラッグ、路面が滑りやすいです")
+            coEvery { tts.isAvailable() } returns true
+            every { volumes.volume() } returns flowOf(42)
+            every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoice() } returns flowOf("voice-a")
+            val vm = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) } coAnswers
+                { pendingStartSound.await() }
+            vm.onFlagTextPreviewClicked("完走")
+            vm.onFlagTextPreviewClicked("完走")
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a", 1.0f) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
+            coVerify(exactly = 1) { tts.isAvailable() }
+            verify(exactly = 1) { volumes.volume() }
+            verify(exactly = 0) { observeVoice() }
+            verify(exactly = 0) { observeVoiceSpeed() }
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
+        }
 }

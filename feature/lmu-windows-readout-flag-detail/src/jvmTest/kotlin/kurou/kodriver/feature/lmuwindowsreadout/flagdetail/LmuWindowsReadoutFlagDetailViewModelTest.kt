@@ -6,6 +6,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -232,5 +233,49 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             FlagReadoutItem.entries.forEach { coVerify(exactly = 1) { flags.saveFlagEnabledState(it.key, false) } }
             verify(exactly = 1) { flags.observeFlagEnabledStates() }
             confirmVerified(flags)
+        }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            coEvery { tts.isAvailable() } returns true
+            every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoice() } returns flowOf("voice-a")
+            stubReadouts()
+            val vm = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } coAnswers
+                { pendingStartSound.await() }
+            vm.onFlagTextPreviewClicked("注意")
+            vm.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
+            coVerify(exactly = 0) { tts.speak("注意", false, 42, "voice-a", 1.0f) }
+            coVerify(exactly = 1) { tts.isAvailable() }
+            verify(exactly = 0) { observeVoice() }
+            verify(exactly = 0) { observeVoiceSpeed() }
+            confirmVerified(engine, tts, observeVoice, observeVoiceSpeed)
+        }
+
+    @Test
+    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
+        runTest {
+            coEvery { tts.isAvailable() } returns true
+            every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoice() } returns flowOf("voice-a")
+            stubReadouts()
+            val vm = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } coAnswers
+                { pendingStartSound.await() }
+            vm.onFlagTextPreviewClicked("注意")
+            vm.onFlagTextPreviewClicked("注意")
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
+            coVerify(exactly = 0) { tts.speak("注意", false, 42, "voice-a", 1.0f) }
+            coVerify(exactly = 1) { tts.isAvailable() }
+            verify(exactly = 0) { observeVoice() }
+            verify(exactly = 0) { observeVoiceSpeed() }
+            confirmVerified(engine, tts, observeVoice, observeVoiceSpeed)
         }
 }

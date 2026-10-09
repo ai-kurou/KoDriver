@@ -72,6 +72,9 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
             AceWindowsReadoutRemainingFuelDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onReadoutTextChanged(text: String) {
         viewModelScope.launch { readout.saveText(text) }
     }
@@ -82,7 +85,7 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
         percent: Int,
     ) {
         val resolvedText = formatAceWindowsRemainingFuelReadoutText(text, percent)
-        viewModelScope.launch { preview.preview(resolvedText, ReadoutItemKey.AceWindows.RemainingFuel.Root) }
+        preview.onPreviewClicked(resolvedText, ReadoutItemKey.AceWindows.RemainingFuel.Root)
     }
 
     fun onThresholdChanged(percentage: Int) {

@@ -13,6 +13,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +64,9 @@ private const val THRESHOLD_MAX = 90f
 fun AceWindowsReadoutRemainingFuelDetailPane(modifier: Modifier = Modifier) {
     val viewModel: AceWindowsReadoutRemainingFuelDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onPreviewStopped() }
+    }
     AceWindowsReadoutRemainingFuelDetailPaneContent(
         uiState = uiState,
         onEnabledChanged = viewModel::onEnabledChanged,
