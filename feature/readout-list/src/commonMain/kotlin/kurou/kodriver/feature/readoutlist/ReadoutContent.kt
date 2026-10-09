@@ -183,6 +183,8 @@ internal fun ReadoutContent(
                         title = itemDisplayName(selectedItem.id),
                         canNavigateBack = navigator.canNavigateBack(),
                         onBack = { navigateBack() },
+                        rootEnabled = uiState.readoutEnabledStates[selectedItem.id] ?: false,
+                        onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
                         content = { detailContent(selectedItem) },
                     )
                 }

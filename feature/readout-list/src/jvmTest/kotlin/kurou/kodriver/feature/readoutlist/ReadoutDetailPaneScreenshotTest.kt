@@ -56,4 +56,27 @@ class ReadoutDetailPaneScreenshotTest {
 
             onRoot().captureRoboImage()
         }
+
+    @Test
+    fun `Rootスイッチ OFF`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            ReadoutDetailPane(
+                                title = "タイヤ温度",
+                                canNavigateBack = true,
+                                onBack = {},
+                                rootEnabled = false,
+                            ) {
+                                Text("詳細内容")
+                            }
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
 }

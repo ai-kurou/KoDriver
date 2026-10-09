@@ -255,6 +255,66 @@ class ReadoutContentTest {
     }
 
     @Test
+    fun `選択中項目のRootがOFFの場合は詳細ペインにバナーを表示しONにするで有効化コールバックを呼ぶ`() {
+        var tyreTemperatureText by mutableStateOf("")
+        val changes = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
+
+        rule.setContent {
+            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            ReadoutContent(
+                uiState =
+                    ReadoutListUiState(
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
+                        selectedItem = ReadoutListItemType.LmuWindows.TyreTemperature,
+                    ),
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { key, enabled -> changes += key to enabled },
+                onQueueEnabledChanged = { _, _ -> },
+                onStartSoundEnabledChanged = { _, _ -> },
+                onItemSelected = {},
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+
+        rule.onNodeWithText("「$tyreTemperatureText」がOFFのため、読み上げられません").assertExists()
+        rule.onNodeWithText("ONにする").performClick()
+
+        assertEquals(
+            listOf<Pair<ReadoutItemKey, Boolean>>(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+            changes,
+        )
+    }
+
+    @Test
+    fun `選択中項目のRootがONの場合は詳細ペインにバナーを表示しない`() {
+        rule.setContent {
+            ReadoutContent(
+                uiState =
+                    ReadoutListUiState(
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+                        selectedItem = ReadoutListItemType.LmuWindows.TyreTemperature,
+                    ),
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
+                onStartSoundEnabledChanged = { _, _ -> },
+                onItemSelected = {},
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+
+        rule.onNodeWithText("ONにする").assertDoesNotExist()
+    }
+
+    @Test
     fun `バーチャルエナジー残量をタップすると選択コールバックを呼ぶ`() {
         var veText by mutableStateOf("")
         val selected = mutableListOf<ReadoutItemKey>()
