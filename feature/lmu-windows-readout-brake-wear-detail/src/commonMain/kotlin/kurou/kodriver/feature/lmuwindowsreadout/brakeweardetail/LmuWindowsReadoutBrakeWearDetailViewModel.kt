@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearInvestigationData
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearInvestigationUseCase
 
@@ -24,12 +25,14 @@ internal class LmuWindowsReadoutBrakeWearDetailViewModel(
             LmuWindowsReadoutBrakeWearDetailUiState(),
         )
 
-    /** 現在表示している値を、差分表示の基準にする。 */
+    /** 現在表示している値を、差分表示の基準にする。値を1つも取得できていないときは何もしない。 */
     fun onBaselineSet() {
-        baseline.value = uiState.value.current
+        val state = uiState.value
+        if (!state.hasCurrentValues) return
+        baseline.update { state.current }
     }
 
     fun onBaselineCleared() {
-        baseline.value = null
+        baseline.update { null }
     }
 }

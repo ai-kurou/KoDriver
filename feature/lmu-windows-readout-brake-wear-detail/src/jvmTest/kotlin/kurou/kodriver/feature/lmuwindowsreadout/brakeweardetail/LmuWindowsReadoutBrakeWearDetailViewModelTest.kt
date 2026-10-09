@@ -38,7 +38,6 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        every { repository.investigationStream() } returns dataFlow
     }
 
     @AfterTest
@@ -52,6 +51,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
     @Test
     fun `初期状態は値なしで基準も未設定`() =
         runTest {
+            every { repository.investigationStream() } returns dataFlow
             val viewModel = createViewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
 
@@ -63,6 +63,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
     @Test
     fun `取得した生の値がuiStateのcurrentに反映される`() =
         runTest {
+            every { repository.investigationStream() } returns dataFlow
             val viewModel = createViewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
 
@@ -77,6 +78,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
     @Test
     fun `基準に設定すると以降の値が変わっても基準は保持される`() =
         runTest {
+            every { repository.investigationStream() } returns dataFlow
             val viewModel = createViewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
             dataFlow.update { first }
@@ -93,8 +95,23 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
         }
 
     @Test
+    fun `値を1つも取得できていないときは基準に設定しない`() =
+        runTest {
+            every { repository.investigationStream() } returns dataFlow
+            val viewModel = createViewModel()
+            backgroundScope.launch { viewModel.uiState.collect {} }
+
+            viewModel.onBaselineSet()
+
+            assertNull(viewModel.uiState.first().baseline)
+            verify(exactly = 1) { repository.investigationStream() }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `基準をクリアすると基準が未設定に戻る`() =
         runTest {
+            every { repository.investigationStream() } returns dataFlow
             val viewModel = createViewModel()
             backgroundScope.launch { viewModel.uiState.collect {} }
             dataFlow.update { first }

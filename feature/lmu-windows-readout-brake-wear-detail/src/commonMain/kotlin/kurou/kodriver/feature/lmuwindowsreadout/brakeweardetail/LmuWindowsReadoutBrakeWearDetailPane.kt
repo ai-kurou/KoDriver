@@ -2,13 +2,15 @@ package kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +23,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearInvestigationData
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_brake_info_title
@@ -54,6 +57,7 @@ fun LmuWindowsReadoutBrakeWearDetailPane(modifier: Modifier = Modifier) {
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun LmuWindowsReadoutBrakeWearDetailPaneContent(
     uiState: LmuWindowsReadoutBrakeWearDetailUiState = LmuWindowsReadoutBrakeWearDetailUiState(),
@@ -68,11 +72,11 @@ internal fun LmuWindowsReadoutBrakeWearDetailPaneContent(
                 .verticalScroll(rememberScrollState()),
     ) {
         DetailPaneDescription(text = stringResource(Res.string.brake_wear_description))
-        Row(
+        FlowRow(
             modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.extraSmall),
             horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
         ) {
-            Button(onClick = onBaselineSet) {
+            Button(onClick = onBaselineSet, enabled = uiState.hasCurrentValues) {
                 Text(stringResource(Res.string.brake_wear_set_baseline))
             }
             OutlinedButton(onClick = onBaselineCleared, enabled = uiState.baseline != null) {
@@ -111,7 +115,10 @@ private fun BrakeWearValuesCard(
                     values.forEachIndexed { index, value ->
                         val label = wheelLabel(index)
                         val base = baseline?.getOrNull(index)
-                        DetailPaneBodyText(
+                        Text(
+                            style = koDriverNumericTextStyle(MaterialTheme.typography.bodyMedium),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(vertical = KoDriverSpacing.extraSmall),
                             text =
                                 if (base == null) {
                                     stringResource(Res.string.brake_wear_wheel_row, label, formatBrakeWearValue(value))

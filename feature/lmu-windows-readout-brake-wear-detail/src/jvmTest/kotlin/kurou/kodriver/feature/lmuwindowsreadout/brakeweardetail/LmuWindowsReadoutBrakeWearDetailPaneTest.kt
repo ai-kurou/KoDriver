@@ -114,6 +114,27 @@ class LmuWindowsReadoutBrakeWearDetailPaneTest {
     }
 
     @Test
+    fun `値を取得できていないときは基準にするボタンが無効で片方でも取得できれば有効になる`() {
+        var state by mutableStateOf(LmuWindowsReadoutBrakeWearDetailUiState())
+        rule.setContent {
+            KoDriverTheme { LmuWindowsReadoutBrakeWearDetailPaneContent(uiState = state) }
+        }
+        rule.onNodeWithText("現在値を基準にする").assertIsNotEnabled()
+
+        state =
+            LmuWindowsReadoutBrakeWearDetailUiState(
+                current = LmuWindowsBrakeWearInvestigationData(brakeInfo = listOf(0.036)),
+            )
+        rule.onNodeWithText("現在値を基準にする").assertIsEnabled()
+
+        state =
+            LmuWindowsReadoutBrakeWearDetailUiState(
+                current = LmuWindowsBrakeWearInvestigationData(wearablesBrakes = listOf(0.036)),
+            )
+        rule.onNodeWithText("現在値を基準にする").assertIsEnabled()
+    }
+
+    @Test
     fun `ボタン押下でコールバックが呼ばれる`() {
         var setCount = 0
         var clearedCount = 0
@@ -121,7 +142,10 @@ class LmuWindowsReadoutBrakeWearDetailPaneTest {
             KoDriverTheme {
                 LmuWindowsReadoutBrakeWearDetailPaneContent(
                     uiState =
-                        LmuWindowsReadoutBrakeWearDetailUiState(baseline = LmuWindowsBrakeWearInvestigationData()),
+                        LmuWindowsReadoutBrakeWearDetailUiState(
+                            current = current,
+                            baseline = LmuWindowsBrakeWearInvestigationData(),
+                        ),
                     onBaselineSet = { setCount++ },
                     onBaselineCleared = { clearedCount++ },
                 )
