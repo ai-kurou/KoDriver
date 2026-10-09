@@ -6,6 +6,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -32,5 +33,6 @@ val otherVolumeDetailModule =
         factory { DeviceVolumeUseCases(get(), get()) }
 
         // 試聴再生（named(Simulator.LmuWindows.id) の TextToSpeechEngine に依存）
+        factory { StopSpeechUseCase(get(named(Simulator.LmuWindows.id))) }
         factory { PlaySpeechEventUseCase(get(named(Simulator.LmuWindows.id))) }
     }

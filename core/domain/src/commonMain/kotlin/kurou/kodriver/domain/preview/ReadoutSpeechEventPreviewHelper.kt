@@ -5,6 +5,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 /**
  * 解決済みの自由文言を持つイベントを、既存のイベント再生経路で試聴する。
@@ -16,9 +17,19 @@ class ReadoutSpeechEventPreviewHelper(
     checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     observeSoundVolume: ObserveSoundVolumeUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
+    private val stopSpeech: StopSpeechUseCase,
 ) {
     private val guard = ReadoutPreviewGuard(scope, checkTextToSpeechAvailable, observeSoundVolume)
     val textToSpeechAvailable = guard.textToSpeechAvailable
+
+    private var previewStarted = false
+
+    /** このヘルパーで開始した試聴を止める。未試聴の場合は本番の読み上げを止めない。 */
+    fun stop() {
+        if (!previewStarted) return
+        stopSpeech()
+        previewStarted = false
+    }
 
     /** 空白文言・TTS利用不可・音量0以下ではイベントを再生しない。 */
     suspend fun preview(
@@ -27,5 +38,6 @@ class ReadoutSpeechEventPreviewHelper(
     ) {
         guard.volumeForPreview(text) ?: return
         playSpeechEvent(event)
+        previewStarted = true
     }
 }

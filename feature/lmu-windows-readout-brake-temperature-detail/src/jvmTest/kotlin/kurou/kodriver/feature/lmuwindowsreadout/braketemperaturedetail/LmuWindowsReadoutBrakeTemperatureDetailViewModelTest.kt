@@ -34,6 +34,7 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeTemperatureReadoutTextUs
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -50,6 +51,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
     private val textFlow = MutableStateFlow(LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT)
+    private val stopSpeech: StopSpeechUseCase = mockk()
     private val playSpeechEvent: PlaySpeechEventUseCase = mockk()
 
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
@@ -81,7 +83,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
                 ),
             observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
-            readout = BrakeTemperatureReadoutUseCases(playSpeechEvent, checkAvailable, observeVolume),
+            readout = BrakeTemperatureReadoutUseCases(playSpeechEvent, stopSpeech, checkAvailable, observeVolume),
         )
 
     @Test
@@ -107,7 +109,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -139,7 +142,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 800)
             }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -171,7 +175,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 800)
             }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -195,7 +200,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { vehicleClassRepository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte) }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -232,7 +238,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
                     false,
                 )
             }
-            confirmVerified(vehicleClassRepository, readoutPreferencesRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
     private fun stubReadout(available: Boolean = true) {
@@ -261,7 +268,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             coVerify(exactly = 1) { vehicleClassRepository.saveReadoutText("残り{celsius}℃") }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            confirmVerified(vehicleClassRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(vehicleClassRepository, stopSpeech)
         }
 
     @Test
@@ -295,7 +303,8 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(650, "残り650℃")) }
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
-            confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)
             collection.cancel()
         }
 
@@ -307,10 +316,13 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
                 MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             every { vehicleClassRepository.observeHighThresholdCelsius() } returns
                 MutableStateFlow(mapOf(LmuWindowsVehicleClassData.Hypercar to 800))
-            createViewModel().onReadoutTextPreviewClicked(" ")
+            val viewModel = createViewModel()
+            viewModel.onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, " ")) }
-            confirmVerified(observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -326,7 +338,9 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "注意")) }
-            confirmVerified(observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -345,7 +359,9 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "注意")) }
-            confirmVerified(observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -363,6 +379,49 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "温度800℃")) }
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
-            confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)
+        }
+
+    @Test
+    fun `ペインを離れると開始した試聴を一度だけ停止する`() =
+        runTest {
+            stubReadout()
+            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
+                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
+            val threshold =
+                MutableStateFlow<Map<LmuWindowsVehicleClassData, Int>>(
+                    mapOf(LmuWindowsVehicleClassData.Hypercar to 800),
+                )
+            every { vehicleClassRepository.observeHighThresholdCelsius() } returns threshold
+            every { observeVolume() } returns MutableStateFlow(60)
+            every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "残り800℃")) } returns Unit
+            every { stopSpeech() } returns Unit
+            val viewModel = createViewModel()
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech() }
+            assertEquals(
+                800,
+                viewModel.uiState.first().vehicleClassHighThresholdCelsius[LmuWindowsVehicleClassData.Hypercar],
+            )
+            viewModel.onReadoutTextPreviewClicked("残り{celsius}℃")
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "残り800℃")) }
+            verify(exactly = 1) { observeVolume() }
+            coVerify(exactly = 1) { checkAvailable() }
+            viewModel.onPreviewStopped()
+            viewModel.onPreviewStopped()
+            verify(exactly = 1) { stopSpeech() }
+            verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
+            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
+            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            confirmVerified(
+                vehicleClassRepository,
+                readoutPreferencesRepository,
+                playSpeechEvent,
+                observeVolume,
+                checkAvailable,
+                stopSpeech,
+            )
         }
 }

@@ -26,6 +26,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class SoundVolumeUseCases(
     val observeSoundVolume: ObserveSoundVolumeUseCase,
@@ -41,7 +42,9 @@ internal class OtherVolumeDetailViewModel(
     private val soundVolumeUseCases: SoundVolumeUseCases,
     private val deviceVolumeUseCases: DeviceVolumeUseCases,
     private val playSpeechEvent: PlaySpeechEventUseCase,
+    private val stopSpeech: StopSpeechUseCase,
 ) : ViewModel() {
+    private var previewStarted = false
     private val deviceVolumeRefreshTrigger = MutableStateFlow(0)
 
     // 連続でスライダーを操作した場合でも書き込みが逆順に完了してOS音量が古い値のまま
@@ -88,6 +91,14 @@ internal class OtherVolumeDetailViewModel(
         // 保存済みの自己ベスト文言が空欄でも音量を確認できるよう、既定文言を解決済みとして再生する。
         val sample = SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = PREVIEW_LAP_TIME_MS)
         playSpeechEvent(sample.copy(resolvedText = sample.narratedText))
+        previewStarted = true
+    }
+
+    /** 詳細ペインを離れると、このペインで開始した試聴だけを止める。 */
+    fun onPreviewStopped() {
+        if (!previewStarted) return
+        stopSpeech()
+        previewStarted = false
     }
 
     fun onDeviceVolumeChanged(volume: Int) {

@@ -21,6 +21,7 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageEnabledStateUseC
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class VehicleDamageUseCases(
     val observeEnabledStates: ObserveLmuWindowsVehicleDamageEnabledStatesUseCase,
@@ -35,6 +36,7 @@ internal data class VehicleDamageUseCases(
 
 internal data class VehicleDamageReadoutUseCases(
     val playSpeechEvent: PlaySpeechEventUseCase,
+    val stopSpeech: StopSpeechUseCase,
     val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
@@ -49,7 +51,11 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
             readout.checkTextToSpeechAvailable,
             readout.observeSoundVolume,
             readout.playSpeechEvent,
+            readout.stopSpeech,
         )
+
+    /** 詳細ペインを離れると試聴を止める。 */
+    fun onPreviewStopped() = previewHelper.stop()
 
     val uiState: StateFlow<LmuWindowsReadoutVehicleDamageDetailUiState> =
         combine(

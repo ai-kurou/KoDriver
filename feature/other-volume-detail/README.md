@@ -1,5 +1,7 @@
 # other-volume-detail
 
+詳細ペインを離れたときも試聴を停止する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

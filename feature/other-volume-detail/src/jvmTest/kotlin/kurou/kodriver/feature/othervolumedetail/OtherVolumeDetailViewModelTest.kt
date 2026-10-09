@@ -29,6 +29,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -41,6 +42,8 @@ class OtherVolumeDetailViewModelTest {
     private val soundVolumeRepository: SoundVolumePreferencesRepository = mockk()
 
     private val deviceVolumeRepository: DeviceVolumeRepository = mockk()
+
+    private val stopSpeech: StopSpeechUseCase = mockk()
 
     private val ttsEngine: TextToSpeechEngine = mockk()
 
@@ -69,6 +72,7 @@ class OtherVolumeDetailViewModelTest {
                     setDeviceVolume = SetDeviceVolumeUseCase(deviceVolumeRepository),
                 ),
             playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+            stopSpeech = stopSpeech,
         )
 
     @Test
@@ -81,7 +85,8 @@ class OtherVolumeDetailViewModelTest {
             assertEquals(OtherVolumeDetailUiState(volume = 80, deviceVolume = 60), viewModel.uiState.first())
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 1) { deviceVolumeRepository.getVolume() }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, stopSpeech)
         }
 
     @Test
@@ -98,7 +103,8 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 1) { deviceVolumeRepository.getVolume() }
             coVerify(exactly = 1) { soundVolumeRepository.saveVolume(40) }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, stopSpeech)
         }
 
     @Test
@@ -116,7 +122,8 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 2) { deviceVolumeRepository.getVolume() }
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(30) }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, stopSpeech)
         }
 
     @Test
@@ -146,7 +153,8 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 4) { deviceVolumeRepository.getVolume() }
             coVerify(exactly = 2) { deviceVolumeRepository.setVolume(50) }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, stopSpeech)
         }
 
     @Test
@@ -172,7 +180,8 @@ class OtherVolumeDetailViewModelTest {
             verify(exactly = 1) { soundVolumeRepository.volume() }
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(20) }
             coVerify(exactly = 1) { deviceVolumeRepository.setVolume(80) }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, stopSpeech)
         }
 
     @Test
@@ -187,7 +196,8 @@ class OtherVolumeDetailViewModelTest {
 
         verify(exactly = 1) { soundVolumeRepository.volume() }
         verify(exactly = 1) { ttsEngine.speak(previewEvent, false) }
-        confirmVerified(soundVolumeRepository, ttsEngine)
+        verify(exactly = 0) { stopSpeech() }
+        confirmVerified(soundVolumeRepository, ttsEngine, stopSpeech)
     }
 
     @Test
@@ -206,7 +216,29 @@ class OtherVolumeDetailViewModelTest {
 
             coVerify(exactly = 3) { deviceVolumeRepository.getVolume() }
             verify(exactly = 1) { soundVolumeRepository.volume() }
-            confirmVerified(soundVolumeRepository, deviceVolumeRepository)
+            verify(exactly = 0) { stopSpeech() }
+            confirmVerified(soundVolumeRepository, deviceVolumeRepository, stopSpeech)
             job.cancel()
         }
+
+    @Test
+    fun `ペインを離れると開始した試聴を一度だけ停止する`() {
+        val previewEvent =
+            SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L, resolvedText = "自己ベストラップ更新 1分23秒456")
+        every { soundVolumeRepository.volume() } returns volumeFlow
+        every { ttsEngine.speak(previewEvent, false) } returns Unit
+        every { stopSpeech() } returns Unit
+        val viewModel = createViewModel()
+        viewModel.onPreviewStopped()
+        verify(exactly = 0) { stopSpeech() }
+
+        viewModel.onPreviewClicked()
+
+        verify(exactly = 1) { soundVolumeRepository.volume() }
+        verify(exactly = 1) { ttsEngine.speak(previewEvent, false) }
+        viewModel.onPreviewStopped()
+        viewModel.onPreviewStopped()
+        verify(exactly = 1) { stopSpeech() }
+        confirmVerified(soundVolumeRepository, ttsEngine, stopSpeech)
+    }
 }
