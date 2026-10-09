@@ -52,6 +52,7 @@ internal fun ReadoutDetailPane(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     rootEnabled: Boolean = true,
+    rootItemName: String = title,
     onEnableRoot: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     content: @Composable () -> Unit,
@@ -81,7 +82,7 @@ internal fun ReadoutDetailPane(
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             if (!rootEnabled) {
-                RootDisabledBanner(itemName = title, onEnableRoot = onEnableRoot)
+                RootDisabledBanner(itemName = rootItemName, onEnableRoot = onEnableRoot)
             }
             // 操作は可能なまま、読み上げられないことを視覚的に示すため薄く表示する。
             Box(

@@ -47,6 +47,25 @@ class ReadoutDetailPaneTest {
     }
 
     @Test
+    fun `バナーの項目名はrootItemNameで指定できる`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutDetailPane(
+                    title = "タイトル",
+                    canNavigateBack = true,
+                    onBack = {},
+                    rootEnabled = false,
+                    rootItemName = "タイヤ温度",
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        rule.onNodeWithText("「タイヤ温度」がOFFのため、読み上げられません").assertIsDisplayed()
+    }
+
+    @Test
     fun `戻るボタンをタップするとonBackが呼ばれる`() {
         var backCount = 0
         rule.setContent {
