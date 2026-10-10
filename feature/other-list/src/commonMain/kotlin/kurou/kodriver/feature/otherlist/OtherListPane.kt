@@ -82,6 +82,9 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_voice_speed_sum
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_windows_speech_unavailable
+import kurou.kodriver.feature.otherlist.generated.resources.local_network_permission_granted
+import kurou.kodriver.feature.otherlist.generated.resources.local_network_permission_not_granted
+import kurou.kodriver.feature.otherlist.generated.resources.local_network_permission_open_settings
 import kurou.kodriver.feature.otherlist.generated.resources.readout_start_sound_electronic_noise
 import kurou.kodriver.feature.otherlist.generated.resources.readout_start_sound_formula_radio
 import kurou.kodriver.feature.otherlist.generated.resources.section_app_settings
@@ -438,6 +441,19 @@ private fun otherListItemSupportingContent(
     uiState: OtherListUiState,
 ): (@Composable () -> Unit)? =
     when (item) {
+        OtherListItemType.AccessLocalNetworkPermission -> {
+            {
+                if (uiState.accessLocalNetworkPermissionGranted) {
+                    Text(stringResource(Res.string.local_network_permission_granted))
+                } else {
+                    Column {
+                        Text(stringResource(Res.string.local_network_permission_not_granted))
+                        Text(stringResource(Res.string.local_network_permission_open_settings))
+                    }
+                }
+            }
+        }
+
         OtherListItemType.GitHubRepository -> {
             { Text(stringResource(Res.string.item_github_repository_star_request)) }
         }
