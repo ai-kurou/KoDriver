@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherlist
 
 import kurou.kodriver.domain.model.DEVICE_VOLUME_MIN
 import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
+import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_VISIBLE_DEFAULT
@@ -35,6 +36,8 @@ data class OtherListUiState(
     val voiceId: String = VOICE_ID_UNSPECIFIED,
     val voiceSpeed: Float = VOICE_SPEED_DEFAULT,
     val serverIp: String? = null,
+    val consoleAddress: String? = null,
+    val consolePort: Int = GT7_PS5_UDP_PORT_DEFAULT,
     val themeMode: ThemeMode = THEME_MODE_DEFAULT,
     val ttsUnavailableGuidance: TtsUnavailableGuidance? = null,
     val startupEnabled: Boolean = false,

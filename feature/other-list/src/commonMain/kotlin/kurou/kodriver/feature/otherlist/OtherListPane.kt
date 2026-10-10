@@ -55,6 +55,7 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.feature.otherlist.generated.resources.Res
+import kurou.kodriver.feature.otherlist.generated.resources.console_ip_not_configured
 import kurou.kodriver.feature.otherlist.generated.resources.item_access_local_network_permission
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
 import kurou.kodriver.feature.otherlist.generated.resources.item_debug_state
@@ -460,6 +461,18 @@ private fun otherListItemSupportingContent(
     when (item) {
         OtherListItemType.ServerIp -> {
             { OtherServerIpSummary(uiState.serverIp) }
+        }
+
+        OtherListItemType.ConsoleIp -> {
+            {
+                Text(
+                    if (uiState.consoleAddress.isNullOrBlank()) {
+                        stringResource(Res.string.console_ip_not_configured)
+                    } else {
+                        "${uiState.consoleAddress}:${uiState.consolePort}"
+                    },
+                )
+            }
         }
 
         OtherListItemType.AccessLocalNetworkPermission -> {

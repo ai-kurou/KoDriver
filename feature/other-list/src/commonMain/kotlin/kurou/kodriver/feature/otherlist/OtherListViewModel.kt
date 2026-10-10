@@ -20,7 +20,9 @@ import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
@@ -60,6 +62,8 @@ data class OtherListSettingsUseCases(
     val observeSoundVolume: ObserveSoundVolumeUseCase,
     val observeThemeMode: ObserveThemeModeUseCase,
     val observeServerIp: ObserveServerIpUseCase?,
+    val observeConsoleAddress: ObserveConsoleAddressUseCase,
+    val observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
 )
 
 /**
@@ -131,6 +135,10 @@ class OtherListViewModel(
             )
         }.combine(settingsUseCases.observeServerIp?.invoke() ?: flowOf(null)) { state, serverIp ->
             state.copy(serverIp = serverIp)
+        }.combine(settingsUseCases.observeConsoleAddress()) { state, consoleAddress ->
+            state.copy(consoleAddress = consoleAddress)
+        }.combine(settingsUseCases.observeGt7Ps5UdpPort()) { state, consolePort ->
+            state.copy(consolePort = consolePort)
         }.combine(settingsUseCases.observeThemeMode()) { state, themeMode ->
             state.copy(themeMode = themeMode)
         }.combine(settingsUseCases.observeVoice()) { state, voiceId ->

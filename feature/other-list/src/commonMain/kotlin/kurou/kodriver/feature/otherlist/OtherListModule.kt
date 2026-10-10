@@ -2,6 +2,8 @@ package kurou.kodriver.feature.otherlist
 
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
@@ -59,6 +61,8 @@ val otherListModule =
                 get(),
                 // 接続先IPの設定はAndroidのみ。項目がないプラットフォームでは購読しない。
                 if (OtherListItemType.ServerIp in buildOtherListItems()) get() else null,
+                get(),
+                get(),
             )
         }
 
@@ -76,6 +80,8 @@ val otherListModule =
         // other-theme-detail と同じfactory定義なので、どちらが後から登録されても同じ依存を解決する。
         factory { ObserveThemeModeUseCase(get()) }
         factory { ObserveServerIpUseCase(get()) }
+        factory { ObserveConsoleAddressUseCase(get()) }
+        factory { ObserveGt7Ps5UdpPortUseCase(get()) }
 
         // 端末のマスター音量（:core:device-volume-data の Repository を解決）。
         // other-volume-detail と同じfactory定義なので、どちらが後から登録されても同じ依存を解決する。
