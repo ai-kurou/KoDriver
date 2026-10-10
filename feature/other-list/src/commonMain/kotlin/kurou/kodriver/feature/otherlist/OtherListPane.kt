@@ -676,23 +676,28 @@ private fun OtherListItem(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .semantics { selected = isSelected }
-                .clickable {
-                    if (item == OtherListItemType.VoicePitch) return@clickable
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    handleOtherListItemClick(
-                        item = item,
-                        uiState = uiState,
-                        onOverlayVisibleChange = onOverlayVisibleChange,
-                        onKeepScreenOnChange = onKeepScreenOnChange,
-                        onDynamicColorEnabledChange = onDynamicColorEnabledChange,
-                        onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
-                        onStartupEnabledChange = onStartupEnabledChange,
-                        openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
-                        openTtsSettings = openTtsSettings,
-                        onItemClick = onItemClick,
-                    )
-                },
+                .semantics(mergeDescendants = true) { selected = isSelected }
+                .then(
+                    if (item == OtherListItemType.VoicePitch) {
+                        Modifier
+                    } else {
+                        Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            handleOtherListItemClick(
+                                item = item,
+                                uiState = uiState,
+                                onOverlayVisibleChange = onOverlayVisibleChange,
+                                onKeepScreenOnChange = onKeepScreenOnChange,
+                                onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                                onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
+                                onStartupEnabledChange = onStartupEnabledChange,
+                                openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
+                                openTtsSettings = openTtsSettings,
+                                onItemClick = onItemClick,
+                            )
+                        }
+                    },
+                ),
     )
 }
 

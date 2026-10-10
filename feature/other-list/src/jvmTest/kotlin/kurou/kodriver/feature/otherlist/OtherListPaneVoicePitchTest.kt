@@ -1,10 +1,11 @@
 package kurou.kodriver.feature.otherlist
 
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
@@ -19,7 +20,7 @@ class OtherListPaneVoicePitchTest {
     private val onItemClick: (OtherListItemType) -> Unit = mockk()
 
     @Test
-    fun `読み上げ設定に既定ピッチを表示しタップしても選択を通知しない`() {
+    fun `読み上げ設定に既定ピッチを選択状態にせず表示する`() {
         setPane(OtherListUiState(items = listOf(OtherListItemType.VoicePitch)))
 
         rule.onNodeWithText("読み上げ設定").assertIsDisplayed()
@@ -28,10 +29,17 @@ class OtherListPaneVoicePitchTest {
             .onNodeWithText("声の高さ")
             .assertIsDisplayed()
             .assertIsNotSelected()
-            .performClick()
-        rule.onNodeWithText("声の高さ").assertIsNotSelected()
 
         verify(exactly = 0) { onItemClick(OtherListItemType.VoicePitch) }
+        confirmVerified(onItemClick)
+    }
+
+    @Test
+    fun `声の高さにはクリック操作を付けず他の項目には付ける`() {
+        setPane(OtherListUiState(items = listOf(OtherListItemType.VoiceSpeed, OtherListItemType.VoicePitch)))
+
+        rule.onNodeWithText("声の高さ").assertHasNoClickAction()
+        rule.onNodeWithText("読み上げ速度").assertHasClickAction()
         confirmVerified(onItemClick)
     }
 
