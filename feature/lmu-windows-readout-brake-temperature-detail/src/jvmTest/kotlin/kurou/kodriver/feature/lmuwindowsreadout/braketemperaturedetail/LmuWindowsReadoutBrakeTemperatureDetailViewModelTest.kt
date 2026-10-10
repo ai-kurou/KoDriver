@@ -109,7 +109,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -142,7 +142,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gte, 800)
             }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -175,7 +175,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             coVerify(exactly = 1) {
                 vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 800)
             }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -200,7 +200,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { vehicleClassRepository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte) }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -238,7 +238,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
                     false,
                 )
             }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(vehicleClassRepository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -268,7 +268,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             coVerify(exactly = 1) { vehicleClassRepository.saveReadoutText("残り{celsius}℃") }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(vehicleClassRepository, stopSpeech)
         }
 
@@ -303,7 +303,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(650, "残り650℃")) }
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)
             collection.cancel()
         }
@@ -321,7 +321,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, " ")) }
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -339,7 +339,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "注意")) }
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -360,7 +360,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 2) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "注意")) }
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -379,7 +379,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "温度800℃")) }
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)
         }
 
@@ -396,10 +396,10 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             every { vehicleClassRepository.observeHighThresholdCelsius() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
             every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeOverheat(800, "残り800℃")) } returns Unit
-            every { stopSpeech() } returns Unit
+            every { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) } returns Unit
             val viewModel = createViewModel()
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             assertEquals(
                 800,
                 viewModel.uiState.first().vehicleClassHighThresholdCelsius[LmuWindowsVehicleClassData.Hypercar],
@@ -410,7 +410,7 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
             coVerify(exactly = 1) { checkAvailable() }
             viewModel.onPreviewStopped()
             viewModel.onPreviewStopped()
-            verify(exactly = 1) { stopSpeech() }
+            verify(exactly = 1) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) }
             verify(exactly = 1) { vehicleClassRepository.observeReadoutText() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }

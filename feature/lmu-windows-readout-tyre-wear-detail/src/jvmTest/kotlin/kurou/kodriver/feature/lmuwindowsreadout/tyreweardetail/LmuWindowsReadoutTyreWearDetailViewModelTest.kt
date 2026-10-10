@@ -105,7 +105,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -125,7 +125,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -145,7 +145,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -180,7 +180,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
                     false,
                 )
             }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -204,7 +204,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             coVerify(exactly = 1) { repository.saveReadoutText("残り{percent}%") }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             confirmVerified(repository, stopSpeech)
         }
 
@@ -230,7 +230,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(70, "残り70%")) }
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)
             collection.cancel()
         }
@@ -245,7 +245,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, " ")) }
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -260,7 +260,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "注意")) }
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -278,7 +278,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 2) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "注意")) }
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -290,10 +290,10 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             every { repository.observeThresholdPercentage() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
             every { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "残り50%")) } returns Unit
-            every { stopSpeech() } returns Unit
+            every { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) } returns Unit
             val viewModel = createViewModel()
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             assertEquals(50, viewModel.uiState.first().thresholdPercentage)
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "残り50%")) }
@@ -301,7 +301,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             coVerify(exactly = 1) { checkAvailable() }
             viewModel.onPreviewStopped()
             viewModel.onPreviewStopped()
-            verify(exactly = 1) { stopSpeech() }
+            verify(exactly = 1) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }

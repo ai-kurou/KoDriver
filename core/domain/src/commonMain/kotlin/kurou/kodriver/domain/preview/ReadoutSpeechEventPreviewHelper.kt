@@ -2,6 +2,7 @@ package kurou.kodriver.domain.preview
 
 import kotlinx.coroutines.CoroutineScope
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
@@ -22,13 +23,18 @@ class ReadoutSpeechEventPreviewHelper(
     private val guard = ReadoutPreviewGuard(scope, checkTextToSpeechAvailable, observeSoundVolume)
     val textToSpeechAvailable = guard.textToSpeechAvailable
 
-    private var previewStarted = false
+    private var startedKey: ReadoutItemKey? = null
+    private var stopGeneration = 0
 
-    /** このヘルパーで開始した試聴を止める。未試聴の場合は本番の読み上げを止めない。 */
+    /**
+     * このヘルパーで開始した試聴を止める。開始待ちの試聴は無効化する。
+     * 試聴が自然終了している場合や別項目の読み上げ中は、本番の読み上げを止めない。
+     */
     fun stop() {
-        if (!previewStarted) return
-        stopSpeech()
-        previewStarted = false
+        stopGeneration++
+        val key = startedKey ?: return
+        startedKey = null
+        stopSpeech(key)
     }
 
     /** 空白文言・TTS利用不可・音量0以下ではイベントを再生しない。 */
@@ -36,8 +42,10 @@ class ReadoutSpeechEventPreviewHelper(
         text: String,
         event: SpeechEvent,
     ) {
+        val generation = stopGeneration
         guard.volumeForPreview(text) ?: return
+        if (generation != stopGeneration) return
         playSpeechEvent(event)
-        previewStarted = true
+        startedKey = event.readoutItemKey
     }
 }

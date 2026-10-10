@@ -32,6 +32,7 @@ class ReadoutSpeechEventPreviewHelperTest {
     private val playSpeechEvent: PlaySpeechEventUseCase = mockk()
     private val stopSpeech: StopSpeechUseCase = mockk()
     private val event = SpeechEvent.LmuWindowsTyreWearWarning(50, "残り50%")
+    private val key = event.readoutItemKey
 
     private fun TestScope.helper() =
         ReadoutSpeechEventPreviewHelper(backgroundScope, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
@@ -53,7 +54,7 @@ class ReadoutSpeechEventPreviewHelperTest {
             available.preview(" \t\n", event)
             unavailable.stop()
             available.stop()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(key) }
             coVerify(exactly = 2) { checkAvailable() }
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(event) }
@@ -72,7 +73,7 @@ class ReadoutSpeechEventPreviewHelperTest {
             coVerify(exactly = 1) { checkAvailable() }
             verify(exactly = 4) { observeVolume() }
             verify(exactly = 2) { playSpeechEvent(event) }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(key) }
             confirmVerified(checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -97,7 +98,7 @@ class ReadoutSpeechEventPreviewHelperTest {
             coVerify(exactly = 1) { checkAvailable() }
             verify(exactly = 1) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(event) }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(key) }
             confirmVerified(checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -112,7 +113,7 @@ class ReadoutSpeechEventPreviewHelperTest {
             runCurrent()
             assertEquals(failure, assertFailsWith<IllegalStateException> { helper.preview("残り50%", event) })
             helper.stop()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(key) }
             coVerify(exactly = 1) { checkAvailable() }
             verify(exactly = 1) { observeVolume() }
             verify(exactly = 1) { playSpeechEvent(event) }
@@ -125,21 +126,21 @@ class ReadoutSpeechEventPreviewHelperTest {
             coEvery { checkAvailable() } returns true
             every { observeVolume() } returns flowOf(42)
             every { playSpeechEvent(event) } returns Unit
-            every { stopSpeech() } returns Unit
+            every { stopSpeech(key) } returns Unit
             val helper = helper()
             runCurrent()
             helper.stop()
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(key) }
             helper.preview("残り50%", event)
             helper.stop()
             helper.stop()
-            verify(exactly = 1) { stopSpeech() }
+            verify(exactly = 1) { stopSpeech(key) }
             helper.preview("残り50%", event)
             helper.stop()
             coVerify(exactly = 1) { checkAvailable() }
             verify(exactly = 2) { observeVolume() }
             verify(exactly = 2) { playSpeechEvent(event) }
-            verify(exactly = 2) { stopSpeech() }
+            verify(exactly = 2) { stopSpeech(key) }
             confirmVerified(checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -157,7 +158,32 @@ class ReadoutSpeechEventPreviewHelperTest {
             coVerify(exactly = 1) { checkAvailable() }
             verify(exactly = 2) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(event) }
-            verify(exactly = 0) { stopSpeech() }
+            verify(exactly = 0) { stopSpeech(key) }
+            confirmVerified(checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
+        }
+
+    @Test
+    fun `音量取得中にペインを離れた場合は後から音量が来ても再生しない`() =
+        runTest {
+            coEvery { checkAvailable() } returns true
+            val requested = CompletableDeferred<Unit>()
+            val volume = CompletableDeferred<Int>()
+            every { observeVolume() } returns
+                flow {
+                    requested.complete(Unit)
+                    emit(volume.await())
+                }
+            val helper = helper()
+            runCurrent()
+            val job = launch { helper.preview("残り50%", event) }
+            requested.await()
+            helper.stop()
+            volume.complete(42)
+            job.join()
+            coVerify(exactly = 1) { checkAvailable() }
+            verify(exactly = 1) { observeVolume() }
+            verify(exactly = 0) { playSpeechEvent(event) }
+            verify(exactly = 0) { stopSpeech(key) }
             confirmVerified(checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 }
