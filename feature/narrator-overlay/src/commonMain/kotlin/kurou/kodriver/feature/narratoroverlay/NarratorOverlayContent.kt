@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -74,9 +75,13 @@ internal fun NarratorOverlayContent(
 @Composable
 private fun narratorOverlayTextStyle(overlayTextSize: OverlayTextSize): TextStyle =
     when (overlayTextSize) {
-        OverlayTextSize.SMALL -> MaterialTheme.typography.titleSmall
-        OverlayTextSize.MEDIUM -> MaterialTheme.typography.titleLarge
-        OverlayTextSize.LARGE -> MaterialTheme.typography.headlineMedium
+        OverlayTextSize.EXTRA_SMALL -> MaterialTheme.typography.titleLarge.copy(fontSize = 14.sp, lineHeight = 18.2.sp)
+        OverlayTextSize.SMALL -> MaterialTheme.typography.titleLarge.copy(fontSize = 18.sp, lineHeight = 23.4.sp)
+        OverlayTextSize.MEDIUM -> MaterialTheme.typography.titleLarge.copy(fontSize = 22.sp, lineHeight = 28.6.sp)
+        OverlayTextSize.LARGE -> MaterialTheme.typography.titleLarge.copy(fontSize = 28.sp, lineHeight = 36.4.sp)
+        OverlayTextSize.EXTRA_LARGE -> MaterialTheme.typography.titleLarge.copy(fontSize = 36.sp, lineHeight = 46.8.sp)
+        OverlayTextSize.HUGE -> MaterialTheme.typography.titleLarge.copy(fontSize = 48.sp, lineHeight = 62.4.sp)
+        OverlayTextSize.MAXIMUM -> MaterialTheme.typography.titleLarge.copy(fontSize = 64.sp, lineHeight = 83.2.sp)
     }
 
 @Preview(showBackground = true)

@@ -23,7 +23,11 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.Res
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_cancel
+import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_extra_large
+import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_extra_small
+import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_huge
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_large
+import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_maximum
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_medium
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_ok
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_small
@@ -78,9 +82,13 @@ internal fun OtherOverlayTextSizeDetailDialogContent(
                 OverlayTextSize.entries.forEach { overlayTextSize ->
                     val label =
                         when (overlayTextSize) {
+                            OverlayTextSize.EXTRA_SMALL -> stringResource(Res.string.overlay_text_size_extra_small)
                             OverlayTextSize.SMALL -> stringResource(Res.string.overlay_text_size_small)
                             OverlayTextSize.MEDIUM -> stringResource(Res.string.overlay_text_size_medium)
                             OverlayTextSize.LARGE -> stringResource(Res.string.overlay_text_size_large)
+                            OverlayTextSize.EXTRA_LARGE -> stringResource(Res.string.overlay_text_size_extra_large)
+                            OverlayTextSize.HUGE -> stringResource(Res.string.overlay_text_size_huge)
+                            OverlayTextSize.MAXIMUM -> stringResource(Res.string.overlay_text_size_maximum)
                         }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
