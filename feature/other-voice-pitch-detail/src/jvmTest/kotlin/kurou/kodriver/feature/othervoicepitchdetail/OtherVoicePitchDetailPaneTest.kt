@@ -1,11 +1,21 @@
 package kurou.kodriver.feature.othervoicepitchdetail
 
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -18,14 +28,16 @@ class OtherVoicePitchDetailPaneTest {
     fun `タイトルと説明を表示して戻る操作を通知する`() {
         var backCount = 0
         rule.setContent {
-            MaterialTheme {
-                OtherVoicePitchDetailPane(
+            KoDriverTheme {
+                OtherVoicePitchDetailPaneContent(
+                    uiState = OtherVoicePitchDetailUiState(),
                     canNavigateBack = true,
                     onBack = { backCount++ },
                 )
             }
         }
 
+        rule.onNodeWithText("1.0倍").assertIsDisplayed()
         rule.onNodeWithText("声の高さ").assertIsDisplayed()
         rule.onNodeWithText("読み上げ音声の高さを設定します。").assertIsDisplayed()
         rule.onNode(hasContentDescription("戻る")).performClick()
@@ -36,13 +48,89 @@ class OtherVoicePitchDetailPaneTest {
     @Test
     fun `戻れない場合は戻るボタンを表示しない`() {
         rule.setContent {
-            MaterialTheme {
-                OtherVoicePitchDetailPane(canNavigateBack = false, onBack = {})
+            KoDriverTheme {
+                OtherVoicePitchDetailPaneContent(
+                    uiState = OtherVoicePitchDetailUiState(),
+                    canNavigateBack = false,
+                    onBack = {},
+                )
             }
         }
 
         rule.onNodeWithText("声の高さ").assertIsDisplayed()
         rule.onNodeWithText("読み上げ音声の高さを設定します。").assertIsDisplayed()
         rule.onNode(hasContentDescription("戻る")).assertDoesNotExist()
+    }
+
+    @Test
+    fun `渡したmodifierを詳細ペインに適用する`() {
+        rule.setContent {
+            KoDriverTheme {
+                OtherVoicePitchDetailPaneContent(
+                    uiState = OtherVoicePitchDetailUiState(),
+                    canNavigateBack = true,
+                    onBack = {},
+                    modifier = Modifier.testTag("voice-pitch-detail"),
+                )
+            }
+        }
+
+        rule.onNodeWithTag("voice-pitch-detail").assertIsDisplayed()
+    }
+
+    @Test
+    fun `声の高さスライダー操作を完了すると変更後の声の高さを通知する`() {
+        var changedPitch: Float? = null
+        rule.setContent {
+            KoDriverTheme {
+                OtherVoicePitchDetailPaneContent(
+                    uiState = OtherVoicePitchDetailUiState(),
+                    onPitchChanged = { changedPitch = it },
+                )
+            }
+        }
+
+        rule
+            .onNode(
+                SemanticsMatcher("ProgressBarRangeInfoを持つスライダー") {
+                    it.config.contains(SemanticsProperties.ProgressBarRangeInfo)
+                },
+            ).assert(
+                SemanticsMatcher.expectValue(
+                    SemanticsProperties.ProgressBarRangeInfo,
+                    ProgressBarRangeInfo(1.0f, 0.5f..2.0f, 14),
+                ),
+            ).performSemanticsAction(SemanticsActions.SetProgress) { it(2.0f) }
+
+        assertEquals(2.0f, changedPitch)
+        rule.onNodeWithText("2.0倍").assertIsDisplayed()
+    }
+
+    @Test
+    fun `リセット操作はデフォルトの声の高さを通知する`() {
+        var changedPitch: Float? = null
+        rule.setContent {
+            KoDriverTheme {
+                OtherVoicePitchDetailPaneContent(
+                    uiState = OtherVoicePitchDetailUiState(pitch = 1.5f),
+                    onPitchChanged = { changedPitch = it },
+                )
+            }
+        }
+
+        rule.onNode(hasContentDescription("声の高さをデフォルトに戻す")).performClick()
+
+        assertEquals(1.0f, changedPitch)
+    }
+
+    @Test
+    fun `デフォルトの声の高さではリセット操作は無効になる`() {
+        rule.setContent {
+            KoDriverTheme {
+                OtherVoicePitchDetailPaneContent(uiState = OtherVoicePitchDetailUiState())
+            }
+        }
+
+        rule.onNode(hasContentDescription("声の高さをデフォルトに戻す")).assertIsNotEnabled()
     }
 }

@@ -39,6 +39,7 @@ import kurou.kodriver.feature.otherreadoutstartsounddetail.otherReadoutStartSoun
 import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
 import kurou.kodriver.feature.otherthemedetail.otherThemeDetailModule
 import kurou.kodriver.feature.othervoicedetail.otherVoiceDetailModule
+import kurou.kodriver.feature.othervoicepitchdetail.otherVoicePitchDetailModule
 import kurou.kodriver.feature.othervoicespeeddetail.otherVoiceSpeedDetailModule
 import kurou.kodriver.feature.othervolumedetail.otherVolumeDetailModule
 import kurou.kodriver.feature.readoutlist.readoutListModule
@@ -75,6 +76,7 @@ val featureModules: List<Module> =
         otherServerIpDetailModule,
         otherConsoleIpDetailModule,
         otherVolumeDetailModule,
+        otherVoicePitchDetailModule,
         otherVoiceSpeedDetailModule,
         otherVoiceDetailModule,
         readoutListModule,

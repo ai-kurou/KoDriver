@@ -1,6 +1,8 @@
 # other-voice-pitch-detail
 
-その他画面の「声の高さ」の詳細ペイン。タイトルと読み上げ音声の高さについての説明を表示する、状態を持たない画面。
+声の高さを0.5〜2.0倍の範囲で0.1刻みに設定する詳細ペイン。スライダーの操作完了時に保存し、デフォルトの1.0倍へリセットできる。
+
+`ObserveVoicePitchUseCase` で保存済みのピッチを監視し、`SaveVoicePitchUseCase` で保存する。KoinモジュールはこれらのUseCaseを提供し、`:core:data`の`VoicePitchPreferencesRepository`を消費する。設定はDataStoreに永続化される。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
