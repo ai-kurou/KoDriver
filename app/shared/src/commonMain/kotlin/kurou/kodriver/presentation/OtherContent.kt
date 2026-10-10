@@ -108,8 +108,6 @@ private fun handleOtherItemClick(
     onOpenTtsEngineInPlayStore: () -> Unit,
 ) {
     when (itemType) {
-        OtherListItemType.VoicePitch -> Unit
-
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
 
         OtherListItemType.Theme -> onOpenThemeDialog()
@@ -130,6 +128,7 @@ private fun handleOtherItemClick(
         OtherListItemType.Volume,
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
+        OtherListItemType.VoicePitch,
         // TtsLanguageDataMissingはOtherListPane側でOS設定画面を直接開くため、ここには到達しない。
         OtherListItemType.TtsLanguageDataMissing,
         OtherListItemType.OverlayBackgroundOpacity,

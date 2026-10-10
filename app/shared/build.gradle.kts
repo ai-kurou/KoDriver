@@ -76,6 +76,7 @@ kotlin {
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.otherVoiceDetail)
             implementation(projects.feature.otherVoiceSpeedDetail)
+            implementation(projects.feature.otherVoicePitchDetail)
             implementation(projects.feature.telemetryLogList)
             implementation(projects.feature.telemetryLogDetail)
             implementation(projects.feature.readoutList)

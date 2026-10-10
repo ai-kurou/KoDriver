@@ -1,12 +1,14 @@
 package kurou.kodriver.feature.otherlist
 
 import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Rule
@@ -35,11 +37,26 @@ class OtherListPaneVoicePitchTest {
     }
 
     @Test
-    fun `声の高さにはクリック操作を付けず他の項目には付ける`() {
+    fun `声の高さをクリックすると選択を通知する`() {
+        every { onItemClick(OtherListItemType.VoicePitch) } returns Unit
         setPane(OtherListUiState(items = listOf(OtherListItemType.VoiceSpeed, OtherListItemType.VoicePitch)))
 
-        rule.onNodeWithText("声の高さ").assertHasNoClickAction()
+        rule.onNodeWithText("声の高さ").assertHasClickAction().performClick()
         rule.onNodeWithText("読み上げ速度").assertHasClickAction()
+        verify(exactly = 1) { onItemClick(OtherListItemType.VoicePitch) }
+        confirmVerified(onItemClick)
+    }
+
+    @Test
+    fun `選択された声の高さを強調する`() {
+        setPane(
+            OtherListUiState(
+                items = listOf(OtherListItemType.VoicePitch),
+                selectedItem = OtherListItemType.VoicePitch,
+            ),
+        )
+
+        rule.onNodeWithText("声の高さ").assertIsSelected()
         confirmVerified(onItemClick)
     }
 

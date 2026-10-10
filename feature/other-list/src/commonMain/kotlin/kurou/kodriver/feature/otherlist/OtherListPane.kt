@@ -299,6 +299,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.Volume,
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
+        OtherListItemType.VoicePitch,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.Feedback,
         OtherListItemType.License,
@@ -310,7 +311,6 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.OverlayTextSize,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
 
-        OtherListItemType.VoicePitch,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
@@ -676,28 +676,22 @@ private fun OtherListItem(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .semantics(mergeDescendants = true) { selected = isSelected }
-                .then(
-                    if (item == OtherListItemType.VoicePitch) {
-                        Modifier
-                    } else {
-                        Modifier.clickable {
-                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                            handleOtherListItemClick(
-                                item = item,
-                                uiState = uiState,
-                                onOverlayVisibleChange = onOverlayVisibleChange,
-                                onKeepScreenOnChange = onKeepScreenOnChange,
-                                onDynamicColorEnabledChange = onDynamicColorEnabledChange,
-                                onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
-                                onStartupEnabledChange = onStartupEnabledChange,
-                                openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
-                                openTtsSettings = openTtsSettings,
-                                onItemClick = onItemClick,
-                            )
-                        }
-                    },
-                ),
+                .semantics { selected = isSelected }
+                .clickable {
+                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                    handleOtherListItemClick(
+                        item = item,
+                        uiState = uiState,
+                        onOverlayVisibleChange = onOverlayVisibleChange,
+                        onKeepScreenOnChange = onKeepScreenOnChange,
+                        onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                        onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
+                        onStartupEnabledChange = onStartupEnabledChange,
+                        openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
+                        openTtsSettings = openTtsSettings,
+                        onItemClick = onItemClick,
+                    )
+                },
     )
 }
 

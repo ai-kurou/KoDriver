@@ -1,0 +1,5 @@
+<resources>
+    <string name="voice_pitch_title">声の高さ</string>
+    <string name="voice_pitch_description">読み上げ音声の高さを設定します。</string>
+    <string name="navigate_back">戻る</string>
+</resources>

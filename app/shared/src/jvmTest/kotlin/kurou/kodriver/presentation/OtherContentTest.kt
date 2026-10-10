@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
+import kurou.kodriver.feature.othervoicepitchdetail.OtherVoicePitchDetailPane
 import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPaneContent
 import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailUiState
 import org.junit.Rule
@@ -45,29 +46,35 @@ class OtherContentTest {
         )
 
     @Test
-    fun `声の高さをタップしても詳細ペインを開かない`() {
-        var selected = false
-        var detailShown = false
+    fun `声の高さをタップすると選択して詳細ペインを開く`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false
 
         rule.setContent {
             OtherContent(
-                uiState = OtherListUiState(items = listOf(OtherListItemType.VoicePitch)),
-                onItemSelected = { selected = true },
+                uiState = OtherListUiState(items = listOf(OtherListItemType.VoicePitch), selectedItem = selectedItem),
+                onItemSelected = { selectedItem = it },
                 onClearSelectedItem = {},
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, _, _ -> backEnabled = enabled },
-                detailContent = { _, _, _, _, _ -> detailShown = true },
+                detailContent = { item, canNavigateBack, onBack, _, _ ->
+                    if (item == OtherListItemType.VoicePitch) {
+                        OtherVoicePitchDetailPane(
+                            canNavigateBack = canNavigateBack,
+                            onBack = onBack,
+                        )
+                    }
+                },
             )
         }
 
         rule.onNodeWithText("声の高さ").assertExists().performClick()
         rule.waitForIdle()
 
-        assertFalse(selected)
-        assertFalse(detailShown)
-        assertFalse(backEnabled)
+        assertEquals(OtherListItemType.VoicePitch, selectedItem)
+        assertTrue(backEnabled)
+        rule.onNodeWithText("読み上げ音声の高さを設定します。").assertExists()
     }
 
     @Test

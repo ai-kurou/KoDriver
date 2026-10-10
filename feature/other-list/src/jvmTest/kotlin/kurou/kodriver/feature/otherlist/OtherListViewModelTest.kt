@@ -1546,7 +1546,7 @@ class OtherListViewModelTest {
         }
 
     @Test
-    fun `声の高さをタップしても選択しない`() =
+    fun `声の高さをタップすると選択し再タップで解除する`() =
         runTest {
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
@@ -1562,7 +1562,13 @@ class OtherListViewModelTest {
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
             viewModel.onItemSelected(OtherListItemType.VoicePitch)
+            assertEquals(OtherListItemType.VoicePitch, viewModel.uiState.first().selectedItem)
 
+            viewModel.onItemSelected(OtherListItemType.Volume)
+            assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoicePitch)
+            assertEquals(OtherListItemType.VoicePitch, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoicePitch)
             assertNull(viewModel.uiState.first().selectedItem)
         }
 
