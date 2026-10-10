@@ -104,9 +104,6 @@ import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDet
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
-import kurou.kodriver.feature.othervoicedetail.OtherVoiceDetailPane
-import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPane
-import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import kurou.kodriver.feature.readoutlist.ReadoutListViewModel
@@ -320,16 +317,12 @@ private fun DefaultOtherContent(
                     OtherConsoleIpDetailPane(canNavigateBack, onBack)
                 }
 
-                OtherListItemType.Volume -> {
-                    OtherVolumeDetailPane(canNavigateBack, onBack)
-                }
-
-                OtherListItemType.VoiceSpeed -> {
-                    OtherVoiceSpeedDetailPane(canNavigateBack, onBack)
-                }
-
-                OtherListItemType.Voice -> {
-                    OtherVoiceDetailPane(canNavigateBack, onBack)
+                OtherListItemType.Volume,
+                OtherListItemType.Voice,
+                OtherListItemType.VoiceSpeed,
+                OtherListItemType.VoicePitch,
+                -> {
+                    OtherReadoutSettingsDetailPane(itemType, canNavigateBack, onBack)
                 }
 
                 OtherListItemType.OverlayBackgroundOpacity -> {

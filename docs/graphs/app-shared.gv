@@ -45,6 +45,7 @@ digraph G {
   ":feature:other-server-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-theme-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-voice-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-voice-pitch-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-voice-speed-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -76,6 +77,7 @@ digraph G {
   ":app:shared" -> ":feature:other-volume-detail"
   ":app:shared" -> ":feature:other-voice-detail"
   ":app:shared" -> ":feature:other-voice-speed-detail"
+  ":app:shared" -> ":feature:other-voice-pitch-detail"
   ":app:shared" -> ":feature:telemetry-log-list"
   ":app:shared" -> ":feature:telemetry-log-detail"
   ":app:shared" -> ":feature:readout-list"

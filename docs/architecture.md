@@ -38,6 +38,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-overlay-text-size-detail` | その他画面のオーバーレイ文字サイズ設定詳細 | [図](graphs/feature-other-overlay-text-size-detail.svg) |
 | `:feature:other-overlay-background-opacity-detail` | その他画面のオーバーレイ背景透明度設定詳細 | [図](graphs/feature-other-overlay-background-opacity-detail.svg) |
 | `:feature:other-voice-speed-detail` | その他画面の読み上げ速度設定詳細 | [図](graphs/feature-other-voice-speed-detail.svg) |
+| `:feature:other-voice-pitch-detail` | その他画面の声の高さ設定詳細（保存済みピッチの監視・保存、スライダー・リセット） | [図](graphs/feature-other-voice-pitch-detail.svg) |
 | `:feature:other-volume-detail` | その他画面の読み上げ音量設定詳細 | [図](graphs/feature-other-volume-detail.svg) |
 | `:feature:other-voice-detail` | その他画面の読み上げ音声設定詳細 | [図](graphs/feature-other-voice-detail.svg) |
 | `:feature:other-feedback-detail` | その他画面のフィードバック送信詳細 | [図](graphs/feature-other-feedback-detail.svg) |

@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
+import kurou.kodriver.feature.othervoicepitchdetail.OtherVoicePitchDetailPaneContent
+import kurou.kodriver.feature.othervoicepitchdetail.OtherVoicePitchDetailUiState
 import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPaneContent
 import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailUiState
 import org.junit.Rule
@@ -43,6 +45,39 @@ class OtherContentTest {
             defaultPanePreferredWidth = 360.dp,
             excludedBounds = emptyList(),
         )
+
+    @Test
+    fun `声の高さをタップすると選択して詳細ペインを開く`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+        var backEnabled = false
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.VoicePitch), selectedItem = selectedItem),
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { item, canNavigateBack, onBack, _, _ ->
+                    if (item == OtherListItemType.VoicePitch) {
+                        OtherVoicePitchDetailPaneContent(
+                            uiState = OtherVoicePitchDetailUiState(),
+                            canNavigateBack = canNavigateBack,
+                            onBack = onBack,
+                        )
+                    }
+                },
+            )
+        }
+
+        rule.onNodeWithText("声の高さ").assertExists().performClick()
+        rule.waitForIdle()
+
+        assertEquals(OtherListItemType.VoicePitch, selectedItem)
+        assertTrue(backEnabled)
+        rule.onNodeWithText("読み上げ音声の高さを設定します。").assertExists()
+    }
 
     @Test
     fun `読み上げ速度をタップすると選択して詳細ペインを開く`() {

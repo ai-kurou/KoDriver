@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
+import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
@@ -12,6 +13,7 @@ import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SpeechSettingsSenderRepository
 import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
+import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import org.koin.dsl.module
 
@@ -29,6 +31,7 @@ val fakeSpeechSettingsSenderRepository = FakeSpeechSettingsSenderRepository()
 val fakeOtherListModule =
     module {
         single<VoiceSpeedPreferencesRepository> { FakeVoiceSpeedPreferencesRepository() }
+        single<VoicePitchPreferencesRepository> { FakeVoicePitchPreferencesRepository() }
         single<ReadoutStartSoundPreferencesRepository> { FakeReadoutStartSoundPreferencesRepository() }
         single<StartupEnabledRepository> { FakeStartupEnabledRepository() }
         single<HapticFeedbackAvailabilityRepository> { FakeHapticFeedbackAvailabilityRepository() }
@@ -60,6 +63,7 @@ class FakeTextToSpeechRepository : TextToSpeechRepository {
         volume: Int,
         voiceId: String,
         speed: Float,
+        pitch: Float,
     ) = Unit
 
     override suspend fun stop() = Unit
@@ -102,5 +106,15 @@ class FakeVoiceSpeedPreferencesRepository : VoiceSpeedPreferencesRepository {
 
     override suspend fun saveVoiceSpeed(voiceSpeed: Float) {
         speed.update { voiceSpeed }
+    }
+}
+
+class FakeVoicePitchPreferencesRepository : VoicePitchPreferencesRepository {
+    private val speed = MutableStateFlow(VOICE_PITCH_DEFAULT)
+
+    override fun voicePitch() = speed
+
+    override suspend fun saveVoicePitch(voicePitch: Float) {
+        speed.update { voicePitch }
     }
 }

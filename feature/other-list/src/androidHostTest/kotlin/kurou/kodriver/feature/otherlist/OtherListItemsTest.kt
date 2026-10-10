@@ -14,6 +14,14 @@ import kotlin.test.assertTrue
 @Config(sdk = [36])
 class OtherListItemsTest {
     @Test
+    fun `声の高さを読み上げ設定の最下部に含める`() {
+        val items = buildOtherListItems()
+
+        assertEquals(OtherListItemType.VoicePitch, items[items.indexOf(OtherListItemType.VoiceSpeed) + 1])
+        assertEquals(OtherListItemType.Theme, items[items.indexOf(OtherListItemType.VoicePitch) + 1])
+    }
+
+    @Test
     fun `読み上げ速度を読み上げ音声の直後に含める`() {
         val items = buildOtherListItems()
 
@@ -46,6 +54,7 @@ class OtherListItemsTest {
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
+                OtherListItemType.VoicePitch,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
@@ -77,6 +86,7 @@ class OtherListItemsAndroid15Test {
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
+                OtherListItemType.VoicePitch,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.HapticFeedback,
@@ -108,6 +118,7 @@ class OtherListItemsAndroid11Test {
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
+                OtherListItemType.VoicePitch,
                 OtherListItemType.Theme,
                 OtherListItemType.HapticFeedback,
                 OtherListItemType.GitHubRepository,

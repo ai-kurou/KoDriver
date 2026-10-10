@@ -26,8 +26,8 @@ Js / WasmJs では例外文字列とスタックトレースを `console.error` 
 始めないよう `lastCancelledPlayback` で待ち合わせます。
 
 `NarratorEngine` の `isCustomSpeakEvent` が true のイベントは、開始音の後に `customSpeak` へ本文と音量を渡す。false のイベントは再生対象外で、イベント別のWAV本文は持たない。
-本文は`SpeakTextUseCase`を通じ、保存済み音声IDと読み上げ速度（0.5〜2.0、既定1.0）を使う。
-速度はUseCaseの呼び出し時に取得し、OS標準TTSの本文に適用する。開始音のWAVには適用しない。
+本文は`SpeakTextUseCase`を通じ、保存済み音声ID・読み上げ速度（0.5〜2.0、既定1.0）・声の高さ（0.5〜2.0、既定1.0）を使う。
+速度と声の高さはUseCaseの呼び出し時に取得し、OS標準TTSの本文に適用する。開始音のWAVには適用しない。
 
 `platformSoundModule(qualifier)` は `SoundPlayer` のプラットフォーム実装を、呼び出し側が指定した Koin の named
 修飾子付きでバインドする expect/actual です。3つの narrator feature は同一の Koin コンテナに同時にロードされるため、

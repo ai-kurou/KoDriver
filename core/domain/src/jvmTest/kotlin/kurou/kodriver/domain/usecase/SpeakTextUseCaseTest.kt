@@ -16,66 +16,78 @@ class SpeakTextUseCaseTest {
     private val repository: TextToSpeechRepository = mockk()
     private val observeVoice: ObserveVoiceUseCase = mockk()
     private val observeVoiceSpeed: ObserveVoiceSpeedUseCase = mockk()
+    private val observeVoicePitch: ObserveVoicePitchUseCase = mockk()
 
     @Test
-    fun `明示した音声でも保存済み速度をRepositoryへ渡す`() =
+    fun `明示した音声でも保存済み速度と高さをRepositoryへ渡す`() =
         runTest {
             every { observeVoiceSpeed() } returns flowOf(1.5f)
-            coEvery { repository.speak("試聴", false, 42, "voice-b", 1.5f) } returns Unit
-            coEvery { repository.speak("試聴", false, 42, VOICE_ID_UNSPECIFIED, 1.5f) } returns Unit
+            every { observeVoicePitch() } returns flowOf(0.75f)
+            coEvery { repository.speak("試聴", false, 42, "voice-b", 1.5f, 0.75f) } returns Unit
+            coEvery { repository.speak("試聴", false, 42, VOICE_ID_UNSPECIFIED, 1.5f, 0.75f) } returns Unit
 
-            val speakText = SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed)
+            val speakText = SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
             speakText("試聴", volume = 42, voiceId = "voice-b")
             speakText("試聴", volume = 42, voiceId = VOICE_ID_UNSPECIFIED)
 
             verify(exactly = 0) { observeVoice() }
-            coVerify(exactly = 1) { repository.speak("試聴", false, 42, "voice-b", 1.5f) }
-            coVerify(exactly = 1) { repository.speak("試聴", false, 42, VOICE_ID_UNSPECIFIED, 1.5f) }
+            coVerify(exactly = 1) { repository.speak("試聴", false, 42, "voice-b", 1.5f, 0.75f) }
+            coVerify(exactly = 1) { repository.speak("試聴", false, 42, VOICE_ID_UNSPECIFIED, 1.5f, 0.75f) }
             verify(exactly = 2) { observeVoiceSpeed() }
-            confirmVerified(repository, observeVoice, observeVoiceSpeed)
+            verify(exactly = 2) { observeVoicePitch() }
+            confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
         }
 
     @Test
-    fun `保存済み音声とテキストとqueueと音量と保存済み速度をRepositoryへ渡す`() =
+    fun `保存済み音声とテキストとqueueと音量と保存済み速度と高さをRepositoryへ渡す`() =
         runTest {
             every { observeVoiceSpeed() } returns flowOf(1.5f)
+            every { observeVoicePitch() } returns flowOf(0.75f)
             every { observeVoice() } returns flowOf("voice-a")
-            coEvery { repository.speak("ベストラップ", true, 30, "voice-a", 1.5f) } returns Unit
+            coEvery { repository.speak("ベストラップ", true, 30, "voice-a", 1.5f, 0.75f) } returns Unit
 
-            SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed)("ベストラップ", queue = true, volume = 30)
+            SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)(
+                "ベストラップ",
+                queue = true,
+                volume = 30,
+            )
 
             verify(exactly = 1) { observeVoice() }
-            coVerify(exactly = 1) { repository.speak("ベストラップ", true, 30, "voice-a", 1.5f) }
+            coVerify(exactly = 1) { repository.speak("ベストラップ", true, 30, "voice-a", 1.5f, 0.75f) }
             verify(exactly = 1) { observeVoiceSpeed() }
-            confirmVerified(repository, observeVoice, observeVoiceSpeed)
+            verify(exactly = 1) { observeVoicePitch() }
+            confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
         }
 
     @Test
     fun `音声未指定の場合も既定の引数と音声IDをRepositoryへ渡す`() =
         runTest {
             every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoicePitch() } returns flowOf(1.0f)
             every { observeVoice() } returns flowOf(VOICE_ID_UNSPECIFIED)
-            coEvery { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f) } returns Unit
+            coEvery { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) } returns Unit
 
-            SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed)("ベストラップ")
+            SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)("ベストラップ")
 
             verify(exactly = 1) { observeVoice() }
-            coVerify(exactly = 1) { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f) }
+            coVerify(exactly = 1) { repository.speak("ベストラップ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
             verify(exactly = 1) { observeVoiceSpeed() }
-            confirmVerified(repository, observeVoice, observeVoiceSpeed)
+            verify(exactly = 1) { observeVoicePitch() }
+            confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
         }
 
     @Test
-    fun `空文字と空白のみのテキストは音声と速度設定を取得せず読み上げない`() =
+    fun `空文字と空白のみのテキストは音声と速度と高さ設定を取得せず読み上げない`() =
         runTest {
-            val speakText = SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed)
+            val speakText = SpeakTextUseCase(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
             speakText("")
             speakText("  ")
 
             verify(exactly = 0) { observeVoice() }
-            coVerify(exactly = 0) { repository.speak("", false, 100, VOICE_ID_UNSPECIFIED, 1.0f) }
-            coVerify(exactly = 0) { repository.speak("  ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f) }
+            coVerify(exactly = 0) { repository.speak("", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
+            coVerify(exactly = 0) { repository.speak("  ", false, 100, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
             verify(exactly = 0) { observeVoiceSpeed() }
-            confirmVerified(repository, observeVoice, observeVoiceSpeed)
+            verify(exactly = 0) { observeVoicePitch() }
+            confirmVerified(repository, observeVoice, observeVoiceSpeed, observeVoicePitch)
         }
 }

@@ -42,4 +42,6 @@
     <string name="local_network_permission_open_settings">タップして設定を開く</string>
     <string name="server_ip_not_configured">未設定</string>
     <string name="console_ip_not_configured">未設定</string>
+    <string name="item_voice_pitch">声の高さ</string>
+    <string name="item_voice_pitch_summary">%1$s倍</string>
 </resources>

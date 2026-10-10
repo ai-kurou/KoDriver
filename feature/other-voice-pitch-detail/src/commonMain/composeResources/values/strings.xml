@@ -1,0 +1,10 @@
+<resources>
+    <string name="voice_pitch_title">声の高さ</string>
+    <string name="voice_pitch_description">読み上げ音声の高さを設定します。</string>
+    <string name="voice_pitch_label">%1$.1f倍</string>
+    <string name="voice_pitch_reset">声の高さをデフォルトに戻す</string>
+    <string name="navigate_back">戻る</string>
+    <string name="voice_pitch_preview">試聴</string>
+    <string name="voice_pitch_preview_stop">試聴を停止</string>
+    <string name="voice_pitch_preview_sample">これは声の高さの試聴です。</string>
+</resources>

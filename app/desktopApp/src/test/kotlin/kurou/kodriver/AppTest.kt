@@ -280,6 +280,9 @@ class AppTest {
         scrollToItem("読み上げ速度")
         clickItem("読み上げ速度")
         waitUntilDisplayed("読み上げの速さを設定します。")
+        scrollToItem("声の高さ")
+        clickItem("声の高さ")
+        waitUntilDisplayed("読み上げ音声の高さを設定します。")
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
         // 「テレメトリ受信中は画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。

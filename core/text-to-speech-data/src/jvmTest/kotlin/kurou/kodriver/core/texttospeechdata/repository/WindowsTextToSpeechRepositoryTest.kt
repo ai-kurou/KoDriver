@@ -90,6 +90,7 @@ class WindowsTextToSpeechRepositoryTest {
             assertEquals(listOf("ベストラップ" to true), synthesizer.spokenTexts)
             assertEquals(listOf(100), synthesizer.spokenVolumes)
             assertEquals(listOf(1.0f), synthesizer.spokenSpeeds)
+            assertEquals(listOf(1.0f), synthesizer.spokenPitches)
             assertEquals(listOf(""), synthesizer.spokenVoiceIds)
         }
 
@@ -161,5 +162,18 @@ class WindowsTextToSpeechRepositoryTest {
             repository.speak("試聴", speed = 3.0f)
 
             assertEquals(listOf(1.5f, 0.5f, 2.0f), synthesizer.spokenSpeeds)
+        }
+
+    @Test
+    fun `speakはピッチを上下限に制限して音声合成へ渡す`() =
+        runTest {
+            val synthesizer = FakeWindowsSpeechSynthesizer()
+            val repository = WindowsTextToSpeechRepository(synthesizer)
+
+            repository.speak("試聴", pitch = 1.5f)
+            repository.speak("試聴", pitch = 0.1f)
+            repository.speak("試聴", pitch = 3.0f)
+
+            assertEquals(listOf(1.5f, 0.5f, 2.0f), synthesizer.spokenPitches)
         }
 }

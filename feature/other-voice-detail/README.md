@@ -4,8 +4,8 @@ Windows/Androidの音声選択画面。システム既定と、それ以外の�
 
 GetAvailableVoicesUseCase・ObserveVoiceUseCase・SaveVoiceUseCaseを使用する。Repositoryはcore:dataとcore:text-to-speech-dataのJVM実装に依存する。SpeakTextUseCase・ObserveSoundVolumeUseCaseで各カード右端の再生ボタンから、そのカードの音声IDで試聴できる（選択・保存は変更しない）。既定と件数付きの日本語音声のセクションを表示し、広いペインは2列、狭いペインは1列に配置する。取得中はカードを表示せず、音量が0以下なら読み上げない。試聴中のカードは再生アイコンの代わりに3本のバーが動くイコライザーを表示する。同じボタンを再タップすると停止し、別のカードのボタンを押すと前の試聴を停止して切り替える。完了・失敗・キャンセルで通常の再生アイコンに戻る。試聴に失敗しても画面の操作は継続できる。指定音声が見つからない場合は日本語音声へフォールバックする。
 
-Koinモジュールは`ObserveVoiceSpeedUseCase`を提供し、`:core:data`の`VoiceSpeedPreferencesRepository`を消費する。
-`SpeakTextUseCase`は試聴・本文の読み上げに保存済み速度（0.5〜2.0、既定1.0）を使用する。
+Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を提供し、`:core:data`の`VoiceSpeedPreferencesRepository`・`VoicePitchPreferencesRepository`を消費する。
+`SpeakTextUseCase`は試聴・本文の読み上げに保存済み速度・声の高さ（ともに0.5〜2.0、既定1.0）を使用する。
 
 詳細ペインを離れたときも試聴を停止する。
 
