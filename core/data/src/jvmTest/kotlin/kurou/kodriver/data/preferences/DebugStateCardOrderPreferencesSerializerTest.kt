@@ -20,7 +20,7 @@ class DebugStateCardOrderPreferencesSerializerTest {
     @Test
     fun `書き込んだ値を読み出せる`() =
         runTest {
-            val original = DebugStateCardOrderPreferences(cardOrder = listOf("SESSION", "SIMULATOR"))
+            val original = DebugStateCardOrderPreferences(cardOrder = listOf("SESSION", "SIMULATOR", "BRAKE_WEAR"))
             val output = ByteArrayOutputStream()
             DebugStateCardOrderPreferencesSerializer.writeTo(original, output)
 
