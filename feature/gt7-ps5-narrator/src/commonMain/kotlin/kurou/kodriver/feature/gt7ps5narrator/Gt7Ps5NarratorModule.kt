@@ -28,6 +28,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveResolvedReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
@@ -50,9 +51,9 @@ import org.koin.dsl.module
  *   各ドメイン UseCase、および named(Simulator.Gt7Ps5.id) の音声再生系
  *   （PlaySpeechEventUseCase・PlayStartSoundForKeyUseCase・TextToSpeechEngine・SpeakTextUseCase・
  *   自己ベストラップ更新・タイヤ過熱・燃料残量・残り周回数文言の Observe UseCase・
- *   CheckTextToSpeechAvailableUseCase・ObserveVoiceUseCase・ObserveVoiceSpeedUseCase）、および Gt7Ps5ReadoutTextSpeaker。
+ *   CheckTextToSpeechAvailableUseCase・ObserveVoiceUseCase・ObserveVoiceSpeedUseCase・ObserveVoicePitchUseCase）、および Gt7Ps5ReadoutTextSpeaker。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:gt7-ps5-data / :core:data）、
- *   TextToSpeechRepository・VoicePreferencesRepository・VoiceSpeedPreferencesRepository、および SoundPlayer（[platformSoundModule]）。
+ *   TextToSpeechRepository・VoicePreferencesRepository・VoiceSpeedPreferencesRepository・VoicePitchPreferencesRepository、および SoundPlayer（[platformSoundModule]）。
  * 音声系は LMU と区別するため named(Simulator.Gt7Ps5.id) で登録している。
  */
 @OptIn(ExperimentalResourceApi::class)
@@ -99,9 +100,15 @@ val gt7Ps5NarratorModule: Module =
         factory(named(Simulator.Gt7Ps5.id)) { ObserveGt7Ps5MyBestLapReadoutTextUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { ObserveVoiceUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { ObserveVoiceSpeedUseCase(get()) }
+        factory(named(Simulator.Gt7Ps5.id)) { ObserveVoicePitchUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) { CheckTextToSpeechAvailableUseCase(get()) }
         factory(named(Simulator.Gt7Ps5.id)) {
-            SpeakTextUseCase(get(), get(named(Simulator.Gt7Ps5.id)), get(named(Simulator.Gt7Ps5.id)))
+            SpeakTextUseCase(
+                get(),
+                get(named(Simulator.Gt7Ps5.id)),
+                get(named(Simulator.Gt7Ps5.id)),
+                get(named(Simulator.Gt7Ps5.id)),
+            )
         }
         factory {
             Gt7Ps5ReadoutTextSpeaker(

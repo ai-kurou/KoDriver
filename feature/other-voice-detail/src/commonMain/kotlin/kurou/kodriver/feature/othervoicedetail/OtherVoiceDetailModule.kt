@@ -2,6 +2,7 @@ package kurou.kodriver.feature.othervoicedetail
 
 import kurou.kodriver.domain.usecase.GetAvailableVoicesUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.SaveVoiceUseCase
@@ -12,9 +13,9 @@ import org.koin.dsl.module
 /**
  * 読み上げ音声設定詳細（other-voice-detail feature）の Koin モジュール。
  *
- * 提供: OtherVoiceDetailViewModel と音声一覧取得・音声と速度の設定監視・保存・試聴・音量監視の UseCase。
+ * 提供: OtherVoiceDetailViewModel と音声一覧取得・音声と速度と高さの設定監視・保存・試聴・音量監視の UseCase。
  * 消費: TextToSpeechRepository（:core:text-to-speech-data）、SoundVolumePreferencesRepository（:core:data）、
- *   VoicePreferencesRepository・VoiceSpeedPreferencesRepository（:core:data）、VoiceListRepository（:core:text-to-speech-data の JVM 実装）。
+ *   VoicePreferencesRepository・VoiceSpeedPreferencesRepository・VoicePitchPreferencesRepository（:core:data）、VoiceListRepository（:core:text-to-speech-data の JVM 実装）。
  */
 val otherVoiceDetailModule =
     module {
@@ -22,7 +23,8 @@ val otherVoiceDetailModule =
         factory { GetAvailableVoicesUseCase(get()) }
         factory { ObserveVoiceUseCase(get()) }
         factory { ObserveVoiceSpeedUseCase(get()) }
+        factory { ObserveVoicePitchUseCase(get()) }
         factory { SaveVoiceUseCase(get()) }
-        factory { SpeakTextUseCase(get(), get(), get()) }
+        factory { SpeakTextUseCase(get(), get(), get(), get()) }
         factory { ObserveSoundVolumeUseCase(get()) }
     }

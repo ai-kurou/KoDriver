@@ -37,6 +37,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadou
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
@@ -71,6 +72,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
     private val tts: TextToSpeechRepository = mockk()
     private val observeVoice: ObserveVoiceUseCase = mockk()
     private val observeVoiceSpeed: ObserveVoiceSpeedUseCase = mockk()
+    private val observeVoicePitch: ObserveVoicePitchUseCase = mockk()
     private val volumes: SoundVolumePreferencesRepository = mockk()
 
     @BeforeTest
@@ -112,7 +114,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
                         SaveAceWindowsRedYellowStripesFlagReadoutTextUseCase(texts),
                     ),
                 ),
-            speakText = SpeakTextUseCase(tts, observeVoice, observeVoiceSpeed),
+            speakText = SpeakTextUseCase(tts, observeVoice, observeVoiceSpeed, observeVoicePitch),
             playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),
             checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(tts),
             observeSoundVolume = ObserveSoundVolumeUseCase(volumes),

@@ -23,6 +23,8 @@ interface WindowsSpeechSynthesizer {
      * `false` なら再生中の読み上げを打ち切ってから読み上げる。
      * [volume] は0〜100の音量。[voiceId] が空ならシステム既定の日本語音声を使い、
      * 指定音声が見つからない場合も日本語音声へフォールバックする。
+     * [pitch] は1.0が標準の声の高さ（0.5〜2.0）。SSMLのprosody pitchで反映する。
+     * 使用中の音声がpitchに対応しない場合は変化しない場合がある。
      * [speed] は1.0が標準の読み上げ速度（0.5〜2.0）。
      */
     fun speak(
@@ -31,6 +33,7 @@ interface WindowsSpeechSynthesizer {
         volume: Int,
         voiceId: String,
         speed: Float,
+        pitch: Float,
     )
 
     /** 再生中の読み上げを停止する。 */

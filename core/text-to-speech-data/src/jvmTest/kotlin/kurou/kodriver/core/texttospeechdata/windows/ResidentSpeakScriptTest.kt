@@ -9,16 +9,18 @@ import kotlin.test.assertTrue
 
 class ResidentSpeakScriptTest {
     @Test
-    fun `要求行は音量とRateとBase64の音声IDとテキストを並べる`() {
-        val request = buildSpeakRequest("It's a lap\n試聴", 30, "voice 'a'", 6)
+    fun `要求行は音量とRateとピッチ半音とBase64の音声IDとテキストを並べる`() {
+        val request = buildSpeakRequest("It's a lap\n試聴", 30, "voice 'a'", 6, 2.0f)
 
         val parts = request.split(" ")
-        assertEquals(5, parts.size)
+        assertEquals(6, parts.size)
         assertEquals("SPEAK", parts[0])
         assertEquals("30", parts[1])
         assertEquals("6", parts[2])
-        assertEquals("voice 'a'", String(Base64.getDecoder().decode(parts[3]), Charsets.UTF_8))
-        assertEquals("It's a lap\n試聴", String(Base64.getDecoder().decode(parts[4]), Charsets.UTF_8))
+        assertEquals("+12.0", parts[3])
+        assertTrue(request.all { it.code < 128 })
+        assertEquals("voice 'a'", String(Base64.getDecoder().decode(parts[4]), Charsets.UTF_8))
+        assertEquals("It's a lap\n試聴", String(Base64.getDecoder().decode(parts[5]), Charsets.UTF_8))
         assertFalse(request.contains("\n"))
     }
 
@@ -26,8 +28,20 @@ class ResidentSpeakScriptTest {
     fun `音声未指定の要求行は音声ID欄が空になる`() {
         val parts = buildSpeakRequest("試聴", 100, VOICE_ID_UNSPECIFIED, 0).split(" ")
 
-        assertEquals(5, parts.size)
-        assertEquals("", parts[3])
+        assertEquals(6, parts.size)
+        assertEquals("0.0", parts[3])
+        assertEquals("", parts[4])
+    }
+
+    @Test
+    fun `低いピッチとXML特殊文字もASCIIの要求行で渡す`() {
+        val text = "<tag>&\"'試聴"
+        val request = buildSpeakRequest(text, 42, "voice-a", 0, 0.5f)
+        val parts = request.split(" ")
+
+        assertEquals("-12.0", parts[3])
+        assertEquals(text, String(Base64.getDecoder().decode(parts[5]), Charsets.UTF_8))
+        assertTrue(request.all { it.code < 128 })
     }
 
     @Test
@@ -40,8 +54,39 @@ class ResidentSpeakScriptTest {
         assertTrue(script.contains("StartsWith('SPEAK ')"))
         assertTrue(script.contains("SpeakAsyncCancelAll"))
         assertTrue(script.contains("${'$'}s.Rate = [int]${'$'}parts[2]"))
-        assertTrue(script.contains("FromBase64String(${'$'}parts[3])"))
+        assertTrue(script.contains("FromBase64String(${'$'}parts[5])"))
         assertTrue(script.contains("FromBase64String(${'$'}parts[4])"))
+    }
+
+    @Test
+    fun `標準ピッチは通常発話しそれ以外はXMLエスケープしたSSMLで発話する`() {
+        val script = buildResidentSpeakScript()
+
+        assertTrue(script.contains("${'$'}pitch = ${'$'}parts[3]"))
+        assertTrue(script.contains("if (${'$'}pitch -eq '0.0')"))
+        assertTrue(script.contains("${'$'}s.SpeakAsync(${'$'}text)"))
+        assertTrue(script.contains("[System.Security.SecurityElement]::Escape(${'$'}text)"))
+        assertTrue(script.contains("${'$'}s.SpeakSsmlAsync(${'$'}ssml)"))
+        assertTrue(
+            script.contains(
+                "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
+                    "xml:lang=\"' + ${'$'}s.Voice.Culture.Name",
+            ),
+        )
+        assertTrue(script.contains("<prosody pitch=\""))
+        assertTrue(script.contains("st\">"))
+        assertTrue(script.contains("</prosody></speak>"))
+    }
+
+    @Test
+    fun `ピッチ倍率は半音へ変換し上下限に制限する`() {
+        assertEquals("-12.0", pitchToSemitones(0.5f))
+        assertEquals("0.0", pitchToSemitones(1.0f))
+        assertEquals("+12.0", pitchToSemitones(2.0f))
+        assertEquals("-12.0", pitchToSemitones(0.1f))
+        assertEquals("+12.0", pitchToSemitones(3.0f))
+        assertEquals("+7.02", pitchToSemitones(1.5f))
+        assertEquals("0.0", pitchToSemitones(1.0000001f))
     }
 
     @Test

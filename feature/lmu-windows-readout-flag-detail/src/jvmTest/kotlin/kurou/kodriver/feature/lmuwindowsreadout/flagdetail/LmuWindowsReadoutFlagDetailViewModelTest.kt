@@ -28,6 +28,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadou
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsSectorYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
@@ -52,6 +53,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     private val engine: TextToSpeechEngine = mockk()
     private val observeVoice: ObserveVoiceUseCase = mockk()
     private val observeVoiceSpeed: ObserveVoiceSpeedUseCase = mockk()
+    private val observeVoicePitch: ObserveVoicePitchUseCase = mockk()
     private val volumes: SoundVolumePreferencesRepository = mockk()
 
     @BeforeTest
@@ -89,7 +91,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
                     SaveLmuWindowsRedFlagReadoutTextUseCase(texts),
                 ),
             ),
-            SpeakTextUseCase(tts, observeVoice, observeVoiceSpeed),
+            SpeakTextUseCase(tts, observeVoice, observeVoiceSpeed, observeVoicePitch),
             PlayStartSoundForKeyUseCase(engine),
             CheckTextToSpeechAvailableUseCase(tts),
             ObserveSoundVolumeUseCase(volumes),
@@ -173,18 +175,20 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             coEvery { tts.isAvailable() } returns true
             coEvery { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } returns Unit
             every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoicePitch() } returns flowOf(1.0f)
             every { observeVoice() } returns flowOf("voice-a")
-            coEvery { tts.speak("注意", false, 42, "voice-a", 1.0f) } returns Unit
+            coEvery { tts.speak("注意", false, 42, "voice-a", 1.0f, 1.0f) } returns Unit
             stubReadouts()
             val vm = createViewModel()
             vm.onFlagTextPreviewClicked("注意")
             // 開始音の有効設定は個別フラッグではなくトップレベルの Flag.Root に保存される。
             coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
-            coVerify(exactly = 1) { tts.speak("注意", false, 42, "voice-a", 1.0f) }
+            coVerify(exactly = 1) { tts.speak("注意", false, 42, "voice-a", 1.0f, 1.0f) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 1) { observeVoice() }
             verify(exactly = 1) { observeVoiceSpeed() }
-            confirmVerified(engine, tts, observeVoice, observeVoiceSpeed)
+            verify(exactly = 1) { observeVoicePitch() }
+            confirmVerified(engine, tts, observeVoice, observeVoiceSpeed, observeVoicePitch)
         }
 
     @Test
@@ -240,6 +244,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         runTest {
             coEvery { tts.isAvailable() } returns true
             every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoicePitch() } returns flowOf(1.0f)
             every { observeVoice() } returns flowOf("voice-a")
             stubReadouts()
             val vm = createViewModel()
@@ -250,11 +255,12 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             vm.onPreviewStopped()
             pendingStartSound.complete(Unit)
             coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
-            coVerify(exactly = 0) { tts.speak("注意", false, 42, "voice-a", 1.0f) }
+            coVerify(exactly = 0) { tts.speak("注意", false, 42, "voice-a", 1.0f, 1.0f) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 0) { observeVoice() }
             verify(exactly = 0) { observeVoiceSpeed() }
-            confirmVerified(engine, tts, observeVoice, observeVoiceSpeed)
+            verify(exactly = 0) { observeVoicePitch() }
+            confirmVerified(engine, tts, observeVoice, observeVoiceSpeed, observeVoicePitch)
         }
 
     @Test
@@ -262,6 +268,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         runTest {
             coEvery { tts.isAvailable() } returns true
             every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoicePitch() } returns flowOf(1.0f)
             every { observeVoice() } returns flowOf("voice-a")
             stubReadouts()
             val vm = createViewModel()
@@ -272,10 +279,11 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             vm.onFlagTextPreviewClicked("注意")
             pendingStartSound.complete(Unit)
             coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
-            coVerify(exactly = 0) { tts.speak("注意", false, 42, "voice-a", 1.0f) }
+            coVerify(exactly = 0) { tts.speak("注意", false, 42, "voice-a", 1.0f, 1.0f) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 0) { observeVoice() }
             verify(exactly = 0) { observeVoiceSpeed() }
-            confirmVerified(engine, tts, observeVoice, observeVoiceSpeed)
+            verify(exactly = 0) { observeVoicePitch() }
+            confirmVerified(engine, tts, observeVoice, observeVoiceSpeed, observeVoicePitch)
         }
 }
