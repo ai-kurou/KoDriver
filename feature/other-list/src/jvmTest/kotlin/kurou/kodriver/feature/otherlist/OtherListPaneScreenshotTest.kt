@@ -68,6 +68,35 @@ class OtherListPaneScreenshotTest {
         }
 
     @Test
+    fun `ゲーム機のIPアドレスとポートを表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            OtherListPane(
+                                uiState =
+                                    OtherListUiState(
+                                        items = listOf(OtherListItemType.ConsoleIp),
+                                        consoleAddress = "192.168.1.100",
+                                        consolePort = 33741,
+                                    ),
+                                onItemClick = {},
+                                onOverlayVisibleChange = {},
+                                onKeepScreenOnChange = {},
+                                onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
+                                onStartupEnabledChange = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
     fun `アップデートバッジを表示`() =
         composeScreenshotTest {
             setContent {

@@ -28,8 +28,10 @@ import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
+import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
@@ -48,7 +50,9 @@ import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckTextToSpeechUnavailableReasonUseCase
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
@@ -99,6 +103,11 @@ class OtherListViewModelTest {
 
     private val readoutStartSoundRepository: ReadoutStartSoundPreferencesRepository = mockk()
     private val readoutStartSoundFlow = MutableStateFlow(READOUT_START_SOUND_TYPE_DEFAULT)
+
+    private val consoleAddressRepository: ConsoleAddressPreferencesRepository = mockk()
+    private val consolePortRepository: Gt7Ps5UdpPortPreferencesRepository = mockk()
+    private val consoleAddressFlow = MutableStateFlow<String?>(null)
+    private val consolePortFlow = MutableStateFlow(33740)
 
     private val serverIpRepository: ServerIpPreferencesRepository = mockk()
     private val serverIpFlow = MutableStateFlow<String?>(null)
@@ -159,6 +168,8 @@ class OtherListViewModelTest {
                     observeSoundVolume = ObserveSoundVolumeUseCase(soundVolumeRepository),
                     observeThemeMode = ObserveThemeModeUseCase(themeRepository),
                     observeServerIp = if (observeServerIp) ObserveServerIpUseCase(serverIpRepository) else null,
+                    observeConsoleAddress = ObserveConsoleAddressUseCase(consoleAddressRepository),
+                    observeGt7Ps5UdpPort = ObserveGt7Ps5UdpPortUseCase(consolePortRepository),
                 ),
             checkHapticFeedbackAvailable = CheckHapticFeedbackAvailableUseCase(hapticFeedbackAvailabilityRepository),
             checkAccessLocalNetworkPermissionGranted =
@@ -186,6 +197,8 @@ class OtherListViewModelTest {
         every { voiceRepository.voiceId() } returns voiceFlow
         every { themeRepository.observeThemeMode() } returns themeModeFlow
         every { serverIpRepository.serverIp() } returns serverIpFlow
+        every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+        every { consolePortRepository.port() } returns consolePortFlow
         every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
         every { speechSettingsRepository.openWindowsSpeechSettings() } returns Unit
         val viewModel = createViewModel()
@@ -208,6 +221,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -243,6 +258,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -276,6 +293,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
             val initialState = viewModel.uiState.first()
@@ -312,6 +331,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -347,6 +368,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -382,6 +405,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -420,6 +445,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -454,6 +481,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -488,6 +517,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -521,6 +552,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery {
                 overlayVisibleRepository.saveOverlayVisible(false)
@@ -559,6 +592,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -593,6 +628,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel()
 
@@ -628,6 +665,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { dynamicColorRepository.saveDynamicColorEnabled(true) } answers {
                 dynamicColorFlow.update { true }
@@ -666,6 +705,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { hapticFeedbackEnabledRepository.saveHapticFeedbackEnabled(false) } answers {
                 hapticFeedbackFlow.update { false }
@@ -704,6 +745,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(hapticFeedbackAvailable = false)
 
@@ -740,6 +783,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v9.9.9")
             val viewModel = createViewModel(currentVersion = "1.0.0")
@@ -775,6 +820,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v1.0.0")
             val viewModel = createViewModel(currentVersion = "1.0.0")
@@ -810,6 +857,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -841,6 +890,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(currentVersion = "")
 
@@ -874,6 +925,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { appUpdateRepository.getLatestRelease() } returns null
             val viewModel = createViewModel(currentVersion = "1.0.0")
@@ -909,6 +962,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { startupRegistrationRepository.isEnabled() } returns true
             val viewModel = createViewModel()
@@ -945,6 +1000,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { startupRegistrationRepository.setEnabled(true) } returns Unit
             val viewModel = createViewModel()
@@ -981,6 +1038,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(accessLocalNetworkPermissionGranted = true)
 
@@ -1014,6 +1073,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(accessLocalNetworkPermissionGranted = false)
 
@@ -1047,6 +1108,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             val viewModel = createViewModel(accessLocalNetworkPermissionGranted = false)
             every { accessLocalNetworkPermissionRepository.isGranted() } returns true
@@ -1083,6 +1146,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { textToSpeechRepository.unavailableReason() } returns null
             val viewModel = createViewModel()
@@ -1124,6 +1189,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { textToSpeechRepository.unavailableReason() } returns
                 TextToSpeechUnavailableReason.WindowsSpeechUnavailable
@@ -1167,6 +1234,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { textToSpeechRepository.unavailableReason() } returns
                 TextToSpeechUnavailableReason.EngineMissing
@@ -1210,6 +1279,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
             coEvery { textToSpeechRepository.unavailableReason() } returns
                 TextToSpeechUnavailableReason.LanguageDataMissing
@@ -1242,6 +1313,41 @@ class OtherListViewModelTest {
         }
 
     @Test
+    fun `ゲーム機の保存済みIPとポートおよび変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            consoleAddressFlow.update { "192.168.1.100" }
+            consolePortFlow.update { 33741 }
+            val viewModel = createViewModel()
+            val saved = viewModel.uiState.first { it.consoleAddress == "192.168.1.100" && it.consolePort == 33741 }
+            assertEquals("192.168.1.100", saved.consoleAddress)
+            assertEquals(33741, saved.consolePort)
+            consoleAddressFlow.update { "192.168.1.101" }
+            assertEquals(
+                "192.168.1.101",
+                viewModel.uiState.first { it.consoleAddress == "192.168.1.101" }.consoleAddress,
+            )
+            consolePortFlow.update { 33740 }
+            assertEquals(33740, viewModel.uiState.first { it.consolePort == 33740 }.consolePort)
+            consoleAddressFlow.update { null }
+            assertEquals(null, viewModel.uiState.first { it.consoleAddress == null }.consoleAddress)
+            verify(exactly = 1) { consoleAddressRepository.consoleAddress() }
+            verify(exactly = 1) { consolePortRepository.port() }
+            confirmVerified(consoleAddressRepository, consolePortRepository)
+        }
+
+    @Test
     fun `接続先IPは未設定と保存済み設定とその変更を反映する`() =
         runTest {
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
@@ -1250,6 +1356,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1275,6 +1383,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1304,6 +1414,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1339,6 +1451,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1360,6 +1474,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1381,6 +1497,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1407,6 +1525,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1459,6 +1579,8 @@ class OtherListViewModelTest {
             every { voiceRepository.voiceId() } returns voiceFlow
             every { themeRepository.observeThemeMode() } returns themeModeFlow
             every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
