@@ -2753,7 +2753,7 @@ class ApplicationTest {
         }
 
     @Test
-    fun `ブレーキ摩耗情報の同一値は重複して送信されない`() =
+    fun `ブレーキ摩耗情報は同一値でも毎回送信される`() =
         testApplication {
             val repository = FakeLmuWindowsBrakeWearRepository()
             application {
@@ -2827,9 +2827,11 @@ class ApplicationTest {
 
                     val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
                     val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val third = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
                     assertEquals(BRAKE_WEAR_JSON, first)
-                    assertEquals("null", second)
+                    assertEquals(BRAKE_WEAR_JSON, second)
+                    assertEquals("null", third)
                 }
         }
 

@@ -366,7 +366,7 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         telemetryWebSocket(KoDriverServerFeature.PIT_STATUS, Simulator.LmuWindows) {
             useCases.observeLmuWindowsPitStatus()
         }
-        telemetryWebSocket(KoDriverServerFeature.BRAKE_WEAR, Simulator.LmuWindows) {
+        telemetryWebSocket(KoDriverServerFeature.BRAKE_WEAR, Simulator.LmuWindows, distinct = false) {
             useCases.observeLmuWindowsBrakeWear()
         }
         telemetryWebSocket(KoDriverServerFeature.TYRE_DETACHED, Simulator.LmuWindows) {
