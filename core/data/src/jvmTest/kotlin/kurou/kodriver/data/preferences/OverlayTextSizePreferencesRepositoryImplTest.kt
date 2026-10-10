@@ -38,9 +38,12 @@ class OverlayTextSizePreferencesRepositoryImplTest {
     @Test
     fun `saveOverlayTextSizeで保存した値をobserveOverlayTextSizeで取得できる`() =
         runTest {
-            repository.saveOverlayTextSize(OverlayTextSize.LARGE)
+            OverlayTextSize.entries.forEach { overlayTextSize ->
+                repository.saveOverlayTextSize(overlayTextSize)
 
-            assertEquals(OverlayTextSize.LARGE, repository.observeOverlayTextSize().first())
+                assertEquals(overlayTextSize.id, dataStore.data.first().size)
+                assertEquals(overlayTextSize, repository.observeOverlayTextSize().first())
+            }
         }
 
     @Test

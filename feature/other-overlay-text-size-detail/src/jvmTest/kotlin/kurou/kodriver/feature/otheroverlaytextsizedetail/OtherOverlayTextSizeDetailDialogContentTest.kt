@@ -52,9 +52,9 @@ class OtherOverlayTextSizeDetailDialogContentTest {
     fun `すべての文字サイズラベルが表示されている`() {
         setContent()
 
-        rule.onNodeWithText("小").fetchSemanticsNode()
-        rule.onNodeWithText("中").fetchSemanticsNode()
-        rule.onNodeWithText("大").fetchSemanticsNode()
+        listOf("極小", "小", "中", "大", "特大", "超特大", "最大").forEach { label ->
+            rule.onNodeWithText(label).fetchSemanticsNode()
+        }
     }
 
     @Test
@@ -62,8 +62,20 @@ class OtherOverlayTextSizeDetailDialogContentTest {
         var selectedOverlayTextSize: OverlayTextSize? = null
         setContent(onOverlayTextSizeSelected = { selectedOverlayTextSize = it })
 
-        rule.onNodeWithText("大").performClick()
+        val sizesByLabel =
+            listOf(
+                "極小" to OverlayTextSize.EXTRA_SMALL,
+                "小" to OverlayTextSize.SMALL,
+                "中" to OverlayTextSize.MEDIUM,
+                "大" to OverlayTextSize.LARGE,
+                "特大" to OverlayTextSize.EXTRA_LARGE,
+                "超特大" to OverlayTextSize.HUGE,
+                "最大" to OverlayTextSize.MAXIMUM,
+            )
+        sizesByLabel.forEach { (label, overlayTextSize) ->
+            rule.onNodeWithText(label).performClick()
 
-        assertEquals(OverlayTextSize.LARGE, selectedOverlayTextSize)
+            assertEquals(overlayTextSize, selectedOverlayTextSize)
+        }
     }
 }

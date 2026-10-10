@@ -41,13 +41,15 @@ class OverlayTextSizePreferencesSerializerTest {
     @Test
     fun `writeToでOverlayTextSizePreferencesを書き込める`() =
         runTest {
-            val original = OverlayTextSizePreferences(size = "small")
-            val output = ByteArrayOutputStream()
+            listOf("small", "extra_small", "extra_large", "huge", "maximum").forEach { id ->
+                val original = OverlayTextSizePreferences(size = id)
+                val output = ByteArrayOutputStream()
 
-            OverlayTextSizePreferencesSerializer.writeTo(original, output)
-            val result = OverlayTextSizePreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
+                OverlayTextSizePreferencesSerializer.writeTo(original, output)
+                val result = OverlayTextSizePreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
 
-            assertEquals(original, result)
+                assertEquals(original, result)
+            }
         }
 
     @Test

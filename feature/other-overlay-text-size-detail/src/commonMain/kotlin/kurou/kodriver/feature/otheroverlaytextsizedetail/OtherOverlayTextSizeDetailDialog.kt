@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -23,7 +25,11 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.Res
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_cancel
+import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_extra_large
+import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_extra_small
+import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_huge
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_large
+import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_maximum
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_medium
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_ok
 import kurou.kodriver.feature.otheroverlaytextsizedetail.generated.resources.overlay_text_size_small
@@ -73,14 +79,18 @@ internal fun OtherOverlayTextSizeDetailDialogContent(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.overlay_text_size_title)) },
         text = {
-            Column {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Spacer(modifier = Modifier.height(KoDriverSpacing.extraSmall))
                 OverlayTextSize.entries.forEach { overlayTextSize ->
                     val label =
                         when (overlayTextSize) {
+                            OverlayTextSize.EXTRA_SMALL -> stringResource(Res.string.overlay_text_size_extra_small)
                             OverlayTextSize.SMALL -> stringResource(Res.string.overlay_text_size_small)
                             OverlayTextSize.MEDIUM -> stringResource(Res.string.overlay_text_size_medium)
                             OverlayTextSize.LARGE -> stringResource(Res.string.overlay_text_size_large)
+                            OverlayTextSize.EXTRA_LARGE -> stringResource(Res.string.overlay_text_size_extra_large)
+                            OverlayTextSize.HUGE -> stringResource(Res.string.overlay_text_size_huge)
+                            OverlayTextSize.MAXIMUM -> stringResource(Res.string.overlay_text_size_maximum)
                         }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

@@ -92,6 +92,54 @@ class NarratorOverlayContentScreenshotTest {
             )
         }
 
+    @Test
+    fun `文字サイズが極小の場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        overlayTextSize = OverlayTextSize.EXTRA_SMALL,
+                    ),
+            )
+        }
+
+    @Test
+    fun `文字サイズが特大の場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        overlayTextSize = OverlayTextSize.EXTRA_LARGE,
+                    ),
+            )
+        }
+
+    @Test
+    fun `文字サイズが超特大の場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        overlayTextSize = OverlayTextSize.HUGE,
+                    ),
+            )
+        }
+
+    @Test
+    fun `文字サイズが最大の場合`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        overlayTextSize = OverlayTextSize.MAXIMUM,
+                    ),
+            )
+        }
+
     private fun DesktopComposeUiTest.captureNarratorOverlayContent(uiState: NarratorOverlayUiState) {
         setContent {
             Box(modifier = Modifier.requiredSize(400.dp, 120.dp)) {

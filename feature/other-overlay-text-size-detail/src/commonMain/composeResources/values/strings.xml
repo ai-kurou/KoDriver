@@ -1,8 +1,12 @@
 <resources>
     <string name="overlay_text_size_title">文字サイズ</string>
+    <string name="overlay_text_size_extra_small">極小</string>
     <string name="overlay_text_size_small">小</string>
     <string name="overlay_text_size_medium">中</string>
     <string name="overlay_text_size_large">大</string>
+    <string name="overlay_text_size_extra_large">特大</string>
+    <string name="overlay_text_size_huge">超特大</string>
+    <string name="overlay_text_size_maximum">最大</string>
     <string name="overlay_text_size_ok">OK</string>
     <string name="overlay_text_size_cancel">キャンセル</string>
 </resources>
