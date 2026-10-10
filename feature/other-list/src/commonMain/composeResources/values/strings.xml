@@ -11,6 +11,14 @@
     <string name="item_overlay_visible_summary">読み上げ内容（順番待ちを含む）を、最前面の小さなウィンドウに表示します</string>
     <string name="item_overlay_text_size">文字サイズ</string>
     <string name="item_overlay_background_opacity">背景の透明度</string>
+    <string name="item_overlay_background_opacity_summary">%1$d%</string>
+    <string name="overlay_text_size_extra_small">極小</string>
+    <string name="overlay_text_size_small">小</string>
+    <string name="overlay_text_size_medium">中</string>
+    <string name="overlay_text_size_large">大</string>
+    <string name="overlay_text_size_extra_large">特大</string>
+    <string name="overlay_text_size_huge">超特大</string>
+    <string name="overlay_text_size_maximum">最大</string>
     <string name="item_theme">テーマ</string>
     <string name="theme_system">システムに従う</string>
     <string name="theme_light">ライト</string>
