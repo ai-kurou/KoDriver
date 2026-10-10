@@ -33,6 +33,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsTyreWearPreferencesReposi
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
@@ -83,6 +84,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
@@ -225,6 +227,9 @@ val desktopDataModule =
         }
         single<LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository> {
             createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsVehicleClassBrakeWearPreferencesRepository> {
+            createLmuWindowsVehicleClassBrakeWearPreferencesRepository(directory = kodriverDirectory)
         }
         single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
             createLmuWindowsRemainingVirtualEnergyPreferencesRepository(directory = kodriverDirectory)

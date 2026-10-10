@@ -74,4 +74,4 @@ LMUの全自由文字列イベント（フラッグ・車両接近・ピット�
 ピットタイミングの周回ゲートとソース選択は本文ではなく `laps` を使い続ける。
 読み上げ済みの周回数は、ソース選択と周回ゲートを通過した警告のみViewModelで記録する。
 
-LMUブレーキ摩耗（`ReadoutItemKey.LmuWindows.BrakeWear.Root`）は listPane のスイッチ（既定OFF）・開始音（既定ON）・キュー（既定ON）の設定永続化のみ対応する。detailPane（`:feature:lmu-windows-readout-brake-wear-detail`）は、摩耗を表すREST値を実機で調べるための生値表示のみで、読み上げの設定項目は持たない。Narratorの読み上げ判定・SpeechEventは未配線で、摩耗を表す値が確定してからfollow-up PRで対応予定。
+LMUブレーキ摩耗警告では一覧の `BrakeWear.Root` と詳細の `WarningReadout` の有効状態を判定する。`LmuWindowsNarratorViewModel` は `ObserveLmuWindowsBrakeWearRemainingUseCase`（REST APIの `wearables.brakes` と車両クラスから、観測した最大の厚さを新品時とみなして残量%を計算）の値を `determineBrakeWearLow` で判定し、いずれかの輪が車両クラス別の残量閾値以下になった時点で1回だけ読み上げる（全輪が閾値を超えるまで再読み上げしない）。イベントは判定時の閾値（%）を持ち、全クラス共通文言の `{percent}` を置換する。実測の残量は使用しない。文言と閾値は `LmuWindowsVehicleClassBrakeWearPreferences` に保存する。判定時に `resolvedText` を確定してログと発話を一致させる。空白・TTS利用不可では本文と開始音を要求せず空文字と `SKIPPED` を記録する。開始音・優先度・キューと試聴は `BrakeWear.Root` を参照する。詳細ペインの試聴は選択中クラスのスライダー閾値を使う。WAVへはフォールバックしない。LMU REST APIはデスクトップ版のみ取得でき、Android版は取得できないため読み上げられない（WebSocket経由の配信は未対応）。

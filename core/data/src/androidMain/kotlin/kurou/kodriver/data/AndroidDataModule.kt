@@ -39,6 +39,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsTyreWearPreferencesReposi
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
@@ -53,7 +54,7 @@ import kurou.kodriver.data.preferences.createThemePreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.release.HttpServerVersionRepository
-import kurou.kodriver.data.restapi.UnavailableLmuWindowsBrakeWearInvestigationRepository
+import kurou.kodriver.data.restapi.UnavailableLmuWindowsBrakeWearRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsBestLapTimeRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsFlagRepository
@@ -103,7 +104,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
-import kurou.kodriver.domain.repository.LmuWindowsBrakeWearInvestigationRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -124,6 +125,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPref
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
@@ -203,7 +205,7 @@ fun androidDataModule(context: Context) =
         single<LmuWindowsTyreCarcassTemperatureRepository> {
             WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
         }
-        single<LmuWindowsBrakeWearInvestigationRepository> { UnavailableLmuWindowsBrakeWearInvestigationRepository() }
+        single<LmuWindowsBrakeWearRepository> { UnavailableLmuWindowsBrakeWearRepository() }
         single<LmuWindowsBrakeTemperatureRepository> {
             WebSocketLmuWindowsBrakeTemperatureRepository(serverIpRepository = get(), client = get())
         }
@@ -395,6 +397,9 @@ private fun androidDataModuleThresholdPreferences(context: Context) =
         }
         single<LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository> {
             createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsVehicleClassBrakeWearPreferencesRepository> {
+            createLmuWindowsVehicleClassBrakeWearPreferencesRepository(context.filesDir.absolutePath)
         }
         single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
             createLmuWindowsRemainingVirtualEnergyPreferencesRepository(context.filesDir.absolutePath)

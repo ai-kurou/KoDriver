@@ -23,6 +23,7 @@ import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
@@ -50,6 +51,7 @@ import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5TyreTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
@@ -244,6 +246,24 @@ sealed interface SpeechEvent {
             )
 
         override fun withResolvedText(text: String): LmuWindowsBrakeOverheat = copy(resolvedText = text)
+    }
+
+    /**
+     * ブレーキ残量警告。[percent] は実測の残量ではなく設定した閾値（%）。
+     * [resolvedText] は判定時に解決済みの文言。キュー待機中もログと発話を一致させる。
+     */
+    data class LmuWindowsBrakeWearLow(
+        val percent: Int,
+        override val resolvedText: String? = null,
+    ) : ReadoutTextEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.BrakeWear.Root
+        override val narratedText =
+            formatLmuWindowsBrakeWearReadoutText(
+                LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT,
+                percent,
+            )
+
+        override fun withResolvedText(text: String): LmuWindowsBrakeWearLow = copy(resolvedText = text)
     }
 
     /**

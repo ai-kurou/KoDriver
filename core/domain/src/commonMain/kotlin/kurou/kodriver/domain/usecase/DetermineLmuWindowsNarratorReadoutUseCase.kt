@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -40,6 +41,7 @@ data class LmuWindowsNarratorState(
     val tyreOverheating: Boolean = false,
     val tyreWearWarned: Boolean = false,
     val brakeOverheating: Boolean = false,
+    val brakeWearWarned: Boolean = false,
     val previousGamePhaseForTyreLowWarning: SessionPhase? = null,
     val remainingVirtualEnergyWarned: Boolean = false,
     val lastAnnouncedPitTimingVirtualEnergyLaps: Int = -1,
@@ -108,6 +110,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
     val tyreWearThresholdPercentage: Int,
     val brakeTemperatureHighThresholdCelsius: Celsius,
+    val brakeWearLowThresholdPercent: Int,
     val remainingVirtualEnergyThresholdPercentage: Int,
     val pitTimingVirtualEnergyLapsThreshold: Int,
     val pitTimingTyreWearLapsThreshold: Int,
@@ -134,8 +137,7 @@ data class TyreTemperatureReadoutInput(
 /**
  * LMU の共有メモリ由来データから、今回読み上げるべき音声イベントを決定する UseCase。
  *
- * ブレーキ摩耗（[ReadoutItemKey.LmuWindows.BrakeWear.Root]）は listPane への項目追加のみ対応済みで、
- * 読み上げ判定はこのUseCaseにまだ配線していない（follow-up PRで対応予定）。
+ * ブレーキ摩耗（[ReadoutItemKey.LmuWindows.BrakeWear.Root]）は、REST API 由来の残量を [determineBrakeWearLow] で判定する。
  */
 @Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCase {
@@ -437,6 +439,28 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                             celsius = settings.brakeTemperatureHighThresholdCelsius.value,
                         ),
                     )
+                } else {
+                    emptyList()
+                },
+        )
+    }
+
+    fun determineBrakeWearLow(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsBrakeWearRemainingData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): LmuWindowsNarratorReadoutDecision {
+        val anyLow =
+            data.wheels.values.any { it.remainingPercent <= settings.brakeWearLowThresholdPercent }
+        val shouldAnnounce =
+            !state.brakeWearWarned && anyLow &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeWear.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout)
+        return LmuWindowsNarratorReadoutDecision(
+            state = state.copy(brakeWearWarned = anyLow),
+            events =
+                if (shouldAnnounce) {
+                    listOf(SpeechEvent.LmuWindowsBrakeWearLow(percent = settings.brakeWearLowThresholdPercent))
                 } else {
                     emptyList()
                 },

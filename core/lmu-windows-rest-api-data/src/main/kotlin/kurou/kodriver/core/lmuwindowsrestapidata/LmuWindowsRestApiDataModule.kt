@@ -3,10 +3,9 @@ package kurou.kodriver.core.lmuwindowsrestapidata
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
-import kurou.kodriver.core.lmuwindowsrestapidata.datasource.LmuWindowsRestApiBrakeInfoDataSource
 import kurou.kodriver.core.lmuwindowsrestapidata.datasource.LmuWindowsRestApiRepairAndRefuelDataSource
-import kurou.kodriver.core.lmuwindowsrestapidata.repository.LmuWindowsRestApiBrakeWearInvestigationRepository
-import kurou.kodriver.domain.repository.LmuWindowsBrakeWearInvestigationRepository
+import kurou.kodriver.core.lmuwindowsrestapidata.repository.LmuWindowsRestApiBrakeWearRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -19,7 +18,7 @@ private val lmuRestApiHttpClient = named("lmuWindowsRestApiHttpClient")
  * LMU 内蔵 REST API（`http://localhost:6397`）経由の Repository バインドを行う Koin モジュール
  * （:core:lmu-windows-rest-api-data。JVM 専用）。
  *
- * 提供: LmuWindowsBrakeWearInvestigationRepository（ブレーキ摩耗の実機調査用の生値ポーリング）。
+ * 提供: LmuWindowsBrakeWearRepository（`wearables.brakes` のポーリング）。
  * REST API は LMU を起動した Windows 機の `localhost` にのみ待ち受けるため、デスクトップ版の
  * エントリーポイントでのみ束ねる。
  */
@@ -32,11 +31,9 @@ val lmuWindowsRestApiDataModule =
                 }
             }
         }
-        single<LmuWindowsBrakeWearInvestigationRepository> {
-            val client = get<HttpClient>(lmuRestApiHttpClient)
-            LmuWindowsRestApiBrakeWearInvestigationRepository(
-                repairAndRefuelDataSource = LmuWindowsRestApiRepairAndRefuelDataSource(client),
-                brakeInfoDataSource = LmuWindowsRestApiBrakeInfoDataSource(client),
+        single<LmuWindowsBrakeWearRepository> {
+            LmuWindowsRestApiBrakeWearRepository(
+                dataSource = LmuWindowsRestApiRepairAndRefuelDataSource(get<HttpClient>(lmuRestApiHttpClient)),
             )
         }
     }

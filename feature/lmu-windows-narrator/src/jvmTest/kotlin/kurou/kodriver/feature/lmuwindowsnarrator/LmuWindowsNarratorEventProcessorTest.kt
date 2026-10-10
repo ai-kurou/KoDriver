@@ -19,16 +19,20 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.double
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -60,6 +64,7 @@ import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
@@ -110,6 +115,7 @@ class LmuWindowsNarratorEventProcessorTest {
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
     private val observeBrakeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase = mockk()
+    private val observeBrakeWearText: ObserveLmuWindowsBrakeWearReadoutTextUseCase = mockk()
     private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase = mockk()
@@ -135,6 +141,7 @@ class LmuWindowsNarratorEventProcessorTest {
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
             observeBrakeText,
+            observeBrakeWearText,
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
@@ -3039,6 +3046,78 @@ class LmuWindowsNarratorEventProcessorTest {
             confirmVerified(ttsEngine, telemetryLogRepository)
         }
 
+    @Test
+    fun `ブレーキ残量警告は直前と現在の残量とともにログに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every {
+                ttsEngine.speak(SpeechEvent.LmuWindowsBrakeWearLow(20, resolvedText = "残量20%です"), queue = false)
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeWear.Root,
+                    narratedText = "残量20%です",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor { "残量20%です" }
+
+            processor.processBrakeWear(
+                brakeWear = brakeWear(frontLeft = 50),
+                events = emptyList(),
+                readoutOrder = emptyList(),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+                logContext = logContext(),
+            )
+            processor.processBrakeWear(
+                brakeWear = brakeWear(frontLeft = 18),
+                events = listOf(SpeechEvent.LmuWindowsBrakeWearLow(20)),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.BrakeWear.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            val root = Json.parseToJsonElement(telemetryJsonSlot.captured).jsonObject
+            assertEquals(
+                50f,
+                root["previousBrakeWear"]!!
+                    .jsonObject["wheels"]!!
+                    .jsonObject["FRONT_LEFT"]!!
+                    .jsonObject["remainingPercent"]!!
+                    .jsonPrimitive.float,
+            )
+            assertEquals(
+                18f,
+                root["brakeWear"]!!
+                    .jsonObject["wheels"]!!
+                    .jsonObject["FRONT_LEFT"]!!
+                    .jsonObject["remainingPercent"]!!
+                    .jsonPrimitive.float,
+            )
+            assertContains(telemetryJsonSlot.captured, """"observedAtMs":200""")
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) {
+                ttsEngine.speak(SpeechEvent.LmuWindowsBrakeWearLow(20, resolvedText = "残量20%です"), false)
+            }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeWear.Root,
+                    narratedText = "残量20%です",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = telemetryJsonSlot.captured,
+                )
+            }
+            confirmVerified(ttsEngine, telemetryLogRepository)
+        }
+
     private fun createProcessor(readoutText: suspend (SpeechEvent) -> String? = { it.narratedText }) =
         LmuWindowsNarratorEventProcessor(
             ttsEngine = ttsEngine,
@@ -3060,6 +3139,7 @@ private fun logContext() =
                 tyreTemperatureLowWarningPhases = emptySet(),
                 tyreWearThresholdPercentage = 50,
                 brakeTemperatureHighThresholdCelsius = Celsius(700),
+                brakeWearLowThresholdPercent = 20,
                 remainingVirtualEnergyThresholdPercentage = 50,
                 pitTimingVirtualEnergyLapsThreshold = 3,
                 pitTimingTyreWearLapsThreshold = 3,
@@ -3133,6 +3213,7 @@ private fun pitTimingLogContext() =
                 tyreTemperatureLowWarningPhases = emptySet(),
                 tyreWearThresholdPercentage = 50,
                 brakeTemperatureHighThresholdCelsius = Celsius(700),
+                brakeWearLowThresholdPercent = 20,
                 remainingVirtualEnergyThresholdPercentage = 50,
                 pitTimingVirtualEnergyLapsThreshold = 3,
                 pitTimingTyreWearLapsThreshold = 3,
@@ -3172,6 +3253,18 @@ private fun fakeTelemetryData(bestLapTimeMs: Long = 0L) =
                 positionX = 0.0,
                 positionY = 0.0,
                 positionZ = 0.0,
+            ),
+    )
+
+private fun brakeWear(frontLeft: Int) =
+    LmuWindowsBrakeWearRemainingData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to
+                    LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), frontLeft.toFloat()),
+                WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80f),
+                WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80f),
+                WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80f),
             ),
     )
 

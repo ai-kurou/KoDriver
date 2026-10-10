@@ -15,6 +15,7 @@ import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
@@ -58,6 +59,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
     private val observeBrakeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase = mockk()
+    private val observeBrakeWearText: ObserveLmuWindowsBrakeWearReadoutTextUseCase = mockk()
     private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase = mockk()
@@ -83,6 +85,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
             observeBrakeText,
+            observeBrakeWearText,
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
@@ -201,6 +204,68 @@ class LmuWindowsReadoutTextSpeakerTest {
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
             verify(exactly = 0) { observeBrakeText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `ブレーキ残量警告はイベントの設定閾値を文言に置換して読み上げる`() =
+        runTest {
+            every { observeBrakeWearText() } returns flowOf("閾値{percent}%、{percent}")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("閾値50%、50", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.LmuWindowsBrakeWearLow(50), VOLUME)
+            verify(exactly = 1) { observeBrakeWearText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("閾値50%、50", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `ブレーキ残量警告は解決済みの文言があれば設定を再取得せずその文言を読み上げる`() =
+        runTest {
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText("解決済み", volume = VOLUME) } just Runs
+            speaker(SpeechEvent.LmuWindowsBrakeWearLow(50, resolvedText = "解決済み"), VOLUME)
+            verify(exactly = 0) { observeBrakeWearText() }
+            coVerify(exactly = 1) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText("解決済み", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `ブレーキ残量警告の空白文言ではTTSを確認せず読み上げない`() =
+        runTest {
+            every { observeBrakeWearText() } returns flowOf(" ")
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsBrakeWearLow(30)))
+            speaker(SpeechEvent.LmuWindowsBrakeWearLow(30), VOLUME)
+            verify(exactly = 2) { observeBrakeWearText() }
+            coVerify(exactly = 0) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `ブレーキ残量警告のTTS利用不可では読み上げ文言を返さず読み上げない`() =
+        runTest {
+            every { observeBrakeWearText() } returns flowOf("残り{percent}%")
+            coEvery { checkTextToSpeechAvailable() } returns false
+            assertNull(speaker.readoutText(SpeechEvent.LmuWindowsBrakeWearLow(70)))
+            speaker(SpeechEvent.LmuWindowsBrakeWearLow(70), VOLUME)
+            verify(exactly = 2) { observeBrakeWearText() }
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 0) { speakText("残り70%", volume = VOLUME) }
+            confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `ブレーキ残量警告の解決済み空白文言は既定文言へ戻さず読み上げない`() =
+        runTest {
+            val event = SpeechEvent.LmuWindowsBrakeWearLow(50, resolvedText = " ")
+            assertNull(speaker.readoutText(event))
+            speaker(event, VOLUME)
+            verify(exactly = 0) { observeBrakeWearText() }
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
             confirmAllMocksVerified()
@@ -333,6 +398,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
             observeBrakeText,
+            observeBrakeWearText,
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
