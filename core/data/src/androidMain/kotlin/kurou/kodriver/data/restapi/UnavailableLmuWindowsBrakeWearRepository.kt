@@ -10,5 +10,5 @@ import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
  * Android からは取得できない。何も流さない。
  */
 internal class UnavailableLmuWindowsBrakeWearRepository : LmuWindowsBrakeWearRepository {
-    override fun brakeWearStream(): Flow<LmuWindowsBrakeWearData> = emptyFlow()
+    override fun brakeWearStream(): Flow<LmuWindowsBrakeWearData?> = emptyFlow()
 }

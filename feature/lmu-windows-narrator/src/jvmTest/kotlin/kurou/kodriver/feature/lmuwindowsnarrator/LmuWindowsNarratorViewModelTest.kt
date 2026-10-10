@@ -22,12 +22,14 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -59,7 +61,9 @@ import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
+import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
@@ -74,6 +78,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
@@ -85,6 +90,7 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
@@ -103,6 +109,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLa
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
@@ -177,6 +184,11 @@ class LmuWindowsNarratorViewModelTest {
     private val vehicleClassBrakeTemperaturePreferencesRepository:
         LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository = mockk(relaxUnitFun = true)
 
+    private val brakeWearRepository: LmuWindowsBrakeWearRepository = mockk(relaxUnitFun = true)
+
+    private val vehicleClassBrakeWearPreferencesRepository:
+        LmuWindowsVehicleClassBrakeWearPreferencesRepository = mockk(relaxUnitFun = true)
+
     private val virtualEnergyRepository: LmuWindowsVirtualEnergyRepository = mockk(relaxUnitFun = true)
 
     private val remainingVirtualEnergyPreferencesRepository: LmuWindowsRemainingVirtualEnergyPreferencesRepository =
@@ -212,6 +224,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData>,
         tyreWearChannel: Channel<LmuWindowsTyreWearData>,
         brakeTemperatureChannel: Channel<LmuWindowsBrakeTemperatureData>,
+        brakeWearChannel: Channel<LmuWindowsBrakeWearData?>,
         remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData>,
         enabledOverrides: Map<ReadoutItemKey, Boolean>,
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean>,
@@ -285,6 +298,13 @@ class LmuWindowsNarratorViewModelTest {
                     lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault(it)
                 },
             )
+        every { brakeWearRepository.brakeWearStream() } returns brakeWearChannel.receiveAsFlow()
+        every { vehicleClassBrakeWearPreferencesRepository.observeLowThresholdPercent() } returns
+            MutableStateFlow(
+                lmuWindowsAllVehicleClasses.associateWith {
+                    lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault(it)
+                },
+            )
         every { virtualEnergyRepository.virtualEnergyStream() } returns
             remainingVirtualEnergyChannel.receiveAsFlow()
         every { remainingVirtualEnergyPreferencesRepository.observeThresholdPercentage() } returns
@@ -309,6 +329,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         tyreWearChannel: Channel<LmuWindowsTyreWearData> = Channel(Channel.UNLIMITED),
         brakeTemperatureChannel: Channel<LmuWindowsBrakeTemperatureData> = Channel(Channel.UNLIMITED),
+        brakeWearChannel: Channel<LmuWindowsBrakeWearData?> = Channel(Channel.UNLIMITED),
         remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -354,6 +375,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = tyreTemperatureChannel,
             tyreWearChannel = tyreWearChannel,
             brakeTemperatureChannel = brakeTemperatureChannel,
+            brakeWearChannel = brakeWearChannel,
             remainingVirtualEnergyChannel = remainingVirtualEnergyChannel,
             enabledOverrides = enabledOverrides,
             flagEnabledOverrides = flagEnabledOverrides,
@@ -457,6 +479,15 @@ class LmuWindowsNarratorViewModelTest {
                     observeVehicleClassHighThreshold =
                         ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase(
                             vehicleClassBrakeTemperaturePreferencesRepository,
+                        ),
+                ),
+            brakeWearUseCases =
+                BrakeWearUseCases(
+                    observeBrakeWear =
+                        ObserveLmuWindowsBrakeWearRemainingUseCase(brakeWearRepository, vehicleClassRepository),
+                    observeVehicleClassLowThreshold =
+                        ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase(
+                            vehicleClassBrakeWearPreferencesRepository,
                         ),
                 ),
             remainingVirtualEnergyUseCases =
@@ -2054,6 +2085,141 @@ class LmuWindowsNarratorViewModelTest {
             assertContains(log.telemetryJson, """"finalState":{""")
         }
 
+    // --- ブレーキ摩耗 ---
+
+    @Test
+    fun `ブレーキ残量が閾値以下になると BrakeWearLow を読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeWearChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeWear.Root to true),
+            )
+
+            channel.send(brakeWearData(thickness = 0.036f))
+            channel.send(brakeWearData(thickness = 0.026f))
+
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキ残量20%以下")),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `ブレーキ残量の低下が継続しても2回目は読み上げない`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeWearChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeWear.Root to true),
+            )
+
+            channel.send(brakeWearData(thickness = 0.036f))
+            channel.send(brakeWearData(thickness = 0.026f))
+            channel.send(brakeWearData(thickness = 0.026f))
+
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキ残量20%以下")),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `ブレーキ交換後に再び閾値以下になると再度読み上げる`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeWearChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeWear.Root to true),
+            )
+
+            channel.send(brakeWearData(thickness = 0.036f))
+            channel.send(brakeWearData(thickness = 0.026f))
+            channel.send(brakeWearData(thickness = 0.036f))
+            channel.send(brakeWearData(thickness = 0.026f))
+
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキ残量20%以下"),
+                    SpeechEvent.LmuWindowsBrakeWearLow(20, resolvedText = "ブレーキ残量20%以下"),
+                ),
+                spokenTexts,
+            )
+        }
+
+    @Test
+    fun `ブレーキ残量を取得できない周期は読み上げに影響しない`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeWearChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeWear.Root to true),
+            )
+
+            channel.send(null)
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `ブレーキ摩耗項目が無効なら読み上げない`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeWearChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeWear.Root to false),
+            )
+
+            channel.send(brakeWearData(thickness = 0.036f))
+            channel.send(brakeWearData(thickness = 0.026f))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `ブレーキ残量低下の読み上げでテレメトリログを保存する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsBrakeWearData?>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                brakeWearChannel = channel,
+                ttsEngine = tts,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.BrakeWear.Root to true),
+                currentTimeMs = { 123L },
+            )
+            stubTelemetryLogSave(logs, createdAt = 123L, ReadoutItemKey.LmuWindows.BrakeWear.Root)
+
+            channel.send(brakeWearData(thickness = 0.036f))
+            channel.send(brakeWearData(thickness = 0.026f))
+
+            assertEquals(1, logs.size)
+            val log = logs.first()
+            assertEquals(123L, log.createdAt)
+            assertEquals(Simulator.LmuWindows, log.simulator)
+            assertEquals(ReadoutItemKey.LmuWindows.BrakeWear.Root, log.readoutItemKey)
+            assertContains(log.telemetryJson, """"previousBrakeWear":{""")
+            assertContains(log.telemetryJson, """"brakeWear":{"wheels":{"FRONT_LEFT":""")
+            assertContains(log.telemetryJson, """"settings":{""")
+            assertContains(log.telemetryJson, """"finalState":{""")
+        }
+
     // --- バーチャルエナジー残量 ---
 
     @Test
@@ -3059,6 +3225,11 @@ private fun tyreWear(
             WheelIndex.REAR_RIGHT to LmuWindowsTyreWearRatio(rr),
         ),
 )
+
+private fun brakeWearData(thickness: Float) =
+    LmuWindowsBrakeWearData(
+        wheels = WheelIndex.entries.associateWith { BrakeThicknessMeters(thickness) },
+    )
 
 private fun brakeTemperature(
     fl: Double = 20.0,

@@ -12,17 +12,17 @@ import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 /**
  * `wearables.brakes`（ブレーキ残り厚さ）を一定間隔でポーリングして流す。
  *
- * 取得に失敗（LMU 未起動・HTTP エラー・JSON 不正など）した回、または 4 輪分が揃っていない回は何も流さず、
+ * 取得に失敗（LMU 未起動・HTTP エラー・JSON 不正など）した回、または 4 輪分が揃っていない回は null を流し、
  * 次の周期で再取得する。
  */
 internal class LmuWindowsRestApiBrakeWearRepository(
     private val dataSource: LmuWindowsRestApiRepairAndRefuelDataSource,
     private val pollIntervalMillis: Long = POLL_INTERVAL_MILLIS,
 ) : LmuWindowsBrakeWearRepository {
-    override fun brakeWearStream(): Flow<LmuWindowsBrakeWearData> =
+    override fun brakeWearStream(): Flow<LmuWindowsBrakeWearData?> =
         flow {
             while (true) {
-                fetchOrNull()?.let { emit(it) }
+                emit(fetchOrNull())
                 delay(pollIntervalMillis)
             }
         }

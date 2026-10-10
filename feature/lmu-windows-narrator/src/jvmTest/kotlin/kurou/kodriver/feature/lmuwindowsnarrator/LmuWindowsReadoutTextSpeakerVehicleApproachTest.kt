@@ -14,6 +14,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
@@ -54,6 +55,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase = mockk()
     private val observeRemainingText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase = mockk()
     private val observeBrakeText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase = mockk()
+    private val observeBrakeWearText: ObserveLmuWindowsBrakeWearReadoutTextUseCase = mockk()
     private val observeTyreWearText: ObserveLmuWindowsTyreWearReadoutTextUseCase = mockk()
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase = mockk()
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase = mockk()
@@ -79,6 +81,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
             observeBrakeText,
+            observeBrakeWearText,
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,
@@ -106,6 +109,7 @@ class LmuWindowsReadoutTextSpeakerVehicleApproachTest {
             observePitTimingTyreWearImminentReadoutText,
             observeRemainingText,
             observeBrakeText,
+            observeBrakeWearText,
             observeTyreWearText,
             observeTyreOverheatReadoutText,
             observeTyreColdReadoutText,

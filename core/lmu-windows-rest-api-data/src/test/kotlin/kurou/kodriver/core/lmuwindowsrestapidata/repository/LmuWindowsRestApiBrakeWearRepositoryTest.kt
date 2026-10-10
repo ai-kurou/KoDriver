@@ -21,6 +21,8 @@ import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 private const val BODY = """{"wearables":{"brakes":[0.036,0.035,0.032,0.031]}}"""
 
@@ -32,12 +34,12 @@ class LmuWindowsRestApiBrakeWearRepositoryTest {
 
             val result = repository.brakeWearStream().first()
 
-            assertEquals(BrakeThicknessMeters(0.036f), result.wheels.getValue(WheelIndex.FRONT_LEFT))
-            assertEquals(BrakeThicknessMeters(0.031f), result.wheels.getValue(WheelIndex.REAR_RIGHT))
+            assertEquals(BrakeThicknessMeters(0.036f), result?.wheels?.getValue(WheelIndex.FRONT_LEFT))
+            assertEquals(BrakeThicknessMeters(0.031f), result?.wheels?.getValue(WheelIndex.REAR_RIGHT))
         }
 
     @Test
-    fun `取得に失敗した回は流さず次の周期で再取得する`() =
+    fun `取得に失敗した回はnullを流し次の周期で再取得する`() =
         runTest {
             var calls = 0
             val repository =
@@ -46,14 +48,15 @@ class LmuWindowsRestApiBrakeWearRepositoryTest {
                     if (calls == 1) respondError(HttpStatusCode.InternalServerError) else plainText(BODY)
                 }
 
-            val results = repository.brakeWearStream().take(1).toList()
+            val results = repository.brakeWearStream().take(2).toList()
 
-            assertEquals(1, results.size)
+            assertNull(results[0])
+            assertNotNull(results[1])
             assertEquals(2, calls)
         }
 
     @Test
-    fun `4輪分が揃っていない回は流さず次の周期で再取得する`() =
+    fun `4輪分が揃っていない回はnullを流し次の周期で再取得する`() =
         runTest {
             var calls = 0
             val repository =
@@ -62,9 +65,10 @@ class LmuWindowsRestApiBrakeWearRepositoryTest {
                     if (calls == 1) plainText("""{"wearables":{"brakes":[0.036]}}""") else plainText(BODY)
                 }
 
-            val results = repository.brakeWearStream().take(1).toList()
+            val results = repository.brakeWearStream().take(2).toList()
 
-            assertEquals(1, results.size)
+            assertNull(results[0])
+            assertNotNull(results[1])
             assertEquals(2, calls)
         }
 

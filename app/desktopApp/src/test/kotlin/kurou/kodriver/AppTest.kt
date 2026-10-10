@@ -20,16 +20,13 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.data.desktopDataModule
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
-import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.feature.gt7ps5narrator.fakeGt7Ps5DataModule
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.main.fakeMainModule
@@ -51,7 +48,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.dsl.module
 import kotlin.test.BeforeTest
 
 class AppTest {
@@ -83,13 +79,6 @@ class AppTest {
                             fakeOtherVolumeDetailModule,
                             fakeOtherVoiceDetailModule,
                             fakeOtherListModule,
-                            module {
-                                single<LmuWindowsBrakeWearRepository> {
-                                    object : LmuWindowsBrakeWearRepository {
-                                        override fun brakeWearStream() = emptyFlow<LmuWindowsBrakeWearData>()
-                                    }
-                                }
-                            },
                         ),
                 )
             }
@@ -137,8 +126,10 @@ class AppTest {
         scrollToItem("ブレーキ摩耗")
         clickItemAndVerifyDescription(
             "ブレーキ摩耗",
-            "ブレーキの残量を4輪それぞれ%と厚さ（mm）で表示します。" +
-                "LMUのREST APIから取得するため、デスクトップ版でLMUを起動しているときのみ取得できます。\n" +
+            "ブレーキの残量が設定した閾値以下になった際に音声でお知らせします。" +
+                "一度警告を読み上げた後は、ブレーキを交換して全輪の残量が閾値を超えるまで再度読み上げません。\n" +
+                "読み上げる文言は下の欄で設定できます。\n" +
+                "残量はLMUのREST APIから取得するため、デスクトップ版でLMUを起動しているときのみ取得できます。" +
                 "新品時の厚さは取得できないため、観測した最大の厚さを100%とします。" +
                 "摩耗した状態で観測を始めた場合、実際より多く表示されます。",
         )

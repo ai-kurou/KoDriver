@@ -42,10 +42,10 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
             every { classRepo.vehicleClassStream() } returns flowOf(LmuWindowsVehicleClassData.Hypercar)
             val useCase = ObserveLmuWindowsBrakeWearRemainingUseCase(wearRepo, classRepo)
 
-            val results = buildList { useCase().collect { add(it.wheels.getValue(WheelIndex.FRONT_LEFT)) } }
+            val results = buildList { useCase().collect { add(it?.wheels?.getValue(WheelIndex.FRONT_LEFT)) } }
 
-            assertEquals(listOf(100, 50, 0), results.map { it.remainingPercent })
-            assertEquals(BrakeThicknessMeters(0.0305f), results[1].thickness)
+            assertEquals(listOf(100, 50, 0), results.map { it?.remainingPercent })
+            assertEquals(BrakeThicknessMeters(0.0305f), results[1]?.thickness)
             verify(exactly = 1) { wearRepo.brakeWearStream() }
             verify(exactly = 1) { classRepo.vehicleClassStream() }
             confirmVerified(wearRepo, classRepo)
@@ -58,9 +58,9 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
             every { classRepo.vehicleClassStream() } returns flowOf(LmuWindowsVehicleClassData.Hypercar)
             val useCase = ObserveLmuWindowsBrakeWearRemainingUseCase(wearRepo, classRepo)
 
-            val results = buildList { useCase().collect { add(it.wheels.getValue(WheelIndex.FRONT_LEFT)) } }
+            val results = buildList { useCase().collect { add(it?.wheels?.getValue(WheelIndex.FRONT_LEFT)) } }
 
-            assertEquals(listOf(100, 50, 100), results.map { it.remainingPercent })
+            assertEquals(listOf(100, 50, 100), results.map { it?.remainingPercent })
             verify(exactly = 1) { wearRepo.brakeWearStream() }
             verify(exactly = 1) { classRepo.vehicleClassStream() }
             confirmVerified(wearRepo, classRepo)
@@ -76,8 +76,8 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
 
             val last = buildList { useCase().collect { add(it) } }.last()
 
-            assertEquals(50, last.wheels.getValue(WheelIndex.FRONT_LEFT).remainingPercent)
-            assertEquals(50, last.wheels.getValue(WheelIndex.REAR_RIGHT).remainingPercent)
+            assertEquals(50, last?.wheels?.getValue(WheelIndex.FRONT_LEFT)?.remainingPercent)
+            assertEquals(50, last?.wheels?.getValue(WheelIndex.REAR_RIGHT)?.remainingPercent)
             verify(exactly = 1) { wearRepo.brakeWearStream() }
             verify(exactly = 1) { classRepo.vehicleClassStream() }
             confirmVerified(wearRepo, classRepo)
@@ -92,7 +92,7 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
 
             val last = buildList { useCase().collect { add(it) } }.last()
 
-            assertEquals(50, last.wheels.getValue(WheelIndex.FRONT_LEFT).remainingPercent)
+            assertEquals(50, last?.wheels?.getValue(WheelIndex.FRONT_LEFT)?.remainingPercent)
             verify(exactly = 1) { wearRepo.brakeWearStream() }
             verify(exactly = 1) { classRepo.vehicleClassStream() }
             confirmVerified(wearRepo, classRepo)
@@ -102,13 +102,13 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
     fun `車両クラスが変わると最大値を取り直す`() =
         runTest {
             val classes = MutableSharedFlow<LmuWindowsVehicleClassData>()
-            val wears = MutableSharedFlow<LmuWindowsBrakeWearData>()
+            val wears = MutableSharedFlow<LmuWindowsBrakeWearData?>()
             every { wearRepo.brakeWearStream() } returns wears
             every { classRepo.vehicleClassStream() } returns classes
             val useCase = ObserveLmuWindowsBrakeWearRemainingUseCase(wearRepo, classRepo)
-            val results = mutableListOf<Int>()
+            val results = mutableListOf<Int?>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                useCase().collect { results.add(it.wheels.getValue(WheelIndex.FRONT_LEFT).remainingPercent) }
+                useCase().collect { results.add(it?.wheels?.getValue(WheelIndex.FRONT_LEFT)?.remainingPercent) }
             }
 
             classes.emit(LmuWindowsVehicleClassData.Hypercar)
@@ -117,8 +117,48 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
             classes.emit(LmuWindowsVehicleClassData.Gt3)
             wears.emit(wear(0.0305f))
 
-            assertEquals(listOf(100, 50, 100), results)
+            assertEquals(listOf<Int?>(100, 50, 100), results)
             verify(exactly = 2) { wearRepo.brakeWearStream() }
+            verify(exactly = 1) { classRepo.vehicleClassStream() }
+            confirmVerified(wearRepo, classRepo)
+        }
+
+    @Test
+    fun `同じ車両クラスが繰り返し流れても最大値を取り直さない`() =
+        runTest {
+            val classes = MutableSharedFlow<LmuWindowsVehicleClassData>()
+            val wears = MutableSharedFlow<LmuWindowsBrakeWearData?>()
+            every { wearRepo.brakeWearStream() } returns wears
+            every { classRepo.vehicleClassStream() } returns classes
+            val useCase = ObserveLmuWindowsBrakeWearRemainingUseCase(wearRepo, classRepo)
+            val results = mutableListOf<Int?>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                useCase().collect { results.add(it?.wheels?.getValue(WheelIndex.FRONT_LEFT)?.remainingPercent) }
+            }
+
+            classes.emit(LmuWindowsVehicleClassData.Hypercar)
+            wears.emit(wear(0.036f))
+            classes.emit(LmuWindowsVehicleClassData.Hypercar)
+            wears.emit(wear(0.0305f))
+
+            assertEquals(listOf<Int?>(100, 50), results)
+            verify(exactly = 1) { wearRepo.brakeWearStream() }
+            verify(exactly = 1) { classRepo.vehicleClassStream() }
+            confirmVerified(wearRepo, classRepo)
+        }
+
+    @Test
+    fun `取得できなかった周期はnullを流し最大値は保持する`() =
+        runTest {
+            every { wearRepo.brakeWearStream() } returns flowOf(wear(0.036f), null, wear(0.0305f))
+            every { classRepo.vehicleClassStream() } returns flowOf(LmuWindowsVehicleClassData.Hypercar)
+            val useCase = ObserveLmuWindowsBrakeWearRemainingUseCase(wearRepo, classRepo)
+
+            val results =
+                buildList { useCase().collect { add(it?.wheels?.getValue(WheelIndex.FRONT_LEFT)?.remainingPercent) } }
+
+            assertEquals(listOf(100, null, 50), results)
+            verify(exactly = 1) { wearRepo.brakeWearStream() }
             verify(exactly = 1) { classRepo.vehicleClassStream() }
             confirmVerified(wearRepo, classRepo)
         }

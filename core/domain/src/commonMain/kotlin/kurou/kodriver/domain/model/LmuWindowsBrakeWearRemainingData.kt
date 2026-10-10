@@ -1,14 +1,17 @@
 package kurou.kodriver.domain.model
 
+import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
 /** 1輪分のブレーキ残量。[remainingPercent] は 0〜100。 */
+@Serializable
 data class LmuWindowsBrakeWearWheelRemaining(
     val thickness: BrakeThicknessMeters,
     val remainingPercent: Int,
 )
 
 /** ホイールごとのブレーキ残量。 */
+@Serializable
 data class LmuWindowsBrakeWearRemainingData(
     val wheels: Map<WheelIndex, LmuWindowsBrakeWearWheelRemaining>,
 )
