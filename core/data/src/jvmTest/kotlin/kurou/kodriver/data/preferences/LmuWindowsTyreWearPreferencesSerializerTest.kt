@@ -3,6 +3,7 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -11,10 +12,10 @@ import kotlin.test.assertFailsWith
 
 class LmuWindowsTyreWearPreferencesSerializerTest {
     @Test
-    fun `デフォルト値は閾値50と既定文言`() {
+    fun `デフォルト値は閾値30と既定文言`() {
         assertEquals(
             LmuWindowsTyreWearPreferences(
-                thresholdPercentage = 50,
+                thresholdPercentage = LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT,
                 readoutText = LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT,
             ),
             LmuWindowsTyreWearPreferencesSerializer.defaultValue,

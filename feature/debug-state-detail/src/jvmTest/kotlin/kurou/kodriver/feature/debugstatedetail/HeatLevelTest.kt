@@ -30,8 +30,8 @@ class HeatLevelTest {
     @Test
     fun `残溝は少ないほど警告色になり境界値を含めて分類する`() {
         assertEquals(HeatLevel.HOT, wearHeatLevel(0.0))
-        assertEquals(HeatLevel.HOT, wearHeatLevel(49.9))
-        assertEquals(HeatLevel.WARM, wearHeatLevel(50.0))
+        assertEquals(HeatLevel.HOT, wearHeatLevel(29.9))
+        assertEquals(HeatLevel.WARM, wearHeatLevel(30.0))
         assertEquals(HeatLevel.WARM, wearHeatLevel(74.9))
         assertEquals(HeatLevel.OK, wearHeatLevel(75.0))
         assertEquals(HeatLevel.OK, wearHeatLevel(100.0))

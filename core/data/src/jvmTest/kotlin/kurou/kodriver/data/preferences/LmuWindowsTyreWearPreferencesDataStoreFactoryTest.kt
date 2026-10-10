@@ -19,7 +19,7 @@ class LmuWindowsTyreWearPreferencesDataStoreFactoryTest {
     fun `タイヤ摩耗設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createLmuWindowsTyreWearPreferencesDataStore(tempDir.absolutePath)
-            dataStore.updateData { it.copy(thresholdPercentage = 30) }
+            dataStore.updateData { it.copy(thresholdPercentage = 50) }
 
             assertTrue(tempDir.resolve("lmu_windows_tyre_wear_preferences.pb").exists())
         }

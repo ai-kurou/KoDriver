@@ -227,8 +227,8 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
         }
 
         rule.onNodeWithText("残存率閾値").performScrollTo().assertIsDisplayed()
-        rule.onNodeWithText("タイヤの残りが50%以下になると警告を読み上げます。").assertIsDisplayed()
-        rule.onNodeWithText("50%").assertIsDisplayed()
+        rule.onNodeWithText("タイヤの残りが30%以下になると警告を読み上げます。").assertIsDisplayed()
+        rule.onNodeWithText("30%").assertIsDisplayed()
     }
 
     @Test

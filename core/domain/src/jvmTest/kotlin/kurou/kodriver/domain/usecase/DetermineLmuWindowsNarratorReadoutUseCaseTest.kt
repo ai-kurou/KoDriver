@@ -3,6 +3,7 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
@@ -2625,7 +2626,7 @@ private fun settings(
     skipFirstLap: Boolean = false,
     sustainedApproachDurationSeconds: Int = 7,
     tyreTemperatureHighThresholdCelsius: Int = 90,
-    tyreWearThresholdPercentage: Int = 50,
+    tyreWearThresholdPercentage: Int = LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT,
     brakeTemperatureHighThresholdCelsius: Int = 700,
     remainingVirtualEnergyThresholdPercentage: Int = 30,
     pitTimingVirtualEnergyLapsThreshold: Int = 3,
