@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
@@ -26,8 +27,8 @@ private fun createAceWindowsTyreTemperaturePreferencesRepository(
     coEvery { repository.saveHighThresholdCelsius(Celsius(100)) } answers { highThreshold.update { Celsius(100) } }
     every { repository.observeEnabledStates() } returns enabledStates
     listOf(
-        ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning,
-        ReadoutItemKey.AceWindows.TyreTemperature.Root,
+        AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+        AceWindowsReadoutItemKey.TyreTemperature.Root,
     ).forEach { key ->
         listOf(true, false).forEach { enabled ->
             coEvery { repository.saveEnabledState(key, enabled) } answers {
@@ -49,7 +50,7 @@ class ObserveAceWindowsTyreTemperatureEnabledStatesUseCaseTest {
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to true,
+                    AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to true,
                 )
             assertEquals(expected, useCase().first())
             verify(exactly = 1) { repo.observeEnabledStates() }
@@ -62,15 +63,15 @@ class ObserveAceWindowsTyreTemperatureEnabledStatesUseCaseTest {
             val repo = createAceWindowsTyreTemperaturePreferencesRepository(repository)
             val useCase = ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
-            repo.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, false)
+            repo.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false,
+                    AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false,
                 )
             assertEquals(expected, useCase().first())
             coVerify(exactly = 1) {
-                repo.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, false)
+                repo.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)
@@ -82,17 +83,17 @@ class ObserveAceWindowsTyreTemperatureEnabledStatesUseCaseTest {
             val repo = createAceWindowsTyreTemperaturePreferencesRepository(repository)
             val useCase = ObserveAceWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
-            repo.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.Root, false)
+            repo.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to true,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root to false,
+                    AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to true,
+                    AceWindowsReadoutItemKey.TyreTemperature.Root to false,
                 ),
                 useCase().first(),
             )
             coVerify(exactly = 1) {
-                repo.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.Root, false)
+                repo.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.Root, false)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)

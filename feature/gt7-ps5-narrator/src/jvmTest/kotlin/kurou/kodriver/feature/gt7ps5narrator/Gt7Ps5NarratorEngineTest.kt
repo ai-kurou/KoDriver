@@ -17,6 +17,7 @@ import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kotlin.test.Test
@@ -29,10 +30,10 @@ class Gt7Ps5NarratorEngineTest {
 
     @Test
     fun `currentReadoutItemKeyはNarratorEngineのcurrentKeyを返す`() {
-        every { wavNarratorEngine.currentKey } returns ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+        every { wavNarratorEngine.currentKey } returns Gt7Ps5ReadoutItemKey.MyBestLap.Root
         val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
-        assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, engine.currentReadoutItemKey)
+        assertEquals(Gt7Ps5ReadoutItemKey.MyBestLap.Root, engine.currentReadoutItemKey)
 
         verify(exactly = 1) { wavNarratorEngine.currentKey }
         confirmVerified(wavNarratorEngine)
@@ -74,12 +75,12 @@ class Gt7Ps5NarratorEngineTest {
     @Test
     fun `playStartSoundはNarratorEngineのplayStartSoundForKeyへ委譲する`() =
         runTest {
-            coEvery { wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) } just Runs
+            coEvery { wavNarratorEngine.playStartSoundForKey(Gt7Ps5ReadoutItemKey.MyBestLap.Root) } just Runs
             val engine = Gt7Ps5NarratorEngine(wavNarratorEngine)
 
-            engine.playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
+            engine.playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root)
 
-            coVerify(exactly = 1) { wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
+            coVerify(exactly = 1) { wavNarratorEngine.playStartSoundForKey(Gt7Ps5ReadoutItemKey.MyBestLap.Root) }
             confirmVerified(wavNarratorEngine)
         }
 

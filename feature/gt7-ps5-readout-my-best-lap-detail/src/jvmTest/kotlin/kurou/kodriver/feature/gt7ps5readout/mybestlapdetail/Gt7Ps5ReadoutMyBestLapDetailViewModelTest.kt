@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
@@ -103,11 +104,11 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             coEvery {
                 enabledRepository.saveReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled,
                     false,
                 )
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled to false) }
+                enabledStatesFlow.update { it + (Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled to false) }
             }
             val viewModel = createViewModel()
 
@@ -118,7 +119,7 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             coVerify(exactly = 1) {
                 enabledRepository.saveReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled,
                     false,
                 )
             }
@@ -156,13 +157,13 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             every { repository.observeReadoutText() } returns textFlow
             coEvery { checkAvailable() } returns true
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) } returns Unit
+            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root) } returns Unit
             coEvery { speakText("更新1分23秒456{unknown}", volume = 60) } returns Unit
             createViewModel().onReadoutTextPreviewClicked("更新{laptime}{unknown}")
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
+            coVerify(exactly = 1) { playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 1) { speakText("更新1分23秒456{unknown}", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
+                playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root)
                 speakText("更新1分23秒456{unknown}", volume = 60)
             }
             verify(exactly = 1) { observeVolume() }
@@ -179,7 +180,7 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             coEvery { checkAvailable() } returns true
             createViewModel().onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
+            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText(" ", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -196,7 +197,7 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
+            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -216,7 +217,7 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             volume.update { -1 }
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
+            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             coVerify(exactly = 0) { speakText("注意", volume = -1) }
             confirmVerified(observeVolume, playStartSound, speakText)
@@ -233,12 +234,12 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             every { observeVolume() } returns MutableStateFlow(60)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) } coAnswers
+            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
+            coVerify(exactly = 1) { playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
@@ -255,12 +256,12 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
             every { observeVolume() } returns MutableStateFlow(60)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) } coAnswers
+            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
             viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) }
+            coVerify(exactly = 1) { playStartSound(Gt7Ps5ReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)

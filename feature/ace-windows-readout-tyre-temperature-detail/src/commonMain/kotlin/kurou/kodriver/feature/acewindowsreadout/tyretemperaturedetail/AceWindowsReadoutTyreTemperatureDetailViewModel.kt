@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.formatAceWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -65,7 +65,7 @@ internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
             preview.textToSpeechAvailable,
         ) { states, highThresholdCelsius, text, available ->
             AceWindowsReadoutTyreTemperatureDetailUiState(
-                overheatWarningEnabled = states.getValue(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning),
+                overheatWarningEnabled = states.getValue(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning),
                 highThresholdCelsius = highThresholdCelsius.value,
                 overheatReadoutText = text,
                 isTextToSpeechAvailable = available,
@@ -81,7 +81,7 @@ internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
 
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            tyreTemperatureUseCases.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, enabled)
+            tyreTemperatureUseCases.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, enabled)
         }
     }
 
@@ -103,6 +103,6 @@ internal class AceWindowsReadoutTyreTemperatureDetailViewModel(
         celsius: Int,
     ) {
         val resolvedText = formatAceWindowsTyreTemperatureReadoutText(text, celsius)
-        preview.onPreviewClicked(resolvedText, ReadoutItemKey.AceWindows.TyreTemperature.Root)
+        preview.onPreviewClicked(resolvedText, AceWindowsReadoutItemKey.TyreTemperature.Root)
     }
 }

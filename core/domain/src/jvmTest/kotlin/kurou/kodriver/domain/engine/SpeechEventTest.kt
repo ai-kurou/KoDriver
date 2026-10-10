@@ -13,12 +13,14 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_T
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.PitTimingSource
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -121,8 +123,8 @@ class SpeechEventTest {
         assertEquals(null, cold.resolvedText)
         assertEquals(100, overheat.celsius)
         assertEquals(60, cold.celsius)
-        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root, overheat.readoutItemKey)
-        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root, cold.readoutItemKey)
+        assertEquals(LmuWindowsReadoutItemKey.TyreTemperature.Root, overheat.readoutItemKey)
+        assertEquals(LmuWindowsReadoutItemKey.TyreTemperature.Root, cold.readoutItemKey)
         assertEquals("過熱100℃", overheat.copy(resolvedText = "過熱100℃").resolvedText)
         assertEquals("低温60℃", cold.copy(resolvedText = "低温60℃").resolvedText)
         assertEquals("タイヤ過熱 100度", overheat.copy(resolvedText = "過熱100℃").narratedText)
@@ -135,13 +137,13 @@ class SpeechEventTest {
         assertEquals("自己ベストラップ更新 23秒005", SpeechEvent.LmuWindowsMyBestLap(23_005L, "カスタム").narratedText)
         val gt7Event = SpeechEvent.Gt7Ps5MyBestLap(83_456)
         assertEquals("自己ベストラップ更新 1分23秒456", gt7Event.narratedText)
-        assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, gt7Event.readoutItemKey)
+        assertEquals(Gt7Ps5ReadoutItemKey.MyBestLap.Root, gt7Event.readoutItemKey)
         assertEquals(83_456, gt7Event.lapTimeMs)
         assertEquals("更新済み", gt7Event.copy(resolvedText = "更新済み").resolvedText)
         assertEquals("自己ベストラップ更新 1分23秒456", gt7Event.copy(resolvedText = "更新済み").narratedText)
         val aceEvent = SpeechEvent.AceWindowsMyBestLap(83_456)
         assertEquals("自己ベストラップ更新 1分23秒456", aceEvent.narratedText)
-        assertEquals(ReadoutItemKey.AceWindows.MyBestLap.Root, aceEvent.readoutItemKey)
+        assertEquals(AceWindowsReadoutItemKey.MyBestLap.Root, aceEvent.readoutItemKey)
         assertEquals(83_456, aceEvent.lapTimeMs)
         assertEquals(null, aceEvent.resolvedText)
         assertEquals("更新済み", aceEvent.withResolvedText("更新済み").resolvedText)
@@ -153,7 +155,7 @@ class SpeechEventTest {
         val event = SpeechEvent.LmuWindowsMyBestLap(3_000_000_005L)
         assertEquals(3_000_000_005L, event.lapTimeMs)
         assertEquals(null, event.resolvedText)
-        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, event.readoutItemKey)
+        assertEquals(LmuWindowsReadoutItemKey.MyBestLap.Root, event.readoutItemKey)
         assertEquals("50000分0秒005", event.copy(resolvedText = "50000分0秒005").resolvedText)
         assertEquals("自己ベストラップ更新 50000分0秒005", event.copy(resolvedText = "カスタム").narratedText)
     }
@@ -174,7 +176,7 @@ class SpeechEventTest {
         val event = SpeechEvent.Gt7Ps5RemainingFuelWarning(29)
         val resolved = event.copy(resolvedText = "残り29%")
 
-        assertEquals(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root, event.readoutItemKey)
+        assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)
         assertEquals("燃料は残り29パーセント", event.narratedText)
         assertEquals("燃料は残り29パーセント", resolved.narratedText)
         assertEquals("残り29%", resolved.resolvedText)
@@ -240,7 +242,7 @@ class SpeechEventTest {
     @Test
     fun `AceWindowsRemainingFuelLapsWarningのreadoutItemKeyはACEの燃料残り周回数`() {
         assertEquals(
-            ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+            AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
             SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps = 3).readoutItemKey,
         )
     }
@@ -288,7 +290,7 @@ class SpeechEventTest {
             SpeechEvent.AceWindowsVehicleApproach().narratedText,
         )
         assertEquals(
-            ReadoutItemKey.AceWindows.VehicleApproach.Root,
+            AceWindowsReadoutItemKey.VehicleApproach.Root,
             SpeechEvent.AceWindowsVehicleApproach().readoutItemKey,
         )
     }
@@ -300,14 +302,14 @@ class SpeechEventTest {
         val resolved = event.copy(resolvedText = "あと1周")
         assertEquals("あと1周", resolved.resolvedText)
         assertEquals("燃料は残り約1周", resolved.narratedText)
-        assertEquals(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, resolved.readoutItemKey)
+        assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root, resolved.readoutItemKey)
     }
 
     @Test
     fun `GT7タイヤ過熱は既定文言とキーを維持し解決文言を保持する`() {
         val event = SpeechEvent.Gt7Ps5TyreOverheat(0, "設定文言")
         assertEquals("タイヤ過熱 0度", event.narratedText)
-        assertEquals(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root, event.readoutItemKey)
+        assertEquals(Gt7Ps5ReadoutItemKey.TyreTemperature.Root, event.readoutItemKey)
         assertEquals("設定文言", event.resolvedText)
     }
 
@@ -323,13 +325,13 @@ class SpeechEventTest {
         assertEquals("カスタム", (events[1] as SpeechEvent.LmuWindowsPartDetached).resolvedText)
         assertEquals("カスタム", (events[2] as SpeechEvent.LmuWindowsTyreDetached).resolvedText)
         assertEquals(listOf("オーバーヒート", "部品脱落", "タイヤ脱落"), events.map { it.narratedText })
-        events.forEach { assertEquals(ReadoutItemKey.LmuWindows.VehicleDamage.Root, it.readoutItemKey) }
+        events.forEach { assertEquals(LmuWindowsReadoutItemKey.VehicleDamage.Root, it.readoutItemKey) }
     }
 
     @Test
     fun `ACEタイヤ過熱は温度と判定時本文を保持する`() {
         val event = SpeechEvent.AceWindowsTyreOverheat(111)
-        assertEquals(ReadoutItemKey.AceWindows.TyreTemperature.Root, event.readoutItemKey)
+        assertEquals(AceWindowsReadoutItemKey.TyreTemperature.Root, event.readoutItemKey)
         assertEquals(null, event.resolvedText)
         val resolved = event.withResolvedText("過熱注意")
         assertEquals(111, resolved.celsius)
@@ -341,7 +343,7 @@ class SpeechEventTest {
     fun `ACE燃料残量イベントは既定文言とRootキーと解決済み本文を保持する`() {
         val event = SpeechEvent.AceWindowsRemainingFuelWarning(30)
         assertEquals("燃料は残り30パーセント", event.narratedText)
-        assertEquals(ReadoutItemKey.AceWindows.RemainingFuel.Root, event.readoutItemKey)
+        assertEquals(AceWindowsReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)
         assertEquals(null, event.resolvedText)
         assertEquals(SpeechEvent.AceWindowsRemainingFuelWarning(30, "残り30%"), event.withResolvedText("残り30%"))
     }

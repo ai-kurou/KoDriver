@@ -13,7 +13,8 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -61,7 +62,7 @@ class ReadoutListViewModelSelectionTest {
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             simulatorFlow.update { Simulator.LmuWindows }
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            viewModel.onItemSelected(LmuWindowsReadoutItemKey.VehicleApproach.Root)
 
             assertEquals(ReadoutListItemType.LmuWindows.VehicleApproach, viewModel.uiState.first().selectedItem)
         }
@@ -80,7 +81,7 @@ class ReadoutListViewModelSelectionTest {
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             simulatorFlow.update { Simulator.LmuWindows }
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.BrakeWear.Root)
+            viewModel.onItemSelected(LmuWindowsReadoutItemKey.BrakeWear.Root)
 
             assertEquals(ReadoutListItemType.LmuWindows.BrakeWear, viewModel.uiState.first().selectedItem)
         }
@@ -99,7 +100,7 @@ class ReadoutListViewModelSelectionTest {
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             simulatorFlow.update { Simulator.LmuWindows }
-            viewModel.onItemSelected(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
+            viewModel.onItemSelected(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root)
 
             assertNull(viewModel.uiState.first().selectedItem)
         }
@@ -118,8 +119,8 @@ class ReadoutListViewModelSelectionTest {
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             simulatorFlow.update { Simulator.LmuWindows }
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            viewModel.onItemSelected(LmuWindowsReadoutItemKey.VehicleApproach.Root)
+            viewModel.onItemSelected(LmuWindowsReadoutItemKey.VehicleApproach.Root)
 
             assertNull(viewModel.uiState.first().selectedItem)
         }
@@ -141,7 +142,7 @@ class ReadoutListViewModelSelectionTest {
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             simulatorFlow.update { Simulator.LmuWindows }
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            viewModel.onItemSelected(LmuWindowsReadoutItemKey.VehicleApproach.Root)
             assertEquals(ReadoutListItemType.LmuWindows.VehicleApproach, viewModel.uiState.first().selectedItem)
 
             simulatorFlow.update { Simulator.Gt7Ps5 }
@@ -169,7 +170,7 @@ class ReadoutListViewModelSelectionTest {
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            viewModel.onItemSelected(LmuWindowsReadoutItemKey.VehicleApproach.Root)
             viewModel.clearSelectedItem()
 
             assertNull(viewModel.uiState.first().selectedItem)

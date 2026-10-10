@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
@@ -60,12 +61,12 @@ data class AceWindowsNarratorReadoutDecision(
  * （[AceWindowsNarratorReadoutSettings.vehicleApproachThresholdMeters]）を下回る車両が1台でもいれば、
  * 左右を区別しない [SpeechEvent.AceWindowsVehicleApproach] を読み上げる。
  *
- * 燃料残り周回数（[ReadoutItemKey.AceWindows.RemainingFuelLaps.Root]）は、GT7 のように燃料消費を自前で追跡せず、
+ * 燃料残り周回数（[AceWindowsReadoutItemKey.RemainingFuelLaps.Root]）は、GT7 のように燃料消費を自前で追跡せず、
  * ACE が算出した [AceWindowsRemainingFuelLapsData.remainingLaps] の整数部を使う（[determineRemainingFuelLaps]）。
  * 閾値以下になった時点と、以降1周減るごとに読み上げる。給油で周回数が増えた場合は基準を更新し、
  * 整数境界付近の揺れで同じ周回数を繰り返し読み上げないよう、基準の次の整数から0.5周以上の増加のみ給油とみなす。
  *
- * 自己ベストラップ（[ReadoutItemKey.AceWindows.MyBestLap.Root]）は [AceWindowsBestLapTimeData.bestLapTimeMs] の
+ * 自己ベストラップ（[AceWindowsReadoutItemKey.MyBestLap.Root]）は [AceWindowsBestLapTimeData.bestLapTimeMs] の
  * 更新を [determineMyBestLap] で判定する。GT7（[DetermineGt7Ps5NarratorReadoutUseCase.determineMyBestLap]）と
  * 同じく、共有メモリのベストラップタイムは Int（milliseconds）でセッション内の値を都度返すため、
  * 前回値との比較（[AceWindowsNarratorState.previousBestLapTimeMs]）と読み上げ済みベスト
@@ -95,8 +96,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         if (current >= sessionState.personalBestMs) {
             return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.Root) ||
-            !settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled)
+        if (!settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.MyBestLap.Root) ||
+            !settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled)
         ) {
             return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
@@ -126,8 +127,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
         val nextState = state.copy(lastRemainingFuelLaps = laps)
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) ||
-            !settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled)
+        if (!settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) ||
+            !settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled)
         ) {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
@@ -147,8 +148,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                 data.remainingPercent.value <= settings.remainingFuelThresholdPercentage
         val shouldAnnounce =
             !state.remainingFuelWarned && isLow &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuel.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled)
+                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuel.Root) &&
+                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
             events =
@@ -170,7 +171,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         val previous = state.previousFlag
         val nextState = state.copy(previousFlag = data.flag)
         if (previous == null) return AceWindowsNarratorReadoutDecision(nextState, emptyList())
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.Flag.Root)) {
+        if (!settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.Flag.Root)) {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
         if (data.flag == previous) return AceWindowsNarratorReadoutDecision(nextState, emptyList())
@@ -205,8 +206,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             }
         val shouldAnnounce =
             !state.tyreOverheating && nextOverheating &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.TyreTemperature.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning)
+                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.TyreTemperature.Root) &&
+                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(tyreOverheating = nextOverheating),
             events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsTyreOverheat(maxCelsius(data))) else emptyList(),
@@ -221,8 +222,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         val isApproaching = data.nearbyVehicles.any { it.distanceMeters <= settings.vehicleApproachThresholdMeters }
         val shouldAnnounce =
             !state.vehicleApproaching && isApproaching &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.VehicleApproach.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout)
+                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.VehicleApproach.Root) &&
+                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.VehicleApproach.StartReadout)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(vehicleApproaching = isApproaching),
             events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsVehicleApproach()) else emptyList(),
@@ -232,43 +233,43 @@ class DetermineAceWindowsNarratorReadoutUseCase {
     private fun flagEvent(flag: AceWindowsFlagType): Pair<ReadoutItemKey, SpeechEvent>? =
         when (flag) {
             AceWindowsFlagType.WHITE_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag()
+                AceWindowsReadoutItemKey.Flag.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag()
             }
 
             AceWindowsFlagType.GREEN_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.GreenFlag to SpeechEvent.AceWindowsGreenFlag()
+                AceWindowsReadoutItemKey.Flag.GreenFlag to SpeechEvent.AceWindowsGreenFlag()
             }
 
             AceWindowsFlagType.RED_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.RedFlag to SpeechEvent.AceWindowsRedFlag()
+                AceWindowsReadoutItemKey.Flag.RedFlag to SpeechEvent.AceWindowsRedFlag()
             }
 
             AceWindowsFlagType.BLUE_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.BlueFlag to SpeechEvent.AceWindowsBlueFlag()
+                AceWindowsReadoutItemKey.Flag.BlueFlag to SpeechEvent.AceWindowsBlueFlag()
             }
 
             AceWindowsFlagType.YELLOW_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.YellowFlag to SpeechEvent.AceWindowsYellowFlag()
+                AceWindowsReadoutItemKey.Flag.YellowFlag to SpeechEvent.AceWindowsYellowFlag()
             }
 
             AceWindowsFlagType.BLACK_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.BlackFlag to SpeechEvent.AceWindowsBlackFlag()
+                AceWindowsReadoutItemKey.Flag.BlackFlag to SpeechEvent.AceWindowsBlackFlag()
             }
 
             AceWindowsFlagType.BLACK_WHITE_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to SpeechEvent.AceWindowsBlackWhiteFlag()
+                AceWindowsReadoutItemKey.Flag.BlackWhiteFlag to SpeechEvent.AceWindowsBlackWhiteFlag()
             }
 
             AceWindowsFlagType.CHECKERED_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.CheckeredFlag to SpeechEvent.AceWindowsCheckeredFlag()
+                AceWindowsReadoutItemKey.Flag.CheckeredFlag to SpeechEvent.AceWindowsCheckeredFlag()
             }
 
             AceWindowsFlagType.ORANGE_CIRCLE_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to SpeechEvent.AceWindowsOrangeCircleFlag()
+                AceWindowsReadoutItemKey.Flag.OrangeCircleFlag to SpeechEvent.AceWindowsOrangeCircleFlag()
             }
 
             AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG -> {
-                ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to SpeechEvent.AceWindowsRedYellowStripesFlag()
+                AceWindowsReadoutItemKey.Flag.RedYellowStripesFlag to SpeechEvent.AceWindowsRedYellowStripesFlag()
             }
 
             AceWindowsFlagType.NO_FLAG, AceWindowsFlagType.UNKNOWN -> {

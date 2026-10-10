@@ -16,11 +16,13 @@ import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
@@ -39,6 +41,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_T
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
@@ -80,7 +83,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsCarLeft(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsCarLeft = copy(resolvedText = text)
@@ -89,7 +92,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsCarRight(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsCarRight = copy(resolvedText = text)
@@ -98,7 +101,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsCarLeftSustained(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsCarLeftSustained = copy(resolvedText = text)
@@ -107,7 +110,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsCarRightSustained(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsCarRightSustained = copy(resolvedText = text)
@@ -116,7 +119,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsBlueFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root
         override val narratedText = LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsBlueFlag = copy(resolvedText = text)
@@ -125,7 +128,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsYellowFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root
         override val narratedText = LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsYellowFlag = copy(resolvedText = text)
@@ -134,7 +137,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsFullCourseYellow(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root
         override val narratedText = LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsFullCourseYellow = copy(resolvedText = text)
@@ -143,7 +146,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsRedFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root
         override val narratedText = LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsRedFlag = copy(resolvedText = text)
@@ -152,7 +155,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsOverheating(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsOverheating = copy(resolvedText = text)
@@ -161,7 +164,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsPartDetached(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsPartDetached = copy(resolvedText = text)
@@ -170,7 +173,7 @@ sealed interface SpeechEvent {
     data class LmuWindowsTyreDetached(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root
         override val narratedText = LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): LmuWindowsTyreDetached = copy(resolvedText = text)
@@ -184,7 +187,7 @@ sealed interface SpeechEvent {
         val celsius: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root
         override val narratedText =
             formatLmuWindowsTyreTemperatureReadoutText(
                 LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
@@ -202,7 +205,7 @@ sealed interface SpeechEvent {
         val celsius: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root
         override val narratedText =
             formatLmuWindowsTyreTemperatureReadoutText(
                 LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT,
@@ -220,7 +223,7 @@ sealed interface SpeechEvent {
         val percentage: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root
         override val narratedText =
             formatLmuWindowsTyreWearReadoutText(
                 LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT,
@@ -238,7 +241,7 @@ sealed interface SpeechEvent {
         val celsius: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root
         override val narratedText =
             formatLmuWindowsBrakeTemperatureReadoutText(
                 LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT,
@@ -256,7 +259,7 @@ sealed interface SpeechEvent {
         val percent: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.BrakeWear.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root
         override val narratedText =
             formatLmuWindowsBrakeWearReadoutText(
                 LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT,
@@ -274,7 +277,7 @@ sealed interface SpeechEvent {
         val percentage: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root
         override val narratedText =
             formatLmuWindowsRemainingVirtualEnergyReadoutText(
                 LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT,
@@ -288,7 +291,7 @@ sealed interface SpeechEvent {
         val lapTimeMs: Long,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root
         override val narratedText =
             formatLmuWindowsMyBestLapReadoutText(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
 
@@ -300,7 +303,7 @@ sealed interface SpeechEvent {
         val lapTimeMs: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+        override val readoutItemKey = Gt7Ps5ReadoutItemKey.MyBestLap.Root
         override val narratedText =
             formatGt7Ps5MyBestLapReadoutText(GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
 
@@ -315,7 +318,7 @@ sealed interface SpeechEvent {
         val laps: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
+        override val readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root
         override val narratedText =
             if (laps <= 0) {
                 GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
@@ -334,7 +337,7 @@ sealed interface SpeechEvent {
         val percent: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root
+        override val readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuel.Root
         override val narratedText =
             formatGt7Ps5RemainingFuelReadoutText(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, percent)
 
@@ -346,7 +349,7 @@ sealed interface SpeechEvent {
         val celsius: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.Gt7Ps5.TyreTemperature.Root
+        override val readoutItemKey = Gt7Ps5ReadoutItemKey.TyreTemperature.Root
         override val narratedText =
             formatGt7Ps5TyreTemperatureReadoutText(GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, celsius)
 
@@ -362,7 +365,7 @@ sealed interface SpeechEvent {
         val source: PitTimingSource,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root
+        override val readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root
         override val narratedText = defaultLmuWindowsPitTimingReadoutText(source, laps)
 
         override fun withResolvedText(text: String): LmuWindowsPitTimingWarning = copy(resolvedText = text)
@@ -373,7 +376,7 @@ sealed interface SpeechEvent {
         val laps: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuelLaps.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.RemainingFuelLaps.Root
         override val narratedText =
             if (laps <= 0) {
                 ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
@@ -392,7 +395,7 @@ sealed interface SpeechEvent {
         val percent: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root
         override val narratedText =
             formatAceWindowsRemainingFuelReadoutText(ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT, percent)
 
@@ -402,7 +405,7 @@ sealed interface SpeechEvent {
     data class AceWindowsWhiteFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsWhiteFlag = copy(resolvedText = text)
@@ -411,7 +414,7 @@ sealed interface SpeechEvent {
     data class AceWindowsGreenFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsGreenFlag = copy(resolvedText = text)
@@ -420,7 +423,7 @@ sealed interface SpeechEvent {
     data class AceWindowsRedFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsRedFlag = copy(resolvedText = text)
@@ -429,7 +432,7 @@ sealed interface SpeechEvent {
     data class AceWindowsBlueFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsBlueFlag = copy(resolvedText = text)
@@ -438,7 +441,7 @@ sealed interface SpeechEvent {
     data class AceWindowsYellowFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsYellowFlag = copy(resolvedText = text)
@@ -447,7 +450,7 @@ sealed interface SpeechEvent {
     data class AceWindowsBlackFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsBlackFlag = copy(resolvedText = text)
@@ -456,7 +459,7 @@ sealed interface SpeechEvent {
     data class AceWindowsBlackWhiteFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsBlackWhiteFlag = copy(resolvedText = text)
@@ -465,7 +468,7 @@ sealed interface SpeechEvent {
     data class AceWindowsCheckeredFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsCheckeredFlag = copy(resolvedText = text)
@@ -474,7 +477,7 @@ sealed interface SpeechEvent {
     data class AceWindowsOrangeCircleFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsOrangeCircleFlag = copy(resolvedText = text)
@@ -483,7 +486,7 @@ sealed interface SpeechEvent {
     data class AceWindowsRedYellowStripesFlag(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.Flag.Root
         override val narratedText = ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsRedYellowStripesFlag = copy(resolvedText = text)
@@ -494,7 +497,7 @@ sealed interface SpeechEvent {
         val celsius: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.TyreTemperature.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.TyreTemperature.Root
         override val narratedText =
             formatAceWindowsTyreTemperatureReadoutText(
                 ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT,
@@ -513,7 +516,7 @@ sealed interface SpeechEvent {
     data class AceWindowsVehicleApproach(
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.VehicleApproach.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.VehicleApproach.Root
         override val narratedText = ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 
         override fun withResolvedText(text: String): AceWindowsVehicleApproach = copy(resolvedText = text)
@@ -524,7 +527,7 @@ sealed interface SpeechEvent {
         val lapTimeMs: Int,
         override val resolvedText: String? = null,
     ) : ReadoutTextEvent {
-        override val readoutItemKey = ReadoutItemKey.AceWindows.MyBestLap.Root
+        override val readoutItemKey = AceWindowsReadoutItemKey.MyBestLap.Root
         override val narratedText =
             formatAceWindowsMyBestLapReadoutText(ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, lapTimeMs)
 

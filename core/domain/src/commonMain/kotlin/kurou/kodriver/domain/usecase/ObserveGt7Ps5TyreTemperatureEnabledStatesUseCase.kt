@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 
@@ -9,7 +10,7 @@ import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesReposito
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val tyreTemperatureEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
-        ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to true,
+        Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to true,
     )
 
 class ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(

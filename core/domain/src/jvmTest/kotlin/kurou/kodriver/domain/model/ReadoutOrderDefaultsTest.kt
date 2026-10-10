@@ -8,28 +8,28 @@ class ReadoutOrderDefaultsTest {
     fun `LMUのデフォルト順序はフラッグが先頭で自己ベストが末尾`() {
         val order = defaultReadoutOrder(Simulator.LmuWindows)
 
-        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root, order.first())
-        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, order.last())
+        assertEquals(LmuWindowsReadoutItemKey.Flag.Root, order.first())
+        assertEquals(LmuWindowsReadoutItemKey.MyBestLap.Root, order.last())
         assertEquals(
             listOf(
-                ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                LmuWindowsReadoutItemKey.BrakeWear.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                LmuWindowsReadoutItemKey.MyBestLap.Root,
             ),
             order.drop(6),
         )
-        assertEquals(ReadoutItemKey.entries.filterIsInstance<ReadoutItemKey.LmuWindows.TopLevel>().size, order.size)
+        assertEquals(ReadoutItemKey.entries.filterIsInstance<LmuWindowsReadoutItemKey.TopLevel>().size, order.size)
     }
 
     @Test
     fun `GT7のデフォルト順序は残り燃料周回数が先頭で自己ベストが末尾`() {
         assertEquals(
             listOf(
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
+                Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root,
             ),
             defaultReadoutOrder(Simulator.Gt7Ps5),
         )
@@ -39,12 +39,12 @@ class ReadoutOrderDefaultsTest {
     fun `ACEのデフォルト順序は安全通知に続いて燃料とタイヤ温度を優先する`() {
         assertEquals(
             listOf(
-                ReadoutItemKey.AceWindows.Flag.Root,
-                ReadoutItemKey.AceWindows.VehicleApproach.Root,
-                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
-                ReadoutItemKey.AceWindows.RemainingFuel.Root,
-                ReadoutItemKey.AceWindows.TyreTemperature.Root,
-                ReadoutItemKey.AceWindows.MyBestLap.Root,
+                AceWindowsReadoutItemKey.Flag.Root,
+                AceWindowsReadoutItemKey.VehicleApproach.Root,
+                AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
+                AceWindowsReadoutItemKey.RemainingFuel.Root,
+                AceWindowsReadoutItemKey.TyreTemperature.Root,
+                AceWindowsReadoutItemKey.MyBestLap.Root,
             ),
             defaultReadoutOrder(Simulator.AceWindows),
         )

@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -169,12 +170,12 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
             coEvery {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.AceWindows.id,
-                    ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled,
+                    AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled,
                     false,
                 )
             } answers {
                 enabledStatesFlow.update {
-                    it + (ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled to false)
+                    it + (AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled to false)
                 }
             }
             val viewModel = createViewModel()
@@ -188,7 +189,7 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
             coVerify(exactly = 1) {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.AceWindows.id,
-                    ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled,
+                    AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled,
                     false,
                 )
             }
@@ -224,7 +225,7 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
             val threshold = MutableStateFlow(50)
             every { repository.observeThresholdPercentage() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root) } returns Unit
+            coEvery { playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root) } returns Unit
             coEvery { speakText("残り50%", volume = 60) } returns Unit
             coEvery { speakText("残り70%", volume = 60) } returns Unit
             val viewModel = createViewModel()
@@ -236,13 +237,13 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("残り{percent}%", 50)
             // 保存値は50のままでも、画面から渡した70を試聴に使う。
             viewModel.onReadoutTextPreviewClicked("残り{percent}%", 70)
-            coVerify(exactly = 2) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root) }
+            coVerify(exactly = 2) { playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 1) { speakText("残り50%", volume = 60) }
             coVerify(exactly = 1) { speakText("残り70%", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root)
+                playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root)
                 speakText("残り50%", volume = 60)
-                playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root)
+                playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root)
                 speakText("残り70%", volume = 60)
             }
             verify(exactly = 2) { observeVolume() }
@@ -260,7 +261,7 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
             every { repository.observeThresholdPercentage() } returns MutableStateFlow(50)
             createViewModel().onReadoutTextPreviewClicked(" ", 50)
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root) }
+            coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText(" ", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -277,7 +278,7 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意", 50)
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root) }
+            coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -297,7 +298,7 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
             volume.update { -1 }
             viewModel.onReadoutTextPreviewClicked("注意", 50)
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root) }
+            coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             coVerify(exactly = 0) { speakText("注意", volume = -1) }
             confirmVerified(observeVolume, playStartSound, speakText)
@@ -320,12 +321,12 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(50, viewModel.uiState.first().thresholdPercentage)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root) } coAnswers
+            coEvery { playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%", 50)
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root) }
+            coVerify(exactly = 1) { playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText("残り50%", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
@@ -349,12 +350,12 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(50, viewModel.uiState.first().thresholdPercentage)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root) } coAnswers
+            coEvery { playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%", 50)
             viewModel.onReadoutTextPreviewClicked("残り{percent}%", 50)
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuel.Root) }
+            coVerify(exactly = 1) { playStartSound(AceWindowsReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText("残り50%", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)

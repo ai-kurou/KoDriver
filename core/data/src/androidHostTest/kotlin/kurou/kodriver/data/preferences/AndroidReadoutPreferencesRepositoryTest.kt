@@ -9,7 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import java.io.File
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -43,14 +43,14 @@ class AndroidReadoutPreferencesRepositoryTest {
         runTest(testDispatcher) {
             assertEquals(emptyMap(), repository.observeReadoutEnabledStates("lmu_windows").first())
 
-            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
-            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.Flag.Root, false)
-            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleDamage.Root, true)
+            repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
+            repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.Flag.Root, false)
+            repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleDamage.Root, true)
 
             val states = repository.observeReadoutEnabledStates("lmu_windows").first()
-            assertEquals(true, states[ReadoutItemKey.LmuWindows.VehicleApproach.Root])
-            assertEquals(false, states[ReadoutItemKey.LmuWindows.Flag.Root])
-            assertEquals(true, states[ReadoutItemKey.LmuWindows.VehicleDamage.Root])
+            assertEquals(true, states[LmuWindowsReadoutItemKey.VehicleApproach.Root])
+            assertEquals(false, states[LmuWindowsReadoutItemKey.Flag.Root])
+            assertEquals(true, states[LmuWindowsReadoutItemKey.VehicleDamage.Root])
         }
 
     @Test
@@ -61,17 +61,17 @@ class AndroidReadoutPreferencesRepositoryTest {
             repository.saveReadoutOrder(
                 "lmu_windows",
                 listOf(
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
                 ),
             )
 
             assertEquals(
                 listOf(
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
                 ),
                 repository.observeReadoutOrder("lmu_windows").first(),
             )
@@ -88,8 +88,8 @@ class AndroidReadoutPreferencesRepositoryTest {
     @Test
     fun `異なるシミュレータのデータは互いに影響しない`() =
         runTest(testDispatcher) {
-            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
-            repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root))
+            repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
+            repository.saveReadoutOrder("lmu_windows", listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root))
 
             assertEquals(emptyMap(), repository.observeReadoutEnabledStates("other").first())
             assertEquals(emptyList(), repository.observeReadoutOrder("other").first())

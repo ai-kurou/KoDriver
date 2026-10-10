@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
@@ -64,7 +64,7 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
                 thresholdPercentage = thresholdPercentage,
                 readoutText = text,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout),
+                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout),
             )
         }.stateIn(
             viewModelScope,
@@ -82,7 +82,7 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
     /** 現在の閾値に置換し、空白文言・TTS利用不可・音量ゼロでは再生しない。 */
     fun onReadoutTextPreviewClicked(text: String) {
         val formattedText = formatLmuWindowsRemainingVirtualEnergyReadoutText(text, uiState.value.thresholdPercentage)
-        preview.onPreviewClicked(formattedText, ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
+        preview.onPreviewClicked(formattedText, LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
     }
 
     fun onThresholdChanged(percentage: Int) {
@@ -101,7 +101,7 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
         viewModelScope.launch {
             remainingVirtualEnergyUseCases.saveReadoutEnabledState(
                 Simulator.LmuWindows.id,
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout,
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
                 enabled,
             )
         }

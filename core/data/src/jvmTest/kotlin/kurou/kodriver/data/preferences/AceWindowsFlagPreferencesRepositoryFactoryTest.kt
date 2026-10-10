@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.Test
@@ -18,9 +19,9 @@ class AceWindowsFlagPreferencesRepositoryFactoryTest {
 
                 assertTrue(repo.observeFlagEnabledStates().first().isEmpty())
 
-                repo.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, true)
+                repo.saveFlagEnabledState(AceWindowsReadoutItemKey.Flag.BlueFlag, true)
                 assertEquals(
-                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.Flag.BlueFlag to true),
+                    mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.Flag.BlueFlag to true),
                     repo.observeFlagEnabledStates().first(),
                 )
             } finally {

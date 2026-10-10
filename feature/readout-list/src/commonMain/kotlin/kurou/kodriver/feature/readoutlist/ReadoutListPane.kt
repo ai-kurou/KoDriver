@@ -94,6 +94,9 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.readoutEnabled
@@ -113,41 +116,41 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 private fun itemIcon(itemId: ReadoutItemKey): ImageVector =
     when (itemId) {
-        is ReadoutItemKey.LmuWindows -> lmuWindowsItemIcon(itemId)
-        is ReadoutItemKey.Gt7Ps5 -> gt7Ps5ItemIcon(itemId)
-        is ReadoutItemKey.AceWindows -> aceWindowsItemIcon(itemId)
+        is LmuWindowsReadoutItemKey -> lmuWindowsItemIcon(itemId)
+        is Gt7Ps5ReadoutItemKey -> gt7Ps5ItemIcon(itemId)
+        is AceWindowsReadoutItemKey -> aceWindowsItemIcon(itemId)
     }
 
-private fun lmuWindowsItemIcon(itemId: ReadoutItemKey.LmuWindows): ImageVector =
+private fun lmuWindowsItemIcon(itemId: LmuWindowsReadoutItemKey): ImageVector =
     when (itemId) {
-        is ReadoutItemKey.LmuWindows.VehicleApproach -> Icons.Filled.DirectionsCar
-        is ReadoutItemKey.LmuWindows.Flag -> Icons.Filled.Flag
-        is ReadoutItemKey.LmuWindows.VehicleDamage -> Icons.Filled.Build
-        is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
-        is ReadoutItemKey.LmuWindows.PitTiming -> Icons.Filled.AccessTime
-        is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy -> Icons.Filled.LocalGasStation
-        is ReadoutItemKey.LmuWindows.TyreWear -> Icons.Filled.DonutLarge
-        is ReadoutItemKey.LmuWindows.BrakeTemperature -> Icons.Filled.DeviceThermostat
-        is ReadoutItemKey.LmuWindows.BrakeWear -> Icons.Filled.Speed
-        is ReadoutItemKey.LmuWindows.MyBestLap -> Icons.Filled.Timer
+        is LmuWindowsReadoutItemKey.VehicleApproach -> Icons.Filled.DirectionsCar
+        is LmuWindowsReadoutItemKey.Flag -> Icons.Filled.Flag
+        is LmuWindowsReadoutItemKey.VehicleDamage -> Icons.Filled.Build
+        is LmuWindowsReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
+        is LmuWindowsReadoutItemKey.PitTiming -> Icons.Filled.AccessTime
+        is LmuWindowsReadoutItemKey.RemainingVirtualEnergy -> Icons.Filled.LocalGasStation
+        is LmuWindowsReadoutItemKey.TyreWear -> Icons.Filled.DonutLarge
+        is LmuWindowsReadoutItemKey.BrakeTemperature -> Icons.Filled.DeviceThermostat
+        is LmuWindowsReadoutItemKey.BrakeWear -> Icons.Filled.Speed
+        is LmuWindowsReadoutItemKey.MyBestLap -> Icons.Filled.Timer
     }
 
-private fun gt7Ps5ItemIcon(itemId: ReadoutItemKey.Gt7Ps5): ImageVector =
+private fun gt7Ps5ItemIcon(itemId: Gt7Ps5ReadoutItemKey): ImageVector =
     when (itemId) {
-        is ReadoutItemKey.Gt7Ps5.MyBestLap -> Icons.Filled.Timer
-        is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> Icons.Filled.LocalGasStation
-        is ReadoutItemKey.Gt7Ps5.RemainingFuel -> Icons.Filled.LocalGasStation
-        is ReadoutItemKey.Gt7Ps5.TyreTemperature -> Icons.Filled.DeviceThermostat
+        is Gt7Ps5ReadoutItemKey.MyBestLap -> Icons.Filled.Timer
+        is Gt7Ps5ReadoutItemKey.RemainingFuelLaps -> Icons.Filled.LocalGasStation
+        is Gt7Ps5ReadoutItemKey.RemainingFuel -> Icons.Filled.LocalGasStation
+        is Gt7Ps5ReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
     }
 
-private fun aceWindowsItemIcon(itemId: ReadoutItemKey.AceWindows): ImageVector =
+private fun aceWindowsItemIcon(itemId: AceWindowsReadoutItemKey): ImageVector =
     when (itemId) {
-        is ReadoutItemKey.AceWindows.VehicleApproach -> Icons.Filled.DirectionsCar
-        is ReadoutItemKey.AceWindows.Flag -> Icons.Filled.Flag
-        is ReadoutItemKey.AceWindows.RemainingFuel -> Icons.Filled.LocalGasStation
-        is ReadoutItemKey.AceWindows.RemainingFuelLaps -> Icons.Filled.LocalGasStation
-        is ReadoutItemKey.AceWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
-        is ReadoutItemKey.AceWindows.MyBestLap -> Icons.Filled.Timer
+        is AceWindowsReadoutItemKey.VehicleApproach -> Icons.Filled.DirectionsCar
+        is AceWindowsReadoutItemKey.Flag -> Icons.Filled.Flag
+        is AceWindowsReadoutItemKey.RemainingFuel -> Icons.Filled.LocalGasStation
+        is AceWindowsReadoutItemKey.RemainingFuelLaps -> Icons.Filled.LocalGasStation
+        is AceWindowsReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
+        is AceWindowsReadoutItemKey.MyBestLap -> Icons.Filled.Timer
     }
 
 private fun readoutItemIndex(
@@ -728,19 +731,19 @@ private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider
                 selectedSimulator = Simulator.LmuWindows,
                 items =
                     listOf(
-                        ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                        ReadoutItemKey.LmuWindows.Flag.Root,
-                        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                        ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                        LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                        LmuWindowsReadoutItemKey.Flag.Root,
+                        LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                        LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                        LmuWindowsReadoutItemKey.MyBestLap.Root,
                     ),
             ),
             ReadoutListUiState(
                 selectedSimulator = Simulator.Gt7Ps5,
                 items =
                     listOf(
-                        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                        ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                        Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
+                        Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     ),
             ),
         )

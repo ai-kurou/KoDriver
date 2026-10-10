@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -105,9 +106,9 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             every { repository.observeEnabledStates() } returns enabledStatesFlow
             every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
             coEvery {
-                repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
+                repository.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, false)
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false) }
+                enabledStatesFlow.update { it + (Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to false) }
             }
             val viewModel = createViewModel()
 
@@ -117,7 +118,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeHighThresholdCelsius() }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
+                repository.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, false)
             }
             verify(exactly = 1) { repository.observeOverheatReadoutText() }
             confirmVerified(repository)
@@ -201,7 +202,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             val threshold = MutableStateFlow(Celsius(100))
             every { repository.observeHighThresholdCelsius() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) } returns Unit
+            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) } returns Unit
             coEvery { speakText("温度100度{wheel}", volume = 60) } returns Unit
             coEvery { speakText("温度107度{wheel}", volume = 60) } returns Unit
             val viewModel = createViewModel()
@@ -213,13 +214,13 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("温度{celsius}度{wheel}")
             threshold.update { Celsius(107) }
             viewModel.onReadoutTextPreviewClicked("温度{celsius}度{wheel}")
-            coVerify(exactly = 2) { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) }
+            coVerify(exactly = 2) { playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 1) { speakText("温度100度{wheel}", volume = 60) }
             coVerify(exactly = 1) { speakText("温度107度{wheel}", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root)
+                playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root)
                 speakText("温度100度{wheel}", volume = 60)
-                playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root)
+                playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root)
                 speakText("温度107度{wheel}", volume = 60)
             }
             verify(exactly = 2) { observeVolume() }
@@ -236,7 +237,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(Celsius(100))
             createViewModel().onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) }
+            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText(" ", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -252,7 +253,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) }
+            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -271,7 +272,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             volume.update { -1 }
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) }
+            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             coVerify(exactly = 0) { speakText("注意", volume = -1) }
             confirmVerified(observeVolume, playStartSound, speakText)
@@ -293,12 +294,12 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(100, viewModel.uiState.first().highThresholdCelsius)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) } coAnswers
+            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("温度{celsius}度{wheel}")
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) }
+            coVerify(exactly = 1) { playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("温度100度{wheel}", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
@@ -321,12 +322,12 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(100, viewModel.uiState.first().highThresholdCelsius)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) } coAnswers
+            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("温度{celsius}度{wheel}")
             viewModel.onReadoutTextPreviewClicked("温度{celsius}度{wheel}")
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) }
+            coVerify(exactly = 1) { playStartSound(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("温度100度{wheel}", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)

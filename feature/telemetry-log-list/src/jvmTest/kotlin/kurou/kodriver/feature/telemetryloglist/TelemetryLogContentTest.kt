@@ -25,6 +25,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -78,7 +81,7 @@ class TelemetryLogContentTest {
                                     id = 1,
                                     createdAt = 1_800_000,
                                     simulator = Simulator.AceWindows,
-                                    readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root,
+                                    readoutItemKey = AceWindowsReadoutItemKey.Flag.Root,
                                     narratedText = "イエローフラッグ",
                                     narrationOutcome = NarrationOutcome.INTERRUPTED,
                                     telemetryJson = """{"flag":"green"}""",
@@ -234,29 +237,29 @@ class TelemetryLogContentTest {
     fun `readoutItemDisplayNameは既知の読み上げ項目IDを日本語名に変換する`() {
         val expectedDisplayNames =
             listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root to "車両接近",
-                ReadoutItemKey.LmuWindows.Flag.Root to "フラッグ",
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag to "ブルーフラッグ",
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to "イエローフラッグ",
-                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to "フルコースイエロー",
-                ReadoutItemKey.LmuWindows.Flag.RedFlag to "レッドフラッグ",
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root to "車両故障",
-                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to "オーバーヒート",
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root to "タイヤ温度",
-                ReadoutItemKey.LmuWindows.PitTiming.Root to "ピットタイミング",
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to "バーチャルエナジー残量",
-                ReadoutItemKey.LmuWindows.TyreWear.Root to "タイヤ摩耗",
-                ReadoutItemKey.LmuWindows.MyBestLap.Root to "自己ベストラップ",
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to "燃料残り周回数",
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to "燃料残量",
-                ReadoutItemKey.AceWindows.VehicleApproach.Root to "車両接近",
-                ReadoutItemKey.AceWindows.Flag.Root to "フラッグ",
-                ReadoutItemKey.AceWindows.Flag.BlueFlag to "ブルーフラッグ",
-                ReadoutItemKey.AceWindows.Flag.RedFlag to "レッドフラッグ",
-                ReadoutItemKey.AceWindows.RemainingFuel.Root to "燃料残量",
-                ReadoutItemKey.AceWindows.MyBestLap.Root to "自己ベストラップ",
-                ReadoutItemKey.AceWindows.TyreTemperature.Root to "タイヤ温度",
+                LmuWindowsReadoutItemKey.VehicleApproach.Root to "車両接近",
+                LmuWindowsReadoutItemKey.Flag.Root to "フラッグ",
+                LmuWindowsReadoutItemKey.Flag.BlueFlag to "ブルーフラッグ",
+                LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to "イエローフラッグ",
+                LmuWindowsReadoutItemKey.Flag.FullCourseYellow to "フルコースイエロー",
+                LmuWindowsReadoutItemKey.Flag.RedFlag to "レッドフラッグ",
+                LmuWindowsReadoutItemKey.VehicleDamage.Root to "車両故障",
+                LmuWindowsReadoutItemKey.VehicleDamage.Overheat to "オーバーヒート",
+                LmuWindowsReadoutItemKey.TyreTemperature.Root to "タイヤ温度",
+                LmuWindowsReadoutItemKey.PitTiming.Root to "ピットタイミング",
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to "バーチャルエナジー残量",
+                LmuWindowsReadoutItemKey.TyreWear.Root to "タイヤ摩耗",
+                LmuWindowsReadoutItemKey.MyBestLap.Root to "自己ベストラップ",
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root to "自己ベストラップ",
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to "燃料残り周回数",
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root to "燃料残量",
+                AceWindowsReadoutItemKey.VehicleApproach.Root to "車両接近",
+                AceWindowsReadoutItemKey.Flag.Root to "フラッグ",
+                AceWindowsReadoutItemKey.Flag.BlueFlag to "ブルーフラッグ",
+                AceWindowsReadoutItemKey.Flag.RedFlag to "レッドフラッグ",
+                AceWindowsReadoutItemKey.RemainingFuel.Root to "燃料残量",
+                AceWindowsReadoutItemKey.MyBestLap.Root to "自己ベストラップ",
+                AceWindowsReadoutItemKey.TyreTemperature.Root to "タイヤ温度",
             )
 
         rule.setContent {
@@ -376,7 +379,7 @@ class TelemetryLogContentTest {
 
         rule.onNode(hasScrollAction()).performScrollToNode(hasText("オーバーヒート"))
         rule.runOnIdle {
-            logs.value = listOf(createTelemetryLog(id = 100, readoutItemKey = ReadoutItemKey.LmuWindows.Flag.RedFlag)) +
+            logs.value = listOf(createTelemetryLog(id = 100, readoutItemKey = LmuWindowsReadoutItemKey.Flag.RedFlag)) +
                 logs.value
         }
 
@@ -417,17 +420,17 @@ private fun createTelemetryLogs(): List<TelemetryLog> =
             simulator = if (id == 10) Simulator.AceWindows else Simulator.LmuWindows,
             readoutItemKey =
                 when (id) {
-                    30 -> ReadoutItemKey.LmuWindows.TyreWear.Root
-                    20 -> ReadoutItemKey.LmuWindows.VehicleDamage.Overheat
-                    10 -> ReadoutItemKey.AceWindows.RemainingFuel.Root
-                    else -> ReadoutItemKey.LmuWindows.Flag.Root
+                    30 -> LmuWindowsReadoutItemKey.TyreWear.Root
+                    20 -> LmuWindowsReadoutItemKey.VehicleDamage.Overheat
+                    10 -> AceWindowsReadoutItemKey.RemainingFuel.Root
+                    else -> LmuWindowsReadoutItemKey.Flag.Root
                 },
         )
     }
 
 internal fun createTelemetryLog(
     id: Long,
-    readoutItemKey: ReadoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+    readoutItemKey: ReadoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
     simulator: Simulator = Simulator.LmuWindows,
     narratedText: String = "イエローフラッグ",
     narrationOutcome: NarrationOutcome = NarrationOutcome.INTERRUPTED,

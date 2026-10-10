@@ -4,7 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kotlin.test.Test
 
@@ -17,15 +17,15 @@ class SaveReadoutOrderUseCaseTest {
             val useCase = SaveReadoutOrderUseCase(repository)
             val firstOrder =
                 listOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
                 )
             val secondOrder =
                 listOf(
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
                 )
 
             useCase("lmu_windows", firstOrder)

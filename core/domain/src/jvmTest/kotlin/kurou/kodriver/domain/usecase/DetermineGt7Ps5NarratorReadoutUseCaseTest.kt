@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -78,8 +79,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 Triple(initialState, 0, emptyMap()),
                 Triple(initialState, 90_000, emptyMap()),
                 Triple(initialState.copy(personalBestMs = 88_000), 89_000, emptyMap()),
-                Triple(initialState, 89_000, mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false)),
-                Triple(initialState, 89_000, mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled to false)),
+                Triple(initialState, 89_000, mapOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root to false)),
+                Triple(initialState, 89_000, mapOf(Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled to false)),
                 Triple(initialState, 89_000, emptyMap()),
             )
         for ((state, current, enabledStates) in cases) {
@@ -230,13 +231,13 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             useCase.determineMyBestLap(
                 state = Gt7Ps5NarratorState(),
                 telemetry = telemetry(bestLapTimeMs = 90_000),
-                settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false)),
+                settings = settings(enabledStates = mapOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root to false)),
             )
         val decision =
             useCase.determineMyBestLap(
                 state = initialDecision.state,
                 telemetry = telemetry(bestLapTimeMs = 89_000),
-                settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false)),
+                settings = settings(enabledStates = mapOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root to false)),
             )
 
         assertTrue(decision.events.isEmpty())
@@ -253,8 +254,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                     settings(
                         enabledStates =
                             mapOf(
-                                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
-                                ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled to false,
+                                Gt7Ps5ReadoutItemKey.MyBestLap.Root to true,
+                                Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled to false,
                             ),
                     ),
             )
@@ -266,8 +267,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                     settings(
                         enabledStates =
                             mapOf(
-                                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
-                                ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled to false,
+                                Gt7Ps5ReadoutItemKey.MyBestLap.Root to true,
+                                Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled to false,
                             ),
                     ),
             )
@@ -335,7 +336,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残り周回数が無効なら評価済みラップだけ更新して読み上げない`() {
-        val disabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false)
+        val disabledStates: Map<ReadoutItemKey, Boolean> = mapOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to false)
         val firstLapDecision =
             useCase.determineRemainingFuelLaps(
                 state = Gt7Ps5NarratorState(),
@@ -366,8 +367,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     fun `燃料残り周回数はRootが有効でもdetailPane側のスイッチが無効なら読み上げない`() {
         val disabledStates: Map<ReadoutItemKey, Boolean> =
             mapOf(
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled to false,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled to false,
             )
         val firstLapDecision =
             useCase.determineRemainingFuelLaps(
@@ -886,7 +887,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             useCase.determineRemainingFuel(
                 state = Gt7Ps5NarratorState(),
                 telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
-                settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false)),
+                settings = settings(enabledStates = mapOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root to false)),
             )
 
         assertTrue(decision.events.isEmpty())
@@ -903,8 +904,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                     settings(
                         enabledStates =
                             mapOf(
-                                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
-                                ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled to false,
+                                Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true,
+                                Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled to false,
                             ),
                     ),
             )
@@ -1135,7 +1136,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                     ),
                 settings =
                     settings(
-                        enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to false),
+                        enabledStates = mapOf(Gt7Ps5ReadoutItemKey.TyreTemperature.Root to false),
                         tyreTemperatureHighThresholdCelsius = Celsius(95),
                     ),
             )
@@ -1161,7 +1162,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                     ),
                 settings =
                     settings(
-                        enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
+                        enabledStates = mapOf(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to false),
                         tyreTemperatureHighThresholdCelsius = Celsius(95),
                     ),
             )
@@ -1171,7 +1172,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     private fun settings(
-        enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
+        enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root to true),
         remainingFuelLapsThreshold: Int = 3,
         remainingFuelThresholdPercentage: Int = 30,
         tyreTemperatureHighThresholdCelsius: Celsius = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,

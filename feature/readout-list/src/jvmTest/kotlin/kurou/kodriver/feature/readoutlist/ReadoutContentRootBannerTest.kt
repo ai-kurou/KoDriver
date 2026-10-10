@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
@@ -39,13 +40,13 @@ class ReadoutContentRootBannerTest {
         val changes = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
 
         rule.setContent {
-            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
+                        items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to false),
                         selectedItem = ReadoutListItemType.LmuWindows.TyreTemperature,
                     ),
                 onMove = { _, _ -> },
@@ -63,7 +64,7 @@ class ReadoutContentRootBannerTest {
         rule.onNodeWithText("ONにする").performClick()
 
         assertEquals(
-            listOf<Pair<ReadoutItemKey, Boolean>>(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+            listOf<Pair<ReadoutItemKey, Boolean>>(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
             changes,
         )
     }
@@ -75,8 +76,8 @@ class ReadoutContentRootBannerTest {
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+                        items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
                         selectedItem = ReadoutListItemType.LmuWindows.TyreTemperature,
                     ),
                 onMove = { _, _ -> },
@@ -100,7 +101,7 @@ class ReadoutContentRootBannerTest {
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                        items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                         readoutEnabledStates = emptyMap(),
                         selectedItem = ReadoutListItemType.LmuWindows.TyreTemperature,
                     ),
@@ -125,7 +126,7 @@ class ReadoutContentRootBannerTest {
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                        items = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                         readoutEnabledStates = emptyMap(),
                         selectedItem = ReadoutListItemType.LmuWindows.VehicleDamage,
                     ),

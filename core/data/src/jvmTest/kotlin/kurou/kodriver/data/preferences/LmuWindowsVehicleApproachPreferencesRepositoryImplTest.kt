@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -59,10 +60,10 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleApproach.Sustained to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -70,11 +71,11 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, true)
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleApproach.Sustained to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -82,13 +83,13 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState で異なるキーを保存しても互いに独立して保持される`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to false,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Sustained to false,
+                    LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to false,
                 ),
                 repository.observeEnabledStates().first(),
             )

@@ -17,8 +17,8 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.rememberPendingText
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_text_preview
@@ -142,10 +142,10 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
                 LmuWindowsReadoutFlagDetailUiState(
                     enabledStates =
                         mapOf(
-                            ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                            ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                            ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                            ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                            LmuWindowsReadoutItemKey.Flag.BlueFlag to true,
+                            LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to true,
+                            LmuWindowsReadoutItemKey.Flag.FullCourseYellow to true,
+                            LmuWindowsReadoutItemKey.Flag.RedFlag to true,
                         ),
                 ),
             onFlagEnabledChanged = { _, _ -> },

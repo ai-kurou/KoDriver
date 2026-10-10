@@ -38,6 +38,7 @@ import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -53,7 +54,6 @@ import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
@@ -163,7 +163,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -182,7 +182,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(SpeechEvent.LmuWindowsCarLeft()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -200,7 +200,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
@@ -213,7 +213,7 @@ class LmuWindowsNarratorEventProcessorTest {
     fun `テレメトリログの保存に失敗しても例外を投げない`() =
         runTest {
             val observedAtMs = 0L
-            val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+            val readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root
             val narratedText = "カーレフト"
             val telemetryJsonSlot = slot<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
@@ -265,7 +265,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root,
                     narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -284,7 +284,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processTyreWear(
                 tyreWear = tyreWear(frontLeft = 0.4),
                 events = listOf(SpeechEvent.LmuWindowsTyreWearWarning(50)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -315,7 +315,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root,
                     narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
@@ -336,7 +336,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                     narratedText = "閾値700℃です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -355,7 +355,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processBrakeTemperature(
                 brakeTemperature = brakeTemperature(frontLeft = 950.0),
                 events = listOf(SpeechEvent.LmuWindowsBrakeOverheat(700)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -386,7 +386,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                     narratedText = "閾値700℃です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
@@ -410,7 +410,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -435,7 +435,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         remainingRatio = LmuWindowsVirtualEnergyRatio(0.3),
                     ),
                 events = listOf(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -460,7 +460,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = "閾値50%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
@@ -479,7 +479,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "ブルーフラッグ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -498,7 +498,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -515,7 +515,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "ブルーフラッグ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
@@ -534,7 +534,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "ブルーフラッグ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -544,7 +544,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor().processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -557,7 +557,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "ブルーフラッグ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -578,7 +578,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "自己ベストラップ更新 1分23秒456",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -588,7 +588,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor().processMyBestLap(
                 telemetry = fakeTelemetryData(),
                 events = listOf(SpeechEvent.LmuWindowsMyBestLap(83_456L)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.MyBestLap.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -603,7 +603,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "自己ベストラップ更新 1分23秒456",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -624,7 +624,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "オーバーヒート",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -634,7 +634,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor().processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(SpeechEvent.LmuWindowsOverheating()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -647,7 +647,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "オーバーヒート",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -668,7 +668,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "オーバーヒート",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -687,7 +687,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(SpeechEvent.LmuWindowsOverheating()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -704,7 +704,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "オーバーヒート",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
@@ -725,7 +725,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "タイヤ脱落",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -744,7 +744,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 events = listOf(SpeechEvent.LmuWindowsTyreDetached()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -773,7 +773,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "タイヤ脱落",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
@@ -801,7 +801,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "タイヤ交換まであと2周",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -812,7 +812,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
                 events = listOf(SpeechEvent.LmuWindowsPitTimingWarning(laps = 2, source = PitTimingSource.TyreWear)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = pitTimingLogContext(),
@@ -843,7 +843,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "タイヤ交換まであと2周",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
@@ -871,7 +871,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "あと2周でピットへ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -885,7 +885,7 @@ class LmuWindowsNarratorEventProcessorTest {
                     listOf(
                         SpeechEvent.LmuWindowsPitTimingWarning(laps = 2, source = PitTimingSource.VirtualEnergy),
                     ),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = pitTimingLogContext(),
@@ -916,7 +916,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "あと2周でピットへ",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJson,
@@ -933,7 +933,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -943,7 +943,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
                 events = listOf(SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = pitTimingLogContext(),
@@ -953,7 +953,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -970,7 +970,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -980,7 +980,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
                 events = listOf(SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = pitTimingLogContext(),
@@ -990,7 +990,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -1003,14 +1003,14 @@ class LmuWindowsNarratorEventProcessorTest {
     fun `優先度の高い項目を再生中なら読み上げずSKIPPEDとして保存する`() =
         runTest {
             val json = slot<String>()
-            val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
+            val currentKey = LmuWindowsReadoutItemKey.Flag.Root
             val newEvent = SpeechEvent.LmuWindowsCarLeft()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -1039,7 +1039,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -1051,14 +1051,14 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() =
         runTest {
-            val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
+            val currentKey = LmuWindowsReadoutItemKey.Flag.Root
             val newEvent = SpeechEvent.LmuWindowsCarLeft()
             every { ttsEngine.speak(newEvent.withResolvedText("カーレフト"), queue = true) } just Runs
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.QUEUED,
                     telemetryJson = capture(slot()),
@@ -1081,7 +1081,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.QUEUED,
                     telemetryJson = capture(slot()),
@@ -1093,7 +1093,7 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `優先度の低い項目を再生中なら停止して読み上げる`() =
         runTest {
-            val currentKey = ReadoutItemKey.LmuWindows.TyreWear.Root
+            val currentKey = LmuWindowsReadoutItemKey.TyreWear.Root
             val newEvent = SpeechEvent.LmuWindowsCarLeft()
             every { ttsEngine.currentReadoutItemKey } returns currentKey
             every { ttsEngine.stop() } just Runs
@@ -1102,7 +1102,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.INTERRUPTED,
                     telemetryJson = capture(slot()),
@@ -1126,7 +1126,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.INTERRUPTED,
                     telemetryJson = capture(slot()),
@@ -1146,7 +1146,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 100L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot()),
@@ -1159,7 +1159,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot()),
@@ -1170,7 +1170,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 4.0),
                 events = listOf(SpeechEvent.LmuWindowsCarLeft()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 100L,
                 logContext = logContext(),
@@ -1178,7 +1178,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(SpeechEvent.LmuWindowsCarLeft()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -1195,7 +1195,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 100L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot()),
@@ -1205,7 +1205,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "カーレフト",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(slot()),
@@ -1224,7 +1224,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(json),
@@ -1233,7 +1233,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "後続に譲ってください" }.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1244,7 +1244,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = json.captured,
@@ -1261,7 +1261,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -1270,7 +1270,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1279,7 +1279,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -1298,7 +1298,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(json),
@@ -1307,7 +1307,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "後続に譲ってください" }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(SpeechEvent.LmuWindowsCarRight()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1318,7 +1318,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = json.captured,
@@ -1335,7 +1335,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -1344,7 +1344,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(SpeechEvent.LmuWindowsCarRight()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1353,7 +1353,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -1374,7 +1374,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(json),
@@ -1383,7 +1383,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "後続に譲ってください" }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(SpeechEvent.LmuWindowsCarLeftSustained()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1396,7 +1396,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = json.captured,
@@ -1413,7 +1413,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -1422,7 +1422,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(SpeechEvent.LmuWindowsCarLeftSustained()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1431,7 +1431,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -1452,7 +1452,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(json),
@@ -1461,7 +1461,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "後続に譲ってください" }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(SpeechEvent.LmuWindowsCarRightSustained()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1474,7 +1474,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "後続に譲ってください",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = json.captured,
@@ -1491,7 +1491,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -1500,7 +1500,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleApproach(
                 vehicleApproach = leftVehicleApproach(distance = 3.0),
                 events = listOf(SpeechEvent.LmuWindowsCarRightSustained()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1509,7 +1509,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -1526,7 +1526,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -1538,7 +1538,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         remainingRatio = LmuWindowsVirtualEnergyRatio(0.3),
                     ),
                 events = listOf(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1548,7 +1548,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -1565,7 +1565,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -1574,7 +1574,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processTyreWear(
                 tyreWear = tyreWear(frontLeft = 0.3),
                 events = listOf(SpeechEvent.LmuWindowsTyreWearWarning(50)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1584,7 +1584,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreWear.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -1601,7 +1601,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -1610,7 +1610,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processBrakeTemperature(
                 brakeTemperature = brakeTemperature(frontLeft = 950.0),
                 events = listOf(SpeechEvent.LmuWindowsBrakeOverheat(700)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
                 logContext = logContext(),
@@ -1620,7 +1620,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 0L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.BrakeTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -1639,7 +1639,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "タイヤを冷やして",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -1656,7 +1656,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(SpeechEvent.LmuWindowsTyreOverheat(100)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1674,7 +1674,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "タイヤを冷やして",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -1691,7 +1691,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -1708,7 +1708,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(SpeechEvent.LmuWindowsTyreOverheat(100)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1726,7 +1726,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -1743,7 +1743,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -1760,7 +1760,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(SpeechEvent.LmuWindowsTyreOverheat(100)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1778,7 +1778,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -1797,7 +1797,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "タイヤを温めて",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -1814,7 +1814,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(SpeechEvent.LmuWindowsTyreCold(60)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1832,7 +1832,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "タイヤを温めて",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -1849,7 +1849,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -1866,7 +1866,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(SpeechEvent.LmuWindowsTyreCold(60)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1884,7 +1884,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -1901,7 +1901,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -1918,7 +1918,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags = raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = listOf(SpeechEvent.LmuWindowsTyreCold(60)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext =
@@ -1936,7 +1936,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.TyreTemperature.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -1948,7 +1948,7 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `タイヤ温度警告はキュー待機中に設定が変わっても判定時の本文を発話してログと一致する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.TyreTemperature.Root
+            val key = LmuWindowsReadoutItemKey.TyreTemperature.Root
             val template = MutableStateFlow("警告{celsius}℃")
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsonSlot = slot<String>()
@@ -1984,7 +1984,7 @@ class LmuWindowsNarratorEventProcessorTest {
                         raceFlags(PrimaryFlag.GREEN),
                     ),
                 events = events,
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root, key),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root, key),
                 queueEnabledStates = mapOf(key to true),
                 observedAtMs = 200L,
                 logContext =
@@ -2038,7 +2038,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsons),
@@ -2047,7 +2047,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "カスタム" }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(SpeechEvent.LmuWindowsOverheating()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2058,7 +2058,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsons.single(),
@@ -2075,7 +2075,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsons),
@@ -2084,7 +2084,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " " }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(SpeechEvent.LmuWindowsOverheating()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2095,7 +2095,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsons.single(),
@@ -2112,7 +2112,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsons),
@@ -2121,7 +2121,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(SpeechEvent.LmuWindowsOverheating()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2132,7 +2132,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsons.single(),
@@ -2151,7 +2151,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsons),
@@ -2160,7 +2160,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "カスタム" }.processMyBestLap(
                 telemetry = fakeTelemetryData(bestLapTimeMs = 83_456L),
                 events = listOf(SpeechEvent.LmuWindowsMyBestLap(83_456L)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.MyBestLap.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2171,7 +2171,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsons.single(),
@@ -2188,7 +2188,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsons),
@@ -2197,7 +2197,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " " }.processMyBestLap(
                 telemetry = fakeTelemetryData(bestLapTimeMs = 83_456L),
                 events = listOf(SpeechEvent.LmuWindowsMyBestLap(83_456L)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.MyBestLap.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2208,7 +2208,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsons.single(),
@@ -2225,7 +2225,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsons),
@@ -2234,7 +2234,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processMyBestLap(
                 telemetry = fakeTelemetryData(bestLapTimeMs = 83_456L),
                 events = listOf(SpeechEvent.LmuWindowsMyBestLap(83_456L)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.MyBestLap.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2245,7 +2245,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.MyBestLap.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsons.single(),
@@ -2264,7 +2264,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsons),
@@ -2273,7 +2273,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "カスタム" }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(SpeechEvent.LmuWindowsPartDetached()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2284,7 +2284,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsons.single(),
@@ -2301,7 +2301,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsons),
@@ -2310,7 +2310,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " " }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(SpeechEvent.LmuWindowsPartDetached()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2321,7 +2321,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsons.single(),
@@ -2338,7 +2338,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsons),
@@ -2347,7 +2347,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processVehicleDamage(
                 vehicleDamage = vehicleDamage(overheating = true),
                 events = listOf(SpeechEvent.LmuWindowsPartDetached()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2358,7 +2358,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsons.single(),
@@ -2377,7 +2377,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsons),
@@ -2386,7 +2386,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { "カスタム" }.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 events = listOf(SpeechEvent.LmuWindowsTyreDetached()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2397,7 +2397,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "カスタム",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsons.single(),
@@ -2414,7 +2414,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsons),
@@ -2423,7 +2423,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " " }.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 events = listOf(SpeechEvent.LmuWindowsTyreDetached()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2434,7 +2434,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsons.single(),
@@ -2451,7 +2451,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(telemetryJsons),
@@ -2460,7 +2460,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { null }.processTyreDetached(
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 events = listOf(SpeechEvent.LmuWindowsTyreDetached()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.VehicleDamage.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2471,7 +2471,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = telemetryJsons.single(),
@@ -2483,7 +2483,7 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `車両故障はキュー待機中の設定変更でも判定時の本文を発話してログと一致する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.VehicleDamage.Root
+            val key = LmuWindowsReadoutItemKey.VehicleDamage.Root
             val template = MutableStateFlow("判定時の本文")
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsons = mutableListOf<String>()
@@ -2573,7 +2573,7 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `自己ベストラップはキュー待機中の設定変更でも判定時の本文を発話してログと一致する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.MyBestLap.Root
+            val key = LmuWindowsReadoutItemKey.MyBestLap.Root
             val template = MutableStateFlow("判定時の本文{laptime}")
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsons = mutableListOf<String>()
@@ -2639,7 +2639,7 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `フラッグはキュー待機中の設定変更でも判定時の本文を発話してログと一致する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.Flag.Root
+            val key = LmuWindowsReadoutItemKey.Flag.Root
             val template = MutableStateFlow("判定時の本文")
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsons = mutableListOf<String>()
@@ -2719,7 +2719,7 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `車両接近はキュー待機中の設定変更でも判定時の本文を発話してログと一致する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+            val key = LmuWindowsReadoutItemKey.VehicleApproach.Root
             val template = MutableStateFlow("判定時の本文")
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsons = mutableListOf<String>()
@@ -2799,7 +2799,7 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `ピットタイミングはキュー待機中の設定変更でも判定時の本文を発話してログと一致する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.PitTiming.Root
+            val key = LmuWindowsReadoutItemKey.PitTiming.Root
             val template = MutableStateFlow("判定時の本文")
             val queuedEvents = mutableListOf<SpeechEvent>()
             val telemetryJsons = mutableListOf<String>()
@@ -2884,7 +2884,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = capture(json),
@@ -2893,7 +2893,7 @@ class LmuWindowsNarratorEventProcessorTest {
             createProcessor { " \t\n" }.processRaceFlags(
                 raceFlags = raceFlags(playerFlag = PrimaryFlag.BLUE),
                 events = listOf(SpeechEvent.LmuWindowsBlueFlag()),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.Flag.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -2904,7 +2904,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     narratedText = "",
                     narrationOutcome = NarrationOutcome.SKIPPED,
                     telemetryJson = json.captured,
@@ -2916,7 +2916,7 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `文言解決に失敗しても同じ入力の後続イベントと次回処理を継続する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.Flag.Root
+            val key = LmuWindowsReadoutItemKey.Flag.Root
             val failedEvent = SpeechEvent.LmuWindowsBlueFlag()
             val nextEvent = SpeechEvent.LmuWindowsRedFlag()
             val resolvedEvent = SpeechEvent.LmuWindowsRedFlag("復旧")
@@ -3007,7 +3007,7 @@ class LmuWindowsNarratorEventProcessorTest {
     @Test
     fun `文言解決のキャンセルは再スローしログ保存と後続処理を行わない`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.Flag.Root
+            val key = LmuWindowsReadoutItemKey.Flag.Root
             val event = SpeechEvent.LmuWindowsBlueFlag()
             val cancellation = CancellationException("cancelled")
             val resolvedEvents = mutableListOf<SpeechEvent>()
@@ -3058,7 +3058,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeWear.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root,
                     narratedText = "残量20%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = capture(telemetryJsonSlot),
@@ -3077,7 +3077,7 @@ class LmuWindowsNarratorEventProcessorTest {
             processor.processBrakeWear(
                 brakeWear = brakeWear(frontLeft = 18),
                 events = listOf(SpeechEvent.LmuWindowsBrakeWearLow(20)),
-                readoutOrder = listOf(ReadoutItemKey.LmuWindows.BrakeWear.Root),
+                readoutOrder = listOf(LmuWindowsReadoutItemKey.BrakeWear.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 200L,
                 logContext = logContext(),
@@ -3109,7 +3109,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 telemetryLogRepository.saveTelemetryLog(
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.BrakeWear.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.BrakeWear.Root,
                     narratedText = "残量20%です",
                     narrationOutcome = NarrationOutcome.SPOKEN,
                     telemetryJson = telemetryJsonSlot.captured,
@@ -3131,7 +3131,7 @@ private fun logContext() =
         state = LmuWindowsNarratorState(),
         settings =
             LmuWindowsNarratorReadoutSettings(
-                enabledStates = mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
+                enabledStates = mapOf(LmuWindowsReadoutItemKey.VehicleApproach.Root to true),
                 currentLap = 1,
                 skipFirstLap = false,
                 vehicleApproachSustainedApproachDurationSeconds = 7,
@@ -3205,7 +3205,7 @@ private fun pitTimingLogContext() =
         state = LmuWindowsNarratorState(),
         settings =
             LmuWindowsNarratorReadoutSettings(
-                enabledStates = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+                enabledStates = mapOf(LmuWindowsReadoutItemKey.PitTiming.Root to true),
                 currentLap = 1,
                 skipFirstLap = false,
                 vehicleApproachSustainedApproachDurationSeconds = 7,

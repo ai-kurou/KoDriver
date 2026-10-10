@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -145,7 +146,7 @@ internal class Gt7Ps5NarratorViewModel(
                     )
                 narratorState = decision.state
                 eventProcessor.process(
-                    sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    sourceKey = Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     telemetry = telemetry,
                     events = decision.events,
                     readoutOrder = readoutOrder.value,
@@ -176,7 +177,7 @@ internal class Gt7Ps5NarratorViewModel(
                     )
                 narratorState = decision.state
                 eventProcessor.process(
-                    sourceKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    sourceKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                     telemetry = telemetry,
                     events = decision.events,
                     readoutOrder = readoutOrder.value,
@@ -206,7 +207,7 @@ internal class Gt7Ps5NarratorViewModel(
                     )
                 narratorState = decision.state
                 eventProcessor.process(
-                    sourceKey = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    sourceKey = Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                     telemetry = telemetry,
                     events = decision.events,
                     readoutOrder = readoutOrder.value,
@@ -236,7 +237,7 @@ internal class Gt7Ps5NarratorViewModel(
                     )
                 narratorState = decision.state
                 eventProcessor.process(
-                    sourceKey = ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
+                    sourceKey = Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                     telemetry = telemetry,
                     events = decision.events,
                     readoutOrder = readoutOrder.value,

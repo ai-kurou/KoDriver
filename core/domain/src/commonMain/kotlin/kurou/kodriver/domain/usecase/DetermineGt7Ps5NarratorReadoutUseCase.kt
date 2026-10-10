@@ -3,6 +3,7 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
@@ -87,8 +88,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         if (current >= sessionState.personalBestMs) {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.Root) ||
-            !settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled)
+        if (!settings.enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.MyBestLap.Root) ||
+            !settings.enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled)
         ) {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
@@ -150,8 +151,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         val shouldAnnounce =
             !state.remainingFuelWarned &&
                 isLow &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled)
+                settings.enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) &&
+                settings.enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled)
         return Gt7Ps5NarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
             events =
@@ -187,8 +188,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             }
         val shouldAnnounce =
             !state.tyreOverheating && nextOverheating &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning)
+                settings.enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.TyreTemperature.Root) &&
+                settings.enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning)
         return Gt7Ps5NarratorReadoutDecision(
             state = state.copy(tyreOverheating = nextOverheating),
             events =
@@ -320,8 +321,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         if (remainingLapsFloor == state.lastAnnouncedRemainingLaps) {
             return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
         }
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root) ||
-            !settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled)
+        if (!settings.enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root) ||
+            !settings.enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled)
         ) {
             return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
         }

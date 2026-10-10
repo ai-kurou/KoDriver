@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kotlin.test.Test
@@ -21,9 +22,9 @@ private fun createLmuWindowsFlagPreferencesRepository(
     val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeFlagEnabledStates() } returns states
     listOf(
-        ReadoutItemKey.LmuWindows.Flag.BlueFlag,
-        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
-        ReadoutItemKey.LmuWindows.Flag.RedFlag,
+        LmuWindowsReadoutItemKey.Flag.BlueFlag,
+        LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
+        LmuWindowsReadoutItemKey.Flag.RedFlag,
     ).forEach { key ->
         listOf(true, false).forEach { enabled ->
             coEvery { repository.saveFlagEnabledState(key, enabled) } answers {
@@ -45,10 +46,10 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                    ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                    ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                    LmuWindowsReadoutItemKey.Flag.BlueFlag to true,
+                    LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to true,
+                    LmuWindowsReadoutItemKey.Flag.FullCourseYellow to true,
+                    LmuWindowsReadoutItemKey.Flag.RedFlag to true,
                 ),
                 useCase().first(),
             )
@@ -62,19 +63,19 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
             val repo = createLmuWindowsFlagPreferencesRepository(repository)
             val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
-            repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
+            repo.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.RedFlag, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                    ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                    ReadoutItemKey.LmuWindows.Flag.RedFlag to false,
+                    LmuWindowsReadoutItemKey.Flag.BlueFlag to true,
+                    LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to true,
+                    LmuWindowsReadoutItemKey.Flag.FullCourseYellow to true,
+                    LmuWindowsReadoutItemKey.Flag.RedFlag to false,
                 ),
                 useCase().first(),
             )
             coVerify(exactly = 1) {
-                repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
+                repo.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.RedFlag, false)
             }
             verify(exactly = 1) { repo.observeFlagEnabledStates() }
             confirmVerified(repo)

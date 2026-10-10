@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 
@@ -9,9 +10,9 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val vehicleDamageEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
-        ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
-        ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
-        ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
+        LmuWindowsReadoutItemKey.VehicleDamage.Overheat to true,
+        LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to true,
+        LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to true,
     )
 
 class ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(

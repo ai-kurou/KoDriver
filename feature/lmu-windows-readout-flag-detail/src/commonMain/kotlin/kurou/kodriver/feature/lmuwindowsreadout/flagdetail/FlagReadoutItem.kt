@@ -4,6 +4,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_blue
@@ -19,22 +20,22 @@ internal enum class FlagReadoutItem(
     val defaultText: String,
 ) {
     BlueFlag(
-        key = ReadoutItemKey.LmuWindows.Flag.BlueFlag,
+        key = LmuWindowsReadoutItemKey.Flag.BlueFlag,
         labelRes = Res.string.flag_blue,
         defaultText = LMU_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT,
     ),
     SectorYellowFlag(
-        key = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+        key = LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
         labelRes = Res.string.flag_yellow,
         defaultText = LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT,
     ),
     FullCourseYellow(
-        key = ReadoutItemKey.LmuWindows.Flag.FullCourseYellow,
+        key = LmuWindowsReadoutItemKey.Flag.FullCourseYellow,
         labelRes = Res.string.flag_full_course_yellow,
         defaultText = LMU_WINDOWS_FULL_COURSE_YELLOW_FLAG_READOUT_TEXT_DEFAULT,
     ),
     RedFlag(
-        key = ReadoutItemKey.LmuWindows.Flag.RedFlag,
+        key = LmuWindowsReadoutItemKey.Flag.RedFlag,
         labelRes = Res.string.flag_red,
         defaultText = LMU_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT,
     ),

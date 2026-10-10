@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.Test
@@ -18,9 +19,9 @@ class ReadoutStartSoundEnabledPreferencesRepositoryFactoryTest {
 
                 assertTrue(repo.observeStartSoundEnabledStates().first().isEmpty())
 
-                repo.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
+                repo.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
                 assertEquals(
-                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                    mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to false),
                     repo.observeStartSoundEnabledStates().first(),
                 )
             } finally {

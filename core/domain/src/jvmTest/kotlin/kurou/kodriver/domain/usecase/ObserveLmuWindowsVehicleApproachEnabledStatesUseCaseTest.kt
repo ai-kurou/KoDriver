@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kotlin.test.Test
@@ -21,12 +22,12 @@ private fun createLmuWindowsVehicleApproachPreferencesRepository(
     val enabledStates = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeEnabledStates() } returns enabledStates
     listOf(
-        ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
-        ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
-        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-        ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout,
-        ReadoutItemKey.LmuWindows.VehicleApproach.Sustained,
-        ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
+        LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+        LmuWindowsReadoutItemKey.TyreTemperature.LowWarning,
+        LmuWindowsReadoutItemKey.TyreTemperature.Root,
+        LmuWindowsReadoutItemKey.VehicleApproach.StartReadout,
+        LmuWindowsReadoutItemKey.VehicleApproach.Sustained,
+        LmuWindowsReadoutItemKey.VehicleDamage.Overheat,
     ).forEach { key ->
         listOf(true, false).forEach { enabled ->
             coEvery { repository.saveEnabledState(key, enabled) } answers {
@@ -48,8 +49,8 @@ class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
+                    LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Sustained to false,
                 )
             assertEquals(expected, useCase().first())
             verify(exactly = 1) { repo.observeEnabledStates() }
@@ -62,16 +63,16 @@ class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
             val repo = createLmuWindowsVehicleApproachPreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(repo)
 
-            repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, true)
+            repo.saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, true)
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
+                    LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Sustained to true,
                 )
             assertEquals(expected, useCase().first())
             coVerify(exactly = 1) {
-                repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, true)
+                repo.saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, true)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)

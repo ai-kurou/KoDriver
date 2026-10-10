@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
@@ -66,9 +66,9 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
             previewHelper.textToSpeechAvailable,
         ) { states, overheatText, partDetachedText, tyreDetachedText, available ->
             LmuWindowsReadoutVehicleDamageDetailUiState(
-                overheatEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat),
-                partDetachedEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached),
-                tyreDetachedEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached),
+                overheatEnabled = states.getValue(LmuWindowsReadoutItemKey.VehicleDamage.Overheat),
+                partDetachedEnabled = states.getValue(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached),
+                tyreDetachedEnabled = states.getValue(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached),
                 overheatReadoutText = overheatText,
                 partDetachedReadoutText = partDetachedText,
                 tyreDetachedReadoutText = tyreDetachedText,
@@ -82,7 +82,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
 
     fun onOverheatEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            vehicleDamageUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, enabled)
+            vehicleDamageUseCases.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, enabled)
         }
     }
 
@@ -96,7 +96,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
 
     fun onPartDetachedEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            vehicleDamageUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, enabled)
+            vehicleDamageUseCases.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached, enabled)
         }
     }
 
@@ -110,7 +110,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
 
     fun onTyreDetachedEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            vehicleDamageUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, enabled)
+            vehicleDamageUseCases.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached, enabled)
         }
     }
 

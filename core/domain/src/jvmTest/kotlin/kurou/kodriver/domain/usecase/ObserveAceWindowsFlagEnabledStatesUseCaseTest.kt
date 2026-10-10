@@ -7,6 +7,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kotlin.test.BeforeTest
@@ -32,16 +33,16 @@ class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
 
             val expected: Map<ReadoutItemKey, Boolean> =
                 mapOf(
-                    ReadoutItemKey.AceWindows.Flag.WhiteFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.GreenFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.RedFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.BlueFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.YellowFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.BlackFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.CheckeredFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to true,
+                    AceWindowsReadoutItemKey.Flag.WhiteFlag to true,
+                    AceWindowsReadoutItemKey.Flag.GreenFlag to true,
+                    AceWindowsReadoutItemKey.Flag.RedFlag to true,
+                    AceWindowsReadoutItemKey.Flag.BlueFlag to true,
+                    AceWindowsReadoutItemKey.Flag.YellowFlag to true,
+                    AceWindowsReadoutItemKey.Flag.BlackFlag to true,
+                    AceWindowsReadoutItemKey.Flag.BlackWhiteFlag to true,
+                    AceWindowsReadoutItemKey.Flag.CheckeredFlag to true,
+                    AceWindowsReadoutItemKey.Flag.OrangeCircleFlag to true,
+                    AceWindowsReadoutItemKey.Flag.RedYellowStripesFlag to true,
                 )
             assertEquals(expected, result)
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
@@ -53,13 +54,13 @@ class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
         runTest {
             every { repository.observeFlagEnabledStates() } returns
                 flowOf(
-                    mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false),
+                    mapOf(AceWindowsReadoutItemKey.Flag.BlueFlag to false),
                 )
 
             val result = useCase().first()
 
-            assertEquals(false, result.getValue(ReadoutItemKey.AceWindows.Flag.BlueFlag))
-            assertEquals(true, result.getValue(ReadoutItemKey.AceWindows.Flag.WhiteFlag))
+            assertEquals(false, result.getValue(AceWindowsReadoutItemKey.Flag.BlueFlag))
+            assertEquals(true, result.getValue(AceWindowsReadoutItemKey.Flag.WhiteFlag))
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             confirmVerified(repository)
         }

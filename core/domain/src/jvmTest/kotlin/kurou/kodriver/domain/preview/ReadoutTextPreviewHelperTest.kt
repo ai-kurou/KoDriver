@@ -21,7 +21,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
@@ -38,7 +38,7 @@ class ReadoutTextPreviewHelperTest {
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
     private val playStartSound: PlayStartSoundForKeyUseCase = mockk()
     private val speakText: SpeakTextUseCase = mockk()
-    private val key = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+    private val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root
 
     private fun TestScope.helper() =
         ReadoutTextPreviewHelper(backgroundScope, checkAvailable, observeVolume, playStartSound, speakText)

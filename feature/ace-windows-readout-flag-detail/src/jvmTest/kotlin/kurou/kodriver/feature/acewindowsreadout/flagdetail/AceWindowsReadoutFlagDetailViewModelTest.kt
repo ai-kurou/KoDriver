@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsFlagReadoutTextKey
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
@@ -155,8 +156,8 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         runTest {
             val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { repository.observeFlagEnabledStates() } returns statesFlow
-            coEvery { repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false) } answers {
-                statesFlow.update { it + (ReadoutItemKey.AceWindows.Flag.BlueFlag to false) }
+            coEvery { repository.saveFlagEnabledState(AceWindowsReadoutItemKey.Flag.BlueFlag, false) } answers {
+                statesFlow.update { it + (AceWindowsReadoutItemKey.Flag.BlueFlag to false) }
             }
             every { texts.observeText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf("完走")
             every { texts.observeText(AceWindowsFlagReadoutTextKey.WHITE) } returns flowOf("ホワイトフラッグ")
@@ -175,8 +176,8 @@ class AceWindowsReadoutFlagDetailViewModelTest {
 
             viewModel.onFlagEnabledChanged(FlagReadoutItem.BlueFlag, false)
 
-            assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.AceWindows.Flag.BlueFlag])
-            coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false) }
+            assertEquals(false, viewModel.uiState.first().enabledStates[AceWindowsReadoutItemKey.Flag.BlueFlag])
+            coVerify(exactly = 1) { repository.saveFlagEnabledState(AceWindowsReadoutItemKey.Flag.BlueFlag, false) }
             verify(exactly = 1) { repository.observeFlagEnabledStates() }
             confirmVerified(repository)
         }
@@ -287,7 +288,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             every { observeVoice() } returns flowOf("voice-a")
             val calls = mutableListOf<String>()
             val startSoundCompleted = CompletableDeferred<Unit>()
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) } coAnswers {
+            coEvery { ttsEngine.playStartSound(AceWindowsReadoutItemKey.Flag.Root) } coAnswers {
                 calls += "start"
                 startSoundCompleted.await()
             }
@@ -298,7 +299,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a", 1.0f, 1.0f) }
             startSoundCompleted.complete(Unit)
             assertEquals(listOf("start", "text"), calls)
-            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.Flag.Root) }
             coVerify(exactly = 1) { tts.speak("完走", false, 42, "voice-a", 1.0f, 1.0f) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 1) { volumes.volume() }
@@ -416,13 +417,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             every { observeVoice() } returns flowOf("voice-a")
             val vm = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) } coAnswers
+            coEvery { ttsEngine.playStartSound(AceWindowsReadoutItemKey.Flag.Root) } coAnswers
                 { pendingStartSound.await() }
             vm.onFlagTextPreviewClicked("完走")
             vm.onPreviewStopped()
             pendingStartSound.complete(Unit)
             coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a", 1.0f, 1.0f) }
-            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.Flag.Root) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 1) { volumes.volume() }
             verify(exactly = 0) { observeVoice() }
@@ -454,13 +455,13 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             every { observeVoice() } returns flowOf("voice-a")
             val vm = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) } coAnswers
+            coEvery { ttsEngine.playStartSound(AceWindowsReadoutItemKey.Flag.Root) } coAnswers
                 { pendingStartSound.await() }
             vm.onFlagTextPreviewClicked("完走")
             vm.onFlagTextPreviewClicked("完走")
             pendingStartSound.complete(Unit)
             coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a", 1.0f, 1.0f) }
-            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.Flag.Root) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 1) { volumes.volume() }
             verify(exactly = 0) { observeVoice() }

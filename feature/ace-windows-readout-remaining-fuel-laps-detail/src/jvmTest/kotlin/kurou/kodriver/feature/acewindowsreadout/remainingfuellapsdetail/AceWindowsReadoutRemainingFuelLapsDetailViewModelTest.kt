@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsPreferencesRepository
@@ -183,12 +184,12 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             coEvery {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.AceWindows.id,
-                    ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled,
+                    AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled,
                     false,
                 )
             } answers {
                 enabledStatesFlow.update {
-                    it + (ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled to false)
+                    it + (AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled to false)
                 }
             }
             val viewModel = createViewModel()
@@ -203,7 +204,7 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             coVerify(exactly = 1) {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.AceWindows.id,
-                    ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled,
+                    AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled,
                     false,
                 )
             }
@@ -242,7 +243,7 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             val threshold = MutableStateFlow(4)
             every { repository.observeThresholdLaps() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) } returns Unit
+            coEvery { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) } returns Unit
             coEvery { speakText("残り4周", volume = 60) } returns Unit
             coEvery { speakText("残り5周", volume = 60) } returns Unit
             val viewModel = createViewModel()
@@ -255,13 +256,13 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             // 保存済みの閾値が4周のままでも、画面に表示中の5周で試聴する。
             viewModel.onReadoutTextPreviewClicked("残り{laps}周", 5)
             assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
-            coVerify(exactly = 2) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
+            coVerify(exactly = 2) { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) }
             coVerify(exactly = 1) { speakText("残り4周", volume = 60) }
             coVerify(exactly = 1) { speakText("残り5周", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root)
+                playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root)
                 speakText("残り4周", volume = 60)
-                playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root)
+                playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root)
                 speakText("残り5周", volume = 60)
             }
             verify(exactly = 2) { observeVolume() }
@@ -282,7 +283,7 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked(" ", 4)
             viewModel.onEmptyReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
+            coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) }
             coVerify(exactly = 0) { speakText(" ", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -301,7 +302,7 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("注意", 4)
             viewModel.onEmptyReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
+            coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -324,7 +325,7 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("注意", 4)
             viewModel.onEmptyReadoutTextPreviewClicked("注意")
             verify(exactly = 4) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
+            coVerify(exactly = 0) { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -360,13 +361,13 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
             coEvery { checkAvailable() } returns true
             every { repository.observeThresholdLaps() } returns MutableStateFlow(3)
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) } returns Unit
+            coEvery { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) } returns Unit
             coEvery { speakText("燃料なし{laps}", volume = 60) } returns Unit
             createViewModel().onEmptyReadoutTextPreviewClicked("燃料なし{laps}")
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
+            coVerify(exactly = 1) { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) }
             coVerify(exactly = 1) { speakText("燃料なし{laps}", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root)
+                playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root)
                 speakText("燃料なし{laps}", volume = 60)
             }
             verify(exactly = 1) { observeVolume() }
@@ -391,12 +392,12 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) } coAnswers
+            coEvery { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
+            coVerify(exactly = 1) { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) }
             coVerify(exactly = 0) { speakText("残り4周", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
@@ -421,12 +422,12 @@ class AceWindowsReadoutRemainingFuelLapsDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) } coAnswers
+            coEvery { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
             viewModel.onReadoutTextPreviewClicked("残り{laps}周", 4)
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root) }
+            coVerify(exactly = 1) { playStartSound(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) }
             coVerify(exactly = 0) { speakText("残り4周", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)

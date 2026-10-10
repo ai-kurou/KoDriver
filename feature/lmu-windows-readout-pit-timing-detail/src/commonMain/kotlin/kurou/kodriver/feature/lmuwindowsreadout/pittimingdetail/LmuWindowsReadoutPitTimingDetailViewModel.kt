@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -84,12 +84,12 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
             preview.textToSpeechAvailable,
         ) { virtualEnergyLaps, tyreWearLaps, enabledStates, texts, available ->
             LmuWindowsReadoutPitTimingDetailUiState(
-                virtualEnergyEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy),
+                virtualEnergyEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy),
                 virtualEnergyLaps = virtualEnergyLaps,
                 virtualEnergyText = texts.first.first,
                 virtualEnergyImminentText = texts.first.second,
                 isTextToSpeechAvailable = available,
-                tyreWearEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.TyreWear),
+                tyreWearEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.PitTiming.TyreWear),
                 tyreWearLaps = tyreWearLaps,
                 tyreWearText = texts.second.first,
                 tyreWearImminentText = texts.second.second,
@@ -105,7 +105,7 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
 
     fun onVirtualEnergyEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            pitTimingUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, enabled)
+            pitTimingUseCases.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, enabled)
         }
     }
 
@@ -117,7 +117,7 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
 
     fun onTyreWearEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            pitTimingUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, enabled)
+            pitTimingUseCases.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.TyreWear, enabled)
         }
     }
 
@@ -161,6 +161,6 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
 
     /** 空白文言・TTS利用不可・音量ゼロでは開始音も本文も再生しない。 */
     private fun playReadoutPreview(text: String) {
-        preview.onPreviewClicked(text, ReadoutItemKey.LmuWindows.PitTiming.Root)
+        preview.onPreviewClicked(text, LmuWindowsReadoutItemKey.PitTiming.Root)
     }
 }

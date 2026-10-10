@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
@@ -61,7 +61,7 @@ internal class AceWindowsReadoutVehicleApproachDetailViewModel(
                 thresholdMeters = thresholdMeters,
                 readoutText = readoutText,
                 isTextToSpeechAvailable = isTextToSpeechAvailable,
-                startReadoutEnabled = enabledStates.getValue(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout),
+                startReadoutEnabled = enabledStates.getValue(AceWindowsReadoutItemKey.VehicleApproach.StartReadout),
             )
         }.stateIn(
             viewModelScope,
@@ -82,7 +82,7 @@ internal class AceWindowsReadoutVehicleApproachDetailViewModel(
 
     fun onStartReadoutEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, enabled)
+            saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, enabled)
         }
     }
 
@@ -95,6 +95,6 @@ internal class AceWindowsReadoutVehicleApproachDetailViewModel(
     }
 
     fun onPreviewClicked(text: String) {
-        preview.onPreviewClicked(text, ReadoutItemKey.AceWindows.VehicleApproach.Root)
+        preview.onPreviewClicked(text, AceWindowsReadoutItemKey.VehicleApproach.Root)
     }
 }

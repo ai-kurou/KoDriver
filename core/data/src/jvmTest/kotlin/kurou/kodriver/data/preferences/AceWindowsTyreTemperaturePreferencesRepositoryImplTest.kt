@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
@@ -67,10 +68,10 @@ class AceWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false),
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -78,11 +79,11 @@ class AceWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, true)
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, true)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false),
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -90,13 +91,13 @@ class AceWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `異なるキーで保存した値がすべて保持される`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, true)
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.Root, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, true)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to true,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root to false,
+                    AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to true,
+                    AceWindowsReadoutItemKey.TyreTemperature.Root to false,
                 ),
                 repository.observeEnabledStates().first(),
             )
@@ -105,11 +106,11 @@ class AceWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState後にsaveHighThresholdCelsiusを呼んでもenabledStatesは保持される`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
             repository.saveHighThresholdCelsius(Celsius(100))
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false),
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -122,18 +123,18 @@ class AceWindowsTyreTemperaturePreferencesRepositoryImplTest {
                 repository.observeOverheatReadoutText().first(),
             )
             repository.saveHighThresholdCelsius(Celsius(105))
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
             listOf("注意{celsius}度", "", " ").forEach { text ->
                 repository.saveOverheatReadoutText(text)
                 assertEquals(text, repository.observeOverheatReadoutText().first())
                 assertEquals(Celsius(105), repository.observeHighThresholdCelsius().first())
                 assertEquals(
-                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false),
+                    mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false),
                     repository.observeEnabledStates().first(),
                 )
             }
             repository.saveHighThresholdCelsius(Celsius(100))
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.TyreTemperature.Root, true)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.TyreTemperature.Root, true)
             assertEquals(" ", repository.observeOverheatReadoutText().first())
         }
 }

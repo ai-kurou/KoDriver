@@ -20,6 +20,7 @@ import kotlinx.coroutines.runBlocking
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -210,13 +211,13 @@ class ReadoutListPaneScreenshotTest {
                                         selectedItem = ReadoutListItemType.LmuWindows.Flag,
                                         readoutEnabledStates =
                                             mapOf(
-                                                ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                                                LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
+                                                LmuWindowsReadoutItemKey.Flag.Root to true,
                                             ),
                                         startSoundEnabledStates =
-                                            mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                                            mapOf(LmuWindowsReadoutItemKey.Flag.Root to false),
                                         queueEnabledStates =
-                                            mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
+                                            mapOf(LmuWindowsReadoutItemKey.VehicleApproach.Root to true),
                                     ),
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
@@ -246,13 +247,13 @@ class ReadoutListPaneScreenshotTest {
                                         selectedItem = ReadoutListItemType.LmuWindows.Flag,
                                         readoutEnabledStates =
                                             mapOf(
-                                                ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                                                LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
+                                                LmuWindowsReadoutItemKey.Flag.Root to true,
                                             ),
                                         startSoundEnabledStates =
-                                            mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                                            mapOf(LmuWindowsReadoutItemKey.Flag.Root to false),
                                         queueEnabledStates =
-                                            mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
+                                            mapOf(LmuWindowsReadoutItemKey.VehicleApproach.Root to true),
                                     ),
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },

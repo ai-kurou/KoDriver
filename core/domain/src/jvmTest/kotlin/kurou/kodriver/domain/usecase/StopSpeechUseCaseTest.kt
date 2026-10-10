@@ -5,12 +5,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kotlin.test.Test
 
 class StopSpeechUseCaseTest {
     private val engine: TextToSpeechEngine = mockk(relaxUnitFun = true)
-    private val key = ReadoutItemKey.LmuWindows.TyreWear.Root
+    private val key = LmuWindowsReadoutItemKey.TyreWear.Root
 
     @Test
     fun `再生中の項目が指定キーと一致する場合は停止する`() {
@@ -35,7 +35,7 @@ class StopSpeechUseCaseTest {
 
     @Test
     fun `別項目の読み上げ中は停止しない`() {
-        every { engine.currentReadoutItemKey } returns ReadoutItemKey.LmuWindows.Flag.Root
+        every { engine.currentReadoutItemKey } returns LmuWindowsReadoutItemKey.Flag.Root
 
         StopSpeechUseCase(engine)(key)
 

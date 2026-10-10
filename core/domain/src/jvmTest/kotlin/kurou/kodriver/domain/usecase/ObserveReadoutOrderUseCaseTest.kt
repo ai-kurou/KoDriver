@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kotlin.test.Test
@@ -29,9 +30,9 @@ private fun createReadoutPreferencesRepository(repository: ReadoutPreferencesRep
         }
     }
     listOf(
-        Triple("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true),
-        Triple("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, false),
-        Triple("rFactor 2", ReadoutItemKey.LmuWindows.VehicleApproach.Root, false),
+        Triple("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true),
+        Triple("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, false),
+        Triple("rFactor 2", LmuWindowsReadoutItemKey.VehicleApproach.Root, false),
     ).forEach { (simulator, key, enabled) ->
         coEvery { repository.saveReadoutEnabledState(simulator, key, enabled) } answers {
             enabledStates.update { all -> all + (simulator to ((all[simulator] ?: emptyMap()) + (key to enabled))) }
@@ -40,17 +41,17 @@ private fun createReadoutPreferencesRepository(repository: ReadoutPreferencesRep
     listOf(
         "lmu_windows" to
             listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.Flag.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
             ),
         "lmu_windows" to
             listOf(
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.Flag.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                LmuWindowsReadoutItemKey.VehicleApproach.Root,
             ),
-        "rFactor 2" to listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+        "rFactor 2" to listOf(LmuWindowsReadoutItemKey.Flag.Root),
     ).forEach { (simulator, newOrder) ->
         coEvery { repository.saveReadoutOrder(simulator, newOrder) } answers {
             order.update { all -> all + (simulator to newOrder) }
@@ -73,36 +74,36 @@ class ObserveReadoutOrderUseCaseTest {
             repo.saveReadoutOrder(
                 "lmu_windows",
                 listOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
                 ),
             )
-            repo.saveReadoutOrder("rFactor 2", listOf(ReadoutItemKey.LmuWindows.Flag.Root))
+            repo.saveReadoutOrder("rFactor 2", listOf(LmuWindowsReadoutItemKey.Flag.Root))
 
             assertEquals(
                 listOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
                 ),
                 useCase("lmu_windows").first(),
             )
-            assertEquals(listOf(ReadoutItemKey.LmuWindows.Flag.Root), useCase("rFactor 2").first())
+            assertEquals(listOf(LmuWindowsReadoutItemKey.Flag.Root), useCase("rFactor 2").first())
             verify(exactly = 2) { repo.observeReadoutOrder("lmu_windows") }
             verify(exactly = 1) { repo.observeReadoutOrder("rFactor 2") }
             coVerify(exactly = 1) {
                 repo.saveReadoutOrder(
                     "lmu_windows",
                     listOf(
-                        ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                        ReadoutItemKey.LmuWindows.Flag.Root,
-                        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                        LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                        LmuWindowsReadoutItemKey.Flag.Root,
+                        LmuWindowsReadoutItemKey.VehicleDamage.Root,
                     ),
                 )
             }
             coVerify(exactly = 1) {
-                repo.saveReadoutOrder("rFactor 2", listOf(ReadoutItemKey.LmuWindows.Flag.Root))
+                repo.saveReadoutOrder("rFactor 2", listOf(LmuWindowsReadoutItemKey.Flag.Root))
             }
             confirmVerified(repo)
         }

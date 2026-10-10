@@ -14,6 +14,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -267,13 +268,13 @@ class MainActivityTest {
                 telemetryLog(
                     id = 1,
                     createdAt = 100,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
                     telemetryJson = """{"flag":"yellow"}""",
                 ),
                 telemetryLog(
                     id = 2,
                     createdAt = 200,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     telemetryJson = """{"flag":"green"}""",
                 ),
             ),
@@ -298,13 +299,13 @@ class MainActivityTest {
                 telemetryLog(
                     id = 1,
                     createdAt = 100,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
                     telemetryJson = """{"flag":"yellow"}""",
                 ),
                 telemetryLog(
                     id = 2,
                     createdAt = 200,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                     telemetryJson = """{"flag":"green"}""",
                 ),
             ),

@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
@@ -9,8 +10,8 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val vehicleApproachEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
-        ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
-        ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
+        LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true,
+        LmuWindowsReadoutItemKey.VehicleApproach.Sustained to false,
     )
 
 class ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(

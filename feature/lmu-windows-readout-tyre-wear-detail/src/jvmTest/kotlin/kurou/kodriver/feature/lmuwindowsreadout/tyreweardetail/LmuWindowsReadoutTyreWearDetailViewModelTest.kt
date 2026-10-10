@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
@@ -108,7 +109,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -128,7 +129,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -153,7 +154,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(DEFAULT_THRESHOLD) }
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -165,12 +166,12 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             coEvery {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.LmuWindows.id,
-                    ReadoutItemKey.LmuWindows.TyreWear.WarningReadout,
+                    LmuWindowsReadoutItemKey.TyreWear.WarningReadout,
                     false,
                 )
             } answers {
                 enabledStatesFlow.update {
-                    it + (ReadoutItemKey.LmuWindows.TyreWear.WarningReadout to false)
+                    it + (LmuWindowsReadoutItemKey.TyreWear.WarningReadout to false)
                 }
             }
             val viewModel = createViewModel()
@@ -184,11 +185,11 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             coVerify(exactly = 1) {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.LmuWindows.id,
-                    ReadoutItemKey.LmuWindows.TyreWear.WarningReadout,
+                    LmuWindowsReadoutItemKey.TyreWear.WarningReadout,
                     false,
                 )
             }
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
@@ -212,7 +213,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             coVerify(exactly = 1) { repository.saveReadoutText("残り{percent}%") }
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             confirmVerified(repository, stopSpeech)
         }
 
@@ -255,7 +256,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(70, "残り70%")) }
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)
             collection.cancel()
         }
@@ -277,7 +278,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
                 )
             }
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -299,7 +300,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
                 )
             }
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -324,7 +325,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
                 )
             }
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
@@ -343,10 +344,10 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
                     ),
                 )
             } returns Unit
-            every { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) } returns Unit
+            every { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) } returns Unit
             val viewModel = createViewModel()
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             assertEquals(
                 DEFAULT_THRESHOLD,
                 viewModel.uiState.first().thresholdPercentage,
@@ -364,7 +365,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             coVerify(exactly = 1) { checkAvailable() }
             viewModel.onPreviewStopped()
             viewModel.onPreviewStopped()
-            verify(exactly = 1) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 1) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }

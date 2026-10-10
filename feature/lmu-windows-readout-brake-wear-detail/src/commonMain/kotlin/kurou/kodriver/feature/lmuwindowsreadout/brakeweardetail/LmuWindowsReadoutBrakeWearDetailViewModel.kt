@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
@@ -75,7 +75,7 @@ internal class LmuWindowsReadoutBrakeWearDetailViewModel(
                 selectedVehicleClass = selectedVehicleClass,
                 readoutText = text,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout),
+                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.BrakeWear.WarningReadout),
             )
         }
 
@@ -134,7 +134,7 @@ internal class LmuWindowsReadoutBrakeWearDetailViewModel(
         viewModelScope.launch {
             saveReadoutEnabledState(
                 Simulator.LmuWindows.id,
-                ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout,
+                LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,
                 enabled,
             )
         }

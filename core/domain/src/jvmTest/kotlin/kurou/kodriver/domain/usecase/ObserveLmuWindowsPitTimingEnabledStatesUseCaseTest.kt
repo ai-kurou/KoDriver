@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kotlin.test.Test
@@ -21,9 +22,9 @@ private fun createLmuWindowsPitTimingPreferencesRepository(
     val enabledStates = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeEnabledStates() } returns enabledStates
     listOf(
-        ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy,
-        ReadoutItemKey.LmuWindows.PitTiming.TyreWear,
-        ReadoutItemKey.LmuWindows.PitTiming.Root,
+        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy,
+        LmuWindowsReadoutItemKey.PitTiming.TyreWear,
+        LmuWindowsReadoutItemKey.PitTiming.Root,
     ).forEach { key ->
         listOf(true, false).forEach { enabled ->
             coEvery { repository.saveEnabledState(key, enabled) } answers {
@@ -45,8 +46,8 @@ class ObserveLmuWindowsPitTimingEnabledStatesUseCaseTest {
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to true,
-                    ReadoutItemKey.LmuWindows.PitTiming.TyreWear to true,
+                    LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to true,
+                    LmuWindowsReadoutItemKey.PitTiming.TyreWear to true,
                 )
             assertEquals(expected, useCase().first())
             verify(exactly = 1) { repo.observeEnabledStates() }
@@ -59,16 +60,16 @@ class ObserveLmuWindowsPitTimingEnabledStatesUseCaseTest {
             val repo = createLmuWindowsPitTimingPreferencesRepository(repository)
             val useCase = ObserveLmuWindowsPitTimingEnabledStatesUseCase(repo)
 
-            repo.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
+            repo.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false)
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to false,
-                    ReadoutItemKey.LmuWindows.PitTiming.TyreWear to true,
+                    LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to false,
+                    LmuWindowsReadoutItemKey.PitTiming.TyreWear to true,
                 )
             assertEquals(expected, useCase().first())
             coVerify(exactly = 1) {
-                repo.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
+                repo.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)
@@ -80,18 +81,18 @@ class ObserveLmuWindowsPitTimingEnabledStatesUseCaseTest {
             val repo = createLmuWindowsPitTimingPreferencesRepository(repository)
             val useCase = ObserveLmuWindowsPitTimingEnabledStatesUseCase(repo)
 
-            repo.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.Root, false)
+            repo.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to true,
-                    ReadoutItemKey.LmuWindows.PitTiming.TyreWear to true,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root to false,
+                    LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to true,
+                    LmuWindowsReadoutItemKey.PitTiming.TyreWear to true,
+                    LmuWindowsReadoutItemKey.PitTiming.Root to false,
                 ),
                 useCase().first(),
             )
             coVerify(exactly = 1) {
-                repo.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.Root, false)
+                repo.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.Root, false)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)

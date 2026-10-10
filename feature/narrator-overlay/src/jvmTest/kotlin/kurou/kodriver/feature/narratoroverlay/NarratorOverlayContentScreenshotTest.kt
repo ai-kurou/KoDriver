@@ -8,9 +8,9 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.OverlayTextSize
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Test
@@ -154,7 +154,7 @@ class NarratorOverlayContentScreenshotTest {
             id = 1L,
             createdAt = 1_000L,
             simulator = Simulator.AceWindows,
-            readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+            readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
             narratedText = narratedText,
             narrationOutcome = NarrationOutcome.INTERRUPTED,
             telemetryJson = "{}",

@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
@@ -84,8 +85,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 Triple(initialState, 0, emptyMap()),
                 Triple(initialState, 60_000, emptyMap()),
                 Triple(initialState.copy(personalBestMs = 58_000), 59_000, emptyMap()),
-                Triple(initialState, 59_000, mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to false)),
-                Triple(initialState, 59_000, mapOf(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled to false)),
+                Triple(initialState, 59_000, mapOf(AceWindowsReadoutItemKey.MyBestLap.Root to false)),
+                Triple(initialState, 59_000, mapOf(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled to false)),
                 Triple(initialState, 59_000, emptyMap()),
             )
         for ((state, current, enabledOverrides) in cases) {
@@ -220,7 +221,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 data = bestLapTime(bestLapTimeMs = 90_000),
                 settings =
                     myBestLapSettings(
-                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to false),
+                        enabledOverrides = mapOf(AceWindowsReadoutItemKey.MyBestLap.Root to false),
                     ),
             )
         val decision =
@@ -229,7 +230,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 data = bestLapTime(bestLapTimeMs = 89_000),
                 settings =
                     myBestLapSettings(
-                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to false),
+                        enabledOverrides = mapOf(AceWindowsReadoutItemKey.MyBestLap.Root to false),
                     ),
             )
 
@@ -245,7 +246,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 data = bestLapTime(bestLapTimeMs = 90_000),
                 settings =
                     myBestLapSettings(
-                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled to false),
+                        enabledOverrides = mapOf(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled to false),
                     ),
             )
         val decision =
@@ -254,7 +255,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 data = bestLapTime(bestLapTimeMs = 89_000),
                 settings =
                     myBestLapSettings(
-                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled to false),
+                        enabledOverrides = mapOf(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled to false),
                     ),
             )
 
@@ -380,7 +381,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         thresholdPercentage = 30,
-                        enabledStates = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to false),
+                        enabledStates = mapOf(AceWindowsReadoutItemKey.RemainingFuel.Root to false),
                     ),
             )
 
@@ -399,8 +400,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                         thresholdPercentage = 30,
                         enabledStates =
                             mapOf(
-                                ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
-                                ReadoutItemKey.AceWindows.RemainingFuel.DetailEnabled to false,
+                                AceWindowsReadoutItemKey.RemainingFuel.Root to true,
+                                AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled to false,
                             ),
                     ),
             )
@@ -497,7 +498,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             remainingFuelLaps(
                 state = AceWindowsNarratorState(),
                 laps = 2.5f,
-                enabledStates = mapOf(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to false),
+                enabledStates = mapOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root to false),
             )
 
         assertTrue(decision.events.isEmpty())
@@ -512,8 +513,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 laps = 2.5f,
                 enabledStates =
                     mapOf(
-                        ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true,
-                        ReadoutItemKey.AceWindows.RemainingFuelLaps.DetailEnabled to false,
+                        AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
+                        AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled to false,
                     ),
             )
 
@@ -571,7 +572,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             useCase.determineFlag(
                 state = state,
                 data = flag(AceWindowsFlagType.BLUE_FLAG),
-                settings = flagSettings(enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.Root to false)),
+                settings = flagSettings(enabledOverrides = mapOf(AceWindowsReadoutItemKey.Flag.Root to false)),
             )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
@@ -586,7 +587,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             useCase.determineFlag(
                 state = state,
                 data = flag(AceWindowsFlagType.BLUE_FLAG),
-                settings = flagSettings(enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false)),
+                settings = flagSettings(enabledOverrides = mapOf(AceWindowsReadoutItemKey.Flag.BlueFlag to false)),
             )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
@@ -713,7 +714,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings =
                     tyreTemperatureSettings(
                         highThresholdCelsius = 90,
-                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.TyreTemperature.Root to false),
+                        enabledOverrides = mapOf(AceWindowsReadoutItemKey.TyreTemperature.Root to false),
                     ),
             )
 
@@ -730,7 +731,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings =
                     tyreTemperatureSettings(
                         highThresholdCelsius = 90,
-                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false),
+                        enabledOverrides = mapOf(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false),
                     ),
             )
 
@@ -869,7 +870,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings =
                     vehicleApproachSettings(
                         thresholdMeters = 10.0,
-                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.VehicleApproach.Root to false),
+                        enabledOverrides = mapOf(AceWindowsReadoutItemKey.VehicleApproach.Root to false),
                     ),
             )
 
@@ -886,7 +887,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings =
                     vehicleApproachSettings(
                         thresholdMeters = 10.0,
-                        enabledOverrides = mapOf(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),
+                        enabledOverrides = mapOf(AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false),
                     ),
             )
 
@@ -905,8 +906,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                         thresholdMeters = 10.0,
                         enabledOverrides =
                             mapOf(
-                                ReadoutItemKey.AceWindows.VehicleApproach.Root to false,
-                                ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false,
+                                AceWindowsReadoutItemKey.VehicleApproach.Root to false,
+                                AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false,
                             ),
                     ),
             )
@@ -921,7 +922,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
     private fun myBestLapSettings(enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap()) =
         AceWindowsNarratorReadoutSettings(
-            enabledStates = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true) + enabledOverrides,
+            enabledStates = mapOf(AceWindowsReadoutItemKey.MyBestLap.Root to true) + enabledOverrides,
             remainingFuelThresholdPercentage = 0,
         )
 
@@ -938,8 +939,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     ) = AceWindowsNarratorReadoutSettings(
         enabledStates =
             mapOf(
-                ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
-                ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to true,
+                AceWindowsReadoutItemKey.VehicleApproach.Root to true,
+                AceWindowsReadoutItemKey.VehicleApproach.StartReadout to true,
             ) + enabledOverrides,
         remainingFuelThresholdPercentage = 0,
         vehicleApproachThresholdMeters = thresholdMeters,
@@ -954,8 +955,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     ) = AceWindowsNarratorReadoutSettings(
         enabledStates =
             mapOf(
-                ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
-                ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to true,
+                AceWindowsReadoutItemKey.TyreTemperature.Root to true,
+                AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to true,
             ) + enabledOverrides,
         remainingFuelThresholdPercentage = 0,
         tyreTemperatureHighThresholdCelsius = Celsius(highThresholdCelsius),
@@ -963,7 +964,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
     private fun settings(
         thresholdPercentage: Int,
-        enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to true),
+        enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(AceWindowsReadoutItemKey.RemainingFuel.Root to true),
     ) = AceWindowsNarratorReadoutSettings(
         enabledStates = enabledStates,
         remainingFuelThresholdPercentage = thresholdPercentage,
@@ -973,17 +974,17 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         AceWindowsNarratorReadoutSettings(
             enabledStates =
                 mapOf(
-                    ReadoutItemKey.AceWindows.Flag.Root to true,
-                    ReadoutItemKey.AceWindows.Flag.WhiteFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.GreenFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.RedFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.BlueFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.YellowFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.BlackFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.CheckeredFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to true,
-                    ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to true,
+                    AceWindowsReadoutItemKey.Flag.Root to true,
+                    AceWindowsReadoutItemKey.Flag.WhiteFlag to true,
+                    AceWindowsReadoutItemKey.Flag.GreenFlag to true,
+                    AceWindowsReadoutItemKey.Flag.RedFlag to true,
+                    AceWindowsReadoutItemKey.Flag.BlueFlag to true,
+                    AceWindowsReadoutItemKey.Flag.YellowFlag to true,
+                    AceWindowsReadoutItemKey.Flag.BlackFlag to true,
+                    AceWindowsReadoutItemKey.Flag.BlackWhiteFlag to true,
+                    AceWindowsReadoutItemKey.Flag.CheckeredFlag to true,
+                    AceWindowsReadoutItemKey.Flag.OrangeCircleFlag to true,
+                    AceWindowsReadoutItemKey.Flag.RedYellowStripesFlag to true,
                 ) + enabledOverrides,
             remainingFuelThresholdPercentage = 0,
         )
@@ -992,7 +993,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         state: AceWindowsNarratorState,
         laps: Float,
         enabledStates: Map<ReadoutItemKey, Boolean> =
-            mapOf(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true),
+            mapOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true),
     ) = useCase.determineRemainingFuelLaps(
         state = state,
         data = AceWindowsRemainingFuelLapsData(remainingLaps = laps),

@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 
@@ -9,10 +10,10 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val flagEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
-        ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-        ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+        LmuWindowsReadoutItemKey.Flag.BlueFlag to true,
+        LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to true,
+        LmuWindowsReadoutItemKey.Flag.FullCourseYellow to true,
+        LmuWindowsReadoutItemKey.Flag.RedFlag to true,
     )
 
 class ObserveLmuWindowsFlagEnabledStatesUseCase(

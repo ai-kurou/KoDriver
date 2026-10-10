@@ -6,6 +6,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -25,7 +28,7 @@ class TelemetryLogRepositoryImplTest {
             repository.saveTelemetryLog(
                 createdAt = 1000L,
                 simulator = Simulator.Gt7Ps5,
-                readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.QUEUED,
                 telemetryJson = """{"lapCount":1}""",
@@ -36,7 +39,7 @@ class TelemetryLogRepositoryImplTest {
                     TelemetryLogEntity(
                         createdAt = 1000L,
                         simulatorId = Simulator.Gt7Ps5.id,
-                        readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                        readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
                         narratedText = "燃料は残り約1周",
                         narrationOutcome = NarrationOutcome.QUEUED.id,
                         telemetryJson = """{"lapCount":1}""",
@@ -55,7 +58,7 @@ class TelemetryLogRepositoryImplTest {
             repository.saveTelemetryLog(
                 createdAt = 1000L,
                 simulator = Simulator.AceWindows,
-                readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
                 narratedText = "残り燃料警告",
                 narrationOutcome = NarrationOutcome.QUEUED,
                 telemetryJson = """{"remainingFuelLiters":8.2}""",
@@ -66,7 +69,7 @@ class TelemetryLogRepositoryImplTest {
                     TelemetryLogEntity(
                         createdAt = 1000L,
                         simulatorId = Simulator.AceWindows.id,
-                        readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
+                        readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root.value,
                         narratedText = "残り燃料警告",
                         narrationOutcome = NarrationOutcome.QUEUED.id,
                         telemetryJson = """{"remainingFuelLiters":8.2}""",
@@ -119,7 +122,7 @@ class TelemetryLogRepositoryImplTest {
                                 id = 1L,
                                 createdAt = 2000L,
                                 simulatorId = Simulator.LmuWindows.id,
-                                readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
+                                readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root.value,
                                 narratedText = "イエローフラッグ",
                                 narrationOutcome = NarrationOutcome.QUEUED.id,
                                 telemetryJson = """{"currentLap":2}""",
@@ -134,7 +137,7 @@ class TelemetryLogRepositoryImplTest {
                         id = 1L,
                         createdAt = 2000L,
                         simulator = Simulator.LmuWindows,
-                        readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                        readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                         narratedText = "イエローフラッグ",
                         narrationOutcome = NarrationOutcome.QUEUED,
                         telemetryJson = """{"currentLap":2}""",
@@ -155,7 +158,7 @@ class TelemetryLogRepositoryImplTest {
                                 id = 1L,
                                 createdAt = 2000L,
                                 simulatorId = Simulator.AceWindows.id,
-                                readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root.value,
+                                readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root.value,
                                 narratedText = "残り燃料警告",
                                 narrationOutcome = NarrationOutcome.QUEUED.id,
                                 telemetryJson = """{"remainingFuelLiters":8.2}""",
@@ -170,7 +173,7 @@ class TelemetryLogRepositoryImplTest {
                         id = 1L,
                         createdAt = 2000L,
                         simulator = Simulator.AceWindows,
-                        readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                        readoutItemKey = AceWindowsReadoutItemKey.RemainingFuel.Root,
                         narratedText = "残り燃料警告",
                         narrationOutcome = NarrationOutcome.QUEUED,
                         telemetryJson = """{"remainingFuelLiters":8.2}""",
@@ -380,9 +383,9 @@ private fun telemetryLogEntity(
     simulatorId = simulator.id,
     readoutItemKey =
         if (simulator == Simulator.AceWindows) {
-            ReadoutItemKey.AceWindows.Flag.Root.value
+            AceWindowsReadoutItemKey.Flag.Root.value
         } else {
-            ReadoutItemKey.LmuWindows.Flag.Root.value
+            LmuWindowsReadoutItemKey.Flag.Root.value
         },
     narratedText = "イエローフラッグ",
     narrationOutcome = NarrationOutcome.QUEUED.id,

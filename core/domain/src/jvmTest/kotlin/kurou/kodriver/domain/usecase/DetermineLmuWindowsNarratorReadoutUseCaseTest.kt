@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -103,8 +104,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 Triple(initialState, 0L, emptyMap()),
                 Triple(initialState, 60_000L, emptyMap()),
                 Triple(initialState.copy(personalBestMs = 58_000L), 59_000L, emptyMap()),
-                Triple(initialState, 59_000L, mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to false)),
-                Triple(initialState, 59_000L, mapOf(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false)),
+                Triple(initialState, 59_000L, mapOf(LmuWindowsReadoutItemKey.MyBestLap.Root to false)),
+                Triple(initialState, 59_000L, mapOf(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled to false)),
                 Triple(initialState, 59_000L, emptyMap()),
             )
         for ((state, current, enabledStates) in cases) {
@@ -327,7 +328,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 telemetry = telemetry(bestLapTimeMs = 60_000L),
                 settings =
                     settings(
-                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to false),
+                        enabledStates = allEnabledStates + mapOf(LmuWindowsReadoutItemKey.MyBestLap.Root to false),
                     ),
             )
 
@@ -337,7 +338,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 telemetry = telemetry(bestLapTimeMs = 59_000L),
                 settings =
                     settings(
-                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to false),
+                        enabledStates = allEnabledStates + mapOf(LmuWindowsReadoutItemKey.MyBestLap.Root to false),
                     ),
             )
 
@@ -353,7 +354,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled to false),
                     ),
             )
 
@@ -364,7 +365,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled to false),
                     ),
             )
 
@@ -488,7 +489,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         enabledStates =
                             allEnabledStates +
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to false,
+                                    LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to false,
                                 ),
                     ),
                 observedAtMs = 0L,
@@ -528,7 +529,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.VehicleApproach.Root to false),
                     ),
                 observedAtMs = 0L,
             )
@@ -540,7 +541,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.VehicleApproach.Root to false),
                     ),
                 observedAtMs = 50L,
             )
@@ -637,7 +638,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val disabledStates =
             allEnabledStates +
                 mapOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Sustained to false,
                 )
         val first =
             useCase.determineVehicleApproach(
@@ -663,7 +664,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val disabledStates =
             allEnabledStates +
                 mapOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root to false,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root to false,
                 )
         val first =
             useCase.determineVehicleApproach(
@@ -828,7 +829,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.Flag.FullCourseYellow to false),
                     ),
             )
 
@@ -839,7 +840,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.Flag.FullCourseYellow to false),
                     ),
             )
 
@@ -907,9 +908,9 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         enabledStates =
                             allEnabledStates +
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to false,
-                                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to false,
-                                    ReadoutItemKey.LmuWindows.Flag.RedFlag to false,
+                                    LmuWindowsReadoutItemKey.Flag.BlueFlag to false,
+                                    LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to false,
+                                    LmuWindowsReadoutItemKey.Flag.RedFlag to false,
                                 ),
                     ),
             )
@@ -940,7 +941,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         enabledStates =
                             allEnabledStates +
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.Flag.Root to false,
+                                    LmuWindowsReadoutItemKey.Flag.Root to false,
                                 ),
                     ),
             )
@@ -1021,7 +1022,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Overheat to false),
                     ),
             )
 
@@ -1036,7 +1037,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 vehicleDamage = damage(overheating = true),
                 settings =
                     settings(
-                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
+                        enabledStates = allEnabledStates + mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Root to false),
                     ),
             )
 
@@ -1083,7 +1084,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to false),
                     ),
             )
 
@@ -1162,7 +1163,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to false),
                     ),
             )
 
@@ -1177,7 +1178,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 tyreDetached = tyreDetached(WheelIndex.FRONT_LEFT),
                 settings =
                     settings(
-                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
+                        enabledStates = allEnabledStates + mapOf(LmuWindowsReadoutItemKey.VehicleDamage.Root to false),
                     ),
             )
 
@@ -1317,8 +1318,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         enabledStates =
                             allEnabledStates +
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+                                    LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
+                                    LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning to true,
                                 ),
                     ),
             )
@@ -1338,7 +1339,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         settings(
                             tyreTemperatureHighThresholdCelsius = 90,
                             enabledStates =
-                                allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
+                                allEnabledStates + mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to false),
                         ),
                 ).state
 
@@ -1364,7 +1365,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         enabledStates =
                             allEnabledStates +
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false,
+                                    LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false,
                                 ),
                     ),
             )
@@ -1464,7 +1465,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         tyreWearThresholdPercentage = 50,
-                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to false),
+                        enabledStates = allEnabledStates + mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to false),
                     ),
             )
 
@@ -1483,7 +1484,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         tyreWearThresholdPercentage = 50,
                         enabledStates =
                             allEnabledStates +
-                                mapOf(ReadoutItemKey.LmuWindows.TyreWear.WarningReadout to false),
+                                mapOf(LmuWindowsReadoutItemKey.TyreWear.WarningReadout to false),
                     ),
             )
 
@@ -1591,7 +1592,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.BrakeWear.Root to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.BrakeWear.Root to false),
                     ),
             )
 
@@ -1608,7 +1609,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.BrakeWear.WarningReadout to false),
                     ),
             )
 
@@ -1682,7 +1683,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         enabledStates =
-                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.Root to false),
+                            allEnabledStates + mapOf(LmuWindowsReadoutItemKey.BrakeTemperature.Root to false),
                     ),
             )
 
@@ -1700,7 +1701,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                     settings(
                         enabledStates =
                             allEnabledStates +
-                                mapOf(ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout to false),
+                                mapOf(LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout to false),
                     ),
             )
 
@@ -1788,7 +1789,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         remainingVirtualEnergyThresholdPercentage = 50,
                         enabledStates =
                             allEnabledStates +
-                                mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false),
+                                mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false),
                     ),
             )
 
@@ -1807,7 +1808,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         remainingVirtualEnergyThresholdPercentage = 50,
                         enabledStates =
                             allEnabledStates +
-                                mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout to false),
+                                mapOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout to false),
                     ),
             )
 
@@ -1974,7 +1975,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         enabledStates =
                             allEnabledStates +
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to false,
+                                    LmuWindowsReadoutItemKey.TyreTemperature.LowWarning to false,
                                 ),
                     ),
             )
@@ -1993,8 +1994,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         enabledStates =
                             allEnabledStates +
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
+                                    LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
+                                    LmuWindowsReadoutItemKey.TyreTemperature.LowWarning to true,
                                 ),
                     ),
             )
@@ -2690,36 +2691,36 @@ private fun pitTimingBoundaryState(): LmuWindowsNarratorState =
 
 private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
     mapOf(
-        ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
-        ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to true,
-        ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-        ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
-        ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
-        ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
-        ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
-        ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
-        ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
-        ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-        ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
-        ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
-        ReadoutItemKey.LmuWindows.TyreWear.Root to true,
-        ReadoutItemKey.LmuWindows.TyreWear.WarningReadout to true,
-        ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
-        ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout to true,
-        ReadoutItemKey.LmuWindows.BrakeWear.Root to true,
-        ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout to true,
-        ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
-        ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout to true,
-        ReadoutItemKey.LmuWindows.PitTiming.Root to true,
-        ReadoutItemKey.LmuWindows.Flag.Root to true,
-        ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-        ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+        LmuWindowsReadoutItemKey.MyBestLap.Root to true,
+        LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled to true,
+        LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
+        LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true,
+        LmuWindowsReadoutItemKey.VehicleApproach.Sustained to true,
+        LmuWindowsReadoutItemKey.VehicleDamage.Root to true,
+        LmuWindowsReadoutItemKey.VehicleDamage.Overheat to true,
+        LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to true,
+        LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to true,
+        LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+        LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning to true,
+        LmuWindowsReadoutItemKey.TyreTemperature.LowWarning to true,
+        LmuWindowsReadoutItemKey.TyreWear.Root to true,
+        LmuWindowsReadoutItemKey.TyreWear.WarningReadout to true,
+        LmuWindowsReadoutItemKey.BrakeTemperature.Root to true,
+        LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout to true,
+        LmuWindowsReadoutItemKey.BrakeWear.Root to true,
+        LmuWindowsReadoutItemKey.BrakeWear.WarningReadout to true,
+        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true,
+        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout to true,
+        LmuWindowsReadoutItemKey.PitTiming.Root to true,
+        LmuWindowsReadoutItemKey.Flag.Root to true,
+        LmuWindowsReadoutItemKey.Flag.BlueFlag to true,
+        LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to true,
+        LmuWindowsReadoutItemKey.Flag.FullCourseYellow to true,
+        LmuWindowsReadoutItemKey.Flag.RedFlag to true,
     )
 
 private val pitTimingDisabledStates: Map<ReadoutItemKey, Boolean> =
-    allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to false)
+    allEnabledStates + mapOf(LmuWindowsReadoutItemKey.PitTiming.Root to false)
 
 @Suppress("LongParameterList")
 private fun settings(

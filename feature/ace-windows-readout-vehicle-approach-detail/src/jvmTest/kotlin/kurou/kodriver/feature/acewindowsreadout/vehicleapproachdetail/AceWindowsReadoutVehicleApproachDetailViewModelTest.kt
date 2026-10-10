@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.usecase.AceWindowsVehicleApproachThresholdsUseCases
@@ -149,9 +150,9 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             every { repository.observeThresholdMeters() } returns thresholdFlow
             every { repository.observeEnabledStates() } returns enabledStatesFlow
             coEvery {
-                repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
+                repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false) }
+                enabledStatesFlow.update { it + (AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false) }
             }
             val viewModel = createViewModel()
 
@@ -161,7 +162,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             verify(exactly = 1) { repository.observeThresholdMeters() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
+                repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
             }
             verifyObservers()
         }
@@ -199,7 +200,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             stubSettings()
             val calls = mutableListOf<String>()
             every { observeVolume() } returns flowOf(42)
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) } answers {
+            coEvery { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) } answers {
                 calls += "start"
             }
             coEvery { speakText("周囲に注意", volume = 42) } answers { calls += "text" }
@@ -207,7 +208,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             viewModel.onPreviewClicked("周囲に注意")
             assertEquals(listOf("start", "text"), calls)
             verify(exactly = 1) { observeVolume() }
-            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) }
             coVerify(exactly = 1) { speakText("周囲に注意", volume = 42) }
             confirmVerified(observeVolume, ttsEngine, speakText)
             verifySettings()
@@ -223,7 +224,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) }
+            coVerify(exactly = 0) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) }
             coVerify(exactly = 0) { speakText("接近", volume = 100) }
             confirmVerified(observeVolume, ttsEngine, speakText)
             verifySettings()
@@ -238,7 +239,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             viewModel.onPreviewClicked("接近")
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) }
+            coVerify(exactly = 0) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) }
             coVerify(exactly = 0) { speakText("接近", volume = 100) }
             confirmVerified(observeVolume, ttsEngine, speakText)
             verifySettings()
@@ -255,7 +256,7 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             volume.update { -1 }
             viewModel.onPreviewClicked("接近")
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) }
+            coVerify(exactly = 0) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) }
             coVerify(exactly = 0) { speakText("接近", volume = 0) }
             coVerify(exactly = 0) { speakText("接近", volume = -1) }
             confirmVerified(observeVolume, ttsEngine, speakText)
@@ -288,13 +289,13 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             every { observeVolume() } returns flowOf(42)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) } coAnswers
+            coEvery { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onPreviewClicked("周囲に注意")
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
             verify(exactly = 1) { observeVolume() }
-            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) }
             coVerify(exactly = 0) { speakText("周囲に注意", volume = 42) }
             confirmVerified(observeVolume, ttsEngine, speakText)
         }
@@ -306,13 +307,13 @@ class AceWindowsReadoutVehicleApproachDetailViewModelTest {
             every { observeVolume() } returns flowOf(42)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) } coAnswers
+            coEvery { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onPreviewClicked("周囲に注意")
             viewModel.onPreviewClicked("周囲に注意")
             pendingStartSound.complete(Unit)
             verify(exactly = 1) { observeVolume() }
-            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root) }
             coVerify(exactly = 0) { speakText("周囲に注意", volume = 42) }
             confirmVerified(observeVolume, ttsEngine, speakText)
         }

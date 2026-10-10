@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -42,12 +43,12 @@ class LmuWindowsVehicleApproachPreferencesRepositoryFactoryTest {
 
             readoutTextRepository.saveStartLeftReadoutText("左注意")
             repository.saveSkipFirstLap(false)
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, false)
             readoutTextRepository.saveSustainedRightReadoutText("継続注意")
 
             assertEquals(false, repository.observeSkipFirstLap().first())
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleApproach.Sustained to false),
                 repository.observeEnabledStates().first(),
             )
             assertEquals("左注意", readoutTextRepository.observeStartLeftReadoutText().first())

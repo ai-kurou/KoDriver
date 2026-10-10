@@ -22,7 +22,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
@@ -125,7 +125,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -176,7 +176,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -227,7 +227,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -291,7 +291,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -355,7 +355,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -406,7 +406,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -466,7 +466,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(
-                mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
             )
         every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
             MutableStateFlow("カーレフト")
@@ -480,7 +480,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         val viewModel = createViewModel()
         viewModel.onStartLeftTextPreviewClicked(" ")
         viewModel.onStartRightTextPreviewClicked(" ")
-        coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
+        coVerify(exactly = 0) { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
         coVerify(exactly = 0) { textToSpeechRepository.speak(" ", false, 60, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
         verify(exactly = 0) { volumes.volume() }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
@@ -514,7 +514,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(
-                mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
             )
         every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
             MutableStateFlow("カーレフト")
@@ -529,7 +529,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         val viewModel = createViewModel()
         viewModel.onStartLeftTextPreviewClicked("注意")
         viewModel.onStartRightTextPreviewClicked("注意")
-        coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
+        coVerify(exactly = 0) { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
         coVerify(exactly = 0) { textToSpeechRepository.speak("注意", false, 0, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
         verify(exactly = 2) { volumes.volume() }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
@@ -563,7 +563,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(
-                mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
             )
         every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
             MutableStateFlow("カーレフト")
@@ -575,7 +575,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             MutableStateFlow("キープレフト")
         coEvery { textToSpeechRepository.isAvailable() } returns true
         every { volumes.volume() } returns MutableStateFlow(60)
-        coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) } returns Unit
+        coEvery { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) } returns Unit
         every { observeVoiceSpeed() } returns flowOf(1.0f)
         every { observeVoicePitch() } returns flowOf(1.0f)
         every { observeVoice() } returns flowOf("voice-a")
@@ -583,16 +583,16 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         val viewModel = createViewModel()
         viewModel.onStartLeftTextPreviewClicked("注意")
         viewModel.onStartRightTextPreviewClicked("注意")
-        coVerify(exactly = 2) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
+        coVerify(exactly = 2) { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
         verify(exactly = 2) { observeVoice() }
         verify(exactly = 2) { observeVoiceSpeed() }
         verify(exactly = 2) { observeVoicePitch() }
         coVerify(exactly = 2) { textToSpeechRepository.speak("注意", false, 60, "voice-a", 1.0f, 1.0f) }
         verify(exactly = 2) { volumes.volume() }
         coVerifyOrder {
-            ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root)
             textToSpeechRepository.speak("注意", false, 60, "voice-a", 1.0f, 1.0f)
-            ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root)
             textToSpeechRepository.speak("注意", false, 60, "voice-a", 1.0f, 1.0f)
         }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
@@ -626,7 +626,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(
-                mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
             )
         every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
             MutableStateFlow("カーレフト")
@@ -638,7 +638,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             MutableStateFlow("キープレフト")
         coEvery { textToSpeechRepository.isAvailable() } returns true
         every { volumes.volume() } returns MutableStateFlow(60)
-        coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) } returns Unit
+        coEvery { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) } returns Unit
         every { observeVoiceSpeed() } returns flowOf(1.0f)
         every { observeVoicePitch() } returns flowOf(1.0f)
         every { observeVoice() } returns flowOf(VOICE_ID_UNSPECIFIED)
@@ -646,16 +646,16 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
         val viewModel = createViewModel()
         viewModel.onSustainedLeftTextPreviewClicked("注意")
         viewModel.onSustainedRightTextPreviewClicked("注意")
-        coVerify(exactly = 2) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
+        coVerify(exactly = 2) { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
         verify(exactly = 2) { observeVoice() }
         verify(exactly = 2) { observeVoiceSpeed() }
         verify(exactly = 2) { observeVoicePitch() }
         coVerify(exactly = 2) { textToSpeechRepository.speak("注意", false, 60, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
         verify(exactly = 2) { volumes.volume() }
         coVerifyOrder {
-            ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root)
             textToSpeechRepository.speak("注意", false, 60, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f)
-            ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root)
             textToSpeechRepository.speak("注意", false, 60, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f)
         }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
@@ -690,7 +690,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -707,12 +707,12 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { observeVoice() } returns flowOf("voice-a")
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) } coAnswers
+            coEvery { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onStartLeftTextPreviewClicked("注意")
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
             verify(exactly = 0) { observeVoice() }
             verify(exactly = 0) { observeVoiceSpeed() }
             verify(exactly = 0) { observeVoicePitch() }
@@ -750,7 +750,7 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -767,12 +767,12 @@ class LmuWindowsReadoutVehicleApproachThresholdViewModelTest {
             every { observeVoice() } returns flowOf("voice-a")
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) } coAnswers
+            coEvery { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onStartLeftTextPreviewClicked("注意")
             viewModel.onStartLeftTextPreviewClicked("注意")
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
             verify(exactly = 0) { observeVoice() }
             verify(exactly = 0) { observeVoiceSpeed() }
             verify(exactly = 0) { observeVoicePitch() }

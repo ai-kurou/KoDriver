@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.formatLmuWindowsTyreTemperatureReadoutText
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
@@ -74,8 +74,8 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
             tyreTemperatureUseCases.observeVehicleClassSelection(),
         ) { states, lowWarningPhases, vehicleClassHighThresholdCelsius, selectedVehicleClass ->
             LmuWindowsReadoutTyreTemperatureDetailUiState(
-                overheatWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning),
-                lowWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning),
+                overheatWarningEnabled = states.getValue(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning),
+                lowWarningEnabled = states.getValue(LmuWindowsReadoutItemKey.TyreTemperature.LowWarning),
                 lowWarningPhases = lowWarningPhases,
                 vehicleClassHighThresholdCelsius = vehicleClassHighThresholdCelsius.mapValues { it.value.value },
                 selectedVehicleClass = selectedVehicleClass,
@@ -101,7 +101,7 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
 
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            tyreTemperatureUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, enabled)
+            tyreTemperatureUseCases.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, enabled)
         }
     }
 
@@ -121,12 +121,12 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     }
 
     private fun previewReadoutText(text: String) {
-        preview.onPreviewClicked(text, ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+        preview.onPreviewClicked(text, LmuWindowsReadoutItemKey.TyreTemperature.Root)
     }
 
     fun onLowWarningEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            tyreTemperatureUseCases.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning, enabled)
+            tyreTemperatureUseCases.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.LowWarning, enabled)
         }
     }
 

@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
@@ -173,7 +173,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     fun `試聴は開始音の後に自由文字列を読み上げる`() =
         runTest {
             coEvery { tts.isAvailable() } returns true
-            coEvery { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } returns Unit
+            coEvery { engine.playStartSound(LmuWindowsReadoutItemKey.Flag.Root) } returns Unit
             every { observeVoiceSpeed() } returns flowOf(1.0f)
             every { observeVoicePitch() } returns flowOf(1.0f)
             every { observeVoice() } returns flowOf("voice-a")
@@ -182,7 +182,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             val vm = createViewModel()
             vm.onFlagTextPreviewClicked("注意")
             // 開始音の有効設定は個別フラッグではなくトップレベルの Flag.Root に保存される。
-            coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
+            coVerify(exactly = 1) { engine.playStartSound(LmuWindowsReadoutItemKey.Flag.Root) }
             coVerify(exactly = 1) { tts.speak("注意", false, 42, "voice-a", 1.0f, 1.0f) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 1) { observeVoice() }
@@ -249,12 +249,12 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             stubReadouts()
             val vm = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } coAnswers
+            coEvery { engine.playStartSound(LmuWindowsReadoutItemKey.Flag.Root) } coAnswers
                 { pendingStartSound.await() }
             vm.onFlagTextPreviewClicked("注意")
             vm.onPreviewStopped()
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
+            coVerify(exactly = 1) { engine.playStartSound(LmuWindowsReadoutItemKey.Flag.Root) }
             coVerify(exactly = 0) { tts.speak("注意", false, 42, "voice-a", 1.0f, 1.0f) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 0) { observeVoice() }
@@ -273,12 +273,12 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
             stubReadouts()
             val vm = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) } coAnswers
+            coEvery { engine.playStartSound(LmuWindowsReadoutItemKey.Flag.Root) } coAnswers
                 { pendingStartSound.await() }
             vm.onFlagTextPreviewClicked("注意")
             vm.onFlagTextPreviewClicked("注意")
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.Root) }
+            coVerify(exactly = 1) { engine.playStartSound(LmuWindowsReadoutItemKey.Flag.Root) }
             coVerify(exactly = 0) { tts.speak("注意", false, 42, "voice-a", 1.0f, 1.0f) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 0) { observeVoice() }

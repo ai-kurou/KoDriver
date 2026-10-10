@@ -4,7 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kotlin.test.Test
 
@@ -16,15 +16,15 @@ class SaveLmuWindowsVehicleDamageEnabledStateUseCaseTest {
         runTest {
             val useCase = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository)
 
-            useCase(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
-            useCase(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
+            useCase(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, true)
+            useCase(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, false)
 
             coVerify(
                 exactly = 1,
-            ) { repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true) }
+            ) { repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, true) }
             coVerify(
                 exactly = 1,
-            ) { repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false) }
+            ) { repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, false) }
             confirmVerified(repository)
         }
 }

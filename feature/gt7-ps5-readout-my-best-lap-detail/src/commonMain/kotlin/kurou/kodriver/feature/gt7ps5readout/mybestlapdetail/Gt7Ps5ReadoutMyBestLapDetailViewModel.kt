@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
@@ -60,7 +60,7 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
             preview.textToSpeechAvailable,
         ) { states, text, available ->
             Gt7Ps5ReadoutMyBestLapDetailUiState(
-                enabled = states.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled),
+                enabled = states.readoutEnabled(Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled),
                 readoutText = text,
                 isTextToSpeechAvailable = available,
             )
@@ -77,7 +77,7 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
         viewModelScope.launch {
             myBestLapUseCases.saveEnabledState(
                 Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
+                Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled,
                 enabled,
             )
         }
@@ -94,6 +94,6 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        preview.onPreviewClicked(text, ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
+        preview.onPreviewClicked(text, Gt7Ps5ReadoutItemKey.MyBestLap.Root)
     }
 }

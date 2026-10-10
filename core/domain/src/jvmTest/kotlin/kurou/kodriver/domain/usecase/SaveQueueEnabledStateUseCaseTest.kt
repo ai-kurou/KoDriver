@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kotlin.test.Test
@@ -23,25 +24,25 @@ class SaveQueueEnabledStateUseCaseTest {
         runTest {
             val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { repository.observeQueueEnabledStates() } returns states
-            coEvery { repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true) } answers {
-                states.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to true) }
+            coEvery { repository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true) } answers {
+                states.update { it + (LmuWindowsReadoutItemKey.Flag.Root to true) }
             }
-            coEvery { repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false) } answers {
-                states.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to false) }
+            coEvery { repository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false) } answers {
+                states.update { it + (LmuWindowsReadoutItemKey.Flag.Root to false) }
             }
             val saveUseCase = SaveQueueEnabledStateUseCase(repository)
             val observeUseCase = ObserveQueueEnabledStatesUseCase(repository)
 
-            saveUseCase(ReadoutItemKey.LmuWindows.Flag.Root, true)
-            assertEquals(true, observeUseCase().first()[ReadoutItemKey.LmuWindows.Flag.Root])
+            saveUseCase(LmuWindowsReadoutItemKey.Flag.Root, true)
+            assertEquals(true, observeUseCase().first()[LmuWindowsReadoutItemKey.Flag.Root])
 
-            saveUseCase(ReadoutItemKey.LmuWindows.Flag.Root, false)
-            assertEquals(false, observeUseCase().first()[ReadoutItemKey.LmuWindows.Flag.Root])
+            saveUseCase(LmuWindowsReadoutItemKey.Flag.Root, false)
+            assertEquals(false, observeUseCase().first()[LmuWindowsReadoutItemKey.Flag.Root])
             coVerify(exactly = 1) {
-                repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+                repository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true)
             }
             coVerify(exactly = 1) {
-                repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
+                repository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
             }
             verify(exactly = 2) { repository.observeQueueEnabledStates() }
             confirmVerified(repository)

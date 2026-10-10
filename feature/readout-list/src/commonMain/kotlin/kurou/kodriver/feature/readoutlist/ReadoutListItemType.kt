@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.readoutlist
 
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.defaultReadoutOrder
@@ -10,54 +13,54 @@ sealed class ReadoutListItemType(
     sealed class LmuWindows(
         id: ReadoutItemKey,
     ) : ReadoutListItemType(id) {
-        data object VehicleApproach : LmuWindows(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+        data object VehicleApproach : LmuWindows(LmuWindowsReadoutItemKey.VehicleApproach.Root)
 
-        data object Flag : LmuWindows(ReadoutItemKey.LmuWindows.Flag.Root)
+        data object Flag : LmuWindows(LmuWindowsReadoutItemKey.Flag.Root)
 
-        data object VehicleDamage : LmuWindows(ReadoutItemKey.LmuWindows.VehicleDamage.Root)
+        data object VehicleDamage : LmuWindows(LmuWindowsReadoutItemKey.VehicleDamage.Root)
 
-        data object TyreTemperature : LmuWindows(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+        data object TyreTemperature : LmuWindows(LmuWindowsReadoutItemKey.TyreTemperature.Root)
 
-        data object PitTiming : LmuWindows(ReadoutItemKey.LmuWindows.PitTiming.Root)
+        data object PitTiming : LmuWindows(LmuWindowsReadoutItemKey.PitTiming.Root)
 
         data object RemainingVirtualEnergy :
-            LmuWindows(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
+            LmuWindows(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
 
-        data object TyreWear : LmuWindows(ReadoutItemKey.LmuWindows.TyreWear.Root)
+        data object TyreWear : LmuWindows(LmuWindowsReadoutItemKey.TyreWear.Root)
 
-        data object BrakeTemperature : LmuWindows(ReadoutItemKey.LmuWindows.BrakeTemperature.Root)
+        data object BrakeTemperature : LmuWindows(LmuWindowsReadoutItemKey.BrakeTemperature.Root)
 
-        data object BrakeWear : LmuWindows(ReadoutItemKey.LmuWindows.BrakeWear.Root)
+        data object BrakeWear : LmuWindows(LmuWindowsReadoutItemKey.BrakeWear.Root)
 
-        data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap.Root)
+        data object MyBestLap : LmuWindows(LmuWindowsReadoutItemKey.MyBestLap.Root)
     }
 
     sealed class Gt7Ps5(
         id: ReadoutItemKey,
     ) : ReadoutListItemType(id) {
-        data object MyBestLap : Gt7Ps5(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
+        data object MyBestLap : Gt7Ps5(Gt7Ps5ReadoutItemKey.MyBestLap.Root)
 
-        data object RemainingFuelLaps : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
+        data object RemainingFuelLaps : Gt7Ps5(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root)
 
-        data object RemainingFuel : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
+        data object RemainingFuel : Gt7Ps5(Gt7Ps5ReadoutItemKey.RemainingFuel.Root)
 
-        data object TyreTemperature : Gt7Ps5(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root)
+        data object TyreTemperature : Gt7Ps5(Gt7Ps5ReadoutItemKey.TyreTemperature.Root)
     }
 
     sealed class AceWindows(
         id: ReadoutItemKey,
     ) : ReadoutListItemType(id) {
-        data object VehicleApproach : AceWindows(ReadoutItemKey.AceWindows.VehicleApproach.Root)
+        data object VehicleApproach : AceWindows(AceWindowsReadoutItemKey.VehicleApproach.Root)
 
-        data object Flag : AceWindows(ReadoutItemKey.AceWindows.Flag.Root)
+        data object Flag : AceWindows(AceWindowsReadoutItemKey.Flag.Root)
 
-        data object TyreTemperature : AceWindows(ReadoutItemKey.AceWindows.TyreTemperature.Root)
+        data object TyreTemperature : AceWindows(AceWindowsReadoutItemKey.TyreTemperature.Root)
 
-        data object RemainingFuel : AceWindows(ReadoutItemKey.AceWindows.RemainingFuel.Root)
+        data object RemainingFuel : AceWindows(AceWindowsReadoutItemKey.RemainingFuel.Root)
 
-        data object RemainingFuelLaps : AceWindows(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root)
+        data object RemainingFuelLaps : AceWindows(AceWindowsReadoutItemKey.RemainingFuelLaps.Root)
 
-        data object MyBestLap : AceWindows(ReadoutItemKey.AceWindows.MyBestLap.Root)
+        data object MyBestLap : AceWindows(AceWindowsReadoutItemKey.MyBestLap.Root)
     }
 
     fun belongsTo(simulator: Simulator): Boolean =
@@ -80,36 +83,36 @@ sealed class ReadoutListItemType(
 
         private fun lmuWindowsFromId(id: ReadoutItemKey): LmuWindows? =
             when (id) {
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root -> LmuWindows.VehicleApproach
-                ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
-                ReadoutItemKey.LmuWindows.PitTiming.Root -> LmuWindows.PitTiming
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
-                ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
-                ReadoutItemKey.LmuWindows.BrakeTemperature.Root -> LmuWindows.BrakeTemperature
-                ReadoutItemKey.LmuWindows.BrakeWear.Root -> LmuWindows.BrakeWear
-                ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
+                LmuWindowsReadoutItemKey.VehicleApproach.Root -> LmuWindows.VehicleApproach
+                LmuWindowsReadoutItemKey.Flag.Root -> LmuWindows.Flag
+                LmuWindowsReadoutItemKey.VehicleDamage.Root -> LmuWindows.VehicleDamage
+                LmuWindowsReadoutItemKey.TyreTemperature.Root -> LmuWindows.TyreTemperature
+                LmuWindowsReadoutItemKey.PitTiming.Root -> LmuWindows.PitTiming
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
+                LmuWindowsReadoutItemKey.TyreWear.Root -> LmuWindows.TyreWear
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root -> LmuWindows.BrakeTemperature
+                LmuWindowsReadoutItemKey.BrakeWear.Root -> LmuWindows.BrakeWear
+                LmuWindowsReadoutItemKey.MyBestLap.Root -> LmuWindows.MyBestLap
                 else -> null
             }
 
         private fun gt7Ps5FromId(id: ReadoutItemKey): Gt7Ps5? =
             when (id) {
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Gt7Ps5.MyBestLap
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Gt7Ps5.RemainingFuel
-                ReadoutItemKey.Gt7Ps5.TyreTemperature.Root -> Gt7Ps5.TyreTemperature
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root -> Gt7Ps5.MyBestLap
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root -> Gt7Ps5.RemainingFuel
+                Gt7Ps5ReadoutItemKey.TyreTemperature.Root -> Gt7Ps5.TyreTemperature
                 else -> null
             }
 
         private fun aceWindowsFromId(id: ReadoutItemKey): AceWindows? =
             when (id) {
-                ReadoutItemKey.AceWindows.VehicleApproach.Root -> AceWindows.VehicleApproach
-                ReadoutItemKey.AceWindows.Flag.Root -> AceWindows.Flag
-                ReadoutItemKey.AceWindows.TyreTemperature.Root -> AceWindows.TyreTemperature
-                ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
-                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root -> AceWindows.RemainingFuelLaps
-                ReadoutItemKey.AceWindows.MyBestLap.Root -> AceWindows.MyBestLap
+                AceWindowsReadoutItemKey.VehicleApproach.Root -> AceWindows.VehicleApproach
+                AceWindowsReadoutItemKey.Flag.Root -> AceWindows.Flag
+                AceWindowsReadoutItemKey.TyreTemperature.Root -> AceWindows.TyreTemperature
+                AceWindowsReadoutItemKey.RemainingFuel.Root -> AceWindows.RemainingFuel
+                AceWindowsReadoutItemKey.RemainingFuelLaps.Root -> AceWindows.RemainingFuelLaps
+                AceWindowsReadoutItemKey.MyBestLap.Root -> AceWindows.MyBestLap
                 else -> null
             }
 

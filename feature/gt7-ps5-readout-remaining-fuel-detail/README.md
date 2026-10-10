@@ -23,7 +23,7 @@ GT7 PS5 の燃料残量アナウンス詳細設定を提供する feature モジ
 試聴はWAVからOS標準TTSに変更し、現在の閾値をサンプル残量として文言の `{percent}` に置換します。
 詳細画面で自由文言を設定でき、`{percent}` の挿入と既定文言へのリセットに対応しています。
 試聴は空白文言・TTS利用不可・音量0以下では本文も開始音も再生しません。
-開始音は `ReadoutItemKey.Gt7Ps5.RemainingFuel.Root` を参照し、本文はOS標準TTSを使用します。
+開始音は `Gt7Ps5ReadoutItemKey.RemainingFuel.Root` を参照し、本文はOS標準TTSを使用します。
 WAVにはフォールバックしません。
 
 <!-- MODULE-GRAPH-START -->

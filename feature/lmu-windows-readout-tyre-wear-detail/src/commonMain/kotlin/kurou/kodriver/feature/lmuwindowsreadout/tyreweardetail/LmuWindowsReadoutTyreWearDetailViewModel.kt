@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
@@ -68,7 +68,7 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
                 thresholdPercentage = thresholdPercentage,
                 readoutText = text,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreWear.WarningReadout),
+                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreWear.WarningReadout),
             )
         }.stateIn(
             viewModelScope,
@@ -111,7 +111,7 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
         viewModelScope.launch {
             tyreWearUseCases.saveReadoutEnabledState(
                 Simulator.LmuWindows.id,
-                ReadoutItemKey.LmuWindows.TyreWear.WarningReadout,
+                LmuWindowsReadoutItemKey.TyreWear.WarningReadout,
                 enabled,
             )
         }

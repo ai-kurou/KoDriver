@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -38,10 +39,10 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, true)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleDamage.Overheat to true),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -49,11 +50,11 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleDamage.Overheat to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -61,13 +62,13 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     @Test
     fun `異なるキーで保存した値がすべて保持される`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Overheat to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
                 ),
                 repository.observeEnabledStates().first(),
             )
@@ -77,12 +78,12 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     fun `オーバーヒート文言を保存しても他の文言とスイッチは維持される`() =
         runTest {
             assertEquals("オーバーヒート", repository.observeOverheatReadoutText().first())
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Root, false)
             listOf("自由文言", "", " ").forEach { text ->
                 repository.saveOverheatReadoutText(text)
                 assertEquals(text, repository.observeOverheatReadoutText().first())
                 assertEquals(
-                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
+                    mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleDamage.Root to false),
                     repository.observeEnabledStates().first(),
                 )
                 assertEquals("部品脱落", repository.observePartDetachedReadoutText().first())
@@ -94,12 +95,12 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     fun `部品脱落文言を保存しても他の文言とスイッチは維持される`() =
         runTest {
             assertEquals("部品脱落", repository.observePartDetachedReadoutText().first())
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Root, false)
             listOf("自由文言", "", " ").forEach { text ->
                 repository.savePartDetachedReadoutText(text)
                 assertEquals(text, repository.observePartDetachedReadoutText().first())
                 assertEquals(
-                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
+                    mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleDamage.Root to false),
                     repository.observeEnabledStates().first(),
                 )
                 assertEquals("オーバーヒート", repository.observeOverheatReadoutText().first())
@@ -111,12 +112,12 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     fun `タイヤ脱落文言を保存しても他の文言とスイッチは維持される`() =
         runTest {
             assertEquals("タイヤ脱落", repository.observeTyreDetachedReadoutText().first())
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Root, false)
             listOf("自由文言", "", " ").forEach { text ->
                 repository.saveTyreDetachedReadoutText(text)
                 assertEquals(text, repository.observeTyreDetachedReadoutText().first())
                 assertEquals(
-                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
+                    mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleDamage.Root to false),
                     repository.observeEnabledStates().first(),
                 )
                 assertEquals("オーバーヒート", repository.observeOverheatReadoutText().first())

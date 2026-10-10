@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import org.junit.Test
 
@@ -20,10 +21,10 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
             captureLmuWindowsReadoutFlagDetailPane(
                 enabledStates =
                     mapOf(
-                        ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                        ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                        LmuWindowsReadoutItemKey.Flag.BlueFlag to true,
+                        LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to true,
+                        LmuWindowsReadoutItemKey.Flag.FullCourseYellow to true,
+                        LmuWindowsReadoutItemKey.Flag.RedFlag to true,
                     ),
             )
         }
@@ -34,10 +35,10 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
             captureLmuWindowsReadoutFlagDetailPane(
                 enabledStates =
                     mapOf(
-                        ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                        ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                        LmuWindowsReadoutItemKey.Flag.BlueFlag to true,
+                        LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to true,
+                        LmuWindowsReadoutItemKey.Flag.FullCourseYellow to true,
+                        LmuWindowsReadoutItemKey.Flag.RedFlag to true,
                     ),
                 // カスタム文言の入力欄を持つ全項目に文言を入力した状態にする。
                 flagTexts =

@@ -6,6 +6,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -35,15 +37,15 @@ class QueuePreferencesRepositoryImplTest {
         runTest {
             assertTrue(repository.observeQueueEnabledStates().first().isEmpty())
 
-            repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+            repository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true)
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to true),
                 repository.observeQueueEnabledStates().first(),
             )
 
-            repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
+            repository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to false),
                 repository.observeQueueEnabledStates().first(),
             )
         }
@@ -51,15 +53,15 @@ class QueuePreferencesRepositoryImplTest {
     @Test
     fun `複数項目を独立して保存・取得できる`() =
         runTest {
-            repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
-            repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
-            repository.saveQueueEnabledState(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, true)
+            repository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true)
+            repository.saveQueueEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.Root, false)
+            repository.saveQueueEnabledState(Gt7Ps5ReadoutItemKey.MyBestLap.Root, true)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.Flag.Root to true,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
+                    LmuWindowsReadoutItemKey.Flag.Root to true,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root to true,
                 ),
                 repository.observeQueueEnabledStates().first(),
             )

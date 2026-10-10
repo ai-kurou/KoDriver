@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
@@ -56,14 +57,14 @@ class ReadoutListViewModelQueueTest {
                 MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns
-                MutableStateFlow(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true))
+                MutableStateFlow(mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to true))
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             val state = viewModel.uiState.first()
-            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.Flag.Root])
-            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.TyreWear.Root])
+            assertEquals(true, state.queueEnabledStates[LmuWindowsReadoutItemKey.Flag.Root])
+            assertEquals(true, state.queueEnabledStates[LmuWindowsReadoutItemKey.TyreWear.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
@@ -83,18 +84,18 @@ class ReadoutListViewModelQueueTest {
             every { queueRepository.observeQueueEnabledStates() } returns queueEnabledFlow
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
             coEvery {
-                queueRepository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+                queueRepository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true)
             } answers {
-                queueEnabledFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to true) }
+                queueEnabledFlow.update { it + (LmuWindowsReadoutItemKey.Flag.Root to true) }
             }
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onQueueEnabledChanged(ReadoutItemKey.LmuWindows.Flag.Root, true)
+            viewModel.onQueueEnabledChanged(LmuWindowsReadoutItemKey.Flag.Root, true)
 
-            assertEquals(true, viewModel.uiState.first().queueEnabledStates[ReadoutItemKey.LmuWindows.Flag.Root])
+            assertEquals(true, viewModel.uiState.first().queueEnabledStates[LmuWindowsReadoutItemKey.Flag.Root])
             coVerify(exactly = 1) {
-                queueRepository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+                queueRepository.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true)
             }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
@@ -115,18 +116,18 @@ class ReadoutListViewModelQueueTest {
             every { queueRepository.observeQueueEnabledStates() } returns queueEnabledFlow
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
             coEvery {
-                queueRepository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.BrakeWear.Root, false)
+                queueRepository.saveQueueEnabledState(LmuWindowsReadoutItemKey.BrakeWear.Root, false)
             } answers {
-                queueEnabledFlow.update { it + (ReadoutItemKey.LmuWindows.BrakeWear.Root to false) }
+                queueEnabledFlow.update { it + (LmuWindowsReadoutItemKey.BrakeWear.Root to false) }
             }
             val viewModel =
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
-            viewModel.onQueueEnabledChanged(ReadoutItemKey.LmuWindows.BrakeWear.Root, false)
+            viewModel.onQueueEnabledChanged(LmuWindowsReadoutItemKey.BrakeWear.Root, false)
 
-            assertEquals(false, viewModel.uiState.first().queueEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root])
+            assertEquals(false, viewModel.uiState.first().queueEnabledStates[LmuWindowsReadoutItemKey.BrakeWear.Root])
             coVerify(exactly = 1) {
-                queueRepository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.BrakeWear.Root, false)
+                queueRepository.saveQueueEnabledState(LmuWindowsReadoutItemKey.BrakeWear.Root, false)
             }
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
