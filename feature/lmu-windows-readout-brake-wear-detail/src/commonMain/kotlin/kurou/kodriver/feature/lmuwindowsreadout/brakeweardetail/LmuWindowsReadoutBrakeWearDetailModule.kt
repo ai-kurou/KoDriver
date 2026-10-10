@@ -3,7 +3,6 @@ package kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearSelectionUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -41,7 +40,7 @@ val lmuWindowsReadoutBrakeWearDetailModule =
         }
 
         factory {
-            BrakeWearUseCases(get(), get(), get(), get(), get(), get(), get())
+            BrakeWearUseCases(get(), get(), get(), get(), get(), get())
         }
 
         factory {
@@ -52,7 +51,6 @@ val lmuWindowsReadoutBrakeWearDetailModule =
                 get(),
             )
         }
-        factoryOf(::ObserveLmuWindowsBrakeWearRemainingUseCase)
         factoryOf(::ObserveLmuWindowsBrakeWearReadoutTextUseCase)
         factoryOf(::SaveLmuWindowsBrakeWearReadoutTextUseCase)
         factoryOf(::CheckTextToSpeechAvailableUseCase)

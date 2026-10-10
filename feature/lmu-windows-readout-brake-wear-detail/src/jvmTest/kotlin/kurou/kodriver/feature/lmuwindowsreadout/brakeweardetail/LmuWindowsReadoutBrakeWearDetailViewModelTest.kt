@@ -8,10 +8,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -19,20 +17,14 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.WheelIndex
-import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearSelectionUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -47,16 +39,12 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsReadoutBrakeWearDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val vehicleClassRepository: LmuWindowsVehicleClassBrakeWearPreferencesRepository = mockk()
-    private val wearRepository: LmuWindowsBrakeWearRepository = mockk()
-    private val classRepository: LmuWindowsVehicleClassRepository = mockk()
-    private val wearFlow = MutableSharedFlow<LmuWindowsBrakeWearData?>(replay = 1)
 
     private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
 
@@ -82,7 +70,6 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
         LmuWindowsReadoutBrakeWearDetailViewModel(
             brakeWearUseCases =
                 BrakeWearUseCases(
-                    observeRemaining = ObserveLmuWindowsBrakeWearRemainingUseCase(wearRepository, classRepository),
                     observeVehicleClassLowThreshold =
                         ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase(vehicleClassRepository),
                     observeVehicleClassSelection =
@@ -254,46 +241,8 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
         every { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) } returns
             enabledStatesFlow
         every { vehicleClassRepository.observeReadoutText() } returns textFlow
-        every { classRepository.vehicleClassStream() } returns flowOf(LmuWindowsVehicleClassData.Hypercar)
-        every { wearRepository.brakeWearStream() } returns wearFlow
         coEvery { checkAvailable() } returns available
     }
-
-    @Test
-    fun `取得したブレーキの厚さから計算した残量がUiStateに反映される`() =
-        runTest {
-            stubReadout()
-            every { vehicleClassRepository.observeLowThresholdPercent() } returns MutableStateFlow(emptyMap())
-            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
-                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
-            val viewModel = createViewModel()
-            backgroundScope.launch { viewModel.uiState.collect {} }
-
-            wearFlow.emit(
-                LmuWindowsBrakeWearData(
-                    wheels = WheelIndex.entries.associateWith { BrakeThicknessMeters(0.036f) },
-                ),
-            )
-
-            val remaining = viewModel.uiState.first { it.remaining != null }.remaining
-            assertEquals(100f, remaining?.wheels?.getValue(WheelIndex.FRONT_LEFT)?.remainingPercent)
-            assertEquals(BrakeThicknessMeters(0.036f), remaining?.wheels?.getValue(WheelIndex.REAR_RIGHT)?.thickness)
-        }
-
-    @Test
-    fun `ブレーキの厚さを取得できない間はremainingがnull`() =
-        runTest {
-            stubReadout()
-            every { vehicleClassRepository.observeLowThresholdPercent() } returns MutableStateFlow(emptyMap())
-            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
-                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
-            val viewModel = createViewModel()
-            backgroundScope.launch { viewModel.uiState.collect {} }
-
-            wearFlow.emit(null)
-
-            assertNull(viewModel.uiState.first().remaining)
-        }
 
     @Test
     fun `文言の監視と保存をUiStateに反映する`() =

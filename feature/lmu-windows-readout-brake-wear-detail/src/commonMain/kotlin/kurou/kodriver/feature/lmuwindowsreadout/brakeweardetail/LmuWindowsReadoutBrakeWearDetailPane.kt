@@ -33,24 +33,19 @@ import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.core.designsystem.rememberPendingText
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_MAX
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_LOW_THRESHOLD_PERCENT_MIN
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_PERCENT_PLACEHOLDER
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
-import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.model.findUnknownLmuWindowsBrakeWearReadoutPlaceholders
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_description
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_percent_insert
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_percent_placeholder_hint
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_remaining_title
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_text_label
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_text_preview
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_text_reset_to_default
@@ -64,14 +59,8 @@ import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resour
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_threshold_label
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_threshold_reset
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_threshold_subtitle
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_unavailable
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_vehicle_class_target_subtitle
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_warning_title
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_front_left
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_front_right
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_rear_left
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_rear_right
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.generated.resources.brake_wear_wheel_row
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -122,7 +111,6 @@ internal fun LmuWindowsReadoutBrakeWearDetailPaneContent(
         DetailPaneDescription(
             text = stringResource(Res.string.brake_wear_description),
         )
-        BrakeWearRemainingCard(remaining = uiState.remaining)
         val thresholdLabelTemplate = stringResource(Res.string.brake_wear_threshold_label)
         val helpIconContentDescription =
             stringResource(Res.string.brake_wear_threshold_help_icon_content_description)
@@ -224,53 +212,6 @@ internal fun LmuWindowsReadoutBrakeWearDetailPaneContent(
         )
     }
 }
-
-@Composable
-private fun BrakeWearRemainingCard(remaining: LmuWindowsBrakeWearRemainingData?) {
-    DetailPaneCard(
-        title = stringResource(Res.string.brake_wear_remaining_title),
-        modifier = Modifier.padding(horizontal = KoDriverSpacing.small, vertical = KoDriverSpacing.extraSmall),
-        bottomContent = {
-            Column(modifier = Modifier.fillMaxWidth().padding(bottom = KoDriverSpacing.small)) {
-                if (remaining == null) {
-                    DetailPaneBodyText(text = stringResource(Res.string.brake_wear_unavailable))
-                } else {
-                    WheelIndex.entries.forEach { wheel ->
-                        remaining.wheels[wheel]?.let { WheelRemainingRow(wheel, it) }
-                    }
-                }
-            }
-        },
-    )
-}
-
-@Composable
-private fun WheelRemainingRow(
-    wheel: WheelIndex,
-    remaining: LmuWindowsBrakeWearWheelRemaining,
-) {
-    Text(
-        text =
-            stringResource(
-                Res.string.brake_wear_wheel_row,
-                wheelLabel(wheel),
-                formatBrakeWearPercent(remaining.remainingPercent),
-                formatBrakeThicknessMillimeters(remaining.thickness),
-            ),
-        style = koDriverNumericTextStyle(MaterialTheme.typography.bodyMedium),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = KoDriverSpacing.large, vertical = KoDriverSpacing.extraSmall),
-    )
-}
-
-@Composable
-private fun wheelLabel(wheel: WheelIndex): String =
-    when (wheel) {
-        WheelIndex.FRONT_LEFT -> stringResource(Res.string.brake_wear_wheel_front_left)
-        WheelIndex.FRONT_RIGHT -> stringResource(Res.string.brake_wear_wheel_front_right)
-        WheelIndex.REAR_LEFT -> stringResource(Res.string.brake_wear_wheel_rear_left)
-        WheelIndex.REAR_RIGHT -> stringResource(Res.string.brake_wear_wheel_rear_right)
-    }
 
 @Composable
 internal fun BrakeWearThresholdHelpSheetContent(modifier: Modifier = Modifier) {
