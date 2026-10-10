@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.SOUND_VOLUME_DEFAULT
 import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
+import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
 import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 
 /**
@@ -35,6 +36,7 @@ data class OtherListUiState(
     val readoutStartSoundType: ReadoutStartSoundType = READOUT_START_SOUND_TYPE_DEFAULT,
     val voiceId: String = VOICE_ID_UNSPECIFIED,
     val voiceSpeed: Float = VOICE_SPEED_DEFAULT,
+    val voicePitch: Float = VOICE_PITCH_DEFAULT,
     val serverIp: String? = null,
     val consoleAddress: String? = null,
     val consolePort: Int = GT7_PS5_UDP_PORT_DEFAULT,

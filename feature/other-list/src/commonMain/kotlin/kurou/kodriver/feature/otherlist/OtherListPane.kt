@@ -78,6 +78,8 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_theme
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_engine_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_tts_language_data_missing
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice
+import kurou.kodriver.feature.otherlist.generated.resources.item_voice_pitch
+import kurou.kodriver.feature.otherlist.generated.resources.item_voice_pitch_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice_speed
 import kurou.kodriver.feature.otherlist.generated.resources.item_voice_speed_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_volume
@@ -131,6 +133,7 @@ private fun OtherListItemType.section(): OtherListSection =
         OtherListItemType.Volume,
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
+        OtherListItemType.VoicePitch,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -176,6 +179,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
         OtherListItemType.Volume,
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
+        OtherListItemType.VoicePitch,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.TtsLanguageDataMissing,
@@ -227,6 +231,7 @@ private fun otherReadoutSettingsItemDisplayName(itemType: OtherListItemType): St
         OtherListItemType.Volume -> stringResource(Res.string.item_volume)
         OtherListItemType.Voice -> stringResource(Res.string.item_voice)
         OtherListItemType.VoiceSpeed -> stringResource(Res.string.item_voice_speed)
+        OtherListItemType.VoicePitch -> stringResource(Res.string.item_voice_pitch)
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
         OtherListItemType.TtsEngineMissing -> stringResource(Res.string.item_tts_engine_missing)
         OtherListItemType.TtsLanguageDataMissing -> stringResource(Res.string.item_tts_language_data_missing)
@@ -305,6 +310,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.OverlayTextSize,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
 
+        OtherListItemType.VoicePitch,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
@@ -421,6 +427,13 @@ private fun otherVoiceSettingsItemSupportingContent(
             }
         }
 
+        OtherListItemType.VoicePitch -> {
+            {
+                val pitch = (round(uiState.voicePitch * 10) / 10).toString()
+                Text(stringResource(Res.string.item_voice_pitch_summary, pitch))
+            }
+        }
+
         OtherListItemType.Voice -> {
             {
                 Text(
@@ -498,6 +511,7 @@ private fun otherListItemSupportingContent(
 
         OtherListItemType.Volume,
         OtherListItemType.VoiceSpeed,
+        OtherListItemType.VoicePitch,
         OtherListItemType.Voice,
         -> {
             otherVoiceSettingsItemSupportingContent(item, uiState)
@@ -638,6 +652,7 @@ private fun OtherListItem(
                 OtherListItemType.Volume,
                 OtherListItemType.Voice,
                 OtherListItemType.VoiceSpeed,
+                OtherListItemType.VoicePitch,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,
@@ -663,6 +678,7 @@ private fun OtherListItem(
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
                 .clickable {
+                    if (item == OtherListItemType.VoicePitch) return@clickable
                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                     handleOtherListItemClick(
                         item = item,
@@ -731,6 +747,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.Volume,
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
+        OtherListItemType.VoicePitch,
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.Theme,

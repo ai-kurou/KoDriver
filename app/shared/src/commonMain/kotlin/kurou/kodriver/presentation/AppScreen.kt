@@ -362,6 +362,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
+                OtherListItemType.VoicePitch,
                 OtherListItemType.AccessLocalNetworkPermission,
                 OtherListItemType.TtsEngineMissing,
                 OtherListItemType.TtsLanguageDataMissing,

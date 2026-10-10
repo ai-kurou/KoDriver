@@ -30,6 +30,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
@@ -58,6 +59,7 @@ data class OtherListSettingsUseCases(
     val saveHapticFeedbackEnabled: SaveHapticFeedbackEnabledUseCase,
     val observeVoice: ObserveVoiceUseCase,
     val observeVoiceSpeed: ObserveVoiceSpeedUseCase,
+    val observeVoicePitch: ObserveVoicePitchUseCase,
     val observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
     val observeSoundVolume: ObserveSoundVolumeUseCase,
     val observeThemeMode: ObserveThemeModeUseCase,
@@ -145,6 +147,8 @@ class OtherListViewModel(
             state.copy(voiceId = voiceId)
         }.combine(settingsUseCases.observeVoiceSpeed()) { state, voiceSpeed ->
             state.copy(voiceSpeed = voiceSpeed)
+        }.combine(settingsUseCases.observeVoicePitch()) { state, voicePitch ->
+            state.copy(voicePitch = voicePitch)
         }.combine(settingsUseCases.observeReadoutStartSoundType()) { state, type ->
             state.copy(readoutStartSoundType = type)
         }.combine(settingsUseCases.observeSoundVolume()) { state, soundVolume ->
@@ -198,6 +202,7 @@ class OtherListViewModel(
 
     fun onItemSelected(itemType: OtherListItemType) {
         if (
+            itemType == OtherListItemType.VoicePitch ||
             itemType == OtherListItemType.GitHubRepository ||
             itemType == OtherListItemType.ReleasePage ||
             itemType == OtherListItemType.AccessLocalNetworkPermission
