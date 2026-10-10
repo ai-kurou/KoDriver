@@ -67,6 +67,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_haptic_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kurou.kodriver.feature.otherlist.generated.resources.item_license
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity
+import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity_summary
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_size
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible_summary
@@ -446,6 +447,20 @@ private fun otherVoiceSettingsItemSupportingContent(
             }
         }
 
+        OtherListItemType.OverlayTextSize -> {
+            {
+                val label = uiState.overlayTextSize.labelResource()
+                Text(stringResource(label))
+            }
+        }
+
+        OtherListItemType.OverlayBackgroundOpacity -> {
+            {
+                val opacity = uiState.overlayBackgroundOpacity
+                Text(stringResource(Res.string.item_overlay_background_opacity_summary, opacity))
+            }
+        }
+
         else -> {
             error("unexpected item type: $item")
         }
@@ -513,6 +528,8 @@ private fun otherListItemSupportingContent(
         OtherListItemType.VoiceSpeed,
         OtherListItemType.VoicePitch,
         OtherListItemType.Voice,
+        OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayBackgroundOpacity,
         -> {
             otherVoiceSettingsItemSupportingContent(item, uiState)
         }

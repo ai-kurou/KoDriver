@@ -5,7 +5,10 @@ import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
+import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
+import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_VISIBLE_DEFAULT
+import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.SOUND_VOLUME_DEFAULT
@@ -28,6 +31,8 @@ data class OtherListUiState(
     val hasAppUpdate: Boolean = false,
     val accessLocalNetworkPermissionGranted: Boolean = true,
     val overlayVisible: Boolean = OVERLAY_VISIBLE_DEFAULT,
+    val overlayTextSize: OverlayTextSize = OVERLAY_TEXT_SIZE_DEFAULT,
+    val overlayBackgroundOpacity: Int = OVERLAY_BACKGROUND_OPACITY_DEFAULT,
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
     val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,
     val hapticFeedbackEnabled: Boolean = HAPTIC_FEEDBACK_ENABLED_DEFAULT,

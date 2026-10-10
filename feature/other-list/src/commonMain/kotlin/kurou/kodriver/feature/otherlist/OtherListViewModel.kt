@@ -25,6 +25,8 @@ import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
@@ -51,6 +53,8 @@ data class OtherListAppVersionInfo(
 data class OtherListSettingsUseCases(
     val observeOverlayVisible: ObserveOverlayVisibleUseCase,
     val saveOverlayVisible: SaveOverlayVisibleUseCase,
+    val observeOverlayTextSize: ObserveOverlayTextSizeUseCase,
+    val observeOverlayBackgroundOpacity: ObserveOverlayBackgroundOpacityUseCase,
     val observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
     val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
     val observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
@@ -149,6 +153,10 @@ class OtherListViewModel(
             state.copy(voiceSpeed = voiceSpeed)
         }.combine(settingsUseCases.observeVoicePitch()) { state, voicePitch ->
             state.copy(voicePitch = voicePitch)
+        }.combine(settingsUseCases.observeOverlayTextSize()) { state, overlayTextSize ->
+            state.copy(overlayTextSize = overlayTextSize)
+        }.combine(settingsUseCases.observeOverlayBackgroundOpacity()) { state, overlayBackgroundOpacity ->
+            state.copy(overlayBackgroundOpacity = overlayBackgroundOpacity)
         }.combine(settingsUseCases.observeReadoutStartSoundType()) { state, type ->
             state.copy(readoutStartSoundType = type)
         }.combine(settingsUseCases.observeSoundVolume()) { state, soundVolume ->
