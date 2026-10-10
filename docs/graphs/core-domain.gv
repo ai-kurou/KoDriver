@@ -49,6 +49,7 @@ digraph G {
   ":feature:other-server-ip-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-theme-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-voice-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:other-voice-pitch-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-voice-speed-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:other-volume-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -104,6 +105,7 @@ digraph G {
   ":feature:other-server-ip-detail" -> ":core:domain"
   ":feature:other-theme-detail" -> ":core:domain"
   ":feature:other-voice-detail" -> ":core:domain"
+  ":feature:other-voice-pitch-detail" -> ":core:domain"
   ":feature:other-voice-speed-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:readout-list" -> ":core:domain"
