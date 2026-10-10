@@ -52,7 +52,7 @@ Processorで解決した本文を `resolvedText` に保持し、空白・TTS利�
 開始音・優先度・キューは `MyBestLap.Root` を使う。WAVへのフォールバックは行わない。
 
 Koinモジュールは`ObserveVoiceSpeedUseCase`・`ObserveVoicePitchUseCase`を提供し、`:core:data`の`VoiceSpeedPreferencesRepository`・`VoicePitchPreferencesRepository`を消費する。
-`SpeakTextUseCase`は試聴・本文の読み上げに保存済み速度（0.5〜2.0、既定1.0）を使用する。
+`SpeakTextUseCase`は試聴・本文の読み上げに保存済み速度・声の高さ（ともに0.5〜2.0、既定1.0）を使用する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
