@@ -22,6 +22,8 @@ import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPaneContent
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailUiState
+import kurou.kodriver.feature.othervoicepitchdetail.OtherVoicePitchDetailPaneContent
+import kurou.kodriver.feature.othervoicepitchdetail.OtherVoicePitchDetailUiState
 import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPaneContent
 import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
@@ -108,6 +110,36 @@ class OtherContentScreenshotTest {
                                     if (itemType == OtherListItemType.VoiceSpeed) {
                                         OtherVoiceSpeedDetailPaneContent(
                                             uiState = OtherVoiceSpeedDetailUiState(),
+                                            canNavigateBack = canNavigateBack,
+                                            onBack = onBack,
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `声の高さ詳細を表示`() =
+        composeScreenshotTest {
+            setContent {
+                AppTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                            OtherContent(
+                                uiState = OtherListUiState(selectedItem = OtherListItemType.VoicePitch),
+                                onItemSelected = {},
+                                onClearSelectedItem = {},
+                                scaffoldDirective = twoPaneDirective,
+                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
+                                    if (itemType == OtherListItemType.VoicePitch) {
+                                        OtherVoicePitchDetailPaneContent(
+                                            uiState = OtherVoicePitchDetailUiState(),
                                             canNavigateBack = canNavigateBack,
                                             onBack = onBack,
                                         )
