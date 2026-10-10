@@ -8,7 +8,7 @@ OS標準の音声合成（TTS）で任意のテキストを読み上げるReposi
   `WindowsTextToSpeechRepository`。JVMには音声合成の標準APIが無く、SAPIのCOMインターフェースをJNAで直接扱うには
   型ライブラリのバインディングが必要になるため、PowerShellプロセスを1つ常駐させて`SpeechSynthesizer`を使い回す
   （`SapiSpeechSynthesizer`、`ResidentSpeechSession`）。読み上げごとにプロセスを起動するとPowerShellと.NETの起動・
-  `System.Speech`のロードが毎回かかって発話が遅れるため。標準入力へ`SPEAK <音量> <Rate> <音声IDのBase64> <テキストのBase64>`の
+  `System.Speech`のロードが毎回かかって発話が遅れるため。標準入力へ`SPEAK <音量> <Rate> <Pitch半音> <音声IDのBase64> <テキストのBase64>`の
   要求行を送り、完了（打ち切りを含む）は標準出力の`DONE`行で受け取る。読み上げの中断は`STOP`行で行い、
   常駐プロセスが終了していれば次の読み上げで起動し直す。利用可否の判定でWindows音声が使えると分かった時点で
   `warmUp()`により常駐プロセスを先に起動する。非Windowsでは`isAvailable()`が`false`を返し、読み上げも行わない。
@@ -31,12 +31,17 @@ Windowsの読み上げは保存済みの`voiceId`を`SelectVoice`へ渡します
 Androidは`voiceId`を`Voice.name`として検索して`setVoice`で反映します。未指定・音声が見つからない場合・
 `setVoice`が失敗した場合は`setLanguage`で既定の日本語音声へ戻します。同じIDは再適用せず、初回未指定時は
 初期化済みの言語設定を使います。設定はエンジン全体に残るため、キュー待ちの発話にも新しい声が適用される可能性があります。
-読み上げ速度は`SpeakTextUseCase`が毎回保存済み設定を取得し、`TextToSpeechRepository.speak`の末尾の`speed`へ渡します。
+読み上げ速度は`SpeakTextUseCase`が毎回保存済み設定を取得し、`TextToSpeechRepository.speak`の`speed`へ渡します。
 `speed`は1.0が標準で、両OSのRepositoryで0.5〜2.0へ制限します。音声IDを明示した試聴でも保存済み速度を使います。
 Androidは発話前に`setSpeechRate`を音声と同じロック内で適用し、成功した同じ値は再適用しません。
 エンジン再初期化時は適用済み速度を破棄し、失敗した値は次の発話で再試行します。速度もエンジン全体の設定です。
 Windowsは`round(10 * ln(speed) / ln(3.0))`を-10〜10へ制限して要求行の`Rate`に含め、
 `SpeechSynthesizer.Rate`へ設定します。整数への丸めにより0.5 / 1.0 / 2.0倍は-6 / 0 / 6になります。
+声の高さも`SpeakTextUseCase`が保存済み設定を取得し、末尾の`pitch`へ渡します。標準は1.0で、両OSで0.5〜2.0へ制限します。
+Androidは`setPitch`で反映し、速度と同様に成功した値を保持して、エンジン再初期化時に破棄します。
+Windowsは`12 * log2(pitch)`で-12〜12半音へ変換し、ASCIIの要求行に含めます。
+SSMLの`prosody pitch`で反映し、テキストはXMLエスケープします。使用中の音声がpitchに対応しない場合は変化しない場合があります。
+1.0（0半音）は従来の`SpeakAsync`、それ以外は`SpeakSsmlAsync`を使います。
 常駐スクリプトと要求行の生成は純粋関数`buildResidentSpeakScript` / `buildSpeakRequest`として切り出してテストします。
 
 Windows専用の`WindowsVoiceListRepository`は、有効なSAPI音声のID（`VoiceInfo.Name`）、表示名
