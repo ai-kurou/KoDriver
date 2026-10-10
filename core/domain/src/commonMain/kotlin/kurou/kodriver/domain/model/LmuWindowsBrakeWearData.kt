@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
  * LMU のホイールごとのブレーキ残り厚さ。
  *
  * 共有メモリには含まれず、LMU 内蔵 REST API の `wearables.brakes` から取得する。
+ * Android 版は KoDriver サーバーの `/ws/lmu_windows/brake_wear` から受信する。
  */
 @Serializable
 data class LmuWindowsBrakeWearData(
