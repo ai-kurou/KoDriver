@@ -18,11 +18,6 @@ kotlin {
             implementation(libs.mockk)
         }
         named("androidHostTest") {
-            kotlin.srcDir(
-                rootProject.layout.projectDirectory.dir(
-                    "build-logic/src/featureComposeScreenshotAndroidHostTest/kotlin",
-                ),
-            )
             dependencies {
                 implementation(libs.kotlin.testJunit)
                 implementation(libs.junit)
