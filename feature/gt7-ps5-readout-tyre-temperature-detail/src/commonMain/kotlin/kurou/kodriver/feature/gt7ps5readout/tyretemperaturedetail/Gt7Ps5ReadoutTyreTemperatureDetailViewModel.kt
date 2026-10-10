@@ -76,6 +76,9 @@ internal class Gt7Ps5ReadoutTyreTemperatureDetailViewModel(
             Gt7Ps5ReadoutTyreTemperatureDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
             tyreTemperatureUseCases.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, enabled)
@@ -101,6 +104,6 @@ internal class Gt7Ps5ReadoutTyreTemperatureDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.Gt7Ps5.TyreTemperature.Root)
     }
 }

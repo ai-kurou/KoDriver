@@ -53,8 +53,8 @@ private fun aceWindowsOrderIndex(key: ReadoutItemKey.AceWindows.TopLevel): Int =
     when (key) {
         ReadoutItemKey.AceWindows.Flag.Root -> 0
         ReadoutItemKey.AceWindows.VehicleApproach.Root -> 1
-        ReadoutItemKey.AceWindows.TyreTemperature.Root -> 2
+        ReadoutItemKey.AceWindows.RemainingFuelLaps.Root -> 2
         ReadoutItemKey.AceWindows.RemainingFuel.Root -> 3
-        ReadoutItemKey.AceWindows.RemainingFuelLaps.Root -> 4
+        ReadoutItemKey.AceWindows.TyreTemperature.Root -> 4
         ReadoutItemKey.AceWindows.MyBestLap.Root -> 5
     }

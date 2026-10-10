@@ -8,6 +8,8 @@ import kotlinx.coroutines.withContext
 import kurou.kodriver.core.texttospeechdata.windows.SapiSpeechSynthesizer
 import kurou.kodriver.core.texttospeechdata.windows.WindowsSpeechSynthesizer
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
+import kurou.kodriver.domain.model.VOICE_SPEED_MAX
+import kurou.kodriver.domain.model.VOICE_SPEED_MIN
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 
 /**
@@ -57,9 +59,18 @@ internal class WindowsTextToSpeechRepository(
         queue: Boolean,
         volume: Int,
         voiceId: String,
+        speed: Float,
     ) {
         if (text.isBlank()) return
-        runInterruptible(Dispatchers.IO) { synthesizer.speak(text, queue, volume.coerceIn(0, 100), voiceId) }
+        runInterruptible(Dispatchers.IO) {
+            synthesizer.speak(
+                text,
+                queue,
+                volume.coerceIn(0, 100),
+                voiceId,
+                speed.coerceIn(VOICE_SPEED_MIN, VOICE_SPEED_MAX),
+            )
+        }
     }
 
     override suspend fun stop() {

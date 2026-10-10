@@ -70,6 +70,9 @@ internal class AceWindowsReadoutMyBestLapDetailViewModel(
             AceWindowsReadoutMyBestLapDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
             myBestLapUseCases.saveEnabledState(
@@ -91,6 +94,6 @@ internal class AceWindowsReadoutMyBestLapDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.AceWindows.MyBestLap.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.AceWindows.MyBestLap.Root)
     }
 }

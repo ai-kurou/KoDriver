@@ -13,6 +13,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +65,9 @@ private const val THRESHOLD_MAX = GT7_PS5_REMAINING_FUEL_LAPS_MAX.toFloat()
 fun Gt7Ps5ReadoutRemainingFuelLapsDetailPane(modifier: Modifier = Modifier) {
     val viewModel: Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onPreviewStopped() }
+    }
     Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
         uiState = uiState,
         onEnabledChanged = viewModel::onEnabledChanged,

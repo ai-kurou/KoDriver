@@ -144,8 +144,10 @@ class MainActivityTest {
         )
         clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
         clickItemAndVerifyDescription(
-            "タイヤ温度",
-            "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
+            "燃料残り周回数",
+            "ACEが算出する残燃料で走行可能な周回数をもとに判定し、設定した周回数以下になると" +
+                "1周減るごとに音声でお知らせします。\n" +
+                "読み上げる文言は下の欄で設定できます。",
         )
         clickItemAndVerifyDescription(
             "燃料残量",
@@ -153,10 +155,8 @@ class MainActivityTest {
                 "読み上げる文言は下の欄で設定できます。",
         )
         clickItemAndVerifyDescription(
-            "燃料残り周回数",
-            "ACEが算出する残燃料で走行可能な周回数をもとに判定し、設定した周回数以下になると" +
-                "1周減るごとに音声でお知らせします。\n" +
-                "読み上げる文言は下の欄で設定できます。",
+            "タイヤ温度",
+            "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
         )
         clickItemAndVerifyDescription(
             "自己ベストラップ",
@@ -202,6 +202,9 @@ class MainActivityTest {
         clickItemAndNavigateBack("Windows版KoDriverへ接続するIPアドレス")
         clickItemAndNavigateBack("ゲーム機・SimHubへ接続するIPアドレス")
         clickItemAndNavigateBack("音量")
+        clickScrollableItem("読み上げ速度")
+        waitUntilDisplayed("読み上げの速さを設定します。")
+        navigateBack()
         clickScrollableItem("読み上げ開始音")
         clickItem("キャンセル")
         clickScrollableItem("テレメトリ受信中は画面をスリープさせない")

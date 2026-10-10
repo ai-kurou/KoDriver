@@ -61,7 +61,7 @@ class OtherVolumeDetailPaneTest {
     }
 
     @Test
-    fun `試聴チップをタップするとonPreviewClickedが呼ばれる`() {
+    fun `試聴ボタンをタップするとonPreviewClickedが呼ばれる`() {
         var previewCount = 0
         rule.setContent {
             MaterialTheme {
@@ -75,6 +75,22 @@ class OtherVolumeDetailPaneTest {
         rule.onNode(hasText("試聴")).performClick()
 
         assertEquals(1, previewCount)
+    }
+
+    @Test
+    fun `試聴中は停止ボタンを表示しタップを通知する`() {
+        var stopCount = 0
+        rule.setContent {
+            MaterialTheme {
+                OtherVolumeDetailPaneContent(
+                    uiState = OtherVolumeDetailUiState(isPreviewing = true),
+                    onPreviewClicked = { stopCount++ },
+                )
+            }
+        }
+        rule.onNode(hasText("停止")).performClick()
+        rule.onNode(hasText("試聴")).assertDoesNotExist()
+        assertEquals(1, stopCount)
     }
 
     @Test

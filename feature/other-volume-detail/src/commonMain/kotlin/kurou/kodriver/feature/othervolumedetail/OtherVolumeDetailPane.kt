@@ -1,20 +1,25 @@
 package kurou.kodriver.feature.othervolumedetail
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
-import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
@@ -30,7 +35,8 @@ import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_descr
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_formula
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_label
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_low_warning
-import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_preview_chip
+import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_preview
+import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_preview_stop
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_subtitle
 import kurou.kodriver.feature.othervolumedetail.generated.resources.volume_title
 import org.jetbrains.compose.resources.stringResource
@@ -48,6 +54,9 @@ fun OtherVolumeDetailPane(
 ) {
     val viewModel: OtherVolumeDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.onPreviewStopped() }
+    }
     OtherVolumeDetailPaneContent(
         uiState = uiState,
         onVolumeChanged = viewModel::onVolumeChanged,
@@ -73,7 +82,6 @@ fun OtherVolumeDetailPaneContent(
     modifier: Modifier = Modifier,
 ) {
     val volumeLabel = stringResource(Res.string.volume_label)
-    val previewChipLabel = stringResource(Res.string.volume_preview_chip)
 
     DetailPaneScaffold(
         title = stringResource(Res.string.volume_title),
@@ -107,16 +115,19 @@ fun OtherVolumeDetailPaneContent(
                 modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
                 steps = 99,
             )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                verticalArrangement = Arrangement.spacedBy(KoDriverSpacing.small),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = KoDriverSpacing.large),
+            FilledTonalButton(
+                onClick = onPreviewClicked,
+                modifier = Modifier.padding(horizontal = KoDriverSpacing.large),
             ) {
-                DetailPaneCardChips(
-                    chipLabels = listOf(previewChipLabel),
-                    selectedChipLabels = setOf(previewChipLabel),
-                    chipEnabled = true,
-                    onChipClick = { onPreviewClicked() },
+                Icon(
+                    imageVector = if (uiState.isPreviewing) Icons.Default.Stop else Icons.Default.PlayArrow,
+                    contentDescription = null,
+                )
+                Spacer(Modifier.width(KoDriverSpacing.small))
+                Text(
+                    stringResource(
+                        if (uiState.isPreviewing) Res.string.volume_preview_stop else Res.string.volume_preview,
+                    ),
                 )
             }
             DetailPaneSubtitle(

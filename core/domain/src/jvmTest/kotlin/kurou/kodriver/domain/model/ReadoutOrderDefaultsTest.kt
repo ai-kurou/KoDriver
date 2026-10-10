@@ -36,10 +36,17 @@ class ReadoutOrderDefaultsTest {
     }
 
     @Test
-    fun `ACEのデフォルト順序はフラッグが先頭で自己ベストが末尾`() {
-        val order = defaultReadoutOrder(Simulator.AceWindows)
-
-        assertEquals(ReadoutItemKey.AceWindows.Flag.Root, order.first())
-        assertEquals(ReadoutItemKey.AceWindows.MyBestLap.Root, order.last())
+    fun `ACEのデフォルト順序は安全通知に続いて燃料とタイヤ温度を優先する`() {
+        assertEquals(
+            listOf(
+                ReadoutItemKey.AceWindows.Flag.Root,
+                ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+                ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                ReadoutItemKey.AceWindows.TyreTemperature.Root,
+                ReadoutItemKey.AceWindows.MyBestLap.Root,
+            ),
+            defaultReadoutOrder(Simulator.AceWindows),
+        )
     }
 }

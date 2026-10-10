@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -274,5 +275,61 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             coVerify(exactly = 0) { speakText("注意", volume = -1) }
             confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeOverheatReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns true
+            val threshold = MutableStateFlow(Celsius(100))
+            every { repository.observeHighThresholdCelsius() } returns threshold
+            every { observeVolume() } returns MutableStateFlow(60)
+            val viewModel = createViewModel()
+            val collection =
+                backgroundScope.launch(
+                    UnconfinedTestDispatcher(testScheduler),
+                ) { viewModel.uiState.collect {} }
+            assertEquals(100, viewModel.uiState.first().highThresholdCelsius)
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onReadoutTextPreviewClicked("温度{celsius}度{wheel}")
+            viewModel.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) }
+            coVerify(exactly = 0) { speakText("温度100度{wheel}", volume = 60) }
+            verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
+            collection.cancel()
+        }
+
+    @Test
+    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
+        runTest {
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeOverheatReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns true
+            val threshold = MutableStateFlow(Celsius(100))
+            every { repository.observeHighThresholdCelsius() } returns threshold
+            every { observeVolume() } returns MutableStateFlow(60)
+            val viewModel = createViewModel()
+            val collection =
+                backgroundScope.launch(
+                    UnconfinedTestDispatcher(testScheduler),
+                ) { viewModel.uiState.collect {} }
+            assertEquals(100, viewModel.uiState.first().highThresholdCelsius)
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onReadoutTextPreviewClicked("温度{celsius}度{wheel}")
+            viewModel.onReadoutTextPreviewClicked("温度{celsius}度{wheel}")
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) }
+            coVerify(exactly = 0) { speakText("温度100度{wheel}", volume = 60) }
+            verify(exactly = 1) { observeVolume() }
+            confirmVerified(playStartSound, speakText, observeVolume)
+            collection.cancel()
         }
 }

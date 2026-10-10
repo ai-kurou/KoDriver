@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailPaneContent
+import kurou.kodriver.feature.othervoicespeeddetail.OtherVoiceSpeedDetailUiState
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,6 +49,39 @@ class OtherContentTest {
             defaultPanePreferredWidth = 360.dp,
             excludedBounds = emptyList(),
         )
+
+    @Test
+    fun `読み上げ速度をタップすると選択して詳細ペインを開く`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+        var backEnabled = false
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.VoiceSpeed), selectedItem = selectedItem),
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { item, canNavigateBack, onBack, _, _ ->
+                    if (item == OtherListItemType.VoiceSpeed) {
+                        OtherVoiceSpeedDetailPaneContent(
+                            uiState = OtherVoiceSpeedDetailUiState(),
+                            canNavigateBack = canNavigateBack,
+                            onBack = onBack,
+                        )
+                    }
+                },
+            )
+        }
+
+        rule.onNodeWithText("読み上げ速度").assertExists().performClick()
+        rule.waitForIdle()
+
+        assertEquals(OtherListItemType.VoiceSpeed, selectedItem)
+        assertTrue(backEnabled)
+        rule.onNodeWithText("読み上げの速さを設定します。").assertExists()
+    }
 
     @Test
     fun `Windows音声設定の案内をクリックするとコールバックを呼ぶ`() {

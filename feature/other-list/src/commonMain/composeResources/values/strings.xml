@@ -35,4 +35,9 @@
     <string name="voice_system_default">システム既定</string>
     <string name="readout_start_sound_formula_radio">Formula無線</string>
     <string name="readout_start_sound_electronic_noise">電子ノイズ</string>
+    <string name="item_voice_speed">読み上げ速度</string>
+    <string name="item_voice_speed_summary">%1$s倍</string>
+    <string name="local_network_permission_granted">許可済み</string>
+    <string name="local_network_permission_not_granted">許可されていません</string>
+    <string name="local_network_permission_open_settings">タップして設定を開く</string>
 </resources>

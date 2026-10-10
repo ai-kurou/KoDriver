@@ -23,6 +23,7 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class TyreWearUseCases(
     val observeThresholdPercentage: ObserveLmuWindowsTyreWearThresholdPercentageUseCase,
@@ -35,6 +36,7 @@ internal data class TyreWearUseCases(
 
 internal data class TyreWearReadoutUseCases(
     val playSpeechEvent: PlaySpeechEventUseCase,
+    val stopSpeech: StopSpeechUseCase,
     val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
@@ -49,7 +51,11 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
             readout.checkTextToSpeechAvailable,
             readout.observeSoundVolume,
             readout.playSpeechEvent,
+            readout.stopSpeech,
         )
+
+    /** 詳細ペインを離れると試聴を止める。 */
+    fun onPreviewStopped() = previewHelper.stop()
 
     val uiState: StateFlow<LmuWindowsReadoutTyreWearDetailUiState> =
         combine(

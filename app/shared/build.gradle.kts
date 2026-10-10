@@ -75,6 +75,7 @@ kotlin {
             implementation(projects.feature.otherOverlayBackgroundOpacityDetail)
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.otherVoiceDetail)
+            implementation(projects.feature.otherVoiceSpeedDetail)
             implementation(projects.feature.telemetryLogList)
             implementation(projects.feature.telemetryLogDetail)
             implementation(projects.feature.readoutList)

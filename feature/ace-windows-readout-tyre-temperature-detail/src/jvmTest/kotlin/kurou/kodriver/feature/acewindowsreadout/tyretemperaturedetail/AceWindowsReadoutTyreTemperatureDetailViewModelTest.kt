@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -276,6 +277,44 @@ class AceWindowsReadoutTyreTemperatureDetailViewModelTest {
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 0) { playStartSound(ReadoutItemKey.AceWindows.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
+            confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            stubSettings()
+            stubReadout(available = true)
+            every { observeVolume() } returns flowOf(60)
+            val viewModel = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.AceWindows.TyreTemperature.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}", 107)
+            viewModel.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            verify(exactly = 1) { observeVolume() }
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.TyreTemperature.Root) }
+            coVerify(exactly = 0) { speakText("注意107℃{unknown}", volume = 60) }
+            confirmVerified(observeVolume, playStartSound, speakText)
+        }
+
+    @Test
+    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
+        runTest {
+            stubSettings()
+            stubReadout(available = true)
+            every { observeVolume() } returns flowOf(60)
+            val viewModel = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { playStartSound(ReadoutItemKey.AceWindows.TyreTemperature.Root) } coAnswers
+                { pendingStartSound.await() }
+            viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}", 107)
+            viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}", 107)
+            pendingStartSound.complete(Unit)
+            verify(exactly = 1) { observeVolume() }
+            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.AceWindows.TyreTemperature.Root) }
+            coVerify(exactly = 0) { speakText("注意107℃{unknown}", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
 }

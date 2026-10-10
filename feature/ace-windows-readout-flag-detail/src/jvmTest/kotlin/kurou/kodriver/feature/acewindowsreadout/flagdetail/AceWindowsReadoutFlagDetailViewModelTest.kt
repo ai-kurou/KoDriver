@@ -39,6 +39,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsRedYellowStripesFlagReadou
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.PlayStartSoundForKeyUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsBlackFlagReadoutTextUseCase
@@ -71,6 +72,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
     private val texts: AceWindowsFlagReadoutTextPreferencesRepository = mockk()
     private val tts: TextToSpeechRepository = mockk()
     private val observeVoice: ObserveVoiceUseCase = mockk()
+    private val observeVoiceSpeed: ObserveVoiceSpeedUseCase = mockk()
     private val volumes: SoundVolumePreferencesRepository = mockk()
 
     @BeforeTest
@@ -112,7 +114,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
                         SaveAceWindowsRedYellowStripesFlagReadoutTextUseCase(texts),
                     ),
                 ),
-            speakText = SpeakTextUseCase(tts, observeVoice),
+            speakText = SpeakTextUseCase(tts, observeVoice, observeVoiceSpeed),
             playStartSoundForKey = PlayStartSoundForKeyUseCase(ttsEngine),
             checkTextToSpeechAvailable = CheckTextToSpeechAvailableUseCase(tts),
             observeSoundVolume = ObserveSoundVolumeUseCase(volumes),
@@ -278,6 +280,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
                 flowOf("レッド・イエローストライプフラッグ、路面が滑りやすいです")
             coEvery { tts.isAvailable() } returns true
             every { volumes.volume() } returns flowOf(42)
+            every { observeVoiceSpeed() } returns flowOf(1.0f)
             every { observeVoice() } returns flowOf("voice-a")
             val calls = mutableListOf<String>()
             val startSoundCompleted = CompletableDeferred<Unit>()
@@ -285,19 +288,20 @@ class AceWindowsReadoutFlagDetailViewModelTest {
                 calls += "start"
                 startSoundCompleted.await()
             }
-            coEvery { tts.speak("完走", false, 42, "voice-a") } answers { calls += "text" }
+            coEvery { tts.speak("完走", false, 42, "voice-a", 1.0f) } answers { calls += "text" }
             val vm = createViewModel()
             vm.onFlagTextPreviewClicked("完走")
             assertEquals(listOf("start"), calls)
-            coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a") }
+            coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a", 1.0f) }
             startSoundCompleted.complete(Unit)
             assertEquals(listOf("start", "text"), calls)
             coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
-            coVerify(exactly = 1) { tts.speak("完走", false, 42, "voice-a") }
+            coVerify(exactly = 1) { tts.speak("完走", false, 42, "voice-a", 1.0f) }
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 1) { volumes.volume() }
             verify(exactly = 1) { observeVoice() }
-            confirmVerified(ttsEngine, tts, volumes, observeVoice)
+            verify(exactly = 1) { observeVoiceSpeed() }
+            confirmVerified(ttsEngine, tts, volumes, observeVoice, observeVoiceSpeed)
         }
 
     @Test
@@ -322,7 +326,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             vm.onFlagTextPreviewClicked("   ")
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 0) { volumes.volume() }
-            confirmVerified(tts, ttsEngine, volumes, observeVoice)
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
         }
 
     @Test
@@ -347,7 +351,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             vm.onFlagTextPreviewClicked("完走")
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 0) { volumes.volume() }
-            confirmVerified(tts, ttsEngine, volumes, observeVoice)
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
         }
 
     @Test
@@ -373,7 +377,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             vm.onFlagTextPreviewClicked("完走")
             coVerify(exactly = 1) { tts.isAvailable() }
             verify(exactly = 2) { volumes.volume() }
-            confirmVerified(tts, ttsEngine, volumes, observeVoice)
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
         }
 
     @Test
@@ -384,4 +388,76 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             assertTrue(state.hasReadoutText(item))
         }
     }
+
+    @Test
+    fun `ペインを離れると開始音待機中の試聴を停止する`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf("完走")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.WHITE) } returns flowOf("ホワイトフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.GREEN) } returns flowOf("グリーンフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.RED) } returns flowOf("レッドフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLUE) } returns flowOf("ブルーフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.YELLOW) } returns flowOf("イエローフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK) } returns flowOf("ブラックフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK_WHITE) } returns flowOf("ブラック・ホワイトフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE) } returns
+                flowOf("オレンジボールフラッグ、車両に不具合があります")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES) } returns
+                flowOf("レッド・イエローストライプフラッグ、路面が滑りやすいです")
+            coEvery { tts.isAvailable() } returns true
+            every { volumes.volume() } returns flowOf(42)
+            every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoice() } returns flowOf("voice-a")
+            val vm = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) } coAnswers
+                { pendingStartSound.await() }
+            vm.onFlagTextPreviewClicked("完走")
+            vm.onPreviewStopped()
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a", 1.0f) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
+            coVerify(exactly = 1) { tts.isAvailable() }
+            verify(exactly = 1) { volumes.volume() }
+            verify(exactly = 0) { observeVoice() }
+            verify(exactly = 0) { observeVoiceSpeed() }
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
+        }
+
+    @Test
+    fun `試聴中に再押しすると開始音待機中の試聴を停止する`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap())
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf("完走")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.WHITE) } returns flowOf("ホワイトフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.GREEN) } returns flowOf("グリーンフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.RED) } returns flowOf("レッドフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLUE) } returns flowOf("ブルーフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.YELLOW) } returns flowOf("イエローフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK) } returns flowOf("ブラックフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.BLACK_WHITE) } returns flowOf("ブラック・ホワイトフラッグ")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE) } returns
+                flowOf("オレンジボールフラッグ、車両に不具合があります")
+            every { texts.observeText(AceWindowsFlagReadoutTextKey.RED_YELLOW_STRIPES) } returns
+                flowOf("レッド・イエローストライプフラッグ、路面が滑りやすいです")
+            coEvery { tts.isAvailable() } returns true
+            every { volumes.volume() } returns flowOf(42)
+            every { observeVoiceSpeed() } returns flowOf(1.0f)
+            every { observeVoice() } returns flowOf("voice-a")
+            val vm = createViewModel()
+            val pendingStartSound = CompletableDeferred<Unit>()
+            coEvery { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) } coAnswers
+                { pendingStartSound.await() }
+            vm.onFlagTextPreviewClicked("完走")
+            vm.onFlagTextPreviewClicked("完走")
+            pendingStartSound.complete(Unit)
+            coVerify(exactly = 0) { tts.speak("完走", false, 42, "voice-a", 1.0f) }
+            coVerify(exactly = 1) { ttsEngine.playStartSound(ReadoutItemKey.AceWindows.Flag.Root) }
+            coVerify(exactly = 1) { tts.isAvailable() }
+            verify(exactly = 1) { volumes.volume() }
+            verify(exactly = 0) { observeVoice() }
+            verify(exactly = 0) { observeVoiceSpeed() }
+            confirmVerified(tts, ttsEngine, volumes, observeVoice, observeVoiceSpeed)
+        }
 }

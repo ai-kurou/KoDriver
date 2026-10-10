@@ -13,14 +13,24 @@ import org.junit.Test
 
 class OtherVolumeDetailPaneScreenshotTest {
     @Test
-    fun `デフォルト`() =
+    fun `デフォルト`() = capturePane(isPreviewing = false)
+
+    @Test
+    fun `試聴中`() = capturePane(isPreviewing = true)
+
+    private fun capturePane(isPreviewing: Boolean) =
         composeScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             OtherVolumeDetailPaneContent(
-                                uiState = OtherVolumeDetailUiState(volume = 80, deviceVolume = 60),
+                                uiState =
+                                    OtherVolumeDetailUiState(
+                                        volume = 80,
+                                        deviceVolume = 60,
+                                        isPreviewing = isPreviewing,
+                                    ),
                             )
                         }
                     }

@@ -212,9 +212,12 @@ class AppTest {
             "ホワイトフラッグ・グリーンフラッグ・レッドフラッグ・イエローフラッグなどのフラッグ状況を音声でお知らせします。",
         )
         clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
+        scrollToItem("燃料残り周回数")
         clickItemAndVerifyDescription(
-            "タイヤ温度",
-            "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
+            "燃料残り周回数",
+            "ACEが算出する残燃料で走行可能な周回数をもとに判定し、設定した周回数以下になると" +
+                "1周減るごとに音声でお知らせします。\n" +
+                "読み上げる文言は下の欄で設定できます。",
         )
         scrollToItem("燃料残量")
         clickItemAndVerifyDescription(
@@ -222,12 +225,10 @@ class AppTest {
             "燃料残量が設定した閾値以下になった場合に、音声でお知らせします。\n" +
                 "読み上げる文言は下の欄で設定できます。",
         )
-        scrollToItem("燃料残り周回数")
+        scrollToItem("タイヤ温度")
         clickItemAndVerifyDescription(
-            "燃料残り周回数",
-            "ACEが算出する残燃料で走行可能な周回数をもとに判定し、設定した周回数以下になると" +
-                "1周減るごとに音声でお知らせします。\n" +
-                "読み上げる文言は下の欄で設定できます。",
+            "タイヤ温度",
+            "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
         )
         scrollToItem("自己ベストラップ")
         clickItemAndVerifyDescription(
@@ -279,6 +280,9 @@ class AppTest {
             .onNode(hasText("システム既定") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
             .performClick()
         rule.waitForIdle()
+        scrollToItem("読み上げ速度")
+        clickItem("読み上げ速度")
+        waitUntilDisplayed("読み上げの速さを設定します。")
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
         // 「テレメトリ受信中は画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。

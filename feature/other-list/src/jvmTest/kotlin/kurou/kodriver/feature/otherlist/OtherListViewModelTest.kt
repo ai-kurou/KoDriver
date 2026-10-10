@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
 import kurou.kodriver.domain.model.TextToSpeechUnavailableReason
 import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.domain.model.VOICE_SPEED_DEFAULT
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.DeviceVolumeRepository
@@ -40,6 +41,7 @@ import kurou.kodriver.domain.repository.StartupEnabledRepository
 import kurou.kodriver.domain.repository.TextToSpeechRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
+import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckHapticFeedbackAvailableUseCase
@@ -52,6 +54,7 @@ import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
@@ -99,6 +102,8 @@ class OtherListViewModelTest {
     private val themeModeFlow = MutableStateFlow(THEME_MODE_DEFAULT)
 
     private val voiceRepository: VoicePreferencesRepository = mockk()
+    private val voiceSpeedRepository: VoiceSpeedPreferencesRepository = mockk()
+    private val voiceSpeedFlow = MutableStateFlow(VOICE_SPEED_DEFAULT)
     private val soundVolumeRepository: SoundVolumePreferencesRepository = mockk()
     private val deviceVolumeRepository: DeviceVolumeRepository = mockk()
     private val soundVolumeFlow = MutableStateFlow(80)
@@ -113,6 +118,7 @@ class OtherListViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(dispatcher)
+        every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
     }
 
     @AfterTest
@@ -142,6 +148,7 @@ class OtherListViewModelTest {
                     observeHapticFeedbackEnabled = ObserveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
                     saveHapticFeedbackEnabled = SaveHapticFeedbackEnabledUseCase(hapticFeedbackEnabledRepository),
                     observeVoice = ObserveVoiceUseCase(voiceRepository),
+                    observeVoiceSpeed = ObserveVoiceSpeedUseCase(voiceSpeedRepository),
                     observeReadoutStartSoundType = ObserveReadoutStartSoundTypeUseCase(readoutStartSoundRepository),
                     observeSoundVolume = ObserveSoundVolumeUseCase(soundVolumeRepository),
                     observeThemeMode = ObserveThemeModeUseCase(themeRepository),
@@ -1275,6 +1282,50 @@ class OtherListViewModelTest {
             voiceFlow.update { "saved-voice" }
 
             assertEquals("saved-voice", viewModel.uiState.first { it.voiceId == "saved-voice" }.voiceId)
+        }
+
+    @Test
+    fun `読み上げ速度は既定値から保存済み速度の変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel()
+            assertEquals(VOICE_SPEED_DEFAULT, viewModel.uiState.first().voiceSpeed)
+
+            voiceSpeedFlow.update { 1.5f }
+
+            assertEquals(1.5f, viewModel.uiState.first { it.voiceSpeed == 1.5f }.voiceSpeed)
+        }
+
+    @Test
+    fun `読み上げ速度をタップすると選択し再タップで解除する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel()
+            viewModel.onItemSelected(OtherListItemType.VoiceSpeed)
+            assertEquals(OtherListItemType.VoiceSpeed, viewModel.uiState.first().selectedItem)
+
+            viewModel.onItemSelected(OtherListItemType.Volume)
+            assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoiceSpeed)
+            assertEquals(OtherListItemType.VoiceSpeed, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoiceSpeed)
+            assertNull(viewModel.uiState.first().selectedItem)
         }
 
     @Test

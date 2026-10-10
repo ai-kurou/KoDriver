@@ -28,6 +28,7 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearSelectionUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class BrakeWearUseCases(
     val observeRemaining: ObserveLmuWindowsBrakeWearRemainingUseCase,
@@ -41,6 +42,7 @@ internal data class BrakeWearUseCases(
 
 internal data class BrakeWearReadoutUseCases(
     val playSpeechEvent: PlaySpeechEventUseCase,
+    val stopSpeech: StopSpeechUseCase,
     val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
@@ -57,7 +59,11 @@ internal class LmuWindowsReadoutBrakeWearDetailViewModel(
             readout.checkTextToSpeechAvailable,
             readout.observeSoundVolume,
             readout.playSpeechEvent,
+            readout.stopSpeech,
         )
+
+    /** 詳細ペインを離れると試聴を止める。 */
+    fun onPreviewStopped() = previewHelper.stop()
 
     private val settingsState =
         combine(

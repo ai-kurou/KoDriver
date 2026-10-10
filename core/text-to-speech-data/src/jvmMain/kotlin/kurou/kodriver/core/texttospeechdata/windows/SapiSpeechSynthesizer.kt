@@ -121,10 +121,11 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
         queue: Boolean,
         volume: Int,
         voiceId: String,
+        speed: Float,
     ) {
         if (!IS_WINDOWS) return
         val token = synchronized(lock) { ++requestToken }
-        val request = buildSpeakRequest(text, volume, voiceId)
+        val request = buildSpeakRequest(text, volume, voiceId, speedToSapiRate(speed))
         val future = enqueue(token, request, queue) ?: return
         await(future)
     }

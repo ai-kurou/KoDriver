@@ -78,6 +78,9 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
             Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(),
         )
 
+    /** ペインを離れるときに試聴を止める。 */
+    fun onPreviewStopped() = preview.stop()
+
     fun onReadoutTextChanged(text: String) {
         viewModelScope.launch { readout.saveText(text) }
     }
@@ -100,7 +103,7 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        viewModelScope.launch { preview.preview(text, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root) }
+        preview.onPreviewClicked(text, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
     }
 
     fun onRemainingFuelLapsChanged(laps: Int) {

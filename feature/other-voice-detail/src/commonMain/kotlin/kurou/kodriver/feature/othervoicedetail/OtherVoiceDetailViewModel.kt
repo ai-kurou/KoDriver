@@ -95,6 +95,13 @@ internal class OtherVoiceDetailViewModel(
             }
     }
 
+    /** 再生中または開始待ちの試聴を止める。 */
+    fun onPreviewStopped() {
+        previewRequest++
+        previewJob?.cancel()
+        previewingVoiceId.update { null }
+    }
+
     fun onRetryClicked() {
         refreshTrigger.update { it + 1 }
     }

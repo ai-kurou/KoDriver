@@ -12,6 +12,7 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearSelectionUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -26,6 +27,7 @@ import org.koin.dsl.module
  *   ReadoutPreferencesRepository・TextToSpeechRepository・SoundVolumePreferencesRepository（:core:data）、
  *   試聴用の named(Simulator.LmuWindows.id) の
  *   PlaySpeechEventUseCase（:feature:lmu-windows-narrator で登録）。
+ *   試聴停止用の StopSpeechUseCase は同じ named(Simulator.LmuWindows.id) の TextToSpeechEngine から生成する。
  */
 val lmuWindowsReadoutBrakeWearDetailModule =
     module {
@@ -43,7 +45,12 @@ val lmuWindowsReadoutBrakeWearDetailModule =
         }
 
         factory {
-            BrakeWearReadoutUseCases(get(named(Simulator.LmuWindows.id)), get(), get())
+            BrakeWearReadoutUseCases(
+                get(named(Simulator.LmuWindows.id)),
+                StopSpeechUseCase(get(named(Simulator.LmuWindows.id))),
+                get(),
+                get(),
+            )
         }
         factoryOf(::ObserveLmuWindowsBrakeWearRemainingUseCase)
         factoryOf(::ObserveLmuWindowsBrakeWearReadoutTextUseCase)

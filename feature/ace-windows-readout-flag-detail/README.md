@@ -12,3 +12,5 @@ Checkered・White・Green・Red・Blue・Yellow・Black・BlackWhite・OrangeCir
 
 ![Module Graph](../../docs/graphs/feature-ace-windows-readout-flag-detail.svg)
 <!-- MODULE-GRAPH-END -->
+
+試聴中に試聴ボタンを再押しすると停止する。詳細ペインを離れたときも試聴を停止する。

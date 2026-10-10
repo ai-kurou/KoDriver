@@ -52,6 +52,7 @@ import kurou.kodriver.data.preferences.createReadoutStartSoundPreferencesReposit
 import kurou.kodriver.data.preferences.createSoundVolumePreferencesRepository
 import kurou.kodriver.data.preferences.createThemePreferencesRepository
 import kurou.kodriver.data.preferences.createVoicePreferencesRepository
+import kurou.kodriver.data.preferences.createVoiceSpeedPreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.release.HttpServerVersionRepository
 import kurou.kodriver.data.restapi.UnavailableLmuWindowsBrakeWearRepository
@@ -146,6 +147,7 @@ import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
+import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
 import org.koin.dsl.module
 
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
@@ -253,6 +255,9 @@ private fun androidDataModuleMisc(context: Context) =
         }
         single<SoundVolumePreferencesRepository> {
             createSoundVolumePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<VoiceSpeedPreferencesRepository> {
+            createVoiceSpeedPreferencesRepository(context.filesDir.absolutePath)
         }
         single<VoicePreferencesRepository> {
             createVoicePreferencesRepository(context.filesDir.absolutePath)

@@ -42,6 +42,7 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeWearSelectionUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -63,6 +64,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
     private val textFlow = MutableStateFlow(LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT)
     private val playSpeechEvent: PlaySpeechEventUseCase = mockk()
+    private val stopSpeech: StopSpeechUseCase = mockk()
 
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
@@ -94,7 +96,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
                 ),
             observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
-            readout = BrakeWearReadoutUseCases(playSpeechEvent, checkAvailable, observeVolume),
+            readout = BrakeWearReadoutUseCases(playSpeechEvent, stopSpeech, checkAvailable, observeVolume),
         )
 
     @Test
@@ -415,5 +417,29 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
+        }
+
+    @Test
+    fun `試聴前のペイン離脱では停止せず試聴後の離脱で一度だけ停止する`() =
+        runTest {
+            stubReadout()
+            every { vehicleClassRepository.observeLowThresholdPercent() } returns
+                MutableStateFlow(mapOf(LmuWindowsVehicleClassData.Hypercar to 20))
+            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
+                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
+            every { observeVolume() } returns MutableStateFlow(60)
+            every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残量20%")) } returns Unit
+            every { stopSpeech(ReadoutItemKey.LmuWindows.BrakeWear.Root) } returns Unit
+            val viewModel = createViewModel()
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeWear.Root) }
+            viewModel.onReadoutTextPreviewClicked("残量{percent}%")
+            viewModel.onPreviewStopped()
+            viewModel.onPreviewStopped()
+            verify(exactly = 1) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeWear.Root) }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残量20%")) }
+            verify(exactly = 1) { observeVolume() }
+            coVerify(exactly = 1) { checkAvailable() }
+            confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)
         }
 }

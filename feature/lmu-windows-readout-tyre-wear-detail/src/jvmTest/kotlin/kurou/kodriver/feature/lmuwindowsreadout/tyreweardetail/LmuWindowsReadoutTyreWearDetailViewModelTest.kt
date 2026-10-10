@@ -30,6 +30,7 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -43,6 +44,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
 
     private val readoutPreferencesRepository: ReadoutPreferencesRepository = mockk()
 
+    private val stopSpeech: StopSpeechUseCase = mockk()
     private val playSpeechEvent: PlaySpeechEventUseCase = mockk()
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
@@ -78,6 +80,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             readout =
                 TyreWearReadoutUseCases(
                     playSpeechEvent,
+                    stopSpeech,
                     checkAvailable,
                     observeVolume,
                 ),
@@ -102,7 +105,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -121,7 +125,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -140,7 +145,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
             coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
-            confirmVerified(repository, readoutPreferencesRepository)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
     @Test
@@ -174,7 +180,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
                     false,
                 )
             }
-            confirmVerified(repository, readoutPreferencesRepository)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            confirmVerified(repository, readoutPreferencesRepository, stopSpeech)
         }
 
     private fun stubReadout(available: Boolean = true) {
@@ -197,7 +204,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { repository.observeReadoutText() }
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             coVerify(exactly = 1) { repository.saveReadoutText("残り{percent}%") }
-            confirmVerified(repository)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            confirmVerified(repository, stopSpeech)
         }
 
     @Test
@@ -222,7 +230,8 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(70, "残り70%")) }
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
-            confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)
             collection.cancel()
         }
 
@@ -231,10 +240,13 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
         runTest {
             stubReadout()
             every { repository.observeThresholdPercentage() } returns MutableStateFlow(50)
-            createViewModel().onReadoutTextPreviewClicked(" ")
+            val viewModel = createViewModel()
+            viewModel.onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, " ")) }
-            confirmVerified(observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -247,7 +259,9 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "注意")) }
-            confirmVerified(observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -263,6 +277,41 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "注意")) }
-            confirmVerified(observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            confirmVerified(observeVolume, playSpeechEvent, stopSpeech)
+        }
+
+    @Test
+    fun `ペインを離れると開始した試聴を一度だけ停止する`() =
+        runTest {
+            stubReadout()
+            val threshold = MutableStateFlow(50)
+            every { repository.observeThresholdPercentage() } returns threshold
+            every { observeVolume() } returns MutableStateFlow(60)
+            every { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "残り50%")) } returns Unit
+            every { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) } returns Unit
+            val viewModel = createViewModel()
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            assertEquals(50, viewModel.uiState.first().thresholdPercentage)
+            viewModel.onReadoutTextPreviewClicked("残り{percent}%")
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(50, "残り50%")) }
+            verify(exactly = 1) { observeVolume() }
+            coVerify(exactly = 1) { checkAvailable() }
+            viewModel.onPreviewStopped()
+            viewModel.onPreviewStopped()
+            verify(exactly = 1) { stopSpeech(ReadoutItemKey.LmuWindows.TyreWear.Root) }
+            verify(exactly = 1) { repository.observeReadoutText() }
+            verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.LmuWindows.id) }
+            confirmVerified(
+                repository,
+                readoutPreferencesRepository,
+                playSpeechEvent,
+                observeVolume,
+                checkAvailable,
+                stopSpeech,
+            )
         }
 }

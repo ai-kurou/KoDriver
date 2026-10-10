@@ -209,6 +209,12 @@ class NarratorEngine<EVENT, START_TYPE, KEY>(
                 soundPlayer.play(sound, currentVolume)
             }
         playJob = job
-        job.join()
+        try {
+            job.join()
+        } catch (e: CancellationException) {
+            // 呼び出し元のキャンセルを再生ジョブへ伝え、開始音を止める。
+            job.cancel()
+            throw e
+        }
     }
 }

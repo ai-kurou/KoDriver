@@ -26,6 +26,7 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsBrakeTemperatureReadoutTextUs
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class BrakeTemperatureUseCases(
     val observeVehicleClassHighThreshold: ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase,
@@ -38,6 +39,7 @@ internal data class BrakeTemperatureUseCases(
 
 internal data class BrakeTemperatureReadoutUseCases(
     val playSpeechEvent: PlaySpeechEventUseCase,
+    val stopSpeech: StopSpeechUseCase,
     val checkTextToSpeechAvailable: CheckTextToSpeechAvailableUseCase,
     val observeSoundVolume: ObserveSoundVolumeUseCase,
 )
@@ -54,7 +56,11 @@ internal class LmuWindowsReadoutBrakeTemperatureDetailViewModel(
             readout.checkTextToSpeechAvailable,
             readout.observeSoundVolume,
             readout.playSpeechEvent,
+            readout.stopSpeech,
         )
+
+    /** 詳細ペインを離れると試聴を止める。 */
+    fun onPreviewStopped() = previewHelper.stop()
 
     val uiState: StateFlow<LmuWindowsReadoutBrakeTemperatureDetailUiState> =
         combine(
