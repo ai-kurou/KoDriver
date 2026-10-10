@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.othervoicepitchdetail
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
@@ -59,12 +62,15 @@ class OtherVoicePitchDetailPaneWiringTest {
         every { viewModel.uiState } returns MutableStateFlow(OtherVoicePitchDetailUiState(pitch = 1.5f))
         every { viewModel.onPitchChanged(2.0f) } returns Unit
         every { viewModel.onPitchChanged(1.0f) } returns Unit
+        every { viewModel.onPreviewClicked("これは声の高さの試聴です。") } returns Unit
+        every { viewModel.onPreviewStopped() } returns Unit
         every { onBack() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
+            var showPane by mutableStateOf(true)
             rule.setContent {
                 KoDriverTheme {
-                    OtherVoicePitchDetailPane(true, onBack, Modifier.testTag("voice-pitch-pane"))
+                    if (showPane) OtherVoicePitchDetailPane(true, onBack, Modifier.testTag("voice-pitch-pane"))
                 }
             }
             rule.onNodeWithTag("voice-pitch-pane").assertExists()
@@ -76,11 +82,15 @@ class OtherVoicePitchDetailPaneWiringTest {
                     },
                 ).performSemanticsAction(SemanticsActions.SetProgress) { it(2.0f) }
             rule.onNodeWithContentDescription("声の高さをデフォルトに戻す").performClick()
+            rule.onNodeWithText("試聴").performClick()
             rule.onNodeWithContentDescription("戻る").performClick()
+            showPane = false
             rule.waitForIdle()
             verify(exactly = 1) { viewModel.uiState }
+            verify(exactly = 1) { viewModel.onPreviewStopped() }
             verify(exactly = 1) { viewModel.onPitchChanged(2.0f) }
             verify(exactly = 1) { viewModel.onPitchChanged(1.0f) }
+            verify(exactly = 1) { viewModel.onPreviewClicked("これは声の高さの試聴です。") }
             verify(exactly = 1) { onBack() }
             confirmVerified(viewModel, onBack)
         } finally {

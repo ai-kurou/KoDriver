@@ -133,4 +133,35 @@ class OtherVoicePitchDetailPaneTest {
 
         rule.onNode(hasContentDescription("声の高さをデフォルトに戻す")).assertIsNotEnabled()
     }
+
+    @Test
+    fun `試聴ボタンを押すと試聴用の文言を通知する`() {
+        var previewText: String? = null
+        rule.setContent {
+            KoDriverTheme {
+                OtherVoicePitchDetailPaneContent(
+                    uiState = OtherVoicePitchDetailUiState(),
+                    onPreviewClicked = { previewText = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("試聴").performClick()
+
+        assertEquals("これは声の高さの試聴です。", previewText)
+    }
+
+    @Test
+    fun `試聴中は停止ボタンを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                OtherVoicePitchDetailPaneContent(
+                    uiState = OtherVoicePitchDetailUiState(isPreviewing = true),
+                )
+            }
+        }
+
+        rule.onNodeWithText("試聴を停止").assertIsDisplayed()
+        rule.onNodeWithText("試聴").assertDoesNotExist()
+    }
 }

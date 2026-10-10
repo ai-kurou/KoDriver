@@ -7,4 +7,5 @@ import kurou.kodriver.domain.model.VOICE_PITCH_DEFAULT
  */
 data class OtherVoicePitchDetailUiState(
     val pitch: Float = VOICE_PITCH_DEFAULT,
+    val isPreviewing: Boolean = false,
 )
