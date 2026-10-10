@@ -15,6 +15,11 @@
 既存の保存IDと `OVERLAY_TEXT_SIZE_DEFAULT` は維持し、未知のIDは中へフォールバックする。
 文字サイズと約1.3倍の行高は `NarratorOverlayContent` のUI側で定義し、ドメインのenumには含めない。
 
+ラジオボタンの選択は共有Repositoryのプレビュー値に即時反映し、実際のオーバーレイで確認できる。
+OKで初めて保存し、保存完了後にプレビューを解除する。キャンセル・ダイアログ外タップ・ViewModel破棄では
+プレビューを解除して保存値に戻す。`selectedOverlayTextSize` はプレビュー込みの適用中のサイズ、
+`pendingOverlayTextSize` はダイアログでの選択値を表す。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

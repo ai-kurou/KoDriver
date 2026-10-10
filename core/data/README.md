@@ -11,6 +11,13 @@
 - `release`: サーバー・アプリのバージョン情報の取得。`ServerVersionRepository`（`:server` のバージョン確認、Android 版アプリのみ登録。`:server` は Windows デスクトップアプリと同一プロセスで動作するため）は Android では `HttpServerVersionRepository` で `:server` へ HTTP アクセスして取得し、`AppUpdateRepository`（アプリ自体の最新リリース確認）は両プラットフォームで `GitHubAppReleaseRepository` により GitHub Releases API から取得する。
 - `feedback`: Sentry User Feedback API へのフィードバック送信（`SentryFeedbackSenderRepository`）。
 
+## オーバーレイ文字サイズのプレビュー
+
+`OverlayTextSizePreferencesRepositoryImpl` は保存値のFlowとメモリ上の nullable な
+`MutableStateFlow` を `combine` し、プレビュー値を優先して配信する。プレビューはDataStoreへ書き込まない。
+`null` で解除すると最新の保存値へ戻る。Android／DesktopのDataModuleはRepositoryを `single` 登録し、
+設定ダイアログとオーバーレイが同じ一時値を共有する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

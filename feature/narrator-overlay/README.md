@@ -23,6 +23,9 @@ TelemetryLog に記録された最新の読み上げ内容をライブ購読し�
 （`rememberNarratorOverlayBounds` / `rememberNarratorOverlayBoundsSaver` と、`app:desktopApp` の
 `NarratorOverlayWindowHost` / `OverlayWindowBoundsScreenCheck.kt` を参照）。
 
+文字サイズは共有Repositoryのプレビュー値を含めて購読するため、設定ダイアログのラジオボタン選択で
+即時に変わる。OKで保存され、キャンセル・ダイアログ外タップ・ViewModel破棄では保存値に戻る。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

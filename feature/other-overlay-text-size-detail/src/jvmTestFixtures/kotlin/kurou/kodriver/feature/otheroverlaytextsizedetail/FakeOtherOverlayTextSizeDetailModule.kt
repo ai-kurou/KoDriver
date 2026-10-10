@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otheroverlaytextsizedetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
@@ -19,7 +20,14 @@ val fakeOtherOverlayTextSizeDetailModule =
 class FakeOverlayTextSizePreferencesRepository : OverlayTextSizePreferencesRepository {
     private val flow = MutableStateFlow(OverlayTextSize.MEDIUM)
 
-    override fun observeOverlayTextSize(): Flow<OverlayTextSize> = flow
+    private val preview = MutableStateFlow<OverlayTextSize?>(null)
+
+    override fun observeOverlayTextSize(): Flow<OverlayTextSize> =
+        combine(flow, preview) { saved, preview -> preview ?: saved }
+
+    override fun setPreviewOverlayTextSize(overlayTextSize: OverlayTextSize?) {
+        preview.update { overlayTextSize }
+    }
 
     override suspend fun saveOverlayTextSize(overlayTextSize: OverlayTextSize) {
         flow.update { overlayTextSize }
