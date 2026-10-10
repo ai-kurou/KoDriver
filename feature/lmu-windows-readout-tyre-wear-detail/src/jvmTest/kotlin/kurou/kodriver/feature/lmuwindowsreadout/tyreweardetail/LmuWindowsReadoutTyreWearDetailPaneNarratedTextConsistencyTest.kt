@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import org.junit.Rule
 import org.junit.Test
@@ -26,8 +27,11 @@ class LmuWindowsReadoutTyreWearDetailPaneNarratedTextConsistencyTest {
         }
         rule.onNode(hasSetTextAction()).assertTextContains(LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT)
         assertEquals(
-            formatLmuWindowsTyreWearReadoutText(LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT, 50),
-            SpeechEvent.LmuWindowsTyreWearWarning(50).narratedText,
+            formatLmuWindowsTyreWearReadoutText(
+                LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT,
+                LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT,
+            ),
+            SpeechEvent.LmuWindowsTyreWearWarning(LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT).narratedText,
         )
     }
 }

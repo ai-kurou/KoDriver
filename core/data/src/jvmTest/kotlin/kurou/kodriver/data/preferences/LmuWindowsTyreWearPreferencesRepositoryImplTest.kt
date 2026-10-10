@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -31,9 +32,12 @@ class LmuWindowsTyreWearPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `thresholdPercentage の初期値は 50`() =
+    fun `thresholdPercentage の初期値は 30`() =
         runTest {
-            assertEquals(50, repository.observeThresholdPercentage().first())
+            assertEquals(
+                LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT,
+                repository.observeThresholdPercentage().first(),
+            )
         }
 
     @Test
