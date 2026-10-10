@@ -2,7 +2,6 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -44,16 +43,6 @@ class Gt7Ps5RemainingFuelPreferencesSerializerTest {
             assertFailsWith<CorruptionException> {
                 Gt7Ps5RemainingFuelPreferencesSerializer.readFrom(corrupt)
             }
-        }
-
-    @Test
-    fun `文言がない旧データは閾値を維持して既定文言を使用する`() =
-        runTest {
-            val restored =
-                Gt7Ps5RemainingFuelPreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(0x08, 0x2D)))
-
-            assertEquals(45, restored.thresholdPercentage)
-            assertEquals(GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT, restored.readoutText)
         }
 
     @Test

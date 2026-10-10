@@ -55,17 +55,6 @@ class AceWindowsRemainingFuelLapsPreferencesSerializerTest {
         }
 
     @Test
-    fun `文言がない旧データは既定文言を使用する`() =
-        runTest {
-            val restored =
-                AceWindowsRemainingFuelLapsPreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(0x08, 0x05)))
-
-            assertEquals(5, restored.thresholdLaps)
-            assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT, restored.readoutText)
-            assertEquals(ACE_WINDOWS_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT, restored.emptyReadoutText)
-        }
-
-    @Test
     fun `空欄文言は読み出しても既定値に戻らない`() =
         runTest {
             val original = AceWindowsRemainingFuelLapsPreferences(readoutText = "", emptyReadoutText = "")

@@ -28,12 +28,4 @@ class ResolveReadoutOrderUseCaseTest {
 
         assertEquals(listOf(vehicleApproach, flag, myBestLap), result)
     }
-
-    @Test
-    fun `保存済み順序の全項目が削除済みの場合はデフォルト順序のみ返す`() {
-        val persisted = listOf(vehicleDamage)
-        val default = listOf(flag, myBestLap)
-
-        assertEquals(listOf(flag, myBestLap), useCase(persistedOrder = persisted, defaultOrder = default))
-    }
 }

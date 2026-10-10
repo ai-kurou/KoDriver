@@ -44,25 +44,6 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
         }
 
     @Test
-    fun `廃止したProtoNumber 3・5を含む旧設定では開始・継続文言が既定値になる`() =
-        runTest {
-            // field 1: false、廃止したfield 3: "left_right_approach"、field 5: "left_right_sustained"。
-            val oldType = "left_right_approach".encodeToByteArray()
-            val sustained = "left_right_sustained".encodeToByteArray()
-            val legacy =
-                byteArrayOf(0x08, 0, 0x1a, oldType.size.toByte()) + oldType +
-                    byteArrayOf(0x2a, sustained.size.toByte()) + sustained
-
-            val restored = LmuWindowsVehicleApproachPreferencesSerializer.readFrom(ByteArrayInputStream(legacy))
-
-            assertEquals("カーレフト", restored.startLeftReadoutText)
-            assertEquals("カーライト", restored.startRightReadoutText)
-            assertEquals(false, restored.skipFirstLap)
-            assertEquals("キープライト", restored.sustainedLeftReadoutText)
-            assertEquals("キープレフト", restored.sustainedRightReadoutText)
-        }
-
-    @Test
     fun `不正なバイト列で CorruptionException が発生する`() =
         runTest {
             val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))

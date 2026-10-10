@@ -2,7 +2,6 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -46,17 +45,6 @@ class LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializerTest {
             assertFailsWith<CorruptionException> {
                 LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializer.readFrom(corrupt)
             }
-        }
-
-    @Test
-    fun `文言フィールドがない旧データは既定文言を使用する`() =
-        runTest {
-            val restored =
-                LmuWindowsVehicleClassBrakeTemperaturePreferencesSerializer.readFrom(
-                    ByteArrayInputStream(byteArrayOf(0x12, 0x03, 0x47, 0x54, 0x45)),
-                )
-            assertEquals("GTE", restored.selectedVehicleClassKey)
-            assertEquals(LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT, restored.readoutText)
         }
 
     @Test

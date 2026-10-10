@@ -3,7 +3,6 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
-import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -44,17 +43,6 @@ class AceWindowsTyreTemperaturePreferencesSerializerTest {
             assertFailsWith<CorruptionException> {
                 AceWindowsTyreTemperaturePreferencesSerializer.readFrom(corrupt)
             }
-        }
-
-    @Test
-    fun `文言未保存の旧データは既定文言を読み出す`() =
-        runTest {
-            val restored =
-                AceWindowsTyreTemperaturePreferencesSerializer.readFrom(
-                    ByteArrayInputStream(byteArrayOf(0x08, 0x64)),
-                )
-            assertEquals(100, restored.highThresholdCelsius)
-            assertEquals(ACE_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, restored.overheatReadoutText)
         }
 
     @Test

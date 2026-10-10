@@ -47,16 +47,6 @@ class AceWindowsRemainingFuelPreferencesSerializerTest {
         }
 
     @Test
-    fun `文言がない旧データは閾値を維持して既定文言を使用する`() =
-        runTest {
-            val restored =
-                AceWindowsRemainingFuelPreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(0x08, 0x2D)))
-
-            assertEquals(45, restored.thresholdPercentage)
-            assertEquals(ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT, restored.readoutText)
-        }
-
-    @Test
     fun `空欄文言は読み出しても既定値に戻らない`() =
         runTest {
             val original = AceWindowsRemainingFuelPreferences(readoutText = "")

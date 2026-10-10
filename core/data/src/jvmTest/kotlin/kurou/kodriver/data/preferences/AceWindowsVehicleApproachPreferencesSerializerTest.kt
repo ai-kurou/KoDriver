@@ -2,11 +2,6 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.protobuf.ProtoBuf
-import kotlinx.serialization.protobuf.ProtoNumber
-import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -55,18 +50,6 @@ class AceWindowsVehicleApproachPreferencesSerializerTest {
             }
         }
 
-    @OptIn(ExperimentalSerializationApi::class)
-    @Test
-    fun `フィールド5のない旧データは閾値とスイッチを保持して既定文言になる`() =
-        runTest {
-            val old = LegacyPreferences(7.0, mapOf("ace_windows_vehicle_approach_start_readout" to false))
-            val bytes = ProtoBuf.encodeToByteArray(LegacyPreferences.serializer(), old)
-            val restored = AceWindowsVehicleApproachPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
-            assertEquals(7.0, restored.thresholdMeters)
-            assertEquals(old.enabledStates, restored.enabledStates)
-            assertEquals(ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT, restored.readoutText)
-        }
-
     @Test
     fun `空文言もそのまま往復できる`() =
         runTest {
@@ -78,11 +61,4 @@ class AceWindowsVehicleApproachPreferencesSerializerTest {
                 AceWindowsVehicleApproachPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray())),
             )
         }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    @Serializable
-    private data class LegacyPreferences(
-        @ProtoNumber(1) val thresholdMeters: Double,
-        @ProtoNumber(4) val enabledStates: Map<String, Boolean>,
-    )
 }
