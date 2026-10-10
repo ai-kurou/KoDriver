@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.othervoicedetail
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -64,15 +67,22 @@ class OtherVoiceDetailPaneWiringTest {
         every { viewModel.onVoiceSelected("voice-a") } returns Unit
         every { viewModel.onPreviewClicked("voice-a", "これは読み上げ音声の試聴です。") } returns Unit
         every { onBack() } returns Unit
+        every { viewModel.onPreviewStopped() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
+            var showPane by mutableStateOf(true)
             rule.setContent {
-                KoDriverTheme { OtherVoiceDetailPane(true, onBack, Modifier.testTag("voice-pane")) }
+                KoDriverTheme {
+                    if (showPane) OtherVoiceDetailPane(true, onBack, Modifier.testTag("voice-pane"))
+                }
             }
             rule.onNodeWithTag("voice-pane").assertExists()
             rule.onNodeWithText("音声A").performScrollTo().performClick()
             rule.onNodeWithContentDescription("音声Aを試聴").performScrollTo().performClick()
             rule.onNodeWithContentDescription("戻る").performClick()
+            showPane = false
+            rule.waitForIdle()
+            verify(exactly = 1) { viewModel.onPreviewStopped() }
             verify(exactly = 1) { viewModel.uiState }
             verify(exactly = 1) { viewModel.onVoiceSelected("voice-a") }
             verify(exactly = 1) { viewModel.onPreviewClicked("voice-a", "これは読み上げ音声の試聴です。") }
@@ -87,11 +97,20 @@ class OtherVoiceDetailPaneWiringTest {
     fun `Paneは空の状態で再読み込みを通知し戻れない場合は戻る操作を隠す`() {
         every { viewModel.uiState } returns MutableStateFlow(OtherVoiceDetailUiState(isLoading = false))
         every { viewModel.onRetryClicked() } returns Unit
+        every { viewModel.onPreviewStopped() } returns Unit
         startKoin { modules(module { single { viewModel } }) }
         try {
-            rule.setContent { KoDriverTheme { OtherVoiceDetailPane(false, onBack) } }
+            var showPane by mutableStateOf(true)
+            rule.setContent {
+                KoDriverTheme {
+                    if (showPane) OtherVoiceDetailPane(false, onBack)
+                }
+            }
             rule.onNodeWithContentDescription("戻る").assertDoesNotExist()
             rule.onNodeWithText("再読み込み").performScrollTo().performClick()
+            showPane = false
+            rule.waitForIdle()
+            verify(exactly = 1) { viewModel.onPreviewStopped() }
             verify(exactly = 1) { viewModel.uiState }
             verify(exactly = 1) { viewModel.onRetryClicked() }
             verify(exactly = 0) { onBack() }

@@ -7,6 +7,8 @@ GetAvailableVoicesUseCase・ObserveVoiceUseCase・SaveVoiceUseCaseを使用す�
 Koinモジュールは`ObserveVoiceSpeedUseCase`を提供し、`:core:data`の`VoiceSpeedPreferencesRepository`を消費する。
 `SpeakTextUseCase`は試聴・本文の読み上げに保存済み速度（0.5〜2.0、既定1.0）を使用する。
 
+詳細ペインを離れたときも試聴を停止する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

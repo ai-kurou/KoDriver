@@ -9,6 +9,7 @@ import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -21,6 +22,7 @@ import org.koin.dsl.module
  * 消費（get で解決）: LmuWindowsTyreWearPreferencesRepository・ReadoutPreferencesRepository・
  *   TextToSpeechRepository・SoundVolumePreferencesRepository（:core:data）、
  *   試聴用の named(Simulator.LmuWindows.id) の PlaySpeechEventUseCase（:feature:lmu-windows-narrator で登録）。
+ * 試聴停止用の StopSpeechUseCase は同じ named(Simulator.LmuWindows.id) の TextToSpeechEngine から生成する。
  */
 val lmuWindowsReadoutTyreWearDetailModule =
     module {
@@ -36,10 +38,12 @@ val lmuWindowsReadoutTyreWearDetailModule =
                 get(named(Simulator.LmuWindows.id)),
                 get(),
                 get(),
+                get(),
             )
         }
         factoryOf(::ObserveLmuWindowsTyreWearReadoutTextUseCase)
         factoryOf(::SaveLmuWindowsTyreWearReadoutTextUseCase)
+        factory { StopSpeechUseCase(get(named(Simulator.LmuWindows.id))) }
         factoryOf(::CheckTextToSpeechAvailableUseCase)
         factoryOf(::ObserveSoundVolumeUseCase)
         factoryOf(::ObserveLmuWindowsTyreWearThresholdPercentageUseCase)

@@ -29,6 +29,7 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageEnabledStateUseC
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageOverheatReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamagePartDetachedReadoutTextUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase
+import kurou.kodriver.domain.usecase.StopSpeechUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -41,6 +42,7 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
     private val repository: LmuWindowsVehicleDamagePreferencesRepository = mockk()
     private val checkAvailable: CheckTextToSpeechAvailableUseCase = mockk()
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
+    private val stopSpeech: StopSpeechUseCase = mockk()
     private val playSpeechEvent: PlaySpeechEventUseCase = mockk()
     private val enabledStates = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     private val overheatText = MutableStateFlow("オーバーヒート")
@@ -75,7 +77,7 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
                     ),
                 saveTyreDetachedReadoutText = SaveLmuWindowsVehicleDamageTyreDetachedReadoutTextUseCase(repository),
             ),
-            VehicleDamageReadoutUseCases(playSpeechEvent, checkAvailable, observeVolume),
+            VehicleDamageReadoutUseCases(playSpeechEvent, stopSpeech, checkAvailable, observeVolume),
         )
 
     private fun stubSettings(available: Boolean = true) {
@@ -126,7 +128,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
                 viewModel.uiState.first(),
             )
             verifySettings()
-            confirmVerified(repository, checkAvailable)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, stopSpeech)
         }
 
     @Test
@@ -143,7 +146,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             coVerify(exactly = 1) {
                 repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
             }
-            confirmVerified(repository, checkAvailable)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, stopSpeech)
         }
 
     @Test
@@ -156,7 +160,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             assertEquals("自由文言", viewModel.uiState.first().overheatReadoutText)
             verifySettings()
             coVerify(exactly = 1) { repository.saveOverheatReadoutText("自由文言") }
-            confirmVerified(repository, checkAvailable)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, stopSpeech)
         }
 
     @Test
@@ -171,7 +176,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             verifySettings()
             verify(exactly = 1) { observeVolume() }
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = "編集中")) }
-            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -189,7 +195,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             coVerify(exactly = 1) {
                 repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached, false)
             }
-            confirmVerified(repository, checkAvailable)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, stopSpeech)
         }
 
     @Test
@@ -202,7 +209,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             assertEquals("自由文言", viewModel.uiState.first().partDetachedReadoutText)
             verifySettings()
             coVerify(exactly = 1) { repository.savePartDetachedReadoutText("自由文言") }
-            confirmVerified(repository, checkAvailable)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, stopSpeech)
         }
 
     @Test
@@ -217,7 +225,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             verifySettings()
             verify(exactly = 1) { observeVolume() }
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = "編集中")) }
-            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -235,7 +244,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             coVerify(exactly = 1) {
                 repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached, false)
             }
-            confirmVerified(repository, checkAvailable)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, stopSpeech)
         }
 
     @Test
@@ -248,7 +258,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             assertEquals("自由文言", viewModel.uiState.first().tyreDetachedReadoutText)
             verifySettings()
             coVerify(exactly = 1) { repository.saveTyreDetachedReadoutText("自由文言") }
-            confirmVerified(repository, checkAvailable)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, stopSpeech)
         }
 
     @Test
@@ -263,7 +274,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             verifySettings()
             verify(exactly = 1) { observeVolume() }
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "編集中")) }
-            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -282,7 +294,9 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = " ")) }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = " ")) }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = " ")) }
-            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -299,7 +313,9 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = "入力中")) }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = "入力中")) }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "入力中")) }
-            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -316,7 +332,9 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = "入力中")) }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = "入力中")) }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "入力中")) }
-            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 
     @Test
@@ -333,6 +351,29 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsOverheating(resolvedText = "入力中")) }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsPartDetached(resolvedText = "入力中")) }
             verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "入力中")) }
-            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent)
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
+        }
+
+    @Test
+    fun `ペインを離れると開始した試聴を一度だけ停止する`() =
+        runTest {
+            stubSettings()
+            enabledStates.update { mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to false) }
+            every { observeVolume() } returns MutableStateFlow(40)
+            every { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "編集中")) } returns Unit
+            every { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) } returns Unit
+            val viewModel = createViewModel()
+            viewModel.onPreviewStopped()
+            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            viewModel.onTyreDetachedReadoutTextPreviewClicked("編集中")
+            verifySettings()
+            verify(exactly = 1) { observeVolume() }
+            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreDetached(resolvedText = "編集中")) }
+            viewModel.onPreviewStopped()
+            viewModel.onPreviewStopped()
+            verify(exactly = 1) { stopSpeech(ReadoutItemKey.LmuWindows.VehicleDamage.Root) }
+            confirmVerified(repository, checkAvailable, observeVolume, playSpeechEvent, stopSpeech)
         }
 }
