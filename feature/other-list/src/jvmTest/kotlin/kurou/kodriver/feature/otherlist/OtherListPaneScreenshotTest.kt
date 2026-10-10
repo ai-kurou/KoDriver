@@ -40,6 +40,34 @@ class OtherListPaneScreenshotTest {
         }
 
     @Test
+    fun `接続先IPアドレスを表示`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
+                            OtherListPane(
+                                uiState =
+                                    OtherListUiState(
+                                        items = listOf(OtherListItemType.ServerIp),
+                                        serverIp = "192.168.1.100",
+                                    ),
+                                onItemClick = {},
+                                onOverlayVisibleChange = {},
+                                onKeepScreenOnChange = {},
+                                onDynamicColorEnabledChange = {},
+                                onHapticFeedbackEnabledChange = {},
+                                onStartupEnabledChange = {},
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
     fun `アップデートバッジを表示`() =
         composeScreenshotTest {
             setContent {
