@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otheroverlaytextsizedetail
 
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.usecase.PreviewOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextSizeUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -18,5 +19,6 @@ val otherOverlayTextSizeDetailModule =
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveOverlayTextSizeUseCase(get()) }
+        factory { PreviewOverlayTextSizeUseCase(get()) }
         factory { SaveOverlayTextSizeUseCase(get()) }
     }

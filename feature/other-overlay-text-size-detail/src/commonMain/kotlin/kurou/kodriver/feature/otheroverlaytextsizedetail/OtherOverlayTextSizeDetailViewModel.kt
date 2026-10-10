@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
+import kurou.kodriver.domain.usecase.PreviewOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextSizeUseCase
 
 /**
@@ -17,29 +18,40 @@ import kurou.kodriver.domain.usecase.SaveOverlayTextSizeUseCase
  */
 class OtherOverlayTextSizeDetailViewModel internal constructor(
     observeOverlayTextSize: ObserveOverlayTextSizeUseCase,
+    private val previewOverlayTextSize: PreviewOverlayTextSizeUseCase,
     private val saveOverlayTextSize: SaveOverlayTextSizeUseCase,
 ) : ViewModel() {
     private val pendingOverlayTextSize = MutableStateFlow<OverlayTextSize?>(null)
 
     internal val uiState =
-        combine(observeOverlayTextSize(), pendingOverlayTextSize) { saved, pending ->
+        combine(observeOverlayTextSize(), pendingOverlayTextSize) { observed, pending ->
             OtherOverlayTextSizeDetailUiState(
-                selectedOverlayTextSize = saved,
-                pendingOverlayTextSize = pending ?: saved,
+                selectedOverlayTextSize = observed,
+                pendingOverlayTextSize = pending ?: observed,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherOverlayTextSizeDetailUiState())
 
     internal fun onPendingOverlayTextSizeSelected(overlayTextSize: OverlayTextSize) {
         pendingOverlayTextSize.update { overlayTextSize }
+        previewOverlayTextSize(overlayTextSize)
     }
 
     internal fun onConfirm() {
         val overlayTextSize = pendingOverlayTextSize.value ?: return
-        viewModelScope.launch { saveOverlayTextSize(overlayTextSize) }
-        pendingOverlayTextSize.update { null }
+        viewModelScope.launch {
+            saveOverlayTextSize(overlayTextSize)
+            previewOverlayTextSize(null)
+            pendingOverlayTextSize.update { null }
+        }
+    }
+
+    override fun onCleared() {
+        previewOverlayTextSize(null)
+        super.onCleared()
     }
 
     internal fun onDismiss() {
+        previewOverlayTextSize(null)
         pendingOverlayTextSize.update { null }
     }
 }

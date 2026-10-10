@@ -1,5 +1,11 @@
 # domain
 
+## オーバーレイ文字サイズのプレビュー
+
+`PreviewOverlayTextSizeUseCase` は `OverlayTextSizePreferencesRepository.setPreviewOverlayTextSize` に
+一時値を渡す。`null` で解除し、`ObserveOverlayTextSizeUseCase` はプレビュー優先の現在値を配信する。
+永続化は `SaveOverlayTextSizeUseCase` が担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 

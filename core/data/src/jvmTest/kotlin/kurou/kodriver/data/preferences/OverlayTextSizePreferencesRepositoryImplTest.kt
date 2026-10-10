@@ -3,7 +3,10 @@ package kurou.kodriver.data.preferences
 import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.OverlayTextSize
@@ -61,5 +64,52 @@ class OverlayTextSizePreferencesRepositoryImplTest {
             dataStore.updateData { it.copy(size = "unknown") }
 
             assertEquals(OverlayTextSize.MEDIUM, repository.observeOverlayTextSize().first())
+        }
+
+    @Test
+    fun `プレビューは保存せず配信され解除すると保存値に戻る`() =
+        runTest {
+            repository.saveOverlayTextSize(OverlayTextSize.SMALL)
+
+            OverlayTextSize.entries.forEach { preview ->
+                repository.setPreviewOverlayTextSize(preview)
+
+                assertEquals(preview, repository.observeOverlayTextSize().first())
+                assertEquals(OverlayTextSize.SMALL.id, dataStore.data.first().size)
+            }
+            repository.setPreviewOverlayTextSize(null)
+
+            assertEquals(OverlayTextSize.SMALL, repository.observeOverlayTextSize().first())
+        }
+
+    @Test
+    fun `プレビュー中に保存した値は解除後に配信される`() =
+        runTest {
+            repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE)
+            repository.saveOverlayTextSize(OverlayTextSize.SMALL)
+
+            assertEquals(OverlayTextSize.LARGE, repository.observeOverlayTextSize().first())
+            assertEquals(OverlayTextSize.SMALL.id, dataStore.data.first().size)
+            repository.setPreviewOverlayTextSize(null)
+
+            assertEquals(OverlayTextSize.SMALL, repository.observeOverlayTextSize().first())
+        }
+
+    @Test
+    fun `購読中のオーバーレイにプレビュー設定と解除が配信される`() =
+        runTest {
+            repository.saveOverlayTextSize(OverlayTextSize.SMALL)
+            val values = Channel<OverlayTextSize>(Channel.UNLIMITED)
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                repository.observeOverlayTextSize().collect { values.send(it) }
+            }
+            assertEquals(OverlayTextSize.SMALL, values.receive())
+
+            repository.setPreviewOverlayTextSize(OverlayTextSize.LARGE)
+            assertEquals(OverlayTextSize.LARGE, values.receive())
+            assertEquals(OverlayTextSize.SMALL.id, dataStore.data.first().size)
+
+            repository.setPreviewOverlayTextSize(null)
+            assertEquals(OverlayTextSize.SMALL, values.receive())
         }
 }
