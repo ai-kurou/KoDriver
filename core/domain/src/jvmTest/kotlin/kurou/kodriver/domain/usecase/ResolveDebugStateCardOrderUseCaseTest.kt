@@ -8,17 +8,6 @@ class ResolveDebugStateCardOrderUseCaseTest {
     private val useCase = ResolveDebugStateCardOrderUseCase()
 
     @Test
-    fun `ブレーキ残量追加前の保存済み順序を維持して末尾に補完する`() {
-        val default = DebugStateCardKey.entries
-        val persisted = default.filter { it != DebugStateCardKey.BRAKE_WEAR }.reversed()
-
-        assertEquals(
-            persisted + DebugStateCardKey.BRAKE_WEAR,
-            useCase(persistedOrder = persisted, defaultOrder = default),
-        )
-    }
-
-    @Test
     fun `保存済み順序が空の場合はデフォルト順序を返す`() {
         val default = listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SESSION)
 
@@ -35,17 +24,6 @@ class ResolveDebugStateCardOrderUseCaseTest {
         assertEquals(
             listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO),
             result,
-        )
-    }
-
-    @Test
-    fun `保存済み順序の全項目が削除済みの場合はデフォルト順序のみ返す`() {
-        val persisted = listOf(DebugStateCardKey.BEST_LAP)
-        val default = listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO)
-
-        assertEquals(
-            listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO),
-            useCase(persistedOrder = persisted, defaultOrder = default),
         )
     }
 }

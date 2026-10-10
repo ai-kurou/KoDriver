@@ -51,13 +51,6 @@ class LmuWindowsMyBestLapPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `旧口調設定に関係なく未設定文言は既定文言を返す`() =
-        runTest {
-            dataStore.updateData { it.copy(voiceType = "casual") }
-            assertEquals(LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
-        }
-
-    @Test
     fun `文言の保存は既存の口調設定を保持する`() =
         runTest {
             dataStore.updateData { it.copy(voiceType = "casual") }

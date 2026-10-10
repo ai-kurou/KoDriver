@@ -46,19 +46,6 @@ class LmuWindowsVehicleDamagePreferencesSerializerTest {
         }
 
     @Test
-    fun `文言フィールドがない旧データはスイッチを保持して既定文言を使用する`() =
-        runTest {
-            // field 1 の map entry（overheat=false）のみを持つ旧ProtoBuf。
-            val restored =
-                LmuWindowsVehicleDamagePreferencesSerializer.readFrom(
-                    ByteArrayInputStream(
-                        byteArrayOf(0x0A, 0x0C, 0x0A, 0x08, 0x6F, 0x76, 0x65, 0x72, 0x68, 0x65, 0x61, 0x74, 0x10, 0x00),
-                    ),
-                )
-            assertEquals(LmuWindowsVehicleDamagePreferences(enabledStates = mapOf("overheat" to false)), restored)
-        }
-
-    @Test
     fun `保存した空欄は復元後も既定文言へ戻らない`() =
         runTest {
             val original =

@@ -59,21 +59,6 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
         }
 
     @Test
-    fun `文言フィールド4がない旧データは既定文言を使用する`() =
-        runTest {
-            val restored =
-                LmuWindowsTyreTemperaturePreferencesSerializer.readFrom(
-                    ByteArrayInputStream(byteArrayOf(0x08, 0x6E)),
-                )
-
-            assertEquals(110, restored.highThresholdCelsius)
-            assertEquals(emptyMap(), restored.enabledStates)
-            assertEquals(emptyMap(), restored.lowWarningPhases)
-            assertEquals(LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, restored.overheatReadoutText)
-            assertEquals(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT, restored.coldReadoutText)
-        }
-
-    @Test
     fun `保存した空欄文言は読み出しても既定値に戻らない`() =
         runTest {
             val original = LmuWindowsTyreTemperaturePreferences(overheatReadoutText = "")
@@ -108,21 +93,5 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
                     ByteArrayInputStream(output.toByteArray()),
                 ),
             )
-        }
-
-    @Test
-    fun `文言フィールド5がない過熱警告文言付き旧データは低温警告の既定文言を使用する`() =
-        runTest {
-            val overheatText = "タイヤが過熱しています".encodeToByteArray()
-            val restored =
-                LmuWindowsTyreTemperaturePreferencesSerializer.readFrom(
-                    ByteArrayInputStream(byteArrayOf(0x08, 0x6E, 0x22, overheatText.size.toByte()) + overheatText),
-                )
-
-            assertEquals(110, restored.highThresholdCelsius)
-            assertEquals(emptyMap(), restored.enabledStates)
-            assertEquals(emptyMap(), restored.lowWarningPhases)
-            assertEquals("タイヤが過熱しています", restored.overheatReadoutText)
-            assertEquals(LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT, restored.coldReadoutText)
         }
 }

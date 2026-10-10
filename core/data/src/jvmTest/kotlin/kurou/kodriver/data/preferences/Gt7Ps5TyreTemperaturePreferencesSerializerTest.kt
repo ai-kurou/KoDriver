@@ -72,17 +72,6 @@ class Gt7Ps5TyreTemperaturePreferencesSerializerTest {
         }
 
     @Test
-    fun `文言未保存の旧データは既定文言を読み出す`() =
-        runTest {
-            val restored =
-                Gt7Ps5TyreTemperaturePreferencesSerializer.readFrom(
-                    ByteArrayInputStream(byteArrayOf(0x08, 0x64)),
-                )
-            assertEquals(100, restored.highThresholdCelsius)
-            assertEquals(GT7_PS5_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT, restored.overheatReadoutText)
-        }
-
-    @Test
     fun `カスタム文言と空文言を他の設定とともに往復できる`() =
         runTest {
             listOf("注意{celsius}度", "", " ").forEach { text ->

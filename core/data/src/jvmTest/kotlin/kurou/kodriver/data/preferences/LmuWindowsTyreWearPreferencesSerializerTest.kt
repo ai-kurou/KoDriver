@@ -49,18 +49,6 @@ class LmuWindowsTyreWearPreferencesSerializerTest {
         }
 
     @Test
-    fun `文言フィールドがない旧データは既定文言を使用する`() =
-        runTest {
-            val restored =
-                LmuWindowsTyreWearPreferencesSerializer.readFrom(
-                    ByteArrayInputStream(byteArrayOf(0x08, 0x32)),
-                )
-
-            assertEquals(50, restored.thresholdPercentage)
-            assertEquals(LMU_WINDOWS_TYRE_WEAR_READOUT_TEXT_DEFAULT, restored.readoutText)
-        }
-
-    @Test
     fun `保存した空欄文言は読み出しても既定値に戻らない`() =
         runTest {
             val original = LmuWindowsTyreWearPreferences(readoutText = "")

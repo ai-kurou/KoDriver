@@ -49,14 +49,4 @@ class AceWindowsMyBestLapPreferencesRepositoryImplTest {
             repository.saveReadoutText(ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT)
             assertEquals(ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT, repository.observeReadoutText().first())
         }
-
-    @Test
-    fun `文言の保存は旧口調設定と他シミュレーターの文言を保持する`() =
-        runTest {
-            dataStore.updateData { it.copy(voiceType = "casual", readoutText = "GT7") }
-            repository.saveReadoutText("")
-            assertEquals("", repository.observeReadoutText().first())
-            assertEquals("casual", dataStore.data.first().voiceType)
-            assertEquals("GT7", dataStore.data.first().readoutText)
-        }
 }

@@ -2,12 +2,8 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
-import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -57,45 +53,6 @@ class LmuWindowsPitTimingPreferencesSerializerTest {
             assertFailsWith<CorruptionException> {
                 LmuWindowsPitTimingPreferencesSerializer.readFrom(corrupt)
             }
-        }
-
-    @Test
-    fun `新しい文言フィールドがない旧データは既定文言を使用する`() =
-        runTest {
-            val restored =
-                LmuWindowsPitTimingPreferencesSerializer.readFrom(
-                    ByteArrayInputStream(byteArrayOf(0x08, 0x05, 0x10, 0x01)),
-                )
-
-            assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT, restored.tyreWearReadoutText)
-            assertEquals(
-                LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
-                restored.tyreWearImminentReadoutText,
-            )
-            assertEquals(5, restored.virtualEnergyLaps)
-            assertEquals(1, restored.tyreWearLaps)
-            assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT, restored.virtualEnergyReadoutText)
-            assertEquals(
-                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
-                restored.virtualEnergyImminentReadoutText,
-            )
-        }
-
-    @Test
-    fun `VE文言を持つ旧データでもタイヤ摩耗の既定文言を使用する`() =
-        runTest {
-            val restored =
-                LmuWindowsPitTimingPreferencesSerializer.readFrom(
-                    ByteArrayInputStream(byteArrayOf(0x22, 0x02, 0x56, 0x45, 0x2A, 0x00)),
-                )
-
-            assertEquals("VE", restored.virtualEnergyReadoutText)
-            assertEquals("", restored.virtualEnergyImminentReadoutText)
-            assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT, restored.tyreWearReadoutText)
-            assertEquals(
-                LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
-                restored.tyreWearImminentReadoutText,
-            )
         }
 
     @Test

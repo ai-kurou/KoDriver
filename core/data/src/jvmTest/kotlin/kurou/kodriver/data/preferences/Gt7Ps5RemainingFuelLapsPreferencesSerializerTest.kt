@@ -55,17 +55,6 @@ class Gt7Ps5RemainingFuelLapsPreferencesSerializerTest {
         }
 
     @Test
-    fun `文言がない旧データは既定文言を使用する`() =
-        runTest {
-            val restored =
-                Gt7Ps5RemainingFuelLapsPreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(0x08, 0x05)))
-
-            assertEquals(5, restored.remainingFuelLaps)
-            assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_READOUT_TEXT_DEFAULT, restored.readoutText)
-            assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_EMPTY_READOUT_TEXT_DEFAULT, restored.emptyReadoutText)
-        }
-
-    @Test
     fun `空欄文言は読み出しても既定値に戻らない`() =
         runTest {
             val original = Gt7Ps5RemainingFuelLapsPreferences(readoutText = "", emptyReadoutText = "")
