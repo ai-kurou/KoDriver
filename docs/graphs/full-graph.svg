@@ -200,7 +200,7 @@
 <title>feature</title>
 <path fill="#c8e6c9" stroke="#43a047" d="M393.5,-160C393.5,-160 318.5,-160 318.5,-160 312.5,-160 306.5,-154 306.5,-148 306.5,-148 306.5,-134 306.5,-134 306.5,-128 312.5,-122 318.5,-122 318.5,-122 393.5,-122 393.5,-122 399.5,-122 405.5,-128 405.5,-134 405.5,-134 405.5,-148 405.5,-148 405.5,-154 399.5,-160 393.5,-160"/>
 <text text-anchor="middle" x="356" y="-144.8" font-family="Times,serif" font-size="14.00">feature</text>
-<text text-anchor="middle" x="356" y="-129.8" font-family="Times,serif" font-size="14.00">45 modules</text>
+<text text-anchor="middle" x="356" y="-129.8" font-family="Times,serif" font-size="14.00">46 modules</text>
 </g>
 <!-- :app:shared&#45;&gt;feature -->
 <g id="edge19" class="edge">

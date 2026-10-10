@@ -516,6 +516,33 @@ class OtherListViewModelTest {
         }
 
     @Test
+    fun `声の高さをタップすると選択し再タップで解除する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel(hapticFeedbackAvailable = true)
+            viewModel.onItemSelected(OtherListItemType.VoicePitch)
+            assertEquals(OtherListItemType.VoicePitch, viewModel.uiState.first().selectedItem)
+
+            viewModel.onItemSelected(OtherListItemType.Volume)
+            assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoicePitch)
+            assertEquals(OtherListItemType.VoicePitch, viewModel.uiState.first().selectedItem)
+            viewModel.onItemSelected(OtherListItemType.VoicePitch)
+            assertNull(viewModel.uiState.first().selectedItem)
+        }
+
+    @Test
     fun `音量の変更と端末音量の定期取得を反映し購読終了後は取得を停止する`() =
         runTest {
             every { soundVolumeRepository.volume() } returns soundVolumeFlow

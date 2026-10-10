@@ -63,7 +63,7 @@ class OtherListPaneTest {
     }
 
     @Test
-    fun `声の高さをタップするとハプティックフィードバックを発生させない`() {
+    fun `声の高さをタップするとハプティックフィードバックを発生させる`() {
         val haptic = FakeHapticFeedback()
 
         rule.setContent {
@@ -82,7 +82,7 @@ class OtherListPaneTest {
 
         rule.onNodeWithText("声の高さ").performClick()
 
-        assertEquals(emptyList(), haptic.performedTypes)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), haptic.performedTypes)
     }
 
     @Test
