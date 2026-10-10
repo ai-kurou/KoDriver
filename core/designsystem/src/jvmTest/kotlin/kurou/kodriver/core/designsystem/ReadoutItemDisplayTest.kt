@@ -23,6 +23,7 @@ class ReadoutItemDisplayTest {
             "lmu_windows_sector_yellow_flag" to "イエローフラッグ",
             "lmu_windows_full_course_yellow" to "フルコースイエロー",
             "lmu_windows_red_flag" to "レッドフラッグ",
+            "lmu_windows_brake_wear" to "ブレーキ摩耗",
             "lmu_windows_vehicle_damage" to "車両故障",
             "lmu_windows_overheat" to "オーバーヒート",
             "lmu_windows_part_detached" to "部品脱落（ホイール除く）",

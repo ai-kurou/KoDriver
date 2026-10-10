@@ -41,7 +41,7 @@ internal fun DebugStateCardFrame(
             }
 
             DebugStateCardKey.TYRE_TEMPERATURE, DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-            DebugStateCardKey.BRAKE_TEMPERATURE, DebugStateCardKey.TYRE_WEAR,
+            DebugStateCardKey.BRAKE_TEMPERATURE, DebugStateCardKey.BRAKE_WEAR, DebugStateCardKey.TYRE_WEAR,
             DebugStateCardKey.VEHICLE_DAMAGE,
             -> {
                 colors.error
@@ -118,6 +118,7 @@ private val debugStateCardSymbols =
         DebugStateCardKey.TYRE_TEMPERATURE to "🔥",
         DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to "◎",
         DebugStateCardKey.BRAKE_TEMPERATURE to "◉",
+        DebugStateCardKey.BRAKE_WEAR to "◒",
         DebugStateCardKey.TYRE_WEAR to "◴",
         DebugStateCardKey.FUEL_CONSUMPTION to "⛽",
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to "⚒",

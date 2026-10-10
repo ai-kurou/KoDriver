@@ -27,6 +27,8 @@ sealed class ReadoutListItemType(
 
         data object BrakeTemperature : LmuWindows(ReadoutItemKey.LmuWindows.BrakeTemperature.Root)
 
+        data object BrakeWear : LmuWindows(ReadoutItemKey.LmuWindows.BrakeWear.Root)
+
         data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap.Root)
     }
 
@@ -86,6 +88,7 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
                 ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
                 ReadoutItemKey.LmuWindows.BrakeTemperature.Root -> LmuWindows.BrakeTemperature
+                ReadoutItemKey.LmuWindows.BrakeWear.Root -> LmuWindows.BrakeWear
                 ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
                 else -> null
             }

@@ -13,6 +13,7 @@ import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
@@ -66,6 +67,7 @@ internal class LmuWindowsNarratorEventProcessor(
     private var previousTyreWear: LmuWindowsTyreWearData? = null
     private var previousRemainingVirtualEnergy: LmuWindowsVirtualEnergyData? = null
     private var previousBrakeTemperature: LmuWindowsBrakeTemperatureData? = null
+    private var previousBrakeWear: LmuWindowsBrakeWearRemainingData? = null
 
     suspend fun processMyBestLap(
         telemetry: LmuWindowsTelemetryData,
@@ -219,6 +221,28 @@ internal class LmuWindowsNarratorEventProcessor(
             )
         }
         previousBrakeTemperature = brakeTemperature
+    }
+
+    suspend fun processBrakeWear(
+        brakeWear: LmuWindowsBrakeWearRemainingData,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: LmuWindowsTelemetryLogContext,
+    ) {
+        val previous = previousBrakeWear
+        processEvents(events, readoutOrder, queueEnabledStates, observedAtMs) {
+            buildTelemetryLogJson(
+                state = logContext.state,
+                previous = previous,
+                current = brakeWear,
+                settings = logContext.settings,
+                observedAtMs = observedAtMs,
+                finalState = logContext.finalState,
+            )
+        }
+        previousBrakeWear = brakeWear
     }
 
     suspend fun processRemainingVirtualEnergy(
@@ -534,6 +558,39 @@ private fun buildTelemetryLogJson(
         current =
             TelemetryLogJsonCurrentField(
                 name = "brakeTemperature",
+                json = TelemetryLogJson.encodeToString(current),
+            ),
+        settingsJson = TelemetryLogJson.encodeToString(settings),
+        observedAtMs = observedAtMs,
+        finalStateJson = TelemetryLogJson.encodeToString(finalState),
+    )
+
+/**
+ * ブレーキ残量判定入力（[LmuWindowsBrakeWearRemainingData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineBrakeWearLow]）と
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
+ */
+private fun buildTelemetryLogJson(
+    state: LmuWindowsNarratorState,
+    previous: LmuWindowsBrakeWearRemainingData?,
+    current: LmuWindowsBrakeWearRemainingData,
+    settings: LmuWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: LmuWindowsNarratorState,
+): String =
+    buildTelemetryLogJson(
+        stateJson = TelemetryLogJson.encodeToString(state),
+        previous =
+            TelemetryLogJsonPreviousField(
+                name = "previousBrakeWear",
+                json =
+                    previous?.let {
+                        TelemetryLogJson.encodeToString(it)
+                    },
+            ),
+        current =
+            TelemetryLogJsonCurrentField(
+                name = "brakeWear",
                 json = TelemetryLogJson.encodeToString(current),
             ),
         settingsJson = TelemetryLogJson.encodeToString(settings),

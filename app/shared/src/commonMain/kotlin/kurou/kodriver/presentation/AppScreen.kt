@@ -80,6 +80,7 @@ import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.Gt7Ps5ReadoutRem
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.Gt7Ps5ReadoutTyreTemperatureDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.LmuWindowsReadoutBrakeTemperatureDetailPane
+import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.LmuWindowsReadoutBrakeWearDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.LmuWindowsReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.LmuWindowsReadoutPitTimingDetailPane
@@ -802,15 +803,45 @@ internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
 @Composable
 private fun LmuWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.LmuWindows) {
     when (itemType) {
-        ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
-        ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
-        ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
-        ReadoutListItemType.LmuWindows.TyreTemperature -> LmuWindowsReadoutTyreTemperatureDetailPane()
-        ReadoutListItemType.LmuWindows.PitTiming -> LmuWindowsReadoutPitTimingDetailPane()
-        ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
-        ReadoutListItemType.LmuWindows.TyreWear -> LmuWindowsReadoutTyreWearDetailPane()
-        ReadoutListItemType.LmuWindows.BrakeTemperature -> LmuWindowsReadoutBrakeTemperatureDetailPane()
-        ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
+        ReadoutListItemType.LmuWindows.VehicleApproach -> {
+            LmuWindowsReadoutVehicleApproachDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.Flag -> {
+            LmuWindowsReadoutFlagDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.VehicleDamage -> {
+            LmuWindowsReadoutVehicleDamageDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.TyreTemperature -> {
+            LmuWindowsReadoutTyreTemperatureDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.PitTiming -> {
+            LmuWindowsReadoutPitTimingDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> {
+            LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.TyreWear -> {
+            LmuWindowsReadoutTyreWearDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.BrakeTemperature -> {
+            LmuWindowsReadoutBrakeTemperatureDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.BrakeWear -> {
+            LmuWindowsReadoutBrakeWearDetailPane()
+        }
+
+        ReadoutListItemType.LmuWindows.MyBestLap -> {
+            LmuWindowsReadoutMyBestLapDetailPane()
+        }
     }
 }
 

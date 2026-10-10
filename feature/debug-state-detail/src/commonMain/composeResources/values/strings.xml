@@ -115,4 +115,10 @@
     <string name="debug_state_vehicle_damage_tyre_detached_rl">タイヤ脱落 RL: %1$s</string>
     <string name="debug_state_vehicle_damage_tyre_detached_rr">タイヤ脱落 RR: %1$s</string>
     <string name="debug_state_side_by_side_duration">%1$s秒</string>
+    <string name="debug_state_brake_wear_title">ブレーキ残量</string>
+    <string name="debug_state_brake_wear_unavailable">取得できません</string>
+    <string name="debug_state_brake_wear_fl">FL %1$s</string>
+    <string name="debug_state_brake_wear_fr">FR %1$s</string>
+    <string name="debug_state_brake_wear_rl">RL %1$s</string>
+    <string name="debug_state_brake_wear_rr">RR %1$s</string>
 </resources>

@@ -1,11 +1,14 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -1516,6 +1519,103 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `いずれかのブレーキ残量が閾値以下になると BrakeWearLow を返す`() {
+        val decision =
+            useCase.determineBrakeWearLow(
+                state = LmuWindowsNarratorState(),
+                data = brakeWear(fl = 18),
+                settings = settings(brakeWearLowThresholdPercent = 20),
+            )
+
+        assertEquals(listOf(SpeechEvent.LmuWindowsBrakeWearLow(20)), decision.events)
+        assertEquals(true, decision.state.brakeWearWarned)
+    }
+
+    @Test
+    fun `ブレーキ残量が閾値ちょうどでも BrakeWearLow を返す`() {
+        val decision =
+            useCase.determineBrakeWearLow(
+                state = LmuWindowsNarratorState(),
+                data = brakeWear(rr = 20),
+                settings = settings(brakeWearLowThresholdPercent = 20),
+            )
+
+        assertEquals(listOf(SpeechEvent.LmuWindowsBrakeWearLow(20)), decision.events)
+    }
+
+    @Test
+    fun `全ブレーキの残量が閾値を超えていれば読み上げない`() {
+        val decision =
+            useCase.determineBrakeWearLow(
+                state = LmuWindowsNarratorState(),
+                data = brakeWear(),
+                settings = settings(brakeWearLowThresholdPercent = 20),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(false, decision.state.brakeWearWarned)
+    }
+
+    @Test
+    fun `ブレーキ残量低下が継続しても再度読み上げない`() {
+        val decision =
+            useCase.determineBrakeWearLow(
+                state = LmuWindowsNarratorState(brakeWearWarned = true),
+                data = brakeWear(fl = 10),
+                settings = settings(),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.brakeWearWarned)
+    }
+
+    @Test
+    fun `ブレーキ交換で残量が閾値を超えると再度読み上げ可能になる`() {
+        val warnedState =
+            useCase
+                .determineBrakeWearLow(LmuWindowsNarratorState(), brakeWear(fl = 10), settings())
+                .state
+        val replacedState = useCase.determineBrakeWearLow(warnedState, brakeWear(), settings()).state
+        val decision = useCase.determineBrakeWearLow(replacedState, brakeWear(fl = 10), settings())
+
+        assertEquals(false, replacedState.brakeWearWarned)
+        assertEquals(listOf(SpeechEvent.LmuWindowsBrakeWearLow(20)), decision.events)
+    }
+
+    @Test
+    fun `ブレーキ摩耗のルートスイッチが無効だと読み上げない`() {
+        val decision =
+            useCase.determineBrakeWearLow(
+                state = LmuWindowsNarratorState(),
+                data = brakeWear(fl = 10),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.BrakeWear.Root to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.brakeWearWarned)
+    }
+
+    @Test
+    fun `ブレーキ摩耗の警告スイッチが無効だと読み上げない`() {
+        val decision =
+            useCase.determineBrakeWearLow(
+                state = LmuWindowsNarratorState(),
+                data = brakeWear(fl = 10),
+                settings =
+                    settings(
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout to false),
+                    ),
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
     fun `全ブレーキがヒステリシス下限以下に冷えると再度読み上げ可能になる`() {
         val overheatState =
             useCase
@@ -2606,6 +2706,8 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.LmuWindows.TyreWear.WarningReadout to true,
         ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
         ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout to true,
+        ReadoutItemKey.LmuWindows.BrakeWear.Root to true,
+        ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout to true,
         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout to true,
         ReadoutItemKey.LmuWindows.PitTiming.Root to true,
@@ -2628,6 +2730,7 @@ private fun settings(
     tyreTemperatureHighThresholdCelsius: Int = 90,
     tyreWearThresholdPercentage: Int = LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT,
     brakeTemperatureHighThresholdCelsius: Int = 700,
+    brakeWearLowThresholdPercent: Int = 20,
     remainingVirtualEnergyThresholdPercentage: Int = 30,
     pitTimingVirtualEnergyLapsThreshold: Int = 3,
     pitTimingTyreWearLapsThreshold: Int = 3,
@@ -2646,6 +2749,7 @@ private fun settings(
         ),
     tyreWearThresholdPercentage = tyreWearThresholdPercentage,
     brakeTemperatureHighThresholdCelsius = Celsius(brakeTemperatureHighThresholdCelsius),
+    brakeWearLowThresholdPercent = brakeWearLowThresholdPercent,
     remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage,
     pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold,
     pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold,
@@ -2821,4 +2925,19 @@ private fun remainingVirtualEnergy(
 ) = LmuWindowsVirtualEnergyData(
     remainingRatio = LmuWindowsVirtualEnergyRatio(remainingRatio),
     session = session,
+)
+
+private fun brakeWear(
+    fl: Int = 80,
+    fr: Int = 80,
+    rl: Int = 80,
+    rr: Int = 80,
+) = LmuWindowsBrakeWearRemainingData(
+    wheels =
+        mapOf(
+            WheelIndex.FRONT_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), fl.toFloat()),
+            WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), fr.toFloat()),
+            WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), rl.toFloat()),
+            WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), rr.toFloat()),
+        ),
 )

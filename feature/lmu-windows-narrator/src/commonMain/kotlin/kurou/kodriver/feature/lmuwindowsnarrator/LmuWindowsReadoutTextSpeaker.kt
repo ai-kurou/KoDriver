@@ -6,6 +6,7 @@ import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
+import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
@@ -14,6 +15,7 @@ import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase
@@ -58,6 +60,7 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * - [SpeechEvent.LmuWindowsPartDetached] : 部品脱落
  * - [SpeechEvent.LmuWindowsTyreDetached] : タイヤ脱落
  * - [SpeechEvent.LmuWindowsBrakeOverheat] : 設定した温度閾値の警告
+ * - [SpeechEvent.LmuWindowsBrakeWearLow] : 設定したブレーキ残量閾値の警告
  * - [SpeechEvent.LmuWindowsTyreWearWarning] : 設定した残存率閾値の警告
  * - [SpeechEvent.LmuWindowsPitTimingWarning] : バーチャルエナジー・タイヤ摩耗由来のピットタイミング
  */
@@ -79,6 +82,7 @@ internal class LmuWindowsReadoutTextSpeaker(
         ObserveLmuWindowsPitTimingTyreWearImminentReadoutTextUseCase,
     private val observeRemainingVirtualEnergyReadoutText: ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase,
     private val observeBrakeTemperatureReadoutText: ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase,
+    private val observeBrakeWearReadoutText: ObserveLmuWindowsBrakeWearReadoutTextUseCase,
     private val observeTyreWearReadoutText: ObserveLmuWindowsTyreWearReadoutTextUseCase,
     private val observeTyreOverheatReadoutText: ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase,
     private val observeTyreColdReadoutText: ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase,
@@ -173,6 +177,10 @@ internal class LmuWindowsReadoutTextSpeaker(
                 brakeTemperatureText(event)
             }
 
+            is SpeechEvent.LmuWindowsBrakeWearLow -> {
+                brakeWearText(event)
+            }
+
             is SpeechEvent.LmuWindowsTyreWearWarning -> {
                 tyreWearText(event)
             }
@@ -208,6 +216,12 @@ internal class LmuWindowsReadoutTextSpeaker(
         formatLmuWindowsBrakeTemperatureReadoutText(
             observeBrakeTemperatureReadoutText().first(),
             event.celsius,
+        )
+
+    private suspend fun brakeWearText(event: SpeechEvent.LmuWindowsBrakeWearLow): String =
+        formatLmuWindowsBrakeWearReadoutText(
+            observeBrakeWearReadoutText().first(),
+            event.percent,
         )
 
     private suspend fun tyreWearText(event: SpeechEvent.LmuWindowsTyreWearWarning): String =

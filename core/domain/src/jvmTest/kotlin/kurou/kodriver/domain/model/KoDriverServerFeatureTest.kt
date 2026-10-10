@@ -11,6 +11,10 @@ class KoDriverServerFeatureTest {
             "/ws/lmu_windows/vehicle_approach",
             KoDriverServerFeature.VEHICLE_APPROACH.webSocketPath(Simulator.LmuWindows),
         )
+        assertEquals(
+            "/ws/lmu_windows/brake_wear",
+            KoDriverServerFeature.BRAKE_WEAR.webSocketPath(Simulator.LmuWindows),
+        )
         assertEquals("/ws/lmu_windows/damage", KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LmuWindows))
         assertEquals(
             "/ws/lmu_windows/tyre_carcass_temperature",

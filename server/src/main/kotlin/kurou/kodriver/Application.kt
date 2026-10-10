@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -40,6 +41,7 @@ import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -58,6 +60,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -94,6 +97,7 @@ data class KoDriverServerUseCases(
     val observeAceWindowsBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
     val observeAceWindowsRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsUseCase,
     val observeLmuWindowsPitStatus: ObserveLmuWindowsPitStatusUseCase,
+    val observeLmuWindowsBrakeWear: ObserveLmuWindowsBrakeWearUseCase,
     val observeLmuWindowsTyreDetached: ObserveLmuWindowsTyreDetachedUseCase,
 )
 
@@ -151,6 +155,8 @@ fun main() {
                     ObserveLmuWindowsPitStatusUseCase(
                         EmptyLmuWindowsPitStatusRepository,
                     ),
+                observeLmuWindowsBrakeWear =
+                    ObserveLmuWindowsBrakeWearUseCase(EmptyLmuWindowsBrakeWearRepository),
                 observeLmuWindowsTyreDetached =
                     ObserveLmuWindowsTyreDetachedUseCase(
                         EmptyLmuWindowsTyreDetachedRepository,
@@ -268,6 +274,8 @@ fun createKoDriverServer(koin: Koin): KoDriverServer =
                     ObserveLmuWindowsPitStatusUseCase(
                         koin.get<LmuWindowsPitStatusRepository>(),
                     ),
+                observeLmuWindowsBrakeWear =
+                    ObserveLmuWindowsBrakeWearUseCase(koin.get<LmuWindowsBrakeWearRepository>()),
                 observeLmuWindowsTyreDetached =
                     ObserveLmuWindowsTyreDetachedUseCase(
                         koin.get<LmuWindowsTyreDetachedRepository>(),
@@ -358,6 +366,9 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         telemetryWebSocket(KoDriverServerFeature.PIT_STATUS, Simulator.LmuWindows) {
             useCases.observeLmuWindowsPitStatus()
         }
+        telemetryWebSocket(KoDriverServerFeature.BRAKE_WEAR, Simulator.LmuWindows, distinct = false) {
+            useCases.observeLmuWindowsBrakeWear()
+        }
         telemetryWebSocket(KoDriverServerFeature.TYRE_DETACHED, Simulator.LmuWindows) {
             useCases.observeLmuWindowsTyreDetached()
         }
@@ -440,4 +451,8 @@ private object EmptyLmuWindowsPitStatusRepository : LmuWindowsPitStatusRepositor
 
 private object EmptyLmuWindowsTyreDetachedRepository : LmuWindowsTyreDetachedRepository {
     override fun tyreDetachedStream(): Flow<LmuWindowsTyreDetachedData> = emptyFlow()
+}
+
+private object EmptyLmuWindowsBrakeWearRepository : LmuWindowsBrakeWearRepository {
+    override fun brakeWearStream(): Flow<LmuWindowsBrakeWearData?> = emptyFlow()
 }

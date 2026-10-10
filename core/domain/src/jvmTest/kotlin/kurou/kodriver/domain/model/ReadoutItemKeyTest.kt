@@ -69,6 +69,7 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout,
             ReadoutItemKey.fromValue("lmu_windows_brake_temperature_warning_readout"),
         )
+        assertEquals(ReadoutItemKey.LmuWindows.BrakeWear.Root, ReadoutItemKey.fromValue("lmu_windows_brake_wear"))
         assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
         assertEquals(
             ReadoutItemKey.Gt7Ps5.MyBestLap.DetailEnabled,
@@ -180,6 +181,7 @@ class ReadoutItemKeyTest {
         assertEquals(true, ReadoutItemKey.LmuWindows.TyreTemperature.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.TyreWear.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.BrakeWear.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.PitTiming.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.MyBestLap.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.Gt7Ps5.MyBestLap.Root.supportsQueue)
