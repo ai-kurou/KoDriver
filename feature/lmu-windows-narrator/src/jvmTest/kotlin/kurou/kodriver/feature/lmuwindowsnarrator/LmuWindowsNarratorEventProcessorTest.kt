@@ -19,7 +19,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.double
-import kotlinx.serialization.json.int
+import kotlinx.serialization.json.float
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
@@ -3085,20 +3085,20 @@ class LmuWindowsNarratorEventProcessorTest {
 
             val root = Json.parseToJsonElement(telemetryJsonSlot.captured).jsonObject
             assertEquals(
-                50,
+                50f,
                 root["previousBrakeWear"]!!
                     .jsonObject["wheels"]!!
                     .jsonObject["FRONT_LEFT"]!!
                     .jsonObject["remainingPercent"]!!
-                    .jsonPrimitive.int,
+                    .jsonPrimitive.float,
             )
             assertEquals(
-                18,
+                18f,
                 root["brakeWear"]!!
                     .jsonObject["wheels"]!!
                     .jsonObject["FRONT_LEFT"]!!
                     .jsonObject["remainingPercent"]!!
-                    .jsonPrimitive.int,
+                    .jsonPrimitive.float,
             )
             assertContains(telemetryJsonSlot.captured, """"observedAtMs":200""")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
@@ -3260,10 +3260,11 @@ private fun brakeWear(frontLeft: Int) =
     LmuWindowsBrakeWearRemainingData(
         wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), frontLeft),
-                WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80),
-                WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80),
-                WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80),
+                WheelIndex.FRONT_LEFT to
+                    LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), frontLeft.toFloat()),
+                WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80f),
+                WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80f),
+                WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80f),
             ),
     )
 

@@ -274,7 +274,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             )
 
             val remaining = viewModel.uiState.first { it.remaining != null }.remaining
-            assertEquals(100, remaining?.wheels?.getValue(WheelIndex.FRONT_LEFT)?.remainingPercent)
+            assertEquals(100f, remaining?.wheels?.getValue(WheelIndex.FRONT_LEFT)?.remainingPercent)
             assertEquals(BrakeThicknessMeters(0.036f), remaining?.wheels?.getValue(WheelIndex.REAR_RIGHT)?.thickness)
         }
 

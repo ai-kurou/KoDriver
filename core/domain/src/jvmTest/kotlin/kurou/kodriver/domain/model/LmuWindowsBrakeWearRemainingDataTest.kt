@@ -9,30 +9,30 @@ class LmuWindowsBrakeWearRemainingDataTest {
 
     @Test
     fun `新品時の厚さなら100%`() {
-        assertEquals(100, calculateBrakeWearRemainingPercent(max, max, failure))
+        assertEquals(100f, calculateBrakeWearRemainingPercent(max, max, failure))
     }
 
     @Test
     fun `新品時の厚さと破損厚さの中間なら50%`() {
-        assertEquals(50, calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.0305f), max, failure))
+        assertEquals(50f, calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.0305f), max, failure), 0.001f)
     }
 
     @Test
     fun `破損厚さ以下なら0%`() {
-        assertEquals(0, calculateBrakeWearRemainingPercent(failure, max, failure))
-        assertEquals(0, calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.010f), max, failure))
+        assertEquals(0f, calculateBrakeWearRemainingPercent(failure, max, failure))
+        assertEquals(0f, calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.010f), max, failure))
     }
 
     @Test
     fun `新品時の厚さを超えても100%を上限にする`() {
-        assertEquals(100, calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.040f), max, failure))
+        assertEquals(100f, calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.040f), max, failure))
     }
 
     @Test
     fun `使える厚さの幅が0以下なら100%`() {
-        assertEquals(100, calculateBrakeWearRemainingPercent(failure, failure, failure))
+        assertEquals(100f, calculateBrakeWearRemainingPercent(failure, failure, failure))
         assertEquals(
-            100,
+            100f,
             calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.020f), BrakeThicknessMeters(0.020f), failure),
         )
     }
