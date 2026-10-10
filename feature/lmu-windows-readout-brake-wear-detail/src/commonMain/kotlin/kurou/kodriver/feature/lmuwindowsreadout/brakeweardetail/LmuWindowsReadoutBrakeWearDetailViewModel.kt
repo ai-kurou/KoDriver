@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -18,7 +17,6 @@ import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearSelectionUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -31,7 +29,6 @@ import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.StopSpeechUseCase
 
 internal data class BrakeWearUseCases(
-    val observeRemaining: ObserveLmuWindowsBrakeWearRemainingUseCase,
     val observeVehicleClassLowThreshold: ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase,
     val observeVehicleClassSelection: ObserveLmuWindowsVehicleClassBrakeWearSelectionUseCase,
     val saveVehicleClassLowThreshold: SaveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase,
@@ -83,9 +80,7 @@ internal class LmuWindowsReadoutBrakeWearDetailViewModel(
         }
 
     val uiState: StateFlow<LmuWindowsReadoutBrakeWearDetailUiState> =
-        combine(settingsState, brakeWearUseCases.observeRemaining().onStart { emit(null) }) { settings, remaining ->
-            settings.copy(remaining = remaining)
-        }.stateIn(
+        settingsState.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsReadoutBrakeWearDetailUiState(),

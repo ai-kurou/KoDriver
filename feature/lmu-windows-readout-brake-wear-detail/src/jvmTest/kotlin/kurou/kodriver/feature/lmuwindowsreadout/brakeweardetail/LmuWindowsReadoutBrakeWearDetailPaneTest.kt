@@ -77,10 +77,7 @@ class LmuWindowsReadoutBrakeWearDetailPaneTest {
             .onNodeWithText(
                 "ブレーキの残量が設定した閾値以下になった際に音声でお知らせします。" +
                     "一度警告を読み上げた後は、ブレーキを交換して全輪の残量が閾値を超えるまで再度読み上げません。\n" +
-                    "読み上げる文言は下の欄で設定できます。\n" +
-                    "残量はLMUのREST APIから取得するため、デスクトップ版でLMUを起動しているときのみ取得できます。" +
-                    "新品時の厚さは取得できないため、観測した最大の厚さを100%とします。" +
-                    "摩耗した状態で観測を始めた場合、実際より多く表示されます。",
+                    "読み上げる文言は下の欄で設定できます。",
             ).assertIsDisplayed()
     }
 
@@ -93,6 +90,8 @@ class LmuWindowsReadoutBrakeWearDetailPaneTest {
                 )
             }
         }
+        rule.onNodeWithText("ブレーキ残量").assertDoesNotExist()
+        rule.onNodeWithText("取得できません").assertDoesNotExist()
         rule.onNodeWithText("残量警告").assertIsDisplayed()
         rule.onNodeWithText("ブレーキ残量が閾値以下になったときの文言").assertIsDisplayed()
         rule.onNodeWithText("ブレーキ残量{percent}%以下").assertIsDisplayed()
