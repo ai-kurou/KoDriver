@@ -12,6 +12,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
@@ -19,6 +20,8 @@ import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -137,6 +140,17 @@ private val sampleBrakeTemperature =
             ),
     )
 
+private val sampleBrakeWear =
+    LmuWindowsBrakeWearRemainingData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.036f), 87f),
+                WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.035f), 82.5f),
+                WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 60f),
+                WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.031f), 65f),
+            ),
+    )
+
 private val sampleVehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar")
 
 private val sampleAceWindowsStatus =
@@ -252,6 +266,7 @@ class DebugStateDetailPaneScreenshotTest {
             lmuWindowsSideBySideDurations = sampleSideBySideDurations,
             tyreCarcassTemperature = sampleTyreCarcassTemperature,
             brakeTemperature = sampleBrakeTemperature,
+            brakeWear = sampleBrakeWear,
             lmuWindowsVehicleClass = sampleVehicleClass,
             aceWindowsStatus = sampleAceWindowsStatus,
             lmuWindowsPitStatus = sampleLmuWindowsPitStatus,

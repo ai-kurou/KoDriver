@@ -11,6 +11,7 @@ import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
@@ -35,11 +36,11 @@ import org.koin.dsl.module
  * 消費（get で解決）: LmuWindowsFlagRepository・SimulatorPreferencesRepository・
  * LmuWindowsVirtualEnergyRepository・LmuWindowsRepository・Gt7Ps5Repository・AceWindowsFuelRepository・
  * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・LmuWindowsTyreCarcassTemperatureRepository・
- * LmuWindowsBrakeTemperatureRepository・
+ * LmuWindowsBrakeTemperatureRepository・LmuWindowsBrakeWearRepository・
  * LmuWindowsVehicleClassRepository・AceWindowsStatusRepository・AceWindowsTyreCarcassTemperatureRepository・
  * AceWindowsVehicleApproachRepository・AceWindowsBestLapTimeRepository・AceWindowsRemainingFuelLapsRepository・LmuWindowsPitStatusRepository・
  * LmuWindowsVehicleDamageRepository・LmuWindowsTyreDetachedRepository・DebugStateCardOrderPreferencesRepository
- * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
+ * （:core:lmu-windows-rest-api-data / :core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
  */
 val debugStateDetailModule =
     module {
@@ -47,7 +48,7 @@ val debugStateDetailModule =
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory {
-            LmuWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+            LmuWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         factory { Gt7Ps5DebugStateUseCases(get(), get()) }
         factory { AceWindowsDebugStateUseCases(get(), get(), get(), get(), get(), get(), get()) }
@@ -64,6 +65,7 @@ val debugStateDetailModule =
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
         factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
         factory { ObserveLmuWindowsBrakeTemperatureUseCase(get()) }
+        factory { ObserveLmuWindowsBrakeWearRemainingUseCase(get(), get()) }
         factory { ObserveLmuWindowsVehicleClassUseCase(get()) }
         factory { ObserveAceWindowsStatusUseCase(get()) }
         factory { ObserveAceWindowsTyreCarcassTemperatureUseCase(get()) }

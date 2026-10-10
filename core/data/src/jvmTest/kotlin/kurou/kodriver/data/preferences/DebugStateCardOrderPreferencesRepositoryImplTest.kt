@@ -33,6 +33,15 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
     }
 
     @Test
+    fun `ブレーキ残量を含む全カードの順序を保存して読み出せる`() =
+        runTest {
+            val order = DebugStateCardKey.entries.reversed()
+            repository.saveCardOrder(order)
+
+            assertEquals(order, repository.observeCardOrder().first())
+        }
+
+    @Test
     fun `初期値は空リスト・保存した順序を読み出せる・上書きで更新される`() =
         runTest {
             assertEquals(emptyList(), repository.observeCardOrder().first())
