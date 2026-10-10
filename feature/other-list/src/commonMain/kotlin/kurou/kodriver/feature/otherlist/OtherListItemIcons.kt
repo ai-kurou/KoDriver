@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.FormatSize
+import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
@@ -33,6 +34,7 @@ internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageV
 
         OtherListItemType.Volume,
         OtherListItemType.VoiceSpeed,
+        OtherListItemType.VoicePitch,
         OtherListItemType.ReadoutStartSound,
         -> otherReadoutSettingsItemLeadingIconVector(itemType)
 
@@ -69,6 +71,7 @@ private fun otherReadoutSettingsItemLeadingIconVector(itemType: OtherListItemTyp
     when (itemType) {
         OtherListItemType.Volume -> Icons.AutoMirrored.Outlined.VolumeUp
         OtherListItemType.VoiceSpeed -> Icons.Outlined.Speed
+        OtherListItemType.VoicePitch -> Icons.Outlined.GraphicEq
         OtherListItemType.ReadoutStartSound -> Icons.Outlined.MusicNote
         else -> error("unexpected item type: $itemType")
     }

@@ -10,6 +10,7 @@ class OtherListItemTypeTest {
         assertEquals(OtherListItemType.Volume, OtherListItemType.fromId("volume"))
         assertEquals(OtherListItemType.Voice, OtherListItemType.fromId("voice"))
         assertEquals(OtherListItemType.VoiceSpeed, OtherListItemType.fromId("voice_speed"))
+        assertEquals(OtherListItemType.VoicePitch, OtherListItemType.fromId("voice_pitch"))
     }
 
     @Test

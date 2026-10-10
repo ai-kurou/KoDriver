@@ -17,6 +17,7 @@ enum class OtherListItemType(
     ReadoutStartSound("readout_start_sound"),
     Voice("voice"),
     VoiceSpeed("voice_speed"),
+    VoicePitch("voice_pitch"),
     Theme("theme"),
     OverlayVisible("overlay_visible"),
     OverlayTextSize("overlay_text_size"),

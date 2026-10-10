@@ -45,6 +45,32 @@ class OtherContentTest {
         )
 
     @Test
+    fun `声の高さをタップしても詳細ペインを開かない`() {
+        var selected = false
+        var detailShown = false
+        var backEnabled = false
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.VoicePitch)),
+                onItemSelected = { selected = true },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { _, _, _, _, _ -> detailShown = true },
+            )
+        }
+
+        rule.onNodeWithText("声の高さ").assertExists().performClick()
+        rule.waitForIdle()
+
+        assertFalse(selected)
+        assertFalse(detailShown)
+        assertFalse(backEnabled)
+    }
+
+    @Test
     fun `読み上げ速度をタップすると選択して詳細ペインを開く`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false

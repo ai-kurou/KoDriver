@@ -9,6 +9,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
+import kurou.kodriver.domain.usecase.ObserveVoicePitchUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceUseCase
 import kurou.kodriver.domain.usecase.OpenWindowsSpeechSettingsUseCase
@@ -59,6 +60,7 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
+                get(),
                 // 接続先IPの設定はAndroidのみ。項目がないプラットフォームでは購読しない。
                 if (OtherListItemType.ServerIp in buildOtherListItems()) get() else null,
                 get(),
@@ -73,6 +75,7 @@ val otherListModule =
         factory { ObserveOverlayVisibleUseCase(get()) }
         factory { ObserveVoiceUseCase(get()) }
         factory { ObserveVoiceSpeedUseCase(get()) }
+        factory { ObserveVoicePitchUseCase(get()) }
         factory { ObserveReadoutStartSoundTypeUseCase(get()) }
         factory { ObserveSoundVolumeUseCase(get()) }
         factory { SaveOverlayVisibleUseCase(get()) }

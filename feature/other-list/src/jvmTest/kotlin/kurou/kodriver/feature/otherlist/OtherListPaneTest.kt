@@ -63,6 +63,29 @@ class OtherListPaneTest {
     }
 
     @Test
+    fun `声の高さをタップするとハプティックフィードバックを発生させない`() {
+        val haptic = FakeHapticFeedback()
+
+        rule.setContent {
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                OtherListPane(
+                    uiState = OtherListUiState(items = listOf(OtherListItemType.VoicePitch)),
+                    onItemClick = {},
+                    onOverlayVisibleChange = {},
+                    onKeepScreenOnChange = {},
+                    onDynamicColorEnabledChange = {},
+                    onHapticFeedbackEnabledChange = {},
+                    onStartupEnabledChange = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("声の高さ").performClick()
+
+        assertEquals(emptyList(), haptic.performedTypes)
+    }
+
+    @Test
     fun `通常項目をクリックすると項目クリックコールバックを呼ぶ`() {
         var clickedItem: OtherListItemType? = null
 
