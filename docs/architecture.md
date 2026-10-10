@@ -14,7 +14,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
 | `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-lmu-windows-data.svg) |
-| `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗（`RepairAndRefuel`）の DataSource・Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |
+| `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗用に `RepairAndRefuel` の DataSource・`wearables.brakes` のポーリング Repository と Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |
 | `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |
 | `:core:ace-windows-data` | Assetto Corsa EVO Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-ace-windows-data.svg) |
 | `:core:device-volume-data` | 端末（OS）のマスター音量取得・設定のリポジトリ実装 | [図](graphs/core-device-volume-data.svg) |
@@ -51,6 +51,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-readout-remaining-virtual-energy-detail` | バーチャルエナジー残量アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-remaining-virtual-energy-detail.svg) |
 | `:feature:lmu-windows-readout-tyre-wear-detail` | タイヤ摩耗アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-tyre-wear-detail.svg) |
 | `:feature:lmu-windows-readout-brake-temperature-detail` | ブレーキ温度アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-brake-temperature-detail.svg) |
+| `:feature:lmu-windows-readout-brake-wear-detail` | ブレーキ摩耗アナウンスの詳細設定 UI（有効スイッチ・読み上げ文言・車両クラス別の残量閾値） | [図](graphs/feature-lmu-windows-readout-brake-wear-detail.svg) |
 | `:feature:lmu-windows-readout-pit-timing-detail` | ピットタイミングアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-pit-timing-detail.svg) |
 | `:feature:gt7-ps5-connection` | GT7 PS5 との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-gt7-ps5-connection.svg) |
 | `:feature:gt7-ps5-narrator` | GT7 PS5 向け WAV開始音・OS標準TTS本文の音声再生とアナウンス制御を担当する | [図](graphs/feature-gt7-ps5-narrator.svg) |
@@ -69,7 +70,9 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:telemetry-log-list` | テレメトリログの一覧表示 UI | [図](graphs/feature-telemetry-log-list.svg) |
 | `:feature:telemetry-log-detail` | テレメトリログの詳細表示 UI | [図](graphs/feature-telemetry-log-detail.svg) |
 | `:feature:narrator-overlay` | TelemetryLog の最新の読み上げ内容をライブ購読して表示するオーバーレイ | [図](graphs/feature-narrator-overlay.svg) |
-| `:server` | デスクトップアプリと同一プロセスで起動する Ktor サーバー。`/ws/<Simulator.id>/<feature>` WebSocket で共有メモリ由来の走行情報を配信する | [図](graphs/server.svg) |
+| `:server` | デスクトップアプリと同一プロセスで起動する Ktor サーバー。`/ws/<Simulator.id>/<feature>` WebSocket で共有メモリ・LMU REST API 由来の走行情報を配信する | [図](graphs/server.svg) |
+
+LMU のブレーキ摩耗は `:core:lmu-windows-rest-api-data` がデスクトップ版で取得し、`:server` の `/ws/lmu_windows/brake_wear` から配信する。Android 版は `:core:data` の WebSocket Repository で受信し、共通の残量計算・Narrator に渡す。取得失敗時の `null` も配信する。
 
 ## モジュール一覧の更新漏れ防止
 

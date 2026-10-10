@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_brake_temperature_title
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_brake_wear_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_current_lap_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_title
@@ -135,6 +136,7 @@ private val debugStateCardTitles: Map<DebugStateCardKey, StringResource> =
         DebugStateCardKey.TYRE_TEMPERATURE to Res.string.debug_state_tyre_temperature_title,
         DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to Res.string.debug_state_tyre_carcass_temperature_title,
         DebugStateCardKey.BRAKE_TEMPERATURE to Res.string.debug_state_brake_temperature_title,
+        DebugStateCardKey.BRAKE_WEAR to Res.string.debug_state_brake_wear_title,
         DebugStateCardKey.TYRE_WEAR to Res.string.debug_state_tyre_wear_title,
         DebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to Res.string.debug_state_pit_timing_title,
@@ -203,6 +205,8 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
             },
         DebugStateCardKey.BRAKE_TEMPERATURE to
             { uiState -> BrakeTemperatureContent(uiState.selectedSimulator, uiState.brakeTemperature) },
+        DebugStateCardKey.BRAKE_WEAR to
+            { uiState -> BrakeWearContent(uiState.selectedSimulator, uiState.brakeWear) },
         DebugStateCardKey.TYRE_WEAR to
             { uiState -> TyreWearContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry) },
         DebugStateCardKey.FUEL_CONSUMPTION to { uiState ->

@@ -107,4 +107,39 @@ class ReadoutListViewModelStartSoundTest {
             verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
             confirmVerified(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
         }
+
+    @Test
+    fun `ブレーキ摩耗のonStartSoundEnabledChangedで読み上げ開始音のON_OFF状態がRepositoryに保存される`() =
+        runTest {
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator>(Simulator.LmuWindows)
+            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
+                MutableStateFlow(emptyMap())
+            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
+            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            val startSoundEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { startSoundRepository.observeStartSoundEnabledStates() } returns startSoundEnabledFlow
+            coEvery {
+                startSoundRepository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.BrakeWear.Root, false)
+            } answers {
+                startSoundEnabledFlow.update { it + (ReadoutItemKey.LmuWindows.BrakeWear.Root to false) }
+            }
+            val viewModel =
+                createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
+
+            viewModel.onStartSoundEnabledChanged(ReadoutItemKey.LmuWindows.BrakeWear.Root, false)
+
+            assertEquals(
+                false,
+                viewModel.uiState.first().startSoundEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root],
+            )
+            coVerify(exactly = 1) {
+                startSoundRepository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.BrakeWear.Root, false)
+            }
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
+            verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+            verify(exactly = 1) { startSoundRepository.observeStartSoundEnabledStates() }
+            confirmVerified(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
+        }
 }

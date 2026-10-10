@@ -14,6 +14,9 @@ import kurou.kodriver.domain.model.Simulator
 /**
  * [feature] / [simulator] から求まる WebSocket パスへ、[flow] が返す Flow を JSON として配信する。
  *
+ * 既定では同一値の連続送信を抑制する。受信側が値の変化ではなく到着自体を契機に状態を組み立てる
+ * エンドポイント（車両クラスの受信順に依存するブレーキ摩耗など）は、[distinct] を false にして毎回送信する。
+ *
  * 接続ごとに独立した Flow を生成する（cold flow）ため、[flow] は毎回呼び出す関数として受け取る。
  * ここで固定の `Flow<T>` を受け取ると、複数クライアントが同一の Flow インスタンスを共有してしまう。
  *
@@ -25,6 +28,7 @@ import kurou.kodriver.domain.model.Simulator
 internal inline fun <reified T> Route.telemetryWebSocket(
     feature: KoDriverServerFeature,
     simulator: Simulator,
+    distinct: Boolean = true,
     crossinline flow: () -> Flow<T>,
 ) {
     webSocket(feature.webSocketPath(simulator)) {
@@ -33,7 +37,7 @@ internal inline fun <reified T> Route.telemetryWebSocket(
             return@webSocket
         }
         flow()
-            .distinctUntilChanged()
+            .let { if (distinct) it.distinctUntilChanged() else it }
             .let { sendJsonMessages(it) }
     }
 }

@@ -11,6 +11,7 @@ val QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
         ReadoutItemKey.LmuWindows.TyreWear.Root to true,
         ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
+        ReadoutItemKey.LmuWindows.BrakeWear.Root to true,
         ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
         ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
         ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,

@@ -36,8 +36,9 @@ private fun lmuWindowsOrderIndex(key: ReadoutItemKey.LmuWindows.TopLevel): Int =
         ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 4
         ReadoutItemKey.LmuWindows.TyreWear.Root -> 5
         ReadoutItemKey.LmuWindows.BrakeTemperature.Root -> 6
-        ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 7
-        ReadoutItemKey.LmuWindows.MyBestLap.Root -> 8
+        ReadoutItemKey.LmuWindows.BrakeWear.Root -> 7
+        ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 8
+        ReadoutItemKey.LmuWindows.MyBestLap.Root -> 9
     }
 
 private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int =

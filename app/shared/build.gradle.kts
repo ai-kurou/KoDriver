@@ -89,6 +89,7 @@ kotlin {
             implementation(projects.feature.lmuWindowsReadoutRemainingVirtualEnergyDetail)
             implementation(projects.feature.lmuWindowsReadoutTyreWearDetail)
             implementation(projects.feature.lmuWindowsReadoutBrakeTemperatureDetail)
+            implementation(projects.feature.lmuWindowsReadoutBrakeWearDetail)
             implementation(projects.feature.gt7Ps5ReadoutMyBestLapDetail)
             implementation(projects.feature.gt7Ps5ReadoutRemainingFuelDetail)
             implementation(projects.feature.gt7Ps5ReadoutRemainingFuelLapsDetail)

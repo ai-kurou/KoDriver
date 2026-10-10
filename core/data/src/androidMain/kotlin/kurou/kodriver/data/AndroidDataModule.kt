@@ -39,6 +39,7 @@ import kurou.kodriver.data.preferences.createLmuWindowsTyreWearPreferencesReposi
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
@@ -64,6 +65,7 @@ import kurou.kodriver.data.websocket.WebSocketAceWindowsStatusRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.data.websocket.WebSocketAceWindowsVehicleApproachRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsBrakeTemperatureRepository
+import kurou.kodriver.data.websocket.WebSocketLmuWindowsBrakeWearRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsFlagRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsPitStatusRepository
 import kurou.kodriver.data.websocket.WebSocketLmuWindowsRepository
@@ -104,6 +106,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -124,6 +127,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPref
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
@@ -204,6 +208,9 @@ fun androidDataModule(context: Context) =
         }
         single<LmuWindowsTyreCarcassTemperatureRepository> {
             WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
+        }
+        single<LmuWindowsBrakeWearRepository> {
+            WebSocketLmuWindowsBrakeWearRepository(serverIpRepository = get(), client = get())
         }
         single<LmuWindowsBrakeTemperatureRepository> {
             WebSocketLmuWindowsBrakeTemperatureRepository(serverIpRepository = get(), client = get())
@@ -402,6 +409,9 @@ private fun androidDataModuleThresholdPreferences(context: Context) =
         }
         single<LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository> {
             createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsVehicleClassBrakeWearPreferencesRepository> {
+            createLmuWindowsVehicleClassBrakeWearPreferencesRepository(context.filesDir.absolutePath)
         }
         single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
             createLmuWindowsRemainingVirtualEnergyPreferencesRepository(context.filesDir.absolutePath)

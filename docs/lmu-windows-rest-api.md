@@ -223,7 +223,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 | `racePosition` | 順位（`placeOverall`/`placeInClass`）、クラス内トップ・最後尾とのギャップ（`gapToFirstInClassTime`/`gapToLastInClassTime`等） |
 | `sessionTime.timeOfDay` | セッション内の時刻（秒。実測値 `29659.5` は 1 日 86400 秒に対する経過秒数の可能性がある） |
 | `teamInfo` | `teamName`/`vehicleName`（チーム名・車両名の文字列）に加え、`driverNames` はドライバー名を **1 文字ずつの ASCII コード配列** として返す（例: `[121, 117, ...]` は `"yusuke saito"` の各文字コード＋null終端）。文字列としてそのまま返す `teamName`/`vehicleName` と扱いが異なる点に注意 |
-| `wearables` | `body.aero`（エアロダメージ）、`body.detachableParts`（脱落可能パーツごとの脱落フラグ配列）、`brakes`/`suspension`/`tires`（各 4 輪分の摩耗・状態を表す配列） |
+| `wearables` | `body.aero`（エアロダメージ）、`body.detachableParts`（脱落可能パーツごとの脱落フラグ配列）、`brakes`/`suspension`/`tires`（各 4 輪分の摩耗・状態を表す配列）。**`brakes` は FL/FR/RL/RR の順のブレーキ残り厚さ（単位: meters）で、ブレーキを踏むたびに減ることを実機で確認済み**（KoDriver のブレーキ摩耗表示・警告はこの値を使う。デスクトップ版で取得し、Android 版へは `/ws/lmu_windows/brake_wear` で配信する。取得失敗時は JSON `null` を配信する） |
 | `weatherForecast.nodes` | `Duration`/`Humidity`/`RainChance`/`Sky`/`StartTime`/`Temperature`/`WindDirection`/`WindSpeed` の各キーが **5 要素の配列**（`START`/`NODE_25`/`NODE_50`/`NODE_75`/`FINISH` に対応すると推測）になっている。`/rest/sessions/weather` と同じ天候予報情報を**フィールド名ごとに配列化した別フォーマット**で重複して持っている。`StartTime` は実測ではすべて `0` で、ノードの相対位置を表す値は今回も確認できなかった |
 
 <details>
@@ -408,7 +408,7 @@ KoDriver の現行実装は `OpenFileMappingA` / `MapViewOfFile` で `LMU_Data` 
 
 ### `/rest/garage/brakeinfo`
 
-4 輪分の数値配列のみを返すシンプルなエンドポイント。`[0.036, 0.036, 0.032, 0.032]`（実測、フロント 2 輪が `0.036`、リア 2 輪が `0.032`）の並びは `[FL, FR, RL, RR]` と推測され、値域・小数第 2 桁までの精度からブレーキパッド摩耗率（0.0〜1.0）またはブレーキバイアス関連の係数の可能性がある。`getPlayerGarageData` の `WM_BRAKEPAD-W_FL` 等（0〜100 のセットアップ値）とは値域が異なるため、**別の表現**（消耗の割合等）と推測されるが、正確な意味・単位は未確認。
+4 輪分の数値配列のみを返すシンプルなエンドポイント。**実機で走行（ブレーキ操作）しても値は変化しなかった**ため、ブレーキの摩耗には使えない（KoDriver は `RepairAndRefuel` の `wearables.brakes` を使う）。`[0.036, 0.036, 0.032, 0.032]`（実測、フロント 2 輪が `0.036`、リア 2 輪が `0.032`）の並びは `[FL, FR, RL, RR]` と推測され、値域・小数第 2 桁までの精度からブレーキパッド摩耗率（0.0〜1.0）またはブレーキバイアス関連の係数の可能性がある。`getPlayerGarageData` の `WM_BRAKEPAD-W_FL` 等（0〜100 のセットアップ値）とは値域が異なるため、**別の表現**（消耗の割合等）と推測されるが、正確な意味・単位は未確認。
 
 ### `/rest/garage/UIScreen/TireManagement`
 

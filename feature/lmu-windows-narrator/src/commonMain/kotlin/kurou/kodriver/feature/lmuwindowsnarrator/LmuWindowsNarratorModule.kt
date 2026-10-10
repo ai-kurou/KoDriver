@@ -12,6 +12,8 @@ import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFullCourseYellowFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
@@ -45,6 +47,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedLe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRightReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
@@ -114,6 +117,7 @@ val lmuWindowsNarratorModule: Module =
                 get(),
                 get(),
                 get(),
+                get(),
             )
         }
 
@@ -130,6 +134,7 @@ val lmuWindowsNarratorModule: Module =
         factory { TyreTemperatureUseCases(get(), get(), get(), get(), get()) }
         factory { TyreWearUseCases(get(), get()) }
         factory { BrakeTemperatureUseCases(get(), get()) }
+        factory { BrakeWearUseCases(get(), get()) }
         factory { RemainingVirtualEnergyUseCases(get(), get()) }
         factory { PitTimingUseCases(get(), get(), get()) }
         factory {
@@ -167,6 +172,8 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsTyreWearThresholdPercentageUseCase(get()) }
         factory { ObserveLmuWindowsBrakeTemperatureUseCase(get()) }
         factory { ObserveLmuWindowsVehicleClassBrakeTemperatureHighThresholdUseCase(get()) }
+        factory { ObserveLmuWindowsBrakeWearRemainingUseCase(get(), get()) }
+        factory { ObserveLmuWindowsVehicleClassBrakeWearLowThresholdUseCase(get()) }
         factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
         factory { ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(get()) }
@@ -204,6 +211,7 @@ val lmuWindowsNarratorModule: Module =
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreWearReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase(get()) }
+        factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsBrakeWearReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureOverheatReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsTyreTemperatureColdReadoutTextUseCase(get()) }
         factory(named(Simulator.LmuWindows.id)) { ObserveLmuWindowsVehicleDamageOverheatReadoutTextUseCase(get()) }
@@ -225,6 +233,7 @@ val lmuWindowsNarratorModule: Module =
                 observePitTimingVirtualEnergyImminentReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeRemainingVirtualEnergyReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeBrakeTemperatureReadoutText = get(named(Simulator.LmuWindows.id)),
+                observeBrakeWearReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreWearReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreOverheatReadoutText = get(named(Simulator.LmuWindows.id)),
                 observeTyreColdReadoutText = get(named(Simulator.LmuWindows.id)),

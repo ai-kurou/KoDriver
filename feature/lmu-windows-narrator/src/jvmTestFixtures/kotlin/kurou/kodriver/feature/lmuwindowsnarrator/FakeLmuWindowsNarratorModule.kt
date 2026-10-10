@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
@@ -16,10 +17,12 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READ
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_TEMPERATURE_SELECTED_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_SELECTED_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -35,7 +38,9 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeTemperatureHighThresholdCelsiusDefault
+import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
@@ -50,6 +55,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
@@ -84,6 +90,10 @@ val fakeLmuWindowsNarratorModule =
             FakeLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository()
         }
         single<LmuWindowsBrakeTemperatureRepository> { FakeLmuWindowsBrakeTemperatureRepository() }
+        single<LmuWindowsVehicleClassBrakeWearPreferencesRepository> {
+            FakeLmuWindowsVehicleClassBrakeWearPreferencesRepository()
+        }
+        single<LmuWindowsBrakeWearRepository> { FakeLmuWindowsBrakeWearRepository() }
         single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
         single<LmuWindowsTyreTemperatureReadoutTextPreferencesRepository> {
             FakeLmuWindowsTyreTemperatureReadoutTextPreferencesRepository()
@@ -230,6 +240,10 @@ class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemp
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
 }
 
+class FakeLmuWindowsBrakeWearRepository : LmuWindowsBrakeWearRepository {
+    override fun brakeWearStream(): Flow<LmuWindowsBrakeWearData?> = emptyFlow()
+}
+
 class FakeLmuWindowsBrakeTemperatureRepository : LmuWindowsBrakeTemperatureRepository {
     override fun brakeTemperatureStream(): Flow<LmuWindowsBrakeTemperatureData> = emptyFlow()
 }
@@ -340,6 +354,39 @@ class FakeLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository :
         celsius: Int,
     ) {
         thresholds.update { it + (vehicleClass to celsius) }
+    }
+
+    override fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData> = selected
+
+    override suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData) {
+        selected.update { vehicleClass }
+    }
+
+    override fun observeReadoutText(): Flow<String> = text
+
+    override suspend fun saveReadoutText(text: String) {
+        this.text.update { text }
+    }
+}
+
+class FakeLmuWindowsVehicleClassBrakeWearPreferencesRepository :
+    LmuWindowsVehicleClassBrakeWearPreferencesRepository {
+    private val thresholds =
+        MutableStateFlow(
+            lmuWindowsAllVehicleClasses.associateWith {
+                lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault(it)
+            },
+        )
+    private val selected = MutableStateFlow(LMU_WINDOWS_VEHICLE_CLASS_BRAKE_WEAR_SELECTED_DEFAULT)
+    private val text = MutableStateFlow(LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT)
+
+    override fun observeLowThresholdPercent(): Flow<Map<LmuWindowsVehicleClassData, Int>> = thresholds
+
+    override suspend fun saveLowThresholdPercent(
+        vehicleClass: LmuWindowsVehicleClassData,
+        percent: Int,
+    ) {
+        thresholds.update { it + (vehicleClass to percent) }
     }
 
     override fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData> = selected

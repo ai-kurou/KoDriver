@@ -19,6 +19,7 @@ import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
 import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
+import kurou.kodriver.core.lmuwindowsrestapidata.lmuWindowsRestApiDataModule
 import kurou.kodriver.core.texttospeechdata.textToSpeechDataModule
 import kurou.kodriver.core.windowsstartupdata.windowsStartupDataModule
 import kurou.kodriver.data.AnonymousUserId
@@ -73,6 +74,7 @@ fun main() {
                                         listOf(
                                             desktopDataModule,
                                             lmuWindowsDataModule,
+                                            lmuWindowsRestApiDataModule,
                                             gt7Ps5DataModule,
                                             aceWindowsDataModule,
                                             deviceVolumeDataModule,
