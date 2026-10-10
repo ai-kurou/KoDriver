@@ -34,6 +34,7 @@ data class OtherListUiState(
     val readoutStartSoundType: ReadoutStartSoundType = READOUT_START_SOUND_TYPE_DEFAULT,
     val voiceId: String = VOICE_ID_UNSPECIFIED,
     val voiceSpeed: Float = VOICE_SPEED_DEFAULT,
+    val serverIp: String? = null,
     val themeMode: ThemeMode = THEME_MODE_DEFAULT,
     val ttsUnavailableGuidance: TtsUnavailableGuidance? = null,
     val startupEnabled: Boolean = false,

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
 import kurou.kodriver.domain.usecase.ObserveVoiceSpeedUseCase
@@ -57,6 +59,7 @@ data class OtherListSettingsUseCases(
     val observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
     val observeSoundVolume: ObserveSoundVolumeUseCase,
     val observeThemeMode: ObserveThemeModeUseCase,
+    val observeServerIp: ObserveServerIpUseCase?,
 )
 
 /**
@@ -126,6 +129,8 @@ class OtherListViewModel(
                 dynamicColorEnabled = dynamicColorEnabled,
                 hapticFeedbackEnabled = hapticFeedbackEnabled,
             )
+        }.combine(settingsUseCases.observeServerIp?.invoke() ?: flowOf(null)) { state, serverIp ->
+            state.copy(serverIp = serverIp)
         }.combine(settingsUseCases.observeThemeMode()) { state, themeMode ->
             state.copy(themeMode = themeMode)
         }.combine(settingsUseCases.observeVoice()) { state, voiceId ->

@@ -92,6 +92,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.section_connection_s
 import kurou.kodriver.feature.otherlist.generated.resources.section_information
 import kurou.kodriver.feature.otherlist.generated.resources.section_overlay_settings
 import kurou.kodriver.feature.otherlist.generated.resources.section_readout_settings
+import kurou.kodriver.feature.otherlist.generated.resources.server_ip_not_configured
 import kurou.kodriver.feature.otherlist.generated.resources.theme_dark
 import kurou.kodriver.feature.otherlist.generated.resources.theme_light
 import kurou.kodriver.feature.otherlist.generated.resources.theme_system
@@ -436,11 +437,31 @@ private fun otherVoiceSettingsItemSupportingContent(
         }
     }
 
+@Composable
+private fun OtherServerIpSummary(serverIp: String?) {
+    Text(serverIp ?: stringResource(Res.string.server_ip_not_configured))
+}
+
+@Composable
+private fun OtherThemeSummary(themeMode: ThemeMode) {
+    val label =
+        when (themeMode) {
+            ThemeMode.SYSTEM -> Res.string.theme_system
+            ThemeMode.LIGHT -> Res.string.theme_light
+            ThemeMode.DARK -> Res.string.theme_dark
+        }
+    Text(stringResource(label))
+}
+
 private fun otherListItemSupportingContent(
     item: OtherListItemType,
     uiState: OtherListUiState,
 ): (@Composable () -> Unit)? =
     when (item) {
+        OtherListItemType.ServerIp -> {
+            { OtherServerIpSummary(uiState.serverIp) }
+        }
+
         OtherListItemType.AccessLocalNetworkPermission -> {
             {
                 if (uiState.accessLocalNetworkPermissionGranted) {
@@ -470,15 +491,7 @@ private fun otherListItemSupportingContent(
         }
 
         OtherListItemType.Theme -> {
-            {
-                val label =
-                    when (uiState.themeMode) {
-                        ThemeMode.SYSTEM -> Res.string.theme_system
-                        ThemeMode.LIGHT -> Res.string.theme_light
-                        ThemeMode.DARK -> Res.string.theme_dark
-                    }
-                Text(stringResource(label))
-            }
+            { OtherThemeSummary(uiState.themeMode) }
         }
 
         OtherListItemType.ReadoutStartSound -> {

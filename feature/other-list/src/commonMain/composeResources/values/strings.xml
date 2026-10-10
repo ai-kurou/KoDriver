@@ -40,4 +40,5 @@
     <string name="local_network_permission_granted">許可済み</string>
     <string name="local_network_permission_not_granted">許可されていません</string>
     <string name="local_network_permission_open_settings">タップして設定を開く</string>
+    <string name="server_ip_not_configured">未設定</string>
 </resources>
