@@ -19,7 +19,8 @@ class OtherVoicePitchDetailPaneScreenshotTest {
                 KoDriverTheme {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
-                            OtherVoicePitchDetailPane(
+                            OtherVoicePitchDetailPaneContent(
+                                uiState = OtherVoicePitchDetailUiState(),
                                 canNavigateBack = true,
                                 onBack = {},
                             )
