@@ -15,17 +15,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -33,13 +30,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.DetailPaneTopAppBar
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -49,7 +49,6 @@ import kurou.kodriver.feature.readoutlist.generated.resources.root_disabled_bann
 import kurou.kodriver.feature.readoutlist.generated.resources.root_disabled_banner_message
 import org.jetbrains.compose.resources.stringResource
 
-private val READOUT_DETAIL_TOP_APP_BAR_HEIGHT = 56.dp
 private const val READOUT_DETAIL_ROOT_DISABLED_ALPHA = 0.38f
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,19 +74,11 @@ internal fun ReadoutDetailPane(
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
-                title = { Text(title) },
-                navigationIcon = {
-                    if (canNavigateBack) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(Res.string.navigate_back),
-                            )
-                        }
-                    }
-                },
-                expandedHeight = READOUT_DETAIL_TOP_APP_BAR_HEIGHT,
+            DetailPaneTopAppBar(
+                title = title,
+                canNavigateBack = canNavigateBack,
+                navigateBackContentDescription = stringResource(Res.string.navigate_back),
+                onBack = onBack,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -118,9 +109,13 @@ private fun RootDisabledBanner(
     itemName: String,
     onEnableRoot: () -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     val contentColor = KoDriverExtendedColors.current.onWarningContainer
     Surface(
-        onClick = onEnableRoot,
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+            onEnableRoot()
+        },
         modifier =
             Modifier
                 .fillMaxWidth()

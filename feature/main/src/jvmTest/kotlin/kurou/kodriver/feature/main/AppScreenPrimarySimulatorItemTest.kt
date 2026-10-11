@@ -1,8 +1,12 @@
 package kurou.kodriver.feature.main
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -98,13 +102,22 @@ class AppScreenPrimarySimulatorItemTest {
         var selectedId: String? = null
         var expanded by mutableStateOf(true)
 
+        val feedback = mutableListOf<HapticFeedbackType>()
+        val haptic =
+            object : HapticFeedback {
+                override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+                    feedback += hapticFeedbackType
+                }
+            }
         rule.setContent {
-            AppScreenPrimarySimulatorIndicator(
-                simulatorId = "lmu_windows",
-                expanded = expanded,
-                onExpandedChange = { expanded = it },
-                onSimulatorSelected = { selectedId = it },
-            )
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                AppScreenPrimarySimulatorIndicator(
+                    simulatorId = "lmu_windows",
+                    expanded = expanded,
+                    onExpandedChange = { expanded = it },
+                    onSimulatorSelected = { selectedId = it },
+                )
+            }
         }
 
         val node = rule.onNode(hasText("Gran Turismo 7（PS5）"))
@@ -113,5 +126,6 @@ class AppScreenPrimarySimulatorItemTest {
 
         assertEquals("gt7_ps5", selectedId)
         assertFalse(expanded)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), feedback)
     }
 }

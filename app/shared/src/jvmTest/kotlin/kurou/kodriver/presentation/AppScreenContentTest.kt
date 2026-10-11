@@ -310,7 +310,10 @@ class AppScreenContentTest {
         rule.onNodeWithText("OtherContent").performClick()
         rule.waitForIdle()
 
-        assertEquals(listOf(HapticFeedbackType.ContextClick), fakeHaptic.performedTypes)
+        assertEquals(
+            listOf(HapticFeedbackType.ContextClick, HapticFeedbackType.ContextClick),
+            fakeHaptic.performedTypes,
+        )
     }
 
     @Test
