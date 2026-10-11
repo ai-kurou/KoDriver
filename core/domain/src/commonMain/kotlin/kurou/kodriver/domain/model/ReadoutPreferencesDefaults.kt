@@ -5,35 +5,9 @@ package kurou.kodriver.domain.model
 // listPaneに表示される ReadoutItemKey は必ずここに列挙すること（省略＝デフォルトtrue、ではない）。
 val READOUT_ENABLED_STATE_DEFAULT: Map<Simulator, Map<ReadoutItemKey, Boolean>> =
     mapOf(
-        Simulator.LmuWindows to
-            mapOf(
-                LmuWindowsReadoutItemKey.Flag.Root to true,
-                LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
-                LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
-                LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
-                LmuWindowsReadoutItemKey.PitTiming.Root to true,
-                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false,
-                LmuWindowsReadoutItemKey.TyreWear.Root to false,
-                LmuWindowsReadoutItemKey.BrakeTemperature.Root to false,
-                LmuWindowsReadoutItemKey.BrakeWear.Root to false,
-                LmuWindowsReadoutItemKey.MyBestLap.Root to false,
-            ),
-        Simulator.Gt7Ps5 to
-            mapOf(
-                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
-                Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true,
-                Gt7Ps5ReadoutItemKey.TyreTemperature.Root to true,
-                Gt7Ps5ReadoutItemKey.MyBestLap.Root to true,
-            ),
-        Simulator.AceWindows to
-            mapOf(
-                AceWindowsReadoutItemKey.Flag.Root to true,
-                AceWindowsReadoutItemKey.VehicleApproach.Root to true,
-                AceWindowsReadoutItemKey.TyreTemperature.Root to true,
-                AceWindowsReadoutItemKey.RemainingFuel.Root to true,
-                AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
-                AceWindowsReadoutItemKey.MyBestLap.Root to false,
-            ),
+        Simulator.LmuWindows to LMU_WINDOWS_READOUT_ENABLED_STATE_DEFAULT,
+        Simulator.Gt7Ps5 to GT7_PS5_READOUT_ENABLED_STATE_DEFAULT,
+        Simulator.AceWindows to ACE_WINDOWS_READOUT_ENABLED_STATE_DEFAULT,
     )
 
 // [READOUT_ENABLED_STATE_DEFAULT] を ReadoutItemKey 単位にフラット化したもの。
