@@ -293,10 +293,15 @@ private fun OtherListItemLeadingIcon(
 }
 
 @Composable
-private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
+private fun OtherListItemTrailingIcon(
+    itemType: OtherListItemType,
+    isSelected: Boolean,
+) {
     when (itemType) {
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
+        -> OtherListGameTagsWithChevron(itemType = itemType, isSelected = isSelected)
+
         OtherListItemType.Volume,
         OtherListItemType.Voice,
         OtherListItemType.VoiceSpeed,
@@ -683,7 +688,7 @@ private fun OtherListItem(
                 OtherListItemType.License,
                 OtherListItemType.DebugState,
                 -> {
-                    OtherListItemTrailingIcon(item)
+                    OtherListItemTrailingIcon(item, isSelected)
                 }
             }
         },

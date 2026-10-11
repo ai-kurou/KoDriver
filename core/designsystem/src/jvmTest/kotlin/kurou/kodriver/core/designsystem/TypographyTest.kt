@@ -6,6 +6,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import org.junit.Rule
@@ -75,5 +76,20 @@ class TypographyTest {
         }
 
         assertEquals(expectedFontSize, actual?.fontSize)
+    }
+
+    @Test
+    fun `koDriverTagTextStyleはlabelSmallを太字にする`() {
+        var actual: TextStyle? = null
+        var expectedSize: TextUnit? = null
+        composeRule.setContent {
+            MaterialTheme {
+                actual = koDriverTagTextStyle()
+                expectedSize = MaterialTheme.typography.labelSmall.fontSize
+            }
+        }
+
+        assertEquals(FontWeight.Bold, actual?.fontWeight)
+        assertEquals(expectedSize, actual?.fontSize)
     }
 }

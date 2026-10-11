@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 
 /**
  * KoDriver アプリ全体のタイポグラフィ定義。
@@ -53,3 +54,13 @@ fun koDriverNumericTextStyle(baseStyle: TextStyle): TextStyle =
 @ReadOnlyComposable
 fun koDriverMonospaceTextStyle(): TextStyle =
     MaterialTheme.typography.bodySmall.merge(TextStyle(fontFamily = FontFamily.Monospace))
+
+/**
+ * 項目に付ける「LMU」「GT7」等の短いタグ表示に適用するスタイル。
+ *
+ * `labelSmall` を太字にしたもので、小さくても識別しやすいようにする。
+ */
+@Composable
+@ReadOnlyComposable
+fun koDriverTagTextStyle(): TextStyle =
+    MaterialTheme.typography.labelSmall.merge(TextStyle(fontWeight = FontWeight.Bold))
