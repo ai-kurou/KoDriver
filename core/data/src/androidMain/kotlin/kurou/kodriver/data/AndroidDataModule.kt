@@ -31,6 +31,7 @@ import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.release.HttpServerVersionRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
@@ -58,6 +59,7 @@ import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
@@ -104,8 +106,11 @@ fun androidDataModule(context: Context) =
  */
 private fun androidDataModuleMisc(context: Context) =
     module {
-        single<DebugStateCardOrderPreferencesRepository> {
-            createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath)
+        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+            createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath, Simulator.LmuWindows)
+        }
+        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
+            createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath, Simulator.AceWindows)
         }
         single<SoundVolumePreferencesRepository> {
             createSoundVolumePreferencesRepository(context.filesDir.absolutePath)

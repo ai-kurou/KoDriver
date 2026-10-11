@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
@@ -31,6 +32,7 @@ import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.koin.core.qualifier.named
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.assertNotNull
@@ -80,7 +82,9 @@ class AceWindowsDebugStateDetailModuleTest {
                             aceWindowsTyreCarcassTemperatureRepository
                         }
                         single<AceWindowsVehicleApproachRepository> { aceWindowsVehicleApproachRepository }
-                        single<DebugStateCardOrderPreferencesRepository> { debugStateCardOrderPreferencesRepository }
+                        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
+                            debugStateCardOrderPreferencesRepository
+                        }
                     },
                 )
             }.koin

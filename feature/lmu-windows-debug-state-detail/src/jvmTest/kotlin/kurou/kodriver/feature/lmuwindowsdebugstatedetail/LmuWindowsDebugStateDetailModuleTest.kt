@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
@@ -39,6 +40,7 @@ import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.koin.core.qualifier.named
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.assertNotNull
@@ -87,7 +89,9 @@ class LmuWindowsDebugStateDetailModuleTest {
                 modules(
                     lmuWindowsDebugStateDetailModule,
                     module {
-                        single<DebugStateCardOrderPreferencesRepository> { debugStateCardOrderPreferencesRepository }
+                        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+                            debugStateCardOrderPreferencesRepository
+                        }
                         single<LmuWindowsBrakeTemperatureRepository> { lmuWindowsBrakeTemperatureRepository }
                         single<LmuWindowsBrakeWearRepository> { lmuWindowsBrakeWearRepository }
                         single<LmuWindowsFlagRepository> { lmuWindowsFlagRepository }
