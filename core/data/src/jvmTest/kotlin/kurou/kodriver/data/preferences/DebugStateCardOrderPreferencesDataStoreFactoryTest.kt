@@ -1,6 +1,7 @@
 package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Simulator
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -20,9 +21,9 @@ class DebugStateCardOrderPreferencesDataStoreFactoryTest {
     @Test
     fun `debug_state_card_order_preferences設定が正しいファイルに書き込まれる`() =
         runTest {
-            val dataStore = createDebugStateCardOrderPreferencesDataStore(tempDir.absolutePath)
+            val dataStore = createDebugStateCardOrderPreferencesDataStore(tempDir.absolutePath, Simulator.LmuWindows)
             dataStore.updateData { it.copy(cardOrder = listOf("SESSION")) }
 
-            assertTrue(tempDir.resolve("debug_state_card_order_preferences.pb").exists())
+            assertTrue(tempDir.resolve("debug_state_card_order_preferences_lmu_windows.pb").exists())
         }
 }

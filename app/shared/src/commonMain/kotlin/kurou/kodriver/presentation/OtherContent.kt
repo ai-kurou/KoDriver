@@ -84,9 +84,7 @@ fun OtherContent(
         onDynamicColorEnabledChange = viewModel::onDynamicColorEnabledChange,
         onHapticFeedbackEnabledChange = viewModel::onHapticFeedbackEnabledChange,
         onStartupEnabledChange = viewModel::onStartupEnabledChange,
-        onAppVersionTapped = {
-            // デバッグ状態詳細は新モジュールへ移行中のため、アプリへの配線まで無効にする。
-        },
+        onAppVersionTapped = { viewModel.selectItem(OtherListItemType.DebugState) },
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,

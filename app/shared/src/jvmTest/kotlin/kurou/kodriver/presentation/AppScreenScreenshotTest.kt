@@ -112,7 +112,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        otherContent = { _ ->
+                        otherContent = { _, _ ->
                             OtherContent(
                                 uiState = OtherListUiState(),
                                 onItemSelected = {},
@@ -248,7 +248,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        otherContent = { _ ->
+                        otherContent = { _, _ ->
                             OtherContent(
                                 uiState = OtherListUiState(),
                                 onItemSelected = {},

@@ -25,6 +25,7 @@ import kurou.kodriver.data.preferences.createVoicePreferencesRepository
 import kurou.kodriver.data.preferences.createVoiceSpeedPreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
@@ -50,6 +51,7 @@ import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VoicePitchPreferencesRepository
 import kurou.kodriver.domain.repository.VoicePreferencesRepository
 import kurou.kodriver.domain.repository.VoiceSpeedPreferencesRepository
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 internal val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
@@ -80,8 +82,17 @@ val desktopDataModule =
         single<ReadoutStartSoundEnabledPreferencesRepository> {
             createReadoutStartSoundEnabledPreferencesRepository(directory = kodriverDirectory)
         }
-        single<DebugStateCardOrderPreferencesRepository> {
-            createDebugStateCardOrderPreferencesRepository(directory = kodriverDirectory)
+        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+            createDebugStateCardOrderPreferencesRepository(
+                directory = kodriverDirectory,
+                simulator = Simulator.LmuWindows,
+            )
+        }
+        single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
+            createDebugStateCardOrderPreferencesRepository(
+                directory = kodriverDirectory,
+                simulator = Simulator.AceWindows,
+            )
         }
         single<SoundVolumePreferencesRepository> {
             createSoundVolumePreferencesRepository(directory = kodriverDirectory)

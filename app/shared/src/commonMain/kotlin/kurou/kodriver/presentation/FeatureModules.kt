@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import kurou.kodriver.feature.acewindowsconnection.aceWindowsConnectionModule
+import kurou.kodriver.feature.acewindowsdebugstatedetail.aceWindowsDebugStateDetailModule
 import kurou.kodriver.feature.acewindowsnarrator.aceWindowsNarratorModule
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.aceWindowsReadoutFlagDetailModule
 import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.aceWindowsReadoutMyBestLapDetailModule
@@ -9,12 +10,14 @@ import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.aceWindo
 import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.aceWindowsReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.aceWindowsReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
+import kurou.kodriver.feature.gt7ps5debugstatedetail.gt7Ps5DebugStateDetailModule
 import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.gt7Ps5ReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.gt7Ps5ReadoutRemainingFuelDetailModule
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.gt7Ps5ReadoutRemainingFuelLapsDetailModule
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.gt7Ps5ReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.lmuwindowsconnection.lmuWindowsConnectionModule
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.lmuWindowsDebugStateDetailModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuWindowsNarratorModule
 import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.lmuWindowsReadoutBrakeTemperatureDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.lmuWindowsReadoutBrakeWearDetailModule
@@ -66,6 +69,9 @@ val featureModules: List<Module> =
         lmuWindowsNarratorModule,
         gt7Ps5NarratorModule,
         aceWindowsNarratorModule,
+        lmuWindowsDebugStateDetailModule,
+        gt7Ps5DebugStateDetailModule,
+        aceWindowsDebugStateDetailModule,
         otherListModule,
         otherFeedbackDetailModule,
         otherReadoutStartSoundDetailModule,
