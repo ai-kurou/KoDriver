@@ -10,16 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.DebugStateCardKey
-import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import kotlin.time.Clock
-
-internal data class DebugStateCardOrderUseCases(
-    val observeCardOrder: ObserveDebugStateCardOrderUseCase,
-    val resolveCardOrder: ResolveDebugStateCardOrderUseCase,
-    val saveCardOrder: SaveDebugStateCardOrderUseCase,
-)
 
 private const val SIDE_BY_SIDE_TICK_INTERVAL_MS = 100L
 
