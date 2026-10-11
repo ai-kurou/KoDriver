@@ -32,19 +32,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.DeviceThermostat
-import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
-import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.PlaylistRemove
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -119,38 +111,6 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector =
         is LmuWindowsReadoutItemKey -> lmuWindowsItemIcon(itemId)
         is Gt7Ps5ReadoutItemKey -> gt7Ps5ItemIcon(itemId)
         is AceWindowsReadoutItemKey -> aceWindowsItemIcon(itemId)
-    }
-
-private fun lmuWindowsItemIcon(itemId: LmuWindowsReadoutItemKey): ImageVector =
-    when (itemId) {
-        is LmuWindowsReadoutItemKey.VehicleApproach -> Icons.Filled.DirectionsCar
-        is LmuWindowsReadoutItemKey.Flag -> Icons.Filled.Flag
-        is LmuWindowsReadoutItemKey.VehicleDamage -> Icons.Filled.Build
-        is LmuWindowsReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
-        is LmuWindowsReadoutItemKey.PitTiming -> Icons.Filled.AccessTime
-        is LmuWindowsReadoutItemKey.RemainingVirtualEnergy -> Icons.Filled.LocalGasStation
-        is LmuWindowsReadoutItemKey.TyreWear -> Icons.Filled.DonutLarge
-        is LmuWindowsReadoutItemKey.BrakeTemperature -> Icons.Filled.DeviceThermostat
-        is LmuWindowsReadoutItemKey.BrakeWear -> Icons.Filled.Speed
-        is LmuWindowsReadoutItemKey.MyBestLap -> Icons.Filled.Timer
-    }
-
-private fun gt7Ps5ItemIcon(itemId: Gt7Ps5ReadoutItemKey): ImageVector =
-    when (itemId) {
-        is Gt7Ps5ReadoutItemKey.MyBestLap -> Icons.Filled.Timer
-        is Gt7Ps5ReadoutItemKey.RemainingFuelLaps -> Icons.Filled.LocalGasStation
-        is Gt7Ps5ReadoutItemKey.RemainingFuel -> Icons.Filled.LocalGasStation
-        is Gt7Ps5ReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
-    }
-
-private fun aceWindowsItemIcon(itemId: AceWindowsReadoutItemKey): ImageVector =
-    when (itemId) {
-        is AceWindowsReadoutItemKey.VehicleApproach -> Icons.Filled.DirectionsCar
-        is AceWindowsReadoutItemKey.Flag -> Icons.Filled.Flag
-        is AceWindowsReadoutItemKey.RemainingFuel -> Icons.Filled.LocalGasStation
-        is AceWindowsReadoutItemKey.RemainingFuelLaps -> Icons.Filled.LocalGasStation
-        is AceWindowsReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
-        is AceWindowsReadoutItemKey.MyBestLap -> Icons.Filled.Timer
     }
 
 private fun readoutItemIndex(
