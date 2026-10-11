@@ -68,27 +68,7 @@ import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.app.shared.generated.resources.nav_readout
-import kurou.kodriver.feature.acewindowsreadout.flagdetail.AceWindowsReadoutFlagDetailPane
-import kurou.kodriver.feature.acewindowsreadout.mybestlapdetail.AceWindowsReadoutMyBestLapDetailPane
-import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsReadoutRemainingFuelDetailPane
-import kurou.kodriver.feature.acewindowsreadout.remainingfuellapsdetail.AceWindowsReadoutRemainingFuelLapsDetailPane
-import kurou.kodriver.feature.acewindowsreadout.tyretemperaturedetail.AceWindowsReadoutTyreTemperatureDetailPane
-import kurou.kodriver.feature.acewindowsreadout.vehicleapproachdetail.AceWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
-import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
-import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.Gt7Ps5ReadoutRemainingFuelDetailPane
-import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
-import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.Gt7Ps5ReadoutTyreTemperatureDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.braketemperaturedetail.LmuWindowsReadoutBrakeTemperatureDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.brakeweardetail.LmuWindowsReadoutBrakeWearDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.LmuWindowsReadoutMyBestLapDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.LmuWindowsReadoutPitTimingDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.LmuWindowsReadoutRemainingVirtualEnergyDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.LmuWindowsReadoutTyreTemperatureDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail.LmuWindowsReadoutTyreWearDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
-import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
@@ -793,101 +773,6 @@ internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
         is LmuWindowsReadoutListItemType -> LmuWindowsReadoutItemDetailContent(itemType)
         is Gt7Ps5ReadoutListItemType -> Gt7Ps5ReadoutItemDetailContent(itemType)
         is AceWindowsReadoutListItemType -> AceWindowsReadoutItemDetailContent(itemType)
-    }
-}
-
-@Composable
-private fun LmuWindowsReadoutItemDetailContent(itemType: LmuWindowsReadoutListItemType) {
-    when (itemType) {
-        LmuWindowsReadoutListItemType.VehicleApproach -> {
-            LmuWindowsReadoutVehicleApproachDetailPane()
-        }
-
-        LmuWindowsReadoutListItemType.Flag -> {
-            LmuWindowsReadoutFlagDetailPane()
-        }
-
-        LmuWindowsReadoutListItemType.VehicleDamage -> {
-            LmuWindowsReadoutVehicleDamageDetailPane()
-        }
-
-        LmuWindowsReadoutListItemType.TyreTemperature -> {
-            LmuWindowsReadoutTyreTemperatureDetailPane()
-        }
-
-        LmuWindowsReadoutListItemType.PitTiming -> {
-            LmuWindowsReadoutPitTimingDetailPane()
-        }
-
-        LmuWindowsReadoutListItemType.RemainingVirtualEnergy -> {
-            LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
-        }
-
-        LmuWindowsReadoutListItemType.TyreWear -> {
-            LmuWindowsReadoutTyreWearDetailPane()
-        }
-
-        LmuWindowsReadoutListItemType.BrakeTemperature -> {
-            LmuWindowsReadoutBrakeTemperatureDetailPane()
-        }
-
-        LmuWindowsReadoutListItemType.BrakeWear -> {
-            LmuWindowsReadoutBrakeWearDetailPane()
-        }
-
-        LmuWindowsReadoutListItemType.MyBestLap -> {
-            LmuWindowsReadoutMyBestLapDetailPane()
-        }
-    }
-}
-
-@Composable
-private fun Gt7Ps5ReadoutItemDetailContent(itemType: Gt7Ps5ReadoutListItemType) {
-    when (itemType) {
-        Gt7Ps5ReadoutListItemType.MyBestLap -> {
-            Gt7Ps5ReadoutMyBestLapDetailPane()
-        }
-
-        Gt7Ps5ReadoutListItemType.RemainingFuelLaps -> {
-            Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
-        }
-
-        Gt7Ps5ReadoutListItemType.RemainingFuel -> {
-            Gt7Ps5ReadoutRemainingFuelDetailPane()
-        }
-
-        Gt7Ps5ReadoutListItemType.TyreTemperature -> {
-            Gt7Ps5ReadoutTyreTemperatureDetailPane()
-        }
-    }
-}
-
-@Composable
-private fun AceWindowsReadoutItemDetailContent(itemType: AceWindowsReadoutListItemType) {
-    when (itemType) {
-        AceWindowsReadoutListItemType.Flag -> {
-            AceWindowsReadoutFlagDetailPane()
-        }
-
-        AceWindowsReadoutListItemType.TyreTemperature -> {
-            AceWindowsReadoutTyreTemperatureDetailPane()
-        }
-
-        AceWindowsReadoutListItemType.RemainingFuel -> {
-            AceWindowsReadoutRemainingFuelDetailPane()
-        }
-
-        AceWindowsReadoutListItemType.RemainingFuelLaps -> {
-            AceWindowsReadoutRemainingFuelLapsDetailPane()
-        }
-
-        AceWindowsReadoutListItemType.VehicleApproach -> {
-            AceWindowsReadoutVehicleApproachDetailPane()
-        }
-
-        AceWindowsReadoutListItemType.MyBestLap -> {
-            AceWindowsReadoutMyBestLapDetailPane()
-        }
     }
 }
 
