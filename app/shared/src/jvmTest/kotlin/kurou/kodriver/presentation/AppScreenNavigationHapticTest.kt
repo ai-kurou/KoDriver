@@ -35,7 +35,17 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        assertEquals(List(6) { HapticFeedbackType.ContextClick }, haptic.performedTypes)
+        assertEquals(
+            listOf(
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+            ),
+            haptic.performedTypes,
+        )
     }
 
     @Test
@@ -61,7 +71,7 @@ class AppScreenNavigationHapticTest {
 
         assertEquals("gt7_ps5", selectedId)
         rule.onNodeWithTag("simulatorSelectionPopup").assertDoesNotExist()
-        assertEquals(List(2) { HapticFeedbackType.ContextClick }, haptic.performedTypes)
+        assertEquals(listOf(HapticFeedbackType.ContextClick, HapticFeedbackType.ContextClick), haptic.performedTypes)
     }
 
     @Test
@@ -131,7 +141,17 @@ class AppScreenNavigationHapticTest {
             }
         }
 
-        assertEquals(List(6) { HapticFeedbackType.ContextClick }, haptic.performedTypes)
+        assertEquals(
+            listOf(
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+                HapticFeedbackType.ContextClick,
+            ),
+            haptic.performedTypes,
+        )
     }
 
     @Test
@@ -157,7 +177,7 @@ class AppScreenNavigationHapticTest {
 
         assertEquals("gt7_ps5", selectedId)
         rule.onNodeWithTag("simulatorSelectionPopup").assertDoesNotExist()
-        assertEquals(List(2) { HapticFeedbackType.ContextClick }, haptic.performedTypes)
+        assertEquals(listOf(HapticFeedbackType.ContextClick, HapticFeedbackType.ContextClick), haptic.performedTypes)
     }
 
     @Test

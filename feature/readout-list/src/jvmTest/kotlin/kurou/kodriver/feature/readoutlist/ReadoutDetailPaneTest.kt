@@ -314,7 +314,7 @@ class ReadoutDetailPaneTest {
 
         banner.performTouchInput { click(Offset(1f, center.y)) }
         assertEquals(2, enableCount)
-        assertEquals(List(2) { HapticFeedbackType.ContextClick }, feedback)
+        assertEquals(listOf(HapticFeedbackType.ContextClick, HapticFeedbackType.ContextClick), feedback)
     }
 
     @Test
