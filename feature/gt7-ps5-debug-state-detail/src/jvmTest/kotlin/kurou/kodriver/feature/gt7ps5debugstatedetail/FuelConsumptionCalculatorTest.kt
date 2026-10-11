@@ -56,6 +56,20 @@ class FuelConsumptionCalculatorTest {
         assertNull(calculateGt7FuelConsumption(sampleGt7Telemetry(lapCount = 3, gasLevel = 70f, gasCapacity = 70f)))
     }
 
+    @Test
+    fun `GT7 燃料値が非有限の場合は消費量と残量割合を返さない`() {
+        listOf(
+            Float.NaN to 70f,
+            Float.POSITIVE_INFINITY to 70f,
+            40f to Float.NaN,
+            40f to Float.POSITIVE_INFINITY,
+        ).forEach { (gasLevel, gasCapacity) ->
+            val telemetry = sampleGt7Telemetry(lapCount = 3, gasLevel = gasLevel, gasCapacity = gasCapacity)
+            assertNull(calculateGt7FuelConsumption(telemetry))
+            assertNull(calculateGt7FuelRemainingPercent(telemetry))
+        }
+    }
+
     private fun sampleGt7Telemetry(
         lapCount: Int,
         gasLevel: Float,

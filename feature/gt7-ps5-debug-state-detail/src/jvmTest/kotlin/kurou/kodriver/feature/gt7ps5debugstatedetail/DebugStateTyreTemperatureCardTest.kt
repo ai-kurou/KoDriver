@@ -4,7 +4,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,6 +36,18 @@ class DebugStateTyreTemperatureCardTest(
         fun cases(): List<Array<Any?>> =
             listOf(
                 arrayOf(null, listOf("未取得")),
+                arrayOf(
+                    sampleGt7Ps5Telemetry().copy(
+                        tyreTemperature =
+                            Gt7Ps5TyreTemperatureData(
+                                CelsiusReading(0f),
+                                CelsiusReading(0f),
+                                CelsiusReading(0f),
+                                CelsiusReading(0f),
+                            ),
+                    ),
+                    listOf("未取得"),
+                ),
                 arrayOf(sampleGt7Ps5Telemetry(), listOf("FL 69.0℃", "FR 85.0℃", "RL 100.0℃", "RR 110.0℃")),
             )
     }
