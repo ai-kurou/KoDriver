@@ -2,94 +2,22 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.DebugStateCardKey
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
-import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
-import kurou.kodriver.domain.model.LmuWindowsPitStatusData
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
-import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreDetachedUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import kotlin.time.Clock
-
-private data class RaceState(
-    val raceFlags: LmuWindowsRaceFlagsData?,
-    val virtualEnergy: LmuWindowsVirtualEnergyData?,
-    val vehicleApproach: LmuWindowsVehicleApproachData?,
-    val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData?,
-    val brakeWear: LmuWindowsBrakeWearRemainingData?,
-    val brakeTemperature: LmuWindowsBrakeTemperatureData?,
-    val lmuWindowsVehicleClass: LmuWindowsVehicleClassData?,
-    val lmuWindowsPitStatus: LmuWindowsPitStatusData?,
-    val vehicleDamage: LmuWindowsVehicleDamageData?,
-    val tyreDetached: LmuWindowsTyreDetachedData?,
-)
-
-private data class OptionalTelemetry(
-    val lmuWindowsTelemetry: LmuWindowsTelemetryData?,
-    val gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
-    val aceWindowsFuel: AceWindowsFuelData?,
-    val aceWindowsFlag: AceWindowsFlagData?,
-    val gt7Ps5VehicleClass: Gt7Ps5VehicleClassData?,
-    val aceWindowsStatus: AceWindowsStatusData?,
-    val aceWindowsTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData?,
-    val aceWindowsVehicleApproach: AceWindowsVehicleApproachData?,
-    val aceWindowsBestLapTime: AceWindowsBestLapTimeData?,
-    val aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData? = null,
-)
 
 private val lmuWindowsSupportedCardKeys =
     setOf(
@@ -141,35 +69,6 @@ private fun supportedCardKeys(simulator: Simulator): Set<DebugStateCardKey> =
         is Simulator.AceWindows -> aceWindowsSupportedCardKeys
     }
 
-internal data class LmuWindowsDebugStateUseCases(
-    val observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
-    val observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
-    val observeTelemetry: ObserveLmuWindowsUseCase,
-    val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
-    val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
-    val observeBrakeWear: ObserveLmuWindowsBrakeWearRemainingUseCase,
-    val observeBrakeTemperature: ObserveLmuWindowsBrakeTemperatureUseCase,
-    val observeVehicleClass: ObserveLmuWindowsVehicleClassUseCase,
-    val observePitStatus: ObserveLmuWindowsPitStatusUseCase,
-    val observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
-    val observeTyreDetached: ObserveLmuWindowsTyreDetachedUseCase,
-)
-
-internal data class Gt7Ps5DebugStateUseCases(
-    val observeTelemetry: ObserveGt7Ps5UseCase,
-    val observeVehicleClass: ObserveGt7Ps5VehicleClassUseCase,
-)
-
-internal data class AceWindowsDebugStateUseCases(
-    val observeFuel: ObserveAceWindowsFuelUseCase,
-    val observeFlag: ObserveAceWindowsFlagUseCase,
-    val observeStatus: ObserveAceWindowsStatusUseCase,
-    val observeTyreCarcassTemperature: ObserveAceWindowsTyreCarcassTemperatureUseCase,
-    val observeVehicleApproach: ObserveAceWindowsVehicleApproachUseCase,
-    val observeBestLapTime: ObserveAceWindowsBestLapTimeUseCase,
-    val observeRemainingFuelLaps: ObserveAceWindowsRemainingFuelLapsUseCase,
-)
-
 internal data class DebugStateCardOrderUseCases(
     val observeCardOrder: ObserveDebugStateCardOrderUseCase,
     val resolveCardOrder: ResolveDebugStateCardOrderUseCase,
@@ -178,7 +77,6 @@ internal data class DebugStateCardOrderUseCases(
 
 private const val SIDE_BY_SIDE_TICK_INTERVAL_MS = 100L
 
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class DebugStateDetailViewModel(
     observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     lmuWindowsUseCases: LmuWindowsDebugStateUseCases,
@@ -195,146 +93,21 @@ internal class DebugStateDetailViewModel(
     private val _selectedSimulator: StateFlow<Simulator> =
         observeSelectedSimulator()
             .onEach { simulator ->
-                markCardsReceived(simulator, DebugStateCardKey.SIMULATOR)
+                markCardsReceived(simulator, setOf(DebugStateCardKey.SIMULATOR))
             }.stateIn(viewModelScope, SharingStarted.Eagerly, SELECTED_SIMULATOR_DEFAULT)
 
-    private val sideBySideDurationTracker = LmuWindowsSideBySideDurationTracker()
-    private val _lmuWindowsVehicleApproach =
-        lmuWindowsUseCases.observeVehicleApproach().shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
-    private val _lmuWindowsSideBySideDurations: StateFlow<LmuWindowsSideBySideDurations?> =
-        _lmuWindowsVehicleApproach
-            .flatMapLatest { data ->
-                if (data.sideBySideLeftVehicleIds.isEmpty() && data.sideBySideRightVehicleIds.isEmpty()) {
-                    flowOf(sideBySideDurationTracker.update(data, currentTimeMs()))
-                } else {
-                    // サーバー側の distinctUntilChanged で同一データが再送されないため、並走中は周期的に経過時間を再計算する
-                    flow {
-                        while (true) {
-                            emit(sideBySideDurationTracker.update(data, currentTimeMs()))
-                            delay(sideBySideTickIntervalMs)
-                        }
-                    }
-                }
-            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-    private val _raceStateBase: StateFlow<RaceState> =
-        combine(
-            lmuWindowsUseCases
-                .observeRaceFlags()
-                .onEach {
-                    markCardsReceived(
-                        Simulator.LmuWindows,
-                        DebugStateCardKey.FLAG_INFO,
-                        DebugStateCardKey.GAME_PHASE,
-                        DebugStateCardKey.YELLOW_FLAG_STATE,
-                    )
-                },
-            lmuWindowsUseCases
-                .observeVirtualEnergy()
-                .onEach {
-                    markCardsReceived(
-                        Simulator.LmuWindows,
-                        DebugStateCardKey.SESSION,
-                        DebugStateCardKey.FUEL_CONSUMPTION,
-                        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-                    )
-                },
-            _lmuWindowsVehicleApproach
-                .onEach {
-                    markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.SIDE_BY_SIDE_VEHICLES)
-                },
-            lmuWindowsUseCases
-                .observeTyreCarcassTemperature()
-                .onEach {
-                    markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.TYRE_CARCASS_TEMPERATURE)
-                },
-            lmuWindowsUseCases
-                .observeVehicleClass()
-                .onEach {
-                    markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.VEHICLE_CLASS)
-                },
-        ) { raceFlags, virtualEnergy, vehicleApproach, tyreCarcassTemperature, lmuWindowsVehicleClass ->
-            RaceState(
-                raceFlags,
-                virtualEnergy,
-                vehicleApproach,
-                tyreCarcassTemperature,
-                null,
-                null,
-                lmuWindowsVehicleClass,
-                null,
-                null,
-                null,
-            )
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            RaceState(null, null, null, null, null, null, null, null, null, null),
+    private val lmuWindowsSource =
+        LmuWindowsDebugStateSource(
+            scope = viewModelScope,
+            useCases = lmuWindowsUseCases,
+            markCardsReceived = ::markCardsReceived,
+            currentTimeMs = currentTimeMs,
+            sideBySideTickIntervalMs = sideBySideTickIntervalMs,
         )
-
-    private val _lmuWindowsBrakeTemperature: StateFlow<LmuWindowsBrakeTemperatureData?> =
-        lmuWindowsUseCases
-            .observeBrakeTemperature()
-            .onEach {
-                markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.BRAKE_TEMPERATURE)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    private val _lmuWindowsBrakeWear: StateFlow<LmuWindowsBrakeWearRemainingData?> =
-        lmuWindowsUseCases
-            .observeBrakeWear()
-            .onEach {
-                markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.BRAKE_WEAR)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    private val _lmuWindowsPitStatus: StateFlow<LmuWindowsPitStatusData?> =
-        lmuWindowsUseCases
-            .observePitStatus()
-            .onEach {
-                markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.VEHICLE_LOCATION)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    private val _lmuWindowsVehicleDamage: StateFlow<LmuWindowsVehicleDamageData?> =
-        lmuWindowsUseCases
-            .observeVehicleDamage()
-            .onEach {
-                markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.VEHICLE_DAMAGE)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    private val _lmuWindowsTyreDetached: StateFlow<LmuWindowsTyreDetachedData?> =
-        lmuWindowsUseCases
-            .observeTyreDetached()
-            .onEach {
-                markCardsReceived(Simulator.LmuWindows, DebugStateCardKey.VEHICLE_DAMAGE)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    private val _raceStateWithoutBrakeWear: StateFlow<RaceState> =
-        combine(
-            _raceStateBase,
-            _lmuWindowsPitStatus,
-            _lmuWindowsVehicleDamage,
-            _lmuWindowsTyreDetached,
-            _lmuWindowsBrakeTemperature,
-        ) { base, lmuWindowsPitStatus, vehicleDamage, tyreDetached, brakeTemperature ->
-            base.copy(
-                lmuWindowsPitStatus = lmuWindowsPitStatus,
-                vehicleDamage = vehicleDamage,
-                tyreDetached = tyreDetached,
-                brakeTemperature = brakeTemperature,
-            )
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            RaceState(null, null, null, null, null, null, null, null, null, null),
-        )
-
-    private val _raceState: StateFlow<RaceState> =
-        combine(_raceStateWithoutBrakeWear, _lmuWindowsBrakeWear) { base, brakeWear ->
-            base.copy(brakeWear = brakeWear)
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            RaceState(null, null, null, null, null, null, null, null, null, null),
-        )
+    private val gt7Ps5Source =
+        Gt7Ps5DebugStateSource(viewModelScope, gt7Ps5UseCases, ::markCardsReceived)
+    private val aceWindowsSource =
+        AceWindowsDebugStateSource(viewModelScope, aceWindowsUseCases, ::markCardsReceived)
 
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
     private val _localCardOrder = MutableStateFlow<List<DebugStateCardKey>?>(null)
@@ -348,97 +121,34 @@ internal class DebugStateDetailViewModel(
 
     // LMU / GT7 いずれか片方しか実際には接続されないため、combine の必須ソースにはせず
     // 初期値 null を持つ StateFlow 化して uiState 全体がブロックされないようにする。
-    private val _optionalTelemetryBase: StateFlow<OptionalTelemetry> =
+    private val _optionalTelemetryBase: StateFlow<DebugStateDetailUiState> =
         combine(
-            lmuWindowsUseCases
-                .observeTelemetry()
-                .onEach {
-                    markCardsReceived(
-                        Simulator.LmuWindows,
-                        DebugStateCardKey.CURRENT_LAP,
-                        DebugStateCardKey.BEST_LAP,
-                        DebugStateCardKey.TYRE_TEMPERATURE,
-                        DebugStateCardKey.TYRE_WEAR,
-                        DebugStateCardKey.FUEL_CONSUMPTION,
-                        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-                    )
-                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
-            gt7Ps5UseCases
-                .observeTelemetry()
-                .onEach {
-                    markCardsReceived(
-                        Simulator.Gt7Ps5,
-                        DebugStateCardKey.CURRENT_LAP,
-                        DebugStateCardKey.BEST_LAP,
-                        DebugStateCardKey.TYRE_TEMPERATURE,
-                        DebugStateCardKey.FUEL_CONSUMPTION,
-                    )
-                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
-            aceWindowsUseCases
-                .observeFuel()
-                .onEach {
-                    markCardsReceived(Simulator.AceWindows, DebugStateCardKey.FUEL_CONSUMPTION)
-                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
-            aceWindowsUseCases
-                .observeFlag()
-                .onEach {
-                    markCardsReceived(Simulator.AceWindows, DebugStateCardKey.FLAG_INFO)
-                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
-            gt7Ps5UseCases
-                .observeVehicleClass()
-                .onEach {
-                    markCardsReceived(Simulator.Gt7Ps5, DebugStateCardKey.VEHICLE_CLASS)
-                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
+            lmuWindowsSource.telemetry,
+            gt7Ps5Source.telemetry,
+            aceWindowsSource.fuel,
+            aceWindowsSource.flag,
+            gt7Ps5Source.vehicleClass,
         ) { lmu, gt7, aceWindowsFuel, aceWindowsFlag, gt7Ps5VehicleClass ->
-            OptionalTelemetry(lmu, gt7, aceWindowsFuel, aceWindowsFlag, gt7Ps5VehicleClass, null, null, null, null)
+            DebugStateDetailUiState(
+                lmuWindowsTelemetry = lmu,
+                gt7Ps5Telemetry = gt7,
+                aceWindowsFuel = aceWindowsFuel,
+                aceWindowsFlag = aceWindowsFlag,
+                gt7Ps5VehicleClass = gt7Ps5VehicleClass,
+            )
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            OptionalTelemetry(null, null, null, null, null, null, null, null, null),
+            DebugStateDetailUiState(),
         )
 
-    private val _aceWindowsStatus: StateFlow<AceWindowsStatusData?> =
-        aceWindowsUseCases
-            .observeStatus()
-            .onEach {
-                markCardsReceived(Simulator.AceWindows, DebugStateCardKey.VEHICLE_LOCATION)
-            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-    private val _aceWindowsTyreCarcassTemperature: StateFlow<AceWindowsTyreCarcassTemperatureData?> =
-        aceWindowsUseCases
-            .observeTyreCarcassTemperature()
-            .onEach {
-                markCardsReceived(Simulator.AceWindows, DebugStateCardKey.TYRE_CARCASS_TEMPERATURE)
-            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-    private val _aceWindowsVehicleApproach: StateFlow<AceWindowsVehicleApproachData?> =
-        aceWindowsUseCases
-            .observeVehicleApproach()
-            .onEach {
-                markCardsReceived(Simulator.AceWindows, DebugStateCardKey.SIDE_BY_SIDE_VEHICLES)
-            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-    private val _aceWindowsBestLapTime: StateFlow<AceWindowsBestLapTimeData?> =
-        aceWindowsUseCases
-            .observeBestLapTime()
-            .onEach {
-                markCardsReceived(Simulator.AceWindows, DebugStateCardKey.BEST_LAP)
-            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-    private val _aceWindowsRemainingFuelLaps: StateFlow<AceWindowsRemainingFuelLapsData?> =
-        aceWindowsUseCases
-            .observeRemainingFuelLaps()
-            .onEach {
-                markCardsReceived(Simulator.AceWindows, DebugStateCardKey.FUEL_CONSUMPTION)
-            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
-    private val _optionalTelemetryWithoutRemainingFuelLaps: StateFlow<OptionalTelemetry> =
+    private val _optionalTelemetryWithoutRemainingFuelLaps: StateFlow<DebugStateDetailUiState> =
         combine(
             _optionalTelemetryBase,
-            _aceWindowsStatus,
-            _aceWindowsTyreCarcassTemperature,
-            _aceWindowsVehicleApproach,
-            _aceWindowsBestLapTime,
+            aceWindowsSource.status,
+            aceWindowsSource.tyreCarcassTemperature,
+            aceWindowsSource.vehicleApproach,
+            aceWindowsSource.bestLapTime,
         ) { base, status, tyreCarcassTemperature, vehicleApproach, bestLapTime ->
             base.copy(
                 aceWindowsStatus = status,
@@ -449,33 +159,31 @@ internal class DebugStateDetailViewModel(
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            OptionalTelemetry(null, null, null, null, null, null, null, null, null),
+            DebugStateDetailUiState(),
         )
 
-    private val _optionalTelemetry: StateFlow<OptionalTelemetry> =
+    private val _optionalTelemetry: StateFlow<DebugStateDetailUiState> =
         combine(
             _optionalTelemetryWithoutRemainingFuelLaps,
-            _aceWindowsRemainingFuelLaps,
+            aceWindowsSource.remainingFuelLaps,
         ) { base, remainingFuelLaps ->
             base.copy(aceWindowsRemainingFuelLaps = remainingFuelLaps)
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            OptionalTelemetry(null, null, null, null, null, null, null, null, null),
+            DebugStateDetailUiState(),
         )
 
     private val _uiStateBase: StateFlow<DebugStateDetailUiState> =
         combine(
             _selectedSimulator,
-            _raceState,
+            lmuWindowsSource.raceState,
             _cardOrder,
             _optionalTelemetry,
             _receivedCardKeys,
         ) { selectedSimulator, raceState, cardOrder, optionalTelemetry, receivedCardKeys ->
-            DebugStateDetailUiState(
+            raceState.copy(
                 selectedSimulator = selectedSimulator,
-                raceFlags = raceState.raceFlags,
-                virtualEnergy = raceState.virtualEnergy,
                 lmuWindowsTelemetry = optionalTelemetry.lmuWindowsTelemetry,
                 gt7Ps5Telemetry = optionalTelemetry.gt7Ps5Telemetry,
                 aceWindowsFuel = optionalTelemetry.aceWindowsFuel,
@@ -483,17 +191,9 @@ internal class DebugStateDetailViewModel(
                 aceWindowsStatus = optionalTelemetry.aceWindowsStatus,
                 aceWindowsBestLapTime = optionalTelemetry.aceWindowsBestLapTime,
                 aceWindowsRemainingFuelLaps = optionalTelemetry.aceWindowsRemainingFuelLaps,
-                lmuWindowsPitStatus = raceState.lmuWindowsPitStatus,
-                vehicleApproach = raceState.vehicleApproach,
                 aceWindowsVehicleApproach = optionalTelemetry.aceWindowsVehicleApproach,
-                tyreCarcassTemperature = raceState.tyreCarcassTemperature,
                 aceWindowsTyreCarcassTemperature = optionalTelemetry.aceWindowsTyreCarcassTemperature,
-                brakeTemperature = raceState.brakeTemperature,
-                brakeWear = raceState.brakeWear,
-                lmuWindowsVehicleClass = raceState.lmuWindowsVehicleClass,
                 gt7Ps5VehicleClass = optionalTelemetry.gt7Ps5VehicleClass,
-                vehicleDamage = raceState.vehicleDamage,
-                tyreDetached = raceState.tyreDetached,
                 enabledCardKeys =
                     receivedCardKeys[selectedSimulator].orEmpty() intersect supportedCardKeys(selectedSimulator),
                 cardOrder = cardOrder,
@@ -501,7 +201,7 @@ internal class DebugStateDetailViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DebugStateDetailUiState())
 
     val uiState: StateFlow<DebugStateDetailUiState> =
-        combine(_uiStateBase, _lmuWindowsSideBySideDurations) { base, durations ->
+        combine(_uiStateBase, lmuWindowsSource.sideBySideDurations) { base, durations ->
             base.copy(lmuWindowsSideBySideDurations = durations)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DebugStateDetailUiState())
 
@@ -516,7 +216,7 @@ internal class DebugStateDetailViewModel(
 
     private fun markCardsReceived(
         simulator: Simulator,
-        vararg cardKeys: DebugStateCardKey,
+        cardKeys: Set<DebugStateCardKey>,
     ) {
         _receivedCardKeys.update { receivedCardKeys ->
             receivedCardKeys + (simulator to (receivedCardKeys[simulator].orEmpty() + cardKeys))
