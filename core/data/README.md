@@ -2,6 +2,13 @@
 
 `:core:domain` で定義された Repository インターフェースの実装を提供するモジュール。JVM（デスクトップ）/ Android の両ターゲットを持つ `kotlinMultiplatform` モジュールで、プラットフォーム固有の実装は `androidMain` / `jvmMain` に、共通実装は `jvmAndroidMain` に置く。
 
+## Koin モジュール
+
+Android は `androidDataModule(context)`、Desktop は `desktopDataModule` が共通の Repository を登録し、
+各プラットフォームの `LmuWindowsDataModule`・`AceWindowsDataModule`・`Gt7Ps5DataModule` を
+`includes(...)` で束ねる。シミュレーター固有の設定は各ファイルへ、Android の LMU・ACE WebSocket
+登録も対応するファイルへ置く。WebSocket 用 `HttpClient` は Android の共通モジュールで共有する。
+
 ## サブパッケージの責務
 
 - `preferences`: Jetpack DataStore（Proto DataStore）によるユーザー設定の永続化。シミュレーター（GT7 PS5 / LMU Windows / ACE Windows）ごと・設定項目ごとに `XxxPreferences`（proto定義）・`XxxPreferencesSerializer`・`XxxPreferencesDataStoreFactory`・`XxxPreferencesRepositoryImpl`・`XxxPreferencesRepositoryFactory` の5点セットを増やしていくパターンを取る。新しい設定項目を追加する際は、既存の類似設定（同じシミュレーター向けのもの）をコピーして書くのが最も安全。

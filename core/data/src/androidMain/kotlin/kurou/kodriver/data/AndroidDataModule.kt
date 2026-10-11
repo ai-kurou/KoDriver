@@ -12,36 +12,9 @@ import kurou.kodriver.data.preferences.AndroidKeepScreenOnEnabledRepository
 import kurou.kodriver.data.preferences.AndroidReadoutPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidServerIpPreferencesRepository
 import kurou.kodriver.data.preferences.AndroidSimulatorPreferencesRepository
-import kurou.kodriver.data.preferences.LmuWindowsPitTimingPreferencesRepositories
-import kurou.kodriver.data.preferences.LmuWindowsTyreTemperaturePreferencesRepositories
-import kurou.kodriver.data.preferences.LmuWindowsVehicleApproachPreferencesRepositories
-import kurou.kodriver.data.preferences.createAceWindowsFlagPreferencesRepository
-import kurou.kodriver.data.preferences.createAceWindowsFlagReadoutTextPreferencesRepository
-import kurou.kodriver.data.preferences.createAceWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelLapsPreferencesRepository
-import kurou.kodriver.data.preferences.createAceWindowsRemainingFuelPreferencesRepository
-import kurou.kodriver.data.preferences.createAceWindowsTyreTemperaturePreferencesRepository
-import kurou.kodriver.data.preferences.createAceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
-import kurou.kodriver.data.preferences.createGt7Ps5MyBestLapPreferencesRepository
-import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelLapsPreferencesRepository
-import kurou.kodriver.data.preferences.createGt7Ps5RemainingFuelPreferencesRepository
-import kurou.kodriver.data.preferences.createGt7Ps5TyreTemperaturePreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsFlagPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsFlagReadoutTextPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsPitTimingPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsRemainingVirtualEnergyPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsTyreTemperaturePreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsTyreWearPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsVehicleApproachThresholdsPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassBrakeWearPreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository
-import kurou.kodriver.data.preferences.createLmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
@@ -57,82 +30,17 @@ import kurou.kodriver.data.preferences.createVoiceSpeedPreferencesRepository
 import kurou.kodriver.data.release.GitHubAppReleaseRepository
 import kurou.kodriver.data.release.HttpServerVersionRepository
 import kurou.kodriver.data.telemetrylog.createTelemetryLogRepository
-import kurou.kodriver.data.websocket.WebSocketAceWindowsBestLapTimeRepository
-import kurou.kodriver.data.websocket.WebSocketAceWindowsFlagRepository
-import kurou.kodriver.data.websocket.WebSocketAceWindowsFuelRepository
-import kurou.kodriver.data.websocket.WebSocketAceWindowsRemainingFuelLapsRepository
-import kurou.kodriver.data.websocket.WebSocketAceWindowsStatusRepository
-import kurou.kodriver.data.websocket.WebSocketAceWindowsTyreCarcassTemperatureRepository
-import kurou.kodriver.data.websocket.WebSocketAceWindowsVehicleApproachRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsBrakeTemperatureRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsBrakeWearRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsFlagRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsPitStatusRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsTyreCarcassTemperatureRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsTyreDetachedRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsTyreWearRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleApproachRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleClassRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsVehicleDamageRepository
-import kurou.kodriver.data.websocket.WebSocketLmuWindowsVirtualEnergyRepository
 import kurou.kodriver.data.websocket.createWebSocketHttpClient
 import kurou.kodriver.domain.repository.AccessLocalNetworkPermissionRepository
-import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
-import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
-import kurou.kodriver.domain.repository.AceWindowsFlagReadoutTextPreferencesRepository
-import kurou.kodriver.domain.repository.AceWindowsFlagRepository
-import kurou.kodriver.domain.repository.AceWindowsFuelRepository
-import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsPreferencesRepository
-import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
-import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
-import kurou.kodriver.domain.repository.AceWindowsStatusRepository
-import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
-import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
-import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
-import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.FeedbackCooldownPreferencesRepository
 import kurou.kodriver.domain.repository.FeedbackSenderRepository
-import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
-import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
-import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
-import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsFlagReadoutTextPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
-import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
-import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsRepository
-import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
-import kurou.kodriver.domain.repository.LmuWindowsTyreDetachedRepository
-import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsTyreTemperatureReadoutTextPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeWearPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
-import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
@@ -181,52 +89,12 @@ fun androidDataModule(context: Context) =
         single<QueuePreferencesRepository> {
             createQueuePreferencesRepository(context.filesDir.absolutePath)
         }
-        single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
-            createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<Gt7Ps5RemainingFuelPreferencesRepository> {
-            createGt7Ps5RemainingFuelPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<Gt7Ps5TyreTemperaturePreferencesRepository> {
-            createGt7Ps5TyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
-        }
-        // LMU 走行データの取得元（Android は KoDriver サーバーへの WebSocket クライアント実装）。
-        // HttpClient は全リポジトリで単一インスタンスを共有する。
+        // WebSocket 用 HttpClient は LMU・ACE の全リポジトリで単一インスタンスを共有する。
         single<HttpClient> { createWebSocketHttpClient() }
-        single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(serverIpRepository = get(), client = get()) }
-        single<LmuWindowsFlagRepository> {
-            WebSocketLmuWindowsFlagRepository(
-                serverIpRepository = get(),
-                client = get(),
-            )
-        }
-        single<LmuWindowsVehicleApproachRepository> {
-            WebSocketLmuWindowsVehicleApproachRepository(serverIpRepository = get(), client = get())
-        }
-        single<LmuWindowsVehicleDamageRepository> {
-            WebSocketLmuWindowsVehicleDamageRepository(serverIpRepository = get(), client = get())
-        }
-        single<LmuWindowsTyreCarcassTemperatureRepository> {
-            WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
-        }
-        single<LmuWindowsBrakeWearRepository> {
-            WebSocketLmuWindowsBrakeWearRepository(serverIpRepository = get(), client = get())
-        }
-        single<LmuWindowsBrakeTemperatureRepository> {
-            WebSocketLmuWindowsBrakeTemperatureRepository(serverIpRepository = get(), client = get())
-        }
-        single<LmuWindowsVehicleClassRepository> {
-            WebSocketLmuWindowsVehicleClassRepository(serverIpRepository = get(), client = get())
-        }
-        single<LmuWindowsTyreWearRepository> {
-            WebSocketLmuWindowsTyreWearRepository(serverIpRepository = get(), client = get())
-        }
-        single<LmuWindowsVirtualEnergyRepository> {
-            WebSocketLmuWindowsVirtualEnergyRepository(serverIpRepository = get(), client = get())
-        }
-        includes(androidDataModuleAceWindows())
-        includes(androidDataModuleThresholdPreferences(context))
-        includes(androidDataModuleLmuWindowsPitStatus())
+        includes(androidDataModuleLmuWindows(context))
+        includes(androidDataModuleAceWindows(context))
+        includes(androidDataModuleGt7Ps5(context))
+        includes(androidDataModuleCommonPreferences(context))
         includes(androidDataModuleAppSettings(context))
         includes(androidDataModuleMisc(context))
     }
@@ -236,26 +104,8 @@ fun androidDataModule(context: Context) =
  */
 private fun androidDataModuleMisc(context: Context) =
     module {
-        single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
-            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
-        }
         single<DebugStateCardOrderPreferencesRepository> {
             createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsFlagPreferencesRepository> {
-            createLmuWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single {
-            createLmuWindowsVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsVehicleApproachPreferencesRepository> {
-            get<LmuWindowsVehicleApproachPreferencesRepositories>().preferences
-        }
-        single<LmuWindowsVehicleApproachReadoutTextPreferencesRepository> {
-            get<LmuWindowsVehicleApproachPreferencesRepositories>().readoutText
-        }
-        single<LmuWindowsVehicleDamagePreferencesRepository> {
-            createLmuWindowsVehicleDamagePreferencesRepository(context.filesDir.absolutePath)
         }
         single<SoundVolumePreferencesRepository> {
             createSoundVolumePreferencesRepository(context.filesDir.absolutePath)
@@ -275,18 +125,6 @@ private fun androidDataModuleMisc(context: Context) =
         single<ThemePreferencesRepository> {
             createThemePreferencesRepository(context.filesDir.absolutePath)
         }
-        single<Gt7Ps5MyBestLapPreferencesRepository> {
-            createGt7Ps5MyBestLapPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsMyBestLapPreferencesRepository> {
-            createLmuWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<AceWindowsMyBestLapPreferencesRepository> {
-            createAceWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsFlagReadoutTextPreferencesRepository> {
-            createLmuWindowsFlagReadoutTextPreferencesRepository(context.filesDir.absolutePath)
-        }
         single<ServerIpPreferencesRepository> {
             AndroidServerIpPreferencesRepository(context.serverIpDataStore)
         }
@@ -297,19 +135,6 @@ private fun androidDataModuleMisc(context: Context) =
         single<ServerVersionRepository> { HttpServerVersionRepository() }
         single<AppUpdateRepository> { GitHubAppReleaseRepository() }
         single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
-    }
-
-/**
- * androidDataModule から分離した LMU のピット状態・タイヤ脱落状態取得用バインド（LongMethod 対策）。
- */
-private fun androidDataModuleLmuWindowsPitStatus() =
-    module {
-        single<LmuWindowsPitStatusRepository> {
-            WebSocketLmuWindowsPitStatusRepository(serverIpRepository = get(), client = get())
-        }
-        single<LmuWindowsTyreDetachedRepository> {
-            WebSocketLmuWindowsTyreDetachedRepository(serverIpRepository = get(), client = get())
-        }
     }
 
 /**
@@ -357,92 +182,10 @@ private fun androidDataModuleAppSettings(context: Context) =
     }
 
 /**
- * androidDataModule から分離した ACE (Assetto Corsa EVO) の走行データ取得用バインド（LongMethod 対策）。
- *
- * ACE の走行データは Windows 共有メモリ専用実装のみのため、Android は LMU 系と同様に
- * KoDriver サーバーへの WebSocket クライアント実装を使う。
+ * androidDataModule から分離した共通の DataStore バインドと TelemetryLog（LongMethod 対策）。
  */
-private fun androidDataModuleAceWindows() =
+private fun androidDataModuleCommonPreferences(context: Context) =
     module {
-        single<AceWindowsFuelRepository> {
-            WebSocketAceWindowsFuelRepository(serverIpRepository = get(), client = get())
-        }
-        single<AceWindowsFlagRepository> {
-            WebSocketAceWindowsFlagRepository(serverIpRepository = get(), client = get())
-        }
-        single<AceWindowsStatusRepository> {
-            WebSocketAceWindowsStatusRepository(serverIpRepository = get(), client = get())
-        }
-        single<AceWindowsTyreCarcassTemperatureRepository> {
-            WebSocketAceWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
-        }
-        single<AceWindowsVehicleApproachRepository> {
-            WebSocketAceWindowsVehicleApproachRepository(serverIpRepository = get(), client = get())
-        }
-        single<AceWindowsBestLapTimeRepository> {
-            WebSocketAceWindowsBestLapTimeRepository(serverIpRepository = get(), client = get())
-        }
-        single<AceWindowsRemainingFuelLapsRepository> {
-            WebSocketAceWindowsRemainingFuelLapsRepository(serverIpRepository = get(), client = get())
-        }
-    }
-
-/**
- * androidDataModule から分離した閾値系 DataStore バインドと TelemetryLog（LongMethod 対策）。
- */
-private fun androidDataModuleThresholdPreferences(context: Context) =
-    module {
-        single {
-            createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsTyreTemperaturePreferencesRepository> {
-            get<LmuWindowsTyreTemperaturePreferencesRepositories>().preferences
-        }
-        single<LmuWindowsTyreTemperatureReadoutTextPreferencesRepository> {
-            get<LmuWindowsTyreTemperaturePreferencesRepositories>().readoutText
-        }
-        single<LmuWindowsVehicleClassTyreTemperaturePreferencesRepository> {
-            createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsTyreWearPreferencesRepository> {
-            createLmuWindowsTyreWearPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository> {
-            createLmuWindowsVehicleClassBrakeTemperaturePreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsVehicleClassBrakeWearPreferencesRepository> {
-            createLmuWindowsVehicleClassBrakeWearPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
-            createLmuWindowsRemainingVirtualEnergyPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<AceWindowsRemainingFuelPreferencesRepository> {
-            createAceWindowsRemainingFuelPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<AceWindowsRemainingFuelLapsPreferencesRepository> {
-            createAceWindowsRemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<AceWindowsFlagPreferencesRepository> {
-            createAceWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<AceWindowsFlagReadoutTextPreferencesRepository> {
-            createAceWindowsFlagReadoutTextPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<AceWindowsTyreTemperaturePreferencesRepository> {
-            createAceWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<AceWindowsVehicleApproachPreferencesRepository> {
-            createAceWindowsVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single {
-            createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)
-        }
-        single<LmuWindowsPitTimingPreferencesRepository> {
-            get<LmuWindowsPitTimingPreferencesRepositories>().preferences
-        }
-        single<LmuWindowsPitTimingReadoutTextPreferencesRepository> {
-            get<LmuWindowsPitTimingPreferencesRepositories>().readoutText
-        }
         single<ReadoutStartSoundEnabledPreferencesRepository> {
             createReadoutStartSoundEnabledPreferencesRepository(context.filesDir.absolutePath)
         }
