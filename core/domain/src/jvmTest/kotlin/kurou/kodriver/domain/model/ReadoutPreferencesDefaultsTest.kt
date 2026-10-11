@@ -2,8 +2,54 @@ package kurou.kodriver.domain.model
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ReadoutPreferencesDefaultsTest {
+    @Test
+    fun `LMUのデフォルト定数にはLMUキーのみが含まれる`() {
+        val defaults =
+            listOf(
+                LMU_WINDOWS_READOUT_ENABLED_STATE_DEFAULT,
+                LMU_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT,
+                LMU_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT,
+            )
+
+        defaults.forEach { enabledStates ->
+            assertTrue(enabledStates.isNotEmpty())
+            assertTrue(enabledStates.keys.all { it is LmuWindowsReadoutItemKey })
+        }
+    }
+
+    @Test
+    fun `GT7のデフォルト定数にはGT7キーのみが含まれる`() {
+        val defaults =
+            listOf(
+                GT7_PS5_READOUT_ENABLED_STATE_DEFAULT,
+                GT7_PS5_READOUT_START_SOUND_ENABLED_STATE_DEFAULT,
+                GT7_PS5_QUEUE_ENABLED_STATE_DEFAULT,
+            )
+
+        defaults.forEach { enabledStates ->
+            assertTrue(enabledStates.isNotEmpty())
+            assertTrue(enabledStates.keys.all { it is Gt7Ps5ReadoutItemKey })
+        }
+    }
+
+    @Test
+    fun `ACEのデフォルト定数にはACEキーのみが含まれる`() {
+        val defaults =
+            listOf(
+                ACE_WINDOWS_READOUT_ENABLED_STATE_DEFAULT,
+                ACE_WINDOWS_READOUT_START_SOUND_ENABLED_STATE_DEFAULT,
+                ACE_WINDOWS_QUEUE_ENABLED_STATE_DEFAULT,
+            )
+
+        defaults.forEach { enabledStates ->
+            assertTrue(enabledStates.isNotEmpty())
+            assertTrue(enabledStates.keys.all { it is AceWindowsReadoutItemKey })
+        }
+    }
+
     @Test
     fun `保存済みの値があればそれを返す`() {
         val enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(LmuWindowsReadoutItemKey.MyBestLap.Root to true)
