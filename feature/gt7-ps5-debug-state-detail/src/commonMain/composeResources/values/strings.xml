@@ -1,4 +1,18 @@
 <resources>
     <string name="debug_state_title">デバッグ状態</string>
     <string name="navigate_back">戻る</string>
+    <string name="debug_state_flag_info_unavailable">未取得</string>
+    <string name="debug_state_simulator_info_title">選択中のシミュレーター</string>
+    <string name="debug_state_current_lap_title">現在のラップ</string>
+    <string name="debug_state_best_lap_title">自己ベストラップ</string>
+    <string name="debug_state_tyre_temperature_title">タイヤ表面温度</string>
+    <string name="debug_state_tyre_temperature_fl">FL %1$s℃</string>
+    <string name="debug_state_tyre_temperature_fr">FR %1$s℃</string>
+    <string name="debug_state_tyre_temperature_rl">RL %1$s℃</string>
+    <string name="debug_state_tyre_temperature_rr">RR %1$s℃</string>
+    <string name="debug_state_fuel_consumption_title">燃料消費</string>
+    <string name="debug_state_fuel_consumption_per_lap_liters">消費 %1$sL/周</string>
+    <string name="debug_state_fuel_consumption_remaining_laps">残り %1$s周</string>
+    <string name="debug_state_fuel_consumption_remaining_percent">残量 %1$s%</string>
+    <string name="debug_state_vehicle_class_title">車両クラス</string>
 </resources>
