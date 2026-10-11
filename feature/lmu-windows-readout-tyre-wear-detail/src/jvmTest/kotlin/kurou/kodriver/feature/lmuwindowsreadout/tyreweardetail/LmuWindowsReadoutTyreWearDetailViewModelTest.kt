@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -226,13 +226,13 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             every { observeVolume() } returns MutableStateFlow(60)
             every {
                 playSpeechEvent(
-                    SpeechEvent.LmuWindowsTyreWearWarning(
+                    LmuWindowsTyreWearWarning(
                         DEFAULT_THRESHOLD,
                         "残り${DEFAULT_THRESHOLD}%",
                     ),
                 )
             } returns Unit
-            every { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(70, "残り70%")) } returns Unit
+            every { playSpeechEvent(LmuWindowsTyreWearWarning(70, "残り70%")) } returns Unit
             val viewModel = createViewModel()
             val collection =
                 backgroundScope.launch(
@@ -247,13 +247,13 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             verify(exactly = 1) {
                 playSpeechEvent(
-                    SpeechEvent.LmuWindowsTyreWearWarning(
+                    LmuWindowsTyreWearWarning(
                         DEFAULT_THRESHOLD,
                         "残り${DEFAULT_THRESHOLD}%",
                     ),
                 )
             }
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsTyreWearWarning(70, "残り70%")) }
+            verify(exactly = 1) { playSpeechEvent(LmuWindowsTyreWearWarning(70, "残り70%")) }
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
             verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.TyreWear.Root) }
@@ -271,7 +271,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) {
                 playSpeechEvent(
-                    SpeechEvent.LmuWindowsTyreWearWarning(
+                    LmuWindowsTyreWearWarning(
                         DEFAULT_THRESHOLD,
                         " ",
                     ),
@@ -293,7 +293,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 0) { observeVolume() }
             verify(exactly = 0) {
                 playSpeechEvent(
-                    SpeechEvent.LmuWindowsTyreWearWarning(
+                    LmuWindowsTyreWearWarning(
                         DEFAULT_THRESHOLD,
                         "注意",
                     ),
@@ -318,7 +318,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             verify(exactly = 2) { observeVolume() }
             verify(exactly = 0) {
                 playSpeechEvent(
-                    SpeechEvent.LmuWindowsTyreWearWarning(
+                    LmuWindowsTyreWearWarning(
                         DEFAULT_THRESHOLD,
                         "注意",
                     ),
@@ -338,7 +338,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             every { observeVolume() } returns MutableStateFlow(60)
             every {
                 playSpeechEvent(
-                    SpeechEvent.LmuWindowsTyreWearWarning(
+                    LmuWindowsTyreWearWarning(
                         DEFAULT_THRESHOLD,
                         "残り${DEFAULT_THRESHOLD}%",
                     ),
@@ -355,7 +355,7 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             verify(exactly = 1) {
                 playSpeechEvent(
-                    SpeechEvent.LmuWindowsTyreWearWarning(
+                    LmuWindowsTyreWearWarning(
                         DEFAULT_THRESHOLD,
                         "残り${DEFAULT_THRESHOLD}%",
                     ),

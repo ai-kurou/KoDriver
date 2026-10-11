@@ -3,7 +3,10 @@ package kurou.kodriver.domain.usecase
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
+import kurou.kodriver.domain.engine.LmuWindowsCarRight
+import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kotlin.test.Test
 
@@ -14,9 +17,9 @@ class PlaySpeechEventUseCaseTest {
     fun `invoke を呼ぶと TextToSpeechEngine の speak が呼ばれる`() {
         val useCase = PlaySpeechEventUseCase(engine)
 
-        useCase(SpeechEvent.LmuWindowsBlueFlag())
+        useCase(LmuWindowsBlueFlag())
 
-        verify(exactly = 1) { engine.speak(SpeechEvent.LmuWindowsBlueFlag(), false) }
+        verify(exactly = 1) { engine.speak(LmuWindowsBlueFlag(), false) }
         confirmVerified(engine)
     }
 
@@ -24,11 +27,11 @@ class PlaySpeechEventUseCaseTest {
     fun `複数回 invoke を呼ぶと呼んだ順に speak が呼ばれる`() {
         val useCase = PlaySpeechEventUseCase(engine)
 
-        useCase(SpeechEvent.LmuWindowsYellowFlag())
-        useCase(SpeechEvent.LmuWindowsRedFlag())
+        useCase(LmuWindowsYellowFlag())
+        useCase(LmuWindowsRedFlag())
 
-        verify(exactly = 1) { engine.speak(SpeechEvent.LmuWindowsYellowFlag(), false) }
-        verify(exactly = 1) { engine.speak(SpeechEvent.LmuWindowsRedFlag(), false) }
+        verify(exactly = 1) { engine.speak(LmuWindowsYellowFlag(), false) }
+        verify(exactly = 1) { engine.speak(LmuWindowsRedFlag(), false) }
         confirmVerified(engine)
     }
 
@@ -36,9 +39,9 @@ class PlaySpeechEventUseCaseTest {
     fun `queue true を指定すると TextToSpeechEngine の speak に渡される`() {
         val useCase = PlaySpeechEventUseCase(engine)
 
-        useCase(SpeechEvent.LmuWindowsCarRight(), queue = true)
+        useCase(LmuWindowsCarRight(), queue = true)
 
-        verify(exactly = 1) { engine.speak(SpeechEvent.LmuWindowsCarRight(), true) }
+        verify(exactly = 1) { engine.speak(LmuWindowsCarRight(), true) }
         confirmVerified(engine)
     }
 }

@@ -1,6 +1,25 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.serialization.Serializable
+import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
+import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
+import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
+import kurou.kodriver.domain.engine.LmuWindowsCarLeft
+import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
+import kurou.kodriver.domain.engine.LmuWindowsCarRight
+import kurou.kodriver.domain.engine.LmuWindowsCarRightSustained
+import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
+import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
+import kurou.kodriver.domain.engine.LmuWindowsOverheating
+import kurou.kodriver.domain.engine.LmuWindowsPartDetached
+import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
+import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
+import kurou.kodriver.domain.engine.LmuWindowsTyreCold
+import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
+import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
+import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
+import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
@@ -171,7 +190,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 
-        val event = SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = current)
+        val event = LmuWindowsMyBestLap(lapTimeMs = current)
         return LmuWindowsNarratorReadoutDecision(
             state = stateWithCurrentBestLap.copy(personalBestMs = current),
             events = listOf(event),
@@ -266,7 +285,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 !previous.overheating &&
                 vehicleDamage.overheating
             ) {
-                SpeechEvent.LmuWindowsOverheating()
+                LmuWindowsOverheating()
             } else {
                 null
             }
@@ -277,7 +296,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 !previous.partDetached &&
                 vehicleDamage.partDetached
             ) {
-                SpeechEvent.LmuWindowsPartDetached()
+                LmuWindowsPartDetached()
             } else {
                 null
             }
@@ -305,7 +324,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached) &&
                 newlyDetached
             ) {
-                SpeechEvent.LmuWindowsTyreDetached()
+                LmuWindowsTyreDetached()
             } else {
                 null
             }
@@ -340,7 +359,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             events =
                 if (shouldAnnounce) {
                     listOf(
-                        SpeechEvent.LmuWindowsTyreOverheat(
+                        LmuWindowsTyreOverheat(
                             celsius =
                                 data.wheels.values
                                     .maxOf { it.value }
@@ -375,7 +394,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             events =
                 if (shouldAnnounce) {
                     listOf(
-                        SpeechEvent.LmuWindowsTyreCold(
+                        LmuWindowsTyreCold(
                             celsius =
                                 data.wheels.values
                                     .maxOf { it.value }
@@ -405,7 +424,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             state = state.copy(tyreWearWarned = anyWorn),
             events =
                 if (shouldAnnounce) {
-                    listOf(SpeechEvent.LmuWindowsTyreWearWarning(percentage = settings.tyreWearThresholdPercentage))
+                    listOf(LmuWindowsTyreWearWarning(percentage = settings.tyreWearThresholdPercentage))
                 } else {
                     emptyList()
                 },
@@ -436,7 +455,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             events =
                 if (shouldAnnounce) {
                     listOf(
-                        SpeechEvent.LmuWindowsBrakeOverheat(
+                        LmuWindowsBrakeOverheat(
                             celsius = settings.brakeTemperatureHighThresholdCelsius.value,
                         ),
                     )
@@ -461,7 +480,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             state = state.copy(brakeWearWarned = anyLow),
             events =
                 if (shouldAnnounce) {
-                    listOf(SpeechEvent.LmuWindowsBrakeWearLow(percent = settings.brakeWearLowThresholdPercent))
+                    listOf(LmuWindowsBrakeWearLow(percent = settings.brakeWearLowThresholdPercent))
                 } else {
                     emptyList()
                 },
@@ -483,7 +502,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             events =
                 if (shouldAnnounce) {
                     listOf(
-                        SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(
+                        LmuWindowsRemainingVirtualEnergyWarning(
                             settings.remainingVirtualEnergyThresholdPercentage,
                         ),
                     )
@@ -551,7 +570,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             state = stateAfterEvaluation,
             events =
                 listOf(
-                    SpeechEvent.LmuWindowsPitTimingWarning(remainingLaps, source = PitTimingSource.VirtualEnergy),
+                    LmuWindowsPitTimingWarning(remainingLaps, source = PitTimingSource.VirtualEnergy),
                 ),
         )
     }
@@ -615,14 +634,14 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             )
         return LmuWindowsNarratorReadoutDecision(
             state = stateAfterEvaluation,
-            events = listOf(SpeechEvent.LmuWindowsPitTimingWarning(remainingLaps, source = PitTimingSource.TyreWear)),
+            events = listOf(LmuWindowsPitTimingWarning(remainingLaps, source = PitTimingSource.TyreWear)),
         )
     }
 
     /** 周回ゲートを通過したピットタイミング警告の読み上げ履歴を記録する。 */
     fun recordPitTimingAnnounced(
         state: LmuWindowsNarratorState,
-        event: SpeechEvent.LmuWindowsPitTimingWarning,
+        event: LmuWindowsPitTimingWarning,
     ): LmuWindowsNarratorState =
         when (event.source) {
             PitTimingSource.VirtualEnergy -> state.copy(lastAnnouncedPitTimingVirtualEnergyLaps = event.laps)
@@ -674,7 +693,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 raceFlags.sectorFlags[i] == SectorFlagState.YELLOW &&
                     previous.sectorFlags.getOrNull(i) != SectorFlagState.YELLOW
             }
-        return if (newYellowSector) SpeechEvent.LmuWindowsYellowFlag() else null
+        return if (newYellowSector) LmuWindowsYellowFlag() else null
     }
 
     private fun determineFullCourseYellowEvent(
@@ -687,7 +706,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             previous.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
             raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW
         ) {
-            SpeechEvent.LmuWindowsFullCourseYellow()
+            LmuWindowsFullCourseYellow()
         } else {
             null
         }
@@ -703,7 +722,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             raceFlags.gamePhase == SessionPhase.RED_FLAG
         ) {
             // 赤旗本文は自由文字列を読み上げる。
-            SpeechEvent.LmuWindowsRedFlag()
+            LmuWindowsRedFlag()
         } else {
             null
         }
@@ -767,7 +786,7 @@ private fun determineBlueFlagEvent(
         previous.playerFlag != PrimaryFlag.BLUE &&
         raceFlags.playerFlag == PrimaryFlag.BLUE
     ) {
-        SpeechEvent.LmuWindowsBlueFlag()
+        LmuWindowsBlueFlag()
     } else {
         null
     }
@@ -923,13 +942,13 @@ private enum class ApproachSide {
 
     fun toSpeechEvent(): SpeechEvent =
         when (this) {
-            LEFT -> SpeechEvent.LmuWindowsCarLeft()
-            RIGHT -> SpeechEvent.LmuWindowsCarRight()
+            LEFT -> LmuWindowsCarLeft()
+            RIGHT -> LmuWindowsCarRight()
         }
 
     fun toSustainedSpeechEvent(): SpeechEvent =
         when (this) {
-            LEFT -> SpeechEvent.LmuWindowsCarLeftSustained()
-            RIGHT -> SpeechEvent.LmuWindowsCarRightSustained()
+            LEFT -> LmuWindowsCarLeftSustained()
+            RIGHT -> LmuWindowsCarRightSustained()
         }
 }

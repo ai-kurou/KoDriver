@@ -30,45 +30,45 @@ class SpeechEventTest {
     fun `全自由文字列イベントは本文を置き換えて型と既定文言とキーを維持する`() {
         val events =
             listOf<ReadoutTextEvent>(
-                SpeechEvent.LmuWindowsCarLeft(),
-                SpeechEvent.LmuWindowsCarRight(),
-                SpeechEvent.LmuWindowsCarLeftSustained(),
-                SpeechEvent.LmuWindowsCarRightSustained(),
-                SpeechEvent.LmuWindowsBlueFlag(),
-                SpeechEvent.LmuWindowsYellowFlag(),
-                SpeechEvent.LmuWindowsFullCourseYellow(),
-                SpeechEvent.LmuWindowsRedFlag(),
-                SpeechEvent.LmuWindowsOverheating(),
-                SpeechEvent.LmuWindowsPartDetached(),
-                SpeechEvent.LmuWindowsTyreDetached(),
-                SpeechEvent.LmuWindowsTyreOverheat(100),
-                SpeechEvent.LmuWindowsTyreCold(60),
-                SpeechEvent.LmuWindowsTyreWearWarning(50),
-                SpeechEvent.LmuWindowsBrakeOverheat(700),
-                SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50),
-                SpeechEvent.LmuWindowsMyBestLap(83_456L),
-                SpeechEvent.LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
+                LmuWindowsCarLeft(),
+                LmuWindowsCarRight(),
+                LmuWindowsCarLeftSustained(),
+                LmuWindowsCarRightSustained(),
+                LmuWindowsBlueFlag(),
+                LmuWindowsYellowFlag(),
+                LmuWindowsFullCourseYellow(),
+                LmuWindowsRedFlag(),
+                LmuWindowsOverheating(),
+                LmuWindowsPartDetached(),
+                LmuWindowsTyreDetached(),
+                LmuWindowsTyreOverheat(100),
+                LmuWindowsTyreCold(60),
+                LmuWindowsTyreWearWarning(50),
+                LmuWindowsBrakeOverheat(700),
+                LmuWindowsRemainingVirtualEnergyWarning(50),
+                LmuWindowsMyBestLap(83_456L),
+                LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
             )
         val expected =
             listOf<ReadoutTextEvent>(
-                SpeechEvent.LmuWindowsCarLeft("判定時の本文"),
-                SpeechEvent.LmuWindowsCarRight("判定時の本文"),
-                SpeechEvent.LmuWindowsCarLeftSustained("判定時の本文"),
-                SpeechEvent.LmuWindowsCarRightSustained("判定時の本文"),
-                SpeechEvent.LmuWindowsBlueFlag("判定時の本文"),
-                SpeechEvent.LmuWindowsYellowFlag("判定時の本文"),
-                SpeechEvent.LmuWindowsFullCourseYellow("判定時の本文"),
-                SpeechEvent.LmuWindowsRedFlag("判定時の本文"),
-                SpeechEvent.LmuWindowsOverheating("判定時の本文"),
-                SpeechEvent.LmuWindowsPartDetached("判定時の本文"),
-                SpeechEvent.LmuWindowsTyreDetached("判定時の本文"),
-                SpeechEvent.LmuWindowsTyreOverheat(100, "判定時の本文"),
-                SpeechEvent.LmuWindowsTyreCold(60, "判定時の本文"),
-                SpeechEvent.LmuWindowsTyreWearWarning(50, "判定時の本文"),
-                SpeechEvent.LmuWindowsBrakeOverheat(700, "判定時の本文"),
-                SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50, "判定時の本文"),
-                SpeechEvent.LmuWindowsMyBestLap(83_456L, "判定時の本文"),
-                SpeechEvent.LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear, "判定時の本文"),
+                LmuWindowsCarLeft("判定時の本文"),
+                LmuWindowsCarRight("判定時の本文"),
+                LmuWindowsCarLeftSustained("判定時の本文"),
+                LmuWindowsCarRightSustained("判定時の本文"),
+                LmuWindowsBlueFlag("判定時の本文"),
+                LmuWindowsYellowFlag("判定時の本文"),
+                LmuWindowsFullCourseYellow("判定時の本文"),
+                LmuWindowsRedFlag("判定時の本文"),
+                LmuWindowsOverheating("判定時の本文"),
+                LmuWindowsPartDetached("判定時の本文"),
+                LmuWindowsTyreDetached("判定時の本文"),
+                LmuWindowsTyreOverheat(100, "判定時の本文"),
+                LmuWindowsTyreCold(60, "判定時の本文"),
+                LmuWindowsTyreWearWarning(50, "判定時の本文"),
+                LmuWindowsBrakeOverheat(700, "判定時の本文"),
+                LmuWindowsRemainingVirtualEnergyWarning(50, "判定時の本文"),
+                LmuWindowsMyBestLap(83_456L, "判定時の本文"),
+                LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear, "判定時の本文"),
             )
         assertEquals(expected, events.map { it.withResolvedText("判定時の本文") })
         events.forEach { event ->
@@ -85,40 +85,40 @@ class SpeechEventTest {
 
     @Test
     fun `LMU車両接近系のnarratedTextは既定文言を返す`() {
-        assertEquals("カーレフト", SpeechEvent.LmuWindowsCarLeft().narratedText)
-        assertEquals("カーライト", SpeechEvent.LmuWindowsCarRight().narratedText)
-        assertEquals("キープレフト", SpeechEvent.LmuWindowsCarRightSustained().narratedText)
-        assertEquals("キープライト", SpeechEvent.LmuWindowsCarLeftSustained().narratedText)
+        assertEquals("カーレフト", LmuWindowsCarLeft().narratedText)
+        assertEquals("カーライト", LmuWindowsCarRight().narratedText)
+        assertEquals("キープレフト", LmuWindowsCarRightSustained().narratedText)
+        assertEquals("キープライト", LmuWindowsCarLeftSustained().narratedText)
     }
 
     @Test
     fun `LMUフラッグ系のnarratedTextは既定文言を返す`() {
-        assertEquals("ブルーフラッグ", SpeechEvent.LmuWindowsBlueFlag().narratedText)
-        assertEquals("イエローフラッグ", SpeechEvent.LmuWindowsYellowFlag().narratedText)
-        assertEquals("フルコースイエロー", SpeechEvent.LmuWindowsFullCourseYellow().narratedText)
-        assertEquals("レッドフラッグ", SpeechEvent.LmuWindowsRedFlag().narratedText)
+        assertEquals("ブルーフラッグ", LmuWindowsBlueFlag().narratedText)
+        assertEquals("イエローフラッグ", LmuWindowsYellowFlag().narratedText)
+        assertEquals("フルコースイエロー", LmuWindowsFullCourseYellow().narratedText)
+        assertEquals("レッドフラッグ", LmuWindowsRedFlag().narratedText)
     }
 
     @Test
     fun `LMU車両故障系のnarratedTextは既定文言を返す`() {
-        assertEquals("オーバーヒート", SpeechEvent.LmuWindowsOverheating().narratedText)
-        assertEquals("部品脱落", SpeechEvent.LmuWindowsPartDetached().narratedText)
-        assertEquals("タイヤ脱落", SpeechEvent.LmuWindowsTyreDetached().narratedText)
+        assertEquals("オーバーヒート", LmuWindowsOverheating().narratedText)
+        assertEquals("部品脱落", LmuWindowsPartDetached().narratedText)
+        assertEquals("タイヤ脱落", LmuWindowsTyreDetached().narratedText)
     }
 
     @Test
     fun `LMUタイヤ・エナジー系のnarratedTextはChipと同じ文言を返す`() {
-        assertEquals("ブレーキ温度800℃以上", SpeechEvent.LmuWindowsBrakeOverheat(800).narratedText)
-        assertEquals("タイヤ過熱 100度", SpeechEvent.LmuWindowsTyreOverheat(100).narratedText)
-        assertEquals("タイヤ低温 60度", SpeechEvent.LmuWindowsTyreCold(60).narratedText)
-        assertEquals("タイヤ残存率50%以下", SpeechEvent.LmuWindowsTyreWearWarning(50).narratedText)
-        assertEquals("バーチャルエナジー残量50%以下", SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
+        assertEquals("ブレーキ温度800℃以上", LmuWindowsBrakeOverheat(800).narratedText)
+        assertEquals("タイヤ過熱 100度", LmuWindowsTyreOverheat(100).narratedText)
+        assertEquals("タイヤ低温 60度", LmuWindowsTyreCold(60).narratedText)
+        assertEquals("タイヤ残存率50%以下", LmuWindowsTyreWearWarning(50).narratedText)
+        assertEquals("バーチャルエナジー残量50%以下", LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
     }
 
     @Test
     fun `タイヤ温度警告は温度と解決済み文言を保持し既定文言とキーを維持する`() {
-        val overheat = SpeechEvent.LmuWindowsTyreOverheat(100)
-        val cold = SpeechEvent.LmuWindowsTyreCold(60)
+        val overheat = LmuWindowsTyreOverheat(100)
+        val cold = LmuWindowsTyreCold(60)
         assertEquals(null, overheat.resolvedText)
         assertEquals(null, cold.resolvedText)
         assertEquals(100, overheat.celsius)
@@ -133,15 +133,15 @@ class SpeechEventTest {
 
     @Test
     fun `自己ベストラップ系はシミュレーターごとの既定文言を返す`() {
-        assertEquals("自己ベストラップ更新 1分23秒456", SpeechEvent.LmuWindowsMyBestLap(83_456L).narratedText)
-        assertEquals("自己ベストラップ更新 23秒005", SpeechEvent.LmuWindowsMyBestLap(23_005L, "カスタム").narratedText)
-        val gt7Event = SpeechEvent.Gt7Ps5MyBestLap(83_456)
+        assertEquals("自己ベストラップ更新 1分23秒456", LmuWindowsMyBestLap(83_456L).narratedText)
+        assertEquals("自己ベストラップ更新 23秒005", LmuWindowsMyBestLap(23_005L, "カスタム").narratedText)
+        val gt7Event = Gt7Ps5MyBestLap(83_456)
         assertEquals("自己ベストラップ更新 1分23秒456", gt7Event.narratedText)
         assertEquals(Gt7Ps5ReadoutItemKey.MyBestLap.Root, gt7Event.readoutItemKey)
         assertEquals(83_456, gt7Event.lapTimeMs)
         assertEquals("更新済み", gt7Event.copy(resolvedText = "更新済み").resolvedText)
         assertEquals("自己ベストラップ更新 1分23秒456", gt7Event.copy(resolvedText = "更新済み").narratedText)
-        val aceEvent = SpeechEvent.AceWindowsMyBestLap(83_456)
+        val aceEvent = AceWindowsMyBestLap(83_456)
         assertEquals("自己ベストラップ更新 1分23秒456", aceEvent.narratedText)
         assertEquals(AceWindowsReadoutItemKey.MyBestLap.Root, aceEvent.readoutItemKey)
         assertEquals(83_456, aceEvent.lapTimeMs)
@@ -152,7 +152,7 @@ class SpeechEventTest {
 
     @Test
     fun `LMU自己ベストラップはLongのタイムと解決文言を保持しRootキーを維持する`() {
-        val event = SpeechEvent.LmuWindowsMyBestLap(3_000_000_005L)
+        val event = LmuWindowsMyBestLap(3_000_000_005L)
         assertEquals(3_000_000_005L, event.lapTimeMs)
         assertEquals(null, event.resolvedText)
         assertEquals(LmuWindowsReadoutItemKey.MyBestLap.Root, event.readoutItemKey)
@@ -162,18 +162,18 @@ class SpeechEventTest {
 
     @Test
     fun `RemainingFuelLapsWarningはlapsが1以上のとき残り周回数の文言を返す`() {
-        assertEquals("燃料は残り約3周", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = 3).narratedText)
+        assertEquals("燃料は残り約3周", Gt7Ps5RemainingFuelLapsWarning(laps = 3).narratedText)
     }
 
     @Test
     fun `RemainingFuelLapsWarningはlapsが0以下のとき燃料切れの文言を返す`() {
-        assertEquals("燃料残り1周未満", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = 0).narratedText)
-        assertEquals("燃料残り1周未満", SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps = -1).narratedText)
+        assertEquals("燃料残り1周未満", Gt7Ps5RemainingFuelLapsWarning(laps = 0).narratedText)
+        assertEquals("燃料残り1周未満", Gt7Ps5RemainingFuelLapsWarning(laps = -1).narratedText)
     }
 
     @Test
     fun `Gt7Ps5燃料残量はRootキーと既定文言を持ち解決文言をcopyで保持する`() {
-        val event = SpeechEvent.Gt7Ps5RemainingFuelWarning(29)
+        val event = Gt7Ps5RemainingFuelWarning(29)
         val resolved = event.copy(resolvedText = "残り29%")
 
         assertEquals(Gt7Ps5ReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)
@@ -184,8 +184,8 @@ class SpeechEventTest {
 
     @Test
     fun `Gt7Ps5の燃料残量は整数を展開しタイヤは警告文言を返す`() {
-        assertEquals("燃料は残り30パーセント", SpeechEvent.Gt7Ps5RemainingFuelWarning(30).narratedText)
-        assertEquals("タイヤ過熱 107度", SpeechEvent.Gt7Ps5TyreOverheat(107).narratedText)
+        assertEquals("燃料は残り30パーセント", Gt7Ps5RemainingFuelWarning(30).narratedText)
+        assertEquals("タイヤ過熱 107度", Gt7Ps5TyreOverheat(107).narratedText)
     }
 
     @Test
@@ -193,7 +193,7 @@ class SpeechEventTest {
         listOf(1, 3).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT.replace("{laps}", laps.toString()),
-                SpeechEvent.LmuWindowsPitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
+                LmuWindowsPitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
             )
         }
     }
@@ -203,7 +203,7 @@ class SpeechEventTest {
         listOf(0, -1).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
-                SpeechEvent.LmuWindowsPitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
+                LmuWindowsPitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
             )
         }
     }
@@ -213,7 +213,7 @@ class SpeechEventTest {
         listOf(1, 3).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT.replace("{laps}", laps.toString()),
-                SpeechEvent.LmuWindowsPitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
+                LmuWindowsPitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
             )
         }
     }
@@ -223,81 +223,81 @@ class SpeechEventTest {
         listOf(0, -1).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
-                SpeechEvent.LmuWindowsPitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
+                LmuWindowsPitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
             )
         }
     }
 
     @Test
     fun `AceWindowsRemainingFuelLapsWarningはlapsが1以上のとき残り周回数の文言を返す`() {
-        assertEquals("燃料は残り約3周", SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps = 3).narratedText)
+        assertEquals("燃料は残り約3周", AceWindowsRemainingFuelLapsWarning(laps = 3).narratedText)
     }
 
     @Test
     fun `AceWindowsRemainingFuelLapsWarningはlapsが0以下のとき燃料切れの文言を返す`() {
-        assertEquals("燃料残り1周未満", SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps = 0).narratedText)
-        assertEquals("燃料残り1周未満", SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps = -1).narratedText)
+        assertEquals("燃料残り1周未満", AceWindowsRemainingFuelLapsWarning(laps = 0).narratedText)
+        assertEquals("燃料残り1周未満", AceWindowsRemainingFuelLapsWarning(laps = -1).narratedText)
     }
 
     @Test
     fun `AceWindowsRemainingFuelLapsWarningのreadoutItemKeyはACEの燃料残り周回数`() {
         assertEquals(
             AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
-            SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps = 3).readoutItemKey,
+            AceWindowsRemainingFuelLapsWarning(laps = 3).readoutItemKey,
         )
     }
 
     @Test
     fun `ACEフラッグ系のnarratedTextは画面と同じ既定文言を返す`() {
-        assertEquals("燃料は残り20パーセント", SpeechEvent.AceWindowsRemainingFuelWarning(20).narratedText)
-        assertEquals("ホワイトフラッグ", SpeechEvent.AceWindowsWhiteFlag().narratedText)
-        assertEquals("グリーンフラッグ", SpeechEvent.AceWindowsGreenFlag().narratedText)
-        assertEquals("レッドフラッグ", SpeechEvent.AceWindowsRedFlag().narratedText)
-        assertEquals("ブルーフラッグ", SpeechEvent.AceWindowsBlueFlag().narratedText)
-        assertEquals("イエローフラッグ", SpeechEvent.AceWindowsYellowFlag().narratedText)
-        assertEquals("ブラックフラッグ", SpeechEvent.AceWindowsBlackFlag().narratedText)
-        assertEquals("ブラック・ホワイトフラッグ", SpeechEvent.AceWindowsBlackWhiteFlag().narratedText)
-        assertEquals("チェッカーフラッグ", SpeechEvent.AceWindowsCheckeredFlag().narratedText)
+        assertEquals("燃料は残り20パーセント", AceWindowsRemainingFuelWarning(20).narratedText)
+        assertEquals("ホワイトフラッグ", AceWindowsWhiteFlag().narratedText)
+        assertEquals("グリーンフラッグ", AceWindowsGreenFlag().narratedText)
+        assertEquals("レッドフラッグ", AceWindowsRedFlag().narratedText)
+        assertEquals("ブルーフラッグ", AceWindowsBlueFlag().narratedText)
+        assertEquals("イエローフラッグ", AceWindowsYellowFlag().narratedText)
+        assertEquals("ブラックフラッグ", AceWindowsBlackFlag().narratedText)
+        assertEquals("ブラック・ホワイトフラッグ", AceWindowsBlackWhiteFlag().narratedText)
+        assertEquals("チェッカーフラッグ", AceWindowsCheckeredFlag().narratedText)
         assertEquals(
             ACE_WINDOWS_CHECKERED_FLAG_READOUT_TEXT_DEFAULT,
-            SpeechEvent.AceWindowsCheckeredFlag().narratedText,
+            AceWindowsCheckeredFlag().narratedText,
         )
-        assertEquals(ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsWhiteFlag().narratedText)
-        assertEquals(ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsGreenFlag().narratedText)
-        assertEquals(ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsRedFlag().narratedText)
-        assertEquals(ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsBlueFlag().narratedText)
-        assertEquals(ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsYellowFlag().narratedText)
-        assertEquals(ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT, SpeechEvent.AceWindowsBlackFlag().narratedText)
+        assertEquals(ACE_WINDOWS_WHITE_FLAG_READOUT_TEXT_DEFAULT, AceWindowsWhiteFlag().narratedText)
+        assertEquals(ACE_WINDOWS_GREEN_FLAG_READOUT_TEXT_DEFAULT, AceWindowsGreenFlag().narratedText)
+        assertEquals(ACE_WINDOWS_RED_FLAG_READOUT_TEXT_DEFAULT, AceWindowsRedFlag().narratedText)
+        assertEquals(ACE_WINDOWS_BLUE_FLAG_READOUT_TEXT_DEFAULT, AceWindowsBlueFlag().narratedText)
+        assertEquals(ACE_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT, AceWindowsYellowFlag().narratedText)
+        assertEquals(ACE_WINDOWS_BLACK_FLAG_READOUT_TEXT_DEFAULT, AceWindowsBlackFlag().narratedText)
         assertEquals(
             ACE_WINDOWS_BLACK_WHITE_FLAG_READOUT_TEXT_DEFAULT,
-            SpeechEvent.AceWindowsBlackWhiteFlag().narratedText,
+            AceWindowsBlackWhiteFlag().narratedText,
         )
         assertEquals(
             ACE_WINDOWS_ORANGE_CIRCLE_FLAG_READOUT_TEXT_DEFAULT,
-            SpeechEvent.AceWindowsOrangeCircleFlag().narratedText,
+            AceWindowsOrangeCircleFlag().narratedText,
         )
         assertEquals(
             ACE_WINDOWS_RED_YELLOW_STRIPES_FLAG_READOUT_TEXT_DEFAULT,
-            SpeechEvent.AceWindowsRedYellowStripesFlag().narratedText,
+            AceWindowsRedYellowStripesFlag().narratedText,
         )
     }
 
     @Test
     fun `ACEタイヤと車両接近は既定文言を返す`() {
-        assertEquals("タイヤ過熱 110度", SpeechEvent.AceWindowsTyreOverheat(110).narratedText)
+        assertEquals("タイヤ過熱 110度", AceWindowsTyreOverheat(110).narratedText)
         assertEquals(
             ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT,
-            SpeechEvent.AceWindowsVehicleApproach().narratedText,
+            AceWindowsVehicleApproach().narratedText,
         )
         assertEquals(
             AceWindowsReadoutItemKey.VehicleApproach.Root,
-            SpeechEvent.AceWindowsVehicleApproach().readoutItemKey,
+            AceWindowsVehicleApproach().readoutItemKey,
         )
     }
 
     @Test
     fun `燃料残り周回数イベントは解決文言を保持しログ用の既定文言は維持する`() {
-        val event = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(1)
+        val event = Gt7Ps5RemainingFuelLapsWarning(1)
         assertEquals(null, event.resolvedText)
         val resolved = event.copy(resolvedText = "あと1周")
         assertEquals("あと1周", resolved.resolvedText)
@@ -307,7 +307,7 @@ class SpeechEventTest {
 
     @Test
     fun `GT7タイヤ過熱は既定文言とキーを維持し解決文言を保持する`() {
-        val event = SpeechEvent.Gt7Ps5TyreOverheat(0, "設定文言")
+        val event = Gt7Ps5TyreOverheat(0, "設定文言")
         assertEquals("タイヤ過熱 0度", event.narratedText)
         assertEquals(Gt7Ps5ReadoutItemKey.TyreTemperature.Root, event.readoutItemKey)
         assertEquals("設定文言", event.resolvedText)
@@ -317,20 +317,20 @@ class SpeechEventTest {
     fun `車両故障イベントは解決済み文言を保持し既定文言とRootキーを維持する`() {
         val events =
             listOf(
-                SpeechEvent.LmuWindowsOverheating("カスタム"),
-                SpeechEvent.LmuWindowsPartDetached("カスタム"),
-                SpeechEvent.LmuWindowsTyreDetached("カスタム"),
+                LmuWindowsOverheating("カスタム"),
+                LmuWindowsPartDetached("カスタム"),
+                LmuWindowsTyreDetached("カスタム"),
             )
-        assertEquals("カスタム", (events[0] as SpeechEvent.LmuWindowsOverheating).resolvedText)
-        assertEquals("カスタム", (events[1] as SpeechEvent.LmuWindowsPartDetached).resolvedText)
-        assertEquals("カスタム", (events[2] as SpeechEvent.LmuWindowsTyreDetached).resolvedText)
+        assertEquals("カスタム", (events[0] as LmuWindowsOverheating).resolvedText)
+        assertEquals("カスタム", (events[1] as LmuWindowsPartDetached).resolvedText)
+        assertEquals("カスタム", (events[2] as LmuWindowsTyreDetached).resolvedText)
         assertEquals(listOf("オーバーヒート", "部品脱落", "タイヤ脱落"), events.map { it.narratedText })
         events.forEach { assertEquals(LmuWindowsReadoutItemKey.VehicleDamage.Root, it.readoutItemKey) }
     }
 
     @Test
     fun `ACEタイヤ過熱は温度と判定時本文を保持する`() {
-        val event = SpeechEvent.AceWindowsTyreOverheat(111)
+        val event = AceWindowsTyreOverheat(111)
         assertEquals(AceWindowsReadoutItemKey.TyreTemperature.Root, event.readoutItemKey)
         assertEquals(null, event.resolvedText)
         val resolved = event.withResolvedText("過熱注意")
@@ -341,19 +341,19 @@ class SpeechEventTest {
 
     @Test
     fun `ACE燃料残量イベントは既定文言とRootキーと解決済み本文を保持する`() {
-        val event = SpeechEvent.AceWindowsRemainingFuelWarning(30)
+        val event = AceWindowsRemainingFuelWarning(30)
         assertEquals("燃料は残り30パーセント", event.narratedText)
         assertEquals(AceWindowsReadoutItemKey.RemainingFuel.Root, event.readoutItemKey)
         assertEquals(null, event.resolvedText)
-        assertEquals(SpeechEvent.AceWindowsRemainingFuelWarning(30, "残り30%"), event.withResolvedText("残り30%"))
+        assertEquals(AceWindowsRemainingFuelWarning(30, "残り30%"), event.withResolvedText("残り30%"))
     }
 
     @Test
     fun `ACE燃料残り周回数は解決済み文言を保持し既定文言を維持する`() {
-        val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(3)
+        val event = AceWindowsRemainingFuelLapsWarning(3)
         assertEquals(null, event.resolvedText)
         val resolved = event.withResolvedText("残り3周")
-        assertEquals(SpeechEvent.AceWindowsRemainingFuelLapsWarning(3, "残り3周"), resolved)
+        assertEquals(AceWindowsRemainingFuelLapsWarning(3, "残り3周"), resolved)
         assertEquals("燃料は残り約3周", resolved.narratedText)
     }
 
@@ -361,17 +361,17 @@ class SpeechEventTest {
     fun `ACEフラッグと車両接近は解決済み本文を保持し既定文言を維持する`() {
         val events =
             listOf<ReadoutTextEvent>(
-                SpeechEvent.AceWindowsCheckeredFlag(),
-                SpeechEvent.AceWindowsWhiteFlag(),
-                SpeechEvent.AceWindowsGreenFlag(),
-                SpeechEvent.AceWindowsRedFlag(),
-                SpeechEvent.AceWindowsBlueFlag(),
-                SpeechEvent.AceWindowsYellowFlag(),
-                SpeechEvent.AceWindowsBlackFlag(),
-                SpeechEvent.AceWindowsBlackWhiteFlag(),
-                SpeechEvent.AceWindowsOrangeCircleFlag(),
-                SpeechEvent.AceWindowsRedYellowStripesFlag(),
-                SpeechEvent.AceWindowsVehicleApproach(),
+                AceWindowsCheckeredFlag(),
+                AceWindowsWhiteFlag(),
+                AceWindowsGreenFlag(),
+                AceWindowsRedFlag(),
+                AceWindowsBlueFlag(),
+                AceWindowsYellowFlag(),
+                AceWindowsBlackFlag(),
+                AceWindowsBlackWhiteFlag(),
+                AceWindowsOrangeCircleFlag(),
+                AceWindowsRedYellowStripesFlag(),
+                AceWindowsVehicleApproach(),
             )
         events.forEach { event ->
             assertEquals(null, event.resolvedText)

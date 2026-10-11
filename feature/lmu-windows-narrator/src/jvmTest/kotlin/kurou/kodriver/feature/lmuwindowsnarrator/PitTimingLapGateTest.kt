@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
+import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
+import kurou.kodriver.domain.engine.LmuWindowsRedFlag
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.PitTimingSource
 import kotlin.test.Test
@@ -9,7 +11,7 @@ class PitTimingLapGateTest {
     private val gate = PitTimingLapGate()
 
     private fun warning(laps: Int) =
-        listOf<SpeechEvent>(SpeechEvent.LmuWindowsPitTimingWarning(laps, source = PitTimingSource.TyreWear))
+        listOf<SpeechEvent>(LmuWindowsPitTimingWarning(laps, source = PitTimingSource.TyreWear))
 
     @Test
     fun `イベントが無ければ空を返す`() {
@@ -20,7 +22,7 @@ class PitTimingLapGateTest {
     fun `PitTimingWarning以外のイベントは通さない`() {
         assertEquals(
             emptyList<SpeechEvent>(),
-            gate.filter(currentLap = 1, events = listOf(SpeechEvent.LmuWindowsRedFlag())),
+            gate.filter(currentLap = 1, events = listOf(LmuWindowsRedFlag())),
         )
     }
 
@@ -52,7 +54,7 @@ class PitTimingLapGateTest {
     fun `通過したイベントは算出元を維持する`() {
         val virtualEnergy =
             listOf<SpeechEvent>(
-                SpeechEvent.LmuWindowsPitTimingWarning(3, PitTimingSource.VirtualEnergy),
+                LmuWindowsPitTimingWarning(3, PitTimingSource.VirtualEnergy),
             )
         val tyreWear = warning(2)
 

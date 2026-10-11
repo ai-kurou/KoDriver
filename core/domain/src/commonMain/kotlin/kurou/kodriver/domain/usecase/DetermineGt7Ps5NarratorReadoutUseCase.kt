@@ -1,5 +1,9 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
+import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
@@ -94,7 +98,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 
-        val event = SpeechEvent.Gt7Ps5MyBestLap(current)
+        val event = Gt7Ps5MyBestLap(current)
         return Gt7Ps5NarratorReadoutDecision(
             state = stateWithCurrentBestLap.copy(personalBestMs = current),
             events = listOf(event),
@@ -138,7 +142,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             )
         return Gt7Ps5NarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedRemainingLaps = remainingLaps),
-            events = listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(remainingLaps)),
+            events = listOf(Gt7Ps5RemainingFuelLapsWarning(remainingLaps)),
         )
     }
 
@@ -157,7 +161,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             state = state.copy(remainingFuelWarned = isLow),
             events =
                 if (shouldAnnounce) {
-                    listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(remainingFuelPercent(telemetry)))
+                    listOf(Gt7Ps5RemainingFuelWarning(remainingFuelPercent(telemetry)))
                 } else {
                     emptyList()
                 },
@@ -194,7 +198,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             state = state.copy(tyreOverheating = nextOverheating),
             events =
                 if (shouldAnnounce) {
-                    listOf(SpeechEvent.Gt7Ps5TyreOverheat(wheels.maxOf { it.value }.roundToInt()))
+                    listOf(Gt7Ps5TyreOverheat(wheels.maxOf { it.value }.roundToInt()))
                 } else {
                     emptyList()
                 },

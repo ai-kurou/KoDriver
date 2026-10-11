@@ -5,6 +5,10 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import kurou.kodriver.domain.engine.LmuWindowsCarLeft
+import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
+import kurou.kodriver.domain.engine.LmuWindowsCarRight
+import kurou.kodriver.domain.engine.LmuWindowsCarRightSustained
 import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
@@ -28,14 +32,14 @@ class LmuWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.LmuWindowsCarLeft().narratedText,
-            SpeechEvent.LmuWindowsCarRight().narratedText,
+            LmuWindowsCarLeft().narratedText,
+            LmuWindowsCarRight().narratedText,
         ).forEach { narratedText ->
             rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText)
         }
         listOf(
-            SpeechEvent.LmuWindowsCarRightSustained().narratedText,
-            SpeechEvent.LmuWindowsCarLeftSustained().narratedText,
+            LmuWindowsCarRightSustained().narratedText,
+            LmuWindowsCarLeftSustained().narratedText,
         ).forEach { narratedText ->
             rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText)
         }

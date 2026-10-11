@@ -1,5 +1,24 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
+import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
+import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
+import kurou.kodriver.domain.engine.LmuWindowsCarLeft
+import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
+import kurou.kodriver.domain.engine.LmuWindowsCarRight
+import kurou.kodriver.domain.engine.LmuWindowsCarRightSustained
+import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
+import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
+import kurou.kodriver.domain.engine.LmuWindowsOverheating
+import kurou.kodriver.domain.engine.LmuWindowsPartDetached
+import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
+import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
+import kurou.kodriver.domain.engine.LmuWindowsTyreCold
+import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
+import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
+import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
+import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
@@ -68,7 +87,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLap(68_000L)), second.events)
+        assertEquals(listOf(LmuWindowsMyBestLap(68_000L)), second.events)
         assertEquals(68_000L, second.state.personalBestMs)
         assertEquals(2, second.state.previousLapCount)
     }
@@ -234,7 +253,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLap(59_000L)), second.events)
+        assertEquals(listOf(LmuWindowsMyBestLap(59_000L)), second.events)
         assertEquals(59_000L, second.state.personalBestMs)
     }
 
@@ -273,7 +292,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsMyBestLap(59_000L)), second.events)
+        assertEquals(listOf(LmuWindowsMyBestLap(59_000L)), second.events)
     }
 
     @Test
@@ -391,7 +410,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(emptyList<SpeechEvent>(), first.events)
-        assertEquals(listOf(SpeechEvent.LmuWindowsCarLeft()), second.events)
+        assertEquals(listOf(LmuWindowsCarLeft()), second.events)
     }
 
     @Test
@@ -412,7 +431,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 50L,
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsCarRight()), second.events)
+        assertEquals(listOf(LmuWindowsCarRight()), second.events)
     }
 
     @Test
@@ -433,7 +452,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 50L,
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsCarLeft()), second.events)
+        assertEquals(listOf(LmuWindowsCarLeft()), second.events)
     }
 
     @Test
@@ -567,7 +586,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 7_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsCarLeft(), SpeechEvent.LmuWindowsCarLeftSustained()), second.events)
+        assertEquals(listOf(LmuWindowsCarLeft(), LmuWindowsCarLeftSustained()), second.events)
     }
 
     @Test
@@ -588,7 +607,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 7_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsCarRight(), SpeechEvent.LmuWindowsCarRightSustained()), second.events)
+        assertEquals(listOf(LmuWindowsCarRight(), LmuWindowsCarRightSustained()), second.events)
     }
 
     @Test
@@ -630,7 +649,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 6_999L,
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsCarLeft()), second.events)
+        assertEquals(listOf(LmuWindowsCarLeft()), second.events)
     }
 
     @Test
@@ -656,7 +675,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 7_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsCarLeft()), second.events)
+        assertEquals(listOf(LmuWindowsCarLeft()), second.events)
     }
 
     @Test
@@ -749,9 +768,9 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
         assertEquals(
             listOf(
-                SpeechEvent.LmuWindowsBlueFlag(),
-                SpeechEvent.LmuWindowsYellowFlag(),
-                SpeechEvent.LmuWindowsFullCourseYellow(),
+                LmuWindowsBlueFlag(),
+                LmuWindowsYellowFlag(),
+                LmuWindowsFullCourseYellow(),
             ),
             second.events,
         )
@@ -773,7 +792,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsRedFlag()), second.events)
+        assertEquals(listOf(LmuWindowsRedFlag()), second.events)
     }
 
     @Test
@@ -979,7 +998,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsOverheating()), second.events)
+        assertEquals(listOf(LmuWindowsOverheating()), second.events)
     }
 
     @Test
@@ -1060,7 +1079,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsPartDetached()), second.events)
+        assertEquals(listOf(LmuWindowsPartDetached()), second.events)
     }
 
     @Test
@@ -1107,7 +1126,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsOverheating(), SpeechEvent.LmuWindowsPartDetached()), second.events)
+        assertEquals(listOf(LmuWindowsOverheating(), LmuWindowsPartDetached()), second.events)
     }
 
     @Test
@@ -1139,7 +1158,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreDetached()), second.events)
+        assertEquals(listOf(LmuWindowsTyreDetached()), second.events)
     }
 
     @Test
@@ -1201,7 +1220,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreDetached()), second.events)
+        assertEquals(listOf(LmuWindowsTyreDetached()), second.events)
     }
 
     @Test
@@ -1213,7 +1232,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreOverheat(95)), decision.events)
+        assertEquals(listOf(LmuWindowsTyreOverheat(95)), decision.events)
         assertEquals(true, decision.state.tyreOverheating)
     }
 
@@ -1244,8 +1263,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                         input,
                         settings(),
                     )
-                assertEquals(listOf(SpeechEvent.LmuWindowsTyreOverheat(expected)), overheat.events)
-                assertEquals(listOf(SpeechEvent.LmuWindowsTyreCold(expected)), cold.events)
+                assertEquals(listOf(LmuWindowsTyreOverheat(expected)), overheat.events)
+                assertEquals(listOf(LmuWindowsTyreCold(expected)), cold.events)
             }
         }
     }
@@ -1290,7 +1309,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, cooledState.tyreOverheating)
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreOverheat(95)), reovertState.events)
+        assertEquals(listOf(LmuWindowsTyreOverheat(95)), reovertState.events)
     }
 
     @Test
@@ -1383,7 +1402,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(tyreWearThresholdPercentage = 50),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreWearWarning(50)), decision.events)
+        assertEquals(listOf(LmuWindowsTyreWearWarning(50)), decision.events)
         assertEquals(true, decision.state.tyreWearWarned)
     }
 
@@ -1396,7 +1415,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(tyreWearThresholdPercentage = 70),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreWearWarning(70)), decision.events)
+        assertEquals(listOf(LmuWindowsTyreWearWarning(70)), decision.events)
         assertEquals(true, decision.state.tyreWearWarned)
     }
 
@@ -1440,7 +1459,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, recoveredState.tyreWearWarned)
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreWearWarning(50)), rewarnedDecision.events)
+        assertEquals(listOf(LmuWindowsTyreWearWarning(50)), rewarnedDecision.events)
     }
 
     @Test
@@ -1501,7 +1520,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(brakeTemperatureHighThresholdCelsius = 650),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsBrakeOverheat(650)), decision.events)
+        assertEquals(listOf(LmuWindowsBrakeOverheat(650)), decision.events)
         assertEquals(true, decision.state.brakeOverheating)
     }
 
@@ -1528,7 +1547,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(brakeWearLowThresholdPercent = 20),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsBrakeWearLow(20)), decision.events)
+        assertEquals(listOf(LmuWindowsBrakeWearLow(20)), decision.events)
         assertEquals(true, decision.state.brakeWearWarned)
     }
 
@@ -1541,7 +1560,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(brakeWearLowThresholdPercent = 20),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsBrakeWearLow(20)), decision.events)
+        assertEquals(listOf(LmuWindowsBrakeWearLow(20)), decision.events)
     }
 
     @Test
@@ -1580,7 +1599,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision = useCase.determineBrakeWearLow(replacedState, brakeWear(fl = 10), settings())
 
         assertEquals(false, replacedState.brakeWearWarned)
-        assertEquals(listOf(SpeechEvent.LmuWindowsBrakeWearLow(20)), decision.events)
+        assertEquals(listOf(LmuWindowsBrakeWearLow(20)), decision.events)
     }
 
     @Test
@@ -1642,7 +1661,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, cooledState.brakeOverheating)
-        assertEquals(listOf(SpeechEvent.LmuWindowsBrakeOverheat(700)), reovertDecision.events)
+        assertEquals(listOf(LmuWindowsBrakeOverheat(700)), reovertDecision.events)
     }
 
     @Test
@@ -1718,7 +1737,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50)), decision.events)
+        assertEquals(listOf(LmuWindowsRemainingVirtualEnergyWarning(50)), decision.events)
         assertEquals(true, decision.state.remainingVirtualEnergyWarned)
     }
 
@@ -1762,7 +1781,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, recoveredState.remainingVirtualEnergyWarned)
-        assertEquals(listOf(SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning(50)), rewarnedDecision.events)
+        assertEquals(listOf(LmuWindowsRemainingVirtualEnergyWarning(50)), rewarnedDecision.events)
     }
 
     @Test
@@ -1825,7 +1844,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreOverheat(90)), decision.events)
+        assertEquals(listOf(LmuWindowsTyreOverheat(90)), decision.events)
     }
 
     @Test
@@ -1879,7 +1898,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreCold(55)), decision.events)
+        assertEquals(listOf(LmuWindowsTyreCold(55)), decision.events)
     }
 
     @Test
@@ -1922,7 +1941,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.LmuWindowsTyreCold(80)), decision.events)
+        assertEquals(listOf(LmuWindowsTyreCold(80)), decision.events)
     }
 
     @Test
@@ -2016,7 +2035,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val announcedState =
             useCase.recordPitTimingAnnounced(
                 state,
-                SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy),
+                LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy),
             )
 
         assertEquals(state.copy(lastAnnouncedPitTimingVirtualEnergyLaps = 0), announcedState)
@@ -2033,7 +2052,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         val announcedState =
-            useCase.recordPitTimingAnnounced(state, SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear))
+            useCase.recordPitTimingAnnounced(state, LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear))
 
         assertEquals(state.copy(lastAnnouncedPitTimingTyreWearLaps = 0), announcedState)
     }
@@ -2080,7 +2099,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             1e-9,
         )
         assertEquals(
-            listOf(SpeechEvent.LmuWindowsPitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
+            listOf(LmuWindowsPitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
             decision.events,
         )
         assertEquals(2, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
@@ -2088,7 +2107,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val announcedState =
             useCase.recordPitTimingAnnounced(
                 decision.state,
-                SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy),
+                LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy),
             )
         assertEquals(0, announcedState.lastAnnouncedPitTimingVirtualEnergyLaps)
     }
@@ -2235,7 +2254,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 state =
                     useCase.recordPitTimingAnnounced(
                         firstWarningDecision.state,
-                        firstWarningDecision.events.single() as SpeechEvent.LmuWindowsPitTimingWarning,
+                        firstWarningDecision.events.single() as LmuWindowsPitTimingWarning,
                     ),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
                 virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
@@ -2249,7 +2268,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             1e-9,
         )
         assertEquals(
-            listOf(SpeechEvent.LmuWindowsPitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
+            listOf(LmuWindowsPitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
             firstWarningDecision.events,
         )
         assertEquals(emptyList<SpeechEvent>(), refilledDecision.events)
@@ -2396,7 +2415,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(
-            listOf(SpeechEvent.LmuWindowsPitTimingWarning(0, source = PitTimingSource.TyreWear)),
+            listOf(LmuWindowsPitTimingWarning(0, source = PitTimingSource.TyreWear)),
             decision.events,
         )
         assertEquals(2, decision.state.lastPitTimingTyreWearEvaluationLap)
@@ -2404,7 +2423,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val announcedState =
             useCase.recordPitTimingAnnounced(
                 decision.state,
-                SpeechEvent.LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear),
+                LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear),
             )
         assertEquals(0, announcedState.lastAnnouncedPitTimingTyreWearLaps)
     }
@@ -2480,7 +2499,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 state =
                     useCase.recordPitTimingAnnounced(
                         firstWarningDecision.state,
-                        firstWarningDecision.events.single() as SpeechEvent.LmuWindowsPitTimingWarning,
+                        firstWarningDecision.events.single() as LmuWindowsPitTimingWarning,
                     ),
                 telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
                 tyreWear = tyreWear(fl = 1.0),
@@ -2489,7 +2508,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(
-            listOf(SpeechEvent.LmuWindowsPitTimingWarning(0, source = PitTimingSource.TyreWear)),
+            listOf(LmuWindowsPitTimingWarning(0, source = PitTimingSource.TyreWear)),
             firstWarningDecision.events,
         )
         assertEquals(emptyList<SpeechEvent>(), tyreChangedDecision.events)
@@ -2569,7 +2588,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 )
             state = decision.state
             if (index == 3) {
-                val warning = SpeechEvent.LmuWindowsPitTimingWarning(0, source = PitTimingSource.VirtualEnergy)
+                val warning = LmuWindowsPitTimingWarning(0, source = PitTimingSource.VirtualEnergy)
                 assertEquals(listOf(warning), decision.events)
                 state = useCase.recordPitTimingAnnounced(state, warning)
             }
@@ -2610,7 +2629,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 observedAtMs = 470_000L,
             )
         assertEquals(
-            listOf(SpeechEvent.LmuWindowsPitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
+            listOf(LmuWindowsPitTimingWarning(0, source = PitTimingSource.VirtualEnergy)),
             warning.events,
         )
     }

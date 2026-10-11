@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.Simulator
@@ -100,7 +100,7 @@ internal class LmuWindowsReadoutBrakeWearDetailViewModel(
         viewModelScope.launch {
             previewHelper.preview(
                 formattedText,
-                SpeechEvent.LmuWindowsBrakeWearLow(
+                LmuWindowsBrakeWearLow(
                     percent = percent,
                     resolvedText = formattedText,
                 ),

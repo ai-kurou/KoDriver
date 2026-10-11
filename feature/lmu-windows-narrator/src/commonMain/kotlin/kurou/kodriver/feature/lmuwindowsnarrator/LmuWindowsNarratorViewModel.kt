@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
@@ -700,7 +701,7 @@ internal class LmuWindowsNarratorViewModel(
                     )
                 narratorState =
                     pitTimingEvents
-                        .filterIsInstance<SpeechEvent.LmuWindowsPitTimingWarning>()
+                        .filterIsInstance<LmuWindowsPitTimingWarning>()
                         .fold(tyreWearDecision.state) { finalState, event ->
                             narratorUseCases.determineReadout.recordPitTimingAnnounced(finalState, event)
                         }
@@ -751,8 +752,8 @@ private fun selectLowerPitTimingEvent(
     tyreWearEvents: List<SpeechEvent>,
 ): List<SpeechEvent> {
     val virtualEnergyEvent =
-        virtualEnergyEvents.filterIsInstance<SpeechEvent.LmuWindowsPitTimingWarning>().firstOrNull()
-    val tyreWearEvent = tyreWearEvents.filterIsInstance<SpeechEvent.LmuWindowsPitTimingWarning>().firstOrNull()
+        virtualEnergyEvents.filterIsInstance<LmuWindowsPitTimingWarning>().firstOrNull()
+    val tyreWearEvent = tyreWearEvents.filterIsInstance<LmuWindowsPitTimingWarning>().firstOrNull()
     return when {
         virtualEnergyEvent != null && tyreWearEvent != null -> {
             if (virtualEnergyEvent.laps <= tyreWearEvent.laps) listOf(virtualEnergyEvent) else listOf(tyreWearEvent)

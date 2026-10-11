@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
@@ -31,7 +31,7 @@ class ReadoutSpeechEventPreviewHelperTest {
     private val observeVolume: ObserveSoundVolumeUseCase = mockk()
     private val playSpeechEvent: PlaySpeechEventUseCase = mockk()
     private val stopSpeech: StopSpeechUseCase = mockk()
-    private val event = SpeechEvent.LmuWindowsTyreWearWarning(50, "残り50%")
+    private val event = LmuWindowsTyreWearWarning(50, "残り50%")
     private val key = event.readoutItemKey
 
     private fun TestScope.helper() =

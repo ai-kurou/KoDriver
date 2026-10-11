@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.engine.LmuWindowsOverheating
+import kurou.kodriver.domain.engine.LmuWindowsPartDetached
+import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
@@ -91,7 +94,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     }
 
     fun onOverheatReadoutTextPreviewClicked(text: String) {
-        preview(SpeechEvent.LmuWindowsOverheating(resolvedText = text), text)
+        preview(LmuWindowsOverheating(resolvedText = text), text)
     }
 
     fun onPartDetachedEnabledChanged(enabled: Boolean) {
@@ -105,7 +108,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     }
 
     fun onPartDetachedReadoutTextPreviewClicked(text: String) {
-        preview(SpeechEvent.LmuWindowsPartDetached(resolvedText = text), text)
+        preview(LmuWindowsPartDetached(resolvedText = text), text)
     }
 
     fun onTyreDetachedEnabledChanged(enabled: Boolean) {
@@ -119,7 +122,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     }
 
     fun onTyreDetachedReadoutTextPreviewClicked(text: String) {
-        preview(SpeechEvent.LmuWindowsTyreDetached(resolvedText = text), text)
+        preview(LmuWindowsTyreDetached(resolvedText = text), text)
     }
 
     /** 空白文言・TTS利用不可・音量ゼロでは再生しない。 */

@@ -22,6 +22,10 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
+import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
@@ -179,7 +183,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryChannel = channel,
                 ttsEngine = tts,
                 readoutText = {
-                    if (it is SpeechEvent.Gt7Ps5MyBestLap && it.lapTimeMs == 59_000) error("preference error")
+                    if (it is Gt7Ps5MyBestLap && it.lapTimeMs == 59_000) error("preference error")
                     "復旧"
                 },
             )
@@ -188,9 +192,9 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 58_000))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLap(58_000, "復旧")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(58_000, "復旧")), spokenTexts)
             verify(exactly = 1) { tts.currentReadoutItemKey }
-            verify(exactly = 1) { tts.speak(SpeechEvent.Gt7Ps5MyBestLap(58_000, "復旧"), false) }
+            verify(exactly = 1) { tts.speak(Gt7Ps5MyBestLap(58_000, "復旧"), false) }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -240,7 +244,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
         }
 
     @Test
@@ -331,7 +335,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(lapCount = 2, gasLevel = 20f, gasCapacity = 100f))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(2, resolvedText = "燃料は残り約2周")),
+                listOf<SpeechEvent>(Gt7Ps5RemainingFuelLapsWarning(2, resolvedText = "燃料は残り約2周")),
                 spokenTexts,
             )
         }
@@ -378,8 +382,8 @@ class Gt7Ps5NarratorViewModelTest {
             )
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
+                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
+                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
                 ),
                 refuelSpokenTexts,
             )
@@ -399,8 +403,8 @@ class Gt7Ps5NarratorViewModelTest {
             )
             assertEquals(
                 listOf<SpeechEvent>(
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
+                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
+                    Gt7Ps5RemainingFuelLapsWarning(0, resolvedText = "燃料残り1周未満"),
                 ),
                 lapResetSpokenTexts,
             )
@@ -439,7 +443,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30パーセント")),
+                listOf<SpeechEvent>(Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30パーセント")),
                 spokenTexts,
             )
         }
@@ -485,7 +489,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30パーセント")),
+                listOf<SpeechEvent>(Gt7Ps5RemainingFuelWarning(30, resolvedText = "燃料は残り30パーセント")),
                 spokenTexts,
             )
             assertEquals(1, telemetryJsons.size)
@@ -536,7 +540,7 @@ class Gt7Ps5NarratorViewModelTest {
                 ),
             )
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat(95, "タイヤ過熱 95度")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5TyreOverheat(95, "タイヤ過熱 95度")), spokenTexts)
         }
 
     @Test
@@ -659,7 +663,7 @@ class Gt7Ps5NarratorViewModelTest {
                 ),
             )
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat(95, "タイヤ過熱 95度")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5TyreOverheat(95, "タイヤ過熱 95度")), spokenTexts)
             assertEquals(1, telemetryJsons.size)
             assertEquals(true, telemetryJsons.single().contains("tyreOverheating=false"))
             assertEquals(true, telemetryJsons.single().contains("tyreOverheating=true"))
@@ -785,7 +789,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
             assertEquals(true, ttsEngine.stopCalled)
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
         }
 
     @Test
@@ -805,7 +809,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
             assertEquals(true, ttsEngine.stopCalled)
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
         }
 
     @Test
@@ -829,7 +833,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
             assertEquals(false, ttsEngine.stopCalled)
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
         }
 
     @Test
@@ -890,7 +894,7 @@ class Gt7Ps5NarratorViewModelTest {
             channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
             // Gt7Ps5.MyBestLap.RootのREADOUT_ENABLED_STATE_DEFAULTはtrueのため、未読み込みでも読み上げられる。
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(59_000, "自己ベストラップ更新 59秒000")), spokenTexts)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) {
                 readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
@@ -1038,7 +1042,7 @@ class Gt7Ps5NarratorViewModelTest {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
             val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root
             val jsons = mutableListOf<String>()
-            val event = SpeechEvent.Gt7Ps5TyreOverheat(108, "温度108度")
+            val event = Gt7Ps5TyreOverheat(108, "温度108度")
             stubReadoutDefaults(orderOverride = listOf(key))
             every { ttsEngine.currentReadoutItemKey } returns null
             every { ttsEngine.speak(event, true) } just Runs
@@ -1069,7 +1073,7 @@ class Gt7Ps5NarratorViewModelTest {
                         ),
                 ),
             )
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat(108)), resolvedEvents)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5TyreOverheat(108)), resolvedEvents)
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(event, true) }
             coVerify(exactly = 1) {
@@ -1091,7 +1095,7 @@ class Gt7Ps5NarratorViewModelTest {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
             val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root
             val jsons = mutableListOf<String>()
-            val event = SpeechEvent.Gt7Ps5TyreOverheat(108, null)
+            val event = Gt7Ps5TyreOverheat(108, null)
             stubReadoutDefaults(orderOverride = listOf(key))
 
             coEvery {
@@ -1121,7 +1125,7 @@ class Gt7Ps5NarratorViewModelTest {
                         ),
                 ),
             )
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5TyreOverheat(108)), resolvedEvents)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5TyreOverheat(108)), resolvedEvents)
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 0) { ttsEngine.speak(event, true) }
             coVerify(exactly = 1) {
@@ -1143,7 +1147,7 @@ class Gt7Ps5NarratorViewModelTest {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
             val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root
             val jsons = mutableListOf<String>()
-            val event = SpeechEvent.Gt7Ps5MyBestLap(83_456, "更新1分23秒456")
+            val event = Gt7Ps5MyBestLap(83_456, "更新1分23秒456")
             stubReadoutDefaults(
                 orderOverride = listOf(key),
                 queueEnabledOverrides = mapOf(key to true),
@@ -1167,7 +1171,7 @@ class Gt7Ps5NarratorViewModelTest {
             })
             channel.send(gt7Telemetry(bestLapTimeMs = 90_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 83_456))
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLap(83_456)), resolvedEvents)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(83_456)), resolvedEvents)
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(event, true) }
             coVerify(exactly = 1) {
@@ -1189,7 +1193,7 @@ class Gt7Ps5NarratorViewModelTest {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
             val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root
             val jsons = mutableListOf<String>()
-            val event = SpeechEvent.Gt7Ps5MyBestLap(83_456, null)
+            val event = Gt7Ps5MyBestLap(83_456, null)
             stubReadoutDefaults(
                 orderOverride = listOf(key),
                 queueEnabledOverrides = mapOf(key to true),
@@ -1212,7 +1216,7 @@ class Gt7Ps5NarratorViewModelTest {
             })
             channel.send(gt7Telemetry(bestLapTimeMs = 90_000))
             channel.send(gt7Telemetry(bestLapTimeMs = 83_456))
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLap(83_456)), resolvedEvents)
+            assertEquals(listOf<SpeechEvent>(Gt7Ps5MyBestLap(83_456)), resolvedEvents)
             verify(exactly = 0) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 0) { ttsEngine.speak(event, true) }
             coVerify(exactly = 1) {

@@ -1,5 +1,20 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.engine.AceWindowsBlackFlag
+import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
+import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsMyBestLap
+import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
+import kurou.kodriver.domain.engine.AceWindowsRedFlag
+import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
+import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
+import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
+import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
@@ -49,7 +64,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = myBestLapSettings(),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLap(lapTimeMs = 68_000)), second.events)
+        assertEquals(listOf(AceWindowsMyBestLap(lapTimeMs = 68_000)), second.events)
         assertEquals(68_000, second.state.personalBestMs)
         assertEquals(2, second.state.previousLapCount)
     }
@@ -130,7 +145,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = myBestLapSettings(),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLap(lapTimeMs = 89_000)), decision.events)
+        assertEquals(listOf(AceWindowsMyBestLap(lapTimeMs = 89_000)), decision.events)
         assertEquals(89_000, decision.state.personalBestMs)
     }
 
@@ -167,7 +182,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = myBestLapSettings(),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsMyBestLap(lapTimeMs = 89_000)), second.events)
+        assertEquals(listOf(AceWindowsMyBestLap(lapTimeMs = 89_000)), second.events)
     }
 
     @Test
@@ -286,8 +301,8 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                     ),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(20)), fuelDecision.events)
-        assertEquals(listOf(SpeechEvent.AceWindowsBlueFlag()), flagDecision.events)
+        assertEquals(listOf(AceWindowsRemainingFuelWarning(20)), fuelDecision.events)
+        assertEquals(listOf(AceWindowsBlueFlag()), flagDecision.events)
     }
 
     @Test
@@ -299,7 +314,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = settings(thresholdPercentage = 30),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(20)), decision.events)
+        assertEquals(listOf(AceWindowsRemainingFuelWarning(20)), decision.events)
         assertEquals(true, decision.state.remainingFuelWarned)
     }
 
@@ -312,7 +327,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = settings(thresholdPercentage = 30),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(30)), decision.events)
+        assertEquals(listOf(AceWindowsRemainingFuelWarning(30)), decision.events)
     }
 
     @Test
@@ -356,7 +371,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, recoveredState.remainingFuelWarned)
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(20)), rewarnedDecision.events)
+        assertEquals(listOf(AceWindowsRemainingFuelWarning(20)), rewarnedDecision.events)
     }
 
     @Test
@@ -416,7 +431,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val decision = remainingFuelLaps(state = above.state, laps = 2.9f)
 
         assertTrue(above.events.isEmpty())
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)), decision.events)
+        assertEquals(listOf(AceWindowsRemainingFuelLapsWarning(2)), decision.events)
         assertEquals(2, decision.state.lastRemainingFuelLaps)
     }
 
@@ -424,7 +439,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     fun `燃料残り周回数が閾値ちょうどなら読み上げる`() {
         val decision = remainingFuelLaps(state = AceWindowsNarratorState(), laps = 3.0f)
 
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(3)), decision.events)
+        assertEquals(listOf(AceWindowsRemainingFuelLapsWarning(3)), decision.events)
     }
 
     @Test
@@ -442,9 +457,9 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val second = remainingFuelLaps(state = first.state, laps = 1.5f)
         val third = remainingFuelLaps(state = second.state, laps = 0.5f)
 
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)), first.events)
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(1)), second.events)
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(0)), third.events)
+        assertEquals(listOf(AceWindowsRemainingFuelLapsWarning(2)), first.events)
+        assertEquals(listOf(AceWindowsRemainingFuelLapsWarning(1)), second.events)
+        assertEquals(listOf(AceWindowsRemainingFuelLapsWarning(0)), third.events)
     }
 
     @Test
@@ -453,7 +468,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val bounced = remainingFuelLaps(state = first.state, laps = 2.01f)
         val decision = remainingFuelLaps(state = bounced.state, laps = 1.98f)
 
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(1)), first.events)
+        assertEquals(listOf(AceWindowsRemainingFuelLapsWarning(1)), first.events)
         assertTrue(bounced.events.isEmpty())
         assertEquals(1, bounced.state.lastRemainingFuelLaps)
         assertTrue(decision.events.isEmpty())
@@ -467,7 +482,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
         assertTrue(refueled.events.isEmpty())
         assertEquals(3, refueled.state.lastRemainingFuelLaps)
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(2)), decision.events)
+        assertEquals(listOf(AceWindowsRemainingFuelLapsWarning(2)), decision.events)
     }
 
     @Test
@@ -477,7 +492,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         val decision = remainingFuelLaps(state = refueled.state, laps = 3.5f)
 
         assertEquals(null, refueled.state.lastRemainingFuelLaps)
-        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelLapsWarning(3)), decision.events)
+        assertEquals(listOf(AceWindowsRemainingFuelLapsWarning(3)), decision.events)
     }
 
     @Test
@@ -546,7 +561,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = flagSettings(),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsBlueFlag()), decision.events)
+        assertEquals(listOf(AceWindowsBlueFlag()), decision.events)
         assertEquals(AceWindowsFlagType.BLUE_FLAG, decision.state.previousFlag)
     }
 
@@ -627,16 +642,16 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     fun `各フラグ種別に対応するイベントを読み上げる`() {
         val expected =
             mapOf(
-                AceWindowsFlagType.WHITE_FLAG to SpeechEvent.AceWindowsWhiteFlag(),
-                AceWindowsFlagType.GREEN_FLAG to SpeechEvent.AceWindowsGreenFlag(),
-                AceWindowsFlagType.RED_FLAG to SpeechEvent.AceWindowsRedFlag(),
-                AceWindowsFlagType.BLUE_FLAG to SpeechEvent.AceWindowsBlueFlag(),
-                AceWindowsFlagType.YELLOW_FLAG to SpeechEvent.AceWindowsYellowFlag(),
-                AceWindowsFlagType.BLACK_FLAG to SpeechEvent.AceWindowsBlackFlag(),
-                AceWindowsFlagType.BLACK_WHITE_FLAG to SpeechEvent.AceWindowsBlackWhiteFlag(),
-                AceWindowsFlagType.CHECKERED_FLAG to SpeechEvent.AceWindowsCheckeredFlag(),
-                AceWindowsFlagType.ORANGE_CIRCLE_FLAG to SpeechEvent.AceWindowsOrangeCircleFlag(),
-                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG to SpeechEvent.AceWindowsRedYellowStripesFlag(),
+                AceWindowsFlagType.WHITE_FLAG to AceWindowsWhiteFlag(),
+                AceWindowsFlagType.GREEN_FLAG to AceWindowsGreenFlag(),
+                AceWindowsFlagType.RED_FLAG to AceWindowsRedFlag(),
+                AceWindowsFlagType.BLUE_FLAG to AceWindowsBlueFlag(),
+                AceWindowsFlagType.YELLOW_FLAG to AceWindowsYellowFlag(),
+                AceWindowsFlagType.BLACK_FLAG to AceWindowsBlackFlag(),
+                AceWindowsFlagType.BLACK_WHITE_FLAG to AceWindowsBlackWhiteFlag(),
+                AceWindowsFlagType.CHECKERED_FLAG to AceWindowsCheckeredFlag(),
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG to AceWindowsOrangeCircleFlag(),
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG to AceWindowsRedYellowStripesFlag(),
             )
 
         expected.forEach { (flagType, event) ->
@@ -659,7 +674,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = tyreTemperatureSettings(highThresholdCelsius = 90),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat(95)), decision.events)
+        assertEquals(listOf(AceWindowsTyreOverheat(95)), decision.events)
         assertEquals(true, decision.state.tyreOverheating)
     }
 
@@ -702,7 +717,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, cooledState.tyreOverheating)
-        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat(95)), reovertDecision.events)
+        assertEquals(listOf(AceWindowsTyreOverheat(95)), reovertDecision.events)
     }
 
     @Test
@@ -748,7 +763,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = tyreTemperatureSettings(highThresholdCelsius = 90),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat(90)), decision.events)
+        assertEquals(listOf(AceWindowsTyreOverheat(90)), decision.events)
     }
 
     @Test
@@ -802,7 +817,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                 settings = vehicleApproachSettings(thresholdMeters = 10.0),
             )
 
-        assertEquals(listOf(SpeechEvent.AceWindowsVehicleApproach()), decision.events)
+        assertEquals(listOf(AceWindowsVehicleApproach()), decision.events)
         assertEquals(true, decision.state.vehicleApproaching)
     }
 
@@ -858,7 +873,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, departedState.vehicleApproaching)
-        assertEquals(listOf(SpeechEvent.AceWindowsVehicleApproach()), reapproachDecision.events)
+        assertEquals(listOf(AceWindowsVehicleApproach()), reapproachDecision.events)
     }
 
     @Test
@@ -1023,7 +1038,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                         ),
                     settings = tyreTemperatureSettings(highThresholdCelsius = 90),
                 )
-            assertEquals(listOf(SpeechEvent.AceWindowsTyreOverheat(expected)), decision.events)
+            assertEquals(listOf(AceWindowsTyreOverheat(expected)), decision.events)
         }
     }
 
@@ -1036,7 +1051,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                     data = fuel(remainingPercent = remaining),
                     settings = settings(thresholdPercentage = 30),
                 )
-            assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(percent)), decision.events)
+            assertEquals(listOf(AceWindowsRemainingFuelWarning(percent)), decision.events)
             assertEquals(true, decision.state.remainingFuelWarned)
         }
     }
@@ -1050,7 +1065,7 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
                     data = fuel(remainingPercent = remaining),
                     settings = settings(thresholdPercentage = 101),
                 )
-            assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning(100)), decision.events)
+            assertEquals(listOf(AceWindowsRemainingFuelWarning(100)), decision.events)
         }
     }
 }

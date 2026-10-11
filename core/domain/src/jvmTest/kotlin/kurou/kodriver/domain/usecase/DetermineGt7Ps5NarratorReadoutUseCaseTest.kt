@@ -1,5 +1,9 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
+import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
@@ -43,7 +47,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLap(98_000)), second.events)
+        assertEquals(listOf(Gt7Ps5MyBestLap(98_000)), second.events)
         assertEquals(98_000, second.state.personalBestMs)
         assertEquals(2, second.state.previousLapCount)
     }
@@ -111,7 +115,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(enabledStates = emptyMap()),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLap(89_000)), decision.events)
+        assertEquals(listOf(Gt7Ps5MyBestLap(89_000)), decision.events)
     }
 
     @Test
@@ -142,7 +146,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLap(89_000)), decision.events)
+        assertEquals(listOf(Gt7Ps5MyBestLap(89_000)), decision.events)
         assertEquals(89_000, decision.state.personalBestMs)
     }
 
@@ -179,7 +183,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLap(89_000)), second.events)
+        assertEquals(listOf(Gt7Ps5MyBestLap(89_000)), second.events)
     }
 
     @Test
@@ -301,7 +305,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 160_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), decision.events)
+        assertEquals(listOf(Gt7Ps5RemainingFuelLapsWarning(0)), decision.events)
         assertEquals(2, decision.state.lastFuelEvaluationLap)
         assertEquals(0, decision.state.lastAnnouncedRemainingLaps)
     }
@@ -441,11 +445,11 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 360_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), firstWarningDecision.events)
+        assertEquals(listOf(Gt7Ps5RemainingFuelLapsWarning(0)), firstWarningDecision.events)
         assertTrue(refueledDecision.events.isEmpty())
         assertEquals(-1, refueledDecision.state.lastAnnouncedRemainingLaps)
         assertEquals(Gt7Ps5FuelUnit(50f), refueledDecision.state.fuelTrackingState.totalRefueled)
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), secondWarningDecision.events)
+        assertEquals(listOf(Gt7Ps5RemainingFuelLapsWarning(0)), secondWarningDecision.events)
     }
 
     @Test
@@ -479,7 +483,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 170_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), warningDecision.events)
+        assertEquals(listOf(Gt7Ps5RemainingFuelLapsWarning(0)), warningDecision.events)
         assertTrue(sameLapDecision.events.isEmpty())
         assertEquals(2, sameLapDecision.state.lastFuelEvaluationLap)
         assertEquals(0, sameLapDecision.state.lastAnnouncedRemainingLaps)
@@ -628,7 +632,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 260_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), firstWarningDecision.events)
+        assertEquals(listOf(Gt7Ps5RemainingFuelLapsWarning(0)), firstWarningDecision.events)
         assertEquals(Gt7Ps5FuelUnit(0f), jitterDecision.state.fuelTrackingState.totalRefueled)
         assertEquals(false, jitterDecision.state.fuelTrackingState.hasRefueled)
         assertTrue(jitterDecision.events.isEmpty())
@@ -797,7 +801,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 observedAtMs = 260_000L,
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0)), firstWarningDecision.events)
+        assertEquals(listOf(Gt7Ps5RemainingFuelLapsWarning(0)), firstWarningDecision.events)
         assertTrue(secondEvaluationDecision.events.isEmpty())
     }
 
@@ -810,7 +814,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(remainingFuelThresholdPercentage = 30),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(30)), decision.events)
+        assertEquals(listOf(Gt7Ps5RemainingFuelWarning(30)), decision.events)
         assertEquals(true, decision.state.remainingFuelWarned)
     }
 
@@ -824,7 +828,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                     settings = settings(remainingFuelThresholdPercentage = level.toInt().coerceAtLeast(30)),
                 )
 
-            assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(percent)), decision.events)
+            assertEquals(listOf(Gt7Ps5RemainingFuelWarning(percent)), decision.events)
             assertEquals(true, decision.state.remainingFuelWarned)
         }
     }
@@ -838,7 +842,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(remainingFuelThresholdPercentage = 30),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(30)), decision.events)
+        assertEquals(listOf(Gt7Ps5RemainingFuelWarning(30)), decision.events)
     }
 
     @Test
@@ -878,7 +882,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, recoveredState.remainingFuelWarned)
-        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning(20)), rewarnedDecision.events)
+        assertEquals(listOf(Gt7Ps5RemainingFuelWarning(20)), rewarnedDecision.events)
     }
 
     @Test
@@ -979,7 +983,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                 settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
             )
 
-        assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat(95)), decision.events)
+        assertEquals(listOf(Gt7Ps5TyreOverheat(95)), decision.events)
         assertEquals(true, decision.state.tyreOverheating)
     }
 
@@ -1094,7 +1098,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             )
 
         assertEquals(false, cooledState.tyreOverheating)
-        assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat(95)), decision.events)
+        assertEquals(listOf(Gt7Ps5TyreOverheat(95)), decision.events)
     }
 
     @Test
@@ -1214,7 +1218,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
                             ),
                         settings = settings(tyreTemperatureHighThresholdCelsius = Celsius(95)),
                     )
-                assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat(rounded)), decision.events)
+                assertEquals(listOf(Gt7Ps5TyreOverheat(rounded)), decision.events)
             }
         }
     }

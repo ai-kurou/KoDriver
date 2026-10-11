@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -26,6 +26,6 @@ class Gt7Ps5ReadoutTyreTemperatureDetailPaneNarratedTextConsistencyTest {
         }
 
         rule.onNodeWithText("タイヤ過熱警告の文言").assertIsDisplayed()
-        assertEquals("タイヤ過熱 95度", SpeechEvent.Gt7Ps5TyreOverheat(95).narratedText)
+        assertEquals("タイヤ過熱 95度", Gt7Ps5TyreOverheat(95).narratedText)
     }
 }
