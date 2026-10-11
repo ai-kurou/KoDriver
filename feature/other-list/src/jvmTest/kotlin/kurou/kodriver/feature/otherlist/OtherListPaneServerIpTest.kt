@@ -22,6 +22,40 @@ class OtherListPaneServerIpTest {
         assertServerIpLabel(null, "未設定")
     }
 
+    @Test
+    fun `ServerIp項目にゲーム名タグを表示する`() {
+        assertGameTags(isSelected = false)
+    }
+
+    @Test
+    fun `選択中のServerIp項目にゲーム名タグを表示する`() {
+        assertGameTags(isSelected = true)
+    }
+
+    private fun assertGameTags(isSelected: Boolean) {
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.ServerIp),
+                        selectedItem = if (isSelected) OtherListItemType.ServerIp else null,
+                    ),
+                onItemClick = {},
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onAllNodesWithText("LMU").assertCountEquals(1)
+        rule.onNode(hasText("Windows版KoDriverへ接続するIPアドレス") and hasText("LMU")).assertIsDisplayed()
+        rule.onAllNodesWithText("ACE").assertCountEquals(1)
+        rule.onNode(hasText("Windows版KoDriverへ接続するIPアドレス") and hasText("ACE")).assertIsDisplayed()
+        rule.onAllNodesWithText("GT7").assertCountEquals(0)
+    }
+
     private fun assertServerIpLabel(
         serverIp: String?,
         label: String,

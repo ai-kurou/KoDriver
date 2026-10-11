@@ -32,6 +32,39 @@ class OtherListPaneConsoleAddressTest {
         assertConsoleAddressLabel("", 33741, "未設定")
     }
 
+    @Test
+    fun `ConsoleIp項目にゲーム名タグを表示する`() {
+        assertGameTags(isSelected = false)
+    }
+
+    @Test
+    fun `選択中のConsoleIp項目にゲーム名タグを表示する`() {
+        assertGameTags(isSelected = true)
+    }
+
+    private fun assertGameTags(isSelected: Boolean) {
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.ConsoleIp),
+                        selectedItem = if (isSelected) OtherListItemType.ConsoleIp else null,
+                    ),
+                onItemClick = {},
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onAllNodesWithText("GT7").assertCountEquals(1)
+        rule.onNode(hasText("ゲーム機・SimHubへ接続するIPアドレス") and hasText("GT7")).assertIsDisplayed()
+        rule.onAllNodesWithText("LMU").assertCountEquals(0)
+        rule.onAllNodesWithText("ACE").assertCountEquals(0)
+    }
+
     private fun assertConsoleAddressLabel(
         consoleAddress: String?,
         consolePort: Int,

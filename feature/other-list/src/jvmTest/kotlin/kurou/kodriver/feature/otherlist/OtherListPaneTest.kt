@@ -40,6 +40,26 @@ class OtherListPaneTest {
     val rule = createComposeRule()
 
     @Test
+    fun `音量項目にはゲーム名タグを表示しない`() {
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(items = listOf(OtherListItemType.Volume)),
+                onItemClick = {},
+                onOverlayVisibleChange = {},
+                onKeepScreenOnChange = {},
+                onDynamicColorEnabledChange = {},
+                onHapticFeedbackEnabledChange = {},
+                onStartupEnabledChange = {},
+            )
+        }
+
+        rule.onNodeWithText("音量").assertIsDisplayed()
+        rule.onAllNodesWithText("LMU").assertCountEquals(0)
+        rule.onAllNodesWithText("ACE").assertCountEquals(0)
+        rule.onAllNodesWithText("GT7").assertCountEquals(0)
+    }
+
+    @Test
     fun `読み上げ速度をタップするとハプティックフィードバックを発生させる`() {
         val haptic = FakeHapticFeedback()
 
