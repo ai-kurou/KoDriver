@@ -19,49 +19,6 @@ import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import kotlin.time.Clock
 
-private val lmuWindowsSupportedCardKeys =
-    setOf(
-        DebugStateCardKey.SIMULATOR,
-        DebugStateCardKey.VEHICLE_CLASS,
-        DebugStateCardKey.VEHICLE_LOCATION,
-        DebugStateCardKey.FLAG_INFO,
-        DebugStateCardKey.GAME_PHASE,
-        DebugStateCardKey.SESSION,
-        DebugStateCardKey.YELLOW_FLAG_STATE,
-        DebugStateCardKey.CURRENT_LAP,
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-        DebugStateCardKey.BEST_LAP,
-        DebugStateCardKey.TYRE_TEMPERATURE,
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-        DebugStateCardKey.BRAKE_TEMPERATURE,
-        DebugStateCardKey.BRAKE_WEAR,
-        DebugStateCardKey.TYRE_WEAR,
-        DebugStateCardKey.FUEL_CONSUMPTION,
-        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-        DebugStateCardKey.VEHICLE_DAMAGE,
-    )
-
-private val gt7Ps5SupportedCardKeys =
-    setOf(
-        DebugStateCardKey.SIMULATOR,
-        DebugStateCardKey.VEHICLE_CLASS,
-        DebugStateCardKey.CURRENT_LAP,
-        DebugStateCardKey.BEST_LAP,
-        DebugStateCardKey.TYRE_TEMPERATURE,
-        DebugStateCardKey.FUEL_CONSUMPTION,
-    )
-
-private val aceWindowsSupportedCardKeys =
-    setOf(
-        DebugStateCardKey.SIMULATOR,
-        DebugStateCardKey.VEHICLE_LOCATION,
-        DebugStateCardKey.FLAG_INFO,
-        DebugStateCardKey.FUEL_CONSUMPTION,
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-        DebugStateCardKey.BEST_LAP,
-    )
-
 private fun supportedCardKeys(simulator: Simulator): Set<DebugStateCardKey> =
     when (simulator) {
         is Simulator.LmuWindows -> lmuWindowsSupportedCardKeys
