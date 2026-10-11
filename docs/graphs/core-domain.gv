@@ -11,6 +11,7 @@ digraph G {
   ":core:text-to-speech-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:windows-startup-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":feature:ace-windows-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -70,6 +71,7 @@ digraph G {
   ":core:text-to-speech-data" -> ":core:domain"
   ":core:windows-startup-data" -> ":core:domain"
   ":feature:ace-windows-connection" -> ":core:domain"
+  ":feature:ace-windows-debug-state-detail" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
   ":feature:ace-windows-readout-flag-detail" -> ":core:domain"
   ":feature:ace-windows-readout-my-best-lap-detail" -> ":core:domain"
