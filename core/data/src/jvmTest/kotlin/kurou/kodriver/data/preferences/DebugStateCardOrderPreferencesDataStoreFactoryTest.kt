@@ -24,6 +24,6 @@ class DebugStateCardOrderPreferencesDataStoreFactoryTest {
             val dataStore = createDebugStateCardOrderPreferencesDataStore(tempDir.absolutePath, Simulator.LmuWindows)
             dataStore.updateData { it.copy(cardOrder = listOf("SESSION")) }
 
-            assertTrue(tempDir.resolve("debug_state_card_order_preferences.pb").exists())
+            assertTrue(tempDir.resolve("debug_state_card_order_preferences_lmu_windows.pb").exists())
         }
 }
