@@ -22,3 +22,6 @@ LMU の Source は並走時間の追跡と周期的な再計算も担当する�
 
 `DebugStateDetailUiState` は、シミュレーター別の入れ子状態（`lmuWindows` / `gt7Ps5` / `aceWindows`）を持つ。
 各 Source は自分のシミュレーターの状態を `state` として公開し、ViewModel がヘッダの状態と組み合わせる。
+
+Koin の定義も `LmuWindowsDebugStateModule.kt`・`AceWindowsDebugStateModule.kt`・`Gt7Ps5DebugStateModule.kt` にシミュレーター別に分割している。
+`DebugStateDetailModule.kt` は ViewModel と共通の UseCase を登録し、各ファイルの定義を集約する。
