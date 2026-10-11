@@ -11,7 +11,7 @@ class ReadoutListItemTypeAceWindowsTest {
     @Test
     fun `ace_windows の remaining_fuel は AceWindows_RemainingFuel を返す`() {
         assertEquals(
-            ReadoutListItemType.AceWindows.RemainingFuel,
+            AceWindowsReadoutListItemType.RemainingFuel,
             ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.RemainingFuel.Root),
         )
     }
@@ -19,7 +19,7 @@ class ReadoutListItemTypeAceWindowsTest {
     @Test
     fun `ace_windows の flag は AceWindows_Flag を返す`() {
         assertEquals(
-            ReadoutListItemType.AceWindows.Flag,
+            AceWindowsReadoutListItemType.Flag,
             ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.Flag.Root),
         )
     }
@@ -27,7 +27,7 @@ class ReadoutListItemTypeAceWindowsTest {
     @Test
     fun `ace_windows の my_best_lap は AceWindows_MyBestLap を返す`() {
         assertEquals(
-            ReadoutListItemType.AceWindows.MyBestLap,
+            AceWindowsReadoutListItemType.MyBestLap,
             ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.MyBestLap.Root),
         )
     }
@@ -35,7 +35,7 @@ class ReadoutListItemTypeAceWindowsTest {
     @Test
     fun `ace_windows の remaining_fuel_laps は AceWindows_RemainingFuelLaps を返す`() {
         assertEquals(
-            ReadoutListItemType.AceWindows.RemainingFuelLaps,
+            AceWindowsReadoutListItemType.RemainingFuelLaps,
             ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.RemainingFuelLaps.Root),
         )
     }
@@ -48,7 +48,7 @@ class ReadoutListItemTypeAceWindowsTest {
     @Test
     fun `ace_windows の tyre_temperature は AceWindows_TyreTemperature を返す`() {
         assertEquals(
-            ReadoutListItemType.AceWindows.TyreTemperature,
+            AceWindowsReadoutListItemType.TyreTemperature,
             ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.TyreTemperature.Root),
         )
     }
@@ -56,7 +56,7 @@ class ReadoutListItemTypeAceWindowsTest {
     @Test
     fun `ace_windows の vehicle_approach は AceWindows_VehicleApproach を返す`() {
         assertEquals(
-            ReadoutListItemType.AceWindows.VehicleApproach,
+            AceWindowsReadoutListItemType.VehicleApproach,
             ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.VehicleApproach.Root),
         )
     }

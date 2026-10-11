@@ -28,7 +28,7 @@ class ReadoutContentScreenshotTest {
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
                                         items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
-                                        selectedItem = ReadoutListItemType.LmuWindows.Flag,
+                                        selectedItem = LmuWindowsReadoutListItemType.Flag,
                                     ),
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },

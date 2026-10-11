@@ -64,7 +64,7 @@ class ReadoutListViewModelSelectionTest {
             simulatorFlow.update { Simulator.LmuWindows }
             viewModel.onItemSelected(LmuWindowsReadoutItemKey.VehicleApproach.Root)
 
-            assertEquals(ReadoutListItemType.LmuWindows.VehicleApproach, viewModel.uiState.first().selectedItem)
+            assertEquals(LmuWindowsReadoutListItemType.VehicleApproach, viewModel.uiState.first().selectedItem)
         }
 
     @Test
@@ -83,7 +83,7 @@ class ReadoutListViewModelSelectionTest {
             simulatorFlow.update { Simulator.LmuWindows }
             viewModel.onItemSelected(LmuWindowsReadoutItemKey.BrakeWear.Root)
 
-            assertEquals(ReadoutListItemType.LmuWindows.BrakeWear, viewModel.uiState.first().selectedItem)
+            assertEquals(LmuWindowsReadoutListItemType.BrakeWear, viewModel.uiState.first().selectedItem)
         }
 
     @Test
@@ -143,7 +143,7 @@ class ReadoutListViewModelSelectionTest {
 
             simulatorFlow.update { Simulator.LmuWindows }
             viewModel.onItemSelected(LmuWindowsReadoutItemKey.VehicleApproach.Root)
-            assertEquals(ReadoutListItemType.LmuWindows.VehicleApproach, viewModel.uiState.first().selectedItem)
+            assertEquals(LmuWindowsReadoutListItemType.VehicleApproach, viewModel.uiState.first().selectedItem)
 
             simulatorFlow.update { Simulator.Gt7Ps5 }
 
