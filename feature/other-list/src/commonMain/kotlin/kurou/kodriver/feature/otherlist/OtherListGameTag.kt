@@ -13,10 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverSpacing
+import kurou.kodriver.core.designsystem.koDriverTagTextStyle
 import kurou.kodriver.core.designsystem.simulatorShortName
 import kurou.kodriver.domain.model.Simulator
 
@@ -51,6 +51,7 @@ internal fun OtherListGameTagsWithChevron(
 internal fun OtherListGameTag(
     simulator: Simulator,
     isSelected: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val backgroundColor =
         if (isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.secondaryContainer
@@ -58,13 +59,13 @@ internal fun OtherListGameTag(
         if (isSelected) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSecondaryContainer
     Text(
         text = simulatorShortName(simulator.id),
-        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+        style = koDriverTagTextStyle(),
         color = textColor,
         textAlign = TextAlign.Center,
         maxLines = 1,
         softWrap = false,
         modifier =
-            Modifier
+            modifier
                 .requiredWidth(36.dp)
                 .background(backgroundColor, MaterialTheme.shapes.small)
                 .padding(vertical = KoDriverSpacing.extraSmall),
