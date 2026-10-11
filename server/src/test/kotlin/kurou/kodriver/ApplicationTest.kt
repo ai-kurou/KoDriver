@@ -901,6 +901,87 @@ class ApplicationTest {
         }
 
     @Test
+    fun `ACEカーカス温度情報をJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeAceWindowsTyreCarcassTemperatureRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsBrakeTemperature =
+                            ObserveLmuWindowsBrakeTemperatureUseCase(
+                                EmptyLmuWindowsBrakeTemperatureRepository,
+                            ),
+                        observeLmuWindowsVehicleClass =
+                            ObserveLmuWindowsVehicleClassUseCase(
+                                EmptyLmuWindowsVehicleClassRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
+                        observeAceWindowsTyreCarcassTemperature =
+                            ObserveAceWindowsTyreCarcassTemperatureUseCase(
+                                repository,
+                            ),
+                        observeAceWindowsVehicleApproach =
+                            ObserveAceWindowsVehicleApproachUseCase(
+                                EmptyAceWindowsVehicleApproachRepository,
+                            ),
+                        observeAceWindowsBestLapTime =
+                            ObserveAceWindowsBestLapTimeUseCase(
+                                EmptyAceWindowsBestLapTimeRepository,
+                            ),
+                        observeAceWindowsRemainingFuelLaps =
+                            ObserveAceWindowsRemainingFuelLapsUseCase(
+                                EmptyAceWindowsRemainingFuelLapsRepository,
+                            ),
+                        observeLmuWindowsPitStatus =
+                            ObserveLmuWindowsPitStatusUseCase(
+                                EmptyLmuWindowsPitStatusRepository,
+                            ),
+                        observeLmuWindowsBrakeWear =
+                            ObserveLmuWindowsBrakeWearUseCase(EmptyLmuWindowsBrakeWearRepository),
+                        observeLmuWindowsTyreDetached =
+                            ObserveLmuWindowsTyreDetachedUseCase(
+                                EmptyLmuWindowsTyreDetachedRepository,
+                            ),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/tyre_carcass_temperature") {
+                    repository.emit(AceWindowsTyreCarcassTemperatureData(tyreCarcassTemperatureData1.wheels))
+
+                    val message =
+                        withTimeout(1_000) {
+                            (incoming.receive() as Frame.Text).readText()
+                        }
+                    assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_1, message)
+                }
+        }
+
+    @Test
     fun `カーカス温度情報の同一値は重複して送信されない`() =
         testApplication {
             val repository = FakeLmuWindowsTyreCarcassTemperatureRepository()
@@ -3575,6 +3656,16 @@ private class FakeAceWindowsStatusRepository : AceWindowsStatusRepository {
 
     fun emit(data: AceWindowsStatusData) {
         channel.trySend(data).getOrThrow()
+    }
+}
+
+private class FakeAceWindowsTyreCarcassTemperatureRepository : AceWindowsTyreCarcassTemperatureRepository {
+    private val channel = Channel<AceWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+
+    override fun tyreCarcassTemperatureStream(): Flow<AceWindowsTyreCarcassTemperatureData> = channel.receiveAsFlow()
+
+    fun emit(data: AceWindowsTyreCarcassTemperatureData) {
+        channel.trySend(data)
     }
 }
 
