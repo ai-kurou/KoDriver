@@ -1,0 +1,4 @@
+<resources>
+    <string name="debug_state_title">デバッグ状態</string>
+    <string name="navigate_back">戻る</string>
+</resources>
