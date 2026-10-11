@@ -2,6 +2,7 @@ digraph G {
   rankdir=TB
   node [shape=box, style="rounded,filled"]
   ":core:designsystem" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
+  ":feature:ace-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-flag-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-my-best-lap-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -46,6 +47,7 @@ digraph G {
   ":feature:readout-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:telemetry-log-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:telemetry-log-list" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
+  ":feature:ace-windows-debug-state-detail" -> ":core:designsystem"
   ":feature:ace-windows-narrator" -> ":core:designsystem"
   ":feature:ace-windows-readout-flag-detail" -> ":core:designsystem"
   ":feature:ace-windows-readout-my-best-lap-detail" -> ":core:designsystem"
