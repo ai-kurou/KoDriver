@@ -6,24 +6,24 @@ import kurou.kodriver.domain.model.Simulator
 
 internal fun Route.aceWindowsRoutes(useCases: KoDriverServerUseCases) {
     telemetryWebSocket(KoDriverServerFeature.FUEL, Simulator.AceWindows) {
-        useCases.observeAceWindowsFuel()
+        useCases.aceWindows.observeAceWindowsFuel()
     }
     telemetryWebSocket(KoDriverServerFeature.FLAGS, Simulator.AceWindows) {
-        useCases.observeAceWindowsFlag()
+        useCases.aceWindows.observeAceWindowsFlag()
     }
     telemetryWebSocket(KoDriverServerFeature.STATUS, Simulator.AceWindows) {
-        useCases.observeAceWindowsStatus()
+        useCases.aceWindows.observeAceWindowsStatus()
     }
     telemetryWebSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE, Simulator.AceWindows) {
-        useCases.observeAceWindowsTyreCarcassTemperature()
+        useCases.aceWindows.observeAceWindowsTyreCarcassTemperature()
     }
     telemetryWebSocket(KoDriverServerFeature.VEHICLE_APPROACH, Simulator.AceWindows) {
-        useCases.observeAceWindowsVehicleApproach()
+        useCases.aceWindows.observeAceWindowsVehicleApproach()
     }
     telemetryWebSocket(KoDriverServerFeature.MY_BEST_LAP, Simulator.AceWindows) {
-        useCases.observeAceWindowsBestLapTime()
+        useCases.aceWindows.observeAceWindowsBestLapTime()
     }
     telemetryWebSocket(KoDriverServerFeature.REMAINING_FUEL_LAPS, Simulator.AceWindows) {
-        useCases.observeAceWindowsRemainingFuelLaps()
+        useCases.aceWindows.observeAceWindowsRemainingFuelLaps()
     }
 }
