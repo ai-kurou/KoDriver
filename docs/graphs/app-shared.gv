@@ -13,7 +13,6 @@ digraph G {
   ":feature:ace-windows-readout-remaining-fuel-laps-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-tyre-temperature-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:ace-windows-readout-vehicle-approach-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
-  ":feature:debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:desktop-splash" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
   ":feature:gt7-ps5-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=1]
@@ -63,7 +62,6 @@ digraph G {
   ":app:shared" -> ":feature:lmu-windows-narrator"
   ":app:shared" -> ":feature:gt7-ps5-narrator"
   ":app:shared" -> ":feature:ace-windows-narrator"
-  ":app:shared" -> ":feature:debug-state-detail"
   ":app:shared" -> ":feature:narrator-overlay"
   ":app:shared" -> ":feature:other-license-detail"
   ":app:shared" -> ":feature:other-list"
