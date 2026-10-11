@@ -16,6 +16,17 @@ class DebugStateTyreCarcassTemperatureCardTest {
     val rule = createComposeRule()
 
     @Test
+    fun `カーカス温度が未取得の場合は未取得と表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                TyreCarcassTemperatureContent(tyreCarcassTemperature = null)
+            }
+        }
+
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
     fun `一部のホイールデータが欠けている場合はハイフンを表示する`() {
         rule.setContent {
             MaterialTheme {

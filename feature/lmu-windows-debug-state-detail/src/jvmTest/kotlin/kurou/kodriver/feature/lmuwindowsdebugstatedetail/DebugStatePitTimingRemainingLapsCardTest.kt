@@ -79,6 +79,36 @@ class DebugStatePitTimingRemainingLapsCardTest {
         rule.onNodeWithText("タイヤ摩耗: 残り 7.5周").assertIsDisplayed()
     }
 
+    @Test
+    fun `バーチャルエナジーだけ未取得でもタイヤ摩耗の残り周回数を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                PitTimingRemainingLapsContent(
+                    virtualEnergy = null,
+                    lmuWindowsTelemetry = sampleLmuTelemetry(5, mapOf(WheelIndex.FRONT_LEFT to 0.6)),
+                )
+            }
+        }
+
+        rule.onNodeWithText("バーチャルエナジー: 残り -周").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ摩耗: 残り 7.5周").assertIsDisplayed()
+    }
+
+    @Test
+    fun `ホイールが空でもバーチャルエナジーの残り周回数を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                PitTimingRemainingLapsContent(
+                    virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.5)),
+                    lmuWindowsTelemetry = sampleLmuTelemetry(5, emptyMap()),
+                )
+            }
+        }
+
+        rule.onNodeWithText("バーチャルエナジー: 残り 5.0周").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
+    }
+
     private fun sampleLmuTelemetry(
         currentLap: Int,
         wheels: Map<WheelIndex, Double>,

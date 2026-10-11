@@ -16,6 +16,28 @@ class DebugStateVehicleDamageCardTest {
     val rule = createComposeRule()
 
     @Test
+    fun `タイヤ脱落データに欠損ホイールがある場合はいいえを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                VehicleDamageContent(
+                    vehicleDamage =
+                        LmuWindowsVehicleDamageData(
+                            overheating = false,
+                            partDetached = false,
+                            lastImpactMagnitude = 0.0,
+                        ),
+                    tyreDetached = LmuWindowsTyreDetachedData(wheels = mapOf(WheelIndex.FRONT_LEFT to true)),
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ脱落 FL: はい").assertIsDisplayed()
+        listOf("FR", "RL", "RR").forEach { wheel ->
+            rule.onNodeWithText("タイヤ脱落 $wheel: いいえ").assertIsDisplayed()
+        }
+    }
+
+    @Test
     fun `vehicleDamageがnullの場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {

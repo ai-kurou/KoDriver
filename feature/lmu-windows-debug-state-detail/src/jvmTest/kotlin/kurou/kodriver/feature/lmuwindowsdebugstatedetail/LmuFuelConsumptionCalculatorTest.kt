@@ -21,6 +21,38 @@ import kotlin.test.assertNull
 
 class LmuFuelConsumptionCalculatorTest {
     @Test
+    fun `残量がゼロなら消費率は計算できて残り周回数はゼロ`() {
+        val result =
+            calculateLmuVirtualEnergyConsumption(
+                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = LmuWindowsVirtualEnergyRatio(0.0)),
+                telemetry = sampleLmuTelemetry(currentLap = 1),
+            )
+
+        assertEquals(100.0, result?.consumptionPerLap)
+        assertEquals(0, result?.remainingLaps)
+        assertEquals(0.0, result?.preciseRemainingLaps)
+        assertEquals(
+            0.0,
+            calculateLmuTyreWearRemainingLaps(
+                sampleLmuTelemetry(currentLap = 1, wheels = mapOf(WheelIndex.FRONT_LEFT to 0.0)),
+            ),
+        )
+    }
+
+    @Test
+    fun `タイヤ摩耗は最小の残溝が後のホイールにあっても採用する`() {
+        assertEquals(
+            5.0,
+            calculateLmuTyreWearRemainingLaps(
+                sampleLmuTelemetry(
+                    currentLap = 5,
+                    wheels = mapOf(WheelIndex.FRONT_LEFT to 0.8, WheelIndex.FRONT_RIGHT to 0.5),
+                ),
+            ),
+        )
+    }
+
+    @Test
     fun `LMU 5周消費後の残量50パーセントなら1周あたり10パーセント消費で残り5周`() {
         val result =
             calculateLmuVirtualEnergyConsumption(

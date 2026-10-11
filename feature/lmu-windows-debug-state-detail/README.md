@@ -27,4 +27,4 @@ LMU Windows 専用のデバッグ状態画面。テレメトリ、レース状�
 ## テスト
 
 `src/jvmTest` に LMU の購読、カード順序、並走時間、カード表示、フォーマッター、Pane の配線を検証するテストを置く。
-Android と Desktop で表示が異なるスクリーンショット検証は今回追加しない。ゴールデンPNGも生成しない。
+Desktop のスクリーンショットテスト（`LmuWindowsDebugStateDetailPaneScreenshotTest`）を持つ。ゴールデンPNGはCIが記録するためコミットしない。Android と Desktop で表示が異なるケースはないため Android 向けは追加しない。

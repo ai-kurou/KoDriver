@@ -641,6 +641,102 @@ class LmuWindowsDebugStateDetailViewModelTest {
         }
 
     @Test
+    fun `右側の並走を停止すると周期更新を止め再開時はゼロから計測する`() =
+        runTest {
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            val rightApproach =
+                sampleVehicleApproach(emptySet()).copy(
+                    sideBySideRightVehicleIds = setOf(2),
+                    lateralDistanceRightMeters = LateralDistanceMeters(1.5),
+                )
+            val approach = MutableStateFlow(rightApproach)
+            every { vehicleApproachRepository.vehicleApproachStream() } returns approach
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+                MutableStateFlow(sampleTyreCarcassTemperature())
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns
+                MutableStateFlow(sampleBrakeTemperature())
+            every { brakeWearRepository.brakeWearStream() } returns MutableStateFlow(sampleBrakeWear())
+            every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
+            every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
+            every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
+            every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            var nowMs = 1_000L
+            var clockReadCount = 0
+            val viewModel =
+                createViewModel(
+                    currentTimeMs = {
+                        clockReadCount++
+                        nowMs
+                    },
+                    sideBySideTickIntervalMs = 100L,
+                )
+            testScheduler.runCurrent()
+
+            val initial = viewModel.uiState.first()
+            assertEquals(LmuWindowsSideBySideDurations(null, 0), initial.lmuWindows.sideBySideDurations)
+            nowMs = 3_000L
+            testScheduler.advanceTimeBy(100L)
+            val ticked = viewModel.uiState.first { it.lmuWindows.sideBySideDurations?.rightMillis == 2_000L }
+            assertEquals(LmuWindowsSideBySideDurations(null, 2_000), ticked.lmuWindows.sideBySideDurations)
+
+            approach.update { sampleVehicleApproach(emptySet()) }
+            val stopped =
+                viewModel.uiState.first {
+                    it.lmuWindows.sideBySideDurations == LmuWindowsSideBySideDurations(null, null)
+                }
+            assertEquals(LmuWindowsSideBySideDurations(null, null), stopped.lmuWindows.sideBySideDurations)
+            val stoppedClockReadCount = clockReadCount
+            nowMs = 4_000L
+            testScheduler.advanceTimeBy(200L)
+            testScheduler.runCurrent()
+            assertEquals(
+                LmuWindowsSideBySideDurations(null, null),
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.sideBySideDurations,
+            )
+            assertEquals(stoppedClockReadCount, clockReadCount)
+
+            approach.update { rightApproach }
+            val restarted = viewModel.uiState.first { it.lmuWindows.sideBySideDurations?.rightMillis == 0L }
+            assertEquals(LmuWindowsSideBySideDurations(null, 0), restarted.lmuWindows.sideBySideDurations)
+            nowMs = 4_500L
+            testScheduler.advanceTimeBy(100L)
+            val continued = viewModel.uiState.first { it.lmuWindows.sideBySideDurations?.rightMillis == 500L }
+            assertEquals(LmuWindowsSideBySideDurations(null, 500), continued.lmuWindows.sideBySideDurations)
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { brakeTemperatureRepository.brakeTemperatureStream() }
+            verify(exactly = 1) { brakeWearRepository.brakeWearStream() }
+            verify(exactly = 2) { vehicleClassRepository.vehicleClassStream() }
+            verify(exactly = 1) { lmuWindowsPitStatusRepository.pitStatusStream() }
+            verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
+            verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                vehicleApproachRepository,
+                tyreCarcassTemperatureRepository,
+                brakeTemperatureRepository,
+                brakeWearRepository,
+                vehicleClassRepository,
+                lmuWindowsPitStatusRepository,
+                vehicleDamageRepository,
+                tyreDetachedRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
     fun `タイヤカーカス温度情報を購読すると uiState に反映される`() =
         runTest {
             every { flagRepository.flagStream() } returns

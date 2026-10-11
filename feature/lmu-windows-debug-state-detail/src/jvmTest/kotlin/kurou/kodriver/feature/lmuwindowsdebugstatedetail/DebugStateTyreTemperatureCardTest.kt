@@ -26,6 +26,30 @@ class DebugStateTyreTemperatureCardTest {
     val rule = createComposeRule()
 
     @Test
+    fun `テレメトリが未取得の場合は未取得と表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                TyreTemperatureContent(lmuWindowsTelemetry = null)
+            }
+        }
+
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `ホイールが空の場合は全輪の温度をハイフンで表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                TyreTemperatureContent(sampleLmuWindowsTelemetry(wheels = emptyMap()))
+            }
+        }
+
+        listOf("FL -℃", "FR -℃", "RL -℃", "RR -℃").forEach { text ->
+            rule.onNodeWithText(text).assertIsDisplayed()
+        }
+    }
+
+    @Test
     fun `一部のホイールデータが欠けている場合はハイフンを表示する`() {
         rule.setContent {
             MaterialTheme {
