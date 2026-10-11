@@ -127,7 +127,7 @@ class ReadoutContentTest {
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
                         readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
-                        selectedItem = ReadoutListItemType.LmuWindows.TyreWear,
+                        selectedItem = LmuWindowsReadoutListItemType.TyreWear,
                     ),
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
@@ -145,7 +145,7 @@ class ReadoutContentTest {
 
     @Test
     fun `detailPane表示中にテーブルトップ姿勢になると選択解除コールバックを呼ぶ`() {
-        var selectedItem by mutableStateOf<ReadoutListItemType?>(ReadoutListItemType.LmuWindows.TyreWear)
+        var selectedItem by mutableStateOf<ReadoutListItemType?>(LmuWindowsReadoutListItemType.TyreWear)
         var windowPosture by mutableStateOf(Posture())
         var clearSelectedItemCallCount = 0
 
@@ -181,7 +181,7 @@ class ReadoutContentTest {
 
     @Test
     fun `detailPane表示中に平らでない縦ヒンジの姿勢になると選択解除コールバックを呼ぶ`() {
-        var selectedItem by mutableStateOf<ReadoutListItemType?>(ReadoutListItemType.LmuWindows.TyreWear)
+        var selectedItem by mutableStateOf<ReadoutListItemType?>(LmuWindowsReadoutListItemType.TyreWear)
         var windowPosture by mutableStateOf(Posture())
         var clearSelectedItemCallCount = 0
 
@@ -241,7 +241,7 @@ class ReadoutContentTest {
                         selectedSimulator = Simulator.LmuWindows,
                         items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
                         readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
-                        selectedItem = ReadoutListItemType.LmuWindows.TyreTemperature,
+                        selectedItem = LmuWindowsReadoutListItemType.TyreTemperature,
                     ),
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
@@ -303,7 +303,7 @@ class ReadoutContentTest {
                         selectedSimulator = Simulator.AceWindows,
                         items = listOf(AceWindowsReadoutItemKey.RemainingFuel.Root),
                         readoutEnabledStates = mapOf(AceWindowsReadoutItemKey.RemainingFuel.Root to true),
-                        selectedItem = ReadoutListItemType.AceWindows.RemainingFuel,
+                        selectedItem = AceWindowsReadoutListItemType.RemainingFuel,
                     ),
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },

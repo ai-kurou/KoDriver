@@ -208,7 +208,7 @@ class ReadoutListPaneScreenshotTest {
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
                                         items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
-                                        selectedItem = ReadoutListItemType.LmuWindows.Flag,
+                                        selectedItem = LmuWindowsReadoutListItemType.Flag,
                                         readoutEnabledStates =
                                             mapOf(
                                                 LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
@@ -244,7 +244,7 @@ class ReadoutListPaneScreenshotTest {
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
                                         items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
-                                        selectedItem = ReadoutListItemType.LmuWindows.Flag,
+                                        selectedItem = LmuWindowsReadoutListItemType.Flag,
                                         readoutEnabledStates =
                                             mapOf(
                                                 LmuWindowsReadoutItemKey.VehicleApproach.Root to true,

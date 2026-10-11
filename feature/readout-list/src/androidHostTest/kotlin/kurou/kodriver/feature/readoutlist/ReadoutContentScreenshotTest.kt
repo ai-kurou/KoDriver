@@ -41,7 +41,7 @@ class ReadoutContentScreenshotTest {
                                 ReadoutListUiState(
                                     selectedSimulator = Simulator.LmuWindows,
                                     items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
-                                    selectedItem = ReadoutListItemType.LmuWindows.Flag,
+                                    selectedItem = LmuWindowsReadoutListItemType.Flag,
                                 ),
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
@@ -98,7 +98,7 @@ class ReadoutContentScreenshotTest {
                     Box(modifier = Modifier.fillMaxSize()) {
                         var selectedItem by
                             remember {
-                                mutableStateOf<ReadoutListItemType?>(ReadoutListItemType.LmuWindows.Flag)
+                                mutableStateOf<ReadoutListItemType?>(LmuWindowsReadoutListItemType.Flag)
                             }
                         ReadoutContent(
                             uiState =

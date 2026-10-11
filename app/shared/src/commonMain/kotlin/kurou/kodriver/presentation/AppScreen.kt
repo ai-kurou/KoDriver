@@ -104,6 +104,9 @@ import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDet
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
+import kurou.kodriver.feature.readoutlist.AceWindowsReadoutListItemType
+import kurou.kodriver.feature.readoutlist.Gt7Ps5ReadoutListItemType
+import kurou.kodriver.feature.readoutlist.LmuWindowsReadoutListItemType
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import kurou.kodriver.feature.readoutlist.ReadoutListViewModel
@@ -787,102 +790,102 @@ internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
 @Composable
 internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
     when (itemType) {
-        is ReadoutListItemType.LmuWindows -> LmuWindowsReadoutItemDetailContent(itemType)
-        is ReadoutListItemType.Gt7Ps5 -> Gt7Ps5ReadoutItemDetailContent(itemType)
-        is ReadoutListItemType.AceWindows -> AceWindowsReadoutItemDetailContent(itemType)
+        is LmuWindowsReadoutListItemType -> LmuWindowsReadoutItemDetailContent(itemType)
+        is Gt7Ps5ReadoutListItemType -> Gt7Ps5ReadoutItemDetailContent(itemType)
+        is AceWindowsReadoutListItemType -> AceWindowsReadoutItemDetailContent(itemType)
     }
 }
 
 @Composable
-private fun LmuWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.LmuWindows) {
+private fun LmuWindowsReadoutItemDetailContent(itemType: LmuWindowsReadoutListItemType) {
     when (itemType) {
-        ReadoutListItemType.LmuWindows.VehicleApproach -> {
+        LmuWindowsReadoutListItemType.VehicleApproach -> {
             LmuWindowsReadoutVehicleApproachDetailPane()
         }
 
-        ReadoutListItemType.LmuWindows.Flag -> {
+        LmuWindowsReadoutListItemType.Flag -> {
             LmuWindowsReadoutFlagDetailPane()
         }
 
-        ReadoutListItemType.LmuWindows.VehicleDamage -> {
+        LmuWindowsReadoutListItemType.VehicleDamage -> {
             LmuWindowsReadoutVehicleDamageDetailPane()
         }
 
-        ReadoutListItemType.LmuWindows.TyreTemperature -> {
+        LmuWindowsReadoutListItemType.TyreTemperature -> {
             LmuWindowsReadoutTyreTemperatureDetailPane()
         }
 
-        ReadoutListItemType.LmuWindows.PitTiming -> {
+        LmuWindowsReadoutListItemType.PitTiming -> {
             LmuWindowsReadoutPitTimingDetailPane()
         }
 
-        ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> {
+        LmuWindowsReadoutListItemType.RemainingVirtualEnergy -> {
             LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
         }
 
-        ReadoutListItemType.LmuWindows.TyreWear -> {
+        LmuWindowsReadoutListItemType.TyreWear -> {
             LmuWindowsReadoutTyreWearDetailPane()
         }
 
-        ReadoutListItemType.LmuWindows.BrakeTemperature -> {
+        LmuWindowsReadoutListItemType.BrakeTemperature -> {
             LmuWindowsReadoutBrakeTemperatureDetailPane()
         }
 
-        ReadoutListItemType.LmuWindows.BrakeWear -> {
+        LmuWindowsReadoutListItemType.BrakeWear -> {
             LmuWindowsReadoutBrakeWearDetailPane()
         }
 
-        ReadoutListItemType.LmuWindows.MyBestLap -> {
+        LmuWindowsReadoutListItemType.MyBestLap -> {
             LmuWindowsReadoutMyBestLapDetailPane()
         }
     }
 }
 
 @Composable
-private fun Gt7Ps5ReadoutItemDetailContent(itemType: ReadoutListItemType.Gt7Ps5) {
+private fun Gt7Ps5ReadoutItemDetailContent(itemType: Gt7Ps5ReadoutListItemType) {
     when (itemType) {
-        ReadoutListItemType.Gt7Ps5.MyBestLap -> {
+        Gt7Ps5ReadoutListItemType.MyBestLap -> {
             Gt7Ps5ReadoutMyBestLapDetailPane()
         }
 
-        ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> {
+        Gt7Ps5ReadoutListItemType.RemainingFuelLaps -> {
             Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
         }
 
-        ReadoutListItemType.Gt7Ps5.RemainingFuel -> {
+        Gt7Ps5ReadoutListItemType.RemainingFuel -> {
             Gt7Ps5ReadoutRemainingFuelDetailPane()
         }
 
-        ReadoutListItemType.Gt7Ps5.TyreTemperature -> {
+        Gt7Ps5ReadoutListItemType.TyreTemperature -> {
             Gt7Ps5ReadoutTyreTemperatureDetailPane()
         }
     }
 }
 
 @Composable
-private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.AceWindows) {
+private fun AceWindowsReadoutItemDetailContent(itemType: AceWindowsReadoutListItemType) {
     when (itemType) {
-        ReadoutListItemType.AceWindows.Flag -> {
+        AceWindowsReadoutListItemType.Flag -> {
             AceWindowsReadoutFlagDetailPane()
         }
 
-        ReadoutListItemType.AceWindows.TyreTemperature -> {
+        AceWindowsReadoutListItemType.TyreTemperature -> {
             AceWindowsReadoutTyreTemperatureDetailPane()
         }
 
-        ReadoutListItemType.AceWindows.RemainingFuel -> {
+        AceWindowsReadoutListItemType.RemainingFuel -> {
             AceWindowsReadoutRemainingFuelDetailPane()
         }
 
-        ReadoutListItemType.AceWindows.RemainingFuelLaps -> {
+        AceWindowsReadoutListItemType.RemainingFuelLaps -> {
             AceWindowsReadoutRemainingFuelLapsDetailPane()
         }
 
-        ReadoutListItemType.AceWindows.VehicleApproach -> {
+        AceWindowsReadoutListItemType.VehicleApproach -> {
             AceWindowsReadoutVehicleApproachDetailPane()
         }
 
-        ReadoutListItemType.AceWindows.MyBestLap -> {
+        AceWindowsReadoutListItemType.MyBestLap -> {
             AceWindowsReadoutMyBestLapDetailPane()
         }
     }

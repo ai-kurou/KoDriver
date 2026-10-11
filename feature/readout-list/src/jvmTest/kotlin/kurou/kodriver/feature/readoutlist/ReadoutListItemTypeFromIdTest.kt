@@ -11,7 +11,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の vehicle_approach は LmuWindows_VehicleApproach を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.VehicleApproach,
+            LmuWindowsReadoutListItemType.VehicleApproach,
             ReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.VehicleApproach.Root),
         )
     }
@@ -19,7 +19,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の flag は LmuWindows_Flag を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.Flag,
+            LmuWindowsReadoutListItemType.Flag,
             ReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.Flag.Root),
         )
     }
@@ -27,7 +27,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の vehicle_damage は LmuWindows_VehicleDamage を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.VehicleDamage,
+            LmuWindowsReadoutListItemType.VehicleDamage,
             ReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.VehicleDamage.Root),
         )
     }
@@ -35,7 +35,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の my_best_lap は LmuWindows_MyBestLap を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.MyBestLap,
+            LmuWindowsReadoutListItemType.MyBestLap,
             ReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.MyBestLap.Root),
         )
     }
@@ -43,7 +43,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `gt7_ps5 の best_lap は Gt7Ps5_BestLap を返す`() {
         assertEquals(
-            ReadoutListItemType.Gt7Ps5.MyBestLap,
+            Gt7Ps5ReadoutListItemType.MyBestLap,
             ReadoutListItemType.fromId(Simulator.Gt7Ps5, Gt7Ps5ReadoutItemKey.MyBestLap.Root),
         )
     }
@@ -56,7 +56,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `gt7_ps5 の remaining_fuel_laps は Gt7Ps5_RemainingFuelLaps を返す`() {
         assertEquals(
-            ReadoutListItemType.Gt7Ps5.RemainingFuelLaps,
+            Gt7Ps5ReadoutListItemType.RemainingFuelLaps,
             ReadoutListItemType.fromId(Simulator.Gt7Ps5, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root),
         )
     }
@@ -64,7 +64,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `gt7_ps5 の remaining_fuel は Gt7Ps5_RemainingFuel を返す`() {
         assertEquals(
-            ReadoutListItemType.Gt7Ps5.RemainingFuel,
+            Gt7Ps5ReadoutListItemType.RemainingFuel,
             ReadoutListItemType.fromId(Simulator.Gt7Ps5, Gt7Ps5ReadoutItemKey.RemainingFuel.Root),
         )
     }
@@ -77,7 +77,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の tyre_temperature は TyreTemperature を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.TyreTemperature,
+            LmuWindowsReadoutListItemType.TyreTemperature,
             ReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.TyreTemperature.Root),
         )
     }
@@ -109,7 +109,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の brake_wear は LmuWindows_BrakeWear を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.BrakeWear,
+            LmuWindowsReadoutListItemType.BrakeWear,
             ReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.BrakeWear.Root),
         )
     }
@@ -117,7 +117,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の brake_temperature は LmuWindows_BrakeTemperature を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.BrakeTemperature,
+            LmuWindowsReadoutListItemType.BrakeTemperature,
             ReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.BrakeTemperature.Root),
         )
     }
@@ -125,7 +125,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の remaining_virtual_energy は LmuWindows_RemainingVirtualEnergy を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.RemainingVirtualEnergy,
+            LmuWindowsReadoutListItemType.RemainingVirtualEnergy,
             ReadoutListItemType.fromId(
                 Simulator.LmuWindows,
                 LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
@@ -136,7 +136,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の tyre_wear は LmuWindows_TyreWear を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.TyreWear,
+            LmuWindowsReadoutListItemType.TyreWear,
             ReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.TyreWear.Root),
         )
     }
@@ -144,7 +144,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `lmu_windows の pit_timing は LmuWindows_PitTiming を返す`() {
         assertEquals(
-            ReadoutListItemType.LmuWindows.PitTiming,
+            LmuWindowsReadoutListItemType.PitTiming,
             ReadoutListItemType.fromId(Simulator.LmuWindows, LmuWindowsReadoutItemKey.PitTiming.Root),
         )
     }
@@ -165,7 +165,7 @@ class ReadoutListItemTypeFromIdTest {
     @Test
     fun `gt7_ps5 の tyre_temperature は Gt7Ps5_TyreTemperature を返す`() {
         assertEquals(
-            ReadoutListItemType.Gt7Ps5.TyreTemperature,
+            Gt7Ps5ReadoutListItemType.TyreTemperature,
             ReadoutListItemType.fromId(Simulator.Gt7Ps5, Gt7Ps5ReadoutItemKey.TyreTemperature.Root),
         )
     }
