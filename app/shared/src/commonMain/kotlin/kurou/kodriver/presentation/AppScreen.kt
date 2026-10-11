@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
@@ -206,6 +207,7 @@ private fun AppScreenPrimarySimulatorNavItem(
     onExpandedChange: (Boolean) -> Unit,
     onSimulatorSelected: (String) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
         NavigationSuiteItem(
             icon = {
@@ -230,7 +232,10 @@ private fun AppScreenPrimarySimulatorNavItem(
                 }
             },
             selected = false,
-            onClick = { onExpandedChange(true) },
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                onExpandedChange(true)
+            },
             navigationSuiteType = resolvedLayoutType,
             modifier = Modifier.testTag("primarySimulatorNavItem"),
         )
@@ -240,8 +245,10 @@ private fun AppScreenPrimarySimulatorNavItem(
             modifier =
                 Modifier
                     .padding(vertical = AppSpacing.medium)
-                    .clickable(onClick = { onExpandedChange(true) })
-                    .testTag("primarySimulatorNavItem"),
+                    .clickable {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onExpandedChange(true)
+                    }.testTag("primarySimulatorNavItem"),
         ) {
             AppScreenPrimarySimulatorIndicator(
                 simulatorId = selectedSimulatorId,
@@ -621,6 +628,7 @@ private fun AppScreenScaffold(
     otherContent: @Composable (scrollToTopRequest: Int) -> Unit,
     otherListScrollToTopRequest: Int,
 ) {
+    val haptic = LocalHapticFeedback.current
     var simulatorMenuExpanded by remember { mutableStateOf(false) }
     Box(
         modifier =
@@ -650,6 +658,7 @@ private fun AppScreenScaffold(
                         label = { Text(dest.label()) },
                         selected = navigationState.current == dest,
                         onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             navigationState.handleTabClick(dest) { reselected ->
                                 when (reselected) {
                                     AppDestination.Readout -> onReadoutTabReselected()

@@ -8,9 +8,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -77,14 +81,23 @@ class ReadoutDetailPaneTest {
     @Test
     fun `戻るボタンをタップするとonBackが呼ばれる`() {
         var backCount = 0
+        val feedback = mutableListOf<HapticFeedbackType>()
+        val haptic =
+            object : HapticFeedback {
+                override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+                    feedback += hapticFeedbackType
+                }
+            }
         rule.setContent {
-            KoDriverTheme {
-                ReadoutDetailPane(
-                    title = "フラッグ",
-                    canNavigateBack = true,
-                    onBack = { backCount++ },
-                ) {
-                    Text("詳細内容")
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    ReadoutDetailPane(
+                        title = "フラッグ",
+                        canNavigateBack = true,
+                        onBack = { backCount++ },
+                    ) {
+                        Text("詳細内容")
+                    }
                 }
             }
         }
@@ -92,6 +105,7 @@ class ReadoutDetailPaneTest {
         rule.onNode(hasContentDescription("戻る")).performClick()
 
         assertEquals(1, backCount)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), feedback)
     }
 
     @Test
@@ -233,16 +247,25 @@ class ReadoutDetailPaneTest {
     @Test
     fun `ONにするをタップするとonEnableRootが呼ばれる`() {
         var enableCount = 0
+        val feedback = mutableListOf<HapticFeedbackType>()
+        val haptic =
+            object : HapticFeedback {
+                override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+                    feedback += hapticFeedbackType
+                }
+            }
         rule.setContent {
-            KoDriverTheme {
-                ReadoutDetailPane(
-                    title = "タイヤ温度",
-                    canNavigateBack = true,
-                    onBack = {},
-                    rootEnabled = false,
-                    onEnableRoot = { enableCount++ },
-                ) {
-                    Text("詳細内容")
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    ReadoutDetailPane(
+                        title = "タイヤ温度",
+                        canNavigateBack = true,
+                        onBack = {},
+                        rootEnabled = false,
+                        onEnableRoot = { enableCount++ },
+                    ) {
+                        Text("詳細内容")
+                    }
                 }
             }
         }
@@ -250,21 +273,31 @@ class ReadoutDetailPaneTest {
         rule.onNodeWithText("ONにする", useUnmergedTree = true).performTouchInput { click() }
 
         assertEquals(1, enableCount)
+        assertEquals(listOf(HapticFeedbackType.ContextClick), feedback)
     }
 
     @Test
     fun `バナーはボタンロールを持ちメッセージと左端の余白のタップでonEnableRootが呼ばれる`() {
         var enableCount = 0
+        val feedback = mutableListOf<HapticFeedbackType>()
+        val haptic =
+            object : HapticFeedback {
+                override fun performHapticFeedback(hapticFeedbackType: HapticFeedbackType) {
+                    feedback += hapticFeedbackType
+                }
+            }
         rule.setContent {
-            KoDriverTheme {
-                ReadoutDetailPane(
-                    title = "タイヤ温度",
-                    canNavigateBack = true,
-                    onBack = {},
-                    rootEnabled = false,
-                    onEnableRoot = { enableCount++ },
-                ) {
-                    Text("詳細内容")
+            CompositionLocalProvider(LocalHapticFeedback provides haptic) {
+                KoDriverTheme {
+                    ReadoutDetailPane(
+                        title = "タイヤ温度",
+                        canNavigateBack = true,
+                        onBack = {},
+                        rootEnabled = false,
+                        onEnableRoot = { enableCount++ },
+                    ) {
+                        Text("詳細内容")
+                    }
                 }
             }
         }
@@ -281,6 +314,7 @@ class ReadoutDetailPaneTest {
 
         banner.performTouchInput { click(Offset(1f, center.y)) }
         assertEquals(2, enableCount)
+        assertEquals(List(2) { HapticFeedbackType.ContextClick }, feedback)
     }
 
     @Test
