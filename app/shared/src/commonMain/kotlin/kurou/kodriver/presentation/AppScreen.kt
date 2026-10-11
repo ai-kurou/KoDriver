@@ -117,15 +117,24 @@ internal fun debugStateDetailType(selectedSimulatorId: String): DebugStateDetail
     }
 
 @Composable
-private fun DebugStateDetailPane(
+internal fun DebugStateDetailPane(
     selectedSimulatorId: String,
     canNavigateBack: Boolean,
     onBack: () -> Unit,
+    lmuWindowsPane: @Composable (canNavigateBack: Boolean, onBack: () -> Unit) -> Unit = { canBack, back ->
+        LmuWindowsDebugStateDetailPane(canBack, back)
+    },
+    gt7Ps5Pane: @Composable (canNavigateBack: Boolean, onBack: () -> Unit) -> Unit = { canBack, back ->
+        Gt7Ps5DebugStateDetailPane(canBack, back)
+    },
+    aceWindowsPane: @Composable (canNavigateBack: Boolean, onBack: () -> Unit) -> Unit = { canBack, back ->
+        AceWindowsDebugStateDetailPane(canBack, back)
+    },
 ) {
     when (debugStateDetailType(selectedSimulatorId)) {
-        DebugStateDetailType.LMU_WINDOWS -> LmuWindowsDebugStateDetailPane(canNavigateBack, onBack)
-        DebugStateDetailType.GT7_PS5 -> Gt7Ps5DebugStateDetailPane(canNavigateBack, onBack)
-        DebugStateDetailType.ACE_WINDOWS -> AceWindowsDebugStateDetailPane(canNavigateBack, onBack)
+        DebugStateDetailType.LMU_WINDOWS -> lmuWindowsPane(canNavigateBack, onBack)
+        DebugStateDetailType.GT7_PS5 -> gt7Ps5Pane(canNavigateBack, onBack)
+        DebugStateDetailType.ACE_WINDOWS -> aceWindowsPane(canNavigateBack, onBack)
         DebugStateDetailType.UNKNOWN -> Unit
     }
 }
