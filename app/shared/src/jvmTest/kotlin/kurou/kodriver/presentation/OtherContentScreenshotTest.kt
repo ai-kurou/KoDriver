@@ -11,8 +11,6 @@ import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.buildlogic.screenshottest.singlePaneDirective
 import kurou.kodriver.buildlogic.screenshottest.twoPaneDirective
-import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPaneContent
-import kurou.kodriver.feature.debugstatedetail.DebugStateDetailUiState
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailUiState
 import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPaneContent
@@ -229,36 +227,6 @@ class OtherContentScreenshotTest {
                                 detailContent = { itemType, canNavigateBack, onBack, _, _ ->
                                     if (itemType == OtherListItemType.License) {
                                         OtherLicenseDetailPane(
-                                            canNavigateBack = canNavigateBack,
-                                            onBack = onBack,
-                                        )
-                                    }
-                                },
-                            )
-                        }
-                    }
-                }
-            }
-
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `DebugStateDetailを表示`() =
-        composeScreenshotTest {
-            setContent {
-                AppTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
-                            OtherContent(
-                                uiState = OtherListUiState(selectedItem = OtherListItemType.DebugState),
-                                onItemSelected = {},
-                                onClearSelectedItem = {},
-                                scaffoldDirective = twoPaneDirective,
-                                detailContent = { itemType, canNavigateBack, onBack, _, _ ->
-                                    if (itemType == OtherListItemType.DebugState) {
-                                        DebugStateDetailPaneContent(
-                                            uiState = DebugStateDetailUiState(),
                                             canNavigateBack = canNavigateBack,
                                             onBack = onBack,
                                         )
