@@ -68,7 +68,6 @@ import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.app.shared.generated.resources.nav_readout
-import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
@@ -325,10 +324,7 @@ private fun DefaultOtherContent(
                     )
                 }
 
-                OtherListItemType.DebugState -> {
-                    DebugStateDetailPane(canNavigateBack, onBack)
-                }
-
+                OtherListItemType.DebugState,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,

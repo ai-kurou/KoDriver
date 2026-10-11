@@ -195,19 +195,14 @@ class OtherContentTest {
 
         assertFalse(state.backEnabled)
 
-        // アプリバージョンを5回連続タップ（onAppVersionTapped経由でDebugStateの詳細ペインへ遷移）
+        // アプリバージョンを5回連続タップしても詳細ペインへ遷移しない。
         rule.onNode(hasScrollAction()).performScrollToNode(hasText("Android版KoDriverバージョン"))
         repeat(5) {
             rule.onNode(hasText("Android版KoDriverバージョン")).performClick()
             rule.waitForIdle()
         }
 
-        rule.onNodeWithText("Detail: debug_state").assertExists()
-        assertTrue(state.backEnabled)
-
-        rule.runOnIdle { state.capturedOnBack?.invoke() }
-        rule.waitUntil { !state.backEnabled }
-
+        rule.onNodeWithText("Detail: debug_state").assertDoesNotExist()
         assertFalse(state.backEnabled)
     }
 
@@ -265,7 +260,6 @@ class OtherContentTest {
                 onKeepScreenOnChange = { state.keepScreenOn = it },
                 onDynamicColorEnabledChange = { state.dynamicColorEnabled = it },
                 onHapticFeedbackEnabledChange = { state.hapticFeedbackEnabled = it },
-                onAppVersionTapped = { selectedItem = OtherListItemType.DebugState },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
