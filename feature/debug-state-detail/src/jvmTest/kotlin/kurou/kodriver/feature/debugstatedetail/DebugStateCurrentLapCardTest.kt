@@ -31,9 +31,15 @@ class DebugStateCurrentLapCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
                             cardOrder = listOf(DebugStateCardKey.CURRENT_LAP),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry = sampleLmuWindowsTelemetry(currentLap = 3),
+                                ),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -53,8 +59,14 @@ class DebugStateCurrentLapCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry = sampleLmuWindowsTelemetry(currentLap = 3),
+                                ),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -74,8 +86,14 @@ class DebugStateCurrentLapCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry = sampleLmuWindowsTelemetry(currentLap = 3),
+                                ),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},

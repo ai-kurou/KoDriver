@@ -99,7 +99,10 @@ class DebugStateDetailPaneTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                                raceFlags = sampleRaceFlags(yellowFlagState = yellowFlagState),
+                                lmuWindows =
+                                    LmuWindowsDebugState(
+                                        raceFlags = sampleRaceFlags(yellowFlagState = yellowFlagState),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},
@@ -147,10 +150,13 @@ class DebugStateDetailPaneTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                                virtualEnergy =
-                                    LmuWindowsVirtualEnergyData(
-                                        remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
-                                        session = session,
+                                lmuWindows =
+                                    LmuWindowsDebugState(
+                                        virtualEnergy =
+                                            LmuWindowsVirtualEnergyData(
+                                                remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                                session = session,
+                                            ),
                                     ),
                             ),
                         canNavigateBack = true,
@@ -199,7 +205,10 @@ class DebugStateDetailPaneTest {
             rule.setContent {
                 MaterialTheme {
                     DebugStateDetailPaneContent(
-                        uiState = DebugStateDetailUiState(raceFlags = sampleRaceFlags(gamePhase = gamePhase)),
+                        uiState =
+                            DebugStateDetailUiState(
+                                lmuWindows = LmuWindowsDebugState(raceFlags = sampleRaceFlags(gamePhase = gamePhase)),
+                            ),
                         canNavigateBack = true,
                         onBack = {},
                     )
@@ -233,18 +242,21 @@ class DebugStateDetailPaneTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            raceFlags =
-                                LmuWindowsRaceFlagsData(
-                                    gamePhase = SessionPhase.GREEN_FLAG,
-                                    yellowFlagState = SessionYellowFlagState.NONE,
-                                    sectorFlags =
-                                        listOf(
-                                            SectorFlagState.CLEAR,
-                                            SectorFlagState.CLEAR,
-                                            SectorFlagState.CLEAR,
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    raceFlags =
+                                        LmuWindowsRaceFlagsData(
+                                            gamePhase = SessionPhase.GREEN_FLAG,
+                                            yellowFlagState = SessionYellowFlagState.NONE,
+                                            sectorFlags =
+                                                listOf(
+                                                    SectorFlagState.CLEAR,
+                                                    SectorFlagState.CLEAR,
+                                                    SectorFlagState.CLEAR,
+                                                ),
+                                            playerFlag = PrimaryFlag.GREEN,
+                                            playerUnderYellow = false,
                                         ),
-                                    playerFlag = PrimaryFlag.GREEN,
-                                    playerUnderYellow = false,
                                 ),
                         ),
                     canNavigateBack = true,
@@ -264,18 +276,21 @@ class DebugStateDetailPaneTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            raceFlags =
-                                LmuWindowsRaceFlagsData(
-                                    gamePhase = SessionPhase.GREEN_FLAG,
-                                    yellowFlagState = SessionYellowFlagState.NONE,
-                                    sectorFlags =
-                                        listOf(
-                                            SectorFlagState.CLEAR,
-                                            SectorFlagState.CLEAR,
-                                            SectorFlagState.CLEAR,
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    raceFlags =
+                                        LmuWindowsRaceFlagsData(
+                                            gamePhase = SessionPhase.GREEN_FLAG,
+                                            yellowFlagState = SessionYellowFlagState.NONE,
+                                            sectorFlags =
+                                                listOf(
+                                                    SectorFlagState.CLEAR,
+                                                    SectorFlagState.CLEAR,
+                                                    SectorFlagState.CLEAR,
+                                                ),
+                                            playerFlag = PrimaryFlag.BLUE,
+                                            playerUnderYellow = false,
                                         ),
-                                    playerFlag = PrimaryFlag.BLUE,
-                                    playerUnderYellow = false,
                                 ),
                         ),
                     canNavigateBack = true,
@@ -311,7 +326,10 @@ class DebugStateDetailPaneTest {
                         uiState =
                             DebugStateDetailUiState(
                                 selectedSimulator = Simulator.AceWindows,
-                                aceWindowsFlag = AceWindowsFlagData(flag = flag),
+                                aceWindows =
+                                    AceWindowsDebugState(
+                                        flag = AceWindowsFlagData(flag = flag),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},
@@ -332,7 +350,10 @@ class DebugStateDetailPaneTest {
                         uiState =
                             DebugStateDetailUiState(
                                 selectedSimulator = Simulator.AceWindows,
-                                aceWindowsFlag = aceWindowsFlag,
+                                aceWindows =
+                                    AceWindowsDebugState(
+                                        flag = aceWindowsFlag,
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},

@@ -33,8 +33,11 @@ class DebugStateBestLapCardTest {
                         uiState =
                             DebugStateDetailUiState(
                                 selectedSimulator = Simulator.Gt7Ps5,
-                                gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = bestLapTimeMs),
                                 cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                                gt7Ps5 =
+                                    Gt7Ps5DebugState(
+                                        telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = bestLapTimeMs),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},
@@ -55,8 +58,14 @@ class DebugStateBestLapCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
+                                ),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -76,8 +85,14 @@ class DebugStateBestLapCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
+                                ),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -97,10 +112,19 @@ class DebugStateBestLapCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
-                            aceWindowsBestLapTime = sampleAceWindowsBestLapTime(bestLapTimeMs = 95_123),
                             cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
+                                ),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                                ),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    bestLapTime = sampleAceWindowsBestLapTime(bestLapTimeMs = 95_123),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -121,8 +145,11 @@ class DebugStateBestLapCardTest {
                         uiState =
                             DebugStateDetailUiState(
                                 selectedSimulator = Simulator.AceWindows,
-                                aceWindowsBestLapTime = sampleAceWindowsBestLapTime(bestLapTimeMs = bestLapTimeMs),
                                 cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                                aceWindows =
+                                    AceWindowsDebugState(
+                                        bestLapTime = sampleAceWindowsBestLapTime(bestLapTimeMs = bestLapTimeMs),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},
@@ -143,8 +170,11 @@ class DebugStateBestLapCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsBestLapTime = null,
                             cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    bestLapTime = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},

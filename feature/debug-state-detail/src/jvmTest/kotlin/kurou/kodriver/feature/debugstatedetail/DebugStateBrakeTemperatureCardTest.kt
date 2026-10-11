@@ -24,16 +24,19 @@ class DebugStateBrakeTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            brakeTemperature =
-                                LmuWindowsBrakeTemperatureData(
-                                    wheels =
-                                        mapOf(
-                                            WheelIndex.FRONT_LEFT to CelsiusReading(399f),
-                                            WheelIndex.FRONT_RIGHT to CelsiusReading(600f),
-                                            WheelIndex.REAR_LEFT to CelsiusReading(800f),
+                            cardOrder = listOf(DebugStateCardKey.BRAKE_TEMPERATURE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    brakeTemperature =
+                                        LmuWindowsBrakeTemperatureData(
+                                            wheels =
+                                                mapOf(
+                                                    WheelIndex.FRONT_LEFT to CelsiusReading(399f),
+                                                    WheelIndex.FRONT_RIGHT to CelsiusReading(600f),
+                                                    WheelIndex.REAR_LEFT to CelsiusReading(800f),
+                                                ),
                                         ),
                                 ),
-                            cardOrder = listOf(DebugStateCardKey.BRAKE_TEMPERATURE),
                         ),
                     canNavigateBack = false,
                     onBack = {},

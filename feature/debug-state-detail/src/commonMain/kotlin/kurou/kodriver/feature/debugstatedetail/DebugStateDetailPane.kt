@@ -150,84 +150,86 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
             { uiState ->
                 VehicleClassContent(
                     uiState.selectedSimulator,
-                    uiState.lmuWindowsVehicleClass,
-                    uiState.gt7Ps5VehicleClass,
+                    uiState.lmuWindows.vehicleClass,
+                    uiState.gt7Ps5.vehicleClass,
                 )
             },
         DebugStateCardKey.VEHICLE_LOCATION to
             { uiState ->
                 VehicleLocationContent(
                     uiState.selectedSimulator,
-                    uiState.aceWindowsStatus,
-                    uiState.lmuWindowsPitStatus,
+                    uiState.aceWindows.status,
+                    uiState.lmuWindows.pitStatus,
                 )
             },
         DebugStateCardKey.FLAG_INFO to
-            { uiState -> FlagInfoContent(uiState.selectedSimulator, uiState.raceFlags, uiState.aceWindowsFlag) },
-        DebugStateCardKey.GAME_PHASE to { uiState -> GamePhaseContent(uiState.raceFlags) },
-        DebugStateCardKey.SESSION to { uiState -> SessionContent(uiState.virtualEnergy) },
-        DebugStateCardKey.YELLOW_FLAG_STATE to { uiState -> YellowFlagStateContent(uiState.raceFlags) },
+            { uiState ->
+                FlagInfoContent(uiState.selectedSimulator, uiState.lmuWindows.raceFlags, uiState.aceWindows.flag)
+            },
+        DebugStateCardKey.GAME_PHASE to { uiState -> GamePhaseContent(uiState.lmuWindows.raceFlags) },
+        DebugStateCardKey.SESSION to { uiState -> SessionContent(uiState.lmuWindows.virtualEnergy) },
+        DebugStateCardKey.YELLOW_FLAG_STATE to { uiState -> YellowFlagStateContent(uiState.lmuWindows.raceFlags) },
         DebugStateCardKey.CURRENT_LAP to { uiState ->
-            CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
+            CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindows.telemetry, uiState.gt7Ps5.telemetry)
         },
         DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to
             { uiState ->
                 SideBySideVehiclesContent(
                     uiState.selectedSimulator,
-                    uiState.vehicleApproach,
-                    uiState.aceWindowsVehicleApproach,
-                    uiState.lmuWindowsSideBySideDurations,
+                    uiState.lmuWindows.vehicleApproach,
+                    uiState.aceWindows.vehicleApproach,
+                    uiState.lmuWindows.sideBySideDurations,
                 )
             },
         DebugStateCardKey.BEST_LAP to { uiState ->
             BestLapContent(
                 uiState.selectedSimulator,
-                uiState.lmuWindowsTelemetry,
-                uiState.gt7Ps5Telemetry,
-                uiState.aceWindowsBestLapTime,
+                uiState.lmuWindows.telemetry,
+                uiState.gt7Ps5.telemetry,
+                uiState.aceWindows.bestLapTime,
             )
         },
         DebugStateCardKey.TYRE_TEMPERATURE to
             { uiState ->
                 TyreTemperatureContent(
                     uiState.selectedSimulator,
-                    uiState.lmuWindowsTelemetry,
-                    uiState.gt7Ps5Telemetry,
+                    uiState.lmuWindows.telemetry,
+                    uiState.gt7Ps5.telemetry,
                 )
             },
         DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
             { uiState ->
                 TyreCarcassTemperatureContent(
                     uiState.selectedSimulator,
-                    uiState.tyreCarcassTemperature,
-                    uiState.aceWindowsTyreCarcassTemperature,
+                    uiState.lmuWindows.tyreCarcassTemperature,
+                    uiState.aceWindows.tyreCarcassTemperature,
                 )
             },
         DebugStateCardKey.BRAKE_TEMPERATURE to
-            { uiState -> BrakeTemperatureContent(uiState.selectedSimulator, uiState.brakeTemperature) },
+            { uiState -> BrakeTemperatureContent(uiState.selectedSimulator, uiState.lmuWindows.brakeTemperature) },
         DebugStateCardKey.BRAKE_WEAR to
-            { uiState -> BrakeWearContent(uiState.selectedSimulator, uiState.brakeWear) },
+            { uiState -> BrakeWearContent(uiState.selectedSimulator, uiState.lmuWindows.brakeWear) },
         DebugStateCardKey.TYRE_WEAR to
-            { uiState -> TyreWearContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry) },
+            { uiState -> TyreWearContent(uiState.selectedSimulator, uiState.lmuWindows.telemetry) },
         DebugStateCardKey.FUEL_CONSUMPTION to { uiState ->
             FuelConsumptionContent(
                 uiState.selectedSimulator,
-                uiState.virtualEnergy,
-                uiState.lmuWindowsTelemetry,
-                uiState.gt7Ps5Telemetry,
-                uiState.aceWindowsFuel,
-                uiState.aceWindowsRemainingFuelLaps,
+                uiState.lmuWindows.virtualEnergy,
+                uiState.lmuWindows.telemetry,
+                uiState.gt7Ps5.telemetry,
+                uiState.aceWindows.fuel,
+                uiState.aceWindows.remainingFuelLaps,
             )
         },
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to { uiState ->
             PitTimingRemainingLapsContent(
                 uiState.selectedSimulator,
-                uiState.virtualEnergy,
-                uiState.lmuWindowsTelemetry,
+                uiState.lmuWindows.virtualEnergy,
+                uiState.lmuWindows.telemetry,
             )
         },
         DebugStateCardKey.VEHICLE_DAMAGE to { uiState ->
-            VehicleDamageContent(uiState.vehicleDamage, uiState.tyreDetached)
+            VehicleDamageContent(uiState.lmuWindows.vehicleDamage, uiState.lmuWindows.tyreDetached)
         },
     )
 

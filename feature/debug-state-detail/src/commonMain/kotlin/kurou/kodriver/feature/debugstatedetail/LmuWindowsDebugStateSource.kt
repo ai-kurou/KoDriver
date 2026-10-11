@@ -57,7 +57,7 @@ internal class LmuWindowsDebugStateSource(
     private val sideBySideDurationTracker = LmuWindowsSideBySideDurationTracker()
     private val _lmuWindowsVehicleApproach =
         useCases.observeVehicleApproach().shareIn(scope, SharingStarted.Eagerly, replay = 1)
-    val sideBySideDurations: StateFlow<LmuWindowsSideBySideDurations?> =
+    private val sideBySideDurations: StateFlow<LmuWindowsSideBySideDurations?> =
         _lmuWindowsVehicleApproach
             .flatMapLatest { data ->
                 if (data.sideBySideLeftVehicleIds.isEmpty() && data.sideBySideRightVehicleIds.isEmpty()) {
@@ -73,7 +73,7 @@ internal class LmuWindowsDebugStateSource(
                 }
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
-    private val _raceStateBase: StateFlow<DebugStateDetailUiState> =
+    private val _raceStateBase: StateFlow<LmuWindowsDebugState> =
         combine(
             useCases
                 .observeRaceFlags()
@@ -113,18 +113,18 @@ internal class LmuWindowsDebugStateSource(
                 .onEach {
                     markCardsReceived(Simulator.LmuWindows, setOf(DebugStateCardKey.VEHICLE_CLASS))
                 },
-        ) { raceFlags, virtualEnergy, vehicleApproach, tyreCarcassTemperature, lmuWindowsVehicleClass ->
-            DebugStateDetailUiState(
+        ) { raceFlags, virtualEnergy, vehicleApproach, tyreCarcassTemperature, vehicleClass ->
+            LmuWindowsDebugState(
                 raceFlags = raceFlags,
                 virtualEnergy = virtualEnergy,
                 vehicleApproach = vehicleApproach,
                 tyreCarcassTemperature = tyreCarcassTemperature,
-                lmuWindowsVehicleClass = lmuWindowsVehicleClass,
+                vehicleClass = vehicleClass,
             )
         }.stateIn(
             scope,
             SharingStarted.Eagerly,
-            DebugStateDetailUiState(),
+            LmuWindowsDebugState(),
         )
 
     private val _lmuWindowsBrakeTemperature: StateFlow<LmuWindowsBrakeTemperatureData?> =
@@ -162,16 +162,16 @@ internal class LmuWindowsDebugStateSource(
                 markCardsReceived(Simulator.LmuWindows, setOf(DebugStateCardKey.VEHICLE_DAMAGE))
             }.stateIn(scope, SharingStarted.Eagerly, null)
 
-    private val _raceStateWithoutBrakeWear: StateFlow<DebugStateDetailUiState> =
+    private val _raceStateWithoutBrakeWear: StateFlow<LmuWindowsDebugState> =
         combine(
             _raceStateBase,
             _lmuWindowsPitStatus,
             _lmuWindowsVehicleDamage,
             _lmuWindowsTyreDetached,
             _lmuWindowsBrakeTemperature,
-        ) { base, lmuWindowsPitStatus, vehicleDamage, tyreDetached, brakeTemperature ->
+        ) { base, pitStatus, vehicleDamage, tyreDetached, brakeTemperature ->
             base.copy(
-                lmuWindowsPitStatus = lmuWindowsPitStatus,
+                pitStatus = pitStatus,
                 vehicleDamage = vehicleDamage,
                 tyreDetached = tyreDetached,
                 brakeTemperature = brakeTemperature,
@@ -179,19 +179,19 @@ internal class LmuWindowsDebugStateSource(
         }.stateIn(
             scope,
             SharingStarted.Eagerly,
-            DebugStateDetailUiState(),
+            LmuWindowsDebugState(),
         )
 
-    val raceState: StateFlow<DebugStateDetailUiState> =
+    private val _raceState: StateFlow<LmuWindowsDebugState> =
         combine(_raceStateWithoutBrakeWear, _lmuWindowsBrakeWear) { base, brakeWear ->
             base.copy(brakeWear = brakeWear)
         }.stateIn(
             scope,
             SharingStarted.Eagerly,
-            DebugStateDetailUiState(),
+            LmuWindowsDebugState(),
         )
 
-    val telemetry: StateFlow<LmuWindowsTelemetryData?> =
+    private val telemetry: StateFlow<LmuWindowsTelemetryData?> =
         useCases
             .observeTelemetry()
             .onEach {
@@ -207,4 +207,14 @@ internal class LmuWindowsDebugStateSource(
                     ),
                 )
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val base: StateFlow<LmuWindowsDebugState> =
+        combine(_raceState, telemetry) { race, telemetry ->
+            race.copy(telemetry = telemetry)
+        }.stateIn(scope, SharingStarted.Eagerly, LmuWindowsDebugState())
+
+    val state: StateFlow<LmuWindowsDebugState> =
+        combine(base, sideBySideDurations) { base, durations ->
+            base.copy(sideBySideDurations = durations)
+        }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), LmuWindowsDebugState())
 }

@@ -3,6 +3,7 @@ package kurou.kodriver.feature.debugstatedetail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.DebugStateCardKey
@@ -22,7 +23,7 @@ internal class Gt7Ps5DebugStateSource(
     useCases: Gt7Ps5DebugStateUseCases,
     markCardsReceived: (Simulator, Set<DebugStateCardKey>) -> Unit,
 ) {
-    val telemetry: StateFlow<Gt7Ps5TelemetryData?> =
+    private val telemetry: StateFlow<Gt7Ps5TelemetryData?> =
         useCases
             .observeTelemetry()
             .onEach {
@@ -37,10 +38,15 @@ internal class Gt7Ps5DebugStateSource(
                 )
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val vehicleClass: StateFlow<Gt7Ps5VehicleClassData?> =
+    private val vehicleClass: StateFlow<Gt7Ps5VehicleClassData?> =
         useCases
             .observeVehicleClass()
             .onEach {
                 markCardsReceived(Simulator.Gt7Ps5, setOf(DebugStateCardKey.VEHICLE_CLASS))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val state: StateFlow<Gt7Ps5DebugState> =
+        combine(telemetry, vehicleClass) { telemetry, vehicleClass ->
+            Gt7Ps5DebugState(telemetry = telemetry, vehicleClass = vehicleClass)
+        }.stateIn(scope, SharingStarted.Eagerly, Gt7Ps5DebugState())
 }

@@ -46,8 +46,11 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            vehicleApproach = null,
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleApproach = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -67,14 +70,17 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            vehicleApproach =
-                                LmuWindowsVehicleApproachData(
-                                    sideBySideLeftVehicleIds = emptySet(),
-                                    sideBySideRightVehicleIds = emptySet(),
-                                    lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
-                                    lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleApproach =
+                                        LmuWindowsVehicleApproachData(
+                                            sideBySideLeftVehicleIds = emptySet(),
+                                            sideBySideRightVehicleIds = emptySet(),
+                                            lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
+                                            lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -93,14 +99,17 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            vehicleApproach =
-                                LmuWindowsVehicleApproachData(
-                                    sideBySideLeftVehicleIds = setOf(1),
-                                    sideBySideRightVehicleIds = emptySet(),
-                                    lateralDistanceLeftMeters = LateralDistanceMeters(1.24),
-                                    lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleApproach =
+                                        LmuWindowsVehicleApproachData(
+                                            sideBySideLeftVehicleIds = setOf(1),
+                                            sideBySideRightVehicleIds = emptySet(),
+                                            lateralDistanceLeftMeters = LateralDistanceMeters(1.24),
+                                            lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -119,15 +128,18 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsSideBySideDurations = LmuWindowsSideBySideDurations(1_000, 0),
-                            vehicleApproach =
-                                LmuWindowsVehicleApproachData(
-                                    sideBySideLeftVehicleIds = emptySet(),
-                                    sideBySideRightVehicleIds = setOf(2),
-                                    lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
-                                    lateralDistanceRightMeters = LateralDistanceMeters(2.06),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    sideBySideDurations = LmuWindowsSideBySideDurations(1_000, 0),
+                                    vehicleApproach =
+                                        LmuWindowsVehicleApproachData(
+                                            sideBySideLeftVehicleIds = emptySet(),
+                                            sideBySideRightVehicleIds = setOf(2),
+                                            lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
+                                            lateralDistanceRightMeters = LateralDistanceMeters(2.06),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -148,14 +160,17 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            vehicleApproach =
-                                LmuWindowsVehicleApproachData(
-                                    sideBySideLeftVehicleIds = setOf(1),
-                                    sideBySideRightVehicleIds = setOf(2),
-                                    lateralDistanceLeftMeters = LateralDistanceMeters(0.5),
-                                    lateralDistanceRightMeters = LateralDistanceMeters(0.76),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleApproach =
+                                        LmuWindowsVehicleApproachData(
+                                            sideBySideLeftVehicleIds = setOf(1),
+                                            sideBySideRightVehicleIds = setOf(2),
+                                            lateralDistanceLeftMeters = LateralDistanceMeters(0.5),
+                                            lateralDistanceRightMeters = LateralDistanceMeters(0.76),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -175,15 +190,18 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsSideBySideDurations = LmuWindowsSideBySideDurations(1_240, 2_060),
-                            vehicleApproach =
-                                LmuWindowsVehicleApproachData(
-                                    sideBySideLeftVehicleIds = setOf(1),
-                                    sideBySideRightVehicleIds = setOf(2),
-                                    lateralDistanceLeftMeters = LateralDistanceMeters(0.5),
-                                    lateralDistanceRightMeters = LateralDistanceMeters(0.76),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    sideBySideDurations = LmuWindowsSideBySideDurations(1_240, 2_060),
+                                    vehicleApproach =
+                                        LmuWindowsVehicleApproachData(
+                                            sideBySideLeftVehicleIds = setOf(1),
+                                            sideBySideRightVehicleIds = setOf(2),
+                                            lateralDistanceLeftMeters = LateralDistanceMeters(0.5),
+                                            lateralDistanceRightMeters = LateralDistanceMeters(0.76),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -211,8 +229,11 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsVehicleApproach = null,
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    vehicleApproach = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -232,8 +253,11 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsVehicleApproach = AceWindowsVehicleApproachData(nearbyVehicles = emptyList()),
                             cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    vehicleApproach = AceWindowsVehicleApproachData(nearbyVehicles = emptyList()),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -252,15 +276,18 @@ class DebugStateSideBySideVehiclesCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsVehicleApproach =
-                                AceWindowsVehicleApproachData(
-                                    nearbyVehicles =
-                                        listOf(
-                                            AceWindowsNearbyVehicleData(distanceMeters = 12.34),
-                                            AceWindowsNearbyVehicleData(distanceMeters = 3.06),
+                            cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    vehicleApproach =
+                                        AceWindowsVehicleApproachData(
+                                            nearbyVehicles =
+                                                listOf(
+                                                    AceWindowsNearbyVehicleData(distanceMeters = 12.34),
+                                                    AceWindowsNearbyVehicleData(distanceMeters = 3.06),
+                                                ),
                                         ),
                                 ),
-                            cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                         ),
                     canNavigateBack = true,
                     onBack = {},

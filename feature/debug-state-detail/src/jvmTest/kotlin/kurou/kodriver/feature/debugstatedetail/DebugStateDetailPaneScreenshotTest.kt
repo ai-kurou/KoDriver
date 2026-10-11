@@ -206,18 +206,21 @@ class DebugStateDetailPaneScreenshotTest {
                                 uiState =
                                     DebugStateDetailUiState(
                                         selectedSimulator = Simulator.Gt7Ps5,
-                                        gt7Ps5Telemetry =
-                                            sampleGt7Ps5Telemetry.copy(
-                                                tyreTemperature =
-                                                    Gt7Ps5TyreTemperatureData(
-                                                        frontLeftCelsius = CelsiusReading(65.2f),
-                                                        frontRightCelsius = CelsiusReading(85.4f),
-                                                        rearLeftCelsius = CelsiusReading(105f),
-                                                        rearRightCelsius = CelsiusReading(115f),
-                                                    ),
-                                            ),
                                         cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
                                         enabledCardKeys = setOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                                        gt7Ps5 =
+                                            Gt7Ps5DebugState(
+                                                telemetry =
+                                                    sampleGt7Ps5Telemetry.copy(
+                                                        tyreTemperature =
+                                                            Gt7Ps5TyreTemperatureData(
+                                                                frontLeftCelsius = CelsiusReading(65.2f),
+                                                                frontRightCelsius = CelsiusReading(85.4f),
+                                                                rearLeftCelsius = CelsiusReading(105f),
+                                                                rearRightCelsius = CelsiusReading(115f),
+                                                            ),
+                                                    ),
+                                            ),
                                     ),
                                 canNavigateBack = true,
                                 onBack = {},
@@ -240,10 +243,13 @@ class DebugStateDetailPaneScreenshotTest {
                                 uiState =
                                     DebugStateDetailUiState(
                                         selectedSimulator = Simulator.LmuWindows,
-                                        vehicleApproach = sampleVehicleApproach,
-                                        lmuWindowsSideBySideDurations = sampleSideBySideDurations,
                                         cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                                         enabledCardKeys = setOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                                        lmuWindows =
+                                            LmuWindowsDebugState(
+                                                vehicleApproach = sampleVehicleApproach,
+                                                sideBySideDurations = sampleSideBySideDurations,
+                                            ),
                                     ),
                                 canNavigateBack = true,
                                 onBack = {},
@@ -258,21 +264,30 @@ class DebugStateDetailPaneScreenshotTest {
     private val allCardsFilledUiState =
         DebugStateDetailUiState(
             selectedSimulator = Simulator.LmuWindows,
-            raceFlags = sampleRaceFlags,
-            virtualEnergy = sampleVirtualEnergy,
-            lmuWindowsTelemetry = sampleLmuWindowsTelemetry,
-            gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
-            vehicleApproach = sampleVehicleApproach,
-            lmuWindowsSideBySideDurations = sampleSideBySideDurations,
-            tyreCarcassTemperature = sampleTyreCarcassTemperature,
-            brakeTemperature = sampleBrakeTemperature,
-            brakeWear = sampleBrakeWear,
-            lmuWindowsVehicleClass = sampleVehicleClass,
-            aceWindowsStatus = sampleAceWindowsStatus,
-            lmuWindowsPitStatus = sampleLmuWindowsPitStatus,
-            vehicleDamage = sampleVehicleDamage,
-            tyreDetached = sampleTyreDetached,
             enabledCardKeys = defaultDebugStateCardOrder.toSet(),
+            lmuWindows =
+                LmuWindowsDebugState(
+                    raceFlags = sampleRaceFlags,
+                    virtualEnergy = sampleVirtualEnergy,
+                    telemetry = sampleLmuWindowsTelemetry,
+                    vehicleApproach = sampleVehicleApproach,
+                    sideBySideDurations = sampleSideBySideDurations,
+                    tyreCarcassTemperature = sampleTyreCarcassTemperature,
+                    brakeTemperature = sampleBrakeTemperature,
+                    brakeWear = sampleBrakeWear,
+                    vehicleClass = sampleVehicleClass,
+                    pitStatus = sampleLmuWindowsPitStatus,
+                    vehicleDamage = sampleVehicleDamage,
+                    tyreDetached = sampleTyreDetached,
+                ),
+            gt7Ps5 =
+                Gt7Ps5DebugState(
+                    telemetry = sampleGt7Ps5Telemetry,
+                ),
+            aceWindows =
+                AceWindowsDebugState(
+                    status = sampleAceWindowsStatus,
+                ),
         )
 
     @Test

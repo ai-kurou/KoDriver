@@ -22,8 +22,11 @@ class DebugStateVehicleDamageCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            vehicleDamage = null,
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleDamage = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -42,13 +45,16 @@ class DebugStateVehicleDamageCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            vehicleDamage =
-                                LmuWindowsVehicleDamageData(
-                                    overheating = true,
-                                    partDetached = true,
-                                    lastImpactMagnitude = 0.0,
-                                ),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleDamage =
+                                        LmuWindowsVehicleDamageData(
+                                            overheating = true,
+                                            partDetached = true,
+                                            lastImpactMagnitude = 0.0,
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -67,13 +73,16 @@ class DebugStateVehicleDamageCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            vehicleDamage =
-                                LmuWindowsVehicleDamageData(
-                                    overheating = false,
-                                    partDetached = false,
-                                    lastImpactMagnitude = 0.0,
-                                ),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleDamage =
+                                        LmuWindowsVehicleDamageData(
+                                            overheating = false,
+                                            partDetached = false,
+                                            lastImpactMagnitude = 0.0,
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -92,14 +101,17 @@ class DebugStateVehicleDamageCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            vehicleDamage =
-                                LmuWindowsVehicleDamageData(
-                                    overheating = false,
-                                    partDetached = false,
-                                    lastImpactMagnitude = 0.0,
-                                ),
-                            tyreDetached = null,
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleDamage =
+                                        LmuWindowsVehicleDamageData(
+                                            overheating = false,
+                                            partDetached = false,
+                                            lastImpactMagnitude = 0.0,
+                                        ),
+                                    tyreDetached = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -120,20 +132,23 @@ class DebugStateVehicleDamageCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            vehicleDamage =
-                                LmuWindowsVehicleDamageData(
-                                    overheating = false,
-                                    partDetached = false,
-                                    lastImpactMagnitude = 0.0,
-                                ),
-                            tyreDetached =
-                                LmuWindowsTyreDetachedData(
-                                    wheels =
-                                        WheelIndex.entries.associateWith {
-                                            it == WheelIndex.FRONT_RIGHT
-                                        },
-                                ),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleDamage =
+                                        LmuWindowsVehicleDamageData(
+                                            overheating = false,
+                                            partDetached = false,
+                                            lastImpactMagnitude = 0.0,
+                                        ),
+                                    tyreDetached =
+                                        LmuWindowsTyreDetachedData(
+                                            wheels =
+                                                WheelIndex.entries.associateWith {
+                                                    it == WheelIndex.FRONT_RIGHT
+                                                },
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},

@@ -34,11 +34,14 @@ class DebugStateTyreWearCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry =
+                                        sampleLmuWindowsTelemetry(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -58,11 +61,14 @@ class DebugStateTyreWearCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry =
+                                        sampleLmuWindowsTelemetry(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -82,8 +88,11 @@ class DebugStateTyreWearCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry = null,
                             cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -103,11 +112,14 @@ class DebugStateTyreWearCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry =
+                                        sampleLmuWindowsTelemetry(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -127,17 +139,20 @@ class DebugStateTyreWearCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels =
-                                        mapOf(
-                                            WheelIndex.FRONT_LEFT to sampleWheel(0.8),
-                                            WheelIndex.FRONT_RIGHT to sampleWheel(0.75),
-                                            WheelIndex.REAR_LEFT to sampleWheel(0.7),
-                                            WheelIndex.REAR_RIGHT to sampleWheel(0.65),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry =
+                                        sampleLmuWindowsTelemetry(
+                                            wheels =
+                                                mapOf(
+                                                    WheelIndex.FRONT_LEFT to sampleWheel(0.8),
+                                                    WheelIndex.FRONT_RIGHT to sampleWheel(0.75),
+                                                    WheelIndex.REAR_LEFT to sampleWheel(0.7),
+                                                    WheelIndex.REAR_RIGHT to sampleWheel(0.65),
+                                                ),
                                         ),
                                 ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
                         ),
                     canNavigateBack = true,
                     onBack = {},

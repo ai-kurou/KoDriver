@@ -107,8 +107,11 @@ class DebugStateVehicleLocationCardTest {
                         uiState =
                             DebugStateDetailUiState(
                                 selectedSimulator = Simulator.AceWindows,
-                                aceWindowsStatus = AceWindowsStatusData(status = status, carLocation = carLocation),
                                 cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                                aceWindows =
+                                    AceWindowsDebugState(
+                                        status = AceWindowsStatusData(status = status, carLocation = carLocation),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},
@@ -130,13 +133,16 @@ class DebugStateVehicleLocationCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsPitStatus =
-                                LmuWindowsPitStatusData(
-                                    inPits = true,
-                                    pitState = LmuWindowsPitState.ENTERING,
-                                    inGarageStall = false,
-                                ),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    pitStatus =
+                                        LmuWindowsPitStatusData(
+                                            inPits = true,
+                                            pitState = LmuWindowsPitState.ENTERING,
+                                            inGarageStall = false,
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -169,9 +175,16 @@ class DebugStateVehicleLocationCardTest {
                         uiState =
                             DebugStateDetailUiState(
                                 selectedSimulator = Simulator.LmuWindows,
-                                lmuWindowsPitStatus =
-                                    LmuWindowsPitStatusData(inPits = false, pitState = pitState, inGarageStall = true),
                                 cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                                lmuWindows =
+                                    LmuWindowsDebugState(
+                                        pitStatus =
+                                            LmuWindowsPitStatusData(
+                                                inPits = false,
+                                                pitState = pitState,
+                                                inGarageStall = true,
+                                            ),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},

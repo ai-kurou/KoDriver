@@ -25,11 +25,14 @@ class DebugStateTyreCarcassTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            tyreCarcassTemperature =
-                                LmuWindowsTyreCarcassTemperatureData(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    tyreCarcassTemperature =
+                                        LmuWindowsTyreCarcassTemperatureData(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -49,11 +52,14 @@ class DebugStateTyreCarcassTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            tyreCarcassTemperature =
-                                LmuWindowsTyreCarcassTemperatureData(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    tyreCarcassTemperature =
+                                        LmuWindowsTyreCarcassTemperatureData(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -73,11 +79,14 @@ class DebugStateTyreCarcassTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            tyreCarcassTemperature =
-                                LmuWindowsTyreCarcassTemperatureData(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    tyreCarcassTemperature =
+                                        LmuWindowsTyreCarcassTemperatureData(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(95.0f)),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -97,14 +106,17 @@ class DebugStateTyreCarcassTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            tyreCarcassTemperature =
-                                LmuWindowsTyreCarcassTemperatureData(
-                                    wheels =
-                                        mapOf(
-                                            WheelIndex.FRONT_LEFT to CelsiusReading(95.0f),
-                                            WheelIndex.FRONT_RIGHT to CelsiusReading(96.0f),
-                                            WheelIndex.REAR_LEFT to CelsiusReading(97.0f),
-                                            WheelIndex.REAR_RIGHT to CelsiusReading(98.0f),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    tyreCarcassTemperature =
+                                        LmuWindowsTyreCarcassTemperatureData(
+                                            wheels =
+                                                mapOf(
+                                                    WheelIndex.FRONT_LEFT to CelsiusReading(95.0f),
+                                                    WheelIndex.FRONT_RIGHT to CelsiusReading(96.0f),
+                                                    WheelIndex.REAR_LEFT to CelsiusReading(97.0f),
+                                                    WheelIndex.REAR_RIGHT to CelsiusReading(98.0f),
+                                                ),
                                         ),
                                 ),
                         ),
@@ -129,14 +141,17 @@ class DebugStateTyreCarcassTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsTyreCarcassTemperature =
-                                AceWindowsTyreCarcassTemperatureData(
-                                    wheels =
-                                        mapOf(
-                                            WheelIndex.FRONT_LEFT to CelsiusReading(91.0f),
-                                            WheelIndex.FRONT_RIGHT to CelsiusReading(92.0f),
-                                            WheelIndex.REAR_LEFT to CelsiusReading(93.0f),
-                                            WheelIndex.REAR_RIGHT to CelsiusReading(94.0f),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    tyreCarcassTemperature =
+                                        AceWindowsTyreCarcassTemperatureData(
+                                            wheels =
+                                                mapOf(
+                                                    WheelIndex.FRONT_LEFT to CelsiusReading(91.0f),
+                                                    WheelIndex.FRONT_RIGHT to CelsiusReading(92.0f),
+                                                    WheelIndex.REAR_LEFT to CelsiusReading(93.0f),
+                                                    WheelIndex.REAR_RIGHT to CelsiusReading(94.0f),
+                                                ),
                                         ),
                                 ),
                         ),
