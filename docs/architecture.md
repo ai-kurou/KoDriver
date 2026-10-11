@@ -25,6 +25,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:narrator` | 開始音のWAV再生・TTS読み上げ制御の共通基盤（lmu/gt7/ace の各narrator featureが共通利用） | [図](graphs/core-narrator.svg) |
 | `:feature:desktop-splash` | デスクトップ起動中スプラッシュの初期化進捗管理・画面表示 | [図](graphs/feature-desktop-splash.svg) |
 | `:feature:debug-state-detail` | 走行データのデバッグ表示（燃料消費・タイヤ摩耗・タイヤ温度・ピットタイミング等） | [図](graphs/feature-debug-state-detail.svg) |
+| `:feature:lmu-windows-debug-state-detail` | LMUのデバッグ状態表示（シミュレーター別分割の移行先。現時点は空のPaneのみ） | [図](graphs/feature-lmu-windows-debug-state-detail.svg) |
 | `:feature:lmu-windows-connection` | LMU との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-lmu-windows-connection.svg) |
 | `:feature:main` | アプリ全体のメイン画面状態管理 | [図](graphs/feature-main.svg) |
 | `:feature:server-connection` | KoDriver サーバー（Ktor）への接続状態確認を担当する | [図](graphs/feature-server-connection.svg) |
