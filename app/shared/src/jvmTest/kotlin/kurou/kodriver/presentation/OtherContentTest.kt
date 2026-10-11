@@ -188,6 +188,7 @@ class OtherContentTest {
                 onOpenOverlayTextSizeDialog = { overlayTextSizeDialogOpened = true },
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
+                onAppVersionTapped = { selectedItem = OtherListItemType.DebugState },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
@@ -277,14 +278,19 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
 
-        // アプリバージョンを5回連続タップしても詳細ペインへ遷移しない。
+        // アプリバージョンを5回連続タップ（onAppVersionTapped経由でDebugStateの詳細ペインへ遷移）
         rule.onNode(hasScrollAction()).performScrollToNode(hasText("Windows版KoDriverバージョン"))
         repeat(5) {
             rule.onNode(hasText("Windows版KoDriverバージョン")).performClick()
             rule.waitForIdle()
         }
 
-        rule.onNodeWithText("Detail: debug_state").assertDoesNotExist()
+        rule.onNodeWithText("Detail: debug_state").assertExists()
+        assertTrue(backEnabled)
+
+        rule.runOnIdle { capturedOnBack?.invoke() }
+        rule.waitUntil { !backEnabled }
+
         assertFalse(backEnabled)
     }
 

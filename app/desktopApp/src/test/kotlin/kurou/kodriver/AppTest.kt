@@ -308,6 +308,16 @@ class AppTest {
     }
 
     @Test
+    fun `アプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
+        setContent()
+
+        clickItem("その他")
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("Windows版KoDriverバージョン"))
+        repeat(5) { clickItem("Windows版KoDriverバージョン") }
+        waitUntilDisplayed("デバッグ状態")
+    }
+
+    @Test
     fun `ログタブにログがない場合は空状態を表示する`() {
         setContent()
 

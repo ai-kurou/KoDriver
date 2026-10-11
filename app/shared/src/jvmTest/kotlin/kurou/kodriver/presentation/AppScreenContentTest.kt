@@ -25,6 +25,23 @@ class AppScreenContentTest {
     val rule = createComposeRule()
 
     @Test
+    fun `その他画面に選択中のシミュレーターIDとスクロール要求を渡す`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                selectedSimulatorId = "ace_windows",
+                otherListScrollToTopRequest = 3,
+                otherContent = { scrollToTopRequest, selectedSimulatorId ->
+                    Text("$selectedSimulatorId: $scrollToTopRequest")
+                },
+            )
+        }
+
+        rule.onNodeWithText("その他").performClick()
+        rule.onNodeWithText("ace_windows: 3").assertIsDisplayed()
+    }
+
+    @Test
     fun `両バナー表示時だけ背景色の隙間を表示する`() {
         val connectionVisible = mutableStateOf(true)
         val reason = mutableStateOf<TtsUnavailableGuidance?>(TtsUnavailableGuidance.EngineMissing)
@@ -60,7 +77,7 @@ class AppScreenContentTest {
                 ttsUnavailableGuidance = TtsUnavailableGuidance.EngineMissing,
                 onTtsAction = { actionCount++ },
                 readoutContent = { Text("読み上げ画面") },
-                otherContent = { Text("その他画面") },
+                otherContent = { _, _ -> Text("その他画面") },
             )
         }
         rule.onNodeWithText("シミュレーターに接続中").assertIsDisplayed()
@@ -238,7 +255,7 @@ class AppScreenContentTest {
                         modifier = Modifier.clickable(onClick = { onFeedbackClick(42L) }),
                     )
                 },
-                otherContent = { Text("OtherContent") },
+                otherContent = { _, _ -> Text("OtherContent") },
             )
         }
 
@@ -272,7 +289,7 @@ class AppScreenContentTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
                     hapticFeedbackEnabled = true,
-                    otherContent = { _ ->
+                    otherContent = { _, _ ->
                         val haptic = LocalHapticFeedback.current
                         Text(
                             text = "OtherContent",
@@ -305,7 +322,7 @@ class AppScreenContentTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
                     hapticFeedbackEnabled = false,
-                    otherContent = { _ ->
+                    otherContent = { _, _ ->
                         val haptic = LocalHapticFeedback.current
                         Text(
                             text = "OtherContent",

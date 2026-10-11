@@ -68,6 +68,9 @@ import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.app.shared.generated.resources.nav_readout
+import kurou.kodriver.feature.acewindowsdebugstatedetail.AceWindowsDebugStateDetailPane
+import kurou.kodriver.feature.gt7ps5debugstatedetail.Gt7Ps5DebugStateDetailPane
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.LmuWindowsDebugStateDetailPane
 import kurou.kodriver.feature.main.AppScreenPrimarySimulatorIndicator
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.main.appScreenPrimarySimulatorLabel
@@ -100,6 +103,32 @@ import org.koin.compose.viewmodel.koinViewModel
  * app:shared は `:core:domain` に依存しないため、Preview / デフォルト値用にリテラルで保持する。
  */
 private const val LMU_WINDOWS_SIMULATOR_ID = "lmu_windows"
+private const val GT7_PS5_SIMULATOR_ID = "gt7_ps5"
+private const val ACE_WINDOWS_SIMULATOR_ID = "ace_windows"
+
+internal enum class DebugStateDetailType { LMU_WINDOWS, GT7_PS5, ACE_WINDOWS, UNKNOWN }
+
+internal fun debugStateDetailType(selectedSimulatorId: String): DebugStateDetailType =
+    when (selectedSimulatorId) {
+        LMU_WINDOWS_SIMULATOR_ID -> DebugStateDetailType.LMU_WINDOWS
+        GT7_PS5_SIMULATOR_ID -> DebugStateDetailType.GT7_PS5
+        ACE_WINDOWS_SIMULATOR_ID -> DebugStateDetailType.ACE_WINDOWS
+        else -> DebugStateDetailType.UNKNOWN
+    }
+
+@Composable
+private fun DebugStateDetailPane(
+    selectedSimulatorId: String,
+    canNavigateBack: Boolean,
+    onBack: () -> Unit,
+) {
+    when (debugStateDetailType(selectedSimulatorId)) {
+        DebugStateDetailType.LMU_WINDOWS -> LmuWindowsDebugStateDetailPane(canNavigateBack, onBack)
+        DebugStateDetailType.GT7_PS5 -> Gt7Ps5DebugStateDetailPane(canNavigateBack, onBack)
+        DebugStateDetailType.ACE_WINDOWS -> AceWindowsDebugStateDetailPane(canNavigateBack, onBack)
+        DebugStateDetailType.UNKNOWN -> Unit
+    }
+}
 
 /**
  * シミュレータ選択項目のドロップダウン矢印アイコンを、メニュー展開時に回転させる角度。
@@ -268,6 +297,7 @@ private fun AppScreenPrimarySimulatorNavItem(
 
 @Composable
 private fun DefaultOtherContent(
+    selectedSimulatorId: String,
     backHandler: AppBackHandler,
     scrollToTopRequest: Int,
 ) {
@@ -324,7 +354,10 @@ private fun DefaultOtherContent(
                     )
                 }
 
-                OtherListItemType.DebugState,
+                OtherListItemType.DebugState -> {
+                    DebugStateDetailPane(selectedSimulatorId, canNavigateBack, onBack)
+                }
+
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
@@ -376,8 +409,12 @@ fun AppScreen(
             },
         )
     },
-    otherContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
+    otherContent: @Composable (
+        scrollToTopRequest: Int,
+        selectedSimulatorId: String,
+    ) -> Unit = { scrollToTopRequest, selectedSimulatorId ->
         DefaultOtherContent(
+            selectedSimulatorId = selectedSimulatorId,
             backHandler = backHandler,
             scrollToTopRequest = scrollToTopRequest,
         )
@@ -549,7 +586,7 @@ internal fun AppScreenContent(
     readoutListScrollToTopRequest: Int = 0,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = { _, _ -> },
     telemetryLogListScrollToTopRequest: Int = 0,
-    otherContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
+    otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit = { _, _ -> },
     otherListScrollToTopRequest: Int = 0,
 ) {
     val navigationState = rememberAppNavigationState()
@@ -618,7 +655,7 @@ private fun AppScreenScaffold(
     readoutListScrollToTopRequest: Int,
     telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit,
     telemetryLogListScrollToTopRequest: Int,
-    otherContent: @Composable (scrollToTopRequest: Int) -> Unit,
+    otherContent: @Composable (scrollToTopRequest: Int, selectedSimulatorId: String) -> Unit,
     otherListScrollToTopRequest: Int,
 ) {
     var simulatorMenuExpanded by remember { mutableStateOf(false) }
@@ -728,7 +765,7 @@ private fun AppScreenScaffold(
                                 onFeedbackClickWithTabSwitch ?: {},
                             )
                         },
-                        otherContent = { otherContent(otherListScrollToTopRequest) },
+                        otherContent = { otherContent(otherListScrollToTopRequest, selectedSimulatorId) },
                     )
                 }
             }
