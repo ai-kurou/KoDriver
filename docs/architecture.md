@@ -26,7 +26,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:desktop-splash` | デスクトップ起動中スプラッシュの初期化進捗管理・画面表示 | [図](graphs/feature-desktop-splash.svg) |
 | `:feature:debug-state-detail` | 走行データのデバッグ表示（燃料消費・タイヤ摩耗・タイヤ温度・ピットタイミング等） | [図](graphs/feature-debug-state-detail.svg) |
 | `:feature:lmu-windows-debug-state-detail` | LMUのデバッグ状態表示（シミュレーター別分割の移行先。現時点は空のPaneのみ） | [図](graphs/feature-lmu-windows-debug-state-detail.svg) |
-| `:feature:ace-windows-debug-state-detail` | ACEのデバッグ状態表示（シミュレーター別分割の移行先。現時点は空のPaneのみ） | [図](graphs/feature-ace-windows-debug-state-detail.svg) |
+| `:feature:ace-windows-debug-state-detail` | ACEのデバッグ状態表示（7枚のカード・状態集約・カード順序保存を備える専用モジュール。現在はアプリ未接続） | [図](graphs/feature-ace-windows-debug-state-detail.svg) |
 | `:feature:gt7-ps5-debug-state-detail` | GT7（PS5）のデバッグ状態表示（シミュレーター別分割の移行先。現時点は空のPaneのみ） | [図](graphs/feature-gt7-ps5-debug-state-detail.svg) |
 | `:feature:lmu-windows-connection` | LMU との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-lmu-windows-connection.svg) |
 | `:feature:main` | アプリ全体のメイン画面状態管理 | [図](graphs/feature-main.svg) |
