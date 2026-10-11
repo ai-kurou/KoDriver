@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -26,6 +26,6 @@ class Gt7Ps5ReadoutRemainingFuelDetailPaneNarratedTextConsistencyTest {
         }
 
         rule.onNodeWithText("燃料残量警告の文言").assertIsDisplayed()
-        assertEquals("燃料は残り30パーセント", SpeechEvent.Gt7Ps5RemainingFuelWarning(30).narratedText)
+        assertEquals("燃料は残り30パーセント", Gt7Ps5RemainingFuelWarning(30).narratedText)
     }
 }

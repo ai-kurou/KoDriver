@@ -8,11 +8,11 @@ class ReadoutTextEventTest {
     fun `全GT7自由文言イベントは本文だけを解決して既定文言とキーを維持する`() {
         val events: List<ReadoutTextEvent> =
             listOf(
-                SpeechEvent.Gt7Ps5MyBestLap(83_456),
-                SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3),
-                SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0),
-                SpeechEvent.Gt7Ps5RemainingFuelWarning(30),
-                SpeechEvent.Gt7Ps5TyreOverheat(120),
+                Gt7Ps5MyBestLap(83_456),
+                Gt7Ps5RemainingFuelLapsWarning(3),
+                Gt7Ps5RemainingFuelLapsWarning(0),
+                Gt7Ps5RemainingFuelWarning(30),
+                Gt7Ps5TyreOverheat(120),
             )
         events.forEach { event ->
             assertEquals(null, event.resolvedText)

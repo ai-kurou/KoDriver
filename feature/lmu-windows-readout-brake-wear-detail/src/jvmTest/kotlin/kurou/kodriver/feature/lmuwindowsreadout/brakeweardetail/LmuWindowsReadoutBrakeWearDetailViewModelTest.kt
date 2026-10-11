@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
@@ -279,8 +279,8 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
                 )
             every { vehicleClassRepository.observeLowThresholdPercent() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
-            every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残り20%")) } returns Unit
-            every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(12, "残り12%")) } returns Unit
+            every { playSpeechEvent(LmuWindowsBrakeWearLow(20, "残り20%")) } returns Unit
+            every { playSpeechEvent(LmuWindowsBrakeWearLow(12, "残り12%")) } returns Unit
             val viewModel = createViewModel()
             val collection =
                 backgroundScope.launch(
@@ -294,8 +294,8 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             threshold.update { mapOf(LmuWindowsVehicleClassData.Gte to 12) }
             selection.update { LmuWindowsVehicleClassData.Gte }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残り20%")) }
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(12, "残り12%")) }
+            verify(exactly = 1) { playSpeechEvent(LmuWindowsBrakeWearLow(20, "残り20%")) }
+            verify(exactly = 1) { playSpeechEvent(LmuWindowsBrakeWearLow(12, "残り12%")) }
             verify(exactly = 2) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
@@ -312,7 +312,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
                 MutableStateFlow(mapOf(LmuWindowsVehicleClassData.Hypercar to 20))
             createViewModel().onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, " ")) }
+            verify(exactly = 0) { playSpeechEvent(LmuWindowsBrakeWearLow(20, " ")) }
             confirmVerified(observeVolume, playSpeechEvent)
         }
 
@@ -328,7 +328,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "注意")) }
+            verify(exactly = 0) { playSpeechEvent(LmuWindowsBrakeWearLow(20, "注意")) }
             confirmVerified(observeVolume, playSpeechEvent)
         }
 
@@ -347,7 +347,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             volume.update { -1 }
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            verify(exactly = 0) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "注意")) }
+            verify(exactly = 0) { playSpeechEvent(LmuWindowsBrakeWearLow(20, "注意")) }
             confirmVerified(observeVolume, playSpeechEvent)
         }
 
@@ -359,11 +359,11 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             every { vehicleClassRepository.observeSelectedVehicleClass() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.Gte)
             every { observeVolume() } returns MutableStateFlow(60)
-            every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残量20%")) } returns Unit
+            every { playSpeechEvent(LmuWindowsBrakeWearLow(20, "残量20%")) } returns Unit
             val viewModel = createViewModel()
             assertEquals(LmuWindowsVehicleClassData.Gte, viewModel.uiState.first().selectedVehicleClass)
             viewModel.onReadoutTextPreviewClicked("残量{percent}%")
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残量20%")) }
+            verify(exactly = 1) { playSpeechEvent(LmuWindowsBrakeWearLow(20, "残量20%")) }
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable)
@@ -378,7 +378,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             every { vehicleClassRepository.observeSelectedVehicleClass() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             every { observeVolume() } returns MutableStateFlow(60)
-            every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残量20%")) } returns Unit
+            every { playSpeechEvent(LmuWindowsBrakeWearLow(20, "残量20%")) } returns Unit
             every { stopSpeech(LmuWindowsReadoutItemKey.BrakeWear.Root) } returns Unit
             val viewModel = createViewModel()
             viewModel.onPreviewStopped()
@@ -387,7 +387,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             viewModel.onPreviewStopped()
             viewModel.onPreviewStopped()
             verify(exactly = 1) { stopSpeech(LmuWindowsReadoutItemKey.BrakeWear.Root) }
-            verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残量20%")) }
+            verify(exactly = 1) { playSpeechEvent(LmuWindowsBrakeWearLow(20, "残量20%")) }
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }
             confirmVerified(playSpeechEvent, observeVolume, checkAvailable, stopSpeech)

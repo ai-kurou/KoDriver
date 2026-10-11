@@ -5,7 +5,7 @@ ACE (Assetto Corsa EVO) Windows版の開始音WAV再生・自由文言TTSとア�
 
 `AceWindowsNarratorViewModel` が `ObserveAceWindowsFuelUseCase` の燃料残量と
 `ObserveAceWindowsRemainingFuelThresholdPercentageUseCase` の閾値を監視し、
-`AceWindowsNarratorEventProcessor` を通じて `SpeechEvent.AceWindowsRemainingFuelWarning` を
+`AceWindowsNarratorEventProcessor` を通じて `AceWindowsRemainingFuelWarning` を
 `TextToSpeechEngine` 実装の `AceWindowsNarratorEngine`（`:core:narrator` の `NarratorEngine` に委譲する薄いアダプタ）に
 渡して、`AceWindowsReadoutTextSpeaker` の自由文言をOS標準TTSで読み上げる。
 保存先は `AceWindowsRemainingFuelPreferences` のフィールド2（`readoutText`）、既定文言は「燃料は残り{percent}パーセント」。
@@ -16,7 +16,7 @@ Processorで解決した本文をイベントの `resolvedText` に保持し、�
 開始音・優先度・キューは `RemainingFuel.Root` を維持する。`remaining_fuel_caution.wav` は廃止し、WAVフォールバックは行わない。
 詳細画面では自由文言の編集・既定値へのリセット・`{percent}` の末尾挿入と未知プレースホルダーの警告を提供する。試聴は画面に表示中の残量閾値を使い、`RemainingFuel.Root` の開始音とOS標準TTSで再生する。空白文言・TTS利用不可・音量ゼロ以下では開始音も本文も再生しない。
 
-燃料残り周回数（`SpeechEvent.AceWindowsRemainingFuelLapsWarning`）も同様に、保存した自由文言をOS標準TTSで読み上げる。
+燃料残り周回数（`AceWindowsRemainingFuelLapsWarning`）も同様に、保存した自由文言をOS標準TTSで読み上げる。
 保存先は `AceWindowsRemainingFuelLapsPreferences` のフィールド2（`readoutText`、既定「燃料は残り約{laps}周」）と
 フィールド3（`emptyReadoutText`、0周以下用、既定「燃料残り1周未満」）。`{laps}` は判定時の整数周回数に置換する。
 Processorで解決した本文を `resolvedText` に保持し、空白・TTS利用不可では開始音も本文も要求せず `SKIPPED` を記録する。
@@ -41,11 +41,11 @@ Narratorで都度文言を解決し、空白・TTS利用不可では開始音も
 タイヤ過熱も保存した自由文言をOS標準TTSで読み上げる。既定文言は「タイヤ過熱 {celsius}度」で、
 `AceWindowsTyreTemperaturePreferences` のフィールド3に保存する。`{celsius}` は判定時点の全輪最大カーカス温度を
 `roundToInt` で四捨五入した整数に置換する。過熱・解除の判定ロジックは従来どおり。
-Processorで解決した本文を `SpeechEvent.AceWindowsTyreOverheat.resolvedText` に保持し、発話とログを一致させる。
+Processorで解決した本文を `AceWindowsTyreOverheat.resolvedText` に保持し、発話とログを一致させる。
 空白・TTS利用不可では開始音も本文も要求せず、空文字と `SKIPPED` をログに保存する。
 開始音・優先度・キューは `TyreTemperature.Root` を維持し、`tyre_overheat.wav` を廃止する。WAVフォールバックは行わない。
 
-自己ベストラップ更新（`SpeechEvent.AceWindowsMyBestLap`）も保存した自由文言をOS標準TTSで読み上げる。
+自己ベストラップ更新（`AceWindowsMyBestLap`）も保存した自由文言をOS標準TTSで読み上げる。
 保存先は共有 `MyBestLapPreferences` の `@ProtoNumber(4) aceWindowsReadoutText`、既定文言は「自己ベストラップ更新 {laptime}」。
 `{laptime}` は更新後の `bestLapTimeMs` を「1分23秒456」形式に置換する。旧口調設定（`voiceType`）は読み取らない。
 Processorで解決した本文を `resolvedText` に保持し、空白・TTS利用不可では開始音も本文も要求せず `SKIPPED` を記録する。

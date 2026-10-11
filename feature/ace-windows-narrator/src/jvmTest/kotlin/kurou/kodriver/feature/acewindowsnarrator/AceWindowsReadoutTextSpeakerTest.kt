@@ -12,7 +12,22 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.AceWindowsBlackFlag
+import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
+import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsMyBestLap
+import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
+import kurou.kodriver.domain.engine.AceWindowsRedFlag
+import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
+import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
+import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
+import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsYellowFlag
+import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackWhiteFlagReadoutTextUseCase
@@ -85,8 +100,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsCheckeredFlag()))
-            speaker(SpeechEvent.AceWindowsCheckeredFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsCheckeredFlag()))
+            speaker(AceWindowsCheckeredFlag(), 42)
 
             verify(exactly = 2) { observeText() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -99,8 +114,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeText() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsCheckeredFlag()))
-                speaker(SpeechEvent.AceWindowsCheckeredFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsCheckeredFlag()))
+                speaker(AceWindowsCheckeredFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeText() }
@@ -113,8 +128,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeText() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsCheckeredFlag()))
-            speaker(SpeechEvent.AceWindowsCheckeredFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsCheckeredFlag()))
+            speaker(AceWindowsCheckeredFlag(), 100)
             verify(exactly = 2) { observeText() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -126,7 +141,7 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.LmuWindowsBlueFlag(),
+                    LmuWindowsBlueFlag(),
                 )
             events.forEach { event ->
                 assertFalse(isAceWindowsCustomSpeakEvent(event))
@@ -134,9 +149,9 @@ class AceWindowsReadoutTextSpeakerTest {
                 speaker(event, 100)
             }
             listOf(
-                SpeechEvent.AceWindowsCheckeredFlag(),
-                SpeechEvent.AceWindowsOrangeCircleFlag(),
-                SpeechEvent.AceWindowsRedYellowStripesFlag(),
+                AceWindowsCheckeredFlag(),
+                AceWindowsOrangeCircleFlag(),
+                AceWindowsRedYellowStripesFlag(),
             ).forEach { assertTrue(isAceWindowsCustomSpeakEvent(it)) }
             verify(exactly = 0) { observeText() }
             coVerify(exactly = 0) { checkAvailable() }
@@ -150,8 +165,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsWhiteFlag()))
-            speaker(SpeechEvent.AceWindowsWhiteFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsWhiteFlag()))
+            speaker(AceWindowsWhiteFlag(), 42)
 
             verify(exactly = 2) { observeWhite() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -164,8 +179,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeWhite() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsWhiteFlag()))
-                speaker(SpeechEvent.AceWindowsWhiteFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsWhiteFlag()))
+                speaker(AceWindowsWhiteFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeWhite() }
@@ -178,8 +193,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeWhite() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsWhiteFlag()))
-            speaker(SpeechEvent.AceWindowsWhiteFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsWhiteFlag()))
+            speaker(AceWindowsWhiteFlag(), 100)
             verify(exactly = 2) { observeWhite() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -193,8 +208,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsGreenFlag()))
-            speaker(SpeechEvent.AceWindowsGreenFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsGreenFlag()))
+            speaker(AceWindowsGreenFlag(), 42)
 
             verify(exactly = 2) { observeGreen() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -207,8 +222,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeGreen() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsGreenFlag()))
-                speaker(SpeechEvent.AceWindowsGreenFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsGreenFlag()))
+                speaker(AceWindowsGreenFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeGreen() }
@@ -221,8 +236,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeGreen() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsGreenFlag()))
-            speaker(SpeechEvent.AceWindowsGreenFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsGreenFlag()))
+            speaker(AceWindowsGreenFlag(), 100)
             verify(exactly = 2) { observeGreen() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -236,8 +251,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsRedFlag()))
-            speaker(SpeechEvent.AceWindowsRedFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsRedFlag()))
+            speaker(AceWindowsRedFlag(), 42)
 
             verify(exactly = 2) { observeRed() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -250,8 +265,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeRed() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsRedFlag()))
-                speaker(SpeechEvent.AceWindowsRedFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsRedFlag()))
+                speaker(AceWindowsRedFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeRed() }
@@ -264,8 +279,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeRed() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsRedFlag()))
-            speaker(SpeechEvent.AceWindowsRedFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsRedFlag()))
+            speaker(AceWindowsRedFlag(), 100)
             verify(exactly = 2) { observeRed() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -279,8 +294,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsBlueFlag()))
-            speaker(SpeechEvent.AceWindowsBlueFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsBlueFlag()))
+            speaker(AceWindowsBlueFlag(), 42)
 
             verify(exactly = 2) { observeBlue() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -293,8 +308,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeBlue() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlueFlag()))
-                speaker(SpeechEvent.AceWindowsBlueFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsBlueFlag()))
+                speaker(AceWindowsBlueFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeBlue() }
@@ -307,8 +322,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeBlue() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlueFlag()))
-            speaker(SpeechEvent.AceWindowsBlueFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsBlueFlag()))
+            speaker(AceWindowsBlueFlag(), 100)
             verify(exactly = 2) { observeBlue() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -322,8 +337,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsYellowFlag()))
-            speaker(SpeechEvent.AceWindowsYellowFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsYellowFlag()))
+            speaker(AceWindowsYellowFlag(), 42)
 
             verify(exactly = 2) { observeYellow() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -336,8 +351,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeYellow() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsYellowFlag()))
-                speaker(SpeechEvent.AceWindowsYellowFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsYellowFlag()))
+                speaker(AceWindowsYellowFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeYellow() }
@@ -350,8 +365,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeYellow() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsYellowFlag()))
-            speaker(SpeechEvent.AceWindowsYellowFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsYellowFlag()))
+            speaker(AceWindowsYellowFlag(), 100)
             verify(exactly = 2) { observeYellow() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -365,8 +380,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsBlackFlag()))
-            speaker(SpeechEvent.AceWindowsBlackFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsBlackFlag()))
+            speaker(AceWindowsBlackFlag(), 42)
 
             verify(exactly = 2) { observeBlack() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -379,8 +394,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeBlack() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlackFlag()))
-                speaker(SpeechEvent.AceWindowsBlackFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsBlackFlag()))
+                speaker(AceWindowsBlackFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeBlack() }
@@ -393,8 +408,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeBlack() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlackFlag()))
-            speaker(SpeechEvent.AceWindowsBlackFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsBlackFlag()))
+            speaker(AceWindowsBlackFlag(), 100)
             verify(exactly = 2) { observeBlack() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -408,8 +423,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsBlackWhiteFlag()))
-            speaker(SpeechEvent.AceWindowsBlackWhiteFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsBlackWhiteFlag()))
+            speaker(AceWindowsBlackWhiteFlag(), 42)
 
             verify(exactly = 2) { observeBlackWhite() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -422,8 +437,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeBlackWhite() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlackWhiteFlag()))
-                speaker(SpeechEvent.AceWindowsBlackWhiteFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsBlackWhiteFlag()))
+                speaker(AceWindowsBlackWhiteFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeBlackWhite() }
@@ -436,8 +451,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeBlackWhite() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsBlackWhiteFlag()))
-            speaker(SpeechEvent.AceWindowsBlackWhiteFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsBlackWhiteFlag()))
+            speaker(AceWindowsBlackWhiteFlag(), 100)
             verify(exactly = 2) { observeBlackWhite() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -451,8 +466,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsOrangeCircleFlag()))
-            speaker(SpeechEvent.AceWindowsOrangeCircleFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsOrangeCircleFlag()))
+            speaker(AceWindowsOrangeCircleFlag(), 42)
 
             verify(exactly = 2) { observeOrangeCircle() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -465,8 +480,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeOrangeCircle() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsOrangeCircleFlag()))
-                speaker(SpeechEvent.AceWindowsOrangeCircleFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsOrangeCircleFlag()))
+                speaker(AceWindowsOrangeCircleFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeOrangeCircle() }
@@ -479,8 +494,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeOrangeCircle() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsOrangeCircleFlag()))
-            speaker(SpeechEvent.AceWindowsOrangeCircleFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsOrangeCircleFlag()))
+            speaker(AceWindowsOrangeCircleFlag(), 100)
             verify(exactly = 2) { observeOrangeCircle() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -494,8 +509,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("チェッカー、完走", volume = 42) } just Runs
 
-            assertEquals("チェッカー、完走", speaker.readoutText(SpeechEvent.AceWindowsRedYellowStripesFlag()))
-            speaker(SpeechEvent.AceWindowsRedYellowStripesFlag(), 42)
+            assertEquals("チェッカー、完走", speaker.readoutText(AceWindowsRedYellowStripesFlag()))
+            speaker(AceWindowsRedYellowStripesFlag(), 42)
 
             verify(exactly = 2) { observeRedYellowStripes() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -508,8 +523,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeRedYellowStripes() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsRedYellowStripesFlag()))
-                speaker(SpeechEvent.AceWindowsRedYellowStripesFlag(), 100)
+                assertNull(speaker.readoutText(AceWindowsRedYellowStripesFlag()))
+                speaker(AceWindowsRedYellowStripesFlag(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeRedYellowStripes() }
@@ -522,8 +537,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeRedYellowStripes() } returns flowOf("完走")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsRedYellowStripesFlag()))
-            speaker(SpeechEvent.AceWindowsRedYellowStripesFlag(), 100)
+            assertNull(speaker.readoutText(AceWindowsRedYellowStripesFlag()))
+            speaker(AceWindowsRedYellowStripesFlag(), 100)
             verify(exactly = 2) { observeRedYellowStripes() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("完走", volume = 100) }
@@ -537,8 +552,8 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("周囲に注意", volume = 42) } just Runs
 
-            assertEquals("周囲に注意", speaker.readoutText(SpeechEvent.AceWindowsVehicleApproach()))
-            speaker(SpeechEvent.AceWindowsVehicleApproach(), 42)
+            assertEquals("周囲に注意", speaker.readoutText(AceWindowsVehicleApproach()))
+            speaker(AceWindowsVehicleApproach(), 42)
 
             verify(exactly = 2) { observeVehicleApproach() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -551,8 +566,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             listOf("", " \t\n ").forEach { text ->
                 every { observeVehicleApproach() } returns flowOf(text)
-                assertNull(speaker.readoutText(SpeechEvent.AceWindowsVehicleApproach()))
-                speaker(SpeechEvent.AceWindowsVehicleApproach(), 100)
+                assertNull(speaker.readoutText(AceWindowsVehicleApproach()))
+                speaker(AceWindowsVehicleApproach(), 100)
                 coVerify(exactly = 0) { speakText(text, volume = 100) }
             }
             verify(exactly = 4) { observeVehicleApproach() }
@@ -565,8 +580,8 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             every { observeVehicleApproach() } returns flowOf("接近")
             coEvery { checkAvailable() } returns false
-            assertNull(speaker.readoutText(SpeechEvent.AceWindowsVehicleApproach()))
-            speaker(SpeechEvent.AceWindowsVehicleApproach(), 100)
+            assertNull(speaker.readoutText(AceWindowsVehicleApproach()))
+            speaker(AceWindowsVehicleApproach(), 100)
             verify(exactly = 2) { observeVehicleApproach() }
             coVerify(exactly = 2) { checkAvailable() }
             coVerify(exactly = 0) { speakText("接近", volume = 100) }
@@ -576,7 +591,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `タイヤ過熱は保存文言の温度を整形して読み上げる`() =
         runTest {
-            val event = SpeechEvent.AceWindowsTyreOverheat(111)
+            val event = AceWindowsTyreOverheat(111)
             every { observeTyreOverheat() } returns flowOf("過熱 {celsius}度、{celsius}")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("過熱 111度、111", volume = 42) } just Runs
@@ -592,7 +607,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `タイヤ過熱の解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
         runTest {
-            val event = SpeechEvent.AceWindowsTyreOverheat(111, "判定時の本文")
+            val event = AceWindowsTyreOverheat(111, "判定時の本文")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("判定時の本文", volume = 42) } just Runs
             assertEquals("判定時の本文", speaker.readoutText(event))
@@ -608,7 +623,7 @@ class AceWindowsReadoutTextSpeakerTest {
     fun `タイヤ過熱は空白の保存文言や解決済み本文を読み上げない`() =
         runTest {
             every { observeTyreOverheat() } returns flowOf(" ")
-            val event = SpeechEvent.AceWindowsTyreOverheat(111)
+            val event = AceWindowsTyreOverheat(111)
             assertNull(speaker.readoutText(event))
             speaker(event, 42)
             speaker(event.withResolvedText(" "), 42)
@@ -621,7 +636,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `タイヤ過熱はTTS利用不可なら読み上げない`() =
         runTest {
-            val event = SpeechEvent.AceWindowsTyreOverheat(111)
+            val event = AceWindowsTyreOverheat(111)
             every { observeTyreOverheat() } returns flowOf("過熱 {celsius}度")
             coEvery { checkAvailable() } returns false
             assertNull(speaker.readoutText(event))
@@ -635,7 +650,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `燃料残量は保存文言の残量を整形して読み上げる`() =
         runTest {
-            val event = SpeechEvent.AceWindowsRemainingFuelWarning(20)
+            val event = AceWindowsRemainingFuelWarning(20)
             every { observeRemainingFuel() } returns flowOf("残り{percent}%、{percent}")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("残り20%、20", volume = 42) } just Runs
@@ -651,7 +666,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `燃料残量の解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
         runTest {
-            val event = SpeechEvent.AceWindowsRemainingFuelWarning(20, "判定時の本文")
+            val event = AceWindowsRemainingFuelWarning(20, "判定時の本文")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("判定時の本文", volume = 42) } just Runs
             assertEquals("判定時の本文", speaker.readoutText(event))
@@ -667,7 +682,7 @@ class AceWindowsReadoutTextSpeakerTest {
     fun `燃料残量は空白の保存文言や解決済み本文を読み上げない`() =
         runTest {
             every { observeRemainingFuel() } returns flowOf(" ")
-            val event = SpeechEvent.AceWindowsRemainingFuelWarning(20)
+            val event = AceWindowsRemainingFuelWarning(20)
             assertNull(speaker.readoutText(event))
             speaker(event, 42)
             speaker(event.withResolvedText(" "), 42)
@@ -680,7 +695,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `燃料残量はTTS利用不可なら読み上げない`() =
         runTest {
-            val event = SpeechEvent.AceWindowsRemainingFuelWarning(20)
+            val event = AceWindowsRemainingFuelWarning(20)
             every { observeRemainingFuel() } returns flowOf("残り{percent}%")
             coEvery { checkAvailable() } returns false
             assertNull(speaker.readoutText(event))
@@ -694,7 +709,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `燃料残り周回数は保存文言の残量を整形して読み上げる`() =
         runTest {
-            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            val event = AceWindowsRemainingFuelLapsWarning(20)
             every { observeRemainingFuelLaps() } returns flowOf("残り{laps}周、{laps}")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("残り20周、20", volume = 42) } just Runs
@@ -710,7 +725,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `燃料残り周回数の解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
         runTest {
-            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20, "判定時の本文")
+            val event = AceWindowsRemainingFuelLapsWarning(20, "判定時の本文")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("判定時の本文", volume = 42) } just Runs
             assertEquals("判定時の本文", speaker.readoutText(event))
@@ -726,7 +741,7 @@ class AceWindowsReadoutTextSpeakerTest {
     fun `燃料残り周回数は空白の保存文言や解決済み本文を読み上げない`() =
         runTest {
             every { observeRemainingFuelLaps() } returns flowOf(" ")
-            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            val event = AceWindowsRemainingFuelLapsWarning(20)
             assertNull(speaker.readoutText(event))
             speaker(event, 42)
             speaker(event.withResolvedText(" "), 42)
@@ -739,7 +754,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `燃料残り周回数はTTS利用不可なら読み上げない`() =
         runTest {
-            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(20)
+            val event = AceWindowsRemainingFuelLapsWarning(20)
             every { observeRemainingFuelLaps() } returns flowOf("残り{laps}周")
             coEvery { checkAvailable() } returns false
             assertNull(speaker.readoutText(event))
@@ -753,7 +768,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `自己ベストラップは保存文言のラップタイムを整形して読み上げる`() =
         runTest {
-            val event = SpeechEvent.AceWindowsMyBestLap(83_456)
+            val event = AceWindowsMyBestLap(83_456)
             every { observeMyBestLap() } returns flowOf("更新 {laptime}、{laptime}")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("更新 1分23秒456、1分23秒456", volume = 42) } just Runs
@@ -769,7 +784,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `自己ベストラップの解決済み本文は観測文言より優先し発話時にTTS利用可否を再確認しない`() =
         runTest {
-            val event = SpeechEvent.AceWindowsMyBestLap(83_456, "判定時の本文")
+            val event = AceWindowsMyBestLap(83_456, "判定時の本文")
             coEvery { checkAvailable() } returns true
             coEvery { speakText("判定時の本文", volume = 42) } just Runs
             assertEquals("判定時の本文", speaker.readoutText(event))
@@ -785,7 +800,7 @@ class AceWindowsReadoutTextSpeakerTest {
     fun `自己ベストラップは空白の保存文言や解決済み本文を読み上げない`() =
         runTest {
             every { observeMyBestLap() } returns flowOf(" ")
-            val event = SpeechEvent.AceWindowsMyBestLap(83_456)
+            val event = AceWindowsMyBestLap(83_456)
             assertNull(speaker.readoutText(event))
             speaker(event, 42)
             speaker(event.withResolvedText(" "), 42)
@@ -798,7 +813,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `自己ベストラップはTTS利用不可なら読み上げない`() =
         runTest {
-            val event = SpeechEvent.AceWindowsMyBestLap(83_456)
+            val event = AceWindowsMyBestLap(83_456)
             every { observeMyBestLap() } returns flowOf("更新 {laptime}")
             coEvery { checkAvailable() } returns false
             assertNull(speaker.readoutText(event))
@@ -816,7 +831,7 @@ class AceWindowsReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("燃料なし {laps}", volume = 42) } just Runs
             listOf(0, -1).forEach { laps ->
-                val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(laps)
+                val event = AceWindowsRemainingFuelLapsWarning(laps)
                 assertEquals("燃料なし {laps}", speaker.readoutText(event))
                 speaker(event, 42)
             }
@@ -830,7 +845,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `0周用の空白文言はTTSを確認せずスキップしTTS不可の文言も読み上げない`() =
         runTest {
-            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(0)
+            val event = AceWindowsRemainingFuelLapsWarning(0)
             every { observeEmptyFuelLaps() } returns flowOf(" ")
             assertNull(speaker.readoutText(event))
             speaker(event, 42)
@@ -848,7 +863,7 @@ class AceWindowsReadoutTextSpeakerTest {
     @Test
     fun `0周用も解決済み本文を優先する`() =
         runTest {
-            val event = SpeechEvent.AceWindowsRemainingFuelLapsWarning(0, "確定した燃料なし")
+            val event = AceWindowsRemainingFuelLapsWarning(0, "確定した燃料なし")
             coEvery { speakText("確定した燃料なし", volume = 42) } just Runs
             speaker(event, 42)
             verify(exactly = 0) { observeEmptyFuelLaps() }
@@ -863,17 +878,17 @@ class AceWindowsReadoutTextSpeakerTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.AceWindowsCheckeredFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsWhiteFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsGreenFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsRedFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsBlueFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsYellowFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsBlackFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsBlackWhiteFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsOrangeCircleFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsRedYellowStripesFlag("判定時の本文"),
-                    SpeechEvent.AceWindowsVehicleApproach("判定時の本文"),
+                    AceWindowsCheckeredFlag("判定時の本文"),
+                    AceWindowsWhiteFlag("判定時の本文"),
+                    AceWindowsGreenFlag("判定時の本文"),
+                    AceWindowsRedFlag("判定時の本文"),
+                    AceWindowsBlueFlag("判定時の本文"),
+                    AceWindowsYellowFlag("判定時の本文"),
+                    AceWindowsBlackFlag("判定時の本文"),
+                    AceWindowsBlackWhiteFlag("判定時の本文"),
+                    AceWindowsOrangeCircleFlag("判定時の本文"),
+                    AceWindowsRedYellowStripesFlag("判定時の本文"),
+                    AceWindowsVehicleApproach("判定時の本文"),
                 )
             coEvery { speakText("判定時の本文", volume = 42) } just Runs
 

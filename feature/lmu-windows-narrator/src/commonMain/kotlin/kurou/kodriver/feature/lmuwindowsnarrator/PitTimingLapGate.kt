@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
+import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 
 /**
@@ -17,7 +18,7 @@ internal class PitTimingLapGate {
         events: List<SpeechEvent>,
     ): List<SpeechEvent> {
         val event =
-            events.filterIsInstance<SpeechEvent.LmuWindowsPitTimingWarning>().firstOrNull() ?: return emptyList()
+            events.filterIsInstance<LmuWindowsPitTimingWarning>().firstOrNull() ?: return emptyList()
         if (currentLap == lastAnnouncedLap && event.laps >= lastAnnouncedLaps) return emptyList()
         lastAnnouncedLap = currentLap
         lastAnnouncedLaps = event.laps

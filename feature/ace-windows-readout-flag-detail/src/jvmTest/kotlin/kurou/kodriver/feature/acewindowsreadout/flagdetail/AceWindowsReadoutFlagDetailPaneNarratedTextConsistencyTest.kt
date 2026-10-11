@@ -4,7 +4,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.AceWindowsBlackFlag
+import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
+import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
+import kurou.kodriver.domain.engine.AceWindowsRedFlag
+import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
+import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import org.junit.Rule
 import org.junit.Test
 
@@ -22,16 +31,16 @@ class AceWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.AceWindowsWhiteFlag().narratedText,
-            SpeechEvent.AceWindowsGreenFlag().narratedText,
-            SpeechEvent.AceWindowsRedFlag().narratedText,
-            SpeechEvent.AceWindowsBlueFlag().narratedText,
-            SpeechEvent.AceWindowsYellowFlag().narratedText,
-            SpeechEvent.AceWindowsBlackFlag().narratedText,
-            SpeechEvent.AceWindowsBlackWhiteFlag().narratedText,
-            SpeechEvent.AceWindowsCheckeredFlag().narratedText,
-            SpeechEvent.AceWindowsOrangeCircleFlag().narratedText,
-            SpeechEvent.AceWindowsRedYellowStripesFlag().narratedText,
+            AceWindowsWhiteFlag().narratedText,
+            AceWindowsGreenFlag().narratedText,
+            AceWindowsRedFlag().narratedText,
+            AceWindowsBlueFlag().narratedText,
+            AceWindowsYellowFlag().narratedText,
+            AceWindowsBlackFlag().narratedText,
+            AceWindowsBlackWhiteFlag().narratedText,
+            AceWindowsCheckeredFlag().narratedText,
+            AceWindowsOrangeCircleFlag().narratedText,
+            AceWindowsRedYellowStripesFlag().narratedText,
         ).forEachIndexed { index, narratedText ->
             rule
                 .onAllNodesWithText(narratedText)[if (index < 8) 1 else 0]

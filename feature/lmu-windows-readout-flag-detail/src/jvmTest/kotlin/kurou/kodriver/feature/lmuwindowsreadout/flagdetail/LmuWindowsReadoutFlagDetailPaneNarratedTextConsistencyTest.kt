@@ -4,6 +4,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
+import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
+import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
@@ -28,10 +32,10 @@ class LmuWindowsReadoutFlagDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.LmuWindowsBlueFlag().narratedText,
-            SpeechEvent.LmuWindowsYellowFlag().narratedText,
-            SpeechEvent.LmuWindowsFullCourseYellow().narratedText,
-            SpeechEvent.LmuWindowsRedFlag().narratedText,
+            LmuWindowsBlueFlag().narratedText,
+            LmuWindowsYellowFlag().narratedText,
+            LmuWindowsFullCourseYellow().narratedText,
+            LmuWindowsRedFlag().narratedText,
         ).forEach { narratedText ->
             rule.onAllNodesWithText(narratedText)[0].assertTextContains(narratedText, substring = true)
         }

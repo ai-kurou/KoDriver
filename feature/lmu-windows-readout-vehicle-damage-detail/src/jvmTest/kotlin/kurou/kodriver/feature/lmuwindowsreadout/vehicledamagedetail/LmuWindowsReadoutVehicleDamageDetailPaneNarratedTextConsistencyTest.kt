@@ -5,7 +5,9 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsOverheating
+import kurou.kodriver.domain.engine.LmuWindowsPartDetached
+import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import org.junit.Rule
 import org.junit.Test
 
@@ -25,9 +27,9 @@ class LmuWindowsReadoutVehicleDamageDetailPaneNarratedTextConsistencyTest {
         }
 
         listOf(
-            SpeechEvent.LmuWindowsOverheating().narratedText,
-            SpeechEvent.LmuWindowsPartDetached().narratedText,
-            SpeechEvent.LmuWindowsTyreDetached().narratedText,
+            LmuWindowsOverheating().narratedText,
+            LmuWindowsPartDetached().narratedText,
+            LmuWindowsTyreDetached().narratedText,
         ).forEach { narratedText ->
             rule.onNode(hasSetTextAction() and hasText(narratedText)).assertTextContains(narratedText, substring = true)
         }

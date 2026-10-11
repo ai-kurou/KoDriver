@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -87,7 +87,7 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
         viewModelScope.launch {
             previewHelper.preview(
                 formattedText,
-                SpeechEvent.LmuWindowsTyreWearWarning(
+                LmuWindowsTyreWearWarning(
                     percentage = percentage,
                     resolvedText = formattedText,
                 ),

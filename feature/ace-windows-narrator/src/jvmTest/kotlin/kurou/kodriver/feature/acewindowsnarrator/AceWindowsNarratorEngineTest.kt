@@ -17,6 +17,21 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.core.narrator.WavResources
+import kurou.kodriver.domain.engine.AceWindowsBlackFlag
+import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
+import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
+import kurou.kodriver.domain.engine.AceWindowsRedFlag
+import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
+import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
+import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
+import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsYellowFlag
+import kurou.kodriver.domain.engine.LmuWindowsCarLeft
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -42,12 +57,12 @@ class AceWindowsNarratorEngineTest {
 
     @Test
     fun `speakはNarratorEngineのspeakへ委譲する`() {
-        every { wavNarratorEngine.speak(SpeechEvent.LmuWindowsCarLeft(), queue = true) } just Runs
+        every { wavNarratorEngine.speak(LmuWindowsCarLeft(), queue = true) } just Runs
         val engine = AceWindowsNarratorEngine(wavNarratorEngine)
 
-        engine.speak(SpeechEvent.LmuWindowsCarLeft(), queue = true)
+        engine.speak(LmuWindowsCarLeft(), queue = true)
 
-        verify(exactly = 1) { wavNarratorEngine.speak(SpeechEvent.LmuWindowsCarLeft(), queue = true) }
+        verify(exactly = 1) { wavNarratorEngine.speak(LmuWindowsCarLeft(), queue = true) }
         confirmVerified(wavNarratorEngine)
     }
 
@@ -94,21 +109,21 @@ class AceWindowsNarratorEngineTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.AceWindowsVehicleApproach(),
-                    SpeechEvent.AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"),
-                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(2, "残り2周"),
-                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(0, "燃料なし"),
-                    SpeechEvent.AceWindowsTyreOverheat(110, "タイヤ過熱 110度"),
-                    SpeechEvent.AceWindowsCheckeredFlag(),
-                    SpeechEvent.AceWindowsWhiteFlag(),
-                    SpeechEvent.AceWindowsGreenFlag(),
-                    SpeechEvent.AceWindowsRedFlag(),
-                    SpeechEvent.AceWindowsBlueFlag(),
-                    SpeechEvent.AceWindowsYellowFlag(),
-                    SpeechEvent.AceWindowsBlackFlag(),
-                    SpeechEvent.AceWindowsBlackWhiteFlag(),
-                    SpeechEvent.AceWindowsOrangeCircleFlag(),
-                    SpeechEvent.AceWindowsRedYellowStripesFlag(),
+                    AceWindowsVehicleApproach(),
+                    AceWindowsRemainingFuelWarning(20, "燃料は残り20パーセント"),
+                    AceWindowsRemainingFuelLapsWarning(2, "残り2周"),
+                    AceWindowsRemainingFuelLapsWarning(0, "燃料なし"),
+                    AceWindowsTyreOverheat(110, "タイヤ過熱 110度"),
+                    AceWindowsCheckeredFlag(),
+                    AceWindowsWhiteFlag(),
+                    AceWindowsGreenFlag(),
+                    AceWindowsRedFlag(),
+                    AceWindowsBlueFlag(),
+                    AceWindowsYellowFlag(),
+                    AceWindowsBlackFlag(),
+                    AceWindowsBlackWhiteFlag(),
+                    AceWindowsOrangeCircleFlag(),
+                    AceWindowsRedYellowStripesFlag(),
                 )
             val startSound = byteArrayOf(2)
             events.forEachIndexed { index, target ->

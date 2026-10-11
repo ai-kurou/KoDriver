@@ -12,7 +12,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
+import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
+import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
@@ -78,11 +83,11 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             }
             val events =
                 listOf(
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3) to "あと3周",
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0) to "燃料なし",
-                    SpeechEvent.Gt7Ps5RemainingFuelWarning(30) to "残り30%",
-                    SpeechEvent.Gt7Ps5MyBestLap(83_005) to "更新1分23秒005",
-                    SpeechEvent.Gt7Ps5TyreOverheat(120) to "温度120度",
+                    Gt7Ps5RemainingFuelLapsWarning(3) to "あと3周",
+                    Gt7Ps5RemainingFuelLapsWarning(0) to "燃料なし",
+                    Gt7Ps5RemainingFuelWarning(30) to "残り30%",
+                    Gt7Ps5MyBestLap(83_005) to "更新1分23秒005",
+                    Gt7Ps5TyreOverheat(120) to "温度120度",
                 )
             events.forEach { (_, text) ->
                 coEvery { speakText(text, volume = 80) } coAnswers { delay(1) }
@@ -120,8 +125,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("残り3周・3", volume = 42) } just Runs
 
-            assertEquals("残り3周・3", speaker.readoutText(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3)))
-            speaker(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3), 42)
+            assertEquals("残り3周・3", speaker.readoutText(Gt7Ps5RemainingFuelLapsWarning(3)))
+            speaker(Gt7Ps5RemainingFuelLapsWarning(3), 42)
 
             verify(exactly = 2) { observeText() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -144,7 +149,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
 
             listOf(0, -1, Int.MIN_VALUE).forEach { laps ->
-                assertEquals("燃料なし{laps}", speaker.readoutText(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps)))
+                assertEquals("燃料なし{laps}", speaker.readoutText(Gt7Ps5RemainingFuelLapsWarning(laps)))
             }
 
             verify(exactly = 3) { observeEmptyText() }
@@ -166,7 +171,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coEvery { speakText("確定した文言{laps}", volume = 80) } just Runs
 
             listOf(3, 0).forEach { laps ->
-                speaker(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(laps, "確定した文言{laps}"), 80)
+                speaker(Gt7Ps5RemainingFuelLapsWarning(laps, "確定した文言{laps}"), 80)
             }
 
             verify(exactly = 0) { observeText() }
@@ -191,9 +196,9 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             every { observeEmptyText() } returns flowOf("")
             val events =
                 listOf(
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(1),
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(0),
-                    SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(1, ""),
+                    Gt7Ps5RemainingFuelLapsWarning(1),
+                    Gt7Ps5RemainingFuelLapsWarning(0),
+                    Gt7Ps5RemainingFuelLapsWarning(1, ""),
                 )
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))
@@ -220,7 +225,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
     fun `TTS利用不可なら判定時に解決済み文言もスキップする`() =
         runTest {
             coEvery { checkAvailable() } returns false
-            val event = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3, "あと3周")
+            val event = Gt7Ps5RemainingFuelLapsWarning(3, "あと3周")
 
             assertNull(speaker.readoutText(event))
 
@@ -242,10 +247,10 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             val events =
                 listOf(
-                    SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L),
-                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(3),
-                    SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = 83_456L, resolvedText = "解決済み文言"),
-                    SpeechEvent.AceWindowsRemainingFuelLapsWarning(3, resolvedText = "解決済み文言"),
+                    LmuWindowsMyBestLap(lapTimeMs = 83_456L),
+                    AceWindowsRemainingFuelLapsWarning(3),
+                    LmuWindowsMyBestLap(lapTimeMs = 83_456L, resolvedText = "解決済み文言"),
+                    AceWindowsRemainingFuelLapsWarning(3, resolvedText = "解決済み文言"),
                 )
             events.forEach { event ->
                 assertNull(speaker.readoutText(event))
@@ -273,8 +278,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("残り30%・30", volume = 42) } just Runs
 
-            assertEquals("残り30%・30", speaker.readoutText(SpeechEvent.Gt7Ps5RemainingFuelWarning(30)))
-            speaker(SpeechEvent.Gt7Ps5RemainingFuelWarning(30), 42)
+            assertEquals("残り30%・30", speaker.readoutText(Gt7Ps5RemainingFuelWarning(30)))
+            speaker(Gt7Ps5RemainingFuelWarning(30), 42)
 
             verify(exactly = 2) { observeFuelText() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -295,7 +300,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             coEvery { speakText("確定した文言{percent}", volume = 80) } just Runs
 
-            speaker(SpeechEvent.Gt7Ps5RemainingFuelWarning(30, "確定した文言{percent}"), 80)
+            speaker(Gt7Ps5RemainingFuelWarning(30, "確定した文言{percent}"), 80)
 
             verify(exactly = 0) { observeFuelText() }
             coVerify(exactly = 0) { checkAvailable() }
@@ -316,8 +321,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             every { observeFuelText() } returns flowOf(" ")
             listOf(
-                SpeechEvent.Gt7Ps5RemainingFuelWarning(30),
-                SpeechEvent.Gt7Ps5RemainingFuelWarning(30, ""),
+                Gt7Ps5RemainingFuelWarning(30),
+                Gt7Ps5RemainingFuelWarning(30, ""),
             ).forEach { event ->
                 assertNull(speaker.readoutText(event))
                 speaker(event, 100)
@@ -344,8 +349,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             every { observeFuelText() } returns flowOf("残り{percent}%")
             coEvery { checkAvailable() } returns false
             listOf(
-                SpeechEvent.Gt7Ps5RemainingFuelWarning(30),
-                SpeechEvent.Gt7Ps5RemainingFuelWarning(30, "残り30%"),
+                Gt7Ps5RemainingFuelWarning(30),
+                Gt7Ps5RemainingFuelWarning(30, "残り30%"),
             ).forEach { event ->
                 assertNull(speaker.readoutText(event))
             }
@@ -371,8 +376,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("温度30度・30{wheel}", volume = 42) } just Runs
 
-            assertEquals("温度30度・30{wheel}", speaker.readoutText(SpeechEvent.Gt7Ps5TyreOverheat(30)))
-            speaker(SpeechEvent.Gt7Ps5TyreOverheat(30), 42)
+            assertEquals("温度30度・30{wheel}", speaker.readoutText(Gt7Ps5TyreOverheat(30)))
+            speaker(Gt7Ps5TyreOverheat(30), 42)
 
             verify(exactly = 2) { observeTyreText() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -393,7 +398,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             coEvery { speakText("確定した文言{celsius}", volume = 80) } just Runs
 
-            speaker(SpeechEvent.Gt7Ps5TyreOverheat(30, "確定した文言{celsius}"), 80)
+            speaker(Gt7Ps5TyreOverheat(30, "確定した文言{celsius}"), 80)
 
             verify(exactly = 0) { observeTyreText() }
             coVerify(exactly = 0) { checkAvailable() }
@@ -414,8 +419,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             every { observeTyreText() } returns flowOf(" ")
             listOf(
-                SpeechEvent.Gt7Ps5TyreOverheat(30),
-                SpeechEvent.Gt7Ps5TyreOverheat(30, ""),
+                Gt7Ps5TyreOverheat(30),
+                Gt7Ps5TyreOverheat(30, ""),
             ).forEach { event ->
                 assertNull(speaker.readoutText(event))
                 speaker(event, 100)
@@ -442,8 +447,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             every { observeTyreText() } returns flowOf("温度{celsius}度")
             coEvery { checkAvailable() } returns false
             listOf(
-                SpeechEvent.Gt7Ps5TyreOverheat(30),
-                SpeechEvent.Gt7Ps5TyreOverheat(30, "温度30度"),
+                Gt7Ps5TyreOverheat(30),
+                Gt7Ps5TyreOverheat(30, "温度30度"),
             ).forEach { event ->
                 assertNull(speaker.readoutText(event))
             }
@@ -469,8 +474,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coEvery { checkAvailable() } returns true
             coEvery { speakText("更新1分23秒005・1分23秒005{wheel}", volume = 42) } just Runs
 
-            assertEquals("更新1分23秒005・1分23秒005{wheel}", speaker.readoutText(SpeechEvent.Gt7Ps5MyBestLap(83_005)))
-            speaker(SpeechEvent.Gt7Ps5MyBestLap(83_005), 42)
+            assertEquals("更新1分23秒005・1分23秒005{wheel}", speaker.readoutText(Gt7Ps5MyBestLap(83_005)))
+            speaker(Gt7Ps5MyBestLap(83_005), 42)
 
             verify(exactly = 2) { observeMyBestLapText() }
             coVerify(exactly = 2) { checkAvailable() }
@@ -491,7 +496,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             coEvery { speakText("確定した文言{laptime}", volume = 80) } just Runs
 
-            speaker(SpeechEvent.Gt7Ps5MyBestLap(83_005, "確定した文言{laptime}"), 80)
+            speaker(Gt7Ps5MyBestLap(83_005, "確定した文言{laptime}"), 80)
 
             verify(exactly = 0) { observeMyBestLapText() }
             coVerify(exactly = 0) { checkAvailable() }
@@ -512,8 +517,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
         runTest {
             every { observeMyBestLapText() } returns flowOf(" ")
             listOf(
-                SpeechEvent.Gt7Ps5MyBestLap(83_005),
-                SpeechEvent.Gt7Ps5MyBestLap(83_005, ""),
+                Gt7Ps5MyBestLap(83_005),
+                Gt7Ps5MyBestLap(83_005, ""),
             ).forEach { event ->
                 assertNull(speaker.readoutText(event))
                 speaker(event, 100)
@@ -540,8 +545,8 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             every { observeMyBestLapText() } returns flowOf("更新{laptime}")
             coEvery { checkAvailable() } returns false
             listOf(
-                SpeechEvent.Gt7Ps5MyBestLap(83_005),
-                SpeechEvent.Gt7Ps5MyBestLap(83_005, "更新1分23秒005"),
+                Gt7Ps5MyBestLap(83_005),
+                Gt7Ps5MyBestLap(83_005, "更新1分23秒005"),
             ).forEach { event ->
                 assertNull(speaker.readoutText(event))
             }
@@ -566,7 +571,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             every { observeText() } returns flowOf("あと{laps}周")
             coEvery { checkAvailable() } returnsMany listOf(true, false)
             coEvery { speakText("あと3周", volume = 80) } just Runs
-            val event = SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3)
+            val event = Gt7Ps5RemainingFuelLapsWarning(3)
 
             val text = speaker.readoutText(event)
             assertEquals("あと3周", text)
@@ -592,7 +597,7 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             every { observeText() } returns flowOf("あと{laps}周")
             coEvery { checkAvailable() } returns false
 
-            speaker(SpeechEvent.Gt7Ps5RemainingFuelLapsWarning(3), 80)
+            speaker(Gt7Ps5RemainingFuelLapsWarning(3), 80)
 
             verify(exactly = 1) { observeText() }
             coVerify(exactly = 1) { checkAvailable() }

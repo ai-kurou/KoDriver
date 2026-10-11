@@ -1,6 +1,21 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
 import kotlinx.coroutines.flow.first
+import kurou.kodriver.domain.engine.AceWindowsBlackFlag
+import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsBlueFlag
+import kurou.kodriver.domain.engine.AceWindowsCheckeredFlag
+import kurou.kodriver.domain.engine.AceWindowsGreenFlag
+import kurou.kodriver.domain.engine.AceWindowsMyBestLap
+import kurou.kodriver.domain.engine.AceWindowsOrangeCircleFlag
+import kurou.kodriver.domain.engine.AceWindowsRedFlag
+import kurou.kodriver.domain.engine.AceWindowsRedYellowStripesFlag
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.AceWindowsRemainingFuelWarning
+import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
+import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
+import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
+import kurou.kodriver.domain.engine.AceWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.formatAceWindowsMyBestLapReadoutText
@@ -76,19 +91,19 @@ internal class AceWindowsReadoutTextSpeaker(
 
     private suspend fun eventText(event: SpeechEvent): ReadoutText? {
         val text =
-            if (event is SpeechEvent.AceWindowsTyreOverheat) {
+            if (event is AceWindowsTyreOverheat) {
                 event.resolvedText
                     ?: formatAceWindowsTyreTemperatureReadoutText(
                         observeTyreOverheatReadoutText().first(),
                         event.celsius,
                     )
-            } else if (event is SpeechEvent.AceWindowsRemainingFuelWarning) {
+            } else if (event is AceWindowsRemainingFuelWarning) {
                 event.resolvedText
                     ?: formatAceWindowsRemainingFuelReadoutText(
                         observeRemainingFuelReadoutText().first(),
                         event.percent,
                     )
-            } else if (event is SpeechEvent.AceWindowsRemainingFuelLapsWarning) {
+            } else if (event is AceWindowsRemainingFuelLapsWarning) {
                 event.resolvedText
                     ?: if (event.laps <= 0) {
                         observeRemainingFuelLapsEmptyReadoutText().first()
@@ -98,7 +113,7 @@ internal class AceWindowsReadoutTextSpeaker(
                             event.laps,
                         )
                     }
-            } else if (event is SpeechEvent.AceWindowsMyBestLap) {
+            } else if (event is AceWindowsMyBestLap) {
                 event.resolvedText
                     ?: formatAceWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
             } else {
@@ -110,47 +125,47 @@ internal class AceWindowsReadoutTextSpeaker(
     /** 保存済み固定文言（フラッグ・車両接近）。対象外イベントは null。 */
     private suspend fun savedReadoutText(event: SpeechEvent): String? =
         when (event) {
-            is SpeechEvent.AceWindowsCheckeredFlag -> {
+            is AceWindowsCheckeredFlag -> {
                 observeCheckeredFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsWhiteFlag -> {
+            is AceWindowsWhiteFlag -> {
                 observeWhiteFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsGreenFlag -> {
+            is AceWindowsGreenFlag -> {
                 observeGreenFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsRedFlag -> {
+            is AceWindowsRedFlag -> {
                 observeRedFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsBlueFlag -> {
+            is AceWindowsBlueFlag -> {
                 observeBlueFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsYellowFlag -> {
+            is AceWindowsYellowFlag -> {
                 observeYellowFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsBlackFlag -> {
+            is AceWindowsBlackFlag -> {
                 observeBlackFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsBlackWhiteFlag -> {
+            is AceWindowsBlackWhiteFlag -> {
                 observeBlackWhiteFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsOrangeCircleFlag -> {
+            is AceWindowsOrangeCircleFlag -> {
                 observeOrangeCircleFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsRedYellowStripesFlag -> {
+            is AceWindowsRedYellowStripesFlag -> {
                 observeRedYellowStripesFlagReadoutText().first()
             }
 
-            is SpeechEvent.AceWindowsVehicleApproach -> {
+            is AceWindowsVehicleApproach -> {
                 observeVehicleApproachReadoutText().first()
             }
 
@@ -163,23 +178,23 @@ internal class AceWindowsReadoutTextSpeaker(
 /** 自由文言対象の判定をNarratorと本文再生で共有する。 */
 internal fun isAceWindowsCustomSpeakEvent(event: SpeechEvent): Boolean =
     when (event) {
-        is SpeechEvent.AceWindowsWhiteFlag,
-        is SpeechEvent.AceWindowsGreenFlag,
-        is SpeechEvent.AceWindowsRedFlag,
-        is SpeechEvent.AceWindowsBlueFlag,
-        is SpeechEvent.AceWindowsYellowFlag,
-        is SpeechEvent.AceWindowsBlackFlag,
-        is SpeechEvent.AceWindowsBlackWhiteFlag,
-        is SpeechEvent.AceWindowsOrangeCircleFlag,
-        is SpeechEvent.AceWindowsRedYellowStripesFlag,
-        is SpeechEvent.AceWindowsCheckeredFlag,
-        is SpeechEvent.AceWindowsVehicleApproach,
+        is AceWindowsWhiteFlag,
+        is AceWindowsGreenFlag,
+        is AceWindowsRedFlag,
+        is AceWindowsBlueFlag,
+        is AceWindowsYellowFlag,
+        is AceWindowsBlackFlag,
+        is AceWindowsBlackWhiteFlag,
+        is AceWindowsOrangeCircleFlag,
+        is AceWindowsRedYellowStripesFlag,
+        is AceWindowsCheckeredFlag,
+        is AceWindowsVehicleApproach,
         -> true
 
-        is SpeechEvent.AceWindowsTyreOverheat,
-        is SpeechEvent.AceWindowsRemainingFuelWarning,
-        is SpeechEvent.AceWindowsRemainingFuelLapsWarning,
-        is SpeechEvent.AceWindowsMyBestLap,
+        is AceWindowsTyreOverheat,
+        is AceWindowsRemainingFuelWarning,
+        is AceWindowsRemainingFuelLapsWarning,
+        is AceWindowsMyBestLap,
         -> true
 
         else -> false

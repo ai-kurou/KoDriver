@@ -4,7 +4,7 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import org.junit.Rule
@@ -27,7 +27,7 @@ class LmuWindowsReadoutBrakeWearDetailPaneNarratedTextConsistencyTest {
         rule.onNode(hasSetTextAction()).assertTextContains(LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT)
         assertEquals(
             formatLmuWindowsBrakeWearReadoutText(LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT, 20),
-            SpeechEvent.LmuWindowsBrakeWearLow(20).narratedText,
+            LmuWindowsBrakeWearLow(20).narratedText,
         )
     }
 }

@@ -2,6 +2,25 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
+import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
+import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
+import kurou.kodriver.domain.engine.LmuWindowsCarLeft
+import kurou.kodriver.domain.engine.LmuWindowsCarLeftSustained
+import kurou.kodriver.domain.engine.LmuWindowsCarRight
+import kurou.kodriver.domain.engine.LmuWindowsCarRightSustained
+import kurou.kodriver.domain.engine.LmuWindowsFullCourseYellow
+import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
+import kurou.kodriver.domain.engine.LmuWindowsOverheating
+import kurou.kodriver.domain.engine.LmuWindowsPartDetached
+import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
+import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
+import kurou.kodriver.domain.engine.LmuWindowsTyreCold
+import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
+import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
+import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
+import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.PitTimingSource
@@ -44,25 +63,25 @@ import kurou.kodriver.domain.usecase.SpeakTextUseCase
  * イベントごとの文言取得とTTSの依存を明示する。
  *
  * 対象イベントと文言の対応:
- * - [SpeechEvent.LmuWindowsMyBestLap] : 自己ベストラップ更新（`{laptime}` は更新後のタイム）
- * - [SpeechEvent.LmuWindowsTyreOverheat] : タイヤ過熱警告（`{celsius}` は判定時の全輪の最高カーカス温度）
- * - [SpeechEvent.LmuWindowsTyreCold] : タイヤ低温警告（`{celsius}` は判定時の全輪の最高カーカス温度）
- * - [SpeechEvent.LmuWindowsYellowFlag] : セクターイエロー
- * - [SpeechEvent.LmuWindowsBlueFlag] : ブルー
- * - [SpeechEvent.LmuWindowsFullCourseYellow] : フルコースイエロー
- * - [SpeechEvent.LmuWindowsRedFlag] : レッド
- * - [SpeechEvent.LmuWindowsCarLeft] : 左車両接近開始
- * - [SpeechEvent.LmuWindowsCarRight] : 右車両接近開始
- * - [SpeechEvent.LmuWindowsCarLeftSustained] : 左車両接近継続
- * - [SpeechEvent.LmuWindowsCarRightSustained] : 右車両接近継続
- * - [SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning] : 設定した残量閾値の警告
- * - [SpeechEvent.LmuWindowsOverheating] : オーバーヒート
- * - [SpeechEvent.LmuWindowsPartDetached] : 部品脱落
- * - [SpeechEvent.LmuWindowsTyreDetached] : タイヤ脱落
- * - [SpeechEvent.LmuWindowsBrakeOverheat] : 設定した温度閾値の警告
- * - [SpeechEvent.LmuWindowsBrakeWearLow] : 設定したブレーキ残量閾値の警告
- * - [SpeechEvent.LmuWindowsTyreWearWarning] : 設定した残存率閾値の警告
- * - [SpeechEvent.LmuWindowsPitTimingWarning] : バーチャルエナジー・タイヤ摩耗由来のピットタイミング
+ * - [LmuWindowsMyBestLap] : 自己ベストラップ更新（`{laptime}` は更新後のタイム）
+ * - [LmuWindowsTyreOverheat] : タイヤ過熱警告（`{celsius}` は判定時の全輪の最高カーカス温度）
+ * - [LmuWindowsTyreCold] : タイヤ低温警告（`{celsius}` は判定時の全輪の最高カーカス温度）
+ * - [LmuWindowsYellowFlag] : セクターイエロー
+ * - [LmuWindowsBlueFlag] : ブルー
+ * - [LmuWindowsFullCourseYellow] : フルコースイエロー
+ * - [LmuWindowsRedFlag] : レッド
+ * - [LmuWindowsCarLeft] : 左車両接近開始
+ * - [LmuWindowsCarRight] : 右車両接近開始
+ * - [LmuWindowsCarLeftSustained] : 左車両接近継続
+ * - [LmuWindowsCarRightSustained] : 右車両接近継続
+ * - [LmuWindowsRemainingVirtualEnergyWarning] : 設定した残量閾値の警告
+ * - [LmuWindowsOverheating] : オーバーヒート
+ * - [LmuWindowsPartDetached] : 部品脱落
+ * - [LmuWindowsTyreDetached] : タイヤ脱落
+ * - [LmuWindowsBrakeOverheat] : 設定した温度閾値の警告
+ * - [LmuWindowsBrakeWearLow] : 設定したブレーキ残量閾値の警告
+ * - [LmuWindowsTyreWearWarning] : 設定した残存率閾値の警告
+ * - [LmuWindowsPitTimingWarning] : バーチャルエナジー・タイヤ摩耗由来のピットタイミング
  */
 @Suppress("LongParameterList")
 internal class LmuWindowsReadoutTextSpeaker(
@@ -113,43 +132,43 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     private suspend fun eventText(event: SpeechEvent): String? =
         when (event) {
-            is SpeechEvent.LmuWindowsYellowFlag -> {
+            is LmuWindowsYellowFlag -> {
                 observeSectorYellowFlagReadoutText().first()
             }
 
-            is SpeechEvent.LmuWindowsBlueFlag -> {
+            is LmuWindowsBlueFlag -> {
                 observeBlueFlagReadoutText().first()
             }
 
-            is SpeechEvent.LmuWindowsFullCourseYellow -> {
+            is LmuWindowsFullCourseYellow -> {
                 observeFullCourseYellowFlagReadoutText().first()
             }
 
-            is SpeechEvent.LmuWindowsRedFlag -> {
+            is LmuWindowsRedFlag -> {
                 observeRedFlagReadoutText().first()
             }
 
-            is SpeechEvent.LmuWindowsCarLeft -> {
+            is LmuWindowsCarLeft -> {
                 observeStartLeftReadoutText().first()
             }
 
-            is SpeechEvent.LmuWindowsCarLeftSustained -> {
+            is LmuWindowsCarLeftSustained -> {
                 observeSustainedLeftReadoutText().first()
             }
 
-            is SpeechEvent.LmuWindowsCarRight -> {
+            is LmuWindowsCarRight -> {
                 observeStartRightReadoutText().first()
             }
 
-            is SpeechEvent.LmuWindowsCarRightSustained -> {
+            is LmuWindowsCarRightSustained -> {
                 observeSustainedRightReadoutText().first()
             }
 
-            is SpeechEvent.LmuWindowsMyBestLap -> {
+            is LmuWindowsMyBestLap -> {
                 myBestLapText(event)
             }
 
-            is SpeechEvent.LmuWindowsPitTimingWarning -> {
+            is LmuWindowsPitTimingWarning -> {
                 pitTimingText(event)
             }
 
@@ -161,27 +180,27 @@ internal class LmuWindowsReadoutTextSpeaker(
     /** 閾値や温度を文言に埋め込む警告（残量・タイヤ摩耗・ブレーキ温度・タイヤ温度）の文言。対象外イベントは null。 */
     private suspend fun thresholdWarningText(event: SpeechEvent): String? =
         when (event) {
-            is SpeechEvent.LmuWindowsTyreOverheat -> {
+            is LmuWindowsTyreOverheat -> {
                 tyreTemperatureText(event.celsius) { observeTyreOverheatReadoutText() }
             }
 
-            is SpeechEvent.LmuWindowsTyreCold -> {
+            is LmuWindowsTyreCold -> {
                 tyreTemperatureText(event.celsius) { observeTyreColdReadoutText() }
             }
 
-            is SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning -> {
+            is LmuWindowsRemainingVirtualEnergyWarning -> {
                 remainingVirtualEnergyText(event)
             }
 
-            is SpeechEvent.LmuWindowsBrakeOverheat -> {
+            is LmuWindowsBrakeOverheat -> {
                 brakeTemperatureText(event)
             }
 
-            is SpeechEvent.LmuWindowsBrakeWearLow -> {
+            is LmuWindowsBrakeWearLow -> {
                 brakeWearText(event)
             }
 
-            is SpeechEvent.LmuWindowsTyreWearWarning -> {
+            is LmuWindowsTyreWearWarning -> {
                 tyreWearText(event)
             }
 
@@ -192,13 +211,13 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     private suspend fun vehicleDamageText(event: SpeechEvent): String? =
         when (event) {
-            is SpeechEvent.LmuWindowsOverheating -> observeOverheatReadoutText().first()
-            is SpeechEvent.LmuWindowsPartDetached -> observePartDetachedReadoutText().first()
-            is SpeechEvent.LmuWindowsTyreDetached -> observeTyreDetachedReadoutText().first()
+            is LmuWindowsOverheating -> observeOverheatReadoutText().first()
+            is LmuWindowsPartDetached -> observePartDetachedReadoutText().first()
+            is LmuWindowsTyreDetached -> observeTyreDetachedReadoutText().first()
             else -> null
         }
 
-    private suspend fun myBestLapText(event: SpeechEvent.LmuWindowsMyBestLap): String =
+    private suspend fun myBestLapText(event: LmuWindowsMyBestLap): String =
         formatLmuWindowsMyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
 
     private suspend fun tyreTemperatureText(
@@ -206,31 +225,31 @@ internal class LmuWindowsReadoutTextSpeaker(
         observeTemplate: () -> Flow<String>,
     ): String = formatLmuWindowsTyreTemperatureReadoutText(observeTemplate().first(), celsius)
 
-    private suspend fun remainingVirtualEnergyText(event: SpeechEvent.LmuWindowsRemainingVirtualEnergyWarning): String =
+    private suspend fun remainingVirtualEnergyText(event: LmuWindowsRemainingVirtualEnergyWarning): String =
         formatLmuWindowsRemainingVirtualEnergyReadoutText(
             observeRemainingVirtualEnergyReadoutText().first(),
             event.percentage,
         )
 
-    private suspend fun brakeTemperatureText(event: SpeechEvent.LmuWindowsBrakeOverheat): String =
+    private suspend fun brakeTemperatureText(event: LmuWindowsBrakeOverheat): String =
         formatLmuWindowsBrakeTemperatureReadoutText(
             observeBrakeTemperatureReadoutText().first(),
             event.celsius,
         )
 
-    private suspend fun brakeWearText(event: SpeechEvent.LmuWindowsBrakeWearLow): String =
+    private suspend fun brakeWearText(event: LmuWindowsBrakeWearLow): String =
         formatLmuWindowsBrakeWearReadoutText(
             observeBrakeWearReadoutText().first(),
             event.percent,
         )
 
-    private suspend fun tyreWearText(event: SpeechEvent.LmuWindowsTyreWearWarning): String =
+    private suspend fun tyreWearText(event: LmuWindowsTyreWearWarning): String =
         formatLmuWindowsTyreWearReadoutText(
             observeTyreWearReadoutText().first(),
             event.percentage,
         )
 
-    private suspend fun pitTimingText(event: SpeechEvent.LmuWindowsPitTimingWarning): String? {
+    private suspend fun pitTimingText(event: LmuWindowsPitTimingWarning): String? {
         if (event.source == PitTimingSource.TyreWear) {
             return if (event.laps <= 0) {
                 observePitTimingTyreWearImminentReadoutText().first()

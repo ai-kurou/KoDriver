@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -26,6 +26,6 @@ class LmuWindowsReadoutMyBestLapDetailPaneNarratedTextConsistencyTest {
         }
 
         rule.onNodeWithText("自己ベストラップ更新の文言").assertIsDisplayed()
-        assertEquals("自己ベストラップ更新 1分23秒456", SpeechEvent.LmuWindowsMyBestLap(83_456L).narratedText)
+        assertEquals("自己ベストラップ更新 1分23秒456", LmuWindowsMyBestLap(83_456L).narratedText)
     }
 }

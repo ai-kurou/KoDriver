@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Rule
 import org.junit.Test
@@ -21,7 +22,7 @@ class AceWindowsReadoutVehicleApproachDetailPaneNarratedTextConsistencyTest {
             }
         }
 
-        val narratedText = SpeechEvent.AceWindowsVehicleApproach().narratedText
+        val narratedText = AceWindowsVehicleApproach().narratedText
         rule.onAllNodesWithText(narratedText)[0].assertTextContains(narratedText, substring = true)
     }
 }

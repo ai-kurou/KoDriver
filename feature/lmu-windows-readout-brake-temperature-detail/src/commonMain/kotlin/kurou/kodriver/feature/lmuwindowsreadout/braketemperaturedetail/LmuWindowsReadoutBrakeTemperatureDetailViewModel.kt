@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.Simulator
@@ -97,7 +97,7 @@ internal class LmuWindowsReadoutBrakeTemperatureDetailViewModel(
         viewModelScope.launch {
             previewHelper.preview(
                 formattedText,
-                SpeechEvent.LmuWindowsBrakeOverheat(
+                LmuWindowsBrakeOverheat(
                     celsius = celsius,
                     resolvedText = formattedText,
                 ),

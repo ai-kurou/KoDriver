@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
 import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.SaveSoundVolumeUseCase
@@ -117,7 +117,7 @@ internal class OtherVolumeDetailViewModel(
                     val volume = soundVolumeUseCases.observeSoundVolume().first()
                     if (volume <= 0) return@launch
                     // 自己ベスト文言が空欄でも、従来の既定文言で音量を確認できるようにする。
-                    val sample = SpeechEvent.LmuWindowsMyBestLap(lapTimeMs = PREVIEW_LAP_TIME_MS)
+                    val sample = LmuWindowsMyBestLap(lapTimeMs = PREVIEW_LAP_TIME_MS)
                     speakText(sample.narratedText, volume = volume)
                 } catch (e: CancellationException) {
                     throw e

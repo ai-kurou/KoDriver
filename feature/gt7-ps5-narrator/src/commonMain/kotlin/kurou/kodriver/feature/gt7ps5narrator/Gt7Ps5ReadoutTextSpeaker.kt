@@ -1,6 +1,10 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
 import kotlinx.coroutines.flow.first
+import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
+import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
@@ -48,28 +52,28 @@ internal class Gt7Ps5ReadoutTextSpeaker(
 
     private suspend fun eventText(event: SpeechEvent): ReadoutText? =
         when (event) {
-            is SpeechEvent.Gt7Ps5RemainingFuelWarning -> {
+            is Gt7Ps5RemainingFuelWarning -> {
                 ReadoutText(
                     remainingFuelText(event),
                     event.resolvedText != null,
                 )
             }
 
-            is SpeechEvent.Gt7Ps5RemainingFuelLapsWarning -> {
+            is Gt7Ps5RemainingFuelLapsWarning -> {
                 ReadoutText(
                     remainingFuelLapsText(event),
                     event.resolvedText != null,
                 )
             }
 
-            is SpeechEvent.Gt7Ps5MyBestLap -> {
+            is Gt7Ps5MyBestLap -> {
                 ReadoutText(
                     myBestLapText(event),
                     event.resolvedText != null,
                 )
             }
 
-            is SpeechEvent.Gt7Ps5TyreOverheat -> {
+            is Gt7Ps5TyreOverheat -> {
                 ReadoutText(
                     tyreOverheatText(event),
                     event.resolvedText != null,
@@ -81,11 +85,11 @@ internal class Gt7Ps5ReadoutTextSpeaker(
             }
         }
 
-    private suspend fun remainingFuelText(event: SpeechEvent.Gt7Ps5RemainingFuelWarning): String =
+    private suspend fun remainingFuelText(event: Gt7Ps5RemainingFuelWarning): String =
         event.resolvedText
             ?: formatGt7Ps5RemainingFuelReadoutText(observeRemainingFuelReadoutText().first(), event.percent)
 
-    private suspend fun remainingFuelLapsText(event: SpeechEvent.Gt7Ps5RemainingFuelLapsWarning): String =
+    private suspend fun remainingFuelLapsText(event: Gt7Ps5RemainingFuelLapsWarning): String =
         event.resolvedText
             ?: if (event.laps <= 0) {
                 observeRemainingFuelLapsEmptyReadoutText().first()
@@ -93,11 +97,11 @@ internal class Gt7Ps5ReadoutTextSpeaker(
                 formatGt7Ps5RemainingFuelLapsReadoutText(observeRemainingFuelLapsReadoutText().first(), event.laps)
             }
 
-    private suspend fun tyreOverheatText(event: SpeechEvent.Gt7Ps5TyreOverheat): String =
+    private suspend fun tyreOverheatText(event: Gt7Ps5TyreOverheat): String =
         event.resolvedText
             ?: formatGt7Ps5TyreTemperatureReadoutText(observeTyreOverheatReadoutText().first(), event.celsius)
 
-    private suspend fun myBestLapText(event: SpeechEvent.Gt7Ps5MyBestLap): String =
+    private suspend fun myBestLapText(event: Gt7Ps5MyBestLap): String =
         event.resolvedText
             ?: formatGt7Ps5MyBestLapReadoutText(observeMyBestLapReadoutText().first(), event.lapTimeMs)
 }
