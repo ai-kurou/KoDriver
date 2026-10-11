@@ -25,3 +25,8 @@ LMU の Source は並走時間の追跡と周期的な再計算も担当する�
 
 Koin の定義も `LmuWindowsDebugStateModule.kt`・`AceWindowsDebugStateModule.kt`・`Gt7Ps5DebugStateModule.kt` にシミュレーター別に分割している。
 `DebugStateDetailModule.kt` は ViewModel と共通の UseCase を登録し、各ファイルの定義を集約する。
+
+## シミュレーター別のカード表示
+
+フラグ情報・車両位置・燃料消費・並走車両のシミュレーター専用の表示は、`LmuWindowsDebugStateCards.kt`・`AceWindowsDebugStateCards.kt`・`Gt7Ps5DebugStateCards.kt` に分割している（GT7 は燃料消費のみ）。
+各カードの元ファイルはシミュレーターの振り分けを担当し、燃料消費の共通フォーマッターも保持する。

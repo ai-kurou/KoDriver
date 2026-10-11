@@ -11,7 +11,6 @@ import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_tyre_wear_remaining_laps
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_virtual_energy_remaining_laps
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.round
 
 @Composable
 internal fun PitTimingRemainingLapsContent(
@@ -45,11 +44,6 @@ internal fun PitTimingRemainingLapsContent(
             style = koDriverNumericTextStyle(),
         )
     }
-}
-
-private fun formatOneDecimal(value: Double): String {
-    val rounded = round(value * 10) / 10
-    return rounded.toString()
 }
 
 private const val UNKNOWN_REMAINING_LAPS_TEXT = "-"
