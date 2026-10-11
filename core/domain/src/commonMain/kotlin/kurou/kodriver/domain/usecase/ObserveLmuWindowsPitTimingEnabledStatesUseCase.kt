@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 
@@ -9,8 +10,8 @@ import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val pitTimingEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
-        ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to true,
-        ReadoutItemKey.LmuWindows.PitTiming.TyreWear to true,
+        LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to true,
+        LmuWindowsReadoutItemKey.PitTiming.TyreWear to true,
     )
 
 class ObserveLmuWindowsPitTimingEnabledStatesUseCase(

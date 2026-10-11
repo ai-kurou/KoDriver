@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
@@ -137,7 +138,7 @@ data class TyreTemperatureReadoutInput(
 /**
  * LMU の共有メモリ由来データから、今回読み上げるべき音声イベントを決定する UseCase。
  *
- * ブレーキ摩耗（[ReadoutItemKey.LmuWindows.BrakeWear.Root]）は、REST API 由来の残量を [determineBrakeWearLow] で判定する。
+ * ブレーキ摩耗（[LmuWindowsReadoutItemKey.BrakeWear.Root]）は、REST API 由来の残量を [determineBrakeWearLow] で判定する。
  */
 @Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCase {
@@ -164,8 +165,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         if (current >= sessionState.personalBestMs) {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.MyBestLap.Root) ||
-            !settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled)
+        if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.MyBestLap.Root) ||
+            !settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled)
         ) {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
@@ -260,8 +261,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             )
         val overheatEvent =
             if (
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleDamage.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleDamage.Overheat) &&
                 !previous.overheating &&
                 vehicleDamage.overheating
             ) {
@@ -271,8 +272,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             }
         val partDetachedEvent =
             if (
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleDamage.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleDamage.PartDetached) &&
                 !previous.partDetached &&
                 vehicleDamage.partDetached
             ) {
@@ -300,8 +301,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             tyreDetached.wheels.any { (wheel, detached) -> detached && previous.wheels[wheel] != true }
         val event =
             if (
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleDamage.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached) &&
                 newlyDetached
             ) {
                 SpeechEvent.LmuWindowsTyreDetached()
@@ -332,8 +333,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             }
         val shouldAnnounce =
             !state.tyreOverheating && nextOverheating &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning)
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreTemperature.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(tyreOverheating = nextOverheating),
             events =
@@ -367,8 +368,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val anyCold = data.wheels.values.any { it.value <= TYRE_LOW_WARNING_THRESHOLD_CELSIUS }
         val shouldAnnounce =
             enteringTargetPhase && anyCold &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning)
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreTemperature.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreTemperature.LowWarning)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(previousGamePhaseForTyreLowWarning = raceFlags.gamePhase),
             events =
@@ -398,8 +399,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             }
         val shouldAnnounce =
             !state.tyreWearWarned && anyWorn &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreWear.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.TyreWear.WarningReadout)
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreWear.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreWear.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(tyreWearWarned = anyWorn),
             events =
@@ -428,8 +429,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             }
         val shouldAnnounce =
             !state.brakeOverheating && nextOverheating &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeTemperature.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeTemperature.WarningReadout)
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.BrakeTemperature.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.BrakeTemperature.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(brakeOverheating = nextOverheating),
             events =
@@ -454,8 +455,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             data.wheels.values.any { it.remainingPercent <= settings.brakeWearLowThresholdPercent }
         val shouldAnnounce =
             !state.brakeWearWarned && anyLow &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeWear.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout)
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.BrakeWear.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.BrakeWear.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(brakeWearWarned = anyLow),
             events =
@@ -475,8 +476,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val isLow = data.remainingRatio.value * PERCENTAGE_SCALE <= settings.remainingVirtualEnergyThresholdPercentage
         val shouldAnnounce =
             !state.remainingVirtualEnergyWarned && isLow &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout)
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(remainingVirtualEnergyWarned = isLow),
             events =
@@ -536,8 +537,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingVirtualEnergyLaps,
                 threshold = settings.pitTimingVirtualEnergyLapsThreshold,
                 enabled =
-                    settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.Root) &&
-                        settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy),
+                    settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.PitTiming.Root) &&
+                        settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy),
             )
         val stateAfterEvaluation =
             stateAfterTracking.copy(lastPitTimingVirtualEnergyEvaluationLap = evaluation.evaluatedLap)
@@ -602,8 +603,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingTyreWearLaps,
                 threshold = settings.pitTimingTyreWearLapsThreshold,
                 enabled =
-                    settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.Root) &&
-                        settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.PitTiming.TyreWear),
+                    settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.PitTiming.Root) &&
+                        settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.PitTiming.TyreWear),
             )
         val stateAfterEvaluation =
             stateAfterTracking.copy(lastPitTimingTyreWearEvaluationLap = evaluation.evaluatedLap)
@@ -638,7 +639,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 state = state.copy(previousRaceFlags = raceFlags),
                 events = emptyList(),
             )
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.Flag.Root)) {
+        if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.Flag.Root)) {
             return LmuWindowsNarratorReadoutDecision(
                 state = state.copy(previousRaceFlags = raceFlags),
                 events = emptyList(),
@@ -667,7 +668,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? {
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)) return null
+        if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag)) return null
         val newYellowSector =
             raceFlags.sectorFlags.indices.any { i ->
                 raceFlags.sectorFlags[i] == SectorFlagState.YELLOW &&
@@ -682,7 +683,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? =
         if (
-            settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.Flag.FullCourseYellow) &&
+            settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.Flag.FullCourseYellow) &&
             previous.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
             raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW
         ) {
@@ -697,7 +698,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? =
         if (
-            settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.Flag.RedFlag) &&
+            settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.Flag.RedFlag) &&
             previous.gamePhase != SessionPhase.RED_FLAG &&
             raceFlags.gamePhase == SessionPhase.RED_FLAG
         ) {
@@ -712,8 +713,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         rightAnnounce: Boolean,
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? {
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleApproach.Root)) return null
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout)) return null
+        if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleApproach.Root)) return null
+        if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout)) return null
         // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
         if (settings.skipFirstLap && settings.currentLap <= 0) return null
         return when {
@@ -728,8 +729,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         rightSustainedAnnounce: Boolean,
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? {
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleApproach.Root)) return null
-        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained)) return null
+        if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleApproach.Root)) return null
+        if (!settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.VehicleApproach.Sustained)) return null
         if (settings.skipFirstLap && settings.currentLap <= 0) return null
         return when {
             leftSustainedAnnounce && !rightSustainedAnnounce -> {
@@ -762,7 +763,7 @@ private fun determineBlueFlagEvent(
     settings: LmuWindowsNarratorReadoutSettings,
 ): SpeechEvent? =
     if (
-        settings.enabledStates.readoutEnabled(ReadoutItemKey.LmuWindows.Flag.BlueFlag) &&
+        settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.Flag.BlueFlag) &&
         previous.playerFlag != PrimaryFlag.BLUE &&
         raceFlags.playerFlag == PrimaryFlag.BLUE
     ) {

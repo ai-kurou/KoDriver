@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import java.nio.file.Files
@@ -47,7 +48,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
     @Test
     fun `既存ファイルの全設定と文言を読み出して更新しても互いに保持する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning
+            val key = LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning
             val original =
                 LmuWindowsTyreTemperaturePreferences(
                     highThresholdCelsius = 110,

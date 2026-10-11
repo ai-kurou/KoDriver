@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_VEHICLE_APPROACH_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.READOUT_CUSTOM_TEXT_MAX_LENGTH
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.SaveAceWindowsVehicleApproachReadoutTextUseCase
@@ -59,10 +60,10 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -70,11 +71,11 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, true)
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, true)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -82,13 +83,13 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
     @Test
     fun `異なるキーで保存した値がすべて保持される`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, true)
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.Root, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, true)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to true,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root to false,
+                    AceWindowsReadoutItemKey.VehicleApproach.StartReadout to true,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root to false,
                 ),
                 repository.observeEnabledStates().first(),
             )
@@ -97,11 +98,11 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState後に閾値を保存してもenabledStatesは保持される`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
             repository.saveThresholdMeters(7.0)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -116,16 +117,16 @@ class AceWindowsVehicleApproachPreferencesRepositoryImplTest {
     fun `文言を保存しても閾値と有効状態を保持する`() =
         runTest {
             repository.saveThresholdMeters(7.0)
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
             repository.saveReadoutText("周囲に注意")
             assertEquals("周囲に注意", repository.observeReadoutText().first())
             assertEquals(7.0, repository.observeThresholdMeters().first())
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false),
+                mapOf<ReadoutItemKey, Boolean>(AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false),
                 repository.observeEnabledStates().first(),
             )
             repository.saveThresholdMeters(8.0)
-            repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, true)
+            repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, true)
             assertEquals("周囲に注意", repository.observeReadoutText().first())
         }
 

@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -103,11 +104,11 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             coEvery {
                 enabledRepository.saveReadoutEnabledState(
                     Simulator.LmuWindows.id,
-                    ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled,
+                    LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
                     false,
                 )
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled to false) }
+                enabledStatesFlow.update { it + (LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled to false) }
             }
             val viewModel = createViewModel()
 
@@ -118,7 +119,7 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             coVerify(exactly = 1) {
                 enabledRepository.saveReadoutEnabledState(
                     Simulator.LmuWindows.id,
-                    ReadoutItemKey.LmuWindows.MyBestLap.DetailEnabled,
+                    LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled,
                     false,
                 )
             }
@@ -157,16 +158,16 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             coEvery { checkAvailable() } returns true
             every { observeVolume() } returns MutableStateFlow(60)
             val startSoundCompleted = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) } coAnswers
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root) } coAnswers
                 { startSoundCompleted.await() }
             coEvery { speakText("更新1分23秒456{unknown}", volume = 60) } returns Unit
             createViewModel().onReadoutTextPreviewClicked("更新{laptime}{unknown}")
             coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
             startSoundCompleted.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 1) { speakText("更新1分23秒456{unknown}", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root)
+                playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root)
                 speakText("更新1分23秒456{unknown}", volume = 60)
             }
             verify(exactly = 1) { observeVolume() }
@@ -183,7 +184,7 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             coEvery { checkAvailable() } returns true
             createViewModel().onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText(" ", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -200,7 +201,7 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -220,7 +221,7 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             volume.update { -1 }
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             coVerify(exactly = 0) { speakText("注意", volume = -1) }
             confirmVerified(observeVolume, playStartSound, speakText)
@@ -237,13 +238,13 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             every { observeVolume() } returns MutableStateFlow(60)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) } coAnswers
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
             coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(speakText, playStartSound, observeVolume)
         }
@@ -259,13 +260,13 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
             every { observeVolume() } returns MutableStateFlow(60)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) } coAnswers
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
             viewModel.onReadoutTextPreviewClicked("更新{laptime}{unknown}")
             pendingStartSound.complete(Unit)
             coVerify(exactly = 0) { speakText("更新1分23秒456{unknown}", volume = 60) }
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.MyBestLap.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.MyBestLap.Root) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(speakText, playStartSound, observeVolume)
         }

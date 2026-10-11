@@ -15,6 +15,8 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
@@ -109,24 +111,24 @@ class ReadoutListViewModelTest {
             assertEquals(Simulator.LmuWindows, state.selectedSimulator)
             assertEquals(
                 listOf(
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.PitTiming.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                    LmuWindowsReadoutItemKey.TyreWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root,
                 ),
                 state.items,
             )
-            assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.VehicleDamage.Root])
-            assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root])
-            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root])
-            assertEquals(true, state.startSoundEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root])
-            assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.MyBestLap.Root])
+            assertEquals(false, state.readoutEnabledStates[LmuWindowsReadoutItemKey.VehicleDamage.Root])
+            assertEquals(false, state.readoutEnabledStates[LmuWindowsReadoutItemKey.BrakeWear.Root])
+            assertEquals(true, state.queueEnabledStates[LmuWindowsReadoutItemKey.BrakeWear.Root])
+            assertEquals(true, state.startSoundEnabledStates[LmuWindowsReadoutItemKey.BrakeWear.Root])
+            assertEquals(false, state.readoutEnabledStates[LmuWindowsReadoutItemKey.MyBestLap.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             confirmVerified(simulatorRepository)
         }
@@ -141,16 +143,16 @@ class ReadoutListViewModelTest {
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             val movedOrder =
                 listOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.PitTiming.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                    LmuWindowsReadoutItemKey.TyreWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root,
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } returns Unit
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -163,16 +165,16 @@ class ReadoutListViewModelTest {
 
             assertEquals(
                 listOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.PitTiming.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                    LmuWindowsReadoutItemKey.TyreWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root,
                 ),
                 viewModel.uiState.first().items,
             )
@@ -180,16 +182,16 @@ class ReadoutListViewModelTest {
                 readoutRepository.saveReadoutOrder(
                     "lmu_windows",
                     listOf(
-                        ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                        ReadoutItemKey.LmuWindows.Flag.Root,
-                        ReadoutItemKey.LmuWindows.PitTiming.Root,
-                        ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                        ReadoutItemKey.LmuWindows.TyreWear.Root,
-                        ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                        ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                        ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                        LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                        LmuWindowsReadoutItemKey.Flag.Root,
+                        LmuWindowsReadoutItemKey.PitTiming.Root,
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                        LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                        LmuWindowsReadoutItemKey.TyreWear.Root,
+                        LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                        LmuWindowsReadoutItemKey.BrakeWear.Root,
+                        LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                        LmuWindowsReadoutItemKey.MyBestLap.Root,
                     ),
                 )
             }
@@ -213,11 +215,11 @@ class ReadoutListViewModelTest {
             coEvery {
                 readoutRepository.saveReadoutEnabledState(
                     "lmu_windows",
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     false,
                 )
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.VehicleApproach.Root to false) }
+                enabledStatesFlow.update { it + (LmuWindowsReadoutItemKey.VehicleApproach.Root to false) }
             }
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -225,16 +227,16 @@ class ReadoutListViewModelTest {
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             simulatorFlow.update { Simulator.LmuWindows }
-            viewModel.onReadoutEnabledChanged(ReadoutItemKey.LmuWindows.VehicleApproach.Root, false)
+            viewModel.onReadoutEnabledChanged(LmuWindowsReadoutItemKey.VehicleApproach.Root, false)
 
             assertEquals(
                 false,
-                viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.LmuWindows.VehicleApproach.Root],
+                viewModel.uiState.first().readoutEnabledStates[LmuWindowsReadoutItemKey.VehicleApproach.Root],
             )
             coVerify(exactly = 1) {
                 readoutRepository.saveReadoutEnabledState(
                     "lmu_windows",
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
                     false,
                 )
             }
@@ -257,11 +259,11 @@ class ReadoutListViewModelTest {
             coEvery {
                 readoutRepository.saveReadoutEnabledState(
                     "lmu_windows",
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
                     true,
                 )
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.BrakeWear.Root to true) }
+                enabledStatesFlow.update { it + (LmuWindowsReadoutItemKey.BrakeWear.Root to true) }
             }
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -269,16 +271,16 @@ class ReadoutListViewModelTest {
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             simulatorFlow.update { Simulator.LmuWindows }
-            viewModel.onReadoutEnabledChanged(ReadoutItemKey.LmuWindows.BrakeWear.Root, true)
+            viewModel.onReadoutEnabledChanged(LmuWindowsReadoutItemKey.BrakeWear.Root, true)
 
             assertEquals(
                 true,
-                viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.LmuWindows.BrakeWear.Root],
+                viewModel.uiState.first().readoutEnabledStates[LmuWindowsReadoutItemKey.BrakeWear.Root],
             )
             coVerify(exactly = 1) {
                 readoutRepository.saveReadoutEnabledState(
                     "lmu_windows",
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
                     true,
                 )
             }
@@ -296,7 +298,7 @@ class ReadoutListViewModelTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
-                MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false))
+                MutableStateFlow(mapOf(LmuWindowsReadoutItemKey.Flag.Root to false))
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -305,7 +307,7 @@ class ReadoutListViewModelTest {
 
             simulatorFlow.update { Simulator.LmuWindows }
 
-            assertEquals(false, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.LmuWindows.Flag.Root])
+            assertEquals(false, viewModel.uiState.first().readoutEnabledStates[LmuWindowsReadoutItemKey.Flag.Root])
         }
 
     @Test
@@ -317,7 +319,7 @@ class ReadoutListViewModelTest {
                 MutableStateFlow(emptyMap())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns
                 MutableStateFlow(
-                    listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                    listOf(LmuWindowsReadoutItemKey.Flag.Root, LmuWindowsReadoutItemKey.VehicleApproach.Root),
                 )
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -328,16 +330,16 @@ class ReadoutListViewModelTest {
 
             assertEquals(
                 listOf(
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.PitTiming.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                    LmuWindowsReadoutItemKey.TyreWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root,
                 ),
                 viewModel.uiState.first().items,
             )
@@ -354,16 +356,16 @@ class ReadoutListViewModelTest {
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns orderFlow
             val movedOrder =
                 listOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.PitTiming.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                    LmuWindowsReadoutItemKey.TyreWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root,
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } answers {
                 orderFlow.update { movedOrder }
@@ -378,16 +380,16 @@ class ReadoutListViewModelTest {
 
             assertEquals(
                 listOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.PitTiming.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                    LmuWindowsReadoutItemKey.TyreWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root,
                 ),
                 orderFlow.value,
             )
@@ -403,29 +405,29 @@ class ReadoutListViewModelTest {
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             val firstMovedOrder =
                 listOf(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.PitTiming.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                    LmuWindowsReadoutItemKey.TyreWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root,
                 )
             val secondMovedOrder =
                 listOf(
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.PitTiming.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                    LmuWindowsReadoutItemKey.TyreWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root,
                 )
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", firstMovedOrder) } returns Unit
             coEvery { readoutRepository.saveReadoutOrder("lmu_windows", secondMovedOrder) } returns Unit
@@ -440,16 +442,16 @@ class ReadoutListViewModelTest {
 
             assertEquals(
                 listOf(
-                    ReadoutItemKey.LmuWindows.Flag.Root,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    LmuWindowsReadoutItemKey.Flag.Root,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                    LmuWindowsReadoutItemKey.PitTiming.Root,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                    LmuWindowsReadoutItemKey.TyreWear.Root,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root,
                 ),
                 viewModel.uiState.first().items,
             )
@@ -471,10 +473,10 @@ class ReadoutListViewModelTest {
             assertEquals(Simulator.Gt7Ps5, state.selectedSimulator)
             assertEquals(
                 listOf(
-                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                    ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
+                    Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                 ),
                 state.items,
             )
@@ -486,7 +488,7 @@ class ReadoutListViewModelTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
             every { readoutRepository.observeReadoutEnabledStates("gt7_ps5") } returns
-                MutableStateFlow(mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false))
+                MutableStateFlow(mapOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to false))
             every { readoutRepository.observeReadoutOrder("gt7_ps5") } returns MutableStateFlow(emptyList())
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -495,7 +497,7 @@ class ReadoutListViewModelTest {
 
             assertEquals(
                 false,
-                viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root],
+                viewModel.uiState.first().readoutEnabledStates[Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root],
             )
         }
 
@@ -513,16 +515,16 @@ class ReadoutListViewModelTest {
             coEvery {
                 readoutRepository.saveReadoutEnabledState(
                     "gt7_ps5",
-                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                     false,
                 )
             } answers {
-                gt7EnabledFlow.update { it + (ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false) }
+                gt7EnabledFlow.update { it + (Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to false) }
             }
             coEvery {
-                readoutRepository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true)
+                readoutRepository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true)
             } answers {
-                lmuEnabledFlow.update { it + (ReadoutItemKey.LmuWindows.MyBestLap.Root to true) }
+                lmuEnabledFlow.update { it + (LmuWindowsReadoutItemKey.MyBestLap.Root to true) }
             }
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -530,13 +532,13 @@ class ReadoutListViewModelTest {
                 createViewModel(simulatorRepository, readoutRepository, queueRepository, startSoundRepository)
 
             simulatorFlow.update { Simulator.Gt7Ps5 }
-            viewModel.onReadoutEnabledChanged(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, false)
+            viewModel.onReadoutEnabledChanged(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root, false)
 
-            assertEquals(false, gt7EnabledFlow.value[ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root])
+            assertEquals(false, gt7EnabledFlow.value[Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root])
 
             simulatorFlow.update { Simulator.LmuWindows }
-            viewModel.onReadoutEnabledChanged(ReadoutItemKey.LmuWindows.MyBestLap.Root, true)
+            viewModel.onReadoutEnabledChanged(LmuWindowsReadoutItemKey.MyBestLap.Root, true)
 
-            assertEquals(true, lmuEnabledFlow.value[ReadoutItemKey.LmuWindows.MyBestLap.Root])
+            assertEquals(true, lmuEnabledFlow.value[LmuWindowsReadoutItemKey.MyBestLap.Root])
         }
 }

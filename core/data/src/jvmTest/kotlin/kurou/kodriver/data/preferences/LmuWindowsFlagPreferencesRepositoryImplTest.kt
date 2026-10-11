@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -35,15 +36,15 @@ class LmuWindowsFlagPreferencesRepositoryImplTest {
         runTest {
             assertTrue(repository.observeFlagEnabledStates().first().isEmpty())
 
-            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, true)
+            repository.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.BlueFlag, true)
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to true),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.BlueFlag to true),
                 repository.observeFlagEnabledStates().first(),
             )
 
-            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false)
+            repository.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.BlueFlag, false)
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.BlueFlag to false),
                 repository.observeFlagEnabledStates().first(),
             )
         }
@@ -51,15 +52,15 @@ class LmuWindowsFlagPreferencesRepositoryImplTest {
     @Test
     fun `複数フラグを独立して保存・取得できる`() =
         runTest {
-            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, true)
-            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag, false)
-            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, true)
+            repository.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.BlueFlag, true)
+            repository.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag, false)
+            repository.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.RedFlag, true)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to false,
-                    ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                    LmuWindowsReadoutItemKey.Flag.BlueFlag to true,
+                    LmuWindowsReadoutItemKey.Flag.SectorYellowFlag to false,
+                    LmuWindowsReadoutItemKey.Flag.RedFlag to true,
                 ),
                 repository.observeFlagEnabledStates().first(),
             )

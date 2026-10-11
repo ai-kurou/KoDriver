@@ -12,7 +12,7 @@ import kotlin.test.assertNull
 class ReadoutItemKeyMapSerializerTest {
     @Test
     fun `シリアライズ時にReadoutItemKeyをvalueへ変換する`() {
-        val map = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true)
+        val map = mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to true)
 
         val json = Json.encodeToString(ReadoutItemKeyMapSerializer, map)
 
@@ -26,7 +26,7 @@ class ReadoutItemKeyMapSerializerTest {
 
         val map: Map<ReadoutItemKey, Boolean> = Json.decodeFromString(ReadoutItemKeyMapSerializer, json)
 
-        assertEquals(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true), map)
+        assertEquals(mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to true), map)
     }
 
     @Test
@@ -35,7 +35,7 @@ class ReadoutItemKeyMapSerializerTest {
 
         val map: Map<ReadoutItemKey, Boolean> = Json.decodeFromString(ReadoutItemKeyMapSerializer, json)
 
-        assertNull(map[ReadoutItemKey.LmuWindows.Flag.Root])
+        assertNull(map[LmuWindowsReadoutItemKey.Flag.Root])
         assertEquals(emptyMap(), map)
     }
 }

@@ -4,7 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kotlin.test.Test
 
@@ -16,14 +16,14 @@ class SaveGt7Ps5TyreTemperatureEnabledStateUseCaseTest {
         runTest {
             val useCase = SaveGt7Ps5TyreTemperatureEnabledStateUseCase(repository)
 
-            useCase(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
-            useCase(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, true)
+            useCase(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, false)
+            useCase(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, true)
 
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
+                repository.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, false)
             }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, true)
+                repository.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, true)
             }
             confirmVerified(repository)
         }

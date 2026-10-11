@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -210,12 +211,12 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             coEvery {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.LmuWindows.id,
-                    ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout,
+                    LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,
                     false,
                 )
             } answers {
                 enabledStatesFlow.update {
-                    it + (ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout to false)
+                    it + (LmuWindowsReadoutItemKey.BrakeWear.WarningReadout to false)
                 }
             }
             val viewModel = createViewModel()
@@ -230,7 +231,7 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
             coVerify(exactly = 1) {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.LmuWindows.id,
-                    ReadoutItemKey.LmuWindows.BrakeWear.WarningReadout,
+                    LmuWindowsReadoutItemKey.BrakeWear.WarningReadout,
                     false,
                 )
             }
@@ -378,14 +379,14 @@ class LmuWindowsReadoutBrakeWearDetailViewModelTest {
                 MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             every { observeVolume() } returns MutableStateFlow(60)
             every { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残量20%")) } returns Unit
-            every { stopSpeech(ReadoutItemKey.LmuWindows.BrakeWear.Root) } returns Unit
+            every { stopSpeech(LmuWindowsReadoutItemKey.BrakeWear.Root) } returns Unit
             val viewModel = createViewModel()
             viewModel.onPreviewStopped()
-            verify(exactly = 0) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeWear.Root) }
+            verify(exactly = 0) { stopSpeech(LmuWindowsReadoutItemKey.BrakeWear.Root) }
             viewModel.onReadoutTextPreviewClicked("残量{percent}%")
             viewModel.onPreviewStopped()
             viewModel.onPreviewStopped()
-            verify(exactly = 1) { stopSpeech(ReadoutItemKey.LmuWindows.BrakeWear.Root) }
+            verify(exactly = 1) { stopSpeech(LmuWindowsReadoutItemKey.BrakeWear.Root) }
             verify(exactly = 1) { playSpeechEvent(SpeechEvent.LmuWindowsBrakeWearLow(20, "残量20%")) }
             verify(exactly = 1) { observeVolume() }
             coVerify(exactly = 1) { checkAvailable() }

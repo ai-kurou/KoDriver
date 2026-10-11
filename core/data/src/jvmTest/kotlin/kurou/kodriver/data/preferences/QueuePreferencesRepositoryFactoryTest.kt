@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.Test
@@ -18,9 +19,9 @@ class QueuePreferencesRepositoryFactoryTest {
 
                 assertTrue(repo.observeQueueEnabledStates().first().isEmpty())
 
-                repo.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+                repo.saveQueueEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true)
                 assertEquals(
-                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                    mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to true),
                     repo.observeQueueEnabledStates().first(),
                 )
             } finally {

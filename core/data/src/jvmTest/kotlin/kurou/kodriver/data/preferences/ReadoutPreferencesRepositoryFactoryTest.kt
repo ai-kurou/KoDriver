@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -20,10 +21,10 @@ class ReadoutPreferencesRepositoryFactoryTest {
     fun `readout設定が正しいファイルに書き込まれる`() =
         runTest {
             val repository = createReadoutPreferencesRepository(tempDir.absolutePath)
-            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
+            repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleApproach.Root to true),
                 repository.observeReadoutEnabledStates("lmu_windows").first(),
             )
         }

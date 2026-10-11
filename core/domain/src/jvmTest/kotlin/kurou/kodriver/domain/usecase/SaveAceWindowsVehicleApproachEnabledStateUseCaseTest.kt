@@ -4,7 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
 import kotlin.test.Test
 
@@ -16,14 +16,14 @@ class SaveAceWindowsVehicleApproachEnabledStateUseCaseTest {
         runTest {
             val useCase = SaveAceWindowsVehicleApproachEnabledStateUseCase(repository)
 
-            useCase(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
-            useCase(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, true)
+            useCase(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
+            useCase(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, true)
 
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, false)
+                repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, false)
             }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.AceWindows.VehicleApproach.StartReadout, true)
+                repository.saveEnabledState(AceWindowsReadoutItemKey.VehicleApproach.StartReadout, true)
             }
             confirmVerified(repository)
         }

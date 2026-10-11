@@ -29,6 +29,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
@@ -63,13 +66,13 @@ class ReadoutContentTest {
         var selectedItem by mutableStateOf<ReadoutListItemType?>(null)
 
         rule.setContent {
-            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             itemTexts =
                 listOf(
-                    itemDisplayName(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
-                    itemDisplayName(ReadoutItemKey.LmuWindows.Flag.Root),
-                    itemDisplayName(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
-                    itemDisplayName(ReadoutItemKey.LmuWindows.MyBestLap.Root),
+                    itemDisplayName(LmuWindowsReadoutItemKey.VehicleApproach.Root),
+                    itemDisplayName(LmuWindowsReadoutItemKey.Flag.Root),
+                    itemDisplayName(LmuWindowsReadoutItemKey.VehicleDamage.Root),
+                    itemDisplayName(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 )
             ReadoutContent(
                 uiState =
@@ -77,19 +80,19 @@ class ReadoutContentTest {
                         selectedSimulator = Simulator.LmuWindows,
                         items =
                             listOf(
-                                ReadoutItemKey.LmuWindows.Flag.Root,
-                                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                                LmuWindowsReadoutItemKey.Flag.Root,
+                                LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                                LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                                LmuWindowsReadoutItemKey.MyBestLap.Root,
                             ),
                         readoutEnabledStates =
                             mapOf(
-                                ReadoutItemKey.LmuWindows.Flag.Root to true,
-                                ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                                ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                                ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
+                                LmuWindowsReadoutItemKey.Flag.Root to true,
+                                LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
+                                LmuWindowsReadoutItemKey.VehicleDamage.Root to true,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                                LmuWindowsReadoutItemKey.MyBestLap.Root to true,
                             ),
                         selectedItem = selectedItem,
                     ),
@@ -117,13 +120,13 @@ class ReadoutContentTest {
         var tyreWearText by mutableStateOf("")
 
         rule.setContent {
-            tyreWearText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreWear.Root)
+            tyreWearText = itemDisplayName(LmuWindowsReadoutItemKey.TyreWear.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to true),
+                        items = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
+                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
                         selectedItem = ReadoutListItemType.LmuWindows.TyreWear,
                     ),
                 onMove = { _, _ -> },
@@ -151,8 +154,8 @@ class ReadoutContentTest {
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to true),
+                        items = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
+                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
                         selectedItem = selectedItem,
                     ),
                 onMove = { _, _ -> },
@@ -187,8 +190,8 @@ class ReadoutContentTest {
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to true),
+                        items = listOf(LmuWindowsReadoutItemKey.TyreWear.Root),
+                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreWear.Root to true),
                         selectedItem = selectedItem,
                     ),
                 onMove = { _, _ -> },
@@ -231,13 +234,13 @@ class ReadoutContentTest {
         var tyreTemperatureText by mutableStateOf("")
 
         rule.setContent {
-            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+                        items = listOf(LmuWindowsReadoutItemKey.TyreTemperature.Root),
+                        readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.TyreTemperature.Root to true),
                         selectedItem = ReadoutListItemType.LmuWindows.TyreTemperature,
                     ),
                 onMove = { _, _ -> },
@@ -260,15 +263,15 @@ class ReadoutContentTest {
         val selected = mutableListOf<ReadoutItemKey>()
 
         rule.setContent {
-            veText = itemDisplayName(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
+            veText = itemDisplayName(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                        items = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
                         readoutEnabledStates =
                             mapOf(
-                                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
+                                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false,
                             ),
                     ),
                 onMove = { _, _ -> },
@@ -285,7 +288,7 @@ class ReadoutContentTest {
         rule.onNodeWithText(veText).performClick()
         rule.waitForIdle()
 
-        assertEquals(listOf<ReadoutItemKey>(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root), selected)
+        assertEquals(listOf<ReadoutItemKey>(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root), selected)
     }
 
     @Test
@@ -293,13 +296,13 @@ class ReadoutContentTest {
         var remainingFuelText by mutableStateOf("")
 
         rule.setContent {
-            remainingFuelText = itemDisplayName(ReadoutItemKey.AceWindows.RemainingFuel.Root)
+            remainingFuelText = itemDisplayName(AceWindowsReadoutItemKey.RemainingFuel.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.AceWindows,
-                        items = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to true),
+                        items = listOf(AceWindowsReadoutItemKey.RemainingFuel.Root),
+                        readoutEnabledStates = mapOf(AceWindowsReadoutItemKey.RemainingFuel.Root to true),
                         selectedItem = ReadoutListItemType.AceWindows.RemainingFuel,
                     ),
                 onMove = { _, _ -> },
@@ -322,13 +325,13 @@ class ReadoutContentTest {
         val selected = mutableListOf<ReadoutItemKey>()
 
         rule.setContent {
-            remainingFuelText = itemDisplayName(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
+            remainingFuelText = itemDisplayName(Gt7Ps5ReadoutItemKey.RemainingFuel.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.Gt7Ps5,
-                        items = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true),
+                        items = listOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root),
+                        readoutEnabledStates = mapOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true),
                     ),
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
@@ -344,7 +347,7 @@ class ReadoutContentTest {
         rule.onNodeWithText(remainingFuelText).performClick()
         rule.waitForIdle()
 
-        assertEquals(listOf<ReadoutItemKey>(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root), selected)
+        assertEquals(listOf<ReadoutItemKey>(Gt7Ps5ReadoutItemKey.RemainingFuel.Root), selected)
     }
 
     @Test
@@ -357,9 +360,9 @@ class ReadoutContentTest {
         rule.setContent {
             itemTexts =
                 listOf(
-                    itemDisplayName(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root),
-                    itemDisplayName(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
-                    itemDisplayName(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+                    itemDisplayName(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root),
+                    itemDisplayName(Gt7Ps5ReadoutItemKey.RemainingFuel.Root),
+                    itemDisplayName(Gt7Ps5ReadoutItemKey.MyBestLap.Root),
                 )
             ReadoutContent(
                 uiState =
@@ -367,15 +370,15 @@ class ReadoutContentTest {
                         selectedSimulator = Simulator.Gt7Ps5,
                         items =
                             listOf(
-                                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
+                                Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
+                                Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                             ),
                         readoutEnabledStates =
                             mapOf(
-                                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
-                                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
-                                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
+                                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
+                                Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true,
+                                Gt7Ps5ReadoutItemKey.MyBestLap.Root to true,
                             ),
                         selectedItem = selectedItem,
                     ),
@@ -403,20 +406,20 @@ class ReadoutContentTest {
         var tyreTemperatureText by mutableStateOf("")
 
         rule.setContent {
-            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items =
                             listOf(
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                                ReadoutItemKey.LmuWindows.Flag.Root,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                                LmuWindowsReadoutItemKey.Flag.Root,
                             ),
                         readoutEnabledStates =
                             mapOf(
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                                LmuWindowsReadoutItemKey.Flag.Root to true,
                             ),
                     ),
                 onMove = { _, _ -> },
@@ -444,8 +447,8 @@ class ReadoutContentTest {
             .assertIsEnabled()
             .performClick()
 
-        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false))
-        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to false))
+        assertTrue(changedItems.contains(LmuWindowsReadoutItemKey.TyreTemperature.Root to false))
+        assertTrue(changedItems.contains(LmuWindowsReadoutItemKey.Flag.Root to false))
     }
 
     @Test
@@ -454,25 +457,25 @@ class ReadoutContentTest {
         var tyreTemperatureText by mutableStateOf("")
 
         rule.setContent {
-            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items =
                             listOf(
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                                ReadoutItemKey.LmuWindows.Flag.Root,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                                LmuWindowsReadoutItemKey.Flag.Root,
                             ),
                         readoutEnabledStates =
                             mapOf(
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                                LmuWindowsReadoutItemKey.Flag.Root to true,
                             ),
                         queueEnabledStates =
                             mapOf(
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                                ReadoutItemKey.LmuWindows.Flag.Root to false,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
+                                LmuWindowsReadoutItemKey.Flag.Root to false,
                             ),
                     ),
                 onMove = { _, _ -> },
@@ -490,16 +493,16 @@ class ReadoutContentTest {
         rule.onNodeWithText(tyreTemperatureText).assertExists()
         rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(4)
         rule
-            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.TyreTemperature.Root.value}")
+            .onNodeWithTag("readoutListQueueTouchTarget:${LmuWindowsReadoutItemKey.TyreTemperature.Root.value}")
             .assertIsEnabled()
             .performClick()
         rule
-            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .onNodeWithTag("readoutListQueueTouchTarget:${LmuWindowsReadoutItemKey.Flag.Root.value}")
             .assertIsEnabled()
             .performClick()
 
-        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true))
-        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
+        assertTrue(changedItems.contains(LmuWindowsReadoutItemKey.TyreTemperature.Root to true))
+        assertTrue(changedItems.contains(LmuWindowsReadoutItemKey.Flag.Root to true))
     }
 
     @Test
@@ -508,25 +511,25 @@ class ReadoutContentTest {
         var tyreTemperatureText by mutableStateOf("")
 
         rule.setContent {
-            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         items =
                             listOf(
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                                ReadoutItemKey.LmuWindows.Flag.Root,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                                LmuWindowsReadoutItemKey.Flag.Root,
                             ),
                         readoutEnabledStates =
                             mapOf(
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
+                                LmuWindowsReadoutItemKey.Flag.Root to true,
                             ),
                         queueEnabledStates =
                             mapOf(
-                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                                ReadoutItemKey.LmuWindows.Flag.Root to false,
+                                LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
+                                LmuWindowsReadoutItemKey.Flag.Root to false,
                             ),
                     ),
                 onMove = { _, _ -> },
@@ -544,16 +547,16 @@ class ReadoutContentTest {
         rule.onNodeWithText(tyreTemperatureText).assertExists()
         rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(4)
         rule
-            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.TyreTemperature.Root.value}")
+            .onNodeWithTag("readoutListQueueTouchTarget:${LmuWindowsReadoutItemKey.TyreTemperature.Root.value}")
             .assertIsNotEnabled()
             .performClick()
         rule
-            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .onNodeWithTag("readoutListQueueTouchTarget:${LmuWindowsReadoutItemKey.Flag.Root.value}")
             .assertIsEnabled()
             .performClick()
 
-        assertFalse(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true))
-        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
+        assertFalse(changedItems.contains(LmuWindowsReadoutItemKey.TyreTemperature.Root to true))
+        assertTrue(changedItems.contains(LmuWindowsReadoutItemKey.Flag.Root to true))
     }
 
     @Test
@@ -563,22 +566,22 @@ class ReadoutContentTest {
         var lastItemText by mutableStateOf("")
         val items =
             listOf(
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag,
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
-                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow,
-                ReadoutItemKey.LmuWindows.Flag.RedFlag,
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
-                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
-                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                LmuWindowsReadoutItemKey.Flag.Root,
+                LmuWindowsReadoutItemKey.Flag.BlueFlag,
+                LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
+                LmuWindowsReadoutItemKey.Flag.FullCourseYellow,
+                LmuWindowsReadoutItemKey.Flag.RedFlag,
+                LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Overheat,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+                LmuWindowsReadoutItemKey.TyreTemperature.LowWarning,
+                LmuWindowsReadoutItemKey.MyBestLap.Root,
             )
 
         rule.setContent {
-            lastItemText = itemDisplayName(ReadoutItemKey.LmuWindows.MyBestLap.Root)
+            lastItemText = itemDisplayName(LmuWindowsReadoutItemKey.MyBestLap.Root)
             Box(modifier = Modifier.height(240.dp)) {
                 ReadoutListPane(
                     uiState =
@@ -611,22 +614,22 @@ class ReadoutContentTest {
         var scrollToTopRequest by mutableIntStateOf(0)
         val items =
             listOf(
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag,
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
-                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow,
-                ReadoutItemKey.LmuWindows.Flag.RedFlag,
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
-                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
-                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                LmuWindowsReadoutItemKey.Flag.Root,
+                LmuWindowsReadoutItemKey.Flag.BlueFlag,
+                LmuWindowsReadoutItemKey.Flag.SectorYellowFlag,
+                LmuWindowsReadoutItemKey.Flag.FullCourseYellow,
+                LmuWindowsReadoutItemKey.Flag.RedFlag,
+                LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Overheat,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+                LmuWindowsReadoutItemKey.TyreTemperature.LowWarning,
+                LmuWindowsReadoutItemKey.MyBestLap.Root,
             )
 
         rule.setContent {
-            lastItemText = itemDisplayName(ReadoutItemKey.LmuWindows.MyBestLap.Root)
+            lastItemText = itemDisplayName(LmuWindowsReadoutItemKey.MyBestLap.Root)
             Box(modifier = Modifier.height(240.dp)) {
                 ReadoutListPane(
                     uiState =

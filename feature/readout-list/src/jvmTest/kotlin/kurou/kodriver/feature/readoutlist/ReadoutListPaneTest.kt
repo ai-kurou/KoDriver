@@ -25,6 +25,9 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.READOUT_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -112,10 +115,10 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                            items = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
                             readoutEnabledStates =
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
+                                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true,
                                 ),
                         ),
                     onMove = { _, _ -> },
@@ -129,7 +132,7 @@ class ReadoutListPaneTest {
 
         rule.onNodeWithContentDescription("バーチャルエナジー残量").performClick()
 
-        assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root, clicked.single())
+        assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, clicked.single())
     }
 
     @Test
@@ -141,10 +144,10 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                            items = listOf(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root),
                             readoutEnabledStates =
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
+                                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true,
                                 ),
                         ),
                     onMove = { _, _ -> },
@@ -158,10 +161,10 @@ class ReadoutListPaneTest {
 
         rule
             .onNodeWithTag(
-                "readoutListChevronTouchTarget:${ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root.value}",
+                "readoutListChevronTouchTarget:${LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root.value}",
             ).performClick()
 
-        assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root, clicked.single())
+        assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, clicked.single())
     }
 
     @Test
@@ -174,9 +177,9 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
-                            queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                            items = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                            readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to true),
+                            queueEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to false),
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { item, enabled -> readoutChanges += item to enabled },
@@ -190,18 +193,18 @@ class ReadoutListPaneTest {
         rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(2)
         rule.onAllNodes(hasSwitchRole()).assertCountEquals(1)
         rule
-            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .onNodeWithTag("readoutListQueueTouchTarget:${LmuWindowsReadoutItemKey.Flag.Root.value}")
             .assertIsEnabled()
             .performClick()
         rule.onAllNodes(hasSwitchRole())[0].assertIsEnabled().performClick()
 
-        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to true, queueChanges.single())
-        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to false, readoutChanges.single())
+        assertEquals(LmuWindowsReadoutItemKey.Flag.Root to true, queueChanges.single())
+        assertEquals(LmuWindowsReadoutItemKey.Flag.Root to false, readoutChanges.single())
     }
 
     @Test
     fun `有効状態が未読み込みの場合はRootのスイッチをデフォルト値で表示する`() {
-        val items = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.LmuWindows.VehicleDamage.Root)
+        val items = listOf(LmuWindowsReadoutItemKey.Flag.Root, LmuWindowsReadoutItemKey.VehicleDamage.Root)
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
@@ -240,8 +243,8 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                            items = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                            readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to true),
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -253,7 +256,7 @@ class ReadoutListPaneTest {
         }
 
         val startSoundToggle =
-            rule.onNodeWithTag("readoutListStartSoundTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            rule.onNodeWithTag("readoutListStartSoundTouchTarget:${LmuWindowsReadoutItemKey.Flag.Root.value}")
 
         startSoundToggle.assertIsEnabled().performClick()
         startSoundToggle.performClick()
@@ -270,9 +273,9 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
-                            queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                            items = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                            readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to true),
+                            queueEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to false),
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { item, enabled -> readoutChanges += item to enabled },
@@ -284,16 +287,16 @@ class ReadoutListPaneTest {
         }
 
         rule
-            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .onNodeWithTag("readoutListQueueTouchTarget:${LmuWindowsReadoutItemKey.Flag.Root.value}")
             .assertIsEnabled()
             .performClick()
         rule
-            .onNodeWithTag("readoutListSwitchTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .onNodeWithTag("readoutListSwitchTouchTarget:${LmuWindowsReadoutItemKey.Flag.Root.value}")
             .assertIsEnabled()
             .performClick()
 
-        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to true, queueChanges.single())
-        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to false, readoutChanges.single())
+        assertEquals(LmuWindowsReadoutItemKey.Flag.Root to true, queueChanges.single())
+        assertEquals(LmuWindowsReadoutItemKey.Flag.Root to false, readoutChanges.single())
         assertEquals(emptyList(), clicked)
     }
 
@@ -306,9 +309,9 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
-                            queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                            items = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                            readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to false),
+                            queueEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to false),
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -320,11 +323,11 @@ class ReadoutListPaneTest {
         }
 
         rule
-            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .onNodeWithTag("readoutListQueueTouchTarget:${LmuWindowsReadoutItemKey.Flag.Root.value}")
             .assertIsNotEnabled()
             .performClick()
 
-        assertFalse(queueChanges.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
+        assertFalse(queueChanges.contains(LmuWindowsReadoutItemKey.Flag.Root to true))
     }
 
     @Test
@@ -335,8 +338,8 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                            items = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                            readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to false),
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -348,7 +351,7 @@ class ReadoutListPaneTest {
         }
 
         rule
-            .onNodeWithTag("readoutListStartSoundTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .onNodeWithTag("readoutListStartSoundTouchTarget:${LmuWindowsReadoutItemKey.Flag.Root.value}")
             .assertIsNotEnabled()
             .performClick()
     }
@@ -361,8 +364,8 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                            items = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                            readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to true),
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -390,8 +393,8 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            items = listOf(ReadoutItemKey.AceWindows.Flag.Root),
-                            readoutEnabledStates = mapOf(ReadoutItemKey.AceWindows.Flag.Root to true),
+                            items = listOf(AceWindowsReadoutItemKey.Flag.Root),
+                            readoutEnabledStates = mapOf(AceWindowsReadoutItemKey.Flag.Root to true),
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -419,8 +422,8 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            items = listOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root),
-                            readoutEnabledStates = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true),
+                            items = listOf(Gt7Ps5ReadoutItemKey.TyreTemperature.Root),
+                            readoutEnabledStates = mapOf(Gt7Ps5ReadoutItemKey.TyreTemperature.Root to true),
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -444,8 +447,8 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                            items = listOf(LmuWindowsReadoutItemKey.Flag.Root),
+                            readoutEnabledStates = mapOf(LmuWindowsReadoutItemKey.Flag.Root to true),
                         ),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -475,10 +478,10 @@ class ReadoutListPaneTest {
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            items = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                            items = listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root),
                             readoutEnabledStates =
                                 mapOf(
-                                    ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
+                                    LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
                                 ),
                         ),
                     onMove = { _, _ -> },
@@ -492,7 +495,7 @@ class ReadoutListPaneTest {
 
         rule.onNodeWithTag("readoutListQueueBlankTouchTarget:lmu_windows_vehicle_approach").performClick()
 
-        assertEquals(listOf<ReadoutItemKey>(ReadoutItemKey.LmuWindows.VehicleApproach.Root), clicked)
+        assertEquals(listOf<ReadoutItemKey>(LmuWindowsReadoutItemKey.VehicleApproach.Root), clicked)
     }
 
     @Test

@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kotlin.test.Test
@@ -29,9 +32,9 @@ private fun createReadoutPreferencesRepository(repository: ReadoutPreferencesRep
         }
     }
     listOf(
-        Triple("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true),
-        Triple("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, false),
-        Triple("rFactor 2", ReadoutItemKey.LmuWindows.VehicleApproach.Root, false),
+        Triple("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true),
+        Triple("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, false),
+        Triple("rFactor 2", LmuWindowsReadoutItemKey.VehicleApproach.Root, false),
     ).forEach { (simulator, key, enabled) ->
         coEvery { repository.saveReadoutEnabledState(simulator, key, enabled) } answers {
             enabledStates.update { all -> all + (simulator to ((all[simulator] ?: emptyMap()) + (key to enabled))) }
@@ -40,17 +43,17 @@ private fun createReadoutPreferencesRepository(repository: ReadoutPreferencesRep
     listOf(
         "lmu_windows" to
             listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.Flag.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
             ),
         "lmu_windows" to
             listOf(
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                LmuWindowsReadoutItemKey.Flag.Root,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                LmuWindowsReadoutItemKey.VehicleApproach.Root,
             ),
-        "rFactor 2" to listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+        "rFactor 2" to listOf(LmuWindowsReadoutItemKey.Flag.Root),
     ).forEach { (simulator, newOrder) ->
         coEvery { repository.saveReadoutOrder(simulator, newOrder) } answers {
             order.update { all -> all + (simulator to newOrder) }
@@ -81,16 +84,16 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.Flag.Root to true,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root to true,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root to false,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root to false,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root to false,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
+                    LmuWindowsReadoutItemKey.Flag.Root to true,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
+                    LmuWindowsReadoutItemKey.PitTiming.Root to true,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false,
+                    LmuWindowsReadoutItemKey.TyreWear.Root to false,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root to false,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root to false,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root to false,
                 ),
                 useCase("lmu_windows").first(),
             )
@@ -106,10 +109,10 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
-                    ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
+                    Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
+                    Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.Root to true,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root to true,
                 ),
                 useCase("gt7_ps5").first(),
             )
@@ -125,12 +128,12 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.AceWindows.Flag.Root to true,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
-                    ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
-                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true,
-                    ReadoutItemKey.AceWindows.MyBestLap.Root to false,
+                    AceWindowsReadoutItemKey.Flag.Root to true,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root to true,
+                    AceWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    AceWindowsReadoutItemKey.RemainingFuel.Root to true,
+                    AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
+                    AceWindowsReadoutItemKey.MyBestLap.Root to false,
                 ),
                 useCase("ace_windows").first(),
             )
@@ -144,33 +147,33 @@ class ObserveReadoutEnabledStatesUseCaseTest {
             val repo = createReadoutPreferencesRepository(repository)
             val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
-            repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true)
-            repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.LmuWindows.VehicleApproach.Root, false)
+            repo.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true)
+            repo.saveReadoutEnabledState("rFactor 2", LmuWindowsReadoutItemKey.VehicleApproach.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.Flag.Root to true,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root to true,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root to false,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root to false,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root to false,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
+                    LmuWindowsReadoutItemKey.Flag.Root to true,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
+                    LmuWindowsReadoutItemKey.PitTiming.Root to true,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false,
+                    LmuWindowsReadoutItemKey.TyreWear.Root to false,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root to false,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root to false,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root to true,
                 ),
                 useCase("lmu_windows").first(),
             )
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleApproach.Root to false),
                 useCase("rFactor 2").first(),
             )
             coVerify(exactly = 1) {
-                repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true)
+                repo.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true)
             }
             coVerify(exactly = 1) {
-                repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.LmuWindows.VehicleApproach.Root, false)
+                repo.saveReadoutEnabledState("rFactor 2", LmuWindowsReadoutItemKey.VehicleApproach.Root, false)
             }
             verify(exactly = 1) { repo.observeReadoutEnabledStates("lmu_windows") }
             verify(exactly = 1) { repo.observeReadoutEnabledStates("rFactor 2") }

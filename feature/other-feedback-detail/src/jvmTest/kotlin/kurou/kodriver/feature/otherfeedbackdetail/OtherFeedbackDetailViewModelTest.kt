@@ -24,8 +24,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
@@ -78,7 +78,7 @@ class OtherFeedbackDetailViewModelTest {
         id = id,
         createdAt = 0L,
         simulator = Simulator.LmuWindows,
-        readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+        readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
         narratedText = "イエローフラッグ",
         narrationOutcome = NarrationOutcome.INTERRUPTED,
         telemetryJson = telemetryJson,

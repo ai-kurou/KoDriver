@@ -7,32 +7,32 @@ val READOUT_ENABLED_STATE_DEFAULT: Map<Simulator, Map<ReadoutItemKey, Boolean>> 
     mapOf(
         Simulator.LmuWindows to
             mapOf(
-                ReadoutItemKey.LmuWindows.Flag.Root to true,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
-                ReadoutItemKey.LmuWindows.PitTiming.Root to true,
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
-                ReadoutItemKey.LmuWindows.TyreWear.Root to false,
-                ReadoutItemKey.LmuWindows.BrakeTemperature.Root to false,
-                ReadoutItemKey.LmuWindows.BrakeWear.Root to false,
-                ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
+                LmuWindowsReadoutItemKey.Flag.Root to true,
+                LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                LmuWindowsReadoutItemKey.VehicleApproach.Root to true,
+                LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
+                LmuWindowsReadoutItemKey.PitTiming.Root to true,
+                LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to false,
+                LmuWindowsReadoutItemKey.TyreWear.Root to false,
+                LmuWindowsReadoutItemKey.BrakeTemperature.Root to false,
+                LmuWindowsReadoutItemKey.BrakeWear.Root to false,
+                LmuWindowsReadoutItemKey.MyBestLap.Root to false,
             ),
         Simulator.Gt7Ps5 to
             mapOf(
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
-                ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true,
+                Gt7Ps5ReadoutItemKey.TyreTemperature.Root to true,
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root to true,
             ),
         Simulator.AceWindows to
             mapOf(
-                ReadoutItemKey.AceWindows.Flag.Root to true,
-                ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
-                ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
-                ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
-                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true,
-                ReadoutItemKey.AceWindows.MyBestLap.Root to false,
+                AceWindowsReadoutItemKey.Flag.Root to true,
+                AceWindowsReadoutItemKey.VehicleApproach.Root to true,
+                AceWindowsReadoutItemKey.TyreTemperature.Root to true,
+                AceWindowsReadoutItemKey.RemainingFuel.Root to true,
+                AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
+                AceWindowsReadoutItemKey.MyBestLap.Root to false,
             ),
     )
 

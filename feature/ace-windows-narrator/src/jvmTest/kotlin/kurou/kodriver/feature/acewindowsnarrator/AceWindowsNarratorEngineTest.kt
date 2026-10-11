@@ -18,6 +18,7 @@ import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kotlin.test.Test
@@ -30,10 +31,10 @@ class AceWindowsNarratorEngineTest {
 
     @Test
     fun `currentReadoutItemKeyはNarratorEngineのcurrentKeyを返す`() {
-        every { wavNarratorEngine.currentKey } returns ReadoutItemKey.AceWindows.VehicleApproach.Root
+        every { wavNarratorEngine.currentKey } returns AceWindowsReadoutItemKey.VehicleApproach.Root
         val engine = AceWindowsNarratorEngine(wavNarratorEngine)
 
-        assertEquals(ReadoutItemKey.AceWindows.VehicleApproach.Root, engine.currentReadoutItemKey)
+        assertEquals(AceWindowsReadoutItemKey.VehicleApproach.Root, engine.currentReadoutItemKey)
 
         verify(exactly = 1) { wavNarratorEngine.currentKey }
         confirmVerified(wavNarratorEngine)
@@ -76,14 +77,14 @@ class AceWindowsNarratorEngineTest {
     fun `playStartSoundはNarratorEngineのplayStartSoundForKeyへ委譲する`() =
         runTest {
             coEvery {
-                wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.AceWindows.VehicleApproach.Root)
+                wavNarratorEngine.playStartSoundForKey(AceWindowsReadoutItemKey.VehicleApproach.Root)
             } just Runs
             val engine = AceWindowsNarratorEngine(wavNarratorEngine)
 
-            engine.playStartSound(ReadoutItemKey.AceWindows.VehicleApproach.Root)
+            engine.playStartSound(AceWindowsReadoutItemKey.VehicleApproach.Root)
 
             coVerify(exactly = 1) {
-                wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.AceWindows.VehicleApproach.Root)
+                wavNarratorEngine.playStartSoundForKey(AceWindowsReadoutItemKey.VehicleApproach.Root)
             }
             confirmVerified(wavNarratorEngine)
         }
@@ -128,8 +129,8 @@ class AceWindowsNarratorEngineTest {
                             flowOf(
                                 mapOf(
                                     target.readoutItemKey to true,
-                                    ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false,
-                                    ReadoutItemKey.AceWindows.Flag.WhiteFlag to false,
+                                    AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false,
+                                    AceWindowsReadoutItemKey.Flag.WhiteFlag to false,
                                 ),
                             ),
                         isCustomSpeakEvent = ::isAceWindowsCustomSpeakEvent,

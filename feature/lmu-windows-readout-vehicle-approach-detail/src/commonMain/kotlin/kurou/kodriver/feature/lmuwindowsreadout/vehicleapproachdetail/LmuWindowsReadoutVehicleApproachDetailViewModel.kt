@@ -14,7 +14,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READ
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
@@ -79,10 +79,10 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
                 longitudinalThresholdMeters = longitudinal,
                 sustainedApproachDurationSeconds = sustainedDuration,
                 skipFirstLap = skipFirstLap,
-                startReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout),
+                startReadoutEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout),
                 startLeftText = startTexts.first,
                 startRightText = startTexts.second,
-                sustainedReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained),
+                sustainedReadoutEnabled = enabledStates.getValue(LmuWindowsReadoutItemKey.VehicleApproach.Sustained),
                 sustainedLeftText = sustainedTexts.first,
                 sustainedRightText = sustainedTexts.second,
             )
@@ -137,13 +137,13 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
 
     fun onStartReadoutEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout, enabled)
+            saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout, enabled)
         }
     }
 
     fun onSustainedReadoutEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, enabled)
+            saveEnabledState(LmuWindowsReadoutItemKey.VehicleApproach.Sustained, enabled)
         }
     }
 
@@ -209,6 +209,6 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
 
     /** 空白文言・TTS利用不可・音量ゼロでは試聴せず、実際の読み上げと同じRootキーで開始音を鳴らす。 */
     private fun playStartReadoutPreview(text: String) {
-        preview.onPreviewClicked(text, ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+        preview.onPreviewClicked(text, LmuWindowsReadoutItemKey.VehicleApproach.Root)
     }
 }

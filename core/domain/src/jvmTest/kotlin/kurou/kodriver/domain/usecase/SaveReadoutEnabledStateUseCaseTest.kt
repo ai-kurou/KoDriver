@@ -4,7 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kotlin.test.Test
 
@@ -16,14 +16,14 @@ class SaveReadoutEnabledStateUseCaseTest {
         runTest {
             val useCase = SaveReadoutEnabledStateUseCase(repository)
 
-            useCase("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true)
-            useCase("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, false)
+            useCase("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true)
+            useCase("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, false)
 
             coVerify(exactly = 1) {
-                repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true)
+                repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, true)
             }
             coVerify(exactly = 1) {
-                repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, false)
+                repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.MyBestLap.Root, false)
             }
             confirmVerified(repository)
         }

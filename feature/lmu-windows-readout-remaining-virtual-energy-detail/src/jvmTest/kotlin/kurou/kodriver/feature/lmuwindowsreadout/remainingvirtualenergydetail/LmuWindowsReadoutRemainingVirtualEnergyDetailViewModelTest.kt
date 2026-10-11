@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
@@ -155,12 +156,12 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
             coEvery {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.LmuWindows.id,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
                     false,
                 )
             } answers {
                 enabledStatesFlow.update {
-                    it + (ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout to false)
+                    it + (LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout to false)
                 }
             }
             val viewModel = createViewModel()
@@ -174,7 +175,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
             coVerify(exactly = 1) {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.LmuWindows.id,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.WarningReadout,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
                     false,
                 )
             }
@@ -211,7 +212,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
             val threshold = MutableStateFlow(50)
             every { repository.observeThresholdPercentage() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) } returns Unit
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) } returns Unit
             coEvery { speakText("残り50%", volume = 60) } returns Unit
             coEvery { speakText("残り70%", volume = 60) } returns Unit
             val viewModel = createViewModel()
@@ -223,13 +224,13 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             threshold.update { 70 }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
-            coVerify(exactly = 2) { playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) }
+            coVerify(exactly = 2) { playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) }
             coVerify(exactly = 1) { speakText("残り50%", volume = 60) }
             coVerify(exactly = 1) { speakText("残り70%", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
+                playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
                 speakText("残り50%", volume = 60)
-                playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
+                playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
                 speakText("残り70%", volume = 60)
             }
             verify(exactly = 2) { observeVolume() }
@@ -244,7 +245,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
             every { repository.observeThresholdPercentage() } returns MutableStateFlow(50)
             createViewModel().onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) }
             coVerify(exactly = 0) { speakText(" ", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -258,7 +259,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -275,7 +276,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
             volume.update { -1 }
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -294,12 +295,12 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(50, viewModel.uiState.first().thresholdPercentage)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) } coAnswers
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) }
             coVerify(exactly = 0) { speakText("残り50%", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
@@ -320,12 +321,12 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(50, viewModel.uiState.first().thresholdPercentage)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) } coAnswers
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) }
             coVerify(exactly = 0) { speakText("残り50%", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)

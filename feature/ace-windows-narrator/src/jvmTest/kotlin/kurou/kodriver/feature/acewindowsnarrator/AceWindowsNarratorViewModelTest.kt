@@ -27,6 +27,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
@@ -214,7 +215,7 @@ class AceWindowsNarratorViewModelTest {
             val channel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
             val tts = mockTts(spokenTexts)
-            val key = ReadoutItemKey.AceWindows.Flag.Root
+            val key = AceWindowsReadoutItemKey.Flag.Root
             stubReadoutDefaults(thresholdPercentage = 30)
             val skippedJson = slot<String>()
             val spokenJson = slot<String>()
@@ -332,7 +333,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    AceWindowsReadoutItemKey.RemainingFuel.Root,
                     "燃料は残り20パーセント",
                     NarrationOutcome.QUEUED,
                     match { it.isNotEmpty() },
@@ -347,7 +348,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    AceWindowsReadoutItemKey.RemainingFuel.Root,
                     "燃料は残り20パーセント",
                     NarrationOutcome.QUEUED,
                     capture(telemetryJsonSlot),
@@ -367,7 +368,7 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to false),
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.RemainingFuel.Root to false),
             )
             createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
 
@@ -416,7 +417,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+                    AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
                     "燃料は残り約3周",
                     NarrationOutcome.QUEUED,
                     match { it.isNotEmpty() },
@@ -436,7 +437,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+                    AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
                     "燃料は残り約3周",
                     NarrationOutcome.QUEUED,
                     capture(telemetryJsonSlot),
@@ -458,7 +459,7 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to false),
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.RemainingFuelLaps.Root to false),
             )
             createViewModel(
                 fuelChannel = Channel(Channel.UNLIMITED),
@@ -476,7 +477,7 @@ class AceWindowsNarratorViewModelTest {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
                 Simulator.AceWindows,
-                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
+                AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
                 "燃料は残り約3周",
                 NarrationOutcome.SPOKEN,
                 "{}",
@@ -492,14 +493,14 @@ class AceWindowsNarratorViewModelTest {
     private fun stubReadoutDefaults(
         thresholdPercentage: Int,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
+        orderOverride: List<ReadoutItemKey> = listOf(AceWindowsReadoutItemKey.RemainingFuel.Root),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         tyreTemperatureHighThresholdCelsius: Int = 90,
         tyreTemperatureEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         vehicleApproachEnabledOverrides: Map<ReadoutItemKey, Boolean> =
             mapOf(
-                ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
-                ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to true,
+                AceWindowsReadoutItemKey.VehicleApproach.Root to true,
+                AceWindowsReadoutItemKey.VehicleApproach.StartReadout to true,
             ),
         vehicleApproachThresholdMeters: Double = 10.0,
         remainingFuelLapsThreshold: Int = 3,
@@ -536,7 +537,7 @@ class AceWindowsNarratorViewModelTest {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
                 Simulator.AceWindows,
-                ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                AceWindowsReadoutItemKey.RemainingFuel.Root,
                 "燃料は残り20パーセント",
                 NarrationOutcome.SPOKEN,
                 "{}",
@@ -557,7 +558,7 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true),
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.MyBestLap.Root to true),
                 remainingFuelLapsThreshold = 2,
                 selectedSimulator = Simulator.LmuWindows,
             )
@@ -645,7 +646,7 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.Root to false),
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.Flag.Root to false),
             )
             createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
 
@@ -678,15 +679,15 @@ class AceWindowsNarratorViewModelTest {
                 thresholdPercentage = 30,
                 flagEnabledOverrides =
                     mapOf(
-                        ReadoutItemKey.AceWindows.Flag.WhiteFlag to false,
-                        ReadoutItemKey.AceWindows.Flag.GreenFlag to false,
-                        ReadoutItemKey.AceWindows.Flag.RedFlag to false,
-                        ReadoutItemKey.AceWindows.Flag.BlueFlag to false,
-                        ReadoutItemKey.AceWindows.Flag.YellowFlag to false,
-                        ReadoutItemKey.AceWindows.Flag.BlackFlag to false,
-                        ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to false,
-                        ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to false,
-                        ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to false,
+                        AceWindowsReadoutItemKey.Flag.WhiteFlag to false,
+                        AceWindowsReadoutItemKey.Flag.GreenFlag to false,
+                        AceWindowsReadoutItemKey.Flag.RedFlag to false,
+                        AceWindowsReadoutItemKey.Flag.BlueFlag to false,
+                        AceWindowsReadoutItemKey.Flag.YellowFlag to false,
+                        AceWindowsReadoutItemKey.Flag.BlackFlag to false,
+                        AceWindowsReadoutItemKey.Flag.BlackWhiteFlag to false,
+                        AceWindowsReadoutItemKey.Flag.OrangeCircleFlag to false,
+                        AceWindowsReadoutItemKey.Flag.RedYellowStripesFlag to false,
                     ),
             )
             createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
@@ -739,7 +740,7 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.TyreTemperature.Root to false),
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.TyreTemperature.Root to false),
                 tyreTemperatureHighThresholdCelsius = 90,
             )
             createViewModel(
@@ -765,7 +766,7 @@ class AceWindowsNarratorViewModelTest {
                 thresholdPercentage = 30,
                 tyreTemperatureHighThresholdCelsius = 90,
                 tyreTemperatureEnabledOverrides =
-                    mapOf(ReadoutItemKey.AceWindows.TyreTemperature.OverheatWarning to false),
+                    mapOf(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false),
             )
             createViewModel(
                 fuelChannel = fuelChannel,
@@ -792,7 +793,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root,
+                    AceWindowsReadoutItemKey.TyreTemperature.Root,
                     "タイヤ過熱 95度",
                     NarrationOutcome.QUEUED,
                     match { it.isNotEmpty() },
@@ -812,7 +813,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root,
+                    AceWindowsReadoutItemKey.TyreTemperature.Root,
                     "タイヤ過熱 95度",
                     NarrationOutcome.QUEUED,
                     capture(telemetryJsonSlot),
@@ -841,7 +842,7 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                orderOverride = listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
+                orderOverride = listOf(AceWindowsReadoutItemKey.VehicleApproach.Root),
             )
             createViewModel(
                 fuelChannel = fuelChannel,
@@ -863,14 +864,14 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                orderOverride = listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
+                orderOverride = listOf(AceWindowsReadoutItemKey.VehicleApproach.Root),
             )
             val json = slot<String>()
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "周囲に注意",
                     NarrationOutcome.SPOKEN,
                     capture(json),
@@ -892,7 +893,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "周囲に注意",
                     NarrationOutcome.SPOKEN,
                     json.captured,
@@ -910,14 +911,14 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                orderOverride = listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
+                orderOverride = listOf(AceWindowsReadoutItemKey.VehicleApproach.Root),
             )
             val json = slot<String>()
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "",
                     NarrationOutcome.SKIPPED,
                     capture(json),
@@ -939,7 +940,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "",
                     NarrationOutcome.SKIPPED,
                     json.captured,
@@ -957,7 +958,7 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                vehicleApproachEnabledOverrides = mapOf(ReadoutItemKey.AceWindows.VehicleApproach.Root to false),
+                vehicleApproachEnabledOverrides = mapOf(AceWindowsReadoutItemKey.VehicleApproach.Root to false),
             )
             createViewModel(
                 fuelChannel = fuelChannel,
@@ -981,8 +982,8 @@ class AceWindowsNarratorViewModelTest {
                 thresholdPercentage = 30,
                 vehicleApproachEnabledOverrides =
                     mapOf(
-                        ReadoutItemKey.AceWindows.VehicleApproach.Root to true,
-                        ReadoutItemKey.AceWindows.VehicleApproach.StartReadout to false,
+                        AceWindowsReadoutItemKey.VehicleApproach.Root to true,
+                        AceWindowsReadoutItemKey.VehicleApproach.StartReadout to false,
                     ),
             )
             createViewModel(
@@ -1072,13 +1073,13 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                orderOverride = listOf(ReadoutItemKey.AceWindows.VehicleApproach.Root),
+                orderOverride = listOf(AceWindowsReadoutItemKey.VehicleApproach.Root),
             )
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "車両接近",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
@@ -1110,7 +1111,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     "車両接近",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),
@@ -1128,8 +1129,8 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true),
-                orderOverride = listOf(ReadoutItemKey.AceWindows.MyBestLap.Root),
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.MyBestLap.Root to true),
+                orderOverride = listOf(AceWindowsReadoutItemKey.MyBestLap.Root),
             )
             createViewModel(
                 fuelChannel = fuelChannel,
@@ -1155,7 +1156,7 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to false),
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.MyBestLap.Root to false),
             )
             createViewModel(
                 fuelChannel = fuelChannel,
@@ -1179,14 +1180,14 @@ class AceWindowsNarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 thresholdPercentage = 30,
-                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.MyBestLap.Root to true),
-                orderOverride = listOf(ReadoutItemKey.AceWindows.MyBestLap.Root),
+                enabledOverrides = mapOf(AceWindowsReadoutItemKey.MyBestLap.Root to true),
+                orderOverride = listOf(AceWindowsReadoutItemKey.MyBestLap.Root),
             )
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.MyBestLap.Root,
+                    AceWindowsReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
                     capture(telemetryJsons),
@@ -1216,7 +1217,7 @@ class AceWindowsNarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.AceWindows,
-                    ReadoutItemKey.AceWindows.MyBestLap.Root,
+                    AceWindowsReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 1分29秒000",
                     NarrationOutcome.SPOKEN,
                     telemetryJsons.single(),

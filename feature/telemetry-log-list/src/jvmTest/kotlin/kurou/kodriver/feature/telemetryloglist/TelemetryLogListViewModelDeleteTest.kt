@@ -15,8 +15,9 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -198,9 +199,9 @@ private fun telemetryLog(
     simulator = simulator,
     readoutItemKey =
         if (simulator == Simulator.AceWindows) {
-            ReadoutItemKey.AceWindows.Flag.Root
+            AceWindowsReadoutItemKey.Flag.Root
         } else {
-            ReadoutItemKey.LmuWindows.Flag.Root
+            LmuWindowsReadoutItemKey.Flag.Root
         },
     narratedText = "イエローフラッグ",
     narrationOutcome = NarrationOutcome.INTERRUPTED,

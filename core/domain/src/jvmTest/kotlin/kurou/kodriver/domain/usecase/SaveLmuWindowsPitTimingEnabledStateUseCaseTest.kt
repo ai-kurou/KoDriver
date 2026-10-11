@@ -4,7 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kotlin.test.Test
 
@@ -16,14 +16,14 @@ class SaveLmuWindowsPitTimingEnabledStateUseCaseTest {
         runTest {
             val useCase = SaveLmuWindowsPitTimingEnabledStateUseCase(repository)
 
-            useCase(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
-            useCase(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, true)
+            useCase(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false)
+            useCase(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, true)
 
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false)
             }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, true)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, true)
             }
             confirmVerified(repository)
         }

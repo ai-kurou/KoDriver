@@ -4,7 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kotlin.test.Test
 
@@ -14,10 +14,10 @@ class SaveAceWindowsFlagEnabledStateUseCaseTest {
     @Test
     fun `指定したフラグの有効状態が保存される`() =
         runTest {
-            SaveAceWindowsFlagEnabledStateUseCase(repository)(ReadoutItemKey.AceWindows.Flag.RedFlag, false)
+            SaveAceWindowsFlagEnabledStateUseCase(repository)(AceWindowsReadoutItemKey.Flag.RedFlag, false)
 
             coVerify(exactly = 1) {
-                repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.RedFlag, false)
+                repository.saveFlagEnabledState(AceWindowsReadoutItemKey.Flag.RedFlag, false)
             }
             confirmVerified(repository)
         }

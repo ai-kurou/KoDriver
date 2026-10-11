@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -33,10 +34,10 @@ class LmuWindowsVehicleDamagePreferencesRepositoryFactoryTest {
         runTest {
             val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, true)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.VehicleDamage.Overheat to true),
                 repository.observeEnabledStates().first(),
             )
         }

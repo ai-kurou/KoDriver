@@ -4,7 +4,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kotlin.test.Test
 
@@ -16,14 +16,14 @@ class SaveLmuWindowsTyreTemperatureEnabledStateUseCaseTest {
         runTest {
             val useCase = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository)
 
-            useCase(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
-            useCase(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
+            useCase(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
+            useCase(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, true)
 
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
             }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, true)
             }
             confirmVerified(repository)
         }

@@ -4,16 +4,16 @@ package kurou.kodriver.domain.model
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 val ACE_WINDOWS_FLAG_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
     mapOf(
-        ReadoutItemKey.AceWindows.Flag.WhiteFlag to true,
-        ReadoutItemKey.AceWindows.Flag.GreenFlag to true,
-        ReadoutItemKey.AceWindows.Flag.RedFlag to true,
-        ReadoutItemKey.AceWindows.Flag.BlueFlag to true,
-        ReadoutItemKey.AceWindows.Flag.YellowFlag to true,
-        ReadoutItemKey.AceWindows.Flag.BlackFlag to true,
-        ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to true,
-        ReadoutItemKey.AceWindows.Flag.CheckeredFlag to true,
-        ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to true,
-        ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to true,
+        AceWindowsReadoutItemKey.Flag.WhiteFlag to true,
+        AceWindowsReadoutItemKey.Flag.GreenFlag to true,
+        AceWindowsReadoutItemKey.Flag.RedFlag to true,
+        AceWindowsReadoutItemKey.Flag.BlueFlag to true,
+        AceWindowsReadoutItemKey.Flag.YellowFlag to true,
+        AceWindowsReadoutItemKey.Flag.BlackFlag to true,
+        AceWindowsReadoutItemKey.Flag.BlackWhiteFlag to true,
+        AceWindowsReadoutItemKey.Flag.CheckeredFlag to true,
+        AceWindowsReadoutItemKey.Flag.OrangeCircleFlag to true,
+        AceWindowsReadoutItemKey.Flag.RedYellowStripesFlag to true,
     )
 
 /** ACE のチェッカーフラッグ読み上げ文言の初期値。空白文言の場合は読み上げない。 */

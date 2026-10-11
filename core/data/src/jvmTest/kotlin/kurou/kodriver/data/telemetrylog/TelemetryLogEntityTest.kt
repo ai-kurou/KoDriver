@@ -1,7 +1,7 @@
 package kurou.kodriver.data.telemetrylog
 
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kotlin.test.Test
@@ -16,7 +16,7 @@ class TelemetryLogEntityTest {
                 id = 1L,
                 createdAt = 1000L,
                 simulatorId = Simulator.Gt7Ps5.id,
-                readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.QUEUED.id,
                 telemetryJson = """{"lapCount":1}""",
@@ -27,7 +27,7 @@ class TelemetryLogEntityTest {
                 id = 1L,
                 createdAt = 1000L,
                 simulator = Simulator.Gt7Ps5,
-                readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.QUEUED,
                 telemetryJson = """{"lapCount":1}""",
@@ -43,7 +43,7 @@ class TelemetryLogEntityTest {
                 id = 1L,
                 createdAt = 1000L,
                 simulatorId = "unknown",
-                readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = NarrationOutcome.QUEUED.id,
                 telemetryJson = """{"lapCount":1}""",
@@ -75,7 +75,7 @@ class TelemetryLogEntityTest {
                 id = 1L,
                 createdAt = 1000L,
                 simulatorId = Simulator.Gt7Ps5.id,
-                readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root.value,
                 narratedText = "燃料は残り約1周",
                 narrationOutcome = "unknown",
                 telemetryJson = """{"lapCount":1}""",

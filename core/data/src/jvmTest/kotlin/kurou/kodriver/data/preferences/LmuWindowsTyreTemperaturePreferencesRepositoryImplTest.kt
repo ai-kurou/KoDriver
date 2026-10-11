@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import java.nio.file.Files
@@ -68,10 +69,10 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -79,11 +80,11 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -91,13 +92,13 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `異なるキーで保存した値がすべて保持される`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                    LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning to true,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root to false,
                 ),
                 repository.observeEnabledStates().first(),
             )
@@ -174,7 +175,7 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `未知の設定キーとセッションを除外する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning
+            val key = LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning
             dataStore.updateData {
                 it.copy(
                     enabledStates = mapOf(key.value to false, "future_temperature" to true),

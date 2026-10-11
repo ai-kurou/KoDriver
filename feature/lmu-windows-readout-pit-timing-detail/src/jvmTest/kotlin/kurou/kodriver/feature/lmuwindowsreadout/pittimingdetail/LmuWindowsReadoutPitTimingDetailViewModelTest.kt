@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingReadoutTextPreferencesRepository
@@ -185,8 +186,8 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
     fun `onVirtualEnergyEnabledChangedにfalseを渡すと保存されvirtualEnergyEnabledがfalseになる`() =
         runTest {
             stubRepository()
-            coEvery { repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false) } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to false) }
+            coEvery { repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false) } answers {
+                enabledStatesFlow.update { it + (LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to false) }
             }
             val viewModel = createViewModel()
 
@@ -197,7 +198,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             verify(exactly = 1) { repository.observeTyreWearLaps() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false)
             }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
@@ -210,8 +211,8 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
     fun `onTyreWearEnabledChangedにfalseを渡すと保存されtyreWearEnabledがfalseになる`() =
         runTest {
             stubRepository()
-            coEvery { repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, false) } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.PitTiming.TyreWear to false) }
+            coEvery { repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.TyreWear, false) } answers {
+                enabledStatesFlow.update { it + (LmuWindowsReadoutItemKey.PitTiming.TyreWear to false) }
             }
             val viewModel = createViewModel()
 
@@ -222,7 +223,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             verify(exactly = 1) { repository.observeTyreWearLaps() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, false)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.TyreWear, false)
             }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearReadoutText() }
             verify(exactly = 1) { readoutTextRepository.observeTyreWearImminentReadoutText() }
@@ -260,19 +261,19 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         runTest {
             stubRepository()
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) } returns Unit
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } returns Unit
             coEvery { speakText("残り5周", volume = 60) } returns Unit
             coEvery { speakText("必ず{laps}", volume = 60) } returns Unit
             val viewModel = createViewModel()
             viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
             viewModel.onVirtualEnergyImminentTextPreviewClicked("必ず{laps}")
-            coVerify(exactly = 2) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
+            coVerify(exactly = 2) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 1) { speakText("残り5周", volume = 60) }
             coVerify(exactly = 1) { speakText("必ず{laps}", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root)
+                playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
                 speakText("残り5周", volume = 60)
-                playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root)
+                playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
                 speakText("必ず{laps}", volume = 60)
             }
             verify(exactly = 2) { observeVolume() }
@@ -287,7 +288,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             viewModel.onVirtualEnergyTextPreviewClicked(" ")
             viewModel.onVirtualEnergyImminentTextPreviewClicked("")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -301,7 +302,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             viewModel.onVirtualEnergyTextPreviewClicked("注意")
             viewModel.onVirtualEnergyImminentTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -317,7 +318,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             volume.update { -1 }
             viewModel.onVirtualEnergyImminentTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -351,19 +352,19 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         runTest {
             stubRepository()
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) } returns Unit
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } returns Unit
             coEvery { speakText("残り5周", volume = 60) } returns Unit
             coEvery { speakText("必ず{laps}", volume = 60) } returns Unit
             val viewModel = createViewModel()
             viewModel.onTyreWearTextPreviewClicked("残り{laps}周")
             viewModel.onTyreWearImminentTextPreviewClicked("必ず{laps}")
-            coVerify(exactly = 2) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
+            coVerify(exactly = 2) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 1) { speakText("残り5周", volume = 60) }
             coVerify(exactly = 1) { speakText("必ず{laps}", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root)
+                playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
                 speakText("残り5周", volume = 60)
-                playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root)
+                playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root)
                 speakText("必ず{laps}", volume = 60)
             }
             verify(exactly = 2) { observeVolume() }
@@ -387,12 +388,12 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             every { observeVolume() } returns MutableStateFlow(60)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) } coAnswers
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("残り5周", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
@@ -405,12 +406,12 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
             every { observeVolume() } returns MutableStateFlow(60)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) } coAnswers
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
             viewModel.onVirtualEnergyTextPreviewClicked("残り{laps}周")
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.PitTiming.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.PitTiming.Root) }
             coVerify(exactly = 0) { speakText("残り5周", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)

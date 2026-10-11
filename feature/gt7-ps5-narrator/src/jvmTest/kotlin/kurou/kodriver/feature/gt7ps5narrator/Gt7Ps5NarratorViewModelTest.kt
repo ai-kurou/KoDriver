@@ -27,8 +27,10 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -149,7 +151,7 @@ class Gt7Ps5NarratorViewModelTest {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
             val tts = mockTts(spokenTexts)
-            val key = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+            val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root
             stubReadoutDefaults()
             val skippedJson = slot<String>()
             val spokenJson = slot<String>()
@@ -253,7 +255,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     any(),
                     capture(telemetryJsons),
@@ -291,7 +293,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     any(),
                     telemetryJsons.single(),
@@ -306,7 +308,7 @@ class Gt7Ps5NarratorViewModelTest {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
             val ttsEngine = mockTts(spokenTexts)
-            stubReadoutDefaults(enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false))
+            stubReadoutDefaults(enabledOverrides = mapOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root to false))
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -411,7 +413,7 @@ class Gt7Ps5NarratorViewModelTest {
             val spokenTexts = mutableListOf<SpeechEvent>()
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
-                enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false),
+                enabledOverrides = mapOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to false),
                 fuelThreshold = 3,
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
@@ -449,7 +451,7 @@ class Gt7Ps5NarratorViewModelTest {
             val spokenTexts = mutableListOf<SpeechEvent>()
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
-                enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false),
+                enabledOverrides = mapOf(Gt7Ps5ReadoutItemKey.RemainingFuel.Root to false),
                 remainingFuelThresholdPercentage = 30,
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
@@ -471,7 +473,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                     "燃料は残り30パーセント",
                     any(),
                     capture(telemetryJsons),
@@ -493,7 +495,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                     "燃料は残り30パーセント",
                     any(),
                     telemetryJsons.single(),
@@ -544,7 +546,7 @@ class Gt7Ps5NarratorViewModelTest {
             val spokenTexts = mutableListOf<SpeechEvent>()
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
-                enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to false),
+                enabledOverrides = mapOf(Gt7Ps5ReadoutItemKey.TyreTemperature.Root to false),
                 tyreTemperatureHighThresholdCelsius = 95,
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
@@ -583,7 +585,7 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine = mockTts(spokenTexts)
             stubReadoutDefaults(
                 tyreTemperatureEnabledOverrides =
-                    mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
+                    mapOf(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to false),
                 tyreTemperatureHighThresholdCelsius = 95,
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
@@ -626,7 +628,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                     "タイヤ過熱 95度",
                     any(),
                     capture(telemetryJsons),
@@ -665,7 +667,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     123_456L,
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                     "タイヤ過熱 95度",
                     any(),
                     telemetryJsons.single(),
@@ -682,11 +684,11 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    initialKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(
                 orderOverride =
-                    listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+                    listOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root, Gt7Ps5ReadoutItemKey.MyBestLap.Root),
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
@@ -709,7 +711,7 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    initialKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(orderOverride = emptyList())
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
@@ -729,17 +731,17 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    initialKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(
                 orderOverride =
-                    listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+                    listOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root, Gt7Ps5ReadoutItemKey.MyBestLap.Root),
             )
             coEvery {
                 telemetryLogRepository.saveTelemetryLog(
                     any(),
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     NarrationOutcome.SKIPPED,
                     any(),
@@ -755,7 +757,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     any(),
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     NarrationOutcome.SKIPPED,
                     any(),
@@ -772,10 +774,10 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    initialKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(
-                orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+                orderOverride = listOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root, LmuWindowsReadoutItemKey.Flag.Root),
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
@@ -794,9 +796,9 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    initialKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 )
-            stubReadoutDefaults(orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root))
+            stubReadoutDefaults(orderOverride = listOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root))
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -814,12 +816,12 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    initialKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 )
             stubReadoutDefaults(
                 orderOverride =
-                    listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
-                queueEnabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
+                    listOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root, Gt7Ps5ReadoutItemKey.MyBestLap.Root),
+                queueEnabledOverrides = mapOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root to true),
             )
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
@@ -838,9 +840,9 @@ class Gt7Ps5NarratorViewModelTest {
             val ttsEngine =
                 mockPriorityAwareTts(
                     spokenTexts = spokenTexts,
-                    initialKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    initialKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 )
-            stubReadoutDefaults(orderOverride = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root))
+            stubReadoutDefaults(orderOverride = listOf(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root))
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -863,7 +865,7 @@ class Gt7Ps5NarratorViewModelTest {
             } returns MutableSharedFlow()
             every {
                 readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
-            } returns MutableStateFlow(listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root))
+            } returns MutableStateFlow(listOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root))
             every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
             every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(0)
             every {
@@ -876,7 +878,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     any(),
                     capture(telemetryJsons),
@@ -905,7 +907,7 @@ class Gt7Ps5NarratorViewModelTest {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
                     Simulator.Gt7Ps5,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                     "自己ベストラップ更新 59秒000",
                     any(),
                     telemetryJsons.single(),
@@ -930,7 +932,7 @@ class Gt7Ps5NarratorViewModelTest {
     private fun stubReadoutDefaults(
         simulator: Simulator = Simulator.Gt7Ps5,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+        orderOverride: List<ReadoutItemKey> = listOf(Gt7Ps5ReadoutItemKey.MyBestLap.Root),
         fuelThreshold: Int = 3,
         remainingFuelThresholdPercentage: Int = 0,
         tyreTemperatureHighThresholdCelsius: Int = 95,
@@ -965,7 +967,7 @@ class Gt7Ps5NarratorViewModelTest {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
                 Simulator.Gt7Ps5,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                Gt7Ps5ReadoutItemKey.MyBestLap.Root,
                 myBestLapNarratedText,
                 any(),
                 capture(telemetryJsons),
@@ -975,7 +977,7 @@ class Gt7Ps5NarratorViewModelTest {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
                 Simulator.Gt7Ps5,
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
                 any(),
                 any(),
                 capture(telemetryJsons),
@@ -985,7 +987,7 @@ class Gt7Ps5NarratorViewModelTest {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
                 Simulator.Gt7Ps5,
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                Gt7Ps5ReadoutItemKey.RemainingFuel.Root,
                 "燃料は残り30パーセント",
                 any(),
                 capture(telemetryJsons),
@@ -995,7 +997,7 @@ class Gt7Ps5NarratorViewModelTest {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
                 Simulator.Gt7Ps5,
-                ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
+                Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                 "タイヤ過熱 95度",
                 any(),
                 capture(telemetryJsons),
@@ -1034,7 +1036,7 @@ class Gt7Ps5NarratorViewModelTest {
     fun `タイヤ過熱は最高温度と解決文言をイベントとログに渡す`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-            val key = ReadoutItemKey.Gt7Ps5.TyreTemperature.Root
+            val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root
             val jsons = mutableListOf<String>()
             val event = SpeechEvent.Gt7Ps5TyreOverheat(108, "温度108度")
             stubReadoutDefaults(orderOverride = listOf(key))
@@ -1087,7 +1089,7 @@ class Gt7Ps5NarratorViewModelTest {
     fun `タイヤ過熱の文言を取得できなければ発話せずSKIPPEDを記録する`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-            val key = ReadoutItemKey.Gt7Ps5.TyreTemperature.Root
+            val key = Gt7Ps5ReadoutItemKey.TyreTemperature.Root
             val jsons = mutableListOf<String>()
             val event = SpeechEvent.Gt7Ps5TyreOverheat(108, null)
             stubReadoutDefaults(orderOverride = listOf(key))
@@ -1139,7 +1141,7 @@ class Gt7Ps5NarratorViewModelTest {
     fun `自己ベストラップ更新は更新後のタイムと解決文言をイベントとログに渡す`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-            val key = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+            val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root
             val jsons = mutableListOf<String>()
             val event = SpeechEvent.Gt7Ps5MyBestLap(83_456, "更新1分23秒456")
             stubReadoutDefaults(
@@ -1185,7 +1187,7 @@ class Gt7Ps5NarratorViewModelTest {
     fun `自己ベストラップ更新の文言を取得できなければ発話せずSKIPPEDを記録する`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-            val key = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+            val key = Gt7Ps5ReadoutItemKey.MyBestLap.Root
             val jsons = mutableListOf<String>()
             val event = SpeechEvent.Gt7Ps5MyBestLap(83_456, null)
             stubReadoutDefaults(

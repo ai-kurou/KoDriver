@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kotlin.test.Test
@@ -24,28 +25,28 @@ class SaveReadoutStartSoundEnabledStateUseCaseTest {
             val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { repository.observeStartSoundEnabledStates() } returns states
             coEvery {
-                repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
+                repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
             } answers {
-                states.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to false) }
+                states.update { it + (LmuWindowsReadoutItemKey.Flag.Root to false) }
             }
             coEvery {
-                repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+                repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true)
             } answers {
-                states.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to true) }
+                states.update { it + (LmuWindowsReadoutItemKey.Flag.Root to true) }
             }
             val saveUseCase = SaveReadoutStartSoundEnabledStateUseCase(repository)
             val observeUseCase = ObserveReadoutStartSoundEnabledStatesUseCase(repository)
 
-            saveUseCase(ReadoutItemKey.LmuWindows.Flag.Root, false)
-            assertEquals(false, observeUseCase().first()[ReadoutItemKey.LmuWindows.Flag.Root])
+            saveUseCase(LmuWindowsReadoutItemKey.Flag.Root, false)
+            assertEquals(false, observeUseCase().first()[LmuWindowsReadoutItemKey.Flag.Root])
 
-            saveUseCase(ReadoutItemKey.LmuWindows.Flag.Root, true)
-            assertEquals(true, observeUseCase().first()[ReadoutItemKey.LmuWindows.Flag.Root])
+            saveUseCase(LmuWindowsReadoutItemKey.Flag.Root, true)
+            assertEquals(true, observeUseCase().first()[LmuWindowsReadoutItemKey.Flag.Root])
             coVerify(exactly = 1) {
-                repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
+                repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
             }
             coVerify(exactly = 1) {
-                repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+                repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, true)
             }
             verify(exactly = 2) { repository.observeStartSoundEnabledStates() }
             confirmVerified(repository)

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatAceWindowsMyBestLapReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
@@ -60,7 +60,7 @@ internal class AceWindowsReadoutMyBestLapDetailViewModel(
             preview.textToSpeechAvailable,
         ) { states, text, available ->
             AceWindowsReadoutMyBestLapDetailUiState(
-                enabled = states.readoutEnabled(ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled),
+                enabled = states.readoutEnabled(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled),
                 readoutText = text,
                 isTextToSpeechAvailable = available,
             )
@@ -77,7 +77,7 @@ internal class AceWindowsReadoutMyBestLapDetailViewModel(
         viewModelScope.launch {
             myBestLapUseCases.saveEnabledState(
                 Simulator.AceWindows.id,
-                ReadoutItemKey.AceWindows.MyBestLap.DetailEnabled,
+                AceWindowsReadoutItemKey.MyBestLap.DetailEnabled,
                 enabled,
             )
         }
@@ -94,6 +94,6 @@ internal class AceWindowsReadoutMyBestLapDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        preview.onPreviewClicked(text, ReadoutItemKey.AceWindows.MyBestLap.Root)
+        preview.onPreviewClicked(text, AceWindowsReadoutItemKey.MyBestLap.Root)
     }
 }

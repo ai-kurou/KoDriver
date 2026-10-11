@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
@@ -64,7 +64,7 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
                 thresholdPercentage = thresholdPercentage,
                 readoutText = text,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled),
+                enabled = enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled),
             )
         }.stateIn(
             viewModelScope,
@@ -86,7 +86,7 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        preview.onPreviewClicked(text, ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
+        preview.onPreviewClicked(text, Gt7Ps5ReadoutItemKey.RemainingFuel.Root)
     }
 
     fun onThresholdChanged(percentage: Int) {
@@ -101,7 +101,7 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
         viewModelScope.launch {
             remainingFuelUseCases.saveReadoutEnabledState(
                 Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled,
+                Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled,
                 enabled,
             )
         }

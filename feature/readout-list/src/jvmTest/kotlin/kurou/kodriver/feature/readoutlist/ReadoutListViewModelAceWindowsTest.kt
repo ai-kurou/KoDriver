@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
@@ -69,27 +70,27 @@ class ReadoutListViewModelAceWindowsTest {
             assertEquals(Simulator.AceWindows, state.selectedSimulator)
             assertEquals(
                 listOf(
-                    ReadoutItemKey.AceWindows.Flag.Root,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
-                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
-                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root,
-                    ReadoutItemKey.AceWindows.MyBestLap.Root,
+                    AceWindowsReadoutItemKey.Flag.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
+                    AceWindowsReadoutItemKey.RemainingFuel.Root,
+                    AceWindowsReadoutItemKey.TyreTemperature.Root,
+                    AceWindowsReadoutItemKey.MyBestLap.Root,
                 ),
                 state.items,
             )
-            assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
-            assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.VehicleApproach.Root])
-            assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
-            assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
-            assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuelLaps.Root])
-            assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.AceWindows.MyBestLap.Root])
-            assertEquals(false, state.queueEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
-            assertEquals(null, state.queueEnabledStates[ReadoutItemKey.AceWindows.VehicleApproach.Root])
-            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.TyreTemperature.Root])
-            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
-            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuelLaps.Root])
-            assertEquals(false, state.queueEnabledStates[ReadoutItemKey.AceWindows.MyBestLap.Root])
+            assertEquals(true, state.readoutEnabledStates[AceWindowsReadoutItemKey.Flag.Root])
+            assertEquals(true, state.readoutEnabledStates[AceWindowsReadoutItemKey.VehicleApproach.Root])
+            assertEquals(true, state.readoutEnabledStates[AceWindowsReadoutItemKey.TyreTemperature.Root])
+            assertEquals(true, state.readoutEnabledStates[AceWindowsReadoutItemKey.RemainingFuel.Root])
+            assertEquals(true, state.readoutEnabledStates[AceWindowsReadoutItemKey.RemainingFuelLaps.Root])
+            assertEquals(false, state.readoutEnabledStates[AceWindowsReadoutItemKey.MyBestLap.Root])
+            assertEquals(false, state.queueEnabledStates[AceWindowsReadoutItemKey.Flag.Root])
+            assertEquals(null, state.queueEnabledStates[AceWindowsReadoutItemKey.VehicleApproach.Root])
+            assertEquals(true, state.queueEnabledStates[AceWindowsReadoutItemKey.TyreTemperature.Root])
+            assertEquals(true, state.queueEnabledStates[AceWindowsReadoutItemKey.RemainingFuel.Root])
+            assertEquals(true, state.queueEnabledStates[AceWindowsReadoutItemKey.RemainingFuelLaps.Root])
+            assertEquals(false, state.queueEnabledStates[AceWindowsReadoutItemKey.MyBestLap.Root])
             verify(exactly = 1) { simulatorRepository.selectedSimulator() }
             verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("ace_windows") }
             verify(exactly = 1) { readoutRepository.observeReadoutOrder("ace_windows") }
@@ -109,11 +110,11 @@ class ReadoutListViewModelAceWindowsTest {
             coEvery {
                 readoutRepository.saveReadoutEnabledState(
                     "ace_windows",
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     false,
                 )
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.AceWindows.VehicleApproach.Root to false) }
+                enabledStatesFlow.update { it + (AceWindowsReadoutItemKey.VehicleApproach.Root to false) }
             }
             every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             every { startSoundRepository.observeStartSoundEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -125,16 +126,16 @@ class ReadoutListViewModelAceWindowsTest {
                     startSoundRepository = startSoundRepository,
                 )
 
-            viewModel.onReadoutEnabledChanged(ReadoutItemKey.AceWindows.VehicleApproach.Root, false)
+            viewModel.onReadoutEnabledChanged(AceWindowsReadoutItemKey.VehicleApproach.Root, false)
 
             assertEquals(
                 false,
-                viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.AceWindows.VehicleApproach.Root],
+                viewModel.uiState.first().readoutEnabledStates[AceWindowsReadoutItemKey.VehicleApproach.Root],
             )
             coVerify(exactly = 1) {
                 readoutRepository.saveReadoutEnabledState(
                     "ace_windows",
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     false,
                 )
             }
@@ -158,11 +159,11 @@ class ReadoutListViewModelAceWindowsTest {
             every { startSoundRepository.observeStartSoundEnabledStates() } returns startSoundEnabledFlow
             coEvery {
                 startSoundRepository.saveStartSoundEnabledState(
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     true,
                 )
             } answers {
-                startSoundEnabledFlow.update { it + (ReadoutItemKey.AceWindows.VehicleApproach.Root to true) }
+                startSoundEnabledFlow.update { it + (AceWindowsReadoutItemKey.VehicleApproach.Root to true) }
             }
             val viewModel =
                 createViewModel(
@@ -172,15 +173,15 @@ class ReadoutListViewModelAceWindowsTest {
                     startSoundRepository = startSoundRepository,
                 )
 
-            viewModel.onStartSoundEnabledChanged(ReadoutItemKey.AceWindows.VehicleApproach.Root, true)
+            viewModel.onStartSoundEnabledChanged(AceWindowsReadoutItemKey.VehicleApproach.Root, true)
 
             assertEquals(
                 true,
-                viewModel.uiState.first().startSoundEnabledStates[ReadoutItemKey.AceWindows.VehicleApproach.Root],
+                viewModel.uiState.first().startSoundEnabledStates[AceWindowsReadoutItemKey.VehicleApproach.Root],
             )
             coVerify(exactly = 1) {
                 startSoundRepository.saveStartSoundEnabledState(
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root,
                     true,
                 )
             }

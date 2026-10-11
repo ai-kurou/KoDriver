@@ -21,7 +21,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_LEFT_READO
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_RIGHT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_LEFT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_RIGHT_READOUT_TEXT_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.VOICE_ID_UNSPECIFIED
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachReadoutTextPreferencesRepository
@@ -130,7 +130,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns skipFirstLapFlow
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 startReadoutEnabledFlow.map {
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to it)
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to it)
                 }
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("左注意")
@@ -194,7 +194,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns skipFirstLapFlow
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -245,7 +245,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 startReadoutEnabledFlow.map {
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to it)
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to it)
                 }
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -257,7 +257,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 MutableStateFlow("キープレフト")
             coEvery {
                 vehicleApproachPreferencesRepository.saveEnabledState(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout,
+                    LmuWindowsReadoutItemKey.VehicleApproach.StartReadout,
                     false,
                 )
             } answers {
@@ -271,7 +271,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().startReadoutEnabled)
             coVerify(exactly = 1) {
                 vehicleApproachPreferencesRepository.saveEnabledState(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout,
+                    LmuWindowsReadoutItemKey.VehicleApproach.StartReadout,
                     false,
                 )
             }
@@ -306,7 +306,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 sustainedReadoutEnabledFlow.map {
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to it)
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.Sustained to it)
                 }
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -318,7 +318,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 MutableStateFlow("キープレフト")
             coEvery {
                 vehicleApproachPreferencesRepository.saveEnabledState(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Sustained,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Sustained,
                     true,
                 )
             } answers {
@@ -332,7 +332,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             assertEquals(true, viewModel.uiState.first().sustainedReadoutEnabled)
             coVerify(exactly = 1) {
                 vehicleApproachPreferencesRepository.saveEnabledState(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Sustained,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Sustained,
                     true,
                 )
             }
@@ -366,7 +366,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -381,7 +381,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onStartLeftTextPreviewClicked("注意")
             viewModel.onStartRightTextPreviewClicked("注意")
-            coVerify(exactly = 0) { ttsEngine.playStartSound(ReadoutItemKey.LmuWindows.VehicleApproach.Root) }
+            coVerify(exactly = 0) { ttsEngine.playStartSound(LmuWindowsReadoutItemKey.VehicleApproach.Root) }
             coVerify(exactly = 0) { textToSpeechRepository.speak("注意", false, 60, VOICE_ID_UNSPECIFIED, 1.0f, 1.0f) }
             verify(exactly = 0) { volumes.volume() }
             verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
@@ -418,7 +418,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns left
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartRightReadoutText() } returns right
@@ -471,7 +471,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")
@@ -526,7 +526,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns left
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartRightReadoutText() } returns right
@@ -599,7 +599,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
             every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns
                 MutableStateFlow(
-                    mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+                    mapOf(LmuWindowsReadoutItemKey.VehicleApproach.StartReadout to true),
                 )
             every { vehicleApproachReadoutTextPreferencesRepository.observeStartLeftReadoutText() } returns
                 MutableStateFlow("カーレフト")

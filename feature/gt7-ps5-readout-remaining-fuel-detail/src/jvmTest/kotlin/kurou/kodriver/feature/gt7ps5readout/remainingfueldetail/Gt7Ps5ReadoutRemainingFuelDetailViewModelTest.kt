@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
@@ -169,12 +170,12 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             coEvery {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled,
+                    Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled,
                     false,
                 )
             } answers {
                 enabledStatesFlow.update {
-                    it + (ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled to false)
+                    it + (Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled to false)
                 }
             }
             val viewModel = createViewModel()
@@ -188,7 +189,7 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             coVerify(exactly = 1) {
                 readoutPreferencesRepository.saveReadoutEnabledState(
                     Simulator.Gt7Ps5.id,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuel.DetailEnabled,
+                    Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled,
                     false,
                 )
             }
@@ -224,7 +225,7 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             val threshold = MutableStateFlow(50)
             every { repository.observeThresholdPercentage() } returns threshold
             every { observeVolume() } returns MutableStateFlow(60)
-            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) } returns Unit
+            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) } returns Unit
             coEvery { speakText("残り50%", volume = 60) } returns Unit
             coEvery { speakText("残り70%", volume = 60) } returns Unit
             val viewModel = createViewModel()
@@ -236,13 +237,13 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             threshold.update { 70 }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
-            coVerify(exactly = 2) { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) }
+            coVerify(exactly = 2) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 1) { speakText("残り50%", volume = 60) }
             coVerify(exactly = 1) { speakText("残り70%", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
+                playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root)
                 speakText("残り50%", volume = 60)
-                playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
+                playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root)
                 speakText("残り70%", volume = 60)
             }
             verify(exactly = 2) { observeVolume() }
@@ -260,7 +261,7 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             every { repository.observeThresholdPercentage() } returns MutableStateFlow(50)
             createViewModel().onReadoutTextPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) }
+            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText(" ", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -277,7 +278,7 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) }
+            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -297,7 +298,7 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             volume.update { -1 }
             viewModel.onReadoutTextPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) }
+            coVerify(exactly = 0) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             coVerify(exactly = 0) { speakText("注意", volume = -1) }
             confirmVerified(observeVolume, playStartSound, speakText)
@@ -320,12 +321,12 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(50, viewModel.uiState.first().thresholdPercentage)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) } coAnswers
+            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) }
+            coVerify(exactly = 1) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText("残り50%", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)
@@ -349,12 +350,12 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
                 ) { viewModel.uiState.collect {} }
             assertEquals(50, viewModel.uiState.first().thresholdPercentage)
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) } coAnswers
+            coEvery { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             viewModel.onReadoutTextPreviewClicked("残り{percent}%")
             pendingStartSound.complete(Unit)
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root) }
+            coVerify(exactly = 1) { playStartSound(Gt7Ps5ReadoutItemKey.RemainingFuel.Root) }
             coVerify(exactly = 0) { speakText("残り50%", volume = 60) }
             verify(exactly = 1) { observeVolume() }
             confirmVerified(playStartSound, speakText, observeVolume)

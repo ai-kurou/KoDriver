@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kotlin.test.Test
@@ -21,10 +22,10 @@ private fun createLmuWindowsVehicleDamagePreferencesRepository(
     val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeEnabledStates() } returns states
     listOf(
-        ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
-        ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached,
-        ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached,
-        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+        LmuWindowsReadoutItemKey.VehicleDamage.Overheat,
+        LmuWindowsReadoutItemKey.VehicleDamage.PartDetached,
+        LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached,
+        LmuWindowsReadoutItemKey.VehicleDamage.Root,
     ).forEach { key ->
         listOf(true, false).forEach { enabled ->
             coEvery { repository.saveEnabledState(key, enabled) } answers {
@@ -46,9 +47,9 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Overheat to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to true,
                 )
             assertEquals(expected, useCase().first())
             verify(exactly = 1) { repo.observeEnabledStates() }
@@ -61,17 +62,17 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
             val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
-            repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
+            repo.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, false)
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Overheat to false,
+                    LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to true,
                 )
             assertEquals(expected, useCase().first())
             coVerify(exactly = 1) {
-                repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
+                repo.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Overheat, false)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)
@@ -83,19 +84,19 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
             val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
-            repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+            repo.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.PartDetached to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.TyreDetached to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Overheat to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.PartDetached to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.TyreDetached to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root to false,
                 ),
                 useCase().first(),
             )
             coVerify(exactly = 1) {
-                repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+                repo.saveEnabledState(LmuWindowsReadoutItemKey.VehicleDamage.Root, false)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)

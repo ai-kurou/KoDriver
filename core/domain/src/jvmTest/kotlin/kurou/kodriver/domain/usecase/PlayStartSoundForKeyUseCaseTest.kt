@@ -8,7 +8,7 @@ import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kotlin.test.Test
 
 class PlayStartSoundForKeyUseCaseTest {
@@ -17,12 +17,12 @@ class PlayStartSoundForKeyUseCaseTest {
     @Test
     fun `invoke を呼ぶと TextToSpeechEngine の playStartSound が呼ばれる`() =
         runTest {
-            coEvery { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag) } just Runs
+            coEvery { engine.playStartSound(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag) } just Runs
             val useCase = PlayStartSoundForKeyUseCase(engine)
 
-            useCase(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
+            useCase(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag)
 
-            coVerify(exactly = 1) { engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag) }
+            coVerify(exactly = 1) { engine.playStartSound(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag) }
             confirmVerified(engine)
         }
 }

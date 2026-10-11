@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
@@ -139,9 +140,9 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             every { vehicleClassRepository.observeSelectedVehicleClass() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             coEvery {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false) }
+                enabledStatesFlow.update { it + (LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning to false) }
             }
             stubReadout()
             val viewModel = createViewModel()
@@ -154,7 +155,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
             }
             confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
@@ -169,9 +170,9 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             every { vehicleClassRepository.observeSelectedVehicleClass() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             coEvery {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning, false)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.LowWarning, false)
             } answers {
-                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to false) }
+                enabledStatesFlow.update { it + (LmuWindowsReadoutItemKey.TyreTemperature.LowWarning to false) }
             }
             stubReadout()
             val viewModel = createViewModel()
@@ -184,7 +185,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             coVerify(exactly = 1) {
-                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning, false)
+                repository.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.LowWarning, false)
             }
             confirmVerified(repository, readoutTextRepository, vehicleClassRepository)
         }
@@ -423,15 +424,15 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             stubSettings()
             stubReadout(available = true)
             every { observeVolume() } returns flowOf(60)
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) } returns Unit
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) } returns Unit
             coEvery { speakText("注意107℃{unknown}", volume = 60) } returns Unit
             val viewModel = createViewModel()
             viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}", 107)
             verify(exactly = 1) { observeVolume() }
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 1) { speakText("注意107℃{unknown}", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+                playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root)
                 speakText("注意107℃{unknown}", volume = 60)
             }
             confirmVerified(observeVolume, playStartSound, speakText)
@@ -444,7 +445,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             stubReadout(available = true)
             createViewModel().onOverheatReadoutTextPreviewClicked(" ", 100)
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText(" ", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -458,7 +459,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onOverheatReadoutTextPreviewClicked("注意", 100)
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -475,7 +476,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             volume.update { -1 }
             viewModel.onOverheatReadoutTextPreviewClicked("注意", 100)
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -504,15 +505,15 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             stubSettings()
             stubReadout(available = true)
             every { observeVolume() } returns flowOf(60)
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) } returns Unit
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) } returns Unit
             coEvery { speakText("注意60℃{unknown}", volume = 60) } returns Unit
             val viewModel = createViewModel()
             viewModel.onLowWarningPreviewClicked("注意{celsius}℃{unknown}")
             verify(exactly = 1) { observeVolume() }
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 1) { speakText("注意60℃{unknown}", volume = 60) }
             coVerifyOrder {
-                playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+                playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root)
                 speakText("注意60℃{unknown}", volume = 60)
             }
             confirmVerified(observeVolume, playStartSound, speakText)
@@ -525,7 +526,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             stubReadout(available = true)
             createViewModel().onLowWarningPreviewClicked(" ")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText(" ", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -539,7 +540,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             assertEquals(false, viewModel.uiState.first().isTextToSpeechAvailable)
             viewModel.onLowWarningPreviewClicked("注意")
             verify(exactly = 0) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -556,7 +557,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             volume.update { -1 }
             viewModel.onLowWarningPreviewClicked("注意")
             verify(exactly = 2) { observeVolume() }
-            coVerify(exactly = 0) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 0) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意", volume = 0) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -590,13 +591,13 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             every { observeVolume() } returns flowOf(60)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) } coAnswers
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}", 107)
             viewModel.onPreviewStopped()
             pendingStartSound.complete(Unit)
             verify(exactly = 1) { observeVolume() }
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意107℃{unknown}", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }
@@ -609,13 +610,13 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             every { observeVolume() } returns flowOf(60)
             val viewModel = createViewModel()
             val pendingStartSound = CompletableDeferred<Unit>()
-            coEvery { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) } coAnswers
+            coEvery { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) } coAnswers
                 { pendingStartSound.await() }
             viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}", 107)
             viewModel.onOverheatReadoutTextPreviewClicked("注意{celsius}℃{unknown}", 107)
             pendingStartSound.complete(Unit)
             verify(exactly = 1) { observeVolume() }
-            coVerify(exactly = 1) { playStartSound(ReadoutItemKey.LmuWindows.TyreTemperature.Root) }
+            coVerify(exactly = 1) { playStartSound(LmuWindowsReadoutItemKey.TyreTemperature.Root) }
             coVerify(exactly = 0) { speakText("注意107℃{unknown}", volume = 60) }
             confirmVerified(observeVolume, playStartSound, speakText)
         }

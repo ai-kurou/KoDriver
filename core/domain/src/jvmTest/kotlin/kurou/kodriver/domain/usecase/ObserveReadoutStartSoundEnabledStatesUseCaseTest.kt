@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutStartSoundEnabledPreferencesRepository
 import kotlin.test.Test
@@ -26,26 +29,26 @@ class ObserveReadoutStartSoundEnabledStatesUseCaseTest {
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.VehicleApproach.Root to false,
-                    ReadoutItemKey.LmuWindows.Flag.Root to true,
-                    ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
-                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                    ReadoutItemKey.LmuWindows.PitTiming.Root to true,
-                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
-                    ReadoutItemKey.LmuWindows.TyreWear.Root to true,
-                    ReadoutItemKey.LmuWindows.BrakeTemperature.Root to true,
-                    ReadoutItemKey.LmuWindows.BrakeWear.Root to true,
-                    ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
-                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
-                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
-                    ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
-                    ReadoutItemKey.AceWindows.Flag.Root to true,
-                    ReadoutItemKey.AceWindows.VehicleApproach.Root to false,
-                    ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
-                    ReadoutItemKey.AceWindows.RemainingFuelLaps.Root to true,
-                    ReadoutItemKey.AceWindows.TyreTemperature.Root to true,
-                    ReadoutItemKey.AceWindows.MyBestLap.Root to true,
+                    LmuWindowsReadoutItemKey.VehicleApproach.Root to false,
+                    LmuWindowsReadoutItemKey.Flag.Root to true,
+                    LmuWindowsReadoutItemKey.VehicleDamage.Root to true,
+                    LmuWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    LmuWindowsReadoutItemKey.PitTiming.Root to true,
+                    LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root to true,
+                    LmuWindowsReadoutItemKey.TyreWear.Root to true,
+                    LmuWindowsReadoutItemKey.BrakeTemperature.Root to true,
+                    LmuWindowsReadoutItemKey.BrakeWear.Root to true,
+                    LmuWindowsReadoutItemKey.MyBestLap.Root to true,
+                    Gt7Ps5ReadoutItemKey.MyBestLap.Root to true,
+                    Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root to true,
+                    Gt7Ps5ReadoutItemKey.RemainingFuel.Root to true,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.Root to true,
+                    AceWindowsReadoutItemKey.Flag.Root to true,
+                    AceWindowsReadoutItemKey.VehicleApproach.Root to false,
+                    AceWindowsReadoutItemKey.RemainingFuel.Root to true,
+                    AceWindowsReadoutItemKey.RemainingFuelLaps.Root to true,
+                    AceWindowsReadoutItemKey.TyreTemperature.Root to true,
+                    AceWindowsReadoutItemKey.MyBestLap.Root to true,
                 ),
                 useCase().first(),
             )
@@ -59,18 +62,18 @@ class ObserveReadoutStartSoundEnabledStatesUseCaseTest {
             val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { repository.observeStartSoundEnabledStates() } returns states
             coEvery {
-                repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
+                repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
             } answers {
-                states.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to false) }
+                states.update { it + (LmuWindowsReadoutItemKey.Flag.Root to false) }
             }
             val useCase = ObserveReadoutStartSoundEnabledStatesUseCase(repository)
 
-            repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
+            repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
 
-            assertEquals(false, useCase().first()[ReadoutItemKey.LmuWindows.Flag.Root])
-            assertEquals(true, useCase().first()[ReadoutItemKey.LmuWindows.TyreWear.Root])
+            assertEquals(false, useCase().first()[LmuWindowsReadoutItemKey.Flag.Root])
+            assertEquals(true, useCase().first()[LmuWindowsReadoutItemKey.TyreWear.Root])
             coVerify(exactly = 1) {
-                repository.saveStartSoundEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, false)
+                repository.saveStartSoundEnabledState(LmuWindowsReadoutItemKey.Flag.Root, false)
             }
             verify(exactly = 2) { repository.observeStartSoundEnabledStates() }
             confirmVerified(repository)

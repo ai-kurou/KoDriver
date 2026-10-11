@@ -16,8 +16,8 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Rule
@@ -185,7 +185,7 @@ class OtherFeedbackDetailPaneTest {
                                     id = 42L,
                                     createdAt = 0L,
                                     simulator = Simulator.LmuWindows,
-                                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                                     narratedText = "イエローフラッグ",
                                     narrationOutcome = NarrationOutcome.INTERRUPTED,
                                     telemetryJson = "",
@@ -222,7 +222,7 @@ class OtherFeedbackDetailPaneTest {
                                     id = 42L,
                                     createdAt = 0L,
                                     simulator = Simulator.LmuWindows,
-                                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
                                     narratedText = "イエローフラッグ",
                                     narrationOutcome = NarrationOutcome.INTERRUPTED,
                                     telemetryJson = "",

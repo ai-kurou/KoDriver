@@ -10,8 +10,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
@@ -50,7 +51,7 @@ private fun createTelemetryLogRepository(
             id = 0L,
             createdAt = 1000L,
             simulator = Simulator.Gt7Ps5,
-            readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+            readoutItemKey = Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root,
             narratedText = "燃料は残り約1周",
             narrationOutcome = NarrationOutcome.QUEUED,
             telemetryJson = """{"lapCount":1}""",
@@ -59,7 +60,7 @@ private fun createTelemetryLogRepository(
             id = 0L,
             createdAt = 2000L,
             simulator = Simulator.LmuWindows,
-            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+            readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
             narratedText = "イエローフラッグ",
             narrationOutcome = NarrationOutcome.QUEUED,
             telemetryJson = """{"currentLap":2}""",
@@ -161,7 +162,7 @@ private fun telemetryLog(
     id = id,
     createdAt = createdAt,
     simulator = Simulator.LmuWindows,
-    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
     narratedText = "イエローフラッグ",
     narrationOutcome = NarrationOutcome.QUEUED,
     telemetryJson = """{"id":$id}""",

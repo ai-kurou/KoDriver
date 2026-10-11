@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBlackFlagReadoutTextUseCase
@@ -160,10 +160,10 @@ internal class AceWindowsReadoutFlagDetailViewModel(
 
     /**
      * 空白文言・TTS利用不可時は試聴しない。本文はOS標準TTSのみで読み上げる。
-     * 開始音の有効設定は読み上げ一覧のトップレベル項目 [ReadoutItemKey.AceWindows.Flag.Root] に保存され、
+     * 開始音の有効設定は読み上げ一覧のトップレベル項目 [AceWindowsReadoutItemKey.Flag.Root] に保存され、
      * 実際の読み上げもそのキーで判定するため、試聴でも個別フラッグのキーではなくそれを渡す。
      */
     fun onFlagTextPreviewClicked(text: String) {
-        preview.onPreviewClicked(text, ReadoutItemKey.AceWindows.Flag.Root)
+        preview.onPreviewClicked(text, AceWindowsReadoutItemKey.Flag.Root)
     }
 }

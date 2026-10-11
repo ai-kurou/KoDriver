@@ -17,6 +17,7 @@ import kurou.kodriver.core.narrator.NarratorEngine
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.core.narrator.WavResources
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kotlin.test.Test
@@ -29,10 +30,10 @@ class LmuWindowsNarratorEngineTest {
 
     @Test
     fun `currentReadoutItemKeyはNarratorEngineのcurrentKeyを返す`() {
-        every { wavNarratorEngine.currentKey } returns ReadoutItemKey.LmuWindows.VehicleApproach.Root
+        every { wavNarratorEngine.currentKey } returns LmuWindowsReadoutItemKey.VehicleApproach.Root
         val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
 
-        assertEquals(ReadoutItemKey.LmuWindows.VehicleApproach.Root, engine.currentReadoutItemKey)
+        assertEquals(LmuWindowsReadoutItemKey.VehicleApproach.Root, engine.currentReadoutItemKey)
 
         verify(exactly = 1) { wavNarratorEngine.currentKey }
         confirmVerified(wavNarratorEngine)
@@ -75,14 +76,14 @@ class LmuWindowsNarratorEngineTest {
     fun `playStartSoundはNarratorEngineのplayStartSoundForKeyへ委譲する`() =
         runTest {
             coEvery {
-                wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
+                wavNarratorEngine.playStartSoundForKey(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag)
             } just Runs
             val engine = LmuWindowsNarratorEngine(wavNarratorEngine)
 
-            engine.playStartSound(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
+            engine.playStartSound(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag)
 
             coVerify(exactly = 1) {
-                wavNarratorEngine.playStartSoundForKey(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)
+                wavNarratorEngine.playStartSoundForKey(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag)
             }
             confirmVerified(wavNarratorEngine)
         }

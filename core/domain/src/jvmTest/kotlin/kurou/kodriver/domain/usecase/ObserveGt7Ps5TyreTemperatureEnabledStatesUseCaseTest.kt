@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Celsius
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kotlin.test.Test
@@ -26,8 +27,8 @@ private fun createGt7Ps5TyreTemperaturePreferencesRepository(
     coEvery { repository.saveHighThresholdCelsius(Celsius(100)) } answers { highThreshold.update { Celsius(100) } }
     every { repository.observeEnabledStates() } returns enabledStates
     listOf(
-        ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning,
-        ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
+        Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning,
+        Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
     ).forEach { key ->
         listOf(true, false).forEach { enabled ->
             coEvery { repository.saveEnabledState(key, enabled) } answers {
@@ -49,7 +50,7 @@ class ObserveGt7Ps5TyreTemperatureEnabledStatesUseCaseTest {
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to true,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to true,
                 )
             assertEquals(expected, useCase().first())
             verify(exactly = 1) { repo.observeEnabledStates() }
@@ -62,15 +63,15 @@ class ObserveGt7Ps5TyreTemperatureEnabledStatesUseCaseTest {
             val repo = createGt7Ps5TyreTemperaturePreferencesRepository(repository)
             val useCase = ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(repo)
 
-            repo.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
+            repo.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, false)
 
             val expected =
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to false,
                 )
             assertEquals(expected, useCase().first())
             coVerify(exactly = 1) {
-                repo.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
+                repo.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning, false)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)
@@ -82,17 +83,17 @@ class ObserveGt7Ps5TyreTemperatureEnabledStatesUseCaseTest {
             val repo = createGt7Ps5TyreTemperaturePreferencesRepository(repository)
             val useCase = ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(repo)
 
-            repo.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root, false)
+            repo.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.Root, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to true,
-                    ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to false,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.OverheatWarning to true,
+                    Gt7Ps5ReadoutItemKey.TyreTemperature.Root to false,
                 ),
                 useCase().first(),
             )
             coVerify(exactly = 1) {
-                repo.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root, false)
+                repo.saveEnabledState(Gt7Ps5ReadoutItemKey.TyreTemperature.Root, false)
             }
             verify(exactly = 1) { repo.observeEnabledStates() }
             confirmVerified(repo)

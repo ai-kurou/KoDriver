@@ -31,6 +31,7 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.readoutEnabled
@@ -205,11 +206,11 @@ private fun ReadoutContentPreview() {
                     selectedSimulator = Simulator.LmuWindows,
                     items =
                         listOf(
-                            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                            ReadoutItemKey.LmuWindows.Flag.Root,
-                            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                            ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                            LmuWindowsReadoutItemKey.VehicleApproach.Root,
+                            LmuWindowsReadoutItemKey.Flag.Root,
+                            LmuWindowsReadoutItemKey.VehicleDamage.Root,
+                            LmuWindowsReadoutItemKey.TyreTemperature.Root,
+                            LmuWindowsReadoutItemKey.MyBestLap.Root,
                         ),
                 ),
             onMove = { _, _ -> },

@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -63,13 +64,13 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
             text.saveTyreWearReadoutText("タイヤ予告")
             preferences.saveTyreWearLaps(2)
             text.saveVirtualEnergyImminentReadoutText("VE直前")
-            preferences.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, false)
+            preferences.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.TyreWear, false)
             text.saveTyreWearImminentReadoutText("タイヤ直前")
 
             assertEquals(4, preferences.observeVirtualEnergyLaps().first())
             assertEquals(2, preferences.observeTyreWearLaps().first())
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.PitTiming.TyreWear to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.PitTiming.TyreWear to false),
                 preferences.observeEnabledStates().first(),
             )
             assertEquals("VE予告", text.observeVirtualEnergyReadoutText().first())
@@ -85,7 +86,7 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
                 LmuWindowsPitTimingPreferences(
                     virtualEnergyLaps = 5,
                     tyreWearLaps = 1,
-                    enabledStates = mapOf(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy.value to false),
+                    enabledStates = mapOf(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy.value to false),
                     virtualEnergyReadoutText = "VE予告",
                     virtualEnergyImminentReadoutText = "",
                     tyreWearReadoutText = "タイヤ予告",
@@ -98,7 +99,7 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
             assertEquals(5, repositories.preferences.observeVirtualEnergyLaps().first())
             assertEquals(1, repositories.preferences.observeTyreWearLaps().first())
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to false),
                 repositories.preferences.observeEnabledStates().first(),
             )
             assertEquals("VE予告", repositories.readoutText.observeVirtualEnergyReadoutText().first())

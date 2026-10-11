@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -68,10 +69,10 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -79,11 +80,11 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, true)
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, false)
 
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to false),
+                mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to false),
                 repository.observeEnabledStates().first(),
             )
         }
@@ -91,13 +92,13 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
     @Test
     fun `異なるキーで保存した値がすべて保持される`() =
         runTest {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy, true)
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.PitTiming.TyreWear, false)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy, true)
+            repository.saveEnabledState(LmuWindowsReadoutItemKey.PitTiming.TyreWear, false)
 
             assertEquals(
                 mapOf<ReadoutItemKey, Boolean>(
-                    ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy to true,
-                    ReadoutItemKey.LmuWindows.PitTiming.TyreWear to false,
+                    LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy to true,
+                    LmuWindowsReadoutItemKey.PitTiming.TyreWear to false,
                 ),
                 repository.observeEnabledStates().first(),
             )
@@ -106,7 +107,7 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
     @Test
     fun `有効状態の未知のキーを除外して既知のキーを取得する`() =
         runTest {
-            val key = ReadoutItemKey.LmuWindows.PitTiming.VirtualEnergy
+            val key = LmuWindowsReadoutItemKey.PitTiming.VirtualEnergy
             pitTimingDataStore.updateData {
                 it.copy(enabledStates = mapOf(key.value to false, "future_pit_timing" to true))
             }

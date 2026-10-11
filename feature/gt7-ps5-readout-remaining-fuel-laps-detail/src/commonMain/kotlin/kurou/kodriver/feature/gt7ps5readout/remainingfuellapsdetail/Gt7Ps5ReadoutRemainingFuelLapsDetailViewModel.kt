@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
 import kurou.kodriver.domain.model.readoutEnabled
@@ -70,7 +70,7 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
                 readoutText = text,
                 emptyReadoutText = emptyText,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled),
+                enabled = enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled),
             )
         }.stateIn(
             viewModelScope,
@@ -103,7 +103,7 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
     }
 
     private fun previewText(text: String) {
-        preview.onPreviewClicked(text, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
+        preview.onPreviewClicked(text, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root)
     }
 
     fun onRemainingFuelLapsChanged(laps: Int) {
@@ -122,7 +122,7 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
         viewModelScope.launch {
             remainingFuelLapsUseCases.saveReadoutEnabledState(
                 Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.DetailEnabled,
+                Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled,
                 enabled,
             )
         }

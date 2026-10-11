@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.readoutlist
 
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -11,7 +12,7 @@ class ReadoutListItemTypeAceWindowsTest {
     fun `ace_windows の remaining_fuel は AceWindows_RemainingFuel を返す`() {
         assertEquals(
             ReadoutListItemType.AceWindows.RemainingFuel,
-            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.RemainingFuel.Root),
+            ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.RemainingFuel.Root),
         )
     }
 
@@ -19,7 +20,7 @@ class ReadoutListItemTypeAceWindowsTest {
     fun `ace_windows の flag は AceWindows_Flag を返す`() {
         assertEquals(
             ReadoutListItemType.AceWindows.Flag,
-            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.Flag.Root),
+            ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.Flag.Root),
         )
     }
 
@@ -27,7 +28,7 @@ class ReadoutListItemTypeAceWindowsTest {
     fun `ace_windows の my_best_lap は AceWindows_MyBestLap を返す`() {
         assertEquals(
             ReadoutListItemType.AceWindows.MyBestLap,
-            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.MyBestLap.Root),
+            ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.MyBestLap.Root),
         )
     }
 
@@ -35,20 +36,20 @@ class ReadoutListItemTypeAceWindowsTest {
     fun `ace_windows の remaining_fuel_laps は AceWindows_RemainingFuelLaps を返す`() {
         assertEquals(
             ReadoutListItemType.AceWindows.RemainingFuelLaps,
-            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.RemainingFuelLaps.Root),
+            ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.RemainingFuelLaps.Root),
         )
     }
 
     @Test
     fun `ace_windows でシミュレータに属さないキーは null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root))
+        assertNull(ReadoutListItemType.fromId(Simulator.AceWindows, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root))
     }
 
     @Test
     fun `ace_windows の tyre_temperature は AceWindows_TyreTemperature を返す`() {
         assertEquals(
             ReadoutListItemType.AceWindows.TyreTemperature,
-            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.TyreTemperature.Root),
+            ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.TyreTemperature.Root),
         )
     }
 
@@ -56,7 +57,7 @@ class ReadoutListItemTypeAceWindowsTest {
     fun `ace_windows の vehicle_approach は AceWindows_VehicleApproach を返す`() {
         assertEquals(
             ReadoutListItemType.AceWindows.VehicleApproach,
-            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.VehicleApproach.Root),
+            ReadoutListItemType.fromId(Simulator.AceWindows, AceWindowsReadoutItemKey.VehicleApproach.Root),
         )
     }
 
@@ -64,12 +65,12 @@ class ReadoutListItemTypeAceWindowsTest {
     fun `ace_windows のデフォルト並び順はフラッグ・車両接近・燃料残り周回数・燃料残量・タイヤ温度・自己ベストラップの順`() {
         assertEquals(
             listOf(
-                ReadoutItemKey.AceWindows.Flag.Root,
-                ReadoutItemKey.AceWindows.VehicleApproach.Root,
-                ReadoutItemKey.AceWindows.RemainingFuelLaps.Root,
-                ReadoutItemKey.AceWindows.RemainingFuel.Root,
-                ReadoutItemKey.AceWindows.TyreTemperature.Root,
-                ReadoutItemKey.AceWindows.MyBestLap.Root,
+                AceWindowsReadoutItemKey.Flag.Root,
+                AceWindowsReadoutItemKey.VehicleApproach.Root,
+                AceWindowsReadoutItemKey.RemainingFuelLaps.Root,
+                AceWindowsReadoutItemKey.RemainingFuel.Root,
+                AceWindowsReadoutItemKey.TyreTemperature.Root,
+                AceWindowsReadoutItemKey.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.AceWindows),
         )
