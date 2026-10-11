@@ -36,8 +36,11 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5Telemetry = null,
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -57,8 +60,11 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsFuel = null,
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    fuel = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -78,12 +84,15 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            virtualEnergy =
-                                LmuWindowsVirtualEnergyData(
-                                    remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
-                                ),
-                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    virtualEnergy =
+                                        LmuWindowsVirtualEnergyData(
+                                            remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                        ),
+                                    telemetry = sampleLmuTelemetry(currentLap = 5),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -105,12 +114,15 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            virtualEnergy =
-                                LmuWindowsVirtualEnergyData(
-                                    remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
-                                ),
-                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 0),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    virtualEnergy =
+                                        LmuWindowsVirtualEnergyData(
+                                            remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                        ),
+                                    telemetry = sampleLmuTelemetry(currentLap = 0),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -130,9 +142,12 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            virtualEnergy = null,
-                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    virtualEnergy = null,
+                                    telemetry = sampleLmuTelemetry(currentLap = 5),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -152,8 +167,11 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 70f),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry = sampleGt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 70f),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -175,8 +193,11 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 0, gasLevel = 35f, gasCapacity = 70f),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry = sampleGt7Telemetry(lapCount = 0, gasLevel = 35f, gasCapacity = 70f),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -196,8 +217,11 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -217,9 +241,12 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
-                            aceWindowsRemainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = 3.46f),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
+                                    remainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = 3.46f),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -239,9 +266,12 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
-                            aceWindowsRemainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = 0f),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
+                                    remainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = 0f),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -261,9 +291,12 @@ class DebugStateFuelConsumptionCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
-                            aceWindowsRemainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = Float.NaN),
                             cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
+                                    remainingFuelLaps = AceWindowsRemainingFuelLapsData(remainingLaps = Float.NaN),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},

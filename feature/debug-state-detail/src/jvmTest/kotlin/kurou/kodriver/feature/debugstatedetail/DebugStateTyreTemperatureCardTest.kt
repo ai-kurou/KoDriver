@@ -37,11 +37,14 @@ class DebugStateTyreTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry =
+                                        sampleLmuWindowsTelemetry(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -61,11 +64,14 @@ class DebugStateTyreTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry =
+                                        sampleLmuWindowsTelemetry(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -85,11 +91,14 @@ class DebugStateTyreTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry =
+                                        sampleLmuWindowsTelemetry(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -109,14 +118,17 @@ class DebugStateTyreTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels =
-                                        mapOf(
-                                            WheelIndex.FRONT_LEFT to sampleWheel(85.0),
-                                            WheelIndex.FRONT_RIGHT to sampleWheel(86.0),
-                                            WheelIndex.REAR_LEFT to sampleWheel(87.0),
-                                            WheelIndex.REAR_RIGHT to sampleWheel(88.0),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry =
+                                        sampleLmuWindowsTelemetry(
+                                            wheels =
+                                                mapOf(
+                                                    WheelIndex.FRONT_LEFT to sampleWheel(85.0),
+                                                    WheelIndex.FRONT_RIGHT to sampleWheel(86.0),
+                                                    WheelIndex.REAR_LEFT to sampleWheel(87.0),
+                                                    WheelIndex.REAR_RIGHT to sampleWheel(88.0),
+                                                ),
                                         ),
                                 ),
                         ),
@@ -141,26 +153,32 @@ class DebugStateTyreTemperatureCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5Telemetry =
-                                Gt7Ps5TelemetryData(
-                                    lapCount = 3,
-                                    lapsInRace = 5,
-                                    bestLapTimeMs = 90_000,
-                                    gasLevel = Gt7Ps5FuelUnit(20f),
-                                    gasCapacity = Gt7Ps5FuelUnit(50f),
-                                    tyreTemperature =
-                                        Gt7Ps5TyreTemperatureData(
-                                            frontLeftCelsius = CelsiusReading(65.24f),
-                                            frontRightCelsius = CelsiusReading(85.36f),
-                                            rearLeftCelsius = CelsiusReading(105.0f),
-                                            rearRightCelsius = CelsiusReading(115.0f),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    telemetry =
+                                        sampleLmuWindowsTelemetry(
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(45.0)),
                                         ),
                                 ),
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(45.0)),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    telemetry =
+                                        Gt7Ps5TelemetryData(
+                                            lapCount = 3,
+                                            lapsInRace = 5,
+                                            bestLapTimeMs = 90_000,
+                                            gasLevel = Gt7Ps5FuelUnit(20f),
+                                            gasCapacity = Gt7Ps5FuelUnit(50f),
+                                            tyreTemperature =
+                                                Gt7Ps5TyreTemperatureData(
+                                                    frontLeftCelsius = CelsiusReading(65.24f),
+                                                    frontRightCelsius = CelsiusReading(85.36f),
+                                                    rearLeftCelsius = CelsiusReading(105.0f),
+                                                    rearRightCelsius = CelsiusReading(115.0f),
+                                                ),
+                                        ),
                                 ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
                         ),
                     canNavigateBack = true,
                     onBack = {},

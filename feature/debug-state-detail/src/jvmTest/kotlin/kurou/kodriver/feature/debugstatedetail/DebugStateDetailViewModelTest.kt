@@ -256,7 +256,10 @@ class DebugStateDetailViewModelTest {
             testScheduler.runCurrent()
 
             val initial = viewModel.uiState.first()
-            val initialWheel = initial.brakeWear?.wheels?.get(WheelIndex.FRONT_LEFT)
+            val initialWheel =
+                initial.lmuWindows.brakeWear
+                    ?.wheels
+                    ?.get(WheelIndex.FRONT_LEFT)
             assertEquals(100f, initialWheel?.remainingPercent)
             assertTrue(DebugStateCardKey.BRAKE_WEAR in initial.enabledCardKeys)
 
@@ -265,13 +268,21 @@ class DebugStateDetailViewModelTest {
             }
             testScheduler.runCurrent()
             val updated = viewModel.uiState.first()
-            val updatedWheel = updated.brakeWear?.wheels?.get(WheelIndex.FRONT_LEFT)
+            val updatedWheel =
+                updated.lmuWindows.brakeWear
+                    ?.wheels
+                    ?.get(WheelIndex.FRONT_LEFT)
             assertEquals(BrakeThicknessMeters(0.03f), updatedWheel?.thickness)
             assertTrue((updatedWheel?.remainingPercent ?: 100f) < 100f)
 
             brakeWearFlow.update { null }
             testScheduler.runCurrent()
-            assertEquals(null, viewModel.uiState.first().brakeWear)
+            assertEquals(
+                null,
+                viewModel.uiState
+                    .first()
+                    .lmuWindows.brakeWear,
+            )
         }
 
     @Test
@@ -310,7 +321,7 @@ class DebugStateDetailViewModelTest {
             testScheduler.runCurrent()
 
             val state = viewModel.uiState.first()
-            assertEquals(null, state.brakeWear)
+            assertEquals(null, state.lmuWindows.brakeWear)
             assertFalse(DebugStateCardKey.BRAKE_WEAR in state.enabledCardKeys)
             assertTrue(DebugStateCardKey.BRAKE_TEMPERATURE in state.enabledCardKeys)
         }
@@ -352,7 +363,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(SessionPhase.UNKNOWN, state.raceFlags?.gamePhase)
+            assertEquals(SessionPhase.UNKNOWN, state.lmuWindows.raceFlags?.gamePhase)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -437,7 +448,7 @@ class DebugStateDetailViewModelTest {
             flagsFlow.update { sampleRaceFlags(gamePhase = SessionPhase.GREEN_FLAG) }
             val state = viewModel.uiState.first()
 
-            assertEquals(SessionPhase.GREEN_FLAG, state.raceFlags?.gamePhase)
+            assertEquals(SessionPhase.GREEN_FLAG, state.lmuWindows.raceFlags?.gamePhase)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -605,7 +616,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(10, state.virtualEnergy?.session)
+            assertEquals(10, state.lmuWindows.virtualEnergy?.session)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -689,7 +700,12 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(3, state.lmuWindowsTelemetry?.timing?.currentLap)
+            assertEquals(
+                3,
+                state.lmuWindows.telemetry
+                    ?.timing
+                    ?.currentLap,
+            )
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -773,7 +789,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(5, state.gt7Ps5Telemetry?.lapCount)
+            assertEquals(5, state.gt7Ps5.telemetry?.lapCount)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -858,7 +874,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(AceWindowsFlagType.BLUE_FLAG, state.aceWindowsFlag?.flag)
+            assertEquals(AceWindowsFlagType.BLUE_FLAG, state.aceWindows.flag?.flag)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -942,7 +958,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(true, state.vehicleApproach?.isSideBySideLeft)
+            assertEquals(true, state.lmuWindows.vehicleApproach?.isSideBySideLeft)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1027,11 +1043,11 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(LmuWindowsSideBySideDurations(0, null), state.lmuWindowsSideBySideDurations)
+            assertEquals(LmuWindowsSideBySideDurations(0, null), state.lmuWindows.sideBySideDurations)
             nowMs = 2_250L
             approach.update { it.copy(lateralDistanceLeftMeters = LateralDistanceMeters(1.5)) }
-            val continued = viewModel.uiState.first { it.lmuWindowsSideBySideDurations?.leftMillis == 1_250L }
-            assertEquals(LmuWindowsSideBySideDurations(1_250, null), continued.lmuWindowsSideBySideDurations)
+            val continued = viewModel.uiState.first { it.lmuWindows.sideBySideDurations?.leftMillis == 1_250L }
+            assertEquals(LmuWindowsSideBySideDurations(1_250, null), continued.lmuWindows.sideBySideDurations)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1115,11 +1131,11 @@ class DebugStateDetailViewModelTest {
             testScheduler.runCurrent()
 
             val initial = viewModel.uiState.first()
-            assertEquals(LmuWindowsSideBySideDurations(0, null), initial.lmuWindowsSideBySideDurations)
+            assertEquals(LmuWindowsSideBySideDurations(0, null), initial.lmuWindows.sideBySideDurations)
             nowMs = 3_000L
             testScheduler.advanceTimeBy(100L)
-            val ticked = viewModel.uiState.first { it.lmuWindowsSideBySideDurations?.leftMillis == 2_000L }
-            assertEquals(LmuWindowsSideBySideDurations(2_000, null), ticked.lmuWindowsSideBySideDurations)
+            val ticked = viewModel.uiState.first { it.lmuWindows.sideBySideDurations?.leftMillis == 2_000L }
+            assertEquals(LmuWindowsSideBySideDurations(2_000, null), ticked.lmuWindows.sideBySideDurations)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1207,7 +1223,12 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(CelsiusReading(92.5f), state.tyreCarcassTemperature?.wheels?.get(WheelIndex.FRONT_LEFT))
+            assertEquals(
+                CelsiusReading(92.5f),
+                state.lmuWindows.tyreCarcassTemperature
+                    ?.wheels
+                    ?.get(WheelIndex.FRONT_LEFT),
+            )
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1292,7 +1313,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals("LMP2", state.lmuWindowsVehicleClass?.name)
+            assertEquals("LMP2", state.lmuWindows.vehicleClass?.name)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1377,7 +1398,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals("Gr.3", state.gt7Ps5VehicleClass?.name)
+            assertEquals("Gr.3", state.gt7Ps5.vehicleClass?.name)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1462,7 +1483,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(AceWindowsCarLocation.PITLANE, state.aceWindowsStatus?.carLocation)
+            assertEquals(AceWindowsCarLocation.PITLANE, state.aceWindows.status?.carLocation)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1550,7 +1571,12 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(1, state.aceWindowsVehicleApproach?.nearbyVehicles?.size)
+            assertEquals(
+                1,
+                state.aceWindows.vehicleApproach
+                    ?.nearbyVehicles
+                    ?.size,
+            )
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1634,7 +1660,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(3.5f, state.aceWindowsRemainingFuelLaps?.remainingLaps)
+            assertEquals(3.5f, state.aceWindows.remainingFuelLaps?.remainingLaps)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1719,7 +1745,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(LmuWindowsPitState.ENTERING, state.lmuWindowsPitStatus?.pitState)
+            assertEquals(LmuWindowsPitState.ENTERING, state.lmuWindows.pitStatus?.pitState)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1804,8 +1830,8 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(true, state.vehicleDamage?.overheating)
-            assertEquals(true, state.vehicleDamage?.partDetached)
+            assertEquals(true, state.lmuWindows.vehicleDamage?.overheating)
+            assertEquals(true, state.lmuWindows.vehicleDamage?.partDetached)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -1890,7 +1916,12 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(true, state.tyreDetached?.wheels?.get(WheelIndex.FRONT_LEFT))
+            assertEquals(
+                true,
+                state.lmuWindows.tyreDetached
+                    ?.wheels
+                    ?.get(WheelIndex.FRONT_LEFT),
+            )
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }

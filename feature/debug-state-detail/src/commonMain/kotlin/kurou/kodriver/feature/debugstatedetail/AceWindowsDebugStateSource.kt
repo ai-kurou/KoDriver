@@ -3,6 +3,7 @@ package kurou.kodriver.feature.debugstatedetail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
@@ -37,52 +38,77 @@ internal class AceWindowsDebugStateSource(
     useCases: AceWindowsDebugStateUseCases,
     markCardsReceived: (Simulator, Set<DebugStateCardKey>) -> Unit,
 ) {
-    val fuel: StateFlow<AceWindowsFuelData?> =
+    private val fuel: StateFlow<AceWindowsFuelData?> =
         useCases
             .observeFuel()
             .onEach {
                 markCardsReceived(Simulator.AceWindows, setOf(DebugStateCardKey.FUEL_CONSUMPTION))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val flag: StateFlow<AceWindowsFlagData?> =
+    private val flag: StateFlow<AceWindowsFlagData?> =
         useCases
             .observeFlag()
             .onEach {
                 markCardsReceived(Simulator.AceWindows, setOf(DebugStateCardKey.FLAG_INFO))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val status: StateFlow<AceWindowsStatusData?> =
+    private val status: StateFlow<AceWindowsStatusData?> =
         useCases
             .observeStatus()
             .onEach {
                 markCardsReceived(Simulator.AceWindows, setOf(DebugStateCardKey.VEHICLE_LOCATION))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val tyreCarcassTemperature: StateFlow<AceWindowsTyreCarcassTemperatureData?> =
+    private val tyreCarcassTemperature: StateFlow<AceWindowsTyreCarcassTemperatureData?> =
         useCases
             .observeTyreCarcassTemperature()
             .onEach {
                 markCardsReceived(Simulator.AceWindows, setOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val vehicleApproach: StateFlow<AceWindowsVehicleApproachData?> =
+    private val vehicleApproach: StateFlow<AceWindowsVehicleApproachData?> =
         useCases
             .observeVehicleApproach()
             .onEach {
                 markCardsReceived(Simulator.AceWindows, setOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val bestLapTime: StateFlow<AceWindowsBestLapTimeData?> =
+    private val bestLapTime: StateFlow<AceWindowsBestLapTimeData?> =
         useCases
             .observeBestLapTime()
             .onEach {
                 markCardsReceived(Simulator.AceWindows, setOf(DebugStateCardKey.BEST_LAP))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
-    val remainingFuelLaps: StateFlow<AceWindowsRemainingFuelLapsData?> =
+    private val remainingFuelLaps: StateFlow<AceWindowsRemainingFuelLapsData?> =
         useCases
             .observeRemainingFuelLaps()
             .onEach {
                 markCardsReceived(Simulator.AceWindows, setOf(DebugStateCardKey.FUEL_CONSUMPTION))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val base: StateFlow<AceWindowsDebugState> =
+        combine(
+            fuel,
+            flag,
+            status,
+            bestLapTime,
+            remainingFuelLaps,
+        ) { fuel, flag, status, bestLapTime, remainingFuelLaps ->
+            AceWindowsDebugState(
+                fuel = fuel,
+                flag = flag,
+                status = status,
+                bestLapTime = bestLapTime,
+                remainingFuelLaps = remainingFuelLaps,
+            )
+        }.stateIn(scope, SharingStarted.Eagerly, AceWindowsDebugState())
+
+    val state: StateFlow<AceWindowsDebugState> =
+        combine(base, vehicleApproach, tyreCarcassTemperature) { base, vehicleApproach, tyreCarcassTemperature ->
+            base.copy(
+                vehicleApproach = vehicleApproach,
+                tyreCarcassTemperature = tyreCarcassTemperature,
+            )
+        }.stateIn(scope, SharingStarted.Eagerly, AceWindowsDebugState())
 }

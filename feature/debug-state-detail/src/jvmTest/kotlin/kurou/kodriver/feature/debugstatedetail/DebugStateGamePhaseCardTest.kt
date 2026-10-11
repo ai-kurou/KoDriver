@@ -24,8 +24,11 @@ class DebugStateGamePhaseCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            raceFlags = null,
                             cardOrder = listOf(DebugStateCardKey.GAME_PHASE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    raceFlags = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -60,8 +63,11 @@ class DebugStateGamePhaseCardTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                                raceFlags = sampleRaceFlags(gamePhase = gamePhase),
                                 cardOrder = listOf(DebugStateCardKey.GAME_PHASE),
+                                lmuWindows =
+                                    LmuWindowsDebugState(
+                                        raceFlags = sampleRaceFlags(gamePhase = gamePhase),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},

@@ -24,8 +24,11 @@ class DebugStateYellowFlagStateCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            raceFlags = null,
                             cardOrder = listOf(DebugStateCardKey.YELLOW_FLAG_STATE),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    raceFlags = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -59,8 +62,11 @@ class DebugStateYellowFlagStateCardTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                                raceFlags = sampleRaceFlags(yellowFlagState = yellowFlagState),
                                 cardOrder = listOf(DebugStateCardKey.YELLOW_FLAG_STATE),
+                                lmuWindows =
+                                    LmuWindowsDebugState(
+                                        raceFlags = sampleRaceFlags(yellowFlagState = yellowFlagState),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},

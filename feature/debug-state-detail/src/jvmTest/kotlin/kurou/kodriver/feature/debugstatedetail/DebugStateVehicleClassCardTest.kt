@@ -23,8 +23,11 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5VehicleClass = Gt7Ps5VehicleClassData(name = ""),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    vehicleClass = Gt7Ps5VehicleClassData(name = ""),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -44,8 +47,11 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar"),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar"),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -65,8 +71,11 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData.fromRawValue(""),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleClass = LmuWindowsVehicleClassData.fromRawValue(""),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -86,7 +95,10 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar"),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    vehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar"),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -106,8 +118,11 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5VehicleClass = Gt7Ps5VehicleClassData(name = "Gr.3"),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
+                            gt7Ps5 =
+                                Gt7Ps5DebugState(
+                                    vehicleClass = Gt7Ps5VehicleClassData(name = "Gr.3"),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},

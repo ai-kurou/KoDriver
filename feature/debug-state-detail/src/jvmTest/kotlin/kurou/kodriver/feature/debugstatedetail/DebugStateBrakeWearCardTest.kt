@@ -25,22 +25,31 @@ class DebugStateBrakeWearCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            brakeWear =
-                                LmuWindowsBrakeWearRemainingData(
-                                    wheels =
-                                        mapOf(
-                                            WheelIndex.FRONT_LEFT to
-                                                LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.036f), 87f),
-                                            WheelIndex.FRONT_RIGHT to
-                                                LmuWindowsBrakeWearWheelRemaining(
-                                                    BrakeThicknessMeters(0.0305f),
-                                                    50.06f,
+                            cardOrder = listOf(DebugStateCardKey.BRAKE_WEAR),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    brakeWear =
+                                        LmuWindowsBrakeWearRemainingData(
+                                            wheels =
+                                                mapOf(
+                                                    WheelIndex.FRONT_LEFT to
+                                                        LmuWindowsBrakeWearWheelRemaining(
+                                                            BrakeThicknessMeters(0.036f),
+                                                            87f,
+                                                        ),
+                                                    WheelIndex.FRONT_RIGHT to
+                                                        LmuWindowsBrakeWearWheelRemaining(
+                                                            BrakeThicknessMeters(0.0305f),
+                                                            50.06f,
+                                                        ),
+                                                    WheelIndex.REAR_LEFT to
+                                                        LmuWindowsBrakeWearWheelRemaining(
+                                                            BrakeThicknessMeters(-0.001f),
+                                                            -1f,
+                                                        ),
                                                 ),
-                                            WheelIndex.REAR_LEFT to
-                                                LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(-0.001f), -1f),
                                         ),
                                 ),
-                            cardOrder = listOf(DebugStateCardKey.BRAKE_WEAR),
                         ),
                     canNavigateBack = false,
                     onBack = {},

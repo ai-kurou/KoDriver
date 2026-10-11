@@ -49,8 +49,11 @@ class FlagInfoContentTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            raceFlags = null,
                             cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    raceFlags = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -69,8 +72,11 @@ class FlagInfoContentTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            raceFlags = sampleRaceFlags(),
                             cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    raceFlags = sampleRaceFlags(),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -89,8 +95,11 @@ class FlagInfoContentTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            raceFlags = sampleRaceFlags(playerFlag = PrimaryFlag.BLUE),
                             cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    raceFlags = sampleRaceFlags(playerFlag = PrimaryFlag.BLUE),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -109,8 +118,11 @@ class FlagInfoContentTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            aceWindowsFlag = null,
                             cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                            aceWindows =
+                                AceWindowsDebugState(
+                                    flag = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -146,8 +158,11 @@ class FlagInfoContentTest {
                         uiState =
                             DebugStateDetailUiState(
                                 selectedSimulator = Simulator.AceWindows,
-                                aceWindowsFlag = AceWindowsFlagData(flag = flag),
                                 cardOrder = listOf(DebugStateCardKey.FLAG_INFO),
+                                aceWindows =
+                                    AceWindowsDebugState(
+                                        flag = AceWindowsFlagData(flag = flag),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},

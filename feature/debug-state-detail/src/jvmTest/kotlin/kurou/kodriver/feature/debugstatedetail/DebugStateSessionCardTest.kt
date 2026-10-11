@@ -21,8 +21,11 @@ class DebugStateSessionCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            virtualEnergy = null,
                             cardOrder = listOf(DebugStateCardKey.SESSION),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    virtualEnergy = null,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -56,12 +59,15 @@ class DebugStateSessionCardTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                                virtualEnergy =
-                                    LmuWindowsVirtualEnergyData(
-                                        remainingRatio = LmuWindowsVirtualEnergyRatio(0.0),
-                                        session = session,
-                                    ),
                                 cardOrder = listOf(DebugStateCardKey.SESSION),
+                                lmuWindows =
+                                    LmuWindowsDebugState(
+                                        virtualEnergy =
+                                            LmuWindowsVirtualEnergyData(
+                                                remainingRatio = LmuWindowsVirtualEnergyRatio(0.0),
+                                                session = session,
+                                            ),
+                                    ),
                             ),
                         canNavigateBack = true,
                         onBack = {},

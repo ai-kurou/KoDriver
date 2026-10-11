@@ -119,81 +119,14 @@ internal class DebugStateDetailViewModel(
             local ?: resolveCardOrder(persistedOrder = persisted, defaultOrder = defaultDebugStateCardOrder)
         }.stateIn(viewModelScope, SharingStarted.Eagerly, defaultDebugStateCardOrder)
 
-    // LMU / GT7 いずれか片方しか実際には接続されないため、combine の必須ソースにはせず
-    // 初期値 null を持つ StateFlow 化して uiState 全体がブロックされないようにする。
-    private val _optionalTelemetryBase: StateFlow<DebugStateDetailUiState> =
-        combine(
-            lmuWindowsSource.telemetry,
-            gt7Ps5Source.telemetry,
-            aceWindowsSource.fuel,
-            aceWindowsSource.flag,
-            gt7Ps5Source.vehicleClass,
-        ) { lmu, gt7, aceWindowsFuel, aceWindowsFlag, gt7Ps5VehicleClass ->
-            DebugStateDetailUiState(
-                lmuWindowsTelemetry = lmu,
-                gt7Ps5Telemetry = gt7,
-                aceWindowsFuel = aceWindowsFuel,
-                aceWindowsFlag = aceWindowsFlag,
-                gt7Ps5VehicleClass = gt7Ps5VehicleClass,
-            )
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            DebugStateDetailUiState(),
-        )
-
-    private val _optionalTelemetryWithoutRemainingFuelLaps: StateFlow<DebugStateDetailUiState> =
-        combine(
-            _optionalTelemetryBase,
-            aceWindowsSource.status,
-            aceWindowsSource.tyreCarcassTemperature,
-            aceWindowsSource.vehicleApproach,
-            aceWindowsSource.bestLapTime,
-        ) { base, status, tyreCarcassTemperature, vehicleApproach, bestLapTime ->
-            base.copy(
-                aceWindowsStatus = status,
-                aceWindowsTyreCarcassTemperature = tyreCarcassTemperature,
-                aceWindowsVehicleApproach = vehicleApproach,
-                aceWindowsBestLapTime = bestLapTime,
-            )
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            DebugStateDetailUiState(),
-        )
-
-    private val _optionalTelemetry: StateFlow<DebugStateDetailUiState> =
-        combine(
-            _optionalTelemetryWithoutRemainingFuelLaps,
-            aceWindowsSource.remainingFuelLaps,
-        ) { base, remainingFuelLaps ->
-            base.copy(aceWindowsRemainingFuelLaps = remainingFuelLaps)
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            DebugStateDetailUiState(),
-        )
-
-    private val _uiStateBase: StateFlow<DebugStateDetailUiState> =
+    private val _header: StateFlow<DebugStateDetailUiState> =
         combine(
             _selectedSimulator,
-            lmuWindowsSource.raceState,
             _cardOrder,
-            _optionalTelemetry,
             _receivedCardKeys,
-        ) { selectedSimulator, raceState, cardOrder, optionalTelemetry, receivedCardKeys ->
-            raceState.copy(
+        ) { selectedSimulator, cardOrder, receivedCardKeys ->
+            DebugStateDetailUiState(
                 selectedSimulator = selectedSimulator,
-                lmuWindowsTelemetry = optionalTelemetry.lmuWindowsTelemetry,
-                gt7Ps5Telemetry = optionalTelemetry.gt7Ps5Telemetry,
-                aceWindowsFuel = optionalTelemetry.aceWindowsFuel,
-                aceWindowsFlag = optionalTelemetry.aceWindowsFlag,
-                aceWindowsStatus = optionalTelemetry.aceWindowsStatus,
-                aceWindowsBestLapTime = optionalTelemetry.aceWindowsBestLapTime,
-                aceWindowsRemainingFuelLaps = optionalTelemetry.aceWindowsRemainingFuelLaps,
-                aceWindowsVehicleApproach = optionalTelemetry.aceWindowsVehicleApproach,
-                aceWindowsTyreCarcassTemperature = optionalTelemetry.aceWindowsTyreCarcassTemperature,
-                gt7Ps5VehicleClass = optionalTelemetry.gt7Ps5VehicleClass,
                 enabledCardKeys =
                     receivedCardKeys[selectedSimulator].orEmpty() intersect supportedCardKeys(selectedSimulator),
                 cardOrder = cardOrder,
@@ -201,8 +134,8 @@ internal class DebugStateDetailViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DebugStateDetailUiState())
 
     val uiState: StateFlow<DebugStateDetailUiState> =
-        combine(_uiStateBase, lmuWindowsSource.sideBySideDurations) { base, durations ->
-            base.copy(lmuWindowsSideBySideDurations = durations)
+        combine(_header, lmuWindowsSource.state, gt7Ps5Source.state, aceWindowsSource.state) { header, lmu, gt7, ace ->
+            header.copy(lmuWindows = lmu, gt7Ps5 = gt7, aceWindows = ace)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DebugStateDetailUiState())
 
     fun moveCard(

@@ -97,16 +97,19 @@ class DebugStatePitTimingRemainingLapsCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            virtualEnergy =
-                                LmuWindowsVirtualEnergyData(
-                                    remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
-                                ),
-                            lmuWindowsTelemetry =
-                                sampleLmuTelemetry(
-                                    currentLap = 5,
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to 0.6),
-                                ),
                             cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                            lmuWindows =
+                                LmuWindowsDebugState(
+                                    virtualEnergy =
+                                        LmuWindowsVirtualEnergyData(
+                                            remainingRatio = LmuWindowsVirtualEnergyRatio(0.5),
+                                        ),
+                                    telemetry =
+                                        sampleLmuTelemetry(
+                                            currentLap = 5,
+                                            wheels = mapOf(WheelIndex.FRONT_LEFT to 0.6),
+                                        ),
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},

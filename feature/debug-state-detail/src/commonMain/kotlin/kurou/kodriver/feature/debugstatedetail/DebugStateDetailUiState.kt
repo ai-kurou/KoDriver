@@ -1,26 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
-import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.DebugStateCardKey
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
-import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
-import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
-import kurou.kodriver.domain.model.LmuWindowsPitStatusData
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
-import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
 
@@ -48,27 +28,9 @@ internal val defaultDebugStateCardOrder =
 
 data class DebugStateDetailUiState(
     val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,
-    val raceFlags: LmuWindowsRaceFlagsData? = null,
-    val virtualEnergy: LmuWindowsVirtualEnergyData? = null,
-    val lmuWindowsTelemetry: LmuWindowsTelemetryData? = null,
-    val gt7Ps5Telemetry: Gt7Ps5TelemetryData? = null,
-    val aceWindowsFuel: AceWindowsFuelData? = null,
-    val aceWindowsFlag: AceWindowsFlagData? = null,
-    val aceWindowsStatus: AceWindowsStatusData? = null,
-    val aceWindowsBestLapTime: AceWindowsBestLapTimeData? = null,
-    val aceWindowsRemainingFuelLaps: AceWindowsRemainingFuelLapsData? = null,
-    val lmuWindowsPitStatus: LmuWindowsPitStatusData? = null,
-    val lmuWindowsSideBySideDurations: LmuWindowsSideBySideDurations? = null,
-    val vehicleApproach: LmuWindowsVehicleApproachData? = null,
-    val aceWindowsVehicleApproach: AceWindowsVehicleApproachData? = null,
-    val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData? = null,
-    val aceWindowsTyreCarcassTemperature: AceWindowsTyreCarcassTemperatureData? = null,
-    val brakeWear: LmuWindowsBrakeWearRemainingData? = null,
-    val brakeTemperature: LmuWindowsBrakeTemperatureData? = null,
-    val lmuWindowsVehicleClass: LmuWindowsVehicleClassData? = null,
-    val gt7Ps5VehicleClass: Gt7Ps5VehicleClassData? = null,
-    val vehicleDamage: LmuWindowsVehicleDamageData? = null,
-    val tyreDetached: LmuWindowsTyreDetachedData? = null,
+    val lmuWindows: LmuWindowsDebugState = LmuWindowsDebugState(),
+    val gt7Ps5: Gt7Ps5DebugState = Gt7Ps5DebugState(),
+    val aceWindows: AceWindowsDebugState = AceWindowsDebugState(),
     val enabledCardKeys: Set<DebugStateCardKey> = emptySet(),
     val cardOrder: List<DebugStateCardKey> = defaultDebugStateCardOrder,
 )
