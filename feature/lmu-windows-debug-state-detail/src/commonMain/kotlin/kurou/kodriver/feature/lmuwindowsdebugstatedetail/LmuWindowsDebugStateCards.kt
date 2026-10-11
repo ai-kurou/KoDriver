@@ -35,6 +35,7 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_side_by_side_left
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_side_by_side_none
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_side_by_side_right
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_unknown
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_in_garage_stall
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_in_pits
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_no
@@ -44,7 +45,6 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_pit_state_none
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_pit_state_requested
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_pit_state_stopped
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_pit_state_unknown
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_vehicle_location_yes
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -109,7 +109,7 @@ private fun lmuPitStateDisplayName(pitState: LmuWindowsPitState): String =
         LmuWindowsPitState.ENTERING -> stringResource(Res.string.debug_state_vehicle_location_pit_state_entering)
         LmuWindowsPitState.STOPPED -> stringResource(Res.string.debug_state_vehicle_location_pit_state_stopped)
         LmuWindowsPitState.EXITING -> stringResource(Res.string.debug_state_vehicle_location_pit_state_exiting)
-        LmuWindowsPitState.UNKNOWN -> stringResource(Res.string.debug_state_vehicle_location_pit_state_unknown)
+        LmuWindowsPitState.UNKNOWN -> stringResource(Res.string.debug_state_unknown)
     }
 
 @Composable

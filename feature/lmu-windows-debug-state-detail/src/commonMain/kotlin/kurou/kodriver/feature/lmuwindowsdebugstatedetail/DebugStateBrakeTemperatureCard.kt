@@ -10,10 +10,10 @@ import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_temperature_fl
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_temperature_fr
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_temperature_rl
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_temperature_rr
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_wheel_temperature_fl
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_wheel_temperature_fr
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_wheel_temperature_rl
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_wheel_temperature_rr
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -29,13 +29,13 @@ internal fun BrakeTemperatureContent(brakeTemperature: LmuWindowsBrakeTemperatur
             WheelBrakeTemperatureText(
                 wheels,
                 WheelIndex.FRONT_LEFT,
-                Res.string.debug_state_brake_temperature_fl,
+                Res.string.debug_state_wheel_temperature_fl,
                 Modifier.weight(1f),
             )
             WheelBrakeTemperatureText(
                 wheels,
                 WheelIndex.FRONT_RIGHT,
-                Res.string.debug_state_brake_temperature_fr,
+                Res.string.debug_state_wheel_temperature_fr,
                 Modifier.weight(1f),
             )
         }
@@ -43,13 +43,13 @@ internal fun BrakeTemperatureContent(brakeTemperature: LmuWindowsBrakeTemperatur
             WheelBrakeTemperatureText(
                 wheels,
                 WheelIndex.REAR_LEFT,
-                Res.string.debug_state_brake_temperature_rl,
+                Res.string.debug_state_wheel_temperature_rl,
                 Modifier.weight(1f),
             )
             WheelBrakeTemperatureText(
                 wheels,
                 WheelIndex.REAR_RIGHT,
-                Res.string.debug_state_brake_temperature_rr,
+                Res.string.debug_state_wheel_temperature_rr,
                 Modifier.weight(1f),
             )
         }
