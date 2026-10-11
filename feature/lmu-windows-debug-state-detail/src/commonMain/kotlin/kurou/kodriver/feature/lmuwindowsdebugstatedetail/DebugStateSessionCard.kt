@@ -8,8 +8,8 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_session_qualifying
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_session_race
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_session_test_day
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_session_unknown
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_session_warmup
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_unknown
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -20,7 +20,7 @@ private fun sessionDisplayName(session: Int): String =
         in 5..8 -> stringResource(Res.string.debug_state_session_qualifying)
         9 -> stringResource(Res.string.debug_state_session_warmup)
         in 10..13 -> stringResource(Res.string.debug_state_session_race)
-        else -> stringResource(Res.string.debug_state_session_unknown)
+        else -> stringResource(Res.string.debug_state_unknown)
     }
 
 @Composable

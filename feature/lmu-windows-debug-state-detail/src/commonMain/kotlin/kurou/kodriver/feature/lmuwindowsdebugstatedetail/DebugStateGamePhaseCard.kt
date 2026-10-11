@@ -19,8 +19,8 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_game_phase_paused
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_game_phase_session_over
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_game_phase_session_stopped
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_game_phase_unknown
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_game_phase_warm_up
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_unknown
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -36,7 +36,7 @@ private fun gamePhaseDisplayName(gamePhase: SessionPhase): String =
         SessionPhase.RED_FLAG -> stringResource(Res.string.debug_state_game_phase_session_stopped)
         SessionPhase.SESSION_OVER -> stringResource(Res.string.debug_state_game_phase_session_over)
         SessionPhase.PAUSED_OR_HEARTBEAT -> stringResource(Res.string.debug_state_game_phase_paused)
-        SessionPhase.UNKNOWN -> stringResource(Res.string.debug_state_game_phase_unknown)
+        SessionPhase.UNKNOWN -> stringResource(Res.string.debug_state_unknown)
     }
 
 @Composable

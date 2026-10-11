@@ -79,4 +79,21 @@ class DebugStateVehicleLocationCardTest {
             rule.onNodeWithText(expectedCarLocationText).assertIsDisplayed()
         }
     }
+
+    @Test
+    fun `statusとcarLocationが両方不明の場合もそれぞれの文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                VehicleLocationContent(
+                    AceWindowsStatusData(
+                        status = AceWindowsStatusType.UNKNOWN,
+                        carLocation = AceWindowsCarLocation.UNKNOWN,
+                    ),
+                )
+            }
+        }
+
+        rule.onNodeWithText("ステータス: 不明").assertIsDisplayed()
+        rule.onNodeWithText("不明").assertIsDisplayed()
+    }
 }

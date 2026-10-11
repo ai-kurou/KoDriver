@@ -10,6 +10,7 @@ import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_flag_info_unavailable
+import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_unknown
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_yellow_flag_state_invalid
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_yellow_flag_state_last_lap
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_yellow_flag_state_none
@@ -19,7 +20,6 @@ import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.deb
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_yellow_flag_state_pit_open
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_yellow_flag_state_race_halt
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_yellow_flag_state_resume
-import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_yellow_flag_state_unknown
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -34,7 +34,7 @@ private fun yellowFlagStateDisplayName(yellowFlagState: SessionYellowFlagState):
         SessionYellowFlagState.LAST_LAP -> stringResource(Res.string.debug_state_yellow_flag_state_last_lap)
         SessionYellowFlagState.RESUME -> stringResource(Res.string.debug_state_yellow_flag_state_resume)
         SessionYellowFlagState.RACE_HALT -> stringResource(Res.string.debug_state_yellow_flag_state_race_halt)
-        SessionYellowFlagState.UNKNOWN -> stringResource(Res.string.debug_state_yellow_flag_state_unknown)
+        SessionYellowFlagState.UNKNOWN -> stringResource(Res.string.debug_state_unknown)
     }
 
 @Composable
