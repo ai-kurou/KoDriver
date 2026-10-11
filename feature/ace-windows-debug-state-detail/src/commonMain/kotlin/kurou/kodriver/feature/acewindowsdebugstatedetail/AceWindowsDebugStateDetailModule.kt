@@ -13,10 +13,13 @@ val aceWindowsDebugStateDetailModule =
     module {
         viewModel { AceWindowsDebugStateDetailViewModel(get(), get()) }
 
-        factory { DebugStateCardOrderUseCases(get(), get(), get()) }
-        factory { ObserveDebugStateCardOrderUseCase(get(named(Simulator.AceWindows.id))) }
-        factory { ResolveDebugStateCardOrderUseCase() }
-        factory { SaveDebugStateCardOrderUseCase(get(named(Simulator.AceWindows.id))) }
+        factory {
+            DebugStateCardOrderUseCases(
+                ObserveDebugStateCardOrderUseCase(get(named(Simulator.AceWindows.id))),
+                ResolveDebugStateCardOrderUseCase(),
+                SaveDebugStateCardOrderUseCase(get(named(Simulator.AceWindows.id))),
+            )
+        }
 
         aceWindowsDebugStateDefinitions()
     }
