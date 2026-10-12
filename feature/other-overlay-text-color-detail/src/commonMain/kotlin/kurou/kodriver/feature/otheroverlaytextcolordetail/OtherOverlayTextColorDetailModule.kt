@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otheroverlaytextcolordetail
 
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
+import kurou.kodriver.domain.usecase.PreviewOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextColorUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -18,5 +19,6 @@ val otherOverlayTextColorDetailModule =
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveOverlayTextColorUseCase(get()) }
+        factory { PreviewOverlayTextColorUseCase(get()) }
         factory { SaveOverlayTextColorUseCase(get()) }
     }

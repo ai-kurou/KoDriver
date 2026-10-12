@@ -10,11 +10,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
+import kurou.kodriver.domain.usecase.PreviewOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.SaveOverlayTextColorUseCase
 
 /** オーバーレイ文字色の保存値とダイアログ内の選択を管理する。 */
 class OtherOverlayTextColorDetailViewModel internal constructor(
     observeOverlayTextColor: ObserveOverlayTextColorUseCase,
+    private val previewOverlayTextColor: PreviewOverlayTextColorUseCase,
     private val saveOverlayTextColor: SaveOverlayTextColorUseCase,
 ) : ViewModel() {
     private var selectionRequest = 0
@@ -32,6 +34,7 @@ class OtherOverlayTextColorDetailViewModel internal constructor(
     internal fun onPendingOverlayTextColorSelected(overlayTextColor: Long) {
         selectionRequest++
         pendingOverlayTextColor.update { overlayTextColor }
+        previewOverlayTextColor(overlayTextColor)
     }
 
     internal fun onConfirm() {
@@ -45,16 +48,23 @@ class OtherOverlayTextColorDetailViewModel internal constructor(
             } catch (_: Exception) {
                 // 保存に失敗しても未保存の色を表示し続けず、保存済みの設定へ戻す。
             } finally {
-                // 保存中に選び直された場合は、後続の選択を破棄しない。
+                // 保存中に選び直された場合は、後続の選択のプレビューを解除しない。
                 if (selectionRequest == request) {
+                    previewOverlayTextColor(null)
                     pendingOverlayTextColor.update { null }
                 }
             }
         }
     }
 
+    override fun onCleared() {
+        previewOverlayTextColor(null)
+        super.onCleared()
+    }
+
     internal fun onDismiss() {
         selectionRequest++
+        previewOverlayTextColor(null)
         pendingOverlayTextColor.update { null }
     }
 }
