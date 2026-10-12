@@ -361,12 +361,10 @@ tasks.register("generateModuleGraphImages") {
 
         fun moduleStrokeColor(module: String): String = moduleStrokeColors.getValue(moduleCategory(module))
 
-        // :feature:* はシミュレーター別のグループと、その他の feature に集約する
+        // :feature:* は LMU Windows 向けのグループと、その他の feature に集約する
         val featureGroup = "feature"
         val simulatorFeatureGroups = mapOf(
             ":feature:lmu-windows-" to ":feature:lmu-windows-*",
-            ":feature:ace-windows-" to ":feature:ace-windows-*",
-            ":feature:gt7-ps5-" to ":feature:gt7-ps5-*",
         )
         val featureGroups = simulatorFeatureGroups.values + featureGroup
 
