@@ -9,9 +9,11 @@ import kurou.kodriver.core.narrator.buildTelemetryLogJson
 import kurou.kodriver.core.narrator.captureNarratorError
 import kurou.kodriver.core.narrator.runCatchingNarratorError
 import kurou.kodriver.core.narrator.speakWithPriority
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -68,6 +70,26 @@ internal class LmuWindowsNarratorEventProcessor(
     private var previousRemainingVirtualEnergy: LmuWindowsVirtualEnergyData? = null
     private var previousBrakeTemperature: LmuWindowsBrakeTemperatureData? = null
     private var previousBrakeWear: LmuWindowsBrakeWearRemainingData? = null
+
+    /** 判定・テンプレート置換を通さず、通常の優先度・音声・ログ経路で処理する。 */
+    suspend fun processDebugReadout(
+        request: DebugReadoutRequest,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: LmuWindowsTelemetryLogContext,
+    ) {
+        processEvents(
+            events = listOf(DebugReadoutText(request.readoutItemKey, request.text)),
+            readoutOrder = readoutOrder,
+            queueEnabledStates = queueEnabledStates,
+            observedAtMs = observedAtMs,
+        ) {
+            """{"state":${TelemetryLogJson.encodeToString(logContext.state)},""" +
+                """"settings":${TelemetryLogJson.encodeToString(logContext.settings)},""" +
+                """"observedAtMs":$observedAtMs,"debugReadout":true}"""
+        }
+    }
 
     suspend fun processMyBestLap(
         telemetry: LmuWindowsTelemetryData,

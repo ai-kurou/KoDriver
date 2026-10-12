@@ -86,6 +86,16 @@ sealed interface ReadoutItemKey {
             )
         }
 
+        /** シミュレーター固有の一覧項目を、entries の順序で返す。 */
+        fun topLevelEntriesOf(simulator: Simulator): List<TopLevel> =
+            entries.filterIsInstance<TopLevel>().filter { key ->
+                when (simulator) {
+                    Simulator.LmuWindows -> key is LmuWindowsReadoutItemKey
+                    Simulator.Gt7Ps5 -> key is Gt7Ps5ReadoutItemKey
+                    Simulator.AceWindows -> key is AceWindowsReadoutItemKey
+                }
+            }
+
         /** DataStore に保存された [value] からキーを復元する。不明な値は null を返す。 */
         fun fromValue(value: String): ReadoutItemKey? = entries.find { it.value == value }
     }

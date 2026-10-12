@@ -57,3 +57,7 @@
 - `PendingThresholdState.kt` の `rememberPendingThreshold` は操作中の整数閾値と操作完了・リセット後の保存待ちを保持する。`change` は表示だけを更新し、`finishChange` は保存待ちを追加する。
 - 途中の保存通知では最新の表示値を巻き戻さず、最後の保存待ちが解除され、操作中でもなければ外部更新に追従する。
 - 文言入力と同様、保存通知が省略された場合は保存待ちの変更から既定で3秒後に表示値を保持したまま保存待ちを解除する。操作中の値は期限後も保持する。
+
+## デバッグ読み上げ
+
+`DebugReadoutRequestCard` は項目ドロップダウン、自由文言の OutlinedTextField と読み上げボタンを提供する。domain に依存せずキーの value を文字列で受け取り、既存の `readoutItemDisplayName` で表示する。選択・入力・送信はコールバックで通知し、空白のみではボタンを無効化する。ラベルは composeResources の日本語文字列を使う。

@@ -33,4 +33,8 @@
     <string name="readout_item_ace_checkered_flag">チェッカーフラッグ</string>
     <string name="readout_item_ace_orange_circle_flag">オレンジボールフラッグ</string>
     <string name="readout_item_ace_red_yellow_stripes_flag">レッド・イエローストライプフラッグ</string>
+    <string name="debug_readout_request_title">デバッグ読み上げ</string>
+    <string name="debug_readout_request_item">読み上げ項目</string>
+    <string name="debug_readout_request_text">読み上げ文言</string>
+    <string name="debug_readout_request_send">読み上げ</string>
 </resources>

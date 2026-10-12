@@ -38,6 +38,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachReadoutText
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsWhiteFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsYellowFlagReadoutTextUseCase
+import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -79,8 +80,22 @@ import org.koin.dsl.module
 @OptIn(ExperimentalResourceApi::class)
 val aceWindowsNarratorModule: Module =
     module {
+        factory { ObserveDebugReadoutRequestUseCase(get()) }
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel {
+            AceWindowsNarratorViewModel(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                observeDebugReadoutRequest = get(),
+            )
+        }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { MyBestLapUseCases(get()) }

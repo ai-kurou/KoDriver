@@ -54,3 +54,7 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 オーバーレイ文字色は `OverlayTextColorPreferences` の ARGB Long として `overlay_text_color_preferences.pb` に永続化する。
 詳細ダイアログのOKで保存し、一覧とオーバーレイが保存値のFlowを購読する。
 既定値はドメインの `OVERLAY_TEXT_COLOR_DEFAULT` を参照し、既存の保存形式は維持する。
+
+## デバッグ読み上げ
+
+`jvmAndroidMain` の `InMemoryDebugReadoutRequestRepository` は replay なしの `MutableSharedFlow` で要求をプロセス内配信する。購読前の要求は保持せず、送信中の要求は現在の全購読者に渡す。DesktopDataModule と AndroidDataModule で同じ実装を single 登録する。永続化やテレメトリソースへの送信は行わない。

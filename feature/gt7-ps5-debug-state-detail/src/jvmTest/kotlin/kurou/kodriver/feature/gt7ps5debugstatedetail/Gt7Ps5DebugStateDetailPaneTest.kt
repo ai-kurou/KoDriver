@@ -8,7 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
@@ -64,7 +67,7 @@ class Gt7Ps5DebugStateDetailPaneTest {
     fun `未取得の5枚を含む全カードとグリッドを表示する`() {
         rule.setContent {
             MaterialTheme {
-                Box(Modifier.requiredSize(900.dp, 600.dp)) {
+                Box(Modifier.requiredSize(1560.dp, 1080.dp)) {
                     Gt7Ps5DebugStateDetailPaneContent(
                         uiState = Gt7Ps5DebugStateDetailUiState(),
                         canNavigateBack = false,
@@ -76,7 +79,9 @@ class Gt7Ps5DebugStateDetailPaneTest {
         rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).assertExists()
         rule.onAllNodesWithText("未取得").assertCountEquals(5)
         listOf("選択中のシミュレーター", "車両クラス", "現在のラップ", "自己ベストラップ", "タイヤ表面温度", "燃料消費")
-            .forEach { rule.onNodeWithText(it).assertIsDisplayed() }
+            .forEach {
+                rule.onNode(hasText(it) and hasAnyAncestor(hasTestTag(DEBUG_STATE_GRID_TEST_TAG))).assertIsDisplayed()
+            }
     }
 
     @Test

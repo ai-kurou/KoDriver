@@ -2,6 +2,7 @@
 
 package kurou.kodriver.feature.acewindowsnarrator
 
+import androidx.lifecycle.viewModelScope
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -13,13 +14,18 @@ import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kurou.kodriver.domain.engine.AceWindowsBlackFlag
 import kurou.kodriver.domain.engine.AceWindowsBlackWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsBlueFlag
@@ -34,6 +40,7 @@ import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
@@ -47,6 +54,7 @@ import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -63,6 +71,7 @@ import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.AceWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -80,6 +89,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureEnabledStat
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -94,6 +104,9 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorViewModelTest {
+    private val debugRequests = MutableSharedFlow<DebugReadoutRequest>()
+    private val debugRequestRepository: DebugReadoutRequestRepository = mockk()
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val bestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
@@ -162,7 +175,9 @@ class AceWindowsNarratorViewModelTest {
         every {
             remainingFuelLapsRepository.remainingFuelLapsStream()
         } returns remainingFuelLapsChannel.receiveAsFlow()
+        every { debugRequestRepository.observeRequests() } returns debugRequests
         return AceWindowsNarratorViewModel(
+            observeDebugReadoutRequest = ObserveDebugReadoutRequestUseCase(debugRequestRepository),
             myBestLapUseCases =
                 MyBestLapUseCases(
                     observeBestLapTime = ObserveAceWindowsBestLapTimeUseCase(bestLapTimeRepository),
@@ -1258,4 +1273,87 @@ class AceWindowsNarratorViewModelTest {
 
     private fun tyreCarcassTemperature(fl: Float) =
         AceWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to CelsiusReading(fl)))
+
+    @Test
+    fun `デバッグ要求は未受信かつ項目無効でも読み上げ他シミュレーターと空白は読み上げない`() =
+        runTest(testDispatcher) {
+            val key = ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows).first()
+            val request = DebugReadoutRequest(Simulator.AceWindows, key, "入力 {laps}")
+            val spokenJson = slot<String>()
+            val skippedJson = slot<String>()
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(key to false),
+                vehicleApproachEnabledOverrides = mapOf(key to false),
+            )
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(DebugReadoutText(key, request.text), false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.AceWindows,
+                    key,
+                    request.text,
+                    NarrationOutcome.SPOKEN,
+                    capture(spokenJson),
+                )
+            } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123L,
+                    Simulator.AceWindows,
+                    key,
+                    "",
+                    NarrationOutcome.SKIPPED,
+                    capture(skippedJson),
+                )
+            } just Runs
+            val viewModel =
+                createViewModel(
+                    fuelChannel = Channel(Channel.UNLIMITED),
+                    ttsEngine = ttsEngine,
+                    currentTimeMs = { 123L },
+                )
+            try {
+                Simulator.entries.filter { it != Simulator.AceWindows }.forEach { simulator ->
+                    debugRequests.emit(request.copy(simulator = simulator))
+                }
+                debugRequests.emit(request)
+                debugRequests.emit(request.copy(text = " \n\t "))
+                val json = Json.parseToJsonElement(spokenJson.captured).jsonObject
+                assertEquals("true", json.getValue("debugReadout").jsonPrimitive.content)
+                assertEquals("123", json.getValue("observedAtMs").jsonPrimitive.content)
+                assertEquals(true, json.containsKey("state"))
+                assertEquals(true, json.containsKey("settings"))
+                assertEquals(setOf("state", "settings", "observedAtMs", "debugReadout"), json.keys)
+                assertEquals(spokenJson.captured, skippedJson.captured)
+                verify(exactly = 1) { debugRequestRepository.observeRequests() }
+                verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+                verify(exactly = 1) { ttsEngine.speak(DebugReadoutText(key, request.text), false) }
+                verify(exactly = 0) { ttsEngine.speak(DebugReadoutText(key, " \n\t "), false) }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        123L,
+                        Simulator.AceWindows,
+                        key,
+                        request.text,
+                        NarrationOutcome.SPOKEN,
+                        spokenJson.captured,
+                    )
+                }
+                coVerify(exactly = 1) {
+                    telemetryLogRepository.saveTelemetryLog(
+                        123L,
+                        Simulator.AceWindows,
+                        key,
+                        "",
+                        NarrationOutcome.SKIPPED,
+                        skippedJson.captured,
+                    )
+                }
+                confirmVerified(debugRequestRepository, ttsEngine, telemetryLogRepository)
+            } finally {
+                viewModel.viewModelScope.cancel()
+            }
+        }
 }

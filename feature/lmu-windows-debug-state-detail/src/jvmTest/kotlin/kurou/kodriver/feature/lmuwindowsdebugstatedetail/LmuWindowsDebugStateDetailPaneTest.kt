@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
@@ -48,6 +50,7 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState = LmuWindowsDebugStateDetailUiState(),
                     canNavigateBack = true,
                     onBack = {},
@@ -63,6 +66,7 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState = LmuWindowsDebugStateDetailUiState(),
                     canNavigateBack = true,
                     onBack = {},
@@ -93,6 +97,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             rule.setContent {
                 MaterialTheme {
                     LmuWindowsDebugStateDetailPaneContent(
+                        modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
                                 lmuWindows =
@@ -115,6 +120,7 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState = LmuWindowsDebugStateDetailUiState(),
                     canNavigateBack = true,
                     onBack = {},
@@ -144,6 +150,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             rule.setContent {
                 MaterialTheme {
                     LmuWindowsDebugStateDetailPaneContent(
+                        modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
                                 lmuWindows =
@@ -170,6 +177,7 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState = LmuWindowsDebugStateDetailUiState(),
                     canNavigateBack = true,
                     onBack = {},
@@ -201,6 +209,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             rule.setContent {
                 MaterialTheme {
                     LmuWindowsDebugStateDetailPaneContent(
+                        modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
                                 lmuWindows = LmuWindowsDebugState(raceFlags = sampleRaceFlags(gamePhase = gamePhase)),
@@ -220,6 +229,7 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState = LmuWindowsDebugStateDetailUiState(),
                     canNavigateBack = true,
                     onBack = {},
@@ -235,6 +245,7 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
                             lmuWindows =
@@ -268,6 +279,7 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
                             lmuWindows =
@@ -301,6 +313,7 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
+                    modifier = Modifier.requiredSize(1560.dp, 1080.dp),
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
                             cardOrder =

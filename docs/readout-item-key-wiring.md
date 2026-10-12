@@ -77,3 +77,7 @@ LMUの全自由文字列イベント（フラッグ・車両接近・ピット�
 LMUブレーキ摩耗警告では一覧の `BrakeWear.Root` と詳細の `WarningReadout` の有効状態を判定する。`LmuWindowsNarratorViewModel` は `ObserveLmuWindowsBrakeWearRemainingUseCase`（REST APIの `wearables.brakes` と車両クラスから、観測した最大の厚さを新品時とみなして残量%を計算）の値を `determineBrakeWearLow` で判定し、いずれかの輪が車両クラス別の残量閾値以下になった時点で1回だけ読み上げる（全輪が閾値を超えるまで再読み上げしない）。イベントは判定時の閾値（%）を持ち、全クラス共通文言の `{percent}` を置換する。実測の残量は使用しない。文言と閾値は `LmuWindowsVehicleClassBrakeWearPreferences` に保存する。判定時に `resolvedText` を確定してログと発話を一致させる。空白・TTS利用不可では本文と開始音を要求せず空文字と `SKIPPED` を記録する。開始音・優先度・キューと試聴は `BrakeWear.Root` を参照する。詳細ペインの試聴は選択中クラスのスライダー閾値を使う。WAVへはフォールバックしない。デスクトップ版はLMU REST APIから取得し、Android版はKoDriverサーバーの `/ws/lmu_windows/brake_wear` から受信して同じ残量判定・読み上げを行う。取得失敗時はJSON `null` が配信される。
 
 自由文言TTSの本文と詳細画面の試聴は`SpeakTextUseCase`を通し、呼び出し時点の保存済み音声ID・読み上げ速度・声の高さを使う。音声IDを明示した試聴でも速度と声の高さは保存値を使用する。`TextToSpeechRepository.speak(text, queue, volume, voiceId, speed, pitch)`の`speed`・`pitch`はともに既定1.0、範囲0.5〜2.0で、Android・Windows実装で範囲外を制限する。開始音のWAVには速度・声の高さを適用しない。
+
+## デバッグ読み上げの例外
+
+デバッグ状態詳細ペインの要求は `ReadoutItemKey.topLevelEntriesOf` の項目を使用する。ログと優先度・キュー判定のキーは通常の Narrator と同じ TopLevel で、項目スイッチと determine 系の判定を意図的に通さず入力文字列を読み上げる。この経路は設定スイッチの配線確認には使わない。通常テレメトリ経路のスイッチ動作は従来どおり確認する。

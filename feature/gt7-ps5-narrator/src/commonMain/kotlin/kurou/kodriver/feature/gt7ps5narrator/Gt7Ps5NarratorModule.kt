@@ -10,6 +10,7 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsReadoutTextUseCase
@@ -59,8 +60,21 @@ import org.koin.dsl.module
 @OptIn(ExperimentalResourceApi::class)
 val gt7Ps5NarratorModule: Module =
     module {
+        factory { ObserveDebugReadoutRequestUseCase(get()) }
         // ViewModel（Gt7Ps5NarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-        viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel {
+            Gt7Ps5NarratorViewModel(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                observeDebugReadoutRequest = get(),
+            )
+        }
 
         // この feature 固有の UseCase 集約 data class（本モジュールで定義）
         factory { MyBestLapUseCases(get()) }

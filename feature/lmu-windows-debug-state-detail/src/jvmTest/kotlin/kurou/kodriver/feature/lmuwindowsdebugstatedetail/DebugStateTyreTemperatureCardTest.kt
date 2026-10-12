@@ -3,7 +3,9 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollToIndex
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -101,6 +103,8 @@ class DebugStateTyreTemperatureCardTest {
             }
         }
 
+        val cardIndex = defaultDebugStateCardOrder.indexOf(LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE)
+        rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).performScrollToIndex(cardIndex)
         rule.onNodeWithText("タイヤ表面温度").assertIsDisplayed()
         rule.onNodeWithText("FL 85.0℃").assertIsDisplayed()
         rule.onNodeWithText("FR 86.0℃").assertIsDisplayed()

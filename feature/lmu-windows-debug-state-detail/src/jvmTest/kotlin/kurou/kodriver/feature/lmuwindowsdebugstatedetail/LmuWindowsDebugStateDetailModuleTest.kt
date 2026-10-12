@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.DebugReadoutRequestRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
@@ -38,6 +39,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -48,6 +50,8 @@ import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsDebugStateDetailModuleTest {
+    private val debugRequestRepository: DebugReadoutRequestRepository = mockk()
+
     private val debugStateCardOrderPreferencesRepository: DebugStateCardOrderPreferencesRepository = mockk()
     private val lmuWindowsBrakeTemperatureRepository: LmuWindowsBrakeTemperatureRepository = mockk()
     private val lmuWindowsBrakeWearRepository: LmuWindowsBrakeWearRepository = mockk()
@@ -91,6 +95,7 @@ class LmuWindowsDebugStateDetailModuleTest {
                 modules(
                     lmuWindowsDebugStateDetailModule,
                     module {
+                        single<DebugReadoutRequestRepository> { debugRequestRepository }
                         single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
                             debugStateCardOrderPreferencesRepository
                         }
@@ -112,6 +117,7 @@ class LmuWindowsDebugStateDetailModuleTest {
             }.koin
         try {
             assertNotNull(koin.get<LmuWindowsDebugStateUseCases>())
+            assertNotNull(koin.get<RequestDebugReadoutUseCase>())
             assertNotNull(koin.get<DebugStateCardOrderUseCases>())
             assertNotNull(koin.get<ObserveLmuWindowsRaceFlagsUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsVirtualEnergyUseCase>())

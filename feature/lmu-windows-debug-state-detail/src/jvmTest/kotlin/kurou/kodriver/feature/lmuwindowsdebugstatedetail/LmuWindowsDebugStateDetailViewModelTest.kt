@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
+import kurou.kodriver.domain.model.DebugReadoutRequest
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
@@ -27,6 +28,7 @@ import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -39,9 +41,11 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.PrimaryFlag
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
@@ -67,6 +71,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
@@ -79,6 +84,8 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions", "LongMethod")
 class LmuWindowsDebugStateDetailViewModelTest {
+    private val requestDebugReadout: RequestDebugReadoutUseCase = mockk(relaxUnitFun = true)
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val flagRepository: LmuWindowsFlagRepository = mockk()
@@ -121,6 +128,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
         currentTimeMs: () -> Long = { 0L },
         sideBySideTickIntervalMs: Long = 100L,
     ) = LmuWindowsDebugStateDetailViewModel(
+        requestDebugReadout = requestDebugReadout,
         currentTimeMs = currentTimeMs,
         sideBySideTickIntervalMs = sideBySideTickIntervalMs,
         lmuWindowsUseCases =
@@ -163,6 +171,25 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { tyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
             val viewModel = createViewModel()
+            val keys = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows)
+            assertEquals(keys.first(), viewModel.uiState.first().selectedReadoutItemKey)
+            viewModel.requestReadout()
+            viewModel.updateDebugReadoutText(" \n\t ")
+            viewModel.requestReadout()
+            viewModel.selectReadoutItem("unknown")
+            viewModel.selectReadoutItem(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled.value)
+            val otherSimulator = Simulator.entries.first { it != Simulator.LmuWindows }
+            viewModel.selectReadoutItem(ReadoutItemKey.topLevelEntriesOf(otherSimulator).first().value)
+            assertEquals(keys.first(), viewModel.uiState.first().selectedReadoutItemKey)
+            viewModel.selectReadoutItem(keys.last().value)
+            viewModel.updateDebugReadoutText("入力 {laps}")
+            viewModel.requestReadout()
+            val inputState = viewModel.uiState.first { it.debugReadoutText == "入力 {laps}" }
+            assertEquals(keys.last(), inputState.selectedReadoutItemKey)
+            coVerify(exactly = 1) {
+                requestDebugReadout(DebugReadoutRequest(Simulator.LmuWindows, keys.last(), "入力 {laps}"))
+            }
+
             testScheduler.runCurrent()
 
             val state = viewModel.uiState.first()
@@ -170,6 +197,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             assertEquals(setOf(LmuWindowsDebugStateCardKey.SIMULATOR), state.enabledCardKeys)
             assertEquals(LmuWindowsDebugState(), state.lmuWindows)
             assertEquals(defaultDebugStateCardOrder, state.cardOrder)
+            confirmVerified(requestDebugReadout)
         }
 
     @Test

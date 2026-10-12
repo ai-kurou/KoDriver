@@ -11,7 +11,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.DebugReadoutRequest
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 
@@ -31,7 +35,14 @@ internal data class DebugStateCardOrderUseCases(
 internal class AceWindowsDebugStateDetailViewModel(
     aceWindowsUseCases: AceWindowsDebugStateUseCases,
     cardOrderUseCases: DebugStateCardOrderUseCases,
+    private val requestDebugReadout: RequestDebugReadoutUseCase,
 ) : ViewModel() {
+    private val _selectedReadoutItemKey =
+        MutableStateFlow<ReadoutItemKey>(
+            ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows).first(),
+        )
+    private val _debugReadoutText = MutableStateFlow("")
+
     private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases::saveKeys
     private val _receivedCardKeys = MutableStateFlow(setOf(AceWindowsDebugStateCardKey.SIMULATOR))
@@ -65,9 +76,25 @@ internal class AceWindowsDebugStateDetailViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsDebugStateDetailUiState())
 
     val uiState: StateFlow<AceWindowsDebugStateDetailUiState> =
-        combine(_header, aceWindowsSource.state) { header, ace ->
-            header.copy(aceWindows = ace)
+        combine(_header, aceWindowsSource.state, _selectedReadoutItemKey, _debugReadoutText) { header, ace, key, text ->
+            header.copy(aceWindows = ace, selectedReadoutItemKey = key, debugReadoutText = text)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsDebugStateDetailUiState())
+
+    fun selectReadoutItem(value: String) {
+        val key = ReadoutItemKey.topLevelEntriesOf(Simulator.AceWindows).find { it.value == value } ?: return
+        _selectedReadoutItemKey.update { key }
+    }
+
+    fun updateDebugReadoutText(text: String) {
+        _debugReadoutText.update { text }
+    }
+
+    fun requestReadout() {
+        val text = _debugReadoutText.value
+        if (text.isBlank()) return
+        val request = DebugReadoutRequest(Simulator.AceWindows, _selectedReadoutItemKey.value, text)
+        viewModelScope.launch { requestDebugReadout(request) }
+    }
 
     fun moveCard(
         fromIndex: Int,
