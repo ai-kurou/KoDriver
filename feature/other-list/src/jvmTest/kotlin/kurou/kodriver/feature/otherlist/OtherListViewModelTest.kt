@@ -167,13 +167,6 @@ class OtherListViewModelTest {
         hapticFeedbackAvailable: Boolean = true,
         accessLocalNetworkPermissionGranted: Boolean = true,
     ): OtherListViewModel {
-        every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
-        every { voicePitchRepository.voicePitch() } returns voicePitchFlow
-        every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
-        every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
-        every {
-            overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
-        } returns overlayBackgroundOpacityFlow
         every { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() } returns hapticFeedbackAvailable
         every {
             accessLocalNetworkPermissionRepository.isGranted()
@@ -221,6 +214,13 @@ class OtherListViewModelTest {
 
     @Test
     fun `Windowsの音声設定を開く処理をUseCase経由でRepositoryへ委譲する`() {
+        every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+        every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+        every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+        every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+        every {
+            overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+        } returns overlayBackgroundOpacityFlow
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
         every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -245,6 +245,13 @@ class OtherListViewModelTest {
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -282,6 +289,13 @@ class OtherListViewModelTest {
     @Test
     fun `音量を選択すると選択状態になる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -317,6 +331,13 @@ class OtherListViewModelTest {
     @Test
     fun `GitHubレポジトリまたはリリースページまたはローカルネットワークへのアクセス許可を選択しても状態は変わらない`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -355,6 +376,13 @@ class OtherListViewModelTest {
     @Test
     fun `onItemSelectedで項目を選択し再選択すると解除される`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -392,6 +420,13 @@ class OtherListViewModelTest {
     @Test
     fun `selectItemで同じ項目を連続して選択しても選択状態が維持される`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -429,6 +464,13 @@ class OtherListViewModelTest {
     @Test
     fun `selectFeedbackItemでフィードバック項目が選択されテレメトリログIDが保持される`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -469,6 +511,13 @@ class OtherListViewModelTest {
     @Test
     fun `selectFeedbackItemの後にonItemSelectedで別項目を選択するとテレメトリログIDが解除される`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -505,6 +554,13 @@ class OtherListViewModelTest {
     @Test
     fun `clearSelectedItemで選択状態が解除される`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -541,6 +597,13 @@ class OtherListViewModelTest {
     @Test
     fun `オーバーレイ表示の状態を監視できる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -576,6 +639,13 @@ class OtherListViewModelTest {
     @Test
     fun `onOverlayVisibleChangeでオーバーレイ表示の状態を保存できる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -616,6 +686,13 @@ class OtherListViewModelTest {
     @Test
     fun `画面スリープ無効の状態を監視できる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -651,6 +728,13 @@ class OtherListViewModelTest {
     @Test
     fun `onKeepScreenOnChangeで画面スリープ無効の状態を保存できる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             coEvery { keepScreenOnRepository.saveKeepScreenOn(false) } answers { keepScreenOnFlow.update { false } }
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -689,6 +773,13 @@ class OtherListViewModelTest {
     @Test
     fun `Dynamic Colorの有効状態を監視・保存できる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -729,6 +820,13 @@ class OtherListViewModelTest {
     @Test
     fun `ハプティックフィードバックの有効状態を監視・保存できる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -769,6 +867,13 @@ class OtherListViewModelTest {
     @Test
     fun `振動機能が利用不可な場合ハプティックフィードバック項目が表示されない`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -807,6 +912,13 @@ class OtherListViewModelTest {
     @Test
     fun `最新バージョンがある場合hasAppUpdateがtrueになる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -844,6 +956,13 @@ class OtherListViewModelTest {
     @Test
     fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -881,6 +1000,13 @@ class OtherListViewModelTest {
     @Test
     fun `checkUpdateを呼ぶ前はhasAppUpdateがfalseのまま`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -914,6 +1040,13 @@ class OtherListViewModelTest {
     @Test
     fun `currentVersionが空の場合checkUpdateは何もしない`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -949,6 +1082,13 @@ class OtherListViewModelTest {
     @Test
     fun `リリース情報がnullの場合hasAppUpdateがfalseになる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -986,6 +1126,13 @@ class OtherListViewModelTest {
     @Test
     fun `checkStartupEnabledでOS起動時自動起動の状態を取得できる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1024,6 +1171,13 @@ class OtherListViewModelTest {
     @Test
     fun `onStartupEnabledChangeでOS起動時自動起動の状態を保存できる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1062,6 +1216,13 @@ class OtherListViewModelTest {
     @Test
     fun `初期状態で権限が許可済みの場合accessLocalNetworkPermissionGrantedがtrueになる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1097,6 +1258,13 @@ class OtherListViewModelTest {
     @Test
     fun `初期状態で権限が未許可の場合accessLocalNetworkPermissionGrantedがfalseになる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1132,6 +1300,13 @@ class OtherListViewModelTest {
     @Test
     fun `checkAccessLocalNetworkPermissionで権限状態を再取得できる`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1170,6 +1345,13 @@ class OtherListViewModelTest {
     @Test
     fun `checkTextToSpeechAvailabilityでTTSが利用可能ならTTS案内項目は表示されない`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1213,6 +1395,13 @@ class OtherListViewModelTest {
     @Test
     fun `checkTextToSpeechAvailabilityでWindows音声が利用できない場合はWindows向け案内を表示する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1258,6 +1447,13 @@ class OtherListViewModelTest {
     @Test
     fun `checkTextToSpeechAvailabilityでEngineMissingをUiStateに公開する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1303,6 +1499,13 @@ class OtherListViewModelTest {
     @Test
     fun `checkTextToSpeechAvailabilityでLanguageDataMissingをUiStateに公開する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
             every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
             every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
@@ -1348,6 +1551,13 @@ class OtherListViewModelTest {
     @Test
     fun `ゲーム機の保存済みIPとポートおよび変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1383,6 +1593,13 @@ class OtherListViewModelTest {
     @Test
     fun `接続先IPは未設定と保存済み設定とその変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1410,6 +1627,13 @@ class OtherListViewModelTest {
     @Test
     fun `テーマは保存済み設定とその変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1441,6 +1665,13 @@ class OtherListViewModelTest {
     @Test
     fun `開始音種別は保存済み設定とその変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1478,6 +1709,13 @@ class OtherListViewModelTest {
     @Test
     fun `音声IDはシステム既定から保存済みIDの変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1501,6 +1739,13 @@ class OtherListViewModelTest {
     @Test
     fun `読み上げ速度は既定値から保存済み速度の変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1524,6 +1769,13 @@ class OtherListViewModelTest {
     @Test
     fun `声の高さは既定値から保存済みピッチの変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1547,6 +1799,13 @@ class OtherListViewModelTest {
     @Test
     fun `オーバーレイ文字サイズは既定値から保存済み設定の変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1573,6 +1832,13 @@ class OtherListViewModelTest {
     @Test
     fun `オーバーレイ背景透明度は既定値から保存済み設定の変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1596,6 +1862,13 @@ class OtherListViewModelTest {
     @Test
     fun `オーバーレイ文字色は既定値から保存済み設定の変更を反映する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1619,6 +1892,13 @@ class OtherListViewModelTest {
     @Test
     fun `読み上げ速度をタップすると選択し再タップで解除する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1646,6 +1926,13 @@ class OtherListViewModelTest {
     @Test
     fun `声の高さをタップすると選択し再タップで解除する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             coEvery { deviceVolumeRepository.getVolume() } returns 60
             every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
@@ -1673,6 +1960,13 @@ class OtherListViewModelTest {
     @Test
     fun `音量の変更と端末音量の定期取得を反映し購読終了後は取得を停止する`() =
         runTest {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns soundVolumeFlow
             var deviceVolume = 60
             coEvery { deviceVolumeRepository.getVolume() } answers { deviceVolume }
@@ -1721,6 +2015,13 @@ class OtherListViewModelTest {
     @Test
     fun `端末音量の取得に失敗しても直前の値を維持して取得を続ける`() =
         runTest(dispatcher) {
+            every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+            every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+            every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+            every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+            every {
+                overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+            } returns overlayBackgroundOpacityFlow
             every { soundVolumeRepository.volume() } returns MutableStateFlow(80)
             var attempt = 0
             coEvery { deviceVolumeRepository.getVolume() } answers {
