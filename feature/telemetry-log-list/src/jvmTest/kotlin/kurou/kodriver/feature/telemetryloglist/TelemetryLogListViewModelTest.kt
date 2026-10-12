@@ -11,8 +11,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
@@ -213,6 +217,37 @@ class TelemetryLogListViewModelTest {
                 }
             assertEquals(listOf(2L), state.logs.map { it.id })
             assertNull(state.selectedLogId)
+
+            selectedSimulator.update { Simulator.LmuWindows }
+            runCurrent()
+
+            val restored =
+                viewModel.uiState.first {
+                    it.selectedSimulator == Simulator.LmuWindows && it.logs.firstOrNull()?.id == 1L
+                }
+            assertNull(restored.selectedLogId)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            verify(exactly = 2) { simulatorRepository.selectedSimulator() }
+            confirmVerified(repository, simulatorRepository)
+        }
+
+    @Test
+    fun `初回購読と同じシミュレーターでの再購読ではログ選択を維持する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
+            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            val viewModel = createViewModel()
+            viewModel.selectLog(1)
+
+            assertEquals(1L, viewModel.uiState.first { it.logs.isNotEmpty() }.selectedLogId)
+            advanceTimeBy(5_001)
+            runCurrent()
+
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+            runCurrent()
+
+            assertEquals(1L, viewModel.uiState.first().selectedLogId)
             verify(exactly = 1) { repository.observeTelemetryLogs() }
             verify(exactly = 2) { simulatorRepository.selectedSimulator() }
             confirmVerified(repository, simulatorRepository)

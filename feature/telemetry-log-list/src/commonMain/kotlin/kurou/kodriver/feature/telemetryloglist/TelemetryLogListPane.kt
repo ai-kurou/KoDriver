@@ -48,6 +48,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -110,112 +111,114 @@ internal fun TelemetryLogListPane(
         return
     }
 
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-    val firstLogId = uiState.logs.first().id
-    val raceStartedAt =
-        remember(uiState.logs) {
-            uiState.logs.minOf { it.createdAt }
-        }
-    var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
-    var showNewLogsButton by remember { mutableStateOf(false) }
-    val isAtTop by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
-        }
-    }
-
-    LaunchedEffect(firstLogId) {
-        if (previousFirstLogId != firstLogId) {
-            if (listState.firstVisibleItemIndex <= FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL) {
-                listState.animateScrollToItem(0)
-            } else {
-                showNewLogsButton = true
+    key(uiState.selectedSimulator) {
+        val listState = rememberLazyListState()
+        val coroutineScope = rememberCoroutineScope()
+        val firstLogId = uiState.logs.first().id
+        val raceStartedAt =
+            remember(uiState.logs) {
+                uiState.logs.minOf { it.createdAt }
             }
-            previousFirstLogId = firstLogId
+        var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
+        var showNewLogsButton by remember { mutableStateOf(false) }
+        val isAtTop by remember {
+            derivedStateOf {
+                listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+            }
         }
-    }
 
-    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
-        listState.animateScrollToItem(0)
-        showNewLogsButton = false
-    }
+        LaunchedEffect(firstLogId) {
+            if (previousFirstLogId != firstLogId) {
+                if (listState.firstVisibleItemIndex <= FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL) {
+                    listState.animateScrollToItem(0)
+                } else {
+                    showNewLogsButton = true
+                }
+                previousFirstLogId = firstLogId
+            }
+        }
 
-    LaunchedEffect(isAtTop) {
-        if (isAtTop) {
+        ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+            listState.animateScrollToItem(0)
             showNewLogsButton = false
         }
-    }
 
-    // visible は常に true。表示/非表示の切り替えではなく、初回コンポジション時の
-    // スライドイン＋フェードイン演出のみを目的とした AnimatedVisibility。
-    AnimatedVisibility(
-        visible = true,
-        enter =
-            slideInVertically(
-                initialOffsetY = { it },
-                animationSpec = tween(durationMillis = 400),
-            ) + fadeIn(animationSpec = tween(durationMillis = 400)),
-        modifier = modifier.fillMaxSize(),
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                state = listState,
-                modifier =
-                    Modifier
-                        .testTag(TELEMETRY_LOG_LIST_TEST_TAG)
-                        .fillMaxSize()
-                        .padding(vertical = KoDriverSpacing.small),
-            ) {
-                item(key = RESET_ITEM_KEY) {
-                    TelemetryLogResetListItem(
-                        isResetting = uiState.isResetting,
-                        onClick = onResetClick,
-                    )
-                    HorizontalDivider()
-                }
-                items(
-                    items = uiState.logs,
-                    key = { it.id },
-                ) { log ->
-                    TelemetryLogListItem(
-                        log = log,
-                        isSelected = log.id == uiState.selectedLogId,
-                        raceStartedAt = raceStartedAt,
-                        modifier = Modifier.animateItem(),
-                        onClick = { onLogClick(log.id) },
-                        onFeedbackClick = { onFeedbackClick(log.id) },
-                        onDeleteClick = { onDeleteClick(log.id) },
-                    )
-                    HorizontalDivider()
-                }
+        LaunchedEffect(isAtTop) {
+            if (isAtTop) {
+                showNewLogsButton = false
             }
+        }
 
-            AnimatedVisibility(
-                visible = showNewLogsButton,
-                enter =
-                    slideInVertically(
-                        initialOffsetY = { -it },
-                        animationSpec = tween(durationMillis = 300),
-                    ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                exit =
-                    slideOutVertically(
-                        targetOffsetY = { -it },
-                        animationSpec = tween(durationMillis = 200),
-                    ) + fadeOut(animationSpec = tween(durationMillis = 200)),
-                modifier =
-                    Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = KoDriverSpacing.large),
-            ) {
-                NewTelemetryLogsButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            listState.animateScrollToItem(0)
-                            showNewLogsButton = false
-                        }
-                    },
-                )
+        // visible は常に true。表示/非表示の切り替えではなく、初回コンポジション時の
+        // スライドイン＋フェードイン演出のみを目的とした AnimatedVisibility。
+        AnimatedVisibility(
+            visible = true,
+            enter =
+                slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(durationMillis = 400),
+                ) + fadeIn(animationSpec = tween(durationMillis = 400)),
+            modifier = modifier.fillMaxSize(),
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    state = listState,
+                    modifier =
+                        Modifier
+                            .testTag(TELEMETRY_LOG_LIST_TEST_TAG)
+                            .fillMaxSize()
+                            .padding(vertical = KoDriverSpacing.small),
+                ) {
+                    item(key = RESET_ITEM_KEY) {
+                        TelemetryLogResetListItem(
+                            isResetting = uiState.isResetting,
+                            onClick = onResetClick,
+                        )
+                        HorizontalDivider()
+                    }
+                    items(
+                        items = uiState.logs,
+                        key = { it.id },
+                    ) { log ->
+                        TelemetryLogListItem(
+                            log = log,
+                            isSelected = log.id == uiState.selectedLogId,
+                            raceStartedAt = raceStartedAt,
+                            modifier = Modifier.animateItem(),
+                            onClick = { onLogClick(log.id) },
+                            onFeedbackClick = { onFeedbackClick(log.id) },
+                            onDeleteClick = { onDeleteClick(log.id) },
+                        )
+                        HorizontalDivider()
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = showNewLogsButton,
+                    enter =
+                        slideInVertically(
+                            initialOffsetY = { -it },
+                            animationSpec = tween(durationMillis = 300),
+                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                    exit =
+                        slideOutVertically(
+                            targetOffsetY = { -it },
+                            animationSpec = tween(durationMillis = 200),
+                        ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = KoDriverSpacing.large),
+                ) {
+                    NewTelemetryLogsButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                listState.animateScrollToItem(0)
+                                showNewLogsButton = false
+                            }
+                        },
+                    )
+                }
             }
         }
     }

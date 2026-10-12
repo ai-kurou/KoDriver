@@ -1,9 +1,17 @@
 package kurou.kodriver.feature.telemetryloglist
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import kotlin.test.Test
@@ -35,6 +43,45 @@ class TelemetryLogListPaneTest {
 
         rule.onNodeWithText("Le Mans Ultimate（Windows版）のログはまだありません").assertIsDisplayed()
         rule.onNodeWithText("テレメトリを受信すると、ここに新しい順で表示されます。").assertIsDisplayed()
+    }
+
+    @Test
+    fun `シミュレーターを切り替えると新着ログボタンを非表示にしてリストを先頭へ戻す`() {
+        val logs = (30 downTo 1).map { createTelemetryLog(id = it.toLong()) }
+        val uiState =
+            mutableStateOf(TelemetryLogListUiState(logs = logs, selectedSimulator = Simulator.LmuWindows))
+        rule.setContent {
+            KoDriverTheme {
+                Box(modifier = Modifier.height(240.dp)) {
+                    TelemetryLogListPane(uiState = uiState.value)
+                }
+            }
+        }
+
+        rule.onNodeWithTag(TELEMETRY_LOG_LIST_TEST_TAG).performScrollToIndex(15)
+        rule.runOnIdle {
+            uiState.value = uiState.value.copy(logs = listOf(createTelemetryLog(id = 100)) + logs)
+        }
+        rule.onNodeWithText("新しいログ").assertIsDisplayed()
+
+        rule.runOnIdle {
+            uiState.value =
+                TelemetryLogListUiState(
+                    selectedSimulator = Simulator.AceWindows,
+                    logs =
+                        (60 downTo 31).map {
+                            createTelemetryLog(
+                                id = it.toLong(),
+                                simulator = Simulator.AceWindows,
+                                readoutItemKey = AceWindowsReadoutItemKey.Flag.Root,
+                            )
+                        },
+                )
+        }
+
+        rule.onNodeWithText("新しいログ").assertDoesNotExist()
+        rule.onNodeWithText("データベースをリセット").assertIsDisplayed()
+        rule.onNodeWithText("09:00:00.060 / レース +00:00:00.029").assertIsDisplayed()
     }
 
     @Test

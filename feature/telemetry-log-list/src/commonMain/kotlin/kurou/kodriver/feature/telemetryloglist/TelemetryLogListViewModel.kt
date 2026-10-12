@@ -7,9 +7,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
@@ -28,6 +31,15 @@ class TelemetryLogListViewModel internal constructor(
     private val _showResetConfirmDialog = MutableStateFlow(false)
     private val _deleteState = MutableStateFlow(DeleteState())
     private val _pendingDeleteLogId = MutableStateFlow<Long?>(null)
+
+    private var previousSimulator: Simulator? = null
+    private val selectedSimulator =
+        observeSelectedSimulator().distinctUntilChanged().onEach { simulator ->
+            if (previousSimulator != null && previousSimulator != simulator) {
+                _selectedLogId.update { null }
+            }
+            previousSimulator = simulator
+        }
 
     private val resetUiState =
         combine(
@@ -50,7 +62,7 @@ class TelemetryLogListViewModel internal constructor(
             resetUiState,
             _deleteState,
             _pendingDeleteLogId,
-            observeSelectedSimulator(),
+            selectedSimulator,
         ) { baseUiState, deleteState, pendingDeleteLogId, selectedSimulator ->
             baseUiState.copy(
                 selectedSimulator = selectedSimulator,
