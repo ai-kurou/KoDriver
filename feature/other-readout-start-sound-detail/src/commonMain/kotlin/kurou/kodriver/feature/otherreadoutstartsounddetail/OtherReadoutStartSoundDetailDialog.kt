@@ -29,16 +29,19 @@ import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.r
 import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 /**
  * OtherReadoutStartSoundDetail のダイアログを表示する Composable。
  */
 @Composable
 fun OtherReadoutStartSoundDetailDialog(
+    simulatorId: String,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: OtherReadoutStartSoundDetailViewModel = koinViewModel()
+    val viewModel: OtherReadoutStartSoundDetailViewModel =
+        koinViewModel(key = simulatorId, parameters = { parametersOf(simulatorId) })
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     OtherReadoutStartSoundDetailDialogContent(
         uiState = uiState,
