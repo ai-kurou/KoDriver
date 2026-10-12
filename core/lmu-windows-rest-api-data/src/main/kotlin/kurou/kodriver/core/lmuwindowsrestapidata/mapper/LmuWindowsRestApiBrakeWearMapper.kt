@@ -1,7 +1,7 @@
 package kurou.kodriver.core.lmuwindowsrestapidata.mapper
 
 import kurou.kodriver.core.lmuwindowsrestapidata.dto.RepairAndRefuelResponseDto
-import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.WheelIndex
 
@@ -14,7 +14,7 @@ internal object LmuWindowsRestApiBrakeWearMapper {
         val brakes = dto.wearables?.brakes ?: return null
         if (brakes.size != WheelIndex.entries.size) return null
         return LmuWindowsBrakeWearData(
-            wheels = WheelIndex.entries.associateWith { BrakeThicknessMeters(brakes[it.ordinal].toFloat()) },
+            wheels = WheelIndex.entries.associateWith { LmuWindowsBrakeThicknessMeters(brakes[it.ordinal].toFloat()) },
         )
     }
 }

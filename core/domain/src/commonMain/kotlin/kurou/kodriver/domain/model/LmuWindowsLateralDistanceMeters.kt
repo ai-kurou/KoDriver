@@ -9,8 +9,8 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class LateralDistanceMeters(
+value class LmuWindowsLateralDistanceMeters(
     val value: Double,
-) : Comparable<LateralDistanceMeters> {
-    override fun compareTo(other: LateralDistanceMeters): Int = value.compareTo(other.value)
+) : Comparable<LmuWindowsLateralDistanceMeters> {
+    override fun compareTo(other: LmuWindowsLateralDistanceMeters): Int = value.compareTo(other.value)
 }

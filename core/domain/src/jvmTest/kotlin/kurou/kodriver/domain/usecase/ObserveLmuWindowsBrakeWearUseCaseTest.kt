@@ -7,7 +7,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsBrakeWearRepository
@@ -23,7 +23,7 @@ class ObserveLmuWindowsBrakeWearUseCaseTest {
         runTest {
             val expected =
                 LmuWindowsBrakeWearData(
-                    wheels = mapOf(WheelIndex.FRONT_LEFT to BrakeThicknessMeters(0.02f)),
+                    wheels = mapOf(WheelIndex.FRONT_LEFT to LmuWindowsBrakeThicknessMeters(0.02f)),
                 )
             every { repo.brakeWearStream() } returns flowOf(expected)
             val useCase = ObserveLmuWindowsBrakeWearUseCase(repo)
@@ -51,9 +51,17 @@ class ObserveLmuWindowsBrakeWearUseCaseTest {
     @Test
     fun `nullを含む複数のデータを順番通りに流す`() =
         runTest {
-            val data1 = LmuWindowsBrakeWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to BrakeThicknessMeters(0.03f)))
+            val data1 =
+                LmuWindowsBrakeWearData(
+                    wheels =
+                        mapOf(WheelIndex.FRONT_LEFT to LmuWindowsBrakeThicknessMeters(0.03f)),
+                )
             val data2: LmuWindowsBrakeWearData? = null
-            val data3 = LmuWindowsBrakeWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to BrakeThicknessMeters(0.03f)))
+            val data3 =
+                LmuWindowsBrakeWearData(
+                    wheels =
+                        mapOf(WheelIndex.FRONT_LEFT to LmuWindowsBrakeThicknessMeters(0.03f)),
+                )
             every { repo.brakeWearStream() } returns flowOf(data1, data2, data3)
             val useCase = ObserveLmuWindowsBrakeWearUseCase(repo)
 

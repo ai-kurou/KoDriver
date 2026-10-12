@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_MINIMUM_METERS_DEFAULT
-import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
@@ -110,8 +110,8 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         return LmuWindowsVehicleApproachData(
             sideBySideLeftVehicleIds = leftVehicleIds,
             sideBySideRightVehicleIds = rightVehicleIds,
-            lateralDistanceLeftMeters = LateralDistanceMeters(nearestLeftMeters),
-            lateralDistanceRightMeters = LateralDistanceMeters(nearestRightMeters),
+            lateralDistanceLeftMeters = LmuWindowsLateralDistanceMeters(nearestLeftMeters),
+            lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(nearestRightMeters),
         )
     }
 

@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 /** 1輪分のブレーキ残量。[remainingPercent] は 0〜100（小数を含む）。 */
 @Serializable
 data class LmuWindowsBrakeWearWheelRemaining(
-    val thickness: BrakeThicknessMeters,
+    val thickness: LmuWindowsBrakeThicknessMeters,
     val remainingPercent: Float,
 )
 
@@ -22,9 +22,9 @@ private const val PERCENT_MAX = 100f
  * 使える厚さの幅が 0 以下（新品時の厚さが破損厚さ以下）の場合は比較できないため 100 を返す。
  */
 fun calculateBrakeWearRemainingPercent(
-    current: BrakeThicknessMeters,
-    maxThickness: BrakeThicknessMeters,
-    failureThickness: BrakeThicknessMeters,
+    current: LmuWindowsBrakeThicknessMeters,
+    maxThickness: LmuWindowsBrakeThicknessMeters,
+    failureThickness: LmuWindowsBrakeThicknessMeters,
 ): Float {
     val usable = maxThickness.value - failureThickness.value
     if (usable <= 0f) return PERCENT_MAX

@@ -2,9 +2,9 @@ package kurou.kodriver.core.acewindowsdata.mapper
 
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagType
+import kurou.kodriver.domain.model.AceWindowsFuelPercent
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -116,14 +116,14 @@ class AceWindowsMapperTest {
     fun `満タンのとき remainingPercent は100を返す`() {
         val result = AceWindowsMapper.mapFuel(buffer(1.0f))
 
-        assertEquals(FuelPercent(100.0), result.remainingPercent)
+        assertEquals(AceWindowsFuelPercent(100.0), result.remainingPercent)
     }
 
     @Test
     fun `残燃料0のとき remainingPercent は0を返す`() {
         val result = AceWindowsMapper.mapFuel(buffer(0.0f))
 
-        assertEquals(FuelPercent(0.0), result.remainingPercent)
+        assertEquals(AceWindowsFuelPercent(0.0), result.remainingPercent)
     }
 
     @Test

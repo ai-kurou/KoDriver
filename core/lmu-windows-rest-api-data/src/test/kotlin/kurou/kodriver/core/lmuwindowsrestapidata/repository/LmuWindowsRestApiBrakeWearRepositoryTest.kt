@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.lmuwindowsrestapidata.datasource.LmuWindowsRestApiRepairAndRefuelDataSource
-import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -34,8 +34,8 @@ class LmuWindowsRestApiBrakeWearRepositoryTest {
 
             val result = repository.brakeWearStream().first()
 
-            assertEquals(BrakeThicknessMeters(0.036f), result?.wheels?.getValue(WheelIndex.FRONT_LEFT))
-            assertEquals(BrakeThicknessMeters(0.031f), result?.wheels?.getValue(WheelIndex.REAR_RIGHT))
+            assertEquals(LmuWindowsBrakeThicknessMeters(0.036f), result?.wheels?.getValue(WheelIndex.FRONT_LEFT))
+            assertEquals(LmuWindowsBrakeThicknessMeters(0.031f), result?.wheels?.getValue(WheelIndex.REAR_RIGHT))
         }
 
     @Test

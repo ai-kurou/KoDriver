@@ -23,7 +23,7 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.PitTimingSource
+import kurou.kodriver.domain.model.LmuWindowsPitTimingSource
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
@@ -250,7 +250,7 @@ internal class LmuWindowsReadoutTextSpeaker(
         )
 
     private suspend fun pitTimingText(event: LmuWindowsPitTimingWarning): String? {
-        if (event.source == PitTimingSource.TyreWear) {
+        if (event.source == LmuWindowsPitTimingSource.TyreWear) {
             return if (event.laps <= 0) {
                 observePitTimingTyreWearImminentReadoutText().first()
             } else {

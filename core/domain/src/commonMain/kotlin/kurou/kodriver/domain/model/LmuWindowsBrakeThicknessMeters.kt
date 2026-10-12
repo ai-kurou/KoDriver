@@ -9,8 +9,8 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class BrakeThicknessMeters(
+value class LmuWindowsBrakeThicknessMeters(
     val value: Float,
-) : Comparable<BrakeThicknessMeters> {
-    override fun compareTo(other: BrakeThicknessMeters): Int = value.compareTo(other.value)
+) : Comparable<LmuWindowsBrakeThicknessMeters> {
+    override fun compareTo(other: LmuWindowsBrakeThicknessMeters): Int = value.compareTo(other.value)
 }

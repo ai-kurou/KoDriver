@@ -9,7 +9,7 @@ class LmuWindowsPitTimingReadoutTextTest {
         listOf(1, 3).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT.replace("{laps}", laps.toString()),
-                defaultLmuWindowsPitTimingReadoutText(PitTimingSource.VirtualEnergy, laps),
+                defaultLmuWindowsPitTimingReadoutText(LmuWindowsPitTimingSource.VirtualEnergy, laps),
             )
         }
     }
@@ -19,7 +19,7 @@ class LmuWindowsPitTimingReadoutTextTest {
         listOf(0, -1).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
-                defaultLmuWindowsPitTimingReadoutText(PitTimingSource.VirtualEnergy, laps),
+                defaultLmuWindowsPitTimingReadoutText(LmuWindowsPitTimingSource.VirtualEnergy, laps),
             )
         }
     }
@@ -29,7 +29,7 @@ class LmuWindowsPitTimingReadoutTextTest {
         listOf(1, 3).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT.replace("{laps}", laps.toString()),
-                defaultLmuWindowsPitTimingReadoutText(PitTimingSource.TyreWear, laps),
+                defaultLmuWindowsPitTimingReadoutText(LmuWindowsPitTimingSource.TyreWear, laps),
             )
         }
     }
@@ -39,7 +39,7 @@ class LmuWindowsPitTimingReadoutTextTest {
         listOf(0, -1).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
-                defaultLmuWindowsPitTimingReadoutText(PitTimingSource.TyreWear, laps),
+                defaultLmuWindowsPitTimingReadoutText(LmuWindowsPitTimingSource.TyreWear, laps),
             )
         }
     }

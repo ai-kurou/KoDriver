@@ -9,8 +9,8 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class FuelPercent(
+value class AceWindowsFuelPercent(
     val value: Double,
-) : Comparable<FuelPercent> {
-    override fun compareTo(other: FuelPercent): Int = value.compareTo(other.value)
+) : Comparable<AceWindowsFuelPercent> {
+    override fun compareTo(other: AceWindowsFuelPercent): Int = value.compareTo(other.value)
 }

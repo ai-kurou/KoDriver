@@ -8,8 +8,8 @@ import kotlin.jvm.JvmInline
  */
 @Serializable
 @JvmInline
-value class PressureKpa(
+value class LmuWindowsPressureKpa(
     val value: Double,
-) : Comparable<PressureKpa> {
-    override fun compareTo(other: PressureKpa): Int = value.compareTo(other.value)
+) : Comparable<LmuWindowsPressureKpa> {
+    override fun compareTo(other: LmuWindowsPressureKpa): Int = value.compareTo(other.value)
 }

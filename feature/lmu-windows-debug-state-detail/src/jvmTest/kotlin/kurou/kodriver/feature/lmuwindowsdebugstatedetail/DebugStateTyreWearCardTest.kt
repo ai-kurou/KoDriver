@@ -9,13 +9,13 @@ import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsPressureKpa
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearRatio
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Rule
 import org.junit.Test
@@ -113,7 +113,7 @@ class DebugStateTyreWearCardTest {
             surfaceTemperature = CelsiusReading(0f),
             carcassTemperature = CelsiusReading(0f),
             brakeTemperature = CelsiusReading(0f),
-            pressureKpa = PressureKpa(0.0),
+            pressureKpa = LmuWindowsPressureKpa(0.0),
             wear = LmuWindowsTyreWearRatio(wear),
         )
 
