@@ -56,7 +56,6 @@ class OtherFeedbackDetailViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
     }
 
     @AfterTest
@@ -87,6 +86,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `必須項目が空なら送信せずエラーを表示する`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -103,6 +103,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `メールアドレスの形式が不正なら送信せずエラーを表示する`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -122,6 +123,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `入力したフィードバックを送信できる`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             coEvery {
                 repository.send(
                     Feedback(
@@ -161,6 +163,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `送信に失敗したらエラーを表示する`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val exception = IllegalStateException("failed")
             mockkStatic(Sentry::class)
             every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
@@ -208,6 +211,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `送信中に想定外の例外が発生したらエラーを表示する`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val exception = IllegalStateException("unexpected")
             mockkStatic(Sentry::class)
             every { Sentry.captureException(exception) } returns SentryId.EMPTY_ID
@@ -254,6 +258,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `送信中に再送信してもRepositoryは1回だけ呼ばれる`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val deferredResult = CompletableDeferred<Result<Unit>>()
             coEvery {
                 repository.send(
@@ -296,6 +301,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `送信中に入力を変更してもSending状態が維持され再送信できない`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val deferredResult = CompletableDeferred<Result<Unit>>()
             coEvery {
                 repository.send(
@@ -340,6 +346,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `最大文字数を超えた入力は切り詰められる`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -356,6 +363,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `setTelemetryLogIdで指定したログが添付される`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val log = telemetryLog(id = 1L)
             every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
                 flowOf(TelemetryLogDetail(current = log, previous = null))
@@ -373,6 +381,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `onDetachTelemetryLogで添付を解除する`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val log = telemetryLog(id = 1L)
             every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
                 flowOf(TelemetryLogDetail(current = log, previous = null))
@@ -392,6 +401,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `添付したテレメトリログの情報を含めて送信する`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val log = telemetryLog(id = 1L, telemetryJson = """{"lapCount":1}""")
             every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
                 flowOf(TelemetryLogDetail(current = log, previous = null))
@@ -440,6 +450,7 @@ class OtherFeedbackDetailViewModelTest {
     @Test
     fun `テレメトリログを添付して送信に成功したら添付が解除される`() =
         runTest {
+            every { cooldownRepository.lastFeedbackSentAtEpochMillis() } returns flowOf(null)
             val log = telemetryLog(id = 1L, telemetryJson = """{"lapCount":1}""")
             every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
                 flowOf(TelemetryLogDetail(current = log, previous = null))

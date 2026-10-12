@@ -56,8 +56,6 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        every { repository.observeOverheatReadoutText() } returns textFlow
-        coEvery { checkAvailable() } returns false
     }
 
     @AfterTest
@@ -88,6 +86,8 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `初期状態はデフォルト値のUiStateを返す`() =
         runTest {
+            every { repository.observeOverheatReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns false
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
             val viewModel = createViewModel()
@@ -102,6 +102,8 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onOverheatWarningEnabledChangedを呼ぶとuiStateのoverheatWarningEnabledが更新される`() =
         runTest {
+            every { repository.observeOverheatReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns false
             val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { repository.observeEnabledStates() } returns enabledStatesFlow
             every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
@@ -127,6 +129,8 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onHighThresholdChangedを呼ぶとuiStateのhighThresholdCelsiusが更新される`() =
         runTest {
+            every { repository.observeOverheatReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns false
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
             coEvery {
@@ -147,6 +151,8 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値に戻る`() =
         runTest {
+            every { repository.observeOverheatReadoutText() } returns textFlow
+            coEvery { checkAvailable() } returns false
             highThresholdFlow.update { Celsius(105) }
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeHighThresholdCelsius() } returns highThresholdFlow

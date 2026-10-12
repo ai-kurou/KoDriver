@@ -154,13 +154,6 @@ class OtherListViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(dispatcher)
-        every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
-        every { voicePitchRepository.voicePitch() } returns voicePitchFlow
-        every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
-        every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
-        every {
-            overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
-        } returns overlayBackgroundOpacityFlow
     }
 
     @AfterTest
@@ -174,6 +167,13 @@ class OtherListViewModelTest {
         hapticFeedbackAvailable: Boolean = true,
         accessLocalNetworkPermissionGranted: Boolean = true,
     ): OtherListViewModel {
+        every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
+        every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+        every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
+        every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
+        every {
+            overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
+        } returns overlayBackgroundOpacityFlow
         every { hapticFeedbackAvailabilityRepository.isHapticFeedbackAvailable() } returns hapticFeedbackAvailable
         every {
             accessLocalNetworkPermissionRepository.isGranted()
