@@ -38,6 +38,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-console-ip-detail` | その他画面のPS5 / SimHub接続先IPとGT7 UDP受信ポートの設定 | [図](graphs/feature-other-console-ip-detail.svg) |
 | `:feature:other-theme-detail` | その他画面のテーマ設定詳細 | [図](graphs/feature-other-theme-detail.svg) |
 | `:feature:other-overlay-text-size-detail` | その他画面のオーバーレイ文字サイズ設定詳細 | [図](graphs/feature-other-overlay-text-size-detail.svg) |
+| `:feature:other-overlay-text-color-detail` | その他画面のオーバーレイ文字色設定詳細（プリセット方式。現時点は空モジュール） | [図](graphs/feature-other-overlay-text-color-detail.svg) |
 | `:feature:other-overlay-background-opacity-detail` | その他画面のオーバーレイ背景透明度設定詳細 | [図](graphs/feature-other-overlay-background-opacity-detail.svg) |
 | `:feature:other-voice-speed-detail` | その他画面の読み上げ速度設定詳細 | [図](graphs/feature-other-voice-speed-detail.svg) |
 | `:feature:other-voice-pitch-detail` | その他画面の声の高さ設定詳細（保存済みピッチの監視・保存、スライダー・リセット） | [図](graphs/feature-other-voice-pitch-detail.svg) |
