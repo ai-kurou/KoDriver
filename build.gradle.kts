@@ -361,11 +361,27 @@ tasks.register("generateModuleGraphImages") {
 
         fun moduleStrokeColor(module: String): String = moduleStrokeColors.getValue(moduleCategory(module))
 
+        // :feature:* はシミュレーター別のグループと、その他の feature に集約する
         val featureGroup = "feature"
-        val featureModuleCount = allModules.count { it.startsWith(":feature:") }
+        val simulatorFeatureGroups = mapOf(
+            ":feature:lmu-windows-" to ":feature:lmu-windows-*",
+            ":feature:ace-windows-" to ":feature:ace-windows-*",
+            ":feature:gt7-ps5-" to ":feature:gt7-ps5-*",
+        )
+        val featureGroups = simulatorFeatureGroups.values + featureGroup
 
-        fun overviewNode(module: String): String =
-            if (module.startsWith(":feature:")) featureGroup else module
+        fun overviewNode(module: String): String = when {
+            !module.startsWith(":feature:") -> module
+            else -> simulatorFeatureGroups.entries
+                .firstOrNull { (prefix, _) -> module.startsWith(prefix) }
+                ?.value
+                ?: featureGroup
+        }
+
+        val groupedModuleCounts = allModules
+            .filter { it.startsWith(":feature:") }
+            .groupingBy { overviewNode(it) }
+            .eachCount()
 
         val overviewEdges = parsedEdges
             .map { (from, to, _) -> overviewNode(from) to overviewNode(to) }
@@ -373,7 +389,7 @@ tasks.register("generateModuleGraphImages") {
             .toSet()
             .sortedWith(compareBy<Pair<String, String>> { it.first }.thenBy { it.second })
 
-        val overviewNodes = (overviewEdges.flatMap { (from, to) -> listOf(from, to) } + featureGroup)
+        val overviewNodes = (overviewEdges.flatMap { (from, to) -> listOf(from, to) } + featureGroups)
             .toSet()
             .sorted()
 
@@ -388,8 +404,9 @@ tasks.register("generateModuleGraphImages") {
                     val category = if (node == featureGroup) ":feature:x" else node
                     val fillColor = moduleFillColor(category)
                     val strokeColor = moduleStrokeColor(category)
-                    val label = if (node == featureGroup) {
-                        "feature\\n${moduleCountLabel(featureModuleCount)}"
+                    val label = if (node in featureGroups) {
+                        val count = groupedModuleCounts[node] ?: 0
+                        "${node.removePrefix(":")}\\n${moduleCountLabel(count)}"
                     } else {
                         node
                     }
