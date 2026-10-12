@@ -30,16 +30,7 @@ GT7の燃料残り周回数・燃料残量・タイヤ温度・自己ベスト�
 フラッグなし・不明は設定対象に含めない。フラッグ別のUseCaseは対応するキーを指定し、
 保存時の空白除去・最大文字数制限を維持する。
 
-## LMUピットタイミング設定
+## LMU固有のドメイン
 
-`LmuWindowsPitTimingPreferencesRepository` は予想残り周回数・読み上げ有効状態、
-`LmuWindowsPitTimingReadoutTextPreferencesRepository` は予告・直前の読み上げ文言を扱う。
-Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStoreを共有する。
-既存の保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
-
-## LMUタイヤ温度設定
-
-`LmuWindowsTyreTemperaturePreferencesRepository` は温度閾値・有効状態・低温警告対象フェーズ、
-`LmuWindowsTyreTemperatureReadoutTextPreferencesRepository` は過熱・低温警告の文言を扱う。
-Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共有する。
-保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
+LMU固有のモデル・Repository抽象・UseCase・設定の既定値は `:core:lmu-windows-domain` に置く。
+共通の読み上げキーと `ReadoutCatalog` は本モジュールで定義し、シムの構成は `:core:data` が決める。

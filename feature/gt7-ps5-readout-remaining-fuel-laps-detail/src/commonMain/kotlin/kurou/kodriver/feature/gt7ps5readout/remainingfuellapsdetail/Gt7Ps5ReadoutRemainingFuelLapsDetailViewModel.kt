@@ -11,7 +11,7 @@ import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelLapsReadoutText
-import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.model.gt7Ps5ReadoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
@@ -70,7 +70,7 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
                 readoutText = text,
                 emptyReadoutText = emptyText,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled),
+                enabled = enabledStates.gt7Ps5ReadoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuelLaps.DetailEnabled),
             )
         }.stateIn(
             viewModelScope,

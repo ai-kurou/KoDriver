@@ -38,7 +38,7 @@ val GT7_PS5_QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> =
 
 /** 一覧画面の TopLevel 項目と Narrator が共有する読み上げ順序の初期値。 */
 internal fun gt7Ps5DefaultReadoutOrder(): List<ReadoutItemKey> =
-    ReadoutItemKey.entries
+    Gt7Ps5ReadoutItemKey.entries
         .filterIsInstance<Gt7Ps5ReadoutItemKey.TopLevel>()
         .sortedBy { key -> gt7Ps5OrderIndex(key) }
 

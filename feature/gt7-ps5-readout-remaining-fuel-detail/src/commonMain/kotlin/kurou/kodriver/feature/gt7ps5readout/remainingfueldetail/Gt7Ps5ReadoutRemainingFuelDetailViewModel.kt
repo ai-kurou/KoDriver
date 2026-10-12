@@ -11,7 +11,7 @@ import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_D
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatGt7Ps5RemainingFuelReadoutText
-import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.model.gt7Ps5ReadoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelReadoutTextUseCase
@@ -64,7 +64,7 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
                 thresholdPercentage = thresholdPercentage,
                 readoutText = text,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled),
+                enabled = enabledStates.gt7Ps5ReadoutEnabled(Gt7Ps5ReadoutItemKey.RemainingFuel.DetailEnabled),
             )
         }.stateIn(
             viewModelScope,

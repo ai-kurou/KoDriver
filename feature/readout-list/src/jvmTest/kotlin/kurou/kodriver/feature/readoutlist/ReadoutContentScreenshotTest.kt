@@ -24,10 +24,15 @@ class ReadoutContentScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                             ReadoutContent(
+                                catalog = testReadoutCatalog,
                                 uiState =
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
-                                        items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                        items =
+                                            ReadoutListItemType.defaultOrder(
+                                                Simulator.LmuWindows,
+                                                testReadoutCatalog,
+                                            ),
                                         selectedItem = LmuWindowsReadoutListItemType.Flag,
                                     ),
                                 onMove = { _, _ -> },
@@ -55,10 +60,15 @@ class ReadoutContentScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                             ReadoutContent(
+                                catalog = testReadoutCatalog,
                                 uiState =
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
-                                        items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                        items =
+                                            ReadoutListItemType.defaultOrder(
+                                                Simulator.LmuWindows,
+                                                testReadoutCatalog,
+                                            ),
                                         selectedItem = null,
                                     ),
                                 onMove = { _, _ -> },

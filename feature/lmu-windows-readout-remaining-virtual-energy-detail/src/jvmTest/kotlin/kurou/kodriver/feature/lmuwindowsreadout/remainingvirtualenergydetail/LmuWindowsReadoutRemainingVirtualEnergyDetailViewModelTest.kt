@@ -18,7 +18,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.LmuWindowsReadoutCatalog
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
@@ -73,7 +75,10 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
                     saveThresholdPercentage =
                         SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(repository),
                     observeReadoutEnabledStates =
-                        ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                        ObserveReadoutEnabledStatesUseCase(
+                            readoutPreferencesRepository,
+                            ReadoutCatalog(listOf(LmuWindowsReadoutCatalog)),
+                        ),
                     saveReadoutEnabledState =
                         SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
                 ),

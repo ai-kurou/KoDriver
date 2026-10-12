@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":core:lmu-windows-domain"))
     implementation(projects.core.domain)
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.clientCore)

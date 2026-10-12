@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.data.APP_READOUT_CATALOG
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 
@@ -33,7 +34,7 @@ internal class ReadoutPreferencesRepositoryImpl(
             prefs.simulatorStates
                 .getOrElse(simulator) { SimulatorReadoutState() }
                 .itemOrder
-                .mapNotNull(ReadoutItemKey::fromValue)
+                .mapNotNull(APP_READOUT_CATALOG::fromValue)
         }
 
     override suspend fun saveReadoutOrder(
@@ -48,5 +49,5 @@ internal class ReadoutPreferencesRepositoryImpl(
     }
 
     private fun Map<String, Boolean>.toReadoutItemKeyMap(): Map<ReadoutItemKey, Boolean> =
-        mapNotNull { (key, enabled) -> ReadoutItemKey.fromValue(key)?.let { it to enabled } }.toMap()
+        mapNotNull { (key, enabled) -> APP_READOUT_CATALOG.fromValue(key)?.let { it to enabled } }.toMap()
 }

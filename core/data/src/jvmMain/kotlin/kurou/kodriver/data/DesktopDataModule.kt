@@ -66,6 +66,7 @@ internal val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
  */
 val desktopDataModule =
     module {
+        single { APP_READOUT_CATALOG }
         includes(desktopDataModuleLmuWindows())
         includes(desktopDataModuleAceWindows())
         includes(desktopDataModuleGt7Ps5())

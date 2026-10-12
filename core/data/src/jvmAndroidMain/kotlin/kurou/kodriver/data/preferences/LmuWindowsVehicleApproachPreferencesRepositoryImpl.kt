@@ -2,6 +2,7 @@ package kurou.kodriver.data.preferences
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.data.APP_READOUT_CATALOG
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
@@ -17,7 +18,7 @@ internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.observeProperty { prefs ->
             prefs.enabledStates
-                .mapNotNull { (key, enabled) -> ReadoutItemKey.fromValue(key)?.let { it to enabled } }
+                .mapNotNull { (key, enabled) -> APP_READOUT_CATALOG.fromValue(key)?.let { it to enabled } }
                 .toMap()
         }
 

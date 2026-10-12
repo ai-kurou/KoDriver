@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.aceWindowsReadoutEnabled
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelLapsReadoutText
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
@@ -70,7 +70,10 @@ internal class AceWindowsReadoutRemainingFuelLapsDetailViewModel(
                 readoutText = text,
                 emptyReadoutText = emptyText,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled),
+                enabled =
+                    enabledStates.aceWindowsReadoutEnabled(
+                        AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled,
+                    ),
             )
         }.stateIn(
             viewModelScope,

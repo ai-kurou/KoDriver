@@ -7,35 +7,39 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class ReadoutItemKeyMapSerializerTest {
+    private object DummyKey : ReadoutItemKey {
+        override val value: String = "dummy"
+    }
+
+    private val serializer = object : ReadoutItemKeyMapSerializer({ listOf(DummyKey) }) {}
+
     @Test
     fun `シリアライズ時にReadoutItemKeyをvalueへ変換する`() {
-        val map = mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to true)
+        val map = mapOf<ReadoutItemKey, Boolean>(DummyKey to true)
 
-        val json = Json.encodeToString(ReadoutItemKeyMapSerializer, map)
+        val json = Json.encodeToString(serializer, map)
 
         val root = Json.parseToJsonElement(json).jsonObject
-        assertEquals(true, root["lmu_windows_flag"]!!.jsonPrimitive.boolean)
+        assertEquals(true, root["dummy"]!!.jsonPrimitive.boolean)
     }
 
     @Test
     fun `デシリアライズ時にvalueからReadoutItemKeyへ復元する`() {
-        val json = """{"lmu_windows_flag":true}"""
+        val json = """{"dummy":true}"""
 
-        val map: Map<ReadoutItemKey, Boolean> = Json.decodeFromString(ReadoutItemKeyMapSerializer, json)
+        val map: Map<ReadoutItemKey, Boolean> = Json.decodeFromString(serializer, json)
 
-        assertEquals(mapOf<ReadoutItemKey, Boolean>(LmuWindowsReadoutItemKey.Flag.Root to true), map)
+        assertEquals(mapOf<ReadoutItemKey, Boolean>(DummyKey to true), map)
     }
 
     @Test
     fun `デシリアライズ時に不明なvalueは無視する`() {
-        val json = """{"unknown_key":true}"""
+        val json = """{"unknown_key":true,"dummy":false}"""
 
-        val map: Map<ReadoutItemKey, Boolean> = Json.decodeFromString(ReadoutItemKeyMapSerializer, json)
+        val map: Map<ReadoutItemKey, Boolean> = Json.decodeFromString(serializer, json)
 
-        assertNull(map[LmuWindowsReadoutItemKey.Flag.Root])
-        assertEquals(emptyMap(), map)
+        assertEquals(mapOf<ReadoutItemKey, Boolean>(DummyKey to false), map)
     }
 }

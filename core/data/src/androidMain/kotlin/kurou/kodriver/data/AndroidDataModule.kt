@@ -79,6 +79,7 @@ private val Context.hapticFeedbackEnabledDataStore by preferencesDataStore("hapt
  */
 fun androidDataModule(context: Context) =
     module {
+        single { APP_READOUT_CATALOG }
         single<Context> { context }
 
         // 設定永続化（DataStore。ファイルは context.filesDir 配下）

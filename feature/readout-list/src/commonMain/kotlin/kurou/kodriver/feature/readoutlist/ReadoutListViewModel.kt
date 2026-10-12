@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SELECTED_SIMULATOR_DEFAULT
 import kurou.kodriver.domain.model.Simulator
@@ -70,6 +71,7 @@ class ReadoutListViewModel(
     private val readoutEnabledUseCases: ReadoutEnabledUseCases,
     private val queueUseCases: QueueUseCases,
     private val startSoundUseCases: StartSoundUseCases,
+    private val catalog: ReadoutCatalog,
 ) : ViewModel() {
     private val _selectedSimulator: StateFlow<Simulator> =
         simulatorUseCases
@@ -111,7 +113,7 @@ class ReadoutListViewModel(
             _persistedOrder,
             _localOrder,
         ) { selected, persisted, local ->
-            val defaultItems = ReadoutListItemType.defaultOrder(selected)
+            val defaultItems = ReadoutListItemType.defaultOrder(selected, catalog)
             // ドラッグ中の localOrder を最優先（DataStore の非同期更新より常に新しい）
             if (local.simulator == selected) {
                 local.items

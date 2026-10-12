@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.data.APP_READOUT_CATALOG
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 
@@ -30,7 +31,7 @@ internal class AndroidReadoutPreferencesRepository(
                 .filterKeys { it.name.startsWith(prefix) && it.name.endsWith(suffix) }
                 .mapKeys { (k, _) -> k.name.removePrefix(prefix).removeSuffix(suffix) }
                 .mapValues { (_, v) -> v as Boolean }
-                .mapNotNull { (key, enabled) -> ReadoutItemKey.fromValue(key)?.let { it to enabled } }
+                .mapNotNull { (key, enabled) -> APP_READOUT_CATALOG.fromValue(key)?.let { it to enabled } }
                 .toMap()
         }
 
@@ -47,7 +48,7 @@ internal class AndroidReadoutPreferencesRepository(
             prefs[orderKey(simulator)]
                 ?.split(",")
                 ?.filter { it.isNotEmpty() }
-                ?.mapNotNull(ReadoutItemKey::fromValue)
+                ?.mapNotNull(APP_READOUT_CATALOG::fromValue)
                 ?: emptyList()
         }
 

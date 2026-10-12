@@ -50,7 +50,7 @@ Le Mans Ultimate（LMU）・Assetto Corsa EVO（ACE）から Windows 共有メ�
 
 ### ユーザー設定のデフォルト値
 
-ユーザー設定として永続化され、DataStore の初期値・詳細設定画面のリセット値・UiState の初期値・Narrator / UseCase の初期値で共有されるデフォルト値は、仕様値として `:core:domain` の `domain/model/*Defaults.kt` に定義すること。`:core:data` の `*Preferences` や feature の ViewModel / Pane / UiState は、その定数を参照する。
+ユーザー設定として永続化され、DataStore の初期値・詳細設定画面のリセット値・UiState の初期値・Narrator / UseCase の初期値で共有されるデフォルト値は、仕様値として `domain/model/*Defaults.kt` に定義すること。シミュレーター共通は `:core:domain`、LMU 固有は `:core:lmu-windows-domain` に置く。`:core:data` の `*Preferences` や feature の ViewModel / Pane / UiState は、その定数を参照する。
 
 feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:data` から参照できず同じ値を重複定義することになるため避ける。Preview やテストデータだけで完結する表示用の値は feature 内に置いてよい。
 

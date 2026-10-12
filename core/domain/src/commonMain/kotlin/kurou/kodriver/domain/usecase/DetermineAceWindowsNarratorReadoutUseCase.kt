@@ -15,8 +15,6 @@ import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
-import kurou.kodriver.domain.engine.LmuWindowsCarLeft
-import kurou.kodriver.domain.engine.LmuWindowsCarRight
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_LAPS_THRESHOLD_DEFAULT
 import kurou.kodriver.domain.model.ACE_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
@@ -31,7 +29,7 @@ import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.model.aceWindowsReadoutEnabled
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
@@ -73,8 +71,8 @@ data class AceWindowsNarratorReadoutDecision(
  * ACE の燃料残量・旗状態・タイヤカーカス温度・周辺車両接近から、今回読み上げるべき音声イベントを決定する UseCase。
  *
  * 注意: ACE の共有メモリには自車の向きに相当するフィールドが存在せず、周辺車両との直線距離
- * （[AceWindowsVehicleApproachData.nearbyVehicles]）のみが取得できるため、LMU（[LmuWindowsCarLeft]/
- * [LmuWindowsCarRight] 等）のような左右を区別した接近アナウンスはできない。単一の閾値
+ * （[AceWindowsVehicleApproachData.nearbyVehicles]）のみが取得できるため、LMU（`LmuWindowsCarLeft`/
+ * `LmuWindowsCarRight` 等）のような左右を区別した接近アナウンスはできない。単一の閾値
  * （[AceWindowsNarratorReadoutSettings.vehicleApproachThresholdMeters]）を下回る車両が1台でもいれば、
  * 左右を区別しない [AceWindowsVehicleApproach] を読み上げる。
  *
@@ -113,8 +111,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         if (current >= sessionState.personalBestMs) {
             return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (!settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.MyBestLap.Root) ||
-            !settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled)
+        if (!settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.MyBestLap.Root) ||
+            !settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.MyBestLap.DetailEnabled)
         ) {
             return AceWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
@@ -144,8 +142,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
         val nextState = state.copy(lastRemainingFuelLaps = laps)
-        if (!settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) ||
-            !settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled)
+        if (!settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.Root) ||
+            !settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.RemainingFuelLaps.DetailEnabled)
         ) {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
@@ -165,8 +163,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
                 data.remainingPercent.value <= settings.remainingFuelThresholdPercentage
         val shouldAnnounce =
             !state.remainingFuelWarned && isLow &&
-                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuel.Root) &&
-                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled)
+                settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.RemainingFuel.Root) &&
+                settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
             events =
@@ -188,14 +186,14 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         val previous = state.previousFlag
         val nextState = state.copy(previousFlag = data.flag)
         if (previous == null) return AceWindowsNarratorReadoutDecision(nextState, emptyList())
-        if (!settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.Flag.Root)) {
+        if (!settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.Flag.Root)) {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
         if (data.flag == previous) return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         val event =
             flagEvent(data.flag)
                 ?.takeIf { (itemKey, _) ->
-                    settings.enabledStates.readoutEnabled(itemKey)
+                    settings.enabledStates.aceWindowsReadoutEnabled(itemKey)
                 }?.second
         return AceWindowsNarratorReadoutDecision(nextState, listOfNotNull(event))
     }
@@ -223,8 +221,10 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             }
         val shouldAnnounce =
             !state.tyreOverheating && nextOverheating &&
-                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.TyreTemperature.Root) &&
-                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning)
+                settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.TyreTemperature.Root) &&
+                settings.enabledStates.aceWindowsReadoutEnabled(
+                    AceWindowsReadoutItemKey.TyreTemperature.OverheatWarning,
+                )
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(tyreOverheating = nextOverheating),
             events = if (shouldAnnounce) listOf(AceWindowsTyreOverheat(maxCelsius(data))) else emptyList(),
@@ -239,8 +239,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         val isApproaching = data.nearbyVehicles.any { it.distanceMeters <= settings.vehicleApproachThresholdMeters }
         val shouldAnnounce =
             !state.vehicleApproaching && isApproaching &&
-                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.VehicleApproach.Root) &&
-                settings.enabledStates.readoutEnabled(AceWindowsReadoutItemKey.VehicleApproach.StartReadout)
+                settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.VehicleApproach.Root) &&
+                settings.enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.VehicleApproach.StartReadout)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(vehicleApproaching = isApproaching),
             events = if (shouldAnnounce) listOf(AceWindowsVehicleApproach()) else emptyList(),

@@ -18,7 +18,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.GT7_PS5_MY_BEST_LAP_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutCatalog
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
@@ -64,7 +66,11 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
         Gt7Ps5ReadoutMyBestLapDetailViewModel(
             myBestLapUseCases =
                 MyBestLapUseCases(
-                    observeEnabledStates = ObserveReadoutEnabledStatesUseCase(enabledRepository),
+                    observeEnabledStates =
+                        ObserveReadoutEnabledStatesUseCase(
+                            enabledRepository,
+                            ReadoutCatalog(listOf(Gt7Ps5ReadoutCatalog)),
+                        ),
                     saveEnabledState = SaveReadoutEnabledStateUseCase(enabledRepository),
                 ),
             readout =

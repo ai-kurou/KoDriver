@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatGt7Ps5MyBestLapReadoutText
-import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.model.gt7Ps5ReadoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
@@ -60,7 +60,7 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
             preview.textToSpeechAvailable,
         ) { states, text, available ->
             Gt7Ps5ReadoutMyBestLapDetailUiState(
-                enabled = states.readoutEnabled(Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled),
+                enabled = states.gt7Ps5ReadoutEnabled(Gt7Ps5ReadoutItemKey.MyBestLap.DetailEnabled),
                 readoutText = text,
                 isTextToSpeechAvailable = available,
             )

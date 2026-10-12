@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.readoutlist
 
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.defaultReadoutOrder
 
 sealed class ReadoutListItemType(
     val id: ReadoutItemKey,
@@ -25,6 +25,9 @@ sealed class ReadoutListItemType(
                 is Simulator.AceWindows -> AceWindowsReadoutListItemType.fromId(id)
             }
 
-        fun defaultOrder(simulator: Simulator): List<ReadoutItemKey> = defaultReadoutOrder(simulator)
+        fun defaultOrder(
+            simulator: Simulator,
+            catalog: ReadoutCatalog,
+        ): List<ReadoutItemKey> = catalog.defaultReadoutOrder(simulator)
     }
 }

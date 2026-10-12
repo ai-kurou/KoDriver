@@ -11,7 +11,8 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:app:androidBenchmark` | Macrobenchmark による Baseline Profile 生成（`app:androidApp` 計装テスト） | [図](graphs/app-androidBenchmark.svg) |
 | `:app:webApp` | Web アプリ（Gradle ビルド設定のみ用意、独自機能は未実装） | [図](graphs/app-webApp.svg) |
 | `:app:shared` | Compose Multiplatform 共通 UI・ナビゲーション。各 feature モジュールを組み合わせた画面遷移を担当する | [図](graphs/app-shared.svg) |
-| `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
+| `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース（シミュレーター共通の基盤。LMU 固有分は `:core:lmu-windows-domain`） | [図](graphs/core-domain.svg) |
+| `:core:lmu-windows-domain` | LMU Windows 固有のドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-lmu-windows-domain.svg) |
 | `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-lmu-windows-data.svg) |
 | `:core:lmu-windows-rest-api-data` | LMU内蔵ローカルREST API利用（JVM）向けのモジュール。現時点ではブレーキ摩耗用に `RepairAndRefuel` の DataSource・`wearables.brakes` のポーリング Repository と Mapper のみ実装（過去に実装した天気予報機能は削除済み、詳細は `docs/lmu-windows-rest-api.md` の調査メモを参照） | [図](graphs/core-lmu-windows-rest-api-data.svg) |

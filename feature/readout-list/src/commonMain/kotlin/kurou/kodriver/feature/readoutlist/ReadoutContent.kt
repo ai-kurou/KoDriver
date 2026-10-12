@@ -32,9 +32,10 @@ import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -54,6 +55,7 @@ fun ReadoutContent(
     val uiState by viewModel.uiState.collectAsStateInLifecycle()
     ReadoutContent(
         uiState = uiState,
+        catalog = koinInject(),
         onMove = viewModel::moveItem,
         onReadoutEnabledChanged = viewModel::onReadoutEnabledChanged,
         onQueueEnabledChanged = viewModel::onQueueEnabledChanged,
@@ -73,6 +75,7 @@ fun ReadoutContent(
 @Composable
 internal fun ReadoutContent(
     uiState: ReadoutListUiState,
+    catalog: ReadoutCatalog,
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
@@ -169,6 +172,7 @@ internal fun ReadoutContent(
         modifier = modifier.constrainToTabletopTopPane(windowPosture),
         listPane = {
             ReadoutListPane(
+                catalog = catalog,
                 uiState = uiState,
                 onMove = onMove,
                 onReadoutEnabledChanged = onReadoutEnabledChanged,
@@ -186,7 +190,7 @@ internal fun ReadoutContent(
                         rootItemName = itemDisplayName(selectedItem.id),
                         canNavigateBack = navigator.canNavigateBack(),
                         onBack = { navigateBack() },
-                        rootEnabled = uiState.readoutEnabledStates.readoutEnabled(selectedItem.id),
+                        rootEnabled = with(catalog) { uiState.readoutEnabledStates.readoutEnabled(selectedItem.id) },
                         onEnableRoot = { onReadoutEnabledChanged(selectedItem.id, true) },
                         content = { detailContent(selectedItem) },
                     )
@@ -201,6 +205,7 @@ internal fun ReadoutContent(
 private fun ReadoutContentPreview() {
     KoDriverTheme {
         ReadoutContent(
+            catalog = previewReadoutCatalog,
             uiState =
                 ReadoutListUiState(
                     selectedSimulator = Simulator.LmuWindows,

@@ -152,7 +152,7 @@ subprojects {
 }
 
 moduleGraphAssert {
-    maxHeight = 3
+    maxHeight = 4
     configurations = setOf(
         // JVM・Android プロジェクトの標準依存関係
         "api",
@@ -205,16 +205,23 @@ moduleGraphAssert {
         ":app:shared -> :feature:.*",
         // feature → core:domain
         ":feature:.* -> :core:domain",
+        // feature → core:lmu-windows-domain（LMU固有のドメインモデル・Repository抽象・UseCase）
+        ":feature:.* -> :core:lmu-windows-domain",
         // feature → core:designsystem（共通 UI コンポーネントの利用）
         ":feature:.* -> :core:designsystem",
         // core:data 系 → core:domain（.*data にマッチ: core:data, core:*-data。core:designsystem は除外される）
         ":core:.*data -> :core:domain",
+        // core:data 系 → core:lmu-windows-domain（LMU固有のRepository実装・シミュレーター横断の集約）
+        ":core:.*data -> :core:lmu-windows-domain",
+        // core:lmu-windows-domain → core:domain（シミュレーター共通の基盤）
+        ":core:lmu-windows-domain -> :core:domain",
         // Windows共有メモリ系データモジュール → core:windows-shared-memory（Windows共有メモリI/Oの共通基盤）
         ":core:.*windows.*data -> :core:windows-shared-memory",
         // narrator系featureモジュール → core:narrator（開始音のWAV再生・TTS読み上げ制御・SoundPlayer・NarratorEngineの共通基盤。
         // core:narrator自体はcore:domainに依存させず、SpeechEvent等はfeature側が型パラメータとして渡す）
         ":feature:.*narrator -> :core:narrator",
         ":server -> :core:domain",
+        ":server -> :core:lmu-windows-domain",
     )
     restricted = arrayOf(
         // app エントリーポイント（feature 層・domain 層・他 app への直接参照禁止）
@@ -552,6 +559,7 @@ kover {
 
 dependencies {
     kover(project(":core:domain"))
+    kover(project(":core:lmu-windows-domain"))
     kover(project(":core:data"))
     kover(project(":core:lmu-windows-data"))
     kover(project(":core:lmu-windows-rest-api-data"))
@@ -617,6 +625,7 @@ dependencies {
     kover(project(":app:desktopApp"))
     kover(project(":server"))
     dokka(project(":core:domain"))
+    dokka(project(":core:lmu-windows-domain"))
     dokka(project(":core:data"))
     dokka(project(":core:lmu-windows-data"))
     dokka(project(":core:lmu-windows-rest-api-data"))
