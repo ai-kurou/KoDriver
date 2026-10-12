@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
 import org.junit.After
@@ -26,6 +27,8 @@ import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5DebugStateDetailModuleTest {
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
+
     private val gt7Ps5Repository: Gt7Ps5Repository = mockk()
 
     private val cardOrderRepository: DebugStateCardOrderPreferencesRepository = mockk()
@@ -49,6 +52,7 @@ class Gt7Ps5DebugStateDetailModuleTest {
                 modules(
                     gt7Ps5DebugStateDetailModule,
                     module {
+                        single<TelemetryLogRepository> { telemetryLogRepository }
                         single<DebugStateCardOrderPreferencesRepository>(named(Simulator.Gt7Ps5.id)) {
                             cardOrderRepository
                         }

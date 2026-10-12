@@ -11,9 +11,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kotlin.time.Clock
 
 internal data class DebugStateCardOrderUseCases(
     val observeCardOrder: ObserveDebugStateCardOrderUseCase,
@@ -31,7 +36,11 @@ internal data class DebugStateCardOrderUseCases(
 internal class AceWindowsDebugStateDetailViewModel(
     aceWindowsUseCases: AceWindowsDebugStateUseCases,
     cardOrderUseCases: DebugStateCardOrderUseCases,
+    private val saveTelemetryLog: SaveTelemetryLogUseCase,
+    private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
+    private val _debugOverlayInput = MutableStateFlow(AceWindowsDebugStateDetailUiState())
+
     private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases::saveKeys
     private val _receivedCardKeys = MutableStateFlow(setOf(AceWindowsDebugStateCardKey.SIMULATOR))
@@ -65,9 +74,43 @@ internal class AceWindowsDebugStateDetailViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsDebugStateDetailUiState())
 
     val uiState: StateFlow<AceWindowsDebugStateDetailUiState> =
-        combine(_header, aceWindowsSource.state) { header, ace ->
-            header.copy(aceWindows = ace)
+        combine(_header, aceWindowsSource.state, _debugOverlayInput) { header, ace, input ->
+            header.copy(
+                aceWindows = ace,
+                debugOverlayText = input.debugOverlayText,
+                debugOverlaySelectedKey = input.debugOverlaySelectedKey,
+            )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsDebugStateDetailUiState())
+
+    fun onDebugOverlayTextChange(text: String) {
+        _debugOverlayInput.update { it.copy(debugOverlayText = text) }
+    }
+
+    fun onDebugOverlayKeySelect(key: ReadoutItemKey) {
+        if (key !in _debugOverlayInput.value.debugOverlayKeys) return
+        _debugOverlayInput.update { it.copy(debugOverlaySelectedKey = key) }
+    }
+
+    /**
+     * 音声を鳴らさず、同一プロセスのオーバーレイへ入力文を届ける。
+     * オーバーレイの購読は SKIPPED を除外するため、読み上げ済みの SPOKEN として保存する。
+     */
+    fun sendDebugOverlayText() {
+        val input = _debugOverlayInput.value
+        val text = input.debugOverlayText.trim()
+        if (text.isEmpty()) return
+        viewModelScope.launch {
+            saveTelemetryLog(
+                createdAt = currentTimeMs(),
+                simulator = Simulator.AceWindows,
+                readoutItemKey = input.debugOverlaySelectedKey,
+                narratedText = text,
+                narrationOutcome = NarrationOutcome.SPOKEN,
+                telemetryJson = "{}",
+            )
+            _debugOverlayInput.update { it.copy(debugOverlayText = "") }
+        }
+    }
 
     fun moveCard(
         fromIndex: Int,

@@ -8,14 +8,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -64,7 +69,7 @@ class Gt7Ps5DebugStateDetailPaneTest {
     fun `未取得の5枚を含む全カードとグリッドを表示する`() {
         rule.setContent {
             MaterialTheme {
-                Box(Modifier.requiredSize(900.dp, 600.dp)) {
+                Box(Modifier.requiredSize(1560.dp, 1080.dp)) {
                     Gt7Ps5DebugStateDetailPaneContent(
                         uiState = Gt7Ps5DebugStateDetailUiState(),
                         canNavigateBack = false,
@@ -110,6 +115,8 @@ class Gt7Ps5DebugStateDetailPaneTest {
         rule.onNodeWithText("選択中のシミュレーター").assertIsDisplayed()
         val flag = rule.onNodeWithText("車両クラス").fetchSemanticsNode().boundsInRoot
         val simulator = rule.onNodeWithText("選択中のシミュレーター").fetchSemanticsNode().boundsInRoot
+        val input = rule.onNodeWithText("オーバーレイ表示テスト").fetchSemanticsNode().boundsInRoot
+        assertTrue(input.top < simulator.top)
         assertTrue(flag.top < simulator.top || flag.left < simulator.left)
     }
 
@@ -128,7 +135,7 @@ class Gt7Ps5DebugStateDetailPaneTest {
                         moves.add(from to to)
                         state.value = state.value.copy(cardOrder = order.reversed())
                     },
-                    modifier = Modifier.requiredSize(360.dp, 640.dp),
+                    modifier = Modifier.requiredSize(360.dp, 1080.dp),
                 )
             }
         }
@@ -156,6 +163,38 @@ class Gt7Ps5DebugStateDetailPaneTest {
         assertEquals(listOf(0 to 1), moves)
         val vehicleClass = rule.onNodeWithText("車両クラス").fetchSemanticsNode().boundsInRoot
         val simulator = rule.onNodeWithText("選択中のシミュレーター").fetchSemanticsNode().boundsInRoot
+        val input = rule.onNodeWithText("オーバーレイ表示テスト").fetchSemanticsNode().boundsInRoot
+        assertTrue(input.top < simulator.top)
         assertTrue(vehicleClass.top < simulator.top)
+    }
+
+    @Test
+    fun `先頭の入力カードは入力と選択と送信を通知する`() {
+        val state = mutableStateOf(Gt7Ps5DebugStateDetailUiState(cardOrder = emptyList()))
+        var sent = 0
+        rule.setContent {
+            MaterialTheme {
+                Gt7Ps5DebugStateDetailPaneContent(
+                    uiState = state.value,
+                    canNavigateBack = false,
+                    onBack = {},
+                    onDebugOverlayTextChange = { state.value = state.value.copy(debugOverlayText = it) },
+                    onDebugOverlayKeySelect = { state.value = state.value.copy(debugOverlaySelectedKey = it) },
+                    onSendDebugOverlayText = { sent++ },
+                )
+            }
+        }
+        rule.onNodeWithText("オーバーレイ表示テスト").assertIsDisplayed()
+        rule.onNodeWithText("送信").assertIsNotEnabled()
+        rule.onNodeWithText("表示する文字列").performTextInput("表示テスト")
+        rule.onNodeWithText("送信").assertIsEnabled().performClick()
+        assertEquals("表示テスト", state.value.debugOverlayText)
+        assertEquals(1, sent)
+        val keys = ReadoutItemKey.entriesOf(Simulator.Gt7Ps5)
+        val initial = keys.first().value
+        val selected = keys[1].value
+        rule.onNodeWithText(" ($initial)", substring = true).performClick()
+        rule.onNodeWithText(" ($selected)", substring = true).performClick()
+        assertEquals(keys[1], state.value.debugOverlaySelectedKey)
     }
 }

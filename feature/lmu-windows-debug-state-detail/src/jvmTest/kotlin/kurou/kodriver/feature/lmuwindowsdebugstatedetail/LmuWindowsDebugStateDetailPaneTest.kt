@@ -1,21 +1,27 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.PrimaryFlag
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -48,14 +54,22 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
-                    uiState = LmuWindowsDebugStateDetailUiState(),
+                    uiState =
+                        LmuWindowsDebugStateDetailUiState(
+                            cardOrder =
+                                listOf(
+                                    LmuWindowsDebugStateCardKey.FLAG_INFO,
+                                    LmuWindowsDebugStateCardKey.GAME_PHASE,
+                                    LmuWindowsDebugStateCardKey.SESSION,
+                                ),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
             }
         }
 
-        rule.onAllNodesWithText("未取得").assertCountEquals(15)
+        rule.onAllNodesWithText("未取得").assertCountEquals(3)
     }
 
     @Test
@@ -63,7 +77,10 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
-                    uiState = LmuWindowsDebugStateDetailUiState(),
+                    uiState =
+                        LmuWindowsDebugStateDetailUiState(
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
@@ -95,6 +112,7 @@ class LmuWindowsDebugStateDetailPaneTest {
                     LmuWindowsDebugStateDetailPaneContent(
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
+                                cardOrder = listOf(LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE),
                                 lmuWindows =
                                     LmuWindowsDebugState(
                                         raceFlags = sampleRaceFlags(yellowFlagState = yellowFlagState),
@@ -115,7 +133,10 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
-                    uiState = LmuWindowsDebugStateDetailUiState(),
+                    uiState =
+                        LmuWindowsDebugStateDetailUiState(
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.SESSION),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
@@ -146,6 +167,7 @@ class LmuWindowsDebugStateDetailPaneTest {
                     LmuWindowsDebugStateDetailPaneContent(
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
+                                cardOrder = listOf(LmuWindowsDebugStateCardKey.SESSION),
                                 lmuWindows =
                                     LmuWindowsDebugState(
                                         virtualEnergy =
@@ -170,7 +192,10 @@ class LmuWindowsDebugStateDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
-                    uiState = LmuWindowsDebugStateDetailUiState(),
+                    uiState =
+                        LmuWindowsDebugStateDetailUiState(
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.GAME_PHASE),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
@@ -203,6 +228,7 @@ class LmuWindowsDebugStateDetailPaneTest {
                     LmuWindowsDebugStateDetailPaneContent(
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
+                                cardOrder = listOf(LmuWindowsDebugStateCardKey.GAME_PHASE),
                                 lmuWindows = LmuWindowsDebugState(raceFlags = sampleRaceFlags(gamePhase = gamePhase)),
                             ),
                         canNavigateBack = true,
@@ -353,4 +379,34 @@ class LmuWindowsDebugStateDetailPaneTest {
         playerFlag = playerFlag,
         playerUnderYellow = playerUnderYellow,
     )
+
+    @Test
+    fun `先頭の入力カードは入力と選択と送信を通知する`() {
+        val state = mutableStateOf(LmuWindowsDebugStateDetailUiState(cardOrder = emptyList()))
+        var sent = 0
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsDebugStateDetailPaneContent(
+                    uiState = state.value,
+                    canNavigateBack = false,
+                    onBack = {},
+                    onDebugOverlayTextChange = { state.value = state.value.copy(debugOverlayText = it) },
+                    onDebugOverlayKeySelect = { state.value = state.value.copy(debugOverlaySelectedKey = it) },
+                    onSendDebugOverlayText = { sent++ },
+                )
+            }
+        }
+        rule.onNodeWithText("オーバーレイ表示テスト").assertIsDisplayed()
+        rule.onNodeWithText("送信").assertIsNotEnabled()
+        rule.onNodeWithText("表示する文字列").performTextInput("表示テスト")
+        rule.onNodeWithText("送信").assertIsEnabled().performClick()
+        assertEquals("表示テスト", state.value.debugOverlayText)
+        assertEquals(1, sent)
+        val keys = ReadoutItemKey.entriesOf(Simulator.LmuWindows)
+        val initial = keys.first().value
+        val selected = keys[1].value
+        rule.onNodeWithText(" ($initial)", substring = true).performClick()
+        rule.onNodeWithText(" ($selected)", substring = true).performClick()
+        assertEquals(keys[1], state.value.debugOverlaySelectedKey)
+    }
 }

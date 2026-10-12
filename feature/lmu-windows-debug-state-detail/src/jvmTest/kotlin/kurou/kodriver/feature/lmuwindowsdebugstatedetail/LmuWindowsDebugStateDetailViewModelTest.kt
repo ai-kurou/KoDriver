@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -38,10 +39,13 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
+import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.PrimaryFlag
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
@@ -55,6 +59,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
@@ -69,6 +74,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -79,6 +85,8 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions", "LongMethod")
 class LmuWindowsDebugStateDetailViewModelTest {
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val flagRepository: LmuWindowsFlagRepository = mockk()
@@ -121,6 +129,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
         currentTimeMs: () -> Long = { 0L },
         sideBySideTickIntervalMs: Long = 100L,
     ) = LmuWindowsDebugStateDetailViewModel(
+        saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
         currentTimeMs = currentTimeMs,
         sideBySideTickIntervalMs = sideBySideTickIntervalMs,
         lmuWindowsUseCases =
@@ -1297,6 +1306,90 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 tyreDetachedRepository,
                 cardOrderRepository,
             )
+        }
+
+    @Test
+    fun `入力と選択を保存して送信後は文字列だけをクリアする`() =
+        runTest {
+            every { flagRepository.flagStream() } returns emptyFlow()
+            every { virtualEnergyRepository.virtualEnergyStream() } returns emptyFlow()
+            every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
+            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
+            every { brakeWearRepository.brakeWearStream() } returns emptyFlow()
+            every { vehicleClassRepository.vehicleClassStream() } returns emptyFlow()
+            every { lmuWindowsPitStatusRepository.pitStatusStream() } returns emptyFlow()
+            every { vehicleDamageRepository.vehicleDamageStream() } returns emptyFlow()
+            every { tyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val keys = ReadoutItemKey.entriesOf(Simulator.LmuWindows)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 1_234L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = keys.last(),
+                    narratedText = "表示テスト",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = "{}",
+                )
+            } returns Unit
+            val viewModel = createViewModel(currentTimeMs = { 1_234L })
+            assertEquals(keys, viewModel.uiState.first().debugOverlayKeys)
+            assertEquals(keys.first(), viewModel.uiState.first().debugOverlaySelectedKey)
+            viewModel.onDebugOverlayTextChange("  表示テスト  ")
+            viewModel.onDebugOverlayKeySelect(keys.last())
+            val input = viewModel.uiState.first { it.debugOverlayText == "  表示テスト  " }
+            assertEquals(keys.last(), input.debugOverlaySelectedKey)
+            viewModel.sendDebugOverlayText()
+            val sent = viewModel.uiState.first { it.debugOverlayText.isEmpty() }
+            assertEquals(keys.last(), sent.debugOverlaySelectedKey)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 1_234L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = keys.last(),
+                    narratedText = "表示テスト",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = "{}",
+                )
+            }
+            confirmVerified(telemetryLogRepository)
+        }
+
+    @Test
+    fun `空白入力は保存せず他シミュレーターのキーは選択しない`() =
+        runTest {
+            every { flagRepository.flagStream() } returns emptyFlow()
+            every { virtualEnergyRepository.virtualEnergyStream() } returns emptyFlow()
+            every { lmuWindowsRepository.telemetryStream() } returns emptyFlow()
+            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { brakeTemperatureRepository.brakeTemperatureStream() } returns emptyFlow()
+            every { brakeWearRepository.brakeWearStream() } returns emptyFlow()
+            every { vehicleClassRepository.vehicleClassStream() } returns emptyFlow()
+            every { lmuWindowsPitStatusRepository.pitStatusStream() } returns emptyFlow()
+            every { vehicleDamageRepository.vehicleDamageStream() } returns emptyFlow()
+            every { tyreDetachedRepository.tyreDetachedStream() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val keys = ReadoutItemKey.entriesOf(Simulator.LmuWindows)
+            val viewModel = createViewModel(currentTimeMs = { 1_234L })
+            viewModel.sendDebugOverlayText()
+            viewModel.onDebugOverlayTextChange(" \n\t ")
+            viewModel.onDebugOverlayKeySelect(ReadoutItemKey.entries.first { it !in keys })
+            viewModel.sendDebugOverlayText()
+            assertEquals(keys.first(), viewModel.uiState.first().debugOverlaySelectedKey)
+            coVerify(exactly = 0) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 1_234L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = keys.first(),
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = "{}",
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 }
 

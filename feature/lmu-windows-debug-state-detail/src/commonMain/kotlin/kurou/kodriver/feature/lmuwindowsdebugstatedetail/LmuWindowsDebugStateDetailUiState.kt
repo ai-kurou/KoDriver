@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+
 internal val defaultDebugStateCardOrder =
     listOf(
         LmuWindowsDebugStateCardKey.SIMULATOR,
@@ -23,6 +26,9 @@ internal val defaultDebugStateCardOrder =
     )
 
 data class LmuWindowsDebugStateDetailUiState(
+    val debugOverlayText: String = "",
+    val debugOverlayKeys: List<ReadoutItemKey> = ReadoutItemKey.entriesOf(Simulator.LmuWindows),
+    val debugOverlaySelectedKey: ReadoutItemKey = ReadoutItemKey.entriesOf(Simulator.LmuWindows).first(),
     val lmuWindows: LmuWindowsDebugState = LmuWindowsDebugState(),
     val enabledCardKeys: Set<LmuWindowsDebugStateCardKey> = setOf(LmuWindowsDebugStateCardKey.SIMULATOR),
     val cardOrder: List<LmuWindowsDebugStateCardKey> = defaultDebugStateCardOrder,

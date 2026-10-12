@@ -320,6 +320,7 @@ class AppTest {
         rule.onNode(hasScrollAction()).performScrollToNode(hasText("Windows版KoDriverバージョン"))
         repeat(5) { clickItem("Windows版KoDriverバージョン") }
         waitUntilDisplayed("デバッグ状態")
+        waitUntilDisplayed("オーバーレイ表示テスト")
     }
 
     @Test

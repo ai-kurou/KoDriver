@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+
 internal val defaultDebugStateCardOrder =
     listOf(
         AceWindowsDebugStateCardKey.SIMULATOR,
@@ -12,6 +15,9 @@ internal val defaultDebugStateCardOrder =
     )
 
 internal data class AceWindowsDebugStateDetailUiState(
+    val debugOverlayText: String = "",
+    val debugOverlayKeys: List<ReadoutItemKey> = ReadoutItemKey.entriesOf(Simulator.AceWindows),
+    val debugOverlaySelectedKey: ReadoutItemKey = ReadoutItemKey.entriesOf(Simulator.AceWindows).first(),
     val aceWindows: AceWindowsDebugState = AceWindowsDebugState(),
     val enabledCardKeys: Set<AceWindowsDebugStateCardKey> = setOf(AceWindowsDebugStateCardKey.SIMULATOR),
     val cardOrder: List<AceWindowsDebugStateCardKey> = defaultDebugStateCardOrder,

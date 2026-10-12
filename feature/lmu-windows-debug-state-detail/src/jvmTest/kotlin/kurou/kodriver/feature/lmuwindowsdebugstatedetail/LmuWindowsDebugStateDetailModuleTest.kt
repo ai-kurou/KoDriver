@@ -27,6 +27,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
@@ -48,6 +49,8 @@ import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsDebugStateDetailModuleTest {
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
+
     private val debugStateCardOrderPreferencesRepository: DebugStateCardOrderPreferencesRepository = mockk()
     private val lmuWindowsBrakeTemperatureRepository: LmuWindowsBrakeTemperatureRepository = mockk()
     private val lmuWindowsBrakeWearRepository: LmuWindowsBrakeWearRepository = mockk()
@@ -91,6 +94,7 @@ class LmuWindowsDebugStateDetailModuleTest {
                 modules(
                     lmuWindowsDebugStateDetailModule,
                     module {
+                        single<TelemetryLogRepository> { telemetryLogRepository }
                         single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
                             debugStateCardOrderPreferencesRepository
                         }

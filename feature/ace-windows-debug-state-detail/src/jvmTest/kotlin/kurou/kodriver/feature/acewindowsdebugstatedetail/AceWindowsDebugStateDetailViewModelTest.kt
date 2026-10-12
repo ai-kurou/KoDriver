@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -27,6 +28,9 @@ import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
@@ -35,6 +39,7 @@ import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
@@ -45,6 +50,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -53,6 +59,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("TooManyFunctions", "LongMethod")
 class AceWindowsDebugStateDetailViewModelTest {
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
+
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private val fuelRepository: AceWindowsFuelRepository = mockk()
@@ -84,6 +92,8 @@ class AceWindowsDebugStateDetailViewModelTest {
 
     private fun createViewModel() =
         AceWindowsDebugStateDetailViewModel(
+            saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            currentTimeMs = { 1_234L },
             aceWindowsUseCases =
                 AceWindowsDebugStateUseCases(
                     observeFuel = ObserveAceWindowsFuelUseCase(fuelRepository),
@@ -618,5 +628,81 @@ class AceWindowsDebugStateDetailViewModelTest {
                 remainingFuelLapsRepository,
                 cardOrderRepository,
             )
+        }
+
+    @Test
+    fun `入力と選択を保存して送信後は文字列だけをクリアする`() =
+        runTest {
+            every { fuelRepository.fuelStream() } returns emptyFlow()
+            every { flagRepository.flagStream() } returns emptyFlow()
+            every { statusRepository.statusStream() } returns emptyFlow()
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
+            every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val keys = ReadoutItemKey.entriesOf(Simulator.AceWindows)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 1_234L,
+                    simulator = Simulator.AceWindows,
+                    readoutItemKey = keys.last(),
+                    narratedText = "表示テスト",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = "{}",
+                )
+            } returns Unit
+            val viewModel = createViewModel()
+            assertEquals(keys, viewModel.uiState.first().debugOverlayKeys)
+            assertEquals(keys.first(), viewModel.uiState.first().debugOverlaySelectedKey)
+            viewModel.onDebugOverlayTextChange("  表示テスト  ")
+            viewModel.onDebugOverlayKeySelect(keys.last())
+            val input = viewModel.uiState.first { it.debugOverlayText == "  表示テスト  " }
+            assertEquals(keys.last(), input.debugOverlaySelectedKey)
+            viewModel.sendDebugOverlayText()
+            val sent = viewModel.uiState.first { it.debugOverlayText.isEmpty() }
+            assertEquals(keys.last(), sent.debugOverlaySelectedKey)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 1_234L,
+                    simulator = Simulator.AceWindows,
+                    readoutItemKey = keys.last(),
+                    narratedText = "表示テスト",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = "{}",
+                )
+            }
+            confirmVerified(telemetryLogRepository)
+        }
+
+    @Test
+    fun `空白入力は保存せず他シミュレーターのキーは選択しない`() =
+        runTest {
+            every { fuelRepository.fuelStream() } returns emptyFlow()
+            every { flagRepository.flagStream() } returns emptyFlow()
+            every { statusRepository.statusStream() } returns emptyFlow()
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns emptyFlow()
+            every { vehicleApproachRepository.vehicleApproachStream() } returns emptyFlow()
+            every { bestLapTimeRepository.bestLapTimeStream() } returns emptyFlow()
+            every { remainingFuelLapsRepository.remainingFuelLapsStream() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val keys = ReadoutItemKey.entriesOf(Simulator.AceWindows)
+            val viewModel = createViewModel()
+            viewModel.sendDebugOverlayText()
+            viewModel.onDebugOverlayTextChange(" \n\t ")
+            viewModel.onDebugOverlayKeySelect(ReadoutItemKey.entries.first { it !in keys })
+            viewModel.sendDebugOverlayText()
+            assertEquals(keys.first(), viewModel.uiState.first().debugOverlaySelectedKey)
+            coVerify(exactly = 0) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 1_234L,
+                    simulator = Simulator.AceWindows,
+                    readoutItemKey = keys.first(),
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = "{}",
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 }

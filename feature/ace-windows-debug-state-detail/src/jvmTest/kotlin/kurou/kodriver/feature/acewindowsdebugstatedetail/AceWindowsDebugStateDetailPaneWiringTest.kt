@@ -4,12 +4,17 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import io.mockk.confirmVerified
@@ -28,6 +33,8 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -87,7 +94,7 @@ class AceWindowsDebugStateDetailPaneWiringTest {
                     AceWindowsDebugStateDetailPane(
                         true,
                         onBack,
-                        Modifier.requiredSize(360.dp, 640.dp).testTag("ace-debug-pane"),
+                        Modifier.requiredSize(360.dp, 1080.dp).testTag("ace-debug-pane"),
                     )
                 }
             }
@@ -116,7 +123,7 @@ class AceWindowsDebugStateDetailPaneWiringTest {
                 up()
             }
             rule.waitForIdle()
-            rule.onNodeWithContentDescription("戻る").performClick()
+            rule.onNodeWithContentDescription("戻る").performSemanticsAction(SemanticsActions.OnClick)
 
             // 状態の getter は表示用スタブ。操作のみを呼び出し検証の対象にする。
             verify(exactly = 1) { viewModel.moveCard(0, 1) }
@@ -161,6 +168,41 @@ class AceWindowsDebugStateDetailPaneWiringTest {
 
             verify(exactly = 0) { onBack() }
             confirmVerified(viewModel, onBack)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun `Paneは文字列入力とキー選択と送信をViewModelへ渡す`() {
+        val keys = ReadoutItemKey.entriesOf(Simulator.AceWindows)
+        val state = MutableStateFlow(AceWindowsDebugStateDetailUiState(cardOrder = emptyList()))
+        excludeRecords { viewModel.uiState }
+        every { viewModel.uiState } returns state
+        every { viewModel.onDebugOverlayTextChange("表示テスト") } answers {
+            state.update { it.copy(debugOverlayText = "表示テスト") }
+        }
+        every { viewModel.onDebugOverlayKeySelect(keys[1]) } answers {
+            state.update { it.copy(debugOverlaySelectedKey = keys[1]) }
+        }
+        every { viewModel.sendDebugOverlayText() } returns Unit
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent {
+                KoDriverTheme { AceWindowsDebugStateDetailPane(false, onBack) }
+            }
+            rule.onNodeWithText("オーバーレイ表示テスト").assertIsDisplayed()
+            rule.onNodeWithText("送信").assertIsNotEnabled()
+            rule.onNodeWithText("表示する文字列").performTextInput("表示テスト")
+            val initial = keys.first().value
+            val selected = keys[1].value
+            rule.onNodeWithText(" ($initial)", substring = true).performClick()
+            rule.onNodeWithText(" ($selected)", substring = true).performClick()
+            rule.onNodeWithText("送信").assertIsEnabled().performClick()
+            verify(exactly = 1) { viewModel.onDebugOverlayTextChange("表示テスト") }
+            verify(exactly = 1) { viewModel.onDebugOverlayKeySelect(keys[1]) }
+            verify(exactly = 1) { viewModel.sendDebugOverlayText() }
+            confirmVerified(viewModel)
         } finally {
             stopKoin()
         }

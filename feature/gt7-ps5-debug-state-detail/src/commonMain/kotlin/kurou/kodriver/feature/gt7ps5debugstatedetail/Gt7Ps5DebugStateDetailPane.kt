@@ -3,6 +3,7 @@ package kurou.kodriver.feature.gt7ps5debugstatedetail
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -15,9 +16,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.DebugOverlayTextInputCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_current_lap_title
@@ -62,6 +65,9 @@ fun Gt7Ps5DebugStateDetailPane(
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         onMoveCard = viewModel::moveCard,
+        onDebugOverlayTextChange = viewModel::onDebugOverlayTextChange,
+        onDebugOverlayKeySelect = viewModel::onDebugOverlayKeySelect,
+        onSendDebugOverlayText = viewModel::sendDebugOverlayText,
         modifier = modifier,
     )
 }
@@ -72,6 +78,9 @@ internal fun Gt7Ps5DebugStateDetailPaneContent(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     onMoveCard: (Int, Int) -> Unit = { _, _ -> },
+    onDebugOverlayTextChange: (String) -> Unit = {},
+    onDebugOverlayKeySelect: (ReadoutItemKey) -> Unit = {},
+    onSendDebugOverlayText: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     DetailPaneScaffold(
@@ -86,13 +95,28 @@ internal fun Gt7Ps5DebugStateDetailPaneContent(
             val gridState = rememberLazyGridState()
             val reorderableState =
                 rememberReorderableLazyGridState(gridState) { from, to ->
-                    onMoveCard(from.index, to.index)
+                    debugStateMoveIndices(uiState.cardOrder, from.key, to.key)?.let { (fromIndex, toIndex) ->
+                        onMoveCard(fromIndex, toIndex)
+                    }
                 }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(columns),
                 state = gridState,
                 modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
             ) {
+                item(key = "debug_overlay_text_input", span = { GridItemSpan(maxLineSpan) }) {
+                    DebugOverlayTextInputCard(
+                        text = uiState.debugOverlayText,
+                        selectedKey = uiState.debugOverlaySelectedKey.value,
+                        keys = uiState.debugOverlayKeys.map { it.value },
+                        onTextChange = onDebugOverlayTextChange,
+                        onKeySelect = { value ->
+                            onDebugOverlayKeySelect(uiState.debugOverlayKeys.first { it.value == value })
+                        },
+                        onSend = onSendDebugOverlayText,
+                        modifier = Modifier.padding(KoDriverSpacing.small),
+                    )
+                }
                 items(uiState.cardOrder, key = { it.name }) { cardKey ->
                     ReorderableItem(reorderableState, key = cardKey.name) {
                         DebugStateCard(

@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -18,12 +19,17 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
+import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -31,6 +37,8 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5DebugStateDetailViewModelTest {
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
+
     private val observeTelemetry: ObserveGt7Ps5UseCase = mockk()
     private val observeVehicleClass: ObserveGt7Ps5VehicleClassUseCase = mockk()
 
@@ -38,12 +46,15 @@ class Gt7Ps5DebugStateDetailViewModelTest {
 
     private fun createViewModel() =
         Gt7Ps5DebugStateDetailViewModel(
-            Gt7Ps5DebugStateUseCases(observeTelemetry, observeVehicleClass),
-            DebugStateCardOrderUseCases(
-                ObserveDebugStateCardOrderUseCase(cardOrderRepository),
-                ResolveDebugStateCardOrderUseCase(),
-                SaveDebugStateCardOrderUseCase(cardOrderRepository),
-            ),
+            saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            currentTimeMs = { 1_234L },
+            gt7Ps5UseCases = Gt7Ps5DebugStateUseCases(observeTelemetry, observeVehicleClass),
+            cardOrderUseCases =
+                DebugStateCardOrderUseCases(
+                    ObserveDebugStateCardOrderUseCase(cardOrderRepository),
+                    ResolveDebugStateCardOrderUseCase(),
+                    SaveDebugStateCardOrderUseCase(cardOrderRepository),
+                ),
         )
 
     @Before
@@ -206,5 +217,71 @@ class Gt7Ps5DebugStateDetailViewModelTest {
                 observeVehicleClass,
                 cardOrderRepository,
             )
+        }
+
+    @Test
+    fun `入力と選択を保存して送信後は文字列だけをクリアする`() =
+        runTest {
+            every { observeTelemetry() } returns emptyFlow()
+            every { observeVehicleClass() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val keys = ReadoutItemKey.entriesOf(Simulator.Gt7Ps5)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 1_234L,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = keys.last(),
+                    narratedText = "表示テスト",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = "{}",
+                )
+            } returns Unit
+            val viewModel = createViewModel()
+            assertEquals(keys, viewModel.uiState.first().debugOverlayKeys)
+            assertEquals(keys.first(), viewModel.uiState.first().debugOverlaySelectedKey)
+            viewModel.onDebugOverlayTextChange("  表示テスト  ")
+            viewModel.onDebugOverlayKeySelect(keys.last())
+            val input = viewModel.uiState.first { it.debugOverlayText == "  表示テスト  " }
+            assertEquals(keys.last(), input.debugOverlaySelectedKey)
+            viewModel.sendDebugOverlayText()
+            val sent = viewModel.uiState.first { it.debugOverlayText.isEmpty() }
+            assertEquals(keys.last(), sent.debugOverlaySelectedKey)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 1_234L,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = keys.last(),
+                    narratedText = "表示テスト",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = "{}",
+                )
+            }
+            confirmVerified(telemetryLogRepository)
+        }
+
+    @Test
+    fun `空白入力は保存せず他シミュレーターのキーは選択しない`() =
+        runTest {
+            every { observeTelemetry() } returns emptyFlow()
+            every { observeVehicleClass() } returns emptyFlow()
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val keys = ReadoutItemKey.entriesOf(Simulator.Gt7Ps5)
+            val viewModel = createViewModel()
+            viewModel.sendDebugOverlayText()
+            viewModel.onDebugOverlayTextChange(" \n\t ")
+            viewModel.onDebugOverlayKeySelect(ReadoutItemKey.entries.first { it !in keys })
+            viewModel.sendDebugOverlayText()
+            assertEquals(keys.first(), viewModel.uiState.first().debugOverlaySelectedKey)
+            coVerify(exactly = 0) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 1_234L,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = keys.first(),
+                    narratedText = "",
+                    narrationOutcome = NarrationOutcome.SPOKEN,
+                    telemetryJson = "{}",
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 }

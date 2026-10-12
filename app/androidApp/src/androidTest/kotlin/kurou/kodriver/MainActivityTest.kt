@@ -249,6 +249,7 @@ class MainActivityTest {
         scrollToItem("Android版KoDriverバージョン")
         repeat(5) { clickItem("Android版KoDriverバージョン") }
         waitUntilDisplayed("デバッグ状態")
+        waitUntilDisplayed("オーバーレイ表示テスト")
         navigateBack()
     }
 

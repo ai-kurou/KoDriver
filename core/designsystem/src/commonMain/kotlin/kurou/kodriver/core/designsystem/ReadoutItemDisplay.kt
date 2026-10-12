@@ -14,6 +14,7 @@ import kurou.kodriver.core.designsystem.generated.resources.readout_item_ace_yel
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_blue_flag
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_brake_temperature
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_brake_wear
+import kurou.kodriver.core.designsystem.generated.resources.readout_item_detail_enabled
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_flag
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_full_course_yellow
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_my_best_lap
@@ -25,6 +26,7 @@ import kurou.kodriver.core.designsystem.generated.resources.readout_item_remaini
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_remaining_fuel_laps
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_remaining_virtual_energy
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_sector_yellow_flag
+import kurou.kodriver.core.designsystem.generated.resources.readout_item_tyre_detached
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_tyre_low_warning
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_tyre_overheat_warning
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_tyre_temperature
@@ -33,6 +35,7 @@ import kurou.kodriver.core.designsystem.generated.resources.readout_item_vehicle
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_vehicle_approach_start_readout
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_vehicle_approach_sustained
 import kurou.kodriver.core.designsystem.generated.resources.readout_item_vehicle_damage
+import kurou.kodriver.core.designsystem.generated.resources.readout_item_warning_readout
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -72,7 +75,7 @@ private fun vehicleApproachDisplayName(readoutItemKeyValue: String): String? =
             stringResource(Res.string.readout_item_vehicle_approach_sustained)
         }
 
-        "lmu_windows_vehicle_approach_start_readout" -> {
+        "lmu_windows_vehicle_approach_start_readout", "ace_windows_vehicle_approach_start_readout" -> {
             stringResource(Res.string.readout_item_vehicle_approach_start_readout)
         }
 
@@ -88,7 +91,10 @@ private fun tyreTemperatureDisplayName(readoutItemKeyValue: String): String? =
             stringResource(Res.string.readout_item_tyre_temperature)
         }
 
-        "lmu_windows_tyre_temperature_overheat_warning" -> {
+        "lmu_windows_tyre_temperature_overheat_warning",
+        "gt7_ps5_tyre_temperature_overheat_warning",
+        "ace_windows_tyre_temperature_overheat_warning",
+        -> {
             stringResource(Res.string.readout_item_tyre_overheat_warning)
         }
 
@@ -106,6 +112,7 @@ private fun vehicleDamageDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
         "lmu_windows_vehicle_damage" -> stringResource(Res.string.readout_item_vehicle_damage)
         "lmu_windows_overheat" -> stringResource(Res.string.readout_item_overheat)
+        "lmu_windows_tyre_detached" -> stringResource(Res.string.readout_item_tyre_detached)
         "lmu_windows_part_detached" -> stringResource(Res.string.readout_item_part_detached)
         else -> null
     }
@@ -143,6 +150,31 @@ private fun bestLapAndFuelDisplayName(readoutItemKeyValue: String): String? =
         }
     }
 
+@Composable
+private fun subItemDisplayName(readoutItemKeyValue: String): String? =
+    when (readoutItemKeyValue) {
+        "lmu_windows_my_best_lap_detail_enabled",
+        "gt7_ps5_my_best_lap_detail_enabled",
+        "gt7_ps5_remaining_fuel_laps_detail_enabled",
+        "gt7_ps5_remaining_fuel_detail_enabled",
+        "ace_windows_my_best_lap_detail_enabled",
+        "ace_windows_remaining_fuel_laps_detail_enabled",
+        "ace_windows_remaining_fuel_detail_enabled",
+        -> stringResource(Res.string.readout_item_detail_enabled)
+
+        "lmu_windows_remaining_virtual_energy_warning_readout",
+        "lmu_windows_tyre_wear_warning_readout",
+        "lmu_windows_brake_temperature_warning_readout",
+        "lmu_windows_brake_wear_warning_readout",
+        -> stringResource(Res.string.readout_item_warning_readout)
+
+        "lmu_windows_pit_timing_virtual_energy" -> stringResource(Res.string.readout_item_remaining_virtual_energy)
+
+        "lmu_windows_pit_timing_tyre_wear" -> stringResource(Res.string.readout_item_tyre_wear)
+
+        else -> null
+    }
+
 /**
  * [readoutItemKeyValue] は `kurou.kodriver.domain.model.ReadoutItemKey.value` の値と一致させる必要がある。
  * このモジュールは core:domain に依存しないため、型ではなく文字列IDを引数にとる。
@@ -155,4 +187,5 @@ fun readoutItemDisplayName(readoutItemKeyValue: String): String =
         ?: tyreTemperatureDisplayName(readoutItemKeyValue)
         ?: lmuStandaloneDisplayName(readoutItemKeyValue)
         ?: bestLapAndFuelDisplayName(readoutItemKeyValue)
+        ?: subItemDisplayName(readoutItemKeyValue)
         ?: error("未対応のreadoutItemKeyValue: $readoutItemKeyValue")

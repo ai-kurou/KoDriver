@@ -24,9 +24,9 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:designsystem` | アプリ全体で共有する Composable コンポーネント | [図](graphs/core-designsystem.svg) |
 | `:core:narrator` | 開始音のWAV再生・TTS読み上げ制御の共通基盤（lmu/gt7/ace の各narrator featureが共通利用） | [図](graphs/core-narrator.svg) |
 | `:feature:desktop-splash` | デスクトップ起動中スプラッシュの初期化進捗管理・画面表示 | [図](graphs/feature-desktop-splash.svg) |
-| `:feature:lmu-windows-debug-state-detail` | LMUのデバッグ状態表示（18枚のカード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-lmu-windows-debug-state-detail.svg) |
-| `:feature:gt7-ps5-debug-state-detail` | GT7（PS5）専用のデバッグ状態表示（6枚のカード・状態集約・カード順序保存。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-gt7-ps5-debug-state-detail.svg) |
-| `:feature:ace-windows-debug-state-detail` | ACEのデバッグ状態表示（7枚のカード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-ace-windows-debug-state-detail.svg) |
+| `:feature:lmu-windows-debug-state-detail` | LMUのデバッグ状態表示（18枚のカード・入力した文字列をオーバーレイへ表示する固定カード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-lmu-windows-debug-state-detail.svg) |
+| `:feature:gt7-ps5-debug-state-detail` | GT7（PS5）専用のデバッグ状態表示（6枚のカード・入力した文字列をオーバーレイへ表示する固定カード・状態集約・カード順序保存。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-gt7-ps5-debug-state-detail.svg) |
+| `:feature:ace-windows-debug-state-detail` | ACEのデバッグ状態表示（7枚のカード・入力した文字列をオーバーレイへ表示する固定カード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-ace-windows-debug-state-detail.svg) |
 | `:feature:lmu-windows-connection` | LMU との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-lmu-windows-connection.svg) |
 | `:feature:main` | アプリ全体のメイン画面状態管理 | [図](graphs/feature-main.svg) |
 | `:feature:server-connection` | KoDriver サーバー（Ktor）への接続状態確認を担当する | [図](graphs/feature-server-connection.svg) |

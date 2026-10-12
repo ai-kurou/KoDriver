@@ -33,4 +33,11 @@
     <string name="readout_item_ace_checkered_flag">チェッカーフラッグ</string>
     <string name="readout_item_ace_orange_circle_flag">オレンジボールフラッグ</string>
     <string name="readout_item_ace_red_yellow_stripes_flag">レッド・イエローストライプフラッグ</string>
+    <string name="debug_overlay_text_input_title">オーバーレイ表示テスト</string>
+    <string name="debug_overlay_text_input_label">表示する文字列</string>
+    <string name="debug_overlay_text_input_readout_item">読み上げ項目</string>
+    <string name="debug_overlay_text_input_send">送信</string>
+    <string name="readout_item_detail_enabled">詳細の読み上げ</string>
+    <string name="readout_item_warning_readout">警告の読み上げ</string>
+    <string name="readout_item_tyre_detached">タイヤ脱落</string>
 </resources>

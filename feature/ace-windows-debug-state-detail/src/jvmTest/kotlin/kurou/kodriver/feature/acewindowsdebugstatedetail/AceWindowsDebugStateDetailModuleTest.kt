@@ -23,6 +23,7 @@ import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
@@ -40,6 +41,8 @@ import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsDebugStateDetailModuleTest {
+    private val telemetryLogRepository: TelemetryLogRepository = mockk()
+
     private val aceWindowsBestLapTimeRepository: AceWindowsBestLapTimeRepository = mockk()
     private val aceWindowsFlagRepository: AceWindowsFlagRepository = mockk()
     private val aceWindowsFuelRepository: AceWindowsFuelRepository = mockk()
@@ -75,6 +78,7 @@ class AceWindowsDebugStateDetailModuleTest {
                 modules(
                     aceWindowsDebugStateDetailModule,
                     module {
+                        single<TelemetryLogRepository> { telemetryLogRepository }
                         single<AceWindowsBestLapTimeRepository> { aceWindowsBestLapTimeRepository }
                         single<AceWindowsFlagRepository> { aceWindowsFlagRepository }
                         single<AceWindowsFuelRepository> { aceWindowsFuelRepository }

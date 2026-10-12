@@ -2,8 +2,11 @@ package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollToNode
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -62,7 +65,9 @@ class DebugStateBestLapCardTest {
             }
         }
 
+        rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).performScrollToNode(hasText("自己ベストラップ"))
         rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
+        rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).performScrollToNode(hasText("1:23.456"))
         rule.onNodeWithText("1:23.456").assertIsDisplayed()
     }
 
