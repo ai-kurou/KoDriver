@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
-import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
@@ -249,15 +248,8 @@ class FakeLmuWindowsBrakeTemperatureRepository : LmuWindowsBrakeTemperatureRepos
 }
 
 class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTemperaturePreferencesRepository {
-    private val flow = MutableStateFlow(Celsius(90))
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     private val lowWarningPhasesFlow = MutableStateFlow<Map<SessionPhase, Boolean>>(emptyMap())
-
-    override fun observeHighThresholdCelsius(): Flow<Celsius> = flow
-
-    override suspend fun saveHighThresholdCelsius(celsius: Celsius) {
-        flow.update { celsius }
-    }
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
 

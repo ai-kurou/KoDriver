@@ -118,16 +118,6 @@ class WindowsTextToSpeechRepositoryTest {
         }
 
     @Test
-    fun `stopは音声合成の停止を呼び出す`() =
-        runTest {
-            val synthesizer = FakeWindowsSpeechSynthesizer()
-
-            WindowsTextToSpeechRepository(synthesizer).stop()
-
-            assertEquals(1, synthesizer.stopCount)
-        }
-
-    @Test
     fun `コルーチンをキャンセルするとブロック中の音声合成へ割り込む`() =
         runTest {
             val synthesizer = FakeWindowsSpeechSynthesizer(blockUntilInterrupted = true)

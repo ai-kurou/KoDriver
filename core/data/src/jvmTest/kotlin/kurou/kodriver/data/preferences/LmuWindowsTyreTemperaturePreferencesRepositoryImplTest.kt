@@ -7,8 +7,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.Celsius
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
@@ -35,30 +33,6 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
         dataStoreScope.cancel()
         tempDir.deleteRecursively()
     }
-
-    @Test
-    fun `highThresholdCelsius の初期値は 95`() =
-        runTest {
-            assertEquals(
-                LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
-                repository.observeHighThresholdCelsius().first(),
-            )
-        }
-
-    @Test
-    fun `saveHighThresholdCelsius で保存した値を observeHighThresholdCelsius で取得できる`() =
-        runTest {
-            repository.saveHighThresholdCelsius(Celsius(110))
-            assertEquals(Celsius(110), repository.observeHighThresholdCelsius().first())
-        }
-
-    @Test
-    fun `saveHighThresholdCelsius を複数回呼ぶと最後の値で上書きされる`() =
-        runTest {
-            repository.saveHighThresholdCelsius(Celsius(80))
-            repository.saveHighThresholdCelsius(Celsius(95))
-            assertEquals(Celsius(95), repository.observeHighThresholdCelsius().first())
-        }
 
     @Test
     fun `enabledStates の初期値は空Map`() =
@@ -151,22 +125,6 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
                     SessionPhase.WARM_UP to false,
                     SessionPhase.GRID_WALK to false,
                     SessionPhase.FORMATION to false,
-                ),
-                repository.observeLowWarningPhases().first(),
-            )
-        }
-
-    @Test
-    fun `saveLowWarningPhases後にsaveHighThresholdCelsiusを呼んでもphasesは保持される`() =
-        runTest {
-            repository.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
-            repository.saveHighThresholdCelsius(Celsius(100))
-            assertEquals(
-                mapOf(
-                    SessionPhase.GARAGE to false,
-                    SessionPhase.WARM_UP to false,
-                    SessionPhase.GRID_WALK to false,
-                    SessionPhase.FORMATION to true,
                 ),
                 repository.observeLowWarningPhases().first(),
             )

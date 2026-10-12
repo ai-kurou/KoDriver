@@ -18,11 +18,10 @@ class LmuWindowsVehicleDataTest {
     )
 
     @Test
-    fun `全速度ゼロのとき speedMs と speedKmh はゼロになる`() {
+    fun `全速度ゼロのとき speedMs はゼロになる`() {
         val data = vehicleData()
 
         assertEquals(0.0, data.speedMs)
-        assertEquals(0.0, data.speedKmh)
     }
 
     @Test
@@ -31,7 +30,6 @@ class LmuWindowsVehicleDataTest {
         val data = vehicleData(vx = 1.0, vy = 2.0, vz = 2.0)
 
         assertEquals(3.0, data.speedMs, 1e-9)
-        assertEquals(10.8, data.speedKmh, 1e-9)
     }
 
     @Test

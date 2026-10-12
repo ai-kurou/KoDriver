@@ -21,8 +21,6 @@ class FakeWindowsSpeechSynthesizer(
     val spokenPitches = mutableListOf<Float>()
     val spokenSpeeds = mutableListOf<Float>()
     val spokenVoiceIds = mutableListOf<String>()
-    var stopCount = 0
-        private set
     var wasInterrupted = false
         private set
 
@@ -78,9 +76,5 @@ class FakeWindowsSpeechSynthesizer(
             wasInterrupted = true
             throw e
         }
-    }
-
-    override fun stop() {
-        stopCount++
     }
 }

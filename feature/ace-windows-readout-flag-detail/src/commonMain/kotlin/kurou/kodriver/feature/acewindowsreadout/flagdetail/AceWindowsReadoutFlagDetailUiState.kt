@@ -11,7 +11,4 @@ internal data class AceWindowsReadoutFlagDetailUiState(
 ) {
     /** [item] の読み上げ文言。未設定なら [FlagReadoutItem.defaultText]。 */
     fun flagText(item: FlagReadoutItem): String = flagTexts[item] ?: item.defaultText
-
-    /** [item] に読み上げ文言があるか。 */
-    fun hasReadoutText(item: FlagReadoutItem): Boolean = flagText(item).isNotBlank()
 }

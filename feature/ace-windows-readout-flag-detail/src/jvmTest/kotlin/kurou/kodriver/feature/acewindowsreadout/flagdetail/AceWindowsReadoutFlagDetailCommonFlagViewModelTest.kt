@@ -57,7 +57,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -151,7 +150,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.WhiteFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.WhiteFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.WhiteFlag))
             vm.onFlagTextReset(FlagReadoutItem.WhiteFlag)
             assertEquals("ホワイトフラッグ", vm.uiState.first().flagText(FlagReadoutItem.WhiteFlag))
             coVerify(exactly = 1) { texts.saveText(AceWindowsFlagReadoutTextKey.WHITE, "") }
@@ -200,7 +199,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.GreenFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.GreenFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.GreenFlag))
             vm.onFlagTextReset(FlagReadoutItem.GreenFlag)
             assertEquals("グリーンフラッグ", vm.uiState.first().flagText(FlagReadoutItem.GreenFlag))
             coVerify(exactly = 1) { texts.saveText(AceWindowsFlagReadoutTextKey.GREEN, "") }
@@ -249,7 +248,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.RedFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.RedFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.RedFlag))
             vm.onFlagTextReset(FlagReadoutItem.RedFlag)
             assertEquals("レッドフラッグ", vm.uiState.first().flagText(FlagReadoutItem.RedFlag))
             coVerify(exactly = 1) { texts.saveText(AceWindowsFlagReadoutTextKey.RED, "") }
@@ -298,7 +297,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.BlueFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.BlueFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.BlueFlag))
             vm.onFlagTextReset(FlagReadoutItem.BlueFlag)
             assertEquals("ブルーフラッグ", vm.uiState.first().flagText(FlagReadoutItem.BlueFlag))
             coVerify(exactly = 1) { texts.saveText(AceWindowsFlagReadoutTextKey.BLUE, "") }
@@ -347,7 +346,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.YellowFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.YellowFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.YellowFlag))
             vm.onFlagTextReset(FlagReadoutItem.YellowFlag)
             assertEquals("イエローフラッグ", vm.uiState.first().flagText(FlagReadoutItem.YellowFlag))
             coVerify(exactly = 1) { texts.saveText(AceWindowsFlagReadoutTextKey.YELLOW, "") }
@@ -396,7 +395,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.BlackFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.BlackFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.BlackFlag))
             vm.onFlagTextReset(FlagReadoutItem.BlackFlag)
             assertEquals("ブラックフラッグ", vm.uiState.first().flagText(FlagReadoutItem.BlackFlag))
             coVerify(exactly = 1) { texts.saveText(AceWindowsFlagReadoutTextKey.BLACK, "") }
@@ -445,7 +444,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.BlackWhiteFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.BlackWhiteFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.BlackWhiteFlag))
             vm.onFlagTextReset(FlagReadoutItem.BlackWhiteFlag)
             assertEquals("ブラック・ホワイトフラッグ", vm.uiState.first().flagText(FlagReadoutItem.BlackWhiteFlag))
             coVerify(exactly = 1) { texts.saveText(AceWindowsFlagReadoutTextKey.BLACK_WHITE, "") }
@@ -494,7 +493,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.OrangeCircleFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.OrangeCircleFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.OrangeCircleFlag))
             vm.onFlagTextReset(FlagReadoutItem.OrangeCircleFlag)
             assertEquals("オレンジボールフラッグ、車両に不具合があります", vm.uiState.first().flagText(FlagReadoutItem.OrangeCircleFlag))
             coVerify(exactly = 1) { texts.saveText(AceWindowsFlagReadoutTextKey.ORANGE_CIRCLE, "") }
@@ -551,7 +550,7 @@ class AceWindowsReadoutFlagDetailCommonFlagViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.RedYellowStripesFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.RedYellowStripesFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.RedYellowStripesFlag))
             vm.onFlagTextReset(FlagReadoutItem.RedYellowStripesFlag)
             assertEquals(
                 "レッド・イエローストライプフラッグ、路面が滑りやすいです",
