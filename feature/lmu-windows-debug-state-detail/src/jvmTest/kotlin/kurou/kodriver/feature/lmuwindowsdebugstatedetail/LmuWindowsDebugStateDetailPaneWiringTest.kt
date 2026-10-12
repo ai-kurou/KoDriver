@@ -24,7 +24,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import org.junit.Rule
 import org.junit.Test
@@ -60,7 +59,7 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
 
     @Test
     fun `PaneはKoinの状態を表示しカード移動と戻る操作を通知する`() {
-        val cardOrder = listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.VEHICLE_CLASS)
+        val cardOrder = listOf(LmuWindowsDebugStateCardKey.SIMULATOR, LmuWindowsDebugStateCardKey.VEHICLE_CLASS)
         val state =
             MutableStateFlow(
                 LmuWindowsDebugStateDetailUiState(
@@ -129,7 +128,7 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
     fun `Paneは状態の更新を表示し戻れない場合は戻る操作を隠す`() {
         val state =
             MutableStateFlow(
-                LmuWindowsDebugStateDetailUiState(cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS)),
+                LmuWindowsDebugStateDetailUiState(cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_CLASS)),
             )
         every { viewModel.uiState } returns state
         startKoin { modules(module { single { viewModel } }) }
@@ -144,7 +143,11 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
             state.update {
                 it.copy(
                     lmuWindows = LmuWindowsDebugState(vehicleClass = LmuWindowsVehicleClassData.fromRawValue("LMP2")),
-                    enabledCardKeys = setOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.VEHICLE_CLASS),
+                    enabledCardKeys =
+                        setOf(
+                            LmuWindowsDebugStateCardKey.SIMULATOR,
+                            LmuWindowsDebugStateCardKey.VEHICLE_CLASS,
+                        ),
                 )
             }
             rule.onNodeWithText("LMP2").assertIsDisplayed()

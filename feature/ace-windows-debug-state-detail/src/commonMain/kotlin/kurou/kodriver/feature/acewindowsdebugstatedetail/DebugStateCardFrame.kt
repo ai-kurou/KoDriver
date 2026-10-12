@@ -22,11 +22,10 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
-import kurou.kodriver.domain.model.DebugStateCardKey
 
 @Composable
 internal fun DebugStateCardFrame(
-    cardKey: DebugStateCardKey,
+    cardKey: AceWindowsDebugStateCardKey,
     title: String,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
@@ -34,9 +33,9 @@ internal fun DebugStateCardFrame(
     val colors = MaterialTheme.colorScheme
     val accent =
         when (cardKey) {
-            DebugStateCardKey.SIMULATOR, DebugStateCardKey.VEHICLE_LOCATION -> colors.primary
-            DebugStateCardKey.TYRE_CARCASS_TEMPERATURE -> colors.error
-            DebugStateCardKey.FUEL_CONSUMPTION -> KoDriverExtendedColors.current.onWarningContainer
+            AceWindowsDebugStateCardKey.SIMULATOR, AceWindowsDebugStateCardKey.VEHICLE_LOCATION -> colors.primary
+            AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE -> colors.error
+            AceWindowsDebugStateCardKey.FUEL_CONSUMPTION -> KoDriverExtendedColors.current.onWarningContainer
             else -> colors.tertiary
         }
     Surface(modifier = modifier, shape = MaterialTheme.shapes.large, color = colors.surfaceContainerLow) {
@@ -89,13 +88,14 @@ internal fun DebugStateCardFrame(
 
 private val debugStateCardSymbols =
     mapOf(
-        DebugStateCardKey.SIMULATOR to "🎮",
-        DebugStateCardKey.VEHICLE_LOCATION to "⌖",
-        DebugStateCardKey.FLAG_INFO to "⚑",
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to "↔",
-        DebugStateCardKey.BEST_LAP to "🏆",
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to "◎",
-        DebugStateCardKey.FUEL_CONSUMPTION to "⛽",
+        AceWindowsDebugStateCardKey.SIMULATOR to "🎮",
+        AceWindowsDebugStateCardKey.VEHICLE_LOCATION to "⌖",
+        AceWindowsDebugStateCardKey.FLAG_INFO to "⚑",
+        AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to "↔",
+        AceWindowsDebugStateCardKey.BEST_LAP to "🏆",
+        AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to "◎",
+        AceWindowsDebugStateCardKey.FUEL_CONSUMPTION to "⛽",
     )
 
-internal fun debugStateCardSymbol(cardKey: DebugStateCardKey): String = debugStateCardSymbols.getValue(cardKey)
+internal fun debugStateCardSymbol(cardKey: AceWindowsDebugStateCardKey): String =
+    debugStateCardSymbols.getValue(cardKey)

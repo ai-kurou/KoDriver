@@ -13,7 +13,6 @@ import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.usecase.ObserveAceWindowsBestLapTimeUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
@@ -35,55 +34,55 @@ internal data class AceWindowsDebugStateUseCases(
 internal class AceWindowsDebugStateSource(
     scope: CoroutineScope,
     useCases: AceWindowsDebugStateUseCases,
-    markCardsReceived: (Set<DebugStateCardKey>) -> Unit,
+    markCardsReceived: (Set<AceWindowsDebugStateCardKey>) -> Unit,
 ) {
     private val fuel: StateFlow<AceWindowsFuelData?> =
         useCases
             .observeFuel()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.FUEL_CONSUMPTION))
+                markCardsReceived(setOf(AceWindowsDebugStateCardKey.FUEL_CONSUMPTION))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val flag: StateFlow<AceWindowsFlagData?> =
         useCases
             .observeFlag()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.FLAG_INFO))
+                markCardsReceived(setOf(AceWindowsDebugStateCardKey.FLAG_INFO))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val status: StateFlow<AceWindowsStatusData?> =
         useCases
             .observeStatus()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.VEHICLE_LOCATION))
+                markCardsReceived(setOf(AceWindowsDebugStateCardKey.VEHICLE_LOCATION))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val tyreCarcassTemperature: StateFlow<AceWindowsTyreCarcassTemperatureData?> =
         useCases
             .observeTyreCarcassTemperature()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE))
+                markCardsReceived(setOf(AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val vehicleApproach: StateFlow<AceWindowsVehicleApproachData?> =
         useCases
             .observeVehicleApproach()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES))
+                markCardsReceived(setOf(AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val bestLapTime: StateFlow<AceWindowsBestLapTimeData?> =
         useCases
             .observeBestLapTime()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.BEST_LAP))
+                markCardsReceived(setOf(AceWindowsDebugStateCardKey.BEST_LAP))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val remainingFuelLaps: StateFlow<AceWindowsRemainingFuelLapsData?> =
         useCases
             .observeRemainingFuelLaps()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.FUEL_CONSUMPTION))
+                markCardsReceived(setOf(AceWindowsDebugStateCardKey.FUEL_CONSUMPTION))
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val base: StateFlow<AceWindowsDebugState> =

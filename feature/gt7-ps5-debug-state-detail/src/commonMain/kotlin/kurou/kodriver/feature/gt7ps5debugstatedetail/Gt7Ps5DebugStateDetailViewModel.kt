@@ -8,12 +8,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.DebugStateCardKey
 
 internal class Gt7Ps5DebugStateDetailViewModel(
     gt7Ps5UseCases: Gt7Ps5DebugStateUseCases,
 ) : ViewModel() {
-    private val _receivedCardKeys = MutableStateFlow(setOf(DebugStateCardKey.SIMULATOR))
+    private val _receivedCardKeys = MutableStateFlow(setOf(Gt7Ps5DebugStateCardKey.SIMULATOR))
     private val gt7Ps5Source =
         Gt7Ps5DebugStateSource(
             scope = viewModelScope,
@@ -29,7 +28,7 @@ internal class Gt7Ps5DebugStateDetailViewModel(
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Gt7Ps5DebugStateDetailUiState())
 
-    private fun markCardsReceived(cardKeys: Set<DebugStateCardKey>) {
+    private fun markCardsReceived(cardKeys: Set<Gt7Ps5DebugStateCardKey>) {
         _receivedCardKeys.update { receivedCardKeys -> receivedCardKeys + cardKeys }
     }
 }

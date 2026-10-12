@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsTyreDetachedData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.WheelIndex
@@ -44,7 +43,7 @@ class DebugStateVehicleDamageCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleDamage = null,
@@ -67,7 +66,7 @@ class DebugStateVehicleDamageCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleDamage =
@@ -95,7 +94,7 @@ class DebugStateVehicleDamageCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleDamage =
@@ -123,7 +122,7 @@ class DebugStateVehicleDamageCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleDamage =
@@ -154,7 +153,7 @@ class DebugStateVehicleDamageCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_DAMAGE),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleDamage =

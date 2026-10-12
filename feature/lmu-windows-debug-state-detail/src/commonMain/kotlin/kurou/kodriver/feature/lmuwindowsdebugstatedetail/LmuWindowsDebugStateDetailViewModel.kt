@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kotlin.time.Clock
 
 private const val SIDE_BY_SIDE_TICK_INTERVAL_MS = 100L
@@ -21,8 +20,8 @@ internal class LmuWindowsDebugStateDetailViewModel(
     private val sideBySideTickIntervalMs: Long = SIDE_BY_SIDE_TICK_INTERVAL_MS,
 ) : ViewModel() {
     private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
-    private val saveCardOrder = cardOrderUseCases.saveCardOrder
-    private val _receivedCardKeys = MutableStateFlow(setOf(DebugStateCardKey.SIMULATOR))
+    private val saveCardOrder = cardOrderUseCases::saveKeys
+    private val _receivedCardKeys = MutableStateFlow(setOf(LmuWindowsDebugStateCardKey.SIMULATOR))
 
     private val lmuWindowsSource =
         LmuWindowsDebugStateSource(
@@ -34,10 +33,10 @@ internal class LmuWindowsDebugStateDetailViewModel(
         )
 
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
-    private val _localCardOrder = MutableStateFlow<List<DebugStateCardKey>?>(null)
-    private val _cardOrder: StateFlow<List<DebugStateCardKey>> =
+    private val _localCardOrder = MutableStateFlow<List<LmuWindowsDebugStateCardKey>?>(null)
+    private val _cardOrder: StateFlow<List<LmuWindowsDebugStateCardKey>> =
         combine(
-            cardOrderUseCases.observeCardOrder(),
+            cardOrderUseCases.observeKeys(),
             _localCardOrder,
         ) { persisted, local ->
             local ?: resolveCardOrder(persistedOrder = persisted, defaultOrder = defaultDebugStateCardOrder)
@@ -68,7 +67,7 @@ internal class LmuWindowsDebugStateDetailViewModel(
         viewModelScope.launch { saveCardOrder(newOrder) }
     }
 
-    private fun markCardsReceived(cardKeys: Set<DebugStateCardKey>) {
+    private fun markCardsReceived(cardKeys: Set<LmuWindowsDebugStateCardKey>) {
         _receivedCardKeys.update { receivedCardKeys ->
             receivedCardKeys + cardKeys
         }

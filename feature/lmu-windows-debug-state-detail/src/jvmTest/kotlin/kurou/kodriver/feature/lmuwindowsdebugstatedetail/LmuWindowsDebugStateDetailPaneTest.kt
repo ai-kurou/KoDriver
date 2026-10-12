@@ -9,7 +9,6 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
@@ -304,7 +303,11 @@ class LmuWindowsDebugStateDetailPaneTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SIMULATOR),
+                            cardOrder =
+                                listOf(
+                                    LmuWindowsDebugStateCardKey.FLAG_INFO,
+                                    LmuWindowsDebugStateCardKey.SIMULATOR,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},

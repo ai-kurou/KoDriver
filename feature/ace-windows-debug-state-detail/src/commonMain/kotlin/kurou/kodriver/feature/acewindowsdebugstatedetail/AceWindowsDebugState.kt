@@ -7,7 +7,6 @@ import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
-import kurou.kodriver.domain.model.DebugStateCardKey
 
 data class AceWindowsDebugState(
     val fuel: AceWindowsFuelData? = null,
@@ -21,11 +20,11 @@ data class AceWindowsDebugState(
 
 internal val aceWindowsSupportedCardKeys =
     setOf(
-        DebugStateCardKey.SIMULATOR,
-        DebugStateCardKey.VEHICLE_LOCATION,
-        DebugStateCardKey.FLAG_INFO,
-        DebugStateCardKey.FUEL_CONSUMPTION,
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-        DebugStateCardKey.BEST_LAP,
+        AceWindowsDebugStateCardKey.SIMULATOR,
+        AceWindowsDebugStateCardKey.VEHICLE_LOCATION,
+        AceWindowsDebugStateCardKey.FLAG_INFO,
+        AceWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+        AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+        AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+        AceWindowsDebugStateCardKey.BEST_LAP,
     )

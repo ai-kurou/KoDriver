@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import org.junit.Rule
@@ -22,7 +21,7 @@ class DebugStateSideBySideVehiclesCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleApproach = null,
@@ -45,7 +44,7 @@ class DebugStateSideBySideVehiclesCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleApproach =
@@ -73,7 +72,7 @@ class DebugStateSideBySideVehiclesCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleApproach =
@@ -101,7 +100,7 @@ class DebugStateSideBySideVehiclesCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     sideBySideDurations = LmuWindowsSideBySideDurations(1_000, 0),
@@ -132,7 +131,7 @@ class DebugStateSideBySideVehiclesCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleApproach =
@@ -161,7 +160,7 @@ class DebugStateSideBySideVehiclesCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     sideBySideDurations = LmuWindowsSideBySideDurations(1_240, 2_060),

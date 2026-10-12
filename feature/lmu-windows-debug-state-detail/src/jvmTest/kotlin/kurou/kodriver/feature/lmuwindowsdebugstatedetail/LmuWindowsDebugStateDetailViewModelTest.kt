@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
@@ -168,7 +167,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals(setOf(DebugStateCardKey.SIMULATOR), state.enabledCardKeys)
+            assertEquals(setOf(LmuWindowsDebugStateCardKey.SIMULATOR), state.enabledCardKeys)
             assertEquals(LmuWindowsDebugState(), state.lmuWindows)
             assertEquals(defaultDebugStateCardOrder, state.cardOrder)
         }
@@ -202,7 +201,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                     ?.wheels
                     ?.get(WheelIndex.FRONT_LEFT)
             assertEquals(100f, initialWheel?.remainingPercent)
-            assertTrue(DebugStateCardKey.BRAKE_WEAR in initial.enabledCardKeys)
+            assertTrue(LmuWindowsDebugStateCardKey.BRAKE_WEAR in initial.enabledCardKeys)
 
             brakeWearFlow.update {
                 LmuWindowsBrakeWearData(mapOf(WheelIndex.FRONT_LEFT to BrakeThicknessMeters(0.03f)))
@@ -250,8 +249,8 @@ class LmuWindowsDebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
             assertEquals(null, state.lmuWindows.brakeWear)
-            assertFalse(DebugStateCardKey.BRAKE_WEAR in state.enabledCardKeys)
-            assertTrue(DebugStateCardKey.BRAKE_TEMPERATURE in state.enabledCardKeys)
+            assertFalse(LmuWindowsDebugStateCardKey.BRAKE_WEAR in state.enabledCardKeys)
+            assertTrue(LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE in state.enabledCardKeys)
         }
 
     @Test
@@ -1046,24 +1045,24 @@ class LmuWindowsDebugStateDetailViewModelTest {
 
             assertEquals(
                 listOf(
-                    DebugStateCardKey.SIMULATOR,
-                    DebugStateCardKey.VEHICLE_CLASS,
-                    DebugStateCardKey.VEHICLE_LOCATION,
-                    DebugStateCardKey.FLAG_INFO,
-                    DebugStateCardKey.GAME_PHASE,
-                    DebugStateCardKey.SESSION,
-                    DebugStateCardKey.YELLOW_FLAG_STATE,
-                    DebugStateCardKey.CURRENT_LAP,
-                    DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-                    DebugStateCardKey.BEST_LAP,
-                    DebugStateCardKey.TYRE_TEMPERATURE,
-                    DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-                    DebugStateCardKey.BRAKE_TEMPERATURE,
-                    DebugStateCardKey.BRAKE_WEAR,
-                    DebugStateCardKey.TYRE_WEAR,
-                    DebugStateCardKey.FUEL_CONSUMPTION,
-                    DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-                    DebugStateCardKey.VEHICLE_DAMAGE,
+                    LmuWindowsDebugStateCardKey.SIMULATOR,
+                    LmuWindowsDebugStateCardKey.VEHICLE_CLASS,
+                    LmuWindowsDebugStateCardKey.VEHICLE_LOCATION,
+                    LmuWindowsDebugStateCardKey.FLAG_INFO,
+                    LmuWindowsDebugStateCardKey.GAME_PHASE,
+                    LmuWindowsDebugStateCardKey.SESSION,
+                    LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE,
+                    LmuWindowsDebugStateCardKey.CURRENT_LAP,
+                    LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                    LmuWindowsDebugStateCardKey.BEST_LAP,
+                    LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
+                    LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+                    LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE,
+                    LmuWindowsDebugStateCardKey.BRAKE_WEAR,
+                    LmuWindowsDebugStateCardKey.TYRE_WEAR,
+                    LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+                    LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+                    LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE,
                 ),
                 state.cardOrder,
             )
@@ -1114,7 +1113,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             every { vehicleDamageRepository.vehicleDamageStream() } returns MutableStateFlow(sampleVehicleDamage())
             every { tyreDetachedRepository.tyreDetachedStream() } returns MutableStateFlow(sampleTyreDetached())
             every { cardOrderRepository.observeCardOrder() } returns
-                MutableStateFlow(listOf(DebugStateCardKey.FUEL_CONSUMPTION, DebugStateCardKey.SIMULATOR))
+                MutableStateFlow(listOf("FUEL_CONSUMPTION", "SIMULATOR"))
             val viewModel = createViewModel()
             testScheduler.runCurrent()
 
@@ -1122,24 +1121,24 @@ class LmuWindowsDebugStateDetailViewModelTest {
 
             assertEquals(
                 listOf(
-                    DebugStateCardKey.FUEL_CONSUMPTION,
-                    DebugStateCardKey.SIMULATOR,
-                    DebugStateCardKey.VEHICLE_CLASS,
-                    DebugStateCardKey.VEHICLE_LOCATION,
-                    DebugStateCardKey.FLAG_INFO,
-                    DebugStateCardKey.GAME_PHASE,
-                    DebugStateCardKey.SESSION,
-                    DebugStateCardKey.YELLOW_FLAG_STATE,
-                    DebugStateCardKey.CURRENT_LAP,
-                    DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-                    DebugStateCardKey.BEST_LAP,
-                    DebugStateCardKey.TYRE_TEMPERATURE,
-                    DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-                    DebugStateCardKey.BRAKE_TEMPERATURE,
-                    DebugStateCardKey.BRAKE_WEAR,
-                    DebugStateCardKey.TYRE_WEAR,
-                    DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-                    DebugStateCardKey.VEHICLE_DAMAGE,
+                    LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+                    LmuWindowsDebugStateCardKey.SIMULATOR,
+                    LmuWindowsDebugStateCardKey.VEHICLE_CLASS,
+                    LmuWindowsDebugStateCardKey.VEHICLE_LOCATION,
+                    LmuWindowsDebugStateCardKey.FLAG_INFO,
+                    LmuWindowsDebugStateCardKey.GAME_PHASE,
+                    LmuWindowsDebugStateCardKey.SESSION,
+                    LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE,
+                    LmuWindowsDebugStateCardKey.CURRENT_LAP,
+                    LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                    LmuWindowsDebugStateCardKey.BEST_LAP,
+                    LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
+                    LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+                    LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE,
+                    LmuWindowsDebugStateCardKey.BRAKE_WEAR,
+                    LmuWindowsDebugStateCardKey.TYRE_WEAR,
+                    LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+                    LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE,
                 ),
                 state.cardOrder,
             )
@@ -1198,24 +1197,24 @@ class LmuWindowsDebugStateDetailViewModelTest {
 
             val expectedCardOrder =
                 listOf(
-                    DebugStateCardKey.VEHICLE_CLASS,
-                    DebugStateCardKey.SIMULATOR,
-                    DebugStateCardKey.VEHICLE_LOCATION,
-                    DebugStateCardKey.FLAG_INFO,
-                    DebugStateCardKey.GAME_PHASE,
-                    DebugStateCardKey.SESSION,
-                    DebugStateCardKey.YELLOW_FLAG_STATE,
-                    DebugStateCardKey.CURRENT_LAP,
-                    DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-                    DebugStateCardKey.BEST_LAP,
-                    DebugStateCardKey.TYRE_TEMPERATURE,
-                    DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
-                    DebugStateCardKey.BRAKE_TEMPERATURE,
-                    DebugStateCardKey.BRAKE_WEAR,
-                    DebugStateCardKey.TYRE_WEAR,
-                    DebugStateCardKey.FUEL_CONSUMPTION,
-                    DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-                    DebugStateCardKey.VEHICLE_DAMAGE,
+                    LmuWindowsDebugStateCardKey.VEHICLE_CLASS,
+                    LmuWindowsDebugStateCardKey.SIMULATOR,
+                    LmuWindowsDebugStateCardKey.VEHICLE_LOCATION,
+                    LmuWindowsDebugStateCardKey.FLAG_INFO,
+                    LmuWindowsDebugStateCardKey.GAME_PHASE,
+                    LmuWindowsDebugStateCardKey.SESSION,
+                    LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE,
+                    LmuWindowsDebugStateCardKey.CURRENT_LAP,
+                    LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                    LmuWindowsDebugStateCardKey.BEST_LAP,
+                    LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
+                    LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
+                    LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE,
+                    LmuWindowsDebugStateCardKey.BRAKE_WEAR,
+                    LmuWindowsDebugStateCardKey.TYRE_WEAR,
+                    LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+                    LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+                    LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE,
                 )
             assertEquals(expectedCardOrder, state.cardOrder)
             verify(exactly = 1) { flagRepository.flagStream() }
@@ -1230,7 +1229,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             verify(exactly = 1) { vehicleDamageRepository.vehicleDamageStream() }
             verify(exactly = 1) { tyreDetachedRepository.tyreDetachedStream() }
             verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-            coVerify(exactly = 1) { cardOrderRepository.saveCardOrder(expectedCardOrder) }
+            coVerify(exactly = 1) { cardOrderRepository.saveCardOrder(expectedCardOrder.map { it.name }) }
             confirmVerified(
                 flagRepository,
                 virtualEnergyRepository,

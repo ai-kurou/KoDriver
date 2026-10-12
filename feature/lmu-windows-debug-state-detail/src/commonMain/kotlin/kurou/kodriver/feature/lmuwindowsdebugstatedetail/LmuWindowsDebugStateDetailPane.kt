@@ -18,7 +18,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.lmuwindowsdebugstatedetail.generated.resources.debug_state_brake_temperature_title
@@ -121,93 +120,96 @@ fun LmuWindowsDebugStateDetailPaneContent(
     }
 }
 
-private val debugStateCardTitles: Map<DebugStateCardKey, StringResource> =
+private val debugStateCardTitles: Map<LmuWindowsDebugStateCardKey, StringResource> =
     mapOf(
-        DebugStateCardKey.SIMULATOR to Res.string.debug_state_simulator_info_title,
-        DebugStateCardKey.VEHICLE_CLASS to Res.string.debug_state_vehicle_class_title,
-        DebugStateCardKey.VEHICLE_LOCATION to Res.string.debug_state_vehicle_location_title,
-        DebugStateCardKey.FLAG_INFO to Res.string.debug_state_flag_info_title,
-        DebugStateCardKey.GAME_PHASE to Res.string.debug_state_game_phase_title,
-        DebugStateCardKey.SESSION to Res.string.debug_state_session_title,
-        DebugStateCardKey.YELLOW_FLAG_STATE to Res.string.debug_state_yellow_flag_state_title,
-        DebugStateCardKey.CURRENT_LAP to Res.string.debug_state_current_lap_title,
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to Res.string.debug_state_side_by_side_title,
-        DebugStateCardKey.BEST_LAP to Res.string.debug_state_best_lap_title,
-        DebugStateCardKey.TYRE_TEMPERATURE to Res.string.debug_state_tyre_temperature_title,
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to Res.string.debug_state_tyre_carcass_temperature_title,
-        DebugStateCardKey.BRAKE_TEMPERATURE to Res.string.debug_state_brake_temperature_title,
-        DebugStateCardKey.BRAKE_WEAR to Res.string.debug_state_brake_wear_title,
-        DebugStateCardKey.TYRE_WEAR to Res.string.debug_state_tyre_wear_title,
-        DebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
-        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to Res.string.debug_state_pit_timing_title,
-        DebugStateCardKey.VEHICLE_DAMAGE to Res.string.debug_state_vehicle_damage_title,
+        LmuWindowsDebugStateCardKey.SIMULATOR to Res.string.debug_state_simulator_info_title,
+        LmuWindowsDebugStateCardKey.VEHICLE_CLASS to Res.string.debug_state_vehicle_class_title,
+        LmuWindowsDebugStateCardKey.VEHICLE_LOCATION to Res.string.debug_state_vehicle_location_title,
+        LmuWindowsDebugStateCardKey.FLAG_INFO to Res.string.debug_state_flag_info_title,
+        LmuWindowsDebugStateCardKey.GAME_PHASE to Res.string.debug_state_game_phase_title,
+        LmuWindowsDebugStateCardKey.SESSION to Res.string.debug_state_session_title,
+        LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE to Res.string.debug_state_yellow_flag_state_title,
+        LmuWindowsDebugStateCardKey.CURRENT_LAP to Res.string.debug_state_current_lap_title,
+        LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to Res.string.debug_state_side_by_side_title,
+        LmuWindowsDebugStateCardKey.BEST_LAP to Res.string.debug_state_best_lap_title,
+        LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE to Res.string.debug_state_tyre_temperature_title,
+        LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to Res.string.debug_state_tyre_carcass_temperature_title,
+        LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE to Res.string.debug_state_brake_temperature_title,
+        LmuWindowsDebugStateCardKey.BRAKE_WEAR to Res.string.debug_state_brake_wear_title,
+        LmuWindowsDebugStateCardKey.TYRE_WEAR to Res.string.debug_state_tyre_wear_title,
+        LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
+        LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS to Res.string.debug_state_pit_timing_title,
+        LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE to Res.string.debug_state_vehicle_damage_title,
     )
 
-private val debugStateCardContents: Map<DebugStateCardKey, @Composable (LmuWindowsDebugStateDetailUiState) -> Unit> =
+private val debugStateCardContents:
+    Map<LmuWindowsDebugStateCardKey, @Composable (LmuWindowsDebugStateDetailUiState) -> Unit> =
     mapOf(
-        DebugStateCardKey.SIMULATOR to { SimulatorInfoContent() },
-        DebugStateCardKey.VEHICLE_CLASS to
+        LmuWindowsDebugStateCardKey.SIMULATOR to { SimulatorInfoContent() },
+        LmuWindowsDebugStateCardKey.VEHICLE_CLASS to
             { uiState ->
                 VehicleClassContent(uiState.lmuWindows.vehicleClass)
             },
-        DebugStateCardKey.VEHICLE_LOCATION to
+        LmuWindowsDebugStateCardKey.VEHICLE_LOCATION to
             { uiState ->
                 VehicleLocationContent(uiState.lmuWindows.pitStatus)
             },
-        DebugStateCardKey.FLAG_INFO to
+        LmuWindowsDebugStateCardKey.FLAG_INFO to
             { uiState ->
                 FlagInfoContent(uiState.lmuWindows.raceFlags)
             },
-        DebugStateCardKey.GAME_PHASE to { uiState -> GamePhaseContent(uiState.lmuWindows.raceFlags) },
-        DebugStateCardKey.SESSION to { uiState -> SessionContent(uiState.lmuWindows.virtualEnergy) },
-        DebugStateCardKey.YELLOW_FLAG_STATE to { uiState -> YellowFlagStateContent(uiState.lmuWindows.raceFlags) },
-        DebugStateCardKey.CURRENT_LAP to { uiState ->
+        LmuWindowsDebugStateCardKey.GAME_PHASE to { uiState -> GamePhaseContent(uiState.lmuWindows.raceFlags) },
+        LmuWindowsDebugStateCardKey.SESSION to { uiState -> SessionContent(uiState.lmuWindows.virtualEnergy) },
+        LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE to { uiState ->
+            YellowFlagStateContent(uiState.lmuWindows.raceFlags)
+        },
+        LmuWindowsDebugStateCardKey.CURRENT_LAP to { uiState ->
             CurrentLapContent(uiState.lmuWindows.telemetry)
         },
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to
+        LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to
             { uiState ->
                 SideBySideVehiclesContent(
                     uiState.lmuWindows.vehicleApproach,
                     uiState.lmuWindows.sideBySideDurations,
                 )
             },
-        DebugStateCardKey.BEST_LAP to { uiState ->
+        LmuWindowsDebugStateCardKey.BEST_LAP to { uiState ->
             BestLapContent(uiState.lmuWindows.telemetry)
         },
-        DebugStateCardKey.TYRE_TEMPERATURE to
+        LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE to
             { uiState ->
                 TyreTemperatureContent(uiState.lmuWindows.telemetry)
             },
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
+        LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
             { uiState ->
                 TyreCarcassTemperatureContent(uiState.lmuWindows.tyreCarcassTemperature)
             },
-        DebugStateCardKey.BRAKE_TEMPERATURE to
+        LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE to
             { uiState -> BrakeTemperatureContent(uiState.lmuWindows.brakeTemperature) },
-        DebugStateCardKey.BRAKE_WEAR to
+        LmuWindowsDebugStateCardKey.BRAKE_WEAR to
             { uiState -> BrakeWearContent(uiState.lmuWindows.brakeWear) },
-        DebugStateCardKey.TYRE_WEAR to
+        LmuWindowsDebugStateCardKey.TYRE_WEAR to
             { uiState -> TyreWearContent(uiState.lmuWindows.telemetry) },
-        DebugStateCardKey.FUEL_CONSUMPTION to { uiState ->
+        LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION to { uiState ->
             FuelConsumptionContent(
                 uiState.lmuWindows.virtualEnergy,
                 uiState.lmuWindows.telemetry,
             )
         },
-        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to { uiState ->
+        LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS to { uiState ->
             PitTimingRemainingLapsContent(
                 uiState.lmuWindows.virtualEnergy,
                 uiState.lmuWindows.telemetry,
             )
         },
-        DebugStateCardKey.VEHICLE_DAMAGE to { uiState ->
+        LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE to { uiState ->
             VehicleDamageContent(uiState.lmuWindows.vehicleDamage, uiState.lmuWindows.tyreDetached)
         },
     )
 
 @Composable
 private fun DebugStateCard(
-    cardKey: DebugStateCardKey,
+    cardKey: LmuWindowsDebugStateCardKey,
     uiState: LmuWindowsDebugStateDetailUiState,
     enabled: Boolean,
     modifier: Modifier = Modifier,

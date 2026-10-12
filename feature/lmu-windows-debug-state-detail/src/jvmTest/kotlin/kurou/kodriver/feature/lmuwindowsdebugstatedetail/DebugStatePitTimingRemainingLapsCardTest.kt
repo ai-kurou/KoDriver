@@ -5,7 +5,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -34,7 +33,7 @@ class DebugStatePitTimingRemainingLapsCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -54,7 +53,7 @@ class DebugStatePitTimingRemainingLapsCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     virtualEnergy =

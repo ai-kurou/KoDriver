@@ -5,7 +5,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Rule
@@ -33,7 +32,7 @@ class DebugStateBrakeTemperatureCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.BRAKE_TEMPERATURE),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     brakeTemperature =

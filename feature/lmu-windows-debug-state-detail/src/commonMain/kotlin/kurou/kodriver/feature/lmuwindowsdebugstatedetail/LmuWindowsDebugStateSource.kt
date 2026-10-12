@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
@@ -49,7 +48,7 @@ internal data class LmuWindowsDebugStateUseCases(
 internal class LmuWindowsDebugStateSource(
     scope: CoroutineScope,
     useCases: LmuWindowsDebugStateUseCases,
-    markCardsReceived: (Set<DebugStateCardKey>) -> Unit,
+    markCardsReceived: (Set<LmuWindowsDebugStateCardKey>) -> Unit,
     currentTimeMs: () -> Long,
     sideBySideTickIntervalMs: Long,
 ) {
@@ -79,9 +78,9 @@ internal class LmuWindowsDebugStateSource(
                 .onEach {
                     markCardsReceived(
                         setOf(
-                            DebugStateCardKey.FLAG_INFO,
-                            DebugStateCardKey.GAME_PHASE,
-                            DebugStateCardKey.YELLOW_FLAG_STATE,
+                            LmuWindowsDebugStateCardKey.FLAG_INFO,
+                            LmuWindowsDebugStateCardKey.GAME_PHASE,
+                            LmuWindowsDebugStateCardKey.YELLOW_FLAG_STATE,
                         ),
                     )
                 },
@@ -90,25 +89,25 @@ internal class LmuWindowsDebugStateSource(
                 .onEach {
                     markCardsReceived(
                         setOf(
-                            DebugStateCardKey.SESSION,
-                            DebugStateCardKey.FUEL_CONSUMPTION,
-                            DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+                            LmuWindowsDebugStateCardKey.SESSION,
+                            LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+                            LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                         ),
                     )
                 },
             _lmuWindowsVehicleApproach
                 .onEach {
-                    markCardsReceived(setOf(DebugStateCardKey.SIDE_BY_SIDE_VEHICLES))
+                    markCardsReceived(setOf(LmuWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES))
                 },
             useCases
                 .observeTyreCarcassTemperature()
                 .onEach {
-                    markCardsReceived(setOf(DebugStateCardKey.TYRE_CARCASS_TEMPERATURE))
+                    markCardsReceived(setOf(LmuWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE))
                 },
             useCases
                 .observeVehicleClass()
                 .onEach {
-                    markCardsReceived(setOf(DebugStateCardKey.VEHICLE_CLASS))
+                    markCardsReceived(setOf(LmuWindowsDebugStateCardKey.VEHICLE_CLASS))
                 },
         ) { raceFlags, virtualEnergy, vehicleApproach, tyreCarcassTemperature, vehicleClass ->
             LmuWindowsDebugState(
@@ -128,35 +127,35 @@ internal class LmuWindowsDebugStateSource(
         useCases
             .observeBrakeTemperature()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.BRAKE_TEMPERATURE))
+                markCardsReceived(setOf(LmuWindowsDebugStateCardKey.BRAKE_TEMPERATURE))
             }.stateIn(scope, SharingStarted.Eagerly, null)
 
     private val _lmuWindowsBrakeWear: StateFlow<LmuWindowsBrakeWearRemainingData?> =
         useCases
             .observeBrakeWear()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.BRAKE_WEAR))
+                markCardsReceived(setOf(LmuWindowsDebugStateCardKey.BRAKE_WEAR))
             }.stateIn(scope, SharingStarted.Eagerly, null)
 
     private val _lmuWindowsPitStatus: StateFlow<LmuWindowsPitStatusData?> =
         useCases
             .observePitStatus()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.VEHICLE_LOCATION))
+                markCardsReceived(setOf(LmuWindowsDebugStateCardKey.VEHICLE_LOCATION))
             }.stateIn(scope, SharingStarted.Eagerly, null)
 
     private val _lmuWindowsVehicleDamage: StateFlow<LmuWindowsVehicleDamageData?> =
         useCases
             .observeVehicleDamage()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.VEHICLE_DAMAGE))
+                markCardsReceived(setOf(LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE))
             }.stateIn(scope, SharingStarted.Eagerly, null)
 
     private val _lmuWindowsTyreDetached: StateFlow<LmuWindowsTyreDetachedData?> =
         useCases
             .observeTyreDetached()
             .onEach {
-                markCardsReceived(setOf(DebugStateCardKey.VEHICLE_DAMAGE))
+                markCardsReceived(setOf(LmuWindowsDebugStateCardKey.VEHICLE_DAMAGE))
             }.stateIn(scope, SharingStarted.Eagerly, null)
 
     private val _raceStateWithoutBrakeWear: StateFlow<LmuWindowsDebugState> =
@@ -194,12 +193,12 @@ internal class LmuWindowsDebugStateSource(
             .onEach {
                 markCardsReceived(
                     setOf(
-                        DebugStateCardKey.CURRENT_LAP,
-                        DebugStateCardKey.BEST_LAP,
-                        DebugStateCardKey.TYRE_TEMPERATURE,
-                        DebugStateCardKey.TYRE_WEAR,
-                        DebugStateCardKey.FUEL_CONSUMPTION,
-                        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+                        LmuWindowsDebugStateCardKey.CURRENT_LAP,
+                        LmuWindowsDebugStateCardKey.BEST_LAP,
+                        LmuWindowsDebugStateCardKey.TYRE_TEMPERATURE,
+                        LmuWindowsDebugStateCardKey.TYRE_WEAR,
+                        LmuWindowsDebugStateCardKey.FUEL_CONSUMPTION,
+                        LmuWindowsDebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                     ),
                 )
             }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), null)

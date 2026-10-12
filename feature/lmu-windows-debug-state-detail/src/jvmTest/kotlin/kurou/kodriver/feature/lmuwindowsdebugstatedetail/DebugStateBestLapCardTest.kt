@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
@@ -28,7 +27,7 @@ class DebugStateBestLapCardTest {
                     LmuWindowsDebugStateDetailPaneContent(
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
-                                cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                                cardOrder = listOf(LmuWindowsDebugStateCardKey.BEST_LAP),
                                 lmuWindows =
                                     LmuWindowsDebugState(
                                         telemetry = sampleLmuWindowsTelemetry(bestLapTimeMs),

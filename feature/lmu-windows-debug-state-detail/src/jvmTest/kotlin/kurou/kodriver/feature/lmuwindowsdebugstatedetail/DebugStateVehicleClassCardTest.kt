@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import org.junit.Rule
 import org.junit.Test
@@ -20,7 +19,7 @@ class DebugStateVehicleClassCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_CLASS),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     vehicleClass = LmuWindowsVehicleClassData.fromRawValue(""),

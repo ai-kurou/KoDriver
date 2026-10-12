@@ -18,7 +18,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.acewindowsdebugstatedetail.generated.resources.debug_state_flag_info_title
@@ -69,7 +68,7 @@ fun AceWindowsDebugStateDetailPane(
 }
 
 @Composable
-fun AceWindowsDebugStateDetailPaneContent(
+internal fun AceWindowsDebugStateDetailPaneContent(
     uiState: AceWindowsDebugStateDetailUiState,
     canNavigateBack: Boolean,
     onBack: () -> Unit,
@@ -110,39 +109,42 @@ fun AceWindowsDebugStateDetailPaneContent(
     }
 }
 
-private val debugStateCardTitles: Map<DebugStateCardKey, StringResource> =
+private val debugStateCardTitles: Map<AceWindowsDebugStateCardKey, StringResource> =
     mapOf(
-        DebugStateCardKey.SIMULATOR to Res.string.debug_state_simulator_info_title,
-        DebugStateCardKey.VEHICLE_LOCATION to Res.string.debug_state_vehicle_location_title,
-        DebugStateCardKey.FLAG_INFO to Res.string.debug_state_flag_info_title,
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to Res.string.debug_state_side_by_side_title,
-        DebugStateCardKey.BEST_LAP to Res.string.debug_state_best_lap_title,
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to Res.string.debug_state_tyre_carcass_temperature_title,
-        DebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
+        AceWindowsDebugStateCardKey.SIMULATOR to Res.string.debug_state_simulator_info_title,
+        AceWindowsDebugStateCardKey.VEHICLE_LOCATION to Res.string.debug_state_vehicle_location_title,
+        AceWindowsDebugStateCardKey.FLAG_INFO to Res.string.debug_state_flag_info_title,
+        AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to Res.string.debug_state_side_by_side_title,
+        AceWindowsDebugStateCardKey.BEST_LAP to Res.string.debug_state_best_lap_title,
+        AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to Res.string.debug_state_tyre_carcass_temperature_title,
+        AceWindowsDebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
     )
 
-private val debugStateCardContents: Map<DebugStateCardKey, @Composable (AceWindowsDebugStateDetailUiState) -> Unit> =
+private val debugStateCardContents:
+    Map<AceWindowsDebugStateCardKey, @Composable (AceWindowsDebugStateDetailUiState) -> Unit> =
     mapOf(
-        DebugStateCardKey.SIMULATOR to { SimulatorInfoContent() },
-        DebugStateCardKey.VEHICLE_LOCATION to { uiState -> VehicleLocationContent(uiState.aceWindows.status) },
-        DebugStateCardKey.FLAG_INFO to { uiState -> FlagInfoContent(uiState.aceWindows.flag) },
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to
+        AceWindowsDebugStateCardKey.SIMULATOR to { SimulatorInfoContent() },
+        AceWindowsDebugStateCardKey.VEHICLE_LOCATION to { uiState ->
+            VehicleLocationContent(uiState.aceWindows.status)
+        },
+        AceWindowsDebugStateCardKey.FLAG_INFO to { uiState -> FlagInfoContent(uiState.aceWindows.flag) },
+        AceWindowsDebugStateCardKey.SIDE_BY_SIDE_VEHICLES to
             { uiState ->
                 SideBySideVehiclesContent(uiState.aceWindows.vehicleApproach)
             },
-        DebugStateCardKey.BEST_LAP to { uiState -> BestLapContent(uiState.aceWindows.bestLapTime) },
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
+        AceWindowsDebugStateCardKey.BEST_LAP to { uiState -> BestLapContent(uiState.aceWindows.bestLapTime) },
+        AceWindowsDebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
             { uiState ->
                 TyreCarcassTemperatureContent(uiState.aceWindows.tyreCarcassTemperature)
             },
-        DebugStateCardKey.FUEL_CONSUMPTION to { uiState ->
+        AceWindowsDebugStateCardKey.FUEL_CONSUMPTION to { uiState ->
             FuelConsumptionContent(uiState.aceWindows.fuel, uiState.aceWindows.remainingFuelLaps)
         },
     )
 
 @Composable
 private fun DebugStateCard(
-    cardKey: DebugStateCardKey,
+    cardKey: AceWindowsDebugStateCardKey,
     uiState: AceWindowsDebugStateDetailUiState,
     enabled: Boolean,
     modifier: Modifier = Modifier,

@@ -1,6 +1,6 @@
-package kurou.kodriver.domain.model
+package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-enum class DebugStateCardKey {
+enum class LmuWindowsDebugStateCardKey {
     SIMULATOR,
     VEHICLE_CLASS,
     VEHICLE_LOCATION,

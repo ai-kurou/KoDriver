@@ -2,7 +2,6 @@ package kurou.kodriver.data.preferences
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Simulator
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -33,10 +32,10 @@ class DebugStateCardOrderPreferencesRepositoryFactoryTest {
         runTest {
             val repository = createDebugStateCardOrderPreferencesRepository(tempDir.absolutePath, Simulator.LmuWindows)
 
-            repository.saveCardOrder(listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR))
+            repository.saveCardOrder(listOf("SESSION", "SIMULATOR"))
 
             assertEquals(
-                listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR),
+                listOf("SESSION", "SIMULATOR"),
                 repository.observeCardOrder().first(),
             )
         }
@@ -49,17 +48,17 @@ class DebugStateCardOrderPreferencesRepositoryFactoryTest {
             val aceRepository =
                 createDebugStateCardOrderPreferencesRepository(tempDir.absolutePath, Simulator.AceWindows)
 
-            lmuRepository.saveCardOrder(listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR))
+            lmuRepository.saveCardOrder(listOf("SESSION", "SIMULATOR"))
             assertEquals(emptyList(), aceRepository.observeCardOrder().first())
 
-            aceRepository.saveCardOrder(listOf(DebugStateCardKey.BEST_LAP, DebugStateCardKey.SIMULATOR))
+            aceRepository.saveCardOrder(listOf("BEST_LAP", "SIMULATOR"))
 
             assertEquals(
-                listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR),
+                listOf("SESSION", "SIMULATOR"),
                 lmuRepository.observeCardOrder().first(),
             )
             assertEquals(
-                listOf(DebugStateCardKey.BEST_LAP, DebugStateCardKey.SIMULATOR),
+                listOf("BEST_LAP", "SIMULATOR"),
                 aceRepository.observeCardOrder().first(),
             )
         }

@@ -6,7 +6,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.FuelPercent
 import org.junit.Rule
 import org.junit.Test
@@ -22,7 +21,7 @@ class DebugStateFuelConsumptionCardTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                             aceWindows =
                                 AceWindowsDebugState(
                                     fuel = null,
@@ -45,7 +44,7 @@ class DebugStateFuelConsumptionCardTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                             aceWindows =
                                 AceWindowsDebugState(
                                     fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
@@ -68,7 +67,7 @@ class DebugStateFuelConsumptionCardTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                             aceWindows =
                                 AceWindowsDebugState(
                                     fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
@@ -92,7 +91,7 @@ class DebugStateFuelConsumptionCardTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                             aceWindows =
                                 AceWindowsDebugState(
                                     fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
@@ -116,7 +115,7 @@ class DebugStateFuelConsumptionCardTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.FUEL_CONSUMPTION),
                             aceWindows =
                                 AceWindowsDebugState(
                                     fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),

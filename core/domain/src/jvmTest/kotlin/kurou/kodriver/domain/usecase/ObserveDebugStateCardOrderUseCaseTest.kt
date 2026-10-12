@@ -7,7 +7,6 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -18,7 +17,7 @@ class ObserveDebugStateCardOrderUseCaseTest {
     @Test
     fun `Repositoryが返す順序をそのまま返す`() =
         runTest {
-            val order = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
+            val order = listOf("SESSION", "SIMULATOR")
             every { repository.observeCardOrder() } returns MutableStateFlow(order)
             val useCase = ObserveDebugStateCardOrderUseCase(repository)
 

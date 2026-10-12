@@ -9,7 +9,6 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.domain.model.DebugStateCardKey
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -89,7 +88,11 @@ class AceWindowsDebugStateDetailPaneTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SIMULATOR),
+                            cardOrder =
+                                listOf(
+                                    AceWindowsDebugStateCardKey.FLAG_INFO,
+                                    AceWindowsDebugStateCardKey.SIMULATOR,
+                                ),
                         ),
                     canNavigateBack = true,
                     onBack = {},

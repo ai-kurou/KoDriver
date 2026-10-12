@@ -7,7 +7,6 @@ import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
-import kurou.kodriver.domain.model.DebugStateCardKey
 import org.junit.Rule
 import org.junit.Test
 
@@ -22,7 +21,7 @@ class DebugStateVehicleLocationCardTest {
                 AceWindowsDebugStateDetailPaneContent(
                     uiState =
                         AceWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                            cardOrder = listOf(AceWindowsDebugStateCardKey.VEHICLE_LOCATION),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -62,7 +61,7 @@ class DebugStateVehicleLocationCardTest {
                     AceWindowsDebugStateDetailPaneContent(
                         uiState =
                             AceWindowsDebugStateDetailUiState(
-                                cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                                cardOrder = listOf(AceWindowsDebugStateCardKey.VEHICLE_LOCATION),
                                 aceWindows =
                                     AceWindowsDebugState(
                                         status = AceWindowsStatusData(status = status, carLocation = carLocation),

@@ -14,7 +14,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
@@ -115,7 +114,7 @@ class AceWindowsDebugStateDetailModuleTest {
     @Test
     fun `カード順序の保存はACE用Repositoryだけに届く`() =
         runTest {
-            val order = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
+            val order = listOf("SESSION", "SIMULATOR")
             coEvery { debugStateCardOrderPreferencesRepository.saveCardOrder(order) } returns Unit
             val koin =
                 koinApplication {

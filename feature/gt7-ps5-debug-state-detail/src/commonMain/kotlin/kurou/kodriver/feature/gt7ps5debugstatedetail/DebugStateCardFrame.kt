@@ -20,11 +20,10 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
-import kurou.kodriver.domain.model.DebugStateCardKey
 
 @Composable
 internal fun DebugStateCardFrame(
-    cardKey: DebugStateCardKey,
+    cardKey: Gt7Ps5DebugStateCardKey,
     title: String,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
@@ -32,9 +31,9 @@ internal fun DebugStateCardFrame(
     val colors = MaterialTheme.colorScheme
     val accent =
         when (cardKey) {
-            DebugStateCardKey.SIMULATOR, DebugStateCardKey.VEHICLE_CLASS -> colors.primary
-            DebugStateCardKey.TYRE_TEMPERATURE -> colors.error
-            DebugStateCardKey.FUEL_CONSUMPTION -> KoDriverExtendedColors.current.onWarningContainer
+            Gt7Ps5DebugStateCardKey.SIMULATOR, Gt7Ps5DebugStateCardKey.VEHICLE_CLASS -> colors.primary
+            Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE -> colors.error
+            Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION -> KoDriverExtendedColors.current.onWarningContainer
             else -> colors.tertiary
         }
     Surface(modifier = modifier, shape = MaterialTheme.shapes.large, color = colors.surfaceContainerLow) {
@@ -76,12 +75,12 @@ internal fun DebugStateCardFrame(
 
 private val debugStateCardSymbols =
     mapOf(
-        DebugStateCardKey.SIMULATOR to "🎮",
-        DebugStateCardKey.VEHICLE_CLASS to "🏎",
-        DebugStateCardKey.CURRENT_LAP to "⏱",
-        DebugStateCardKey.BEST_LAP to "🏆",
-        DebugStateCardKey.TYRE_TEMPERATURE to "🔥",
-        DebugStateCardKey.FUEL_CONSUMPTION to "⛽",
+        Gt7Ps5DebugStateCardKey.SIMULATOR to "🎮",
+        Gt7Ps5DebugStateCardKey.VEHICLE_CLASS to "🏎",
+        Gt7Ps5DebugStateCardKey.CURRENT_LAP to "⏱",
+        Gt7Ps5DebugStateCardKey.BEST_LAP to "🏆",
+        Gt7Ps5DebugStateCardKey.TYRE_TEMPERATURE to "🔥",
+        Gt7Ps5DebugStateCardKey.FUEL_CONSUMPTION to "⛽",
     )
 
-internal fun debugStateCardSymbol(cardKey: DebugStateCardKey): String = debugStateCardSymbols.getValue(cardKey)
+internal fun debugStateCardSymbol(cardKey: Gt7Ps5DebugStateCardKey): String = debugStateCardSymbols.getValue(cardKey)

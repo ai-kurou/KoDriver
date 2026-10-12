@@ -1,10 +1,9 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.DebugStateCardKey
 
 interface DebugStateCardOrderPreferencesRepository {
-    fun observeCardOrder(): Flow<List<DebugStateCardKey>>
+    fun observeCardOrder(): Flow<List<String>>
 
-    suspend fun saveCardOrder(order: List<DebugStateCardKey>)
+    suspend fun saveCardOrder(order: List<String>)
 }

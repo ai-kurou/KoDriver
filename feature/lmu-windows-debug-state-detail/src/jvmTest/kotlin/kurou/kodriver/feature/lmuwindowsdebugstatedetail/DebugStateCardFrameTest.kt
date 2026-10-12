@@ -5,7 +5,6 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,7 +12,7 @@ import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
 class DebugStateCardFrameTest(
-    private val cardKey: DebugStateCardKey,
+    private val cardKey: LmuWindowsDebugStateCardKey,
 ) {
     @get:Rule
     val rule = createComposeRule()
@@ -37,6 +36,7 @@ class DebugStateCardFrameTest(
     companion object {
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
-        fun cardKeys(): List<Array<DebugStateCardKey>> = DebugStateCardKey.entries.map { arrayOf(it) }
+        fun cardKeys(): List<Array<LmuWindowsDebugStateCardKey>> =
+            LmuWindowsDebugStateCardKey.entries.map { arrayOf(it) }
     }
 }

@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import org.junit.Rule
@@ -21,7 +20,7 @@ class DebugStateVehicleLocationCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_LOCATION),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -40,7 +39,7 @@ class DebugStateVehicleLocationCardTest {
                 LmuWindowsDebugStateDetailPaneContent(
                     uiState =
                         LmuWindowsDebugStateDetailUiState(
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                            cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_LOCATION),
                             lmuWindows =
                                 LmuWindowsDebugState(
                                     pitStatus =
@@ -81,7 +80,7 @@ class DebugStateVehicleLocationCardTest {
                     LmuWindowsDebugStateDetailPaneContent(
                         uiState =
                             LmuWindowsDebugStateDetailUiState(
-                                cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                                cardOrder = listOf(LmuWindowsDebugStateCardKey.VEHICLE_LOCATION),
                                 lmuWindows =
                                     LmuWindowsDebugState(
                                         pitStatus =
