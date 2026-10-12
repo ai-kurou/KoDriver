@@ -29,6 +29,7 @@ internal class TelemetryLogRepositoryImpl(
             } else {
                 dao
                     .observePreviousTelemetryLog(
+                        simulatorId = current.simulatorId,
                         createdAt = current.createdAt,
                         id = current.id,
                     ).map { previous ->
