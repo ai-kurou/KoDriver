@@ -1,6 +1,9 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
 import androidx.lifecycle.viewModelScope
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -9,7 +12,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsBrakeTemperatureRepository
@@ -23,7 +28,6 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
-import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
@@ -35,8 +39,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
-import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -59,6 +61,7 @@ class LmuWindowsDebugStateDetailModuleTest {
     private val lmuWindowsVehicleClassRepository: LmuWindowsVehicleClassRepository = mockk()
     private val lmuWindowsVehicleDamageRepository: LmuWindowsVehicleDamageRepository = mockk()
     private val lmuWindowsVirtualEnergyRepository: LmuWindowsVirtualEnergyRepository = mockk()
+    private val otherDebugStateCardOrderPreferencesRepository: DebugStateCardOrderPreferencesRepository = mockk()
 
     @Before
     fun setUp() {
@@ -111,9 +114,6 @@ class LmuWindowsDebugStateDetailModuleTest {
         try {
             assertNotNull(koin.get<LmuWindowsDebugStateUseCases>())
             assertNotNull(koin.get<DebugStateCardOrderUseCases>())
-            assertNotNull(koin.get<ObserveDebugStateCardOrderUseCase>())
-            assertNotNull(koin.get<ResolveDebugStateCardOrderUseCase>())
-            assertNotNull(koin.get<SaveDebugStateCardOrderUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsRaceFlagsUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsVirtualEnergyUseCase>())
             assertNotNull(koin.get<ObserveLmuWindowsUseCase>())
@@ -135,4 +135,34 @@ class LmuWindowsDebugStateDetailModuleTest {
             koin.close()
         }
     }
+
+    @Test
+    fun `カード順序の保存はLMU用Repositoryだけに届く`() =
+        runTest {
+            val order = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
+            coEvery { debugStateCardOrderPreferencesRepository.saveCardOrder(order) } returns Unit
+            val koin =
+                koinApplication {
+                    modules(
+                        lmuWindowsDebugStateDetailModule,
+                        module {
+                            single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+                                debugStateCardOrderPreferencesRepository
+                            }
+                            single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
+                                otherDebugStateCardOrderPreferencesRepository
+                            }
+                        },
+                    )
+                }.koin
+            try {
+                koin.get<DebugStateCardOrderUseCases>().saveCardOrder(order)
+            } finally {
+                koin.close()
+            }
+
+            coVerify(exactly = 1) { debugStateCardOrderPreferencesRepository.saveCardOrder(order) }
+            coVerify(exactly = 0) { otherDebugStateCardOrderPreferencesRepository.saveCardOrder(order) }
+            confirmVerified(debugStateCardOrderPreferencesRepository, otherDebugStateCardOrderPreferencesRepository)
+        }
 }

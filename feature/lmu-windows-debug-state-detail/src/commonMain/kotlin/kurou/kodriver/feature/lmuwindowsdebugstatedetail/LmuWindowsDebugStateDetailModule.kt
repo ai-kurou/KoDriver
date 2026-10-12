@@ -13,10 +13,13 @@ val lmuWindowsDebugStateDetailModule =
     module {
         viewModel { LmuWindowsDebugStateDetailViewModel(get(), get()) }
 
-        factory { DebugStateCardOrderUseCases(get(), get(), get()) }
-        factory { ObserveDebugStateCardOrderUseCase(get(named(Simulator.LmuWindows.id))) }
-        factory { ResolveDebugStateCardOrderUseCase() }
-        factory { SaveDebugStateCardOrderUseCase(get(named(Simulator.LmuWindows.id))) }
+        factory {
+            DebugStateCardOrderUseCases(
+                ObserveDebugStateCardOrderUseCase(get(named(Simulator.LmuWindows.id))),
+                ResolveDebugStateCardOrderUseCase(),
+                SaveDebugStateCardOrderUseCase(get(named(Simulator.LmuWindows.id))),
+            )
+        }
 
         lmuWindowsDebugStateDefinitions()
     }

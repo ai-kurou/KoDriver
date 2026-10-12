@@ -1,6 +1,9 @@
 package kurou.kodriver.feature.acewindowsdebugstatedetail
 
 import androidx.lifecycle.viewModelScope
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -9,7 +12,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
@@ -26,9 +31,6 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsVehicleApproachUseCase
-import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
-import kurou.kodriver.domain.usecase.SaveDebugStateCardOrderUseCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -47,6 +49,7 @@ class AceWindowsDebugStateDetailModuleTest {
     private val aceWindowsTyreCarcassTemperatureRepository: AceWindowsTyreCarcassTemperatureRepository = mockk()
     private val aceWindowsVehicleApproachRepository: AceWindowsVehicleApproachRepository = mockk()
     private val debugStateCardOrderPreferencesRepository: DebugStateCardOrderPreferencesRepository = mockk()
+    private val otherDebugStateCardOrderPreferencesRepository: DebugStateCardOrderPreferencesRepository = mockk()
 
     @Before
     fun setUp() {
@@ -90,9 +93,6 @@ class AceWindowsDebugStateDetailModuleTest {
             }.koin
         try {
             assertNotNull(koin.get<DebugStateCardOrderUseCases>())
-            assertNotNull(koin.get<ObserveDebugStateCardOrderUseCase>())
-            assertNotNull(koin.get<ResolveDebugStateCardOrderUseCase>())
-            assertNotNull(koin.get<SaveDebugStateCardOrderUseCase>())
             assertNotNull(koin.get<AceWindowsDebugStateUseCases>())
             assertNotNull(koin.get<ObserveAceWindowsFuelUseCase>())
             assertNotNull(koin.get<ObserveAceWindowsFlagUseCase>())
@@ -111,4 +111,34 @@ class AceWindowsDebugStateDetailModuleTest {
             koin.close()
         }
     }
+
+    @Test
+    fun `カード順序の保存はACE用Repositoryだけに届く`() =
+        runTest {
+            val order = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
+            coEvery { debugStateCardOrderPreferencesRepository.saveCardOrder(order) } returns Unit
+            val koin =
+                koinApplication {
+                    modules(
+                        aceWindowsDebugStateDetailModule,
+                        module {
+                            single<DebugStateCardOrderPreferencesRepository>(named(Simulator.AceWindows.id)) {
+                                debugStateCardOrderPreferencesRepository
+                            }
+                            single<DebugStateCardOrderPreferencesRepository>(named(Simulator.LmuWindows.id)) {
+                                otherDebugStateCardOrderPreferencesRepository
+                            }
+                        },
+                    )
+                }.koin
+            try {
+                koin.get<DebugStateCardOrderUseCases>().saveCardOrder(order)
+            } finally {
+                koin.close()
+            }
+
+            coVerify(exactly = 1) { debugStateCardOrderPreferencesRepository.saveCardOrder(order) }
+            coVerify(exactly = 0) { otherDebugStateCardOrderPreferencesRepository.saveCardOrder(order) }
+            confirmVerified(debugStateCardOrderPreferencesRepository, otherDebugStateCardOrderPreferencesRepository)
+        }
 }
