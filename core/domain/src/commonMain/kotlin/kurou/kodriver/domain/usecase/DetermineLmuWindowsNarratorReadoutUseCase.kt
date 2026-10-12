@@ -14,6 +14,7 @@ import kurou.kodriver.domain.engine.LmuWindowsOverheating
 import kurou.kodriver.domain.engine.LmuWindowsPartDetached
 import kurou.kodriver.domain.engine.LmuWindowsPitTimingWarning
 import kurou.kodriver.domain.engine.LmuWindowsRedFlag
+import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyCurrentValue
 import kurou.kodriver.domain.engine.LmuWindowsRemainingVirtualEnergyWarning
 import kurou.kodriver.domain.engine.LmuWindowsTyreCold
 import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
@@ -504,6 +505,30 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                     listOf(
                         LmuWindowsRemainingVirtualEnergyWarning(
                             settings.remainingVirtualEnergyThresholdPercentage,
+                        ),
+                    )
+                } else {
+                    emptyList()
+                },
+        )
+    }
+
+    /** 警告の閾値・読み上げ済み状態を変更せず、現在の残量を読み上げる。 */
+    fun determineRemainingVirtualEnergyCurrentValue(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsVirtualEnergyData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): LmuWindowsNarratorReadoutDecision {
+        val shouldAnnounce =
+            settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root) &&
+                settings.enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout)
+        return LmuWindowsNarratorReadoutDecision(
+            state = state,
+            events =
+                if (shouldAnnounce) {
+                    listOf(
+                        LmuWindowsRemainingVirtualEnergyCurrentValue(
+                            (data.remainingRatio.value * PERCENTAGE_SCALE).roundToInt(),
                         ),
                     )
                 } else {
