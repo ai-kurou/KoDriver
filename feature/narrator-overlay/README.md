@@ -7,14 +7,15 @@ TelemetryLog に記録された最新の読み上げ内容をライブ購読し�
 ログは音が鳴っていないため除外する。除外しないと、優先度で勝った項目が再生されている最中に、負けて
 読み上げられなかった項目がオーバーレイに表示され、音と表示が食い違う。
 
-`NarratorOverlayContent` が薄い灰色の背景に保存済みの文字色（既定はアンバー）で読み上げ内容を表示する。長文は折り返し、
+`NarratorOverlayContent` が薄い灰色の背景に現在の文字色（既定はアンバー）で読み上げ内容を表示する。長文は折り返し、
 収まらない場合は縦スクロールする。この画面はデスクトップアプリ（`app:desktopApp`、Windows / macOS / Linux
 共通）が常時最前面・タスクバー非表示の専用ウィンドウにホストする（`app:shared` の `NarratorOverlayScreen`
 経由）。ウィンドウのドラッグ移動・リサイズ、初期表示位置・サイズについては
 `app/desktopApp/src/main/kotlin/kurou/kodriver/NarratorOverlayWindow.kt` を参照。
 文字にはテーマに依存しない黒い影を付け、背景が透明な場合の視認性を高める。
 文字色は `ObserveOverlayTextColorUseCase` のARGB Longを購読し、Textのcolorへ適用する。
-既定値は `OVERLAY_TEXT_COLOR_DEFAULT` を参照する。文字色ダイアログのOKで保存された色が反映される。
+既定値は `OVERLAY_TEXT_COLOR_DEFAULT` を参照する。文字色ダイアログの選択は共有Repositoryのプレビュー値として即時反映される。
+OKで保存され、キャンセル・ダイアログ外タップ・ViewModel破棄・保存失敗では保存値に戻る。
 文字サイズはその他タブの「オーバーレイ設定」から極小〜最大の7段階で選択する（中がデフォルト）。
 サイズと保存IDの対応は [other-overlay-text-size-detail](../other-overlay-text-size-detail/README.md) を参照。
 表示ON/OFFはその他タブの「オーバーレイ設定」→「オーバーレイを表示」で切り替える。設定は
