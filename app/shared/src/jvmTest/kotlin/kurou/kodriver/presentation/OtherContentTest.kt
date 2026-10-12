@@ -49,10 +49,11 @@ class OtherContentTest {
         )
 
     @Test
-    fun `文字色をタップしても選択や詳細表示を行わない`() {
+    fun `文字色をタップするとダイアログを開き詳細ペインへ遷移しない`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false
         var detailDisplayed = false
+        var dialogOpened = false
 
         rule.setContent {
             OtherContent(
@@ -61,6 +62,7 @@ class OtherContentTest {
                         items = listOf(OtherListItemType.OverlayTextColor),
                         selectedItem = selectedItem,
                     ),
+                onOpenOverlayTextColorDialog = { dialogOpened = true },
                 onItemSelected = { selectedItem = it },
                 onClearSelectedItem = {},
                 scaffoldDirective = singlePaneDirective,
@@ -73,6 +75,7 @@ class OtherContentTest {
         rule.onNodeWithText("文字色").assertExists().performTouchInput { click() }
         rule.waitForIdle()
 
+        assertTrue(dialogOpened)
         assertEquals(null, selectedItem)
         assertFalse(backEnabled)
         assertFalse(detailDisplayed)

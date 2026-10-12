@@ -1,7 +1,6 @@
 package kurou.kodriver.feature.otherlist
 
 import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.click
@@ -39,7 +38,7 @@ class OtherListPaneOverlayTest {
 
         rule.onNodeWithText("オーバーレイ設定").assertIsDisplayed()
         rule.onNode(hasText("文字サイズ") and hasText("中")).assertIsDisplayed().assertIsNotSelected()
-        rule.onNodeWithText("文字色").assertIsDisplayed().assertHasNoClickAction()
+        rule.onNodeWithText("文字色").assertIsDisplayed().assertHasClickAction()
         rule.onNodeWithText("#FFC107").assertIsDisplayed()
         rule.onNode(hasText("背景の透明度") and hasText("50%")).assertIsDisplayed().assertIsNotSelected()
         verify(exactly = 0) { onItemClick(OtherListItemType.OverlayTextSize) }
@@ -131,15 +130,16 @@ class OtherListPaneOverlayTest {
     }
 
     @Test
-    fun `文字色にはクリック操作がなくタップしても選択を通知しない`() {
+    fun `文字色をクリックすると選択を通知する`() {
+        every { onItemClick(OtherListItemType.OverlayTextColor) } returns Unit
         setPane(OtherListUiState(items = listOf(OtherListItemType.OverlayTextColor)))
 
         rule
             .onNodeWithText("文字色")
-            .assertHasNoClickAction()
+            .assertHasClickAction()
             .performTouchInput { click() }
 
-        verify(exactly = 0) { onItemClick(OtherListItemType.OverlayTextColor) }
+        verify(exactly = 1) { onItemClick(OtherListItemType.OverlayTextColor) }
         confirmVerified(onItemClick)
     }
 
@@ -152,7 +152,7 @@ class OtherListPaneOverlayTest {
             ),
         )
 
-        rule.onNodeWithText("文字色").assertIsDisplayed().assertHasNoClickAction()
+        rule.onNodeWithText("文字色").assertIsDisplayed().assertHasClickAction()
         rule.onNodeWithText("#123ABC").assertIsDisplayed()
         confirmVerified(onItemClick)
     }

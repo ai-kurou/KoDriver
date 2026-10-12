@@ -52,3 +52,5 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
 
 オーバーレイ文字色は `OverlayTextColorPreferences` の ARGB Long として `overlay_text_color_preferences.pb` に永続化する。
+詳細ダイアログのOKで保存し、一覧とオーバーレイが保存値のFlowを購読する。
+既定値はドメインの `OVERLAY_TEXT_COLOR_DEFAULT` を参照し、既存の保存形式は維持する。
