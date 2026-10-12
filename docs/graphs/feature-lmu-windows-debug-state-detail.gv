@@ -4,8 +4,11 @@ digraph G {
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:designsystem" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:lmu-windows-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":feature:lmu-windows-debug-state-detail" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:lmu-windows-debug-state-detail"
+  ":core:lmu-windows-domain" -> ":core:domain"
   ":feature:lmu-windows-debug-state-detail" -> ":core:domain"
+  ":feature:lmu-windows-debug-state-detail" -> ":core:lmu-windows-domain"
   ":feature:lmu-windows-debug-state-detail" -> ":core:designsystem"
 }
