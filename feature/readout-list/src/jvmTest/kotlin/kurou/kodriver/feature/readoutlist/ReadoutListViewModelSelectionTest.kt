@@ -87,7 +87,7 @@ class ReadoutListViewModelSelectionTest {
         }
 
     @Test
-    fun `シミュレータに属さないアイテムを選択しても選択状態は変わらない`() =
+    fun `シミュレーターに属さないアイテムを選択しても選択状態は変わらない`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -126,7 +126,7 @@ class ReadoutListViewModelSelectionTest {
         }
 
     @Test
-    fun `アイテム選択後にシミュレータを切り替えると選択状態が解除される`() =
+    fun `アイテム選択後にシミュレーターを切り替えると選択状態が解除される`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow

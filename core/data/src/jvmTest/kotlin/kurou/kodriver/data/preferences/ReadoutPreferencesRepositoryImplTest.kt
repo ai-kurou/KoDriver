@@ -50,7 +50,7 @@ class ReadoutPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `他シミュレータにデータがあっても未保存のシミュレータはemptyMapを返す`() =
+    fun `他シミュレーターにデータがあっても未保存のシミュレーターはemptyMapを返す`() =
         runTest {
             repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
 
@@ -58,7 +58,7 @@ class ReadoutPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `未保存のシミュレータへの初回保存はemptyMapから開始され既存データを引き継がない`() =
+    fun `未保存のシミュレーターへの初回保存はemptyMapから開始され既存データを引き継がない`() =
         runTest {
             repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
             repository.saveReadoutEnabledState("rFactor 2", LmuWindowsReadoutItemKey.Flag.Root, false)
@@ -177,7 +177,7 @@ class ReadoutPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `他シミュレータに順序があっても未保存のシミュレータは空リストを返す`() =
+    fun `他シミュレーターに順序があっても未保存のシミュレーターは空リストを返す`() =
         runTest {
             repository.saveReadoutOrder("lmu_windows", listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root))
 
@@ -185,7 +185,7 @@ class ReadoutPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `未保存のシミュレータへの初回の順序保存はemptyListから開始され既存データを引き継がない`() =
+    fun `未保存のシミュレーターへの初回の順序保存はemptyListから開始され既存データを引き継がない`() =
         runTest {
             repository.saveReadoutOrder(
                 "lmu_windows",
@@ -249,7 +249,7 @@ class ReadoutPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `順序のみ保存済みのシミュレータはenabledStatesが空Mapを返す`() =
+    fun `順序のみ保存済みのシミュレーターはenabledStatesが空Mapを返す`() =
         runTest {
             repository.saveReadoutOrder(
                 "lmu_windows",
@@ -260,7 +260,7 @@ class ReadoutPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `enabledStateのみ保存済みのシミュレータはitemOrderが空リストを返す`() =
+    fun `enabledStateのみ保存済みのシミュレーターはitemOrderが空リストを返す`() =
         runTest {
             repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
 

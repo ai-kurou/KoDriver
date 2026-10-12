@@ -9,12 +9,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
@@ -45,6 +47,39 @@ class OtherContentTest {
             defaultPanePreferredWidth = 360.dp,
             excludedBounds = emptyList(),
         )
+
+    @Test
+    fun `文字色をタップするとダイアログを開き詳細ペインへ遷移しない`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+        var backEnabled = false
+        var detailDisplayed = false
+        var dialogOpened = false
+
+        rule.setContent {
+            OtherContent(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayTextColor),
+                        selectedItem = selectedItem,
+                    ),
+                onOpenOverlayTextColorDialog = { dialogOpened = true },
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { _, _, _, _, _ -> detailDisplayed = true },
+            )
+        }
+
+        rule.onNodeWithText("文字色").assertExists().performTouchInput { click() }
+        rule.waitForIdle()
+
+        assertTrue(dialogOpened)
+        assertEquals(null, selectedItem)
+        assertFalse(backEnabled)
+        assertFalse(detailDisplayed)
+    }
 
     @Test
     fun `声の高さをタップすると選択して詳細ペインを開く`() {

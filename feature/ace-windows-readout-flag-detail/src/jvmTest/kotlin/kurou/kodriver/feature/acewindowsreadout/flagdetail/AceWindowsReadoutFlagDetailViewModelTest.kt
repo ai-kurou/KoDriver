@@ -124,7 +124,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         )
 
     @Test
-    fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() =
+    fun `初期状態はすべてのフラッグが enabled=true の UiState を返す`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
             every { texts.observeText(AceWindowsFlagReadoutTextKey.CHECKERED) } returns flowOf("完走")

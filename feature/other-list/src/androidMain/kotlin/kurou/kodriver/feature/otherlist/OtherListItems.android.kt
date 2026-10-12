@@ -6,27 +6,21 @@ import android.os.Build
  * buildOtherListItems のこのプラットフォーム向け実装。
  */
 actual fun buildOtherListItems(): List<OtherListItemType> {
-    val windowsOnlyItems = setOf(OtherListItemType.WindowsSpeechUnavailable)
+    val excludedItems =
+        setOf(
+            OtherListItemType.DebugState,
+            OtherListItemType.WindowsSpeechUnavailable,
+            OtherListItemType.Startup,
+            OtherListItemType.OverlayVisible,
+            OtherListItemType.OverlayTextSize,
+            OtherListItemType.OverlayTextColor,
+            OtherListItemType.OverlayBackgroundOpacity,
+        )
     val items =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            OtherListItemType.entries.filter {
-                it != OtherListItemType.DebugState &&
-                    it !in windowsOnlyItems &&
-                    it != OtherListItemType.Startup &&
-                    it != OtherListItemType.OverlayVisible &&
-                    it != OtherListItemType.OverlayTextSize &&
-                    it != OtherListItemType.OverlayBackgroundOpacity
-            }
+            OtherListItemType.entries.filter { it !in excludedItems }
         } else {
-            OtherListItemType.entries.filter {
-                it != OtherListItemType.DynamicColor &&
-                    it != OtherListItemType.DebugState &&
-                    it !in windowsOnlyItems &&
-                    it != OtherListItemType.Startup &&
-                    it != OtherListItemType.OverlayVisible &&
-                    it != OtherListItemType.OverlayTextSize &&
-                    it != OtherListItemType.OverlayBackgroundOpacity
-            }
+            OtherListItemType.entries.filter { it !in excludedItems && it != OtherListItemType.DynamicColor }
         }
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
         items

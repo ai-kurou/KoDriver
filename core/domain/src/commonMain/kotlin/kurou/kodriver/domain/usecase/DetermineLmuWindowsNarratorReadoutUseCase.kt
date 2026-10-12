@@ -46,7 +46,7 @@ import kotlin.math.roundToInt
 /**
  * LMU 向け読み上げ判定の継続状態。
  *
- * 旗、車両接近、自己ベスト、温度・摩耗・ピットタイミングなどの重複読み上げを避けるため、
+ * フラッグ、車両接近、自己ベスト、温度・摩耗・ピットタイミングなどの重複読み上げを避けるため、
  * 前回までの入力と判定結果を保持する。
  * 自己ベストの状態は周回数の減少による新セッション検出時にリセットする。
  */
@@ -746,7 +746,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             previous.gamePhase != SessionPhase.RED_FLAG &&
             raceFlags.gamePhase == SessionPhase.RED_FLAG
         ) {
-            // 赤旗本文は自由文字列を読み上げる。
+            // レッドフラッグ本文は自由文字列を読み上げる。
             LmuWindowsRedFlag()
         } else {
             null

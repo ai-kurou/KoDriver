@@ -26,7 +26,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:narrator` | 開始音のWAV再生・TTS読み上げ制御の共通基盤（lmu/gt7/ace の各narrator featureが共通利用） | [図](graphs/core-narrator.svg) |
 | `:feature:desktop-splash` | デスクトップ起動中スプラッシュの初期化進捗管理・画面表示 | [図](graphs/feature-desktop-splash.svg) |
 | `:feature:lmu-windows-debug-state-detail` | LMUのデバッグ状態表示（18枚のカード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-lmu-windows-debug-state-detail.svg) |
-| `:feature:gt7-ps5-debug-state-detail` | GT7（PS5）専用のデバッグ状態表示（6枚のカードを固定順で表示。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-gt7-ps5-debug-state-detail.svg) |
+| `:feature:gt7-ps5-debug-state-detail` | GT7（PS5）専用のデバッグ状態表示（6枚のカード・状態集約・カード順序保存。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-gt7-ps5-debug-state-detail.svg) |
 | `:feature:ace-windows-debug-state-detail` | ACEのデバッグ状態表示（7枚のカード・状態集約・カード順序保存を備える専用モジュール。「その他」タブのバージョンを5回タップすると選択中のシミュレーターのペインを表示） | [図](graphs/feature-ace-windows-debug-state-detail.svg) |
 | `:feature:lmu-windows-connection` | LMU との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-lmu-windows-connection.svg) |
 | `:feature:main` | アプリ全体のメイン画面状態管理 | [図](graphs/feature-main.svg) |
@@ -39,6 +39,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-console-ip-detail` | その他画面のPS5 / SimHub接続先IPとGT7 UDP受信ポートの設定 | [図](graphs/feature-other-console-ip-detail.svg) |
 | `:feature:other-theme-detail` | その他画面のテーマ設定詳細 | [図](graphs/feature-other-theme-detail.svg) |
 | `:feature:other-overlay-text-size-detail` | その他画面のオーバーレイ文字サイズ設定詳細 | [図](graphs/feature-other-overlay-text-size-detail.svg) |
+| `:feature:other-overlay-text-color-detail` | その他画面のオーバーレイ文字色設定詳細（8色のプリセット選択・既定色へのリセット・OKで保存） | [図](graphs/feature-other-overlay-text-color-detail.svg) |
 | `:feature:other-overlay-background-opacity-detail` | その他画面のオーバーレイ背景透明度設定詳細 | [図](graphs/feature-other-overlay-background-opacity-detail.svg) |
 | `:feature:other-voice-speed-detail` | その他画面の読み上げ速度設定詳細 | [図](graphs/feature-other-voice-speed-detail.svg) |
 | `:feature:other-voice-pitch-detail` | その他画面の声の高さ設定詳細（保存済みピッチの監視・保存、スライダー・リセット） | [図](graphs/feature-other-voice-pitch-detail.svg) |
@@ -46,7 +47,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-voice-detail` | その他画面の読み上げ音声設定詳細 | [図](graphs/feature-other-voice-detail.svg) |
 | `:feature:other-feedback-detail` | その他画面のフィードバック送信詳細 | [図](graphs/feature-other-feedback-detail.svg) |
 | `:feature:readout-list` | アナウンス項目の一覧表示・有効/無効の切り替え・優先度のドラッグ&リオーダー | [図](graphs/feature-readout-list.svg) |
-| `:feature:lmu-windows-readout-flag-detail` | フラグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-flag-detail.svg) |
+| `:feature:lmu-windows-readout-flag-detail` | フラッグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-flag-detail.svg) |
 | `:feature:lmu-windows-readout-my-best-lap-detail` | LMU 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-my-best-lap-detail.svg) |
 | `:feature:lmu-windows-readout-vehicle-approach-detail` | 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-vehicle-approach-detail.svg) |
 | `:feature:lmu-windows-readout-vehicle-damage-detail` | 車両故障アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-vehicle-damage-detail.svg) |

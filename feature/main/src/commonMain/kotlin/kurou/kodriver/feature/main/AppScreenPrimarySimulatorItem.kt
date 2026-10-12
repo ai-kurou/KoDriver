@@ -47,7 +47,7 @@ import kurou.kodriver.feature.main.generated.resources.select_simulator_hint
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータのアイコン。
+ * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレーターのアイコン。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
@@ -63,7 +63,7 @@ fun AppScreenPrimarySimulatorIcon(
 }
 
 /**
- * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータの短縮名（"LMU"・"GT7"・"ACE"）。
+ * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレーターの短縮名（"LMU"・"GT7"・"ACE"）。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable
@@ -79,9 +79,9 @@ private val SimulatorCardCheckBadgeSize = 28.dp
 private val SimulatorPopupBorderWidth = 1.dp
 
 /**
- * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレータのアイコンと、
- * それをタップして開くシミュレータ選択メニュー。
- * メニューの中身は、カード全体にシミュレータ画像を敷き詰めた等幅カードの縦スクロールで表示する。
+ * NavigationRail / NavigationBar の先頭項目に表示する、現在選択中のシミュレーターのアイコンと、
+ * それをタップして開くシミュレーター選択メニュー。
+ * メニューの中身は、カード全体にシミュレーター画像を敷き詰めた等幅カードの縦スクロールで表示する。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable

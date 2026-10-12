@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.model.HAPTIC_FEEDBACK_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
+import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_VISIBLE_DEFAULT
 import kurou.kodriver.domain.model.OverlayTextSize
@@ -32,6 +33,7 @@ data class OtherListUiState(
     val accessLocalNetworkPermissionGranted: Boolean = true,
     val overlayVisible: Boolean = OVERLAY_VISIBLE_DEFAULT,
     val overlayTextSize: OverlayTextSize = OVERLAY_TEXT_SIZE_DEFAULT,
+    val overlayTextColor: Long = OVERLAY_TEXT_COLOR_DEFAULT,
     val overlayBackgroundOpacity: Int = OVERLAY_BACKGROUND_OPACITY_DEFAULT,
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
     val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,

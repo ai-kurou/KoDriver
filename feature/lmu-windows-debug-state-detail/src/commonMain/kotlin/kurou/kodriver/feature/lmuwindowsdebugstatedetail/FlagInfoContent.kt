@@ -7,7 +7,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 
-// 表示するフラグが変わらないテレメトリの更新ではフェードし直さないよう、表示内容だけをキーにする。
+// 表示するフラッグが変わらないテレメトリの更新ではフェードし直さないよう、表示内容だけをキーにする。
 internal fun flagInfoContentKey(raceFlags: LmuWindowsRaceFlagsData?): List<ActiveRaceFlag>? =
     raceFlags?.let { determineActiveRaceFlags(it) }
 

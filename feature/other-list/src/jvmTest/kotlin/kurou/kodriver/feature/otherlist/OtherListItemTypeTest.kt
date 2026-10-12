@@ -7,6 +7,8 @@ import kotlin.test.assertNull
 class OtherListItemTypeTest {
     @Test
     fun `存在するidを渡すと対応するOtherListItemTypeを返す`() {
+        assertEquals("overlay_text_color", OtherListItemType.OverlayTextColor.id)
+        assertEquals(OtherListItemType.OverlayTextColor, OtherListItemType.fromId("overlay_text_color"))
         assertEquals(OtherListItemType.Volume, OtherListItemType.fromId("volume"))
         assertEquals(OtherListItemType.Voice, OtherListItemType.fromId("voice"))
         assertEquals(OtherListItemType.VoiceSpeed, OtherListItemType.fromId("voice_speed"))

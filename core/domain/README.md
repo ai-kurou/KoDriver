@@ -6,6 +6,12 @@
 一時値を渡す。`null` で解除し、`ObserveOverlayTextSizeUseCase` はプレビュー優先の現在値を配信する。
 永続化は `SaveOverlayTextSizeUseCase` が担当する。
 
+## オーバーレイ文字色のプレビュー
+
+`PreviewOverlayTextColorUseCase` は `OverlayTextColorPreferencesRepository.setPreviewOverlayTextColor` に
+一時値を渡す。`null` で解除し、`ObserveOverlayTextColorUseCase` はプレビュー優先の現在値を配信する。
+永続化は `SaveOverlayTextColorUseCase` が担当する。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
@@ -43,3 +49,5 @@ Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStor
 `LmuWindowsTyreTemperatureReadoutTextPreferencesRepository` は過熱・低温警告の文言を扱う。
 Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共有する。
 保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
+
+オーバーレイ文字色は ARGB の Long として保存し、`OVERLAY_TEXT_COLOR_DEFAULT`（`0xFFFFC107L`）を既定値とする。`ObserveOverlayTextColorUseCase` は保存値を配信し、`SaveOverlayTextColorUseCase` は選択したARGB値をRepositoryへ保存する。

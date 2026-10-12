@@ -368,7 +368,7 @@ ACC では REST API の代わりに UDP API(ブロードキャスト API)から�
 | <img src="images/tinypedal/widget-weather.svg" width="400"> | Weather | 現在の天候情報 |
 | — | Wind direction | 自車の進行方向に対する風向きの矢印と風速(v2.51.0 で追加)。風速しきい値で矢印を色分けし、無風に近いときは円で表示する。**現状 ACC のみ有効**(LMU / RF2 は風のシミュレーションがなく常にゼロ) |
 | <img src="images/tinypedal/widget-weather-forecast.svg" width="400"> | Weather forecast | 天候予報(REST API 接続が必要) |
-| <img src="images/tinypedal/widget-flag.svg" width="400"> | Flag | 旗(イエロー/ブルー等)、ピット状態、警告、スタートシグナル。LMU ではダメージ修理が予定されているときに修理予定と推定修理時間を表示可能(`show_scheduled_repairs`) |
+| <img src="images/tinypedal/widget-flag.svg" width="400"> | Flag | フラッグ(イエロー/ブルー等)、ピット状態、警告、スタートシグナル。LMU ではダメージ修理が予定されているときに修理予定と推定修理時間を表示可能(`show_scheduled_repairs`) |
 | <img src="images/tinypedal/widget-track-notes.svg" width="400"> | Track notes | トラックノート(コメント・デバッグ情報) |
 | <img src="images/tinypedal/widget-pace-notes.svg" width="400"> | Pace notes | ペースノートの表示(音声再生と連動) |
 
@@ -532,7 +532,7 @@ RF2 は「今の残量に**追加で**何 L 入れるか」(相対給油)、LMU 
 
 - 絶対給油表示は Fuel / Relative finish order / Virtual energy の各ウィジェットで `show_absolute_refueling`(または `show_absolute_refilling`)オプションを ON にすると有効になる
 - 絶対給油値は走行が進むほど(残りレース距離が減るほど)減少し、相対給油と違って負の値にならない
-- **走行中の使い方**: ピットに入るラップの開始時に表示値へ給油量を合わせ、ピット進入直前に最終調整する(調整しなくても最大1ラップ分の余剰で済む)
+- **走行中の使い方**: ピットに入るラップの開始時に表示値へ給油量を合わせ、ピットイン直前に最終調整する(調整しなくても最大1ラップ分の余剰で済む)
 - **追加ピットの要否**: Fuel ウィジェットの `pits` 列(現スティント終了時にピットした場合の必要回数)/ `early` 列(現ラップ終了時にピットした場合の必要回数)で判断する。または「絶対給油値 > タンク残量」なら追加ピットが必要
 - 「ラップ終了時点の絶対給油量」を表示しないのは仕様。ピット入口の位置がトラックごとに大きく異なり(例: セブリング WEC 配置ではフィニッシュラインから約 28% 手前)、誤差が大きすぎるため
 
@@ -565,7 +565,7 @@ v2.49.0 からは Laps and position / Session ウィジェットでも `show_pre
 
 - ゲームがカクつく場合は、まず **System Performance ウィジェット**で TinyPedal と OS の CPU・メモリ使用率を確認し、原因を切り分ける
 - TinyPedal は CPU のみを使用するため **G-Sync と相性が悪い**ことが報告されている(対応不可)
-- Windowed / Borderless モードの FPS 安定化: グラフィックドライバ側で最大フレームレートを制限(モニタリフレッシュレート+10 程度)、ゲーム実行ファイルの Fullscreen Optimizations を無効化、ゲーム内 Post Effects を下げる
+- Windowed / Borderless モードの FPS 安定化: グラフィックドライバー側で最大フレームレートを制限(モニタリフレッシュレート+10 程度)、ゲーム実行ファイルの Fullscreen Optimizations を無効化、ゲーム内 Post Effects を下げる
 
 ### その他
 

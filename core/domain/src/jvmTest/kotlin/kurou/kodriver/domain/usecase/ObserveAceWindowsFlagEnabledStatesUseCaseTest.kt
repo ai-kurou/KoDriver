@@ -25,7 +25,7 @@ class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `永続化された値がない場合は全フラグがデフォルトで有効になる`() =
+    fun `永続化された値がない場合は全フラッグがデフォルトで有効になる`() =
         runTest {
             every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap<ReadoutItemKey, Boolean>())
 

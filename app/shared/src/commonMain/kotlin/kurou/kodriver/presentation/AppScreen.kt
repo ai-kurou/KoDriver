@@ -83,6 +83,7 @@ import kurou.kodriver.feature.otherlist.OtherListViewModel
 import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import kurou.kodriver.feature.otherlist.rememberOpenTtsSettings
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPane
+import kurou.kodriver.feature.otheroverlaytextcolordetail.OtherOverlayTextColorDetailDialog
 import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
@@ -100,7 +101,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * `:core:domain` の `Simulator.LmuWindows.id` と一致させる、初期選択シミュレータの ID。
+ * `:core:domain` の `Simulator.LmuWindows.id` と一致させる、初期選択シミュレーターの ID。
  * app:shared は `:core:domain` に依存しないため、Preview / デフォルト値用にリテラルで保持する。
  */
 private const val LMU_WINDOWS_SIMULATOR_ID = "lmu_windows"
@@ -141,12 +142,12 @@ internal fun DebugStateDetailPane(
 }
 
 /**
- * シミュレータ選択項目のドロップダウン矢印アイコンを、メニュー展開時に回転させる角度。
+ * シミュレーター選択項目のドロップダウン矢印アイコンを、メニュー展開時に回転させる角度。
  */
 private const val HALF_ROTATION_DEGREES = 180f
 
 /**
- * NavigationRail ヘッダーに表示するシミュレータロゴのサイズ。
+ * NavigationRail ヘッダーに表示するシミュレーターロゴのサイズ。
  * ナビ項目内のアイコン（24dp）より大きくし、ヘッダーであることを視覚的に強調する。
  */
 private val PrimarySimulatorRailHeaderIconSize = 40.dp
@@ -225,9 +226,9 @@ private fun AppNavIcon(
 }
 
 /**
- * NavigationBar / NavigationRail の先頭に表示する、現在選択中のシミュレータの項目。
+ * NavigationBar / NavigationRail の先頭に表示する、現在選択中のシミュレーターの項目。
  * 他の [AppDestination] とは異なりタブ切り替えの対象ではないため、常に非選択として扱う。
- * タップするとシミュレータ選択メニューを開く。ラベル横にドロップダウン矢印アイコンを添えて、
+ * タップするとシミュレーター選択メニューを開く。ラベル横にドロップダウン矢印アイコンを添えて、
  * 単なるタブではなくメニューを開く操作対象であることを視覚的に示す。NavigationBar ではメニューが
  * 上方向に展開されるため矢印を上向き（[Icons.Filled.ArrowDropUp]）にし、NavigationRail では
  * 右方向に展開されるため矢印を右向き（[Icons.AutoMirrored.Filled.ArrowRight]）にする。
@@ -319,6 +320,7 @@ private fun DefaultOtherContent(
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
+    var showOverlayTextColorDialog by rememberSaveable { mutableStateOf(false) }
     var showOverlayTextSizeDialog by rememberSaveable { mutableStateOf(false) }
     if (showReadoutStartSoundDialog) {
         OtherReadoutStartSoundDetailDialog(
@@ -329,6 +331,9 @@ private fun DefaultOtherContent(
     if (showThemeDialog) {
         OtherThemeDetailDialog(onDismiss = { showThemeDialog = false })
     }
+    if (showOverlayTextColorDialog) {
+        OtherOverlayTextColorDetailDialog(onDismiss = { showOverlayTextColorDialog = false })
+    }
     if (showOverlayTextSizeDialog) {
         OtherOverlayTextSizeDetailDialog(onDismiss = { showOverlayTextSizeDialog = false })
     }
@@ -337,6 +342,7 @@ private fun DefaultOtherContent(
         scrollToTopRequest = scrollToTopRequest,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         onOpenThemeDialog = { showThemeDialog = true },
+        onOpenOverlayTextColorDialog = { showOverlayTextColorDialog = true },
         onOpenOverlayTextSizeDialog = { showOverlayTextSizeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId, feedbackAttachRequestId ->
             when (itemType) {
@@ -377,6 +383,7 @@ private fun DefaultOtherContent(
                     DebugStateDetailPane(selectedSimulatorId, canNavigateBack, onBack)
                 }
 
+                OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
@@ -537,9 +544,9 @@ fun AppScreen(
 }
 
 /**
- * シミュレータ選択が変更されたときに、ルールタブのlistPaneを最上部までスクロールさせる。
+ * シミュレーター選択が変更されたときに、ルールタブのlistPaneを最上部までスクロールさせる。
  * ACE選択時の注意文言などlistPane先頭の項目が、スクロールしたままの状態だと
- * シミュレータ変更後も見えなくなるため、変更を検知して自動的に先頭へ戻す。
+ * シミュレーター変更後も見えなくなるため、変更を検知して自動的に先頭へ戻す。
  * 初回コンポジション時には発火させない。
  */
 @Composable

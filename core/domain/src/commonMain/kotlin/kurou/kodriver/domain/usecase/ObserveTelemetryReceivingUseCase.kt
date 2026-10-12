@@ -11,10 +11,10 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TELEMETRY_RECEIVING_TIMEOUT_MS_DEFAULT
 
 /**
- * 選択中シミュレータのテレメトリを実際に受信中かどうかを監視する UseCase。
+ * 選択中シミュレーターのテレメトリを実際に受信中かどうかを監視する UseCase。
  *
  * 接続バナーの CONNECTED 状態（共有メモリのプローブ可否やサーバーバージョン取得の成否で判定）とは異なり、
- * 各シミュレータの生テレメトリ Flow が直近 [TELEMETRY_RECEIVING_TIMEOUT_MS_DEFAULT] 以内に
+ * 各シミュレーターの生テレメトリ Flow が直近 [TELEMETRY_RECEIVING_TIMEOUT_MS_DEFAULT] 以内に
  * データを流しているかどうかで判定する。テレメトリを受信するたびに [transformLatest] がタイムアウト待機を
  * 最初からやり直すため、ticker によるポーリングを使わずに正確なタイムアウトを実現する。
  */

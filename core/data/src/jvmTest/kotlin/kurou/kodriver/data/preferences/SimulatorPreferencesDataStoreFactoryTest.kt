@@ -15,7 +15,7 @@ class SimulatorPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `シミュレータ設定が正しいファイルに書き込まれる`() =
+    fun `シミュレーター設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createSimulatorPreferencesDataStore(tempDir.absolutePath)
             dataStore.updateData { it.copy(selectedSimulator = "lmu_windows") }

@@ -13,7 +13,7 @@ data class AppScreenUiState(
     val hasAppUpdate: Boolean = false,
     val accessLocalNetworkPermissionGranted: Boolean = true,
     /**
-     * 実際に画面を常時オンにするかどうか。設定がONで、かつ選択中シミュレータのテレメトリを
+     * 実際に画面を常時オンにするかどうか。設定がONで、かつ選択中シミュレーターのテレメトリを
      * 実際に受信中の場合のみ true になる（設定値そのものではない）。
      */
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
@@ -22,7 +22,7 @@ data class AppScreenUiState(
     val selectedSimulator: Simulator = SELECTED_SIMULATOR_DEFAULT,
 ) {
     /**
-     * app:shared など `:core:domain` に依存しないモジュールへ渡すための、選択中シミュレータの ID。
+     * app:shared など `:core:domain` に依存しないモジュールへ渡すための、選択中シミュレーターの ID。
      * `:core:domain` の `Simulator` 型は `implementation` 依存のため、モジュール境界を越えて型を渡せない。
      */
     val selectedSimulatorId: String

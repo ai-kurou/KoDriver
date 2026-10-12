@@ -52,6 +52,7 @@ fun OtherContent(
     scrollToTopRequest: Int = 0,
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
+    onOpenOverlayTextColorDialog: () -> Unit = {},
     onOpenOverlayTextSizeDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
 ) {
@@ -78,6 +79,7 @@ fun OtherContent(
         onOpenTtsEngineInPlayStore = { uriHandler.openUri(TTS_ENGINE_PLAY_STORE_URL) },
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onOpenThemeDialog = onOpenThemeDialog,
+        onOpenOverlayTextColorDialog = onOpenOverlayTextColorDialog,
         onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
         onOverlayVisibleChange = viewModel::onOverlayVisibleChange,
         onKeepScreenOnChange = viewModel::onKeepScreenOnChange,
@@ -103,11 +105,14 @@ private fun handleOtherItemClick(
     onOpenReleasePage: () -> Unit,
     onOpenReadoutStartSoundDialog: () -> Unit,
     onOpenThemeDialog: () -> Unit,
+    onOpenOverlayTextColorDialog: () -> Unit,
     onOpenOverlayTextSizeDialog: () -> Unit,
     onOpenWindowsSpeechSettings: () -> Unit,
     onOpenTtsEngineInPlayStore: () -> Unit,
 ) {
     when (itemType) {
+        OtherListItemType.OverlayTextColor -> onOpenOverlayTextColorDialog()
+
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
 
         OtherListItemType.Theme -> onOpenThemeDialog()
@@ -153,6 +158,7 @@ internal fun OtherContent(
     onOpenReleasePage: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
+    onOpenOverlayTextColorDialog: () -> Unit = {},
     onOpenOverlayTextSizeDialog: () -> Unit = {},
     onOpenWindowsSpeechSettings: () -> Unit = {},
     onOpenTtsEngineInPlayStore: () -> Unit = {},
@@ -269,6 +275,7 @@ internal fun OtherContent(
                         onOpenReleasePage = onOpenReleasePage,
                         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
                         onOpenThemeDialog = onOpenThemeDialog,
+                        onOpenOverlayTextColorDialog = onOpenOverlayTextColorDialog,
                         onOpenOverlayTextSizeDialog = onOpenOverlayTextSizeDialog,
                         onOpenWindowsSpeechSettings = onOpenWindowsSpeechSettings,
                         onOpenTtsEngineInPlayStore = onOpenTtsEngineInPlayStore,

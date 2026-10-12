@@ -190,7 +190,7 @@ class Gt7Ps5ConnectionViewModelTest {
         }
 
     @Test
-    fun `GT7から別シミュレータへ切り替えると未確認にリセットされる`() =
+    fun `GT7から別シミュレーターへ切り替えると未確認にリセットされる`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.Gt7Ps5)
             every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)

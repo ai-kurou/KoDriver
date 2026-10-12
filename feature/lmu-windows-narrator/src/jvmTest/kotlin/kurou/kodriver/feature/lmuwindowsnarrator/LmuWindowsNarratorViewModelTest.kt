@@ -979,7 +979,7 @@ class LmuWindowsNarratorViewModelTest {
     // --- 優先度 ---
 
     @Test
-    fun `フラグ読み上げ中に車両接近イベントが来ても読み上げない`() =
+    fun `フラッグ読み上げ中に車両接近イベントが来ても読み上げない`() =
         runTest(testDispatcher) {
             var fakeTime = 0L
             val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
@@ -1028,7 +1028,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `車両接近読み上げ中にフラグイベントが来ると読み上げを停止して割り込む`() =
+    fun `車両接近読み上げ中にフラッグイベントが来ると読み上げを停止して割り込む`() =
         runTest(testDispatcher) {
             val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -1132,7 +1132,7 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(listOf<SpeechEvent>(LmuWindowsCarLeft(resolvedText = "カーレフト")), spokenTexts)
         }
 
-    // --- オーバーヒート / 旗 ---
+    // --- オーバーヒート / フラッグ ---
 
     @Test
     fun `OVERHEATが無効のときはオーバーヒートを読み上げない`() =
@@ -1461,7 +1461,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `BLUE_FLAGが無効のときは青旗を読み上げない`() =
+    fun `BLUE_FLAGが無効のときはブルーフラッグを読み上げない`() =
         runTest(testDispatcher) {
             val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()
@@ -1510,7 +1510,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `青旗読み上げが発生したら現在と直前のテレメトリを保存する`() =
+    fun `ブルーフラッグ読み上げが発生したら現在と直前のテレメトリを保存する`() =
         runTest(testDispatcher) {
             var fakeTime = 0L
             val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
@@ -1543,7 +1543,7 @@ class LmuWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `赤旗イベントを読み上げる`() =
+    fun `レッドフラッグイベントを読み上げる`() =
         runTest(testDispatcher) {
             val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
             val spokenTexts = mutableListOf<SpeechEvent>()

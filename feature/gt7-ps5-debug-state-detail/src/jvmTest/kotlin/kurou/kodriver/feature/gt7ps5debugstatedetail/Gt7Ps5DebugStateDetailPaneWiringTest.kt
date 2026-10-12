@@ -2,6 +2,7 @@ package kurou.kodriver.feature.gt7ps5debugstatedetail
 
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -9,9 +10,11 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.excludeRecords
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +55,75 @@ class Gt7Ps5DebugStateDetailPaneWiringTest {
             ).around(rule)
 
     private val viewModel: Gt7Ps5DebugStateDetailViewModel = mockk()
+
     private val onBack: () -> Unit = mockk()
+
+    @Test
+    fun `PaneはKoinの状態を表示しカード移動と戻る操作を通知する`() {
+        val cardOrder = listOf(Gt7Ps5DebugStateCardKey.SIMULATOR, Gt7Ps5DebugStateCardKey.VEHICLE_CLASS)
+        val state =
+            MutableStateFlow(
+                Gt7Ps5DebugStateDetailUiState(
+                    cardOrder = cardOrder,
+                    enabledCardKeys = cardOrder.toSet(),
+                    gt7Ps5 =
+                        Gt7Ps5DebugState(
+                            vehicleClass = Gt7Ps5VehicleClassData("GR3"),
+                        ),
+                ),
+            )
+        excludeRecords { viewModel.uiState }
+        every { viewModel.uiState } returns state
+        every { viewModel.moveCard(0, 1) } answers {
+            state.update { it.copy(cardOrder = cardOrder.reversed()) }
+        }
+        every { onBack() } returns Unit
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent {
+                KoDriverTheme {
+                    Gt7Ps5DebugStateDetailPane(
+                        true,
+                        onBack,
+                        Modifier.requiredSize(360.dp, 640.dp).testTag("gt7-debug-pane"),
+                    )
+                }
+            }
+            rule.onNodeWithTag("gt7-debug-pane").assertExists()
+            rule.onNodeWithText("Gran Turismo 7（PS5）").assertIsDisplayed()
+            rule.onNodeWithText("GR3").assertIsDisplayed()
+
+            val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
+            val gridTopLeft = grid.fetchSemanticsNode().boundsInRoot.topLeft
+            val from =
+                rule
+                    .onNodeWithText("選択中のシミュレーター")
+                    .fetchSemanticsNode()
+                    .boundsInRoot.center - gridTopLeft
+            val to =
+                rule
+                    .onNodeWithText("車両クラス")
+                    .fetchSemanticsNode()
+                    .boundsInRoot.center - gridTopLeft
+            grid.performTouchInput { down(from) }
+            rule.mainClock.advanceTimeBy(1_000)
+            grid.performTouchInput {
+                repeat(10) { step ->
+                    moveTo(from + Offset(0f, (to.y - from.y) * (step + 1) / 10))
+                }
+                up()
+            }
+            rule.waitForIdle()
+            rule.onNodeWithContentDescription("戻る").performClick()
+
+            // 状態の getter は表示用スタブ。操作のみを呼び出し検証の対象にする。
+            verify(exactly = 1) { viewModel.moveCard(0, 1) }
+            verify(exactly = 1) { onBack() }
+            confirmVerified(viewModel, onBack)
+        } finally {
+            stopKoin()
+        }
+    }
 
     @Test
     fun `PaneはKoinの状態と更新を表示して戻る操作を通知する`() {

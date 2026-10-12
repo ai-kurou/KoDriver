@@ -43,7 +43,7 @@ fun simulatorIcon(simulatorId: String): Painter =
     }
 
 /**
- * カード全体に敷き詰めるような、より大きな表示領域向けのシミュレータ画像を返す。
+ * カード全体に敷き詰めるような、より大きな表示領域向けのシミュレーター画像を返す。
  * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
  */
 @Composable

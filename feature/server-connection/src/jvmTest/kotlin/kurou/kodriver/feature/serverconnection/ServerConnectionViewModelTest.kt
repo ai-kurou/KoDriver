@@ -104,7 +104,7 @@ class ServerConnectionViewModelTest {
         }
 
     @Test
-    fun `選択シミュレータがuiStateに反映される`() =
+    fun `選択シミュレーターがuiStateに反映される`() =
         runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)

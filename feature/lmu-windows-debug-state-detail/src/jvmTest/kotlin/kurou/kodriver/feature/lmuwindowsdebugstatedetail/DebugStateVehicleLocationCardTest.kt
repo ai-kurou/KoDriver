@@ -58,7 +58,7 @@ class DebugStateVehicleLocationCardTest {
 
         rule.onNodeWithText("車両位置").assertIsDisplayed()
         rule.onNodeWithText("ピットレーン走行中: はい").assertIsDisplayed()
-        rule.onNodeWithText("ピット状態: Entering（ピット進入中）").assertIsDisplayed()
+        rule.onNodeWithText("ピット状態: Entering（ピットイン中）").assertIsDisplayed()
         rule.onNodeWithText("ガレージ内: いいえ").assertIsDisplayed()
     }
 
@@ -68,9 +68,9 @@ class DebugStateVehicleLocationCardTest {
             mapOf(
                 LmuWindowsPitState.NONE to "None（ピット動作なし）",
                 LmuWindowsPitState.REQUESTED to "Requested（ピット要求中）",
-                LmuWindowsPitState.ENTERING to "Entering（ピット進入中）",
+                LmuWindowsPitState.ENTERING to "Entering（ピットイン中）",
                 LmuWindowsPitState.STOPPED to "Stopped（ピット停止中）",
-                LmuWindowsPitState.EXITING to "Exiting（ピット退出中）",
+                LmuWindowsPitState.EXITING to "Exiting（ピットアウト中）",
                 LmuWindowsPitState.UNKNOWN to "不明",
             )
 

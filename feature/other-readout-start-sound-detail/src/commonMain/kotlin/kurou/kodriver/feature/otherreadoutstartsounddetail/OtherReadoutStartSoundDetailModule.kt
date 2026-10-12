@@ -25,6 +25,6 @@ val otherReadoutStartSoundDetailModule =
             )
         }
 
-        // 他の feature も Koin 経由で使用する設定観測 UseCase。設定は全シミュレータで共有する。
+        // 他の feature も Koin 経由で使用する設定観測 UseCase。設定は全シミュレーターで共有する。
         factory { ObserveReadoutStartSoundTypeUseCase(get()) }
     }

@@ -12,7 +12,7 @@ class SaveLmuWindowsFlagEnabledStateUseCaseTest {
     private val repository: LmuWindowsFlagPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
-    fun `指定したフラグの有効状態が保存される`() =
+    fun `指定したフラッグの有効状態が保存される`() =
         runTest {
             SaveLmuWindowsFlagEnabledStateUseCase(repository)(LmuWindowsReadoutItemKey.Flag.RedFlag, false)
 

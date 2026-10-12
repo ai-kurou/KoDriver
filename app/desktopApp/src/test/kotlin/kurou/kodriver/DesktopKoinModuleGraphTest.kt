@@ -24,6 +24,7 @@ import kurou.kodriver.domain.repository.AceWindowsRemainingFuelLapsRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AceWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.AceWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelLapsEmptyReadoutTextUseCase
@@ -68,6 +69,18 @@ import kotlin.test.assertNotNull
  *   Desktop 構成にも含まれ、グラフ検証のためにここで補う。
  */
 class DesktopKoinModuleGraphTest {
+    @Test
+    fun `全シミュレーターのカード順序Repositoryを名前付きで解決できる`() {
+        val application = koinApplication { modules(desktopDataModule) }
+        try {
+            Simulator.entries.forEach { simulator ->
+                assertNotNull(application.koin.get<DebugStateCardOrderPreferencesRepository>(named(simulator.id)))
+            }
+        } finally {
+            application.close()
+        }
+    }
+
     @Test
     fun `ACE燃料残り周回数の文言Observeを名前付きで解決できる`() {
         val application =
@@ -232,7 +245,7 @@ class DesktopKoinModuleGraphTest {
                     },
                 ),
         ) {
-            // 開始音ダイアログの ViewModel が要求する選択中のシミュレータ ID。
+            // 開始音ダイアログの ViewModel が要求する選択中のシミュレーター ID。
             withInstance(Simulator.LmuWindows.id)
         }
     }

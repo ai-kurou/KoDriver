@@ -35,6 +35,7 @@ class OtherListItemsTest {
         assertTrue(items.contains(OtherListItemType.TtsEngineMissing))
         assertTrue(items.contains(OtherListItemType.TtsLanguageDataMissing))
         assertFalse(items.contains(OtherListItemType.WindowsSpeechUnavailable))
+        assertFalse(items.contains(OtherListItemType.OverlayTextColor))
         assertTrue(items.contains(OtherListItemType.Voice))
     }
 

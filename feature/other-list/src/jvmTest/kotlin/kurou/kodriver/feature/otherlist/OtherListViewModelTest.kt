@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.model.OVERLAY_BACKGROUND_OPACITY_DEFAULT
+import kurou.kodriver.domain.model.OVERLAY_TEXT_COLOR_DEFAULT
 import kurou.kodriver.domain.model.OVERLAY_TEXT_SIZE_DEFAULT
 import kurou.kodriver.domain.model.OverlayTextSize
 import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
@@ -40,6 +41,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
+import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
@@ -63,6 +65,7 @@ import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
@@ -95,8 +98,10 @@ class OtherListViewModelTest {
 
     private val overlayTextSizeRepository: OverlayTextSizePreferencesRepository = mockk()
     private val overlayBackgroundOpacityRepository: OverlayBackgroundOpacityPreferencesRepository = mockk()
+    private val overlayTextColorRepository: OverlayTextColorPreferencesRepository = mockk()
     private val overlayTextSizeFlow = MutableStateFlow(OVERLAY_TEXT_SIZE_DEFAULT)
     private val overlayBackgroundOpacityFlow = MutableStateFlow(OVERLAY_BACKGROUND_OPACITY_DEFAULT)
+    private val overlayTextColorFlow = MutableStateFlow(OVERLAY_TEXT_COLOR_DEFAULT)
 
     private val overlayVisibleRepository: OverlayVisiblePreferencesRepository = mockk()
 
@@ -151,6 +156,7 @@ class OtherListViewModelTest {
         Dispatchers.setMain(dispatcher)
         every { voiceSpeedRepository.voiceSpeed() } returns voiceSpeedFlow
         every { voicePitchRepository.voicePitch() } returns voicePitchFlow
+        every { overlayTextColorRepository.observeOverlayTextColor() } returns overlayTextColorFlow
         every { overlayTextSizeRepository.observeOverlayTextSize() } returns overlayTextSizeFlow
         every {
             overlayBackgroundOpacityRepository.observeOverlayBackgroundOpacity()
@@ -179,6 +185,7 @@ class OtherListViewModelTest {
                     observeOverlayVisible = ObserveOverlayVisibleUseCase(overlayVisibleRepository),
                     saveOverlayVisible = SaveOverlayVisibleUseCase(overlayVisibleRepository),
                     observeOverlayTextSize = ObserveOverlayTextSizeUseCase(overlayTextSizeRepository),
+                    observeOverlayTextColor = ObserveOverlayTextColorUseCase(overlayTextColorRepository),
                     observeOverlayBackgroundOpacity =
                         ObserveOverlayBackgroundOpacityUseCase(overlayBackgroundOpacityRepository),
                     observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
@@ -1584,6 +1591,29 @@ class OtherListViewModelTest {
             overlayBackgroundOpacityFlow.update { 75 }
 
             assertEquals(75, viewModel.uiState.first { it.overlayBackgroundOpacity == 75 }.overlayBackgroundOpacity)
+        }
+
+    @Test
+    fun `オーバーレイ文字色は既定値から保存済み設定の変更を反映する`() =
+        runTest {
+            every { soundVolumeRepository.volume() } returns soundVolumeFlow
+            coEvery { deviceVolumeRepository.getVolume() } returns 60
+            every { readoutStartSoundRepository.observeType() } returns readoutStartSoundFlow
+            every { voiceRepository.voiceId() } returns voiceFlow
+            every { themeRepository.observeThemeMode() } returns themeModeFlow
+            every { serverIpRepository.serverIp() } returns serverIpFlow
+            every { consoleAddressRepository.consoleAddress() } returns consoleAddressFlow
+            every { consolePortRepository.port() } returns consolePortFlow
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            every { hapticFeedbackEnabledRepository.hapticFeedbackEnabled() } returns hapticFeedbackFlow
+            every { overlayVisibleRepository.observeOverlayVisible() } returns overlayVisibleFlow
+            val viewModel = createViewModel()
+            assertEquals(OVERLAY_TEXT_COLOR_DEFAULT, viewModel.uiState.first().overlayTextColor)
+
+            overlayTextColorFlow.update { 0x80123456L }
+
+            assertEquals(0x80123456L, viewModel.uiState.first { it.overlayTextColor == 0x80123456L }.overlayTextColor)
         }
 
     @Test

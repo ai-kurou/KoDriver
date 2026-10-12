@@ -69,7 +69,7 @@ class AceWindowsDebugStateDetailPaneTest {
         listOf(
             "選択中のシミュレーター",
             "車両位置",
-            "フラグ情報",
+            "フラッグ情報",
             "並走車両",
             "自己ベストラップ",
             "タイヤカーカス温度",
@@ -100,9 +100,9 @@ class AceWindowsDebugStateDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("フラグ情報").assertIsDisplayed()
+        rule.onNodeWithText("フラッグ情報").assertIsDisplayed()
         rule.onNodeWithText("選択中のシミュレーター").assertIsDisplayed()
-        val flag = rule.onNodeWithText("フラグ情報").fetchSemanticsNode().boundsInRoot
+        val flag = rule.onNodeWithText("フラッグ情報").fetchSemanticsNode().boundsInRoot
         val simulator = rule.onNodeWithText("選択中のシミュレーター").fetchSemanticsNode().boundsInRoot
         assertTrue(flag.top < simulator.top || flag.left < simulator.left)
     }

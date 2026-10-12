@@ -42,7 +42,7 @@ class OtherReadoutStartSoundDetailModuleTest {
     }
 
     @Test
-    fun `各シミュレータのパラメータで解決したViewModelは対応するエンジンだけで試聴する`() {
+    fun `各シミュレーターのパラメータで解決したViewModelは対応するエンジンだけで試聴する`() {
         every { repository.observeType() } returns flowOf(ReadoutStartSoundType.FORMULA_RADIO)
         every { lmuEngine.previewStartSound(ReadoutStartSoundType.ELECTRONIC_NOISE) } returns Unit
         every { gt7Engine.previewStartSound(ReadoutStartSoundType.ELECTRONIC_NOISE) } returns Unit

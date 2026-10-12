@@ -68,6 +68,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kurou.kodriver.feature.otherlist.generated.resources.item_license
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity_summary
+import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_color
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_size
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible_summary
@@ -143,6 +144,7 @@ private fun OtherListItemType.section(): OtherListSection =
 
         OtherListItemType.OverlayVisible,
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
         -> OtherListSection.OverlaySettings
 
@@ -191,6 +193,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
 
         OtherListItemType.OverlayVisible,
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
         -> {
             otherOverlaySettingsItemDisplayName(itemType)
@@ -256,6 +259,7 @@ private fun otherOverlaySettingsItemDisplayName(itemType: OtherListItemType): St
     when (itemType) {
         OtherListItemType.OverlayVisible -> stringResource(Res.string.item_overlay_visible)
         OtherListItemType.OverlayTextSize -> stringResource(Res.string.item_overlay_text_size)
+        OtherListItemType.OverlayTextColor -> stringResource(Res.string.item_overlay_text_color)
         OtherListItemType.OverlayBackgroundOpacity -> stringResource(Res.string.item_overlay_background_opacity)
         else -> error("unexpected item type: $itemType")
     }
@@ -317,6 +321,7 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.OverlayTextSize,
         -> Icon(imageVector = Icons.Outlined.UnfoldMore, contentDescription = null)
 
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
@@ -459,6 +464,10 @@ private fun otherVoiceSettingsItemSupportingContent(
             }
         }
 
+        OtherListItemType.OverlayTextColor -> {
+            { OtherListOverlayTextColorSummary(uiState.overlayTextColor) }
+        }
+
         OtherListItemType.OverlayBackgroundOpacity -> {
             {
                 val opacity = uiState.overlayBackgroundOpacity
@@ -534,6 +543,7 @@ private fun otherListItemSupportingContent(
         OtherListItemType.VoicePitch,
         OtherListItemType.Voice,
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
         -> {
             otherVoiceSettingsItemSupportingContent(item, uiState)
@@ -681,6 +691,7 @@ private fun OtherListItem(
                 OtherListItemType.WindowsSpeechUnavailable,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayTextSize,
+                OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
@@ -773,6 +784,7 @@ private fun handleOtherListItemClick(
         OtherListItemType.TtsEngineMissing,
         OtherListItemType.Theme,
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,

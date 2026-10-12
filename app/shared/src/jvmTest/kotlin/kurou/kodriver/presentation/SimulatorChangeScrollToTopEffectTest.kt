@@ -29,7 +29,7 @@ class SimulatorChangeScrollToTopEffectTest {
     }
 
     @Test
-    fun `シミュレータIDが変更されると先頭スクロールを要求する`() {
+    fun `シミュレーターIDが変更されると先頭スクロールを要求する`() {
         var selectedSimulatorId by mutableStateOf("lmu_windows")
         var requestScrollToTopCount = 0
 
@@ -48,7 +48,7 @@ class SimulatorChangeScrollToTopEffectTest {
     }
 
     @Test
-    fun `同一のシミュレータIDが再度渡されても先頭スクロールを要求しない`() {
+    fun `同一のシミュレーターIDが再度渡されても先頭スクロールを要求しない`() {
         var selectedSimulatorId by mutableStateOf("lmu_windows")
         var requestScrollToTopCount = 0
 

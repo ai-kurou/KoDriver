@@ -307,7 +307,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
         }
 
     @Test
-    fun `フラグ情報を購読すると uiState に反映される`() =
+    fun `フラッグ情報を購読すると uiState に反映される`() =
         runTest {
             val flagsFlow = MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.GARAGE))
             every { flagRepository.flagStream() } returns flagsFlow

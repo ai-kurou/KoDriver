@@ -293,7 +293,7 @@ class ReadoutListViewModelTest {
         }
 
     @Test
-    fun `シミュレータを選択するとRepositoryから永続化済みのON_OFF状態が読み込まれる`() =
+    fun `シミュレーターを選択するとRepositoryから永続化済みのON_OFF状態が読み込まれる`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -311,7 +311,7 @@ class ReadoutListViewModelTest {
         }
 
     @Test
-    fun `シミュレータを選択するとRepositoryから永続化済みの順序が読み込まれる`() =
+    fun `シミュレーターを選択するとRepositoryから永続化済みの順序が読み込まれる`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -502,7 +502,7 @@ class ReadoutListViewModelTest {
         }
 
     @Test
-    fun `ON_OFF状態はシミュレータと項目ごとに共通Repositoryへ保存される`() =
+    fun `ON_OFF状態はシミュレーターと項目ごとに共通Repositoryへ保存される`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             val gt7EnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
