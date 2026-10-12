@@ -32,7 +32,7 @@ class LmuWindowsFlagRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリからセッション旗とプレイヤー旗を読み取る`() =
+    fun `共有メモリからセッションフラッグとプレイヤーフラッグを読み取る`() =
         runBlocking {
             val reader =
                 FakeStaticSharedMemoryReader(

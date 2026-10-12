@@ -733,7 +733,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `初回の旗情報は状態だけ更新する`() {
+    fun `初回のフラッグ情報は状態だけ更新する`() {
         val decision =
             useCase.determineRaceFlags(
                 state = LmuWindowsNarratorState(),
@@ -746,7 +746,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `旗の変化を読み上げイベントに変換する`() {
+    fun `フラッグの変化を読み上げイベントに変換する`() {
         val first =
             useCase.determineRaceFlags(
                 state = LmuWindowsNarratorState(),
@@ -777,7 +777,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `赤旗の変化をRedFlagイベントに変換する`() {
+    fun `レッドフラッグの変化をRedFlagイベントに変換する`() {
         val first =
             useCase.determineRaceFlags(
                 state = LmuWindowsNarratorState(),
@@ -796,7 +796,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `青旗が継続しても再度読み上げない`() {
+    fun `ブルーフラッグが継続しても再度読み上げない`() {
         val first =
             useCase.determineRaceFlags(
                 state = LmuWindowsNarratorState(),
@@ -886,7 +886,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `赤旗が継続しても再度読み上げない`() {
+    fun `レッドフラッグが継続しても再度読み上げない`() {
         val first =
             useCase.determineRaceFlags(
                 state = LmuWindowsNarratorState(),
@@ -905,7 +905,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `無効な旗項目は読み上げない`() {
+    fun `無効なフラッグ項目は読み上げない`() {
         val first =
             useCase.determineRaceFlags(
                 state = LmuWindowsNarratorState(),
