@@ -23,7 +23,7 @@ OS標準の音声合成（TTS）で任意のテキストを読み上げるReposi
   アプリへ戻った場合に案内を消せるよう、`unavailableReason()`の呼び出し時のみ再初期化する（`speak()`や
   `isAvailable()`は利用不可の結果を保持し、読み上げのたびにエンジンを生成し直さない）。
 
-いずれも`core:domain`の`TextToSpeechRepository`を実装し、`SpeakTextUseCase` / `StopSpeakingUseCase` /
+いずれも`core:domain`の`TextToSpeechRepository`を実装し、`SpeakTextUseCase` /
 `CheckTextToSpeechAvailableUseCase`から利用されます。
 
 Windowsの読み上げは保存済みの`voiceId`を`SelectVoice`へ渡します。未指定なら従来どおり日本語（`ja-JP`）音声を

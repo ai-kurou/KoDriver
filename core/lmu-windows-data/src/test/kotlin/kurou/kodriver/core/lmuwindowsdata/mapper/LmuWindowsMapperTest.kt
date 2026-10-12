@@ -239,7 +239,6 @@ class LmuWindowsMapperTest {
         val result = requireNotNull(LmuWindowsMapper.map(buf))
 
         assertEquals(5.0, result.vehicle.speedMs, 1e-9)
-        assertEquals(18.0, result.vehicle.speedKmh, 1e-9)
     }
 
     @Test

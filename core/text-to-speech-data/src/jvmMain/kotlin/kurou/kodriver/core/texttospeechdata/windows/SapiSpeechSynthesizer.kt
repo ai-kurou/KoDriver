@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit
  * [speak] は読み上げの完了（応答行の受信）まで [CompletableFuture.get] でブロックする。
  * 呼び出し元（[WindowsTextToSpeechRepository]）は `runInterruptible` でこの呼び出しを包んでおり、
  * コルーチンのキャンセルはスレッド割り込み → [InterruptedException] としてここへ伝わるため、
- * その際は読み上げの打ち切り要求を送ってから例外を再送出する。明示的な中断（[stop]）も同じ要求で行う。
+ * その際は読み上げの打ち切り要求を送ってから例外を再送出する。
  * 常駐プロセスが終了した場合は、次の [speak] で起動し直す。アプリ終了時は標準入力が閉じられて常駐プロセスも終了する。
  *
  * Windows専用の外部プロセスを起動するためユニットテストの対象外とし、
  * 読み上げ制御のロジックは [WindowsSpeechSynthesizer] を差し替えられる呼び出し側で検証する。
  *
  * `queue = true` で前の発話の終了を待つ間は [lock] を保持しない。保持したままだと、待っている間に
- * 呼ばれた [stop] や別スレッドからの `queue = false` の [speak] 呼び出しが [lock] を取得できず、
+ * 別スレッドからの `queue = false` の [speak] 呼び出しが [lock] を取得できず、
  * 前の発話が自然に終わるまで割り込めなくなってしまう（`runInterruptible` によるコルーチンの
  * キャンセル伝播の意味がなくなる）。ただし [lock] を保持しない間に別スレッドの [speak] 呼び出しが
  * 割り込んでいる可能性があるため、待機後は [requestToken] で自分がまだ最新の要求かを確認し、
@@ -163,10 +163,6 @@ internal class SapiSpeechSynthesizer : WindowsSpeechSynthesizer {
             synchronized(lock) { session?.stopIfCurrent(target) }
             throw e
         }
-    }
-
-    override fun stop() {
-        synchronized(lock) { session?.stop() }
     }
 
     /** 常駐プロセスが使えなければ起動し直す。起動に失敗したら `null`。呼び出し元が [lock] を保持していること。 */

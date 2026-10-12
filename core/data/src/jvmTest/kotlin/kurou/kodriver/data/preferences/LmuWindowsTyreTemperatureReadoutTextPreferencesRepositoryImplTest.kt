@@ -7,7 +7,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_COLD_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_OVERHEAT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
@@ -45,7 +44,6 @@ class LmuWindowsTyreTemperatureReadoutTextPreferencesRepositoryImplTest {
                 repository.observeOverheatReadoutText().first(),
             )
             repository.saveColdReadoutText("タイヤ低温注意")
-            settings.saveHighThresholdCelsius(Celsius(100))
             settings.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, false)
             settings.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
             val enabledStates = settings.observeEnabledStates().first()
@@ -54,11 +52,9 @@ class LmuWindowsTyreTemperatureReadoutTextPreferencesRepositoryImplTest {
                 repository.saveOverheatReadoutText(text)
                 assertEquals(text, repository.observeOverheatReadoutText().first())
                 assertEquals("タイヤ低温注意", repository.observeColdReadoutText().first())
-                assertEquals(Celsius(100), settings.observeHighThresholdCelsius().first())
                 assertEquals(enabledStates, settings.observeEnabledStates().first())
                 assertEquals(lowWarningPhases, settings.observeLowWarningPhases().first())
             }
-            settings.saveHighThresholdCelsius(Celsius(110))
             settings.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning, true)
             settings.saveLowWarningPhases(emptySet())
             assertEquals("タイヤ過熱注意", repository.observeOverheatReadoutText().first())
@@ -72,7 +68,6 @@ class LmuWindowsTyreTemperatureReadoutTextPreferencesRepositoryImplTest {
                 repository.observeColdReadoutText().first(),
             )
             repository.saveOverheatReadoutText("タイヤ過熱注意")
-            settings.saveHighThresholdCelsius(Celsius(100))
             settings.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.LowWarning, false)
             settings.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
             val enabledStates = settings.observeEnabledStates().first()
@@ -81,11 +76,9 @@ class LmuWindowsTyreTemperatureReadoutTextPreferencesRepositoryImplTest {
                 repository.saveColdReadoutText(text)
                 assertEquals(text, repository.observeColdReadoutText().first())
                 assertEquals("タイヤ過熱注意", repository.observeOverheatReadoutText().first())
-                assertEquals(Celsius(100), settings.observeHighThresholdCelsius().first())
                 assertEquals(enabledStates, settings.observeEnabledStates().first())
                 assertEquals(lowWarningPhases, settings.observeLowWarningPhases().first())
             }
-            settings.saveHighThresholdCelsius(Celsius(110))
             settings.saveEnabledState(LmuWindowsReadoutItemKey.TyreTemperature.LowWarning, true)
             settings.saveLowWarningPhases(emptySet())
             assertEquals("タイヤ低温注意", repository.observeColdReadoutText().first())

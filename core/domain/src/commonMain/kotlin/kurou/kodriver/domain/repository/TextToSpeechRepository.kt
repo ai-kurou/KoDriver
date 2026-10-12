@@ -28,7 +28,7 @@ interface TextToSpeechRepository {
     suspend fun unavailableReason(): TextToSpeechUnavailableReason?
 
     /**
-     * [text] を読み上げる。実装は読み上げが実際に完了する（または [stop] やコルーチンのキャンセルで
+     * [text] を読み上げる。実装は読み上げが実際に完了する（またはコルーチンのキャンセルで
      * 打ち切られる）まで suspend すること。`:core:narrator` の `NarratorEngine` は開始音と同じ
      * コルーチン上で完了・優先度判定・割り込みを扱う前提でこのRepositoryを呼び出すため、
      * 即座に返ってしまうと読み上げ中に次のイベントの音声が重なって再生されてしまう。
@@ -49,7 +49,4 @@ interface TextToSpeechRepository {
         speed: Float = VOICE_SPEED_DEFAULT,
         pitch: Float = VOICE_PITCH_DEFAULT,
     )
-
-    /** 再生中・キュー待ちの読み上げをすべて停止する。 */
-    suspend fun stop()
 }

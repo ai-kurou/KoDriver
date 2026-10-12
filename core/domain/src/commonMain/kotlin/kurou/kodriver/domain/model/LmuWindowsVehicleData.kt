@@ -17,7 +17,4 @@ data class LmuWindowsVehicleData(
                     localVelocityY * localVelocityY +
                     localVelocityZ * localVelocityZ,
             )
-
-    val speedKmh: Double
-        get() = speedMs * 3.6
 }

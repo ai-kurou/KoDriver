@@ -213,7 +213,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
             )
             assertTrue(vm.uiState.first().isTextToSpeechAvailable)
             vm.onFlagTextChanged(FlagReadoutItem.CheckeredFlag, "   ")
-            assertFalse(vm.uiState.first().hasReadoutText(FlagReadoutItem.CheckeredFlag))
+            assertEquals("", vm.uiState.first().flagText(FlagReadoutItem.CheckeredFlag))
             vm.onFlagTextReset(FlagReadoutItem.CheckeredFlag)
             assertEquals("チェッカーフラッグ", vm.uiState.first().flagText(FlagReadoutItem.CheckeredFlag))
             coVerify(exactly = 1) { texts.saveText(AceWindowsFlagReadoutTextKey.CHECKERED, "") }
@@ -390,7 +390,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         val state = AceWindowsReadoutFlagDetailUiState()
         FlagReadoutItem.entries.forEach { item ->
             assertEquals(item.defaultText, state.flagText(item))
-            assertTrue(state.hasReadoutText(item))
+            assertFalse(state.flagText(item).isBlank())
         }
     }
 

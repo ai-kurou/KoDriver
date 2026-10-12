@@ -35,7 +35,4 @@ interface WindowsSpeechSynthesizer {
         speed: Float,
         pitch: Float,
     )
-
-    /** 再生中の読み上げを停止する。 */
-    fun stop()
 }

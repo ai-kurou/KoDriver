@@ -65,8 +65,6 @@ class FakeTextToSpeechRepository : TextToSpeechRepository {
         speed: Float,
         pitch: Float,
     ) = Unit
-
-    override suspend fun stop() = Unit
 }
 
 class FakeHapticFeedbackAvailabilityRepository : HapticFeedbackAvailabilityRepository {

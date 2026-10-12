@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference
  * `isAvailable()` も `false` を返す。
  *
  * [speak] は [UtteranceProgressListener] で発話の完了（エラー・打ち切りを含む）通知を待ち合わせるため、
- * 実際に読み上げが終わるまで（あるいは [stop] やコルーチンのキャンセルで打ち切られるまで）
+ * 実際に読み上げが終わるまで（あるいはコルーチンのキャンセルで打ち切られるまで）
  * suspendする。`:core:narrator` の `NarratorEngine` は「開始音のWAV再生と同じコルーチン上で
  * 完了・割り込みを扱える」ことを前提に `customSpeak` フックへこのRepositoryを渡しているため、
  * ここが即座に返ってしまうと発話中に次のイベントの音声が重なってしまう。
@@ -195,15 +195,6 @@ internal class AndroidTextToSpeechRepository(
         }
     }
 
-    override suspend fun stop() {
-        mutex.withLock {
-            textToSpeech?.stop()
-            // stop()はonStopを発火させるが、コールバックが来ない経路（未再生のキュー分等）に
-            // 備えて、残っているpendingUtterancesもここで明示的に完了させる。
-            completePendingUtterancesExcept(exceptUtteranceId = null)
-        }
-    }
-
     /**
      * 初回呼び出し時のみ [TextToSpeech] を生成し、初期化完了を待つ。
      * 利用できない場合は `null` を返し、[unavailableReason] にその理由を記録する。以降の [speak] / [isAvailable] では再初期化せず、
@@ -301,7 +292,7 @@ internal class AndroidTextToSpeechRepository(
 
     /**
      * [exceptUtteranceId] 以外の残っているpendingな発話をすべて即座に完了させる。
-     * `QUEUE_FLUSH`（新しい発話要求）や明示的な [stop] は、Androidが実際に `onStop` を
+     * `QUEUE_FLUSH`（新しい発話要求）は、Androidが実際に `onStop` を
      * 通知するかどうかに関わらず対象の発話をすべて打ち切るため、コールバックを待たずここで解決する。
      */
     private fun completePendingUtterancesExcept(exceptUtteranceId: String?) {
