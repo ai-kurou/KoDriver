@@ -19,7 +19,7 @@ class LmuWindowsTyreTemperaturePreferencesDataStoreFactoryTest {
     fun `タイヤ温度設定が正しいファイルに書き込まれる`() =
         runTest {
             val dataStore = createLmuWindowsTyreTemperaturePreferencesDataStore(tempDir.absolutePath)
-            dataStore.updateData { it.copy(highThresholdCelsius = 100) }
+            dataStore.updateData { it.copy(overheatReadoutText = "タイヤ過熱注意") }
 
             assertTrue(tempDir.resolve("lmu_windows_tyre_temperature_preferences.pb").exists())
         }

@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -19,12 +18,8 @@ import kotlin.test.assertEquals
 
 private fun createLmuWindowsTyreTemperaturePreferencesRepository(
     repository: LmuWindowsTyreTemperaturePreferencesRepository,
-    initialHighThreshold: Celsius = Celsius(90),
 ): LmuWindowsTyreTemperaturePreferencesRepository {
-    val highThreshold = MutableStateFlow(initialHighThreshold)
     val enabledStates = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-    every { repository.observeHighThresholdCelsius() } returns highThreshold
-    coEvery { repository.saveHighThresholdCelsius(Celsius(100)) } answers { highThreshold.update { Celsius(100) } }
     every { repository.observeEnabledStates() } returns enabledStates
     listOf(
         LmuWindowsReadoutItemKey.TyreTemperature.OverheatWarning,

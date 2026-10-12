@@ -45,10 +45,10 @@ Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStor
 
 ## LMUタイヤ温度設定
 
-`LmuWindowsTyreTemperaturePreferencesRepository` は温度閾値・有効状態・低温警告対象フェーズ、
+`LmuWindowsTyreTemperaturePreferencesRepository` は有効状態・低温警告対象フェーズ、
 `LmuWindowsTyreTemperatureReadoutTextPreferencesRepository` は過熱・低温警告の文言を扱う。
 Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共有する。
-保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
+保存ファイルと現行フィールドのProtoNumberを維持するため、設定移行は不要。廃止したProtoNumber 1は再利用しない。
 
 オーバーレイ文字色は ARGB の Long として保存し、`OVERLAY_TEXT_COLOR_DEFAULT`（`0xFFFFC107L`）を既定値とする。`ObserveOverlayTextColorUseCase` は保存値を配信し、`SaveOverlayTextColorUseCase` は選択したARGB値をRepositoryへ保存する。
 

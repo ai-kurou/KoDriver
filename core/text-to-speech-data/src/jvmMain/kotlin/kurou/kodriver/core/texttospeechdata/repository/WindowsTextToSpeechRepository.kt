@@ -76,8 +76,4 @@ internal class WindowsTextToSpeechRepository(
             )
         }
     }
-
-    override suspend fun stop() {
-        withContext(Dispatchers.IO) { synthesizer.stop() }
-    }
 }
