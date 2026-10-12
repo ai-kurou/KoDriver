@@ -106,4 +106,33 @@ sealed interface AceWindowsReadoutItemKey : ReadoutItemKey {
             override val value = "ace_windows_tyre_temperature_overheat_warning"
         }
     }
+
+    companion object {
+        /** 既存保存値の復元対象となる全キー。新しいキーを追加した場合はここにも追加する。 */
+        val entries: List<AceWindowsReadoutItemKey> by lazy {
+            listOf(
+                VehicleApproach.Root,
+                VehicleApproach.StartReadout,
+                Flag.Root,
+                Flag.WhiteFlag,
+                Flag.GreenFlag,
+                Flag.RedFlag,
+                Flag.BlueFlag,
+                Flag.YellowFlag,
+                Flag.BlackFlag,
+                Flag.BlackWhiteFlag,
+                Flag.CheckeredFlag,
+                Flag.OrangeCircleFlag,
+                Flag.RedYellowStripesFlag,
+                RemainingFuel.Root,
+                RemainingFuel.DetailEnabled,
+                RemainingFuelLaps.Root,
+                RemainingFuelLaps.DetailEnabled,
+                TyreTemperature.Root,
+                TyreTemperature.OverheatWarning,
+                MyBestLap.Root,
+                MyBestLap.DetailEnabled,
+            )
+        }
+    }
 }

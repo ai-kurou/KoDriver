@@ -8,7 +8,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 /**
- * [ReadoutItemKey] は sealed interface のため既定のシリアライズ対象にならない。
+ * [ReadoutItemKey] の実装型に依存せず、安定識別子を使ってシリアライズする。
  * DataStore キーと同じ [ReadoutItemKey.value] を Map キーとして使うことで、
  * テレメトリログ上でも読み上げ設定を読める形で記録する。
  */
