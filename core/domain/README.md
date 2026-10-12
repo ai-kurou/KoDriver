@@ -51,3 +51,7 @@ Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共�
 保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
 
 オーバーレイ文字色は ARGB の Long として保存し、`OVERLAY_TEXT_COLOR_DEFAULT`（`0xFFFFC107L`）を既定値とする。`ObserveOverlayTextColorUseCase` は保存値を配信し、`SaveOverlayTextColorUseCase` は選択したARGB値をRepositoryへ保存する。
+
+## デバッグ読み上げ
+
+`DebugReadoutRequest` と `DebugReadoutRequestRepository`、送信・購読用の `RequestDebugReadoutUseCase` / `ObserveDebugReadoutRequestUseCase` を提供する。`ReadoutItemKey.topLevelEntriesOf(simulator)` は一覧項目だけを entries 順に返す。`DebugReadoutText` は入力文言を置換せず音声経路へ渡すイベントで、本文の再解決には copy を使う。

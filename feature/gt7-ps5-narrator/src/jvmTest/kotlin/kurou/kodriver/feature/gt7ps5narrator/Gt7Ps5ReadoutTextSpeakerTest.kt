@@ -13,11 +13,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.AceWindowsRemainingFuelLapsWarning
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelLapsWarning
 import kurou.kodriver.domain.engine.Gt7Ps5RemainingFuelWarning
 import kurou.kodriver.domain.engine.Gt7Ps5TyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsMyBestLap
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEmptyReadoutTextUseCase
@@ -603,5 +606,22 @@ class Gt7Ps5ReadoutTextSpeakerTest {
             coVerify(exactly = 1) { checkAvailable() }
             coVerify(exactly = 0) { speakText("あと3周", volume = 80) }
             confirmVerified(observeText, checkAvailable, speakText)
+        }
+
+    @Test
+    fun `デバッグ要求の本文はテンプレート置換せずTTSで再生する`() =
+        runTest {
+            val key = ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5).first()
+            val event = DebugReadoutText(key, "入力 {laps}")
+            coEvery { checkAvailable() } returns true
+            coEvery { speakText(event.resolvedText, volume = 42) } just Runs
+
+            assertEquals(event.resolvedText, speaker.readoutText(event))
+            speaker(event, 42)
+            assertNull(speaker.readoutText(event.copy(resolvedText = " ")))
+            speaker(event.copy(resolvedText = " "), 42)
+            coVerify(exactly = 1) { checkAvailable() }
+            coVerify(exactly = 1) { speakText(event.resolvedText, volume = 42) }
+            confirmVerified(checkAvailable, speakText)
         }
 }

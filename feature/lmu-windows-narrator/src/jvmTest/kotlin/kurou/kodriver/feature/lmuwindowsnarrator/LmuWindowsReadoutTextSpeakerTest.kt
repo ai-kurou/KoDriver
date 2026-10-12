@@ -10,6 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.Gt7Ps5MyBestLap
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
@@ -28,6 +29,8 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.model.PitTimingSource
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
@@ -1202,5 +1205,22 @@ class LmuWindowsReadoutTextSpeakerTest {
             coVerify(exactly = 0) { checkTextToSpeechAvailable() }
             coVerify(exactly = 0) { speakText(" ", volume = VOLUME) }
             confirmAllMocksVerified()
+        }
+
+    @Test
+    fun `デバッグ要求の本文はテンプレート置換せずTTSで再生する`() =
+        runTest {
+            val key = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows).first()
+            val event = DebugReadoutText(key, "入力 {laps}")
+            coEvery { checkTextToSpeechAvailable() } returns true
+            coEvery { speakText(event.resolvedText, volume = 42) } just Runs
+
+            assertEquals(event.resolvedText, speaker.readoutText(event))
+            speaker(event, 42)
+            assertNull(speaker.readoutText(event.copy(resolvedText = " ")))
+            speaker(event.copy(resolvedText = " "), 42)
+            coVerify(exactly = 2) { checkTextToSpeechAvailable() }
+            coVerify(exactly = 1) { speakText(event.resolvedText, volume = 42) }
+            confirmVerified(checkTextToSpeechAvailable, speakText)
         }
 }

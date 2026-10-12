@@ -9,11 +9,22 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.DebugReadoutRequest
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.RequestDebugReadoutUseCase
 
 internal class Gt7Ps5DebugStateDetailViewModel(
     gt7Ps5UseCases: Gt7Ps5DebugStateUseCases,
     cardOrderUseCases: DebugStateCardOrderUseCases,
+    private val requestDebugReadout: RequestDebugReadoutUseCase,
 ) : ViewModel() {
+    private val _selectedReadoutItemKey =
+        MutableStateFlow<ReadoutItemKey>(
+            ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5).first(),
+        )
+    private val _debugReadoutText = MutableStateFlow("")
+
     private val resolveCardOrder = cardOrderUseCases.resolveCardOrder
     private val saveCardOrder = cardOrderUseCases::saveKeys
     private val _receivedCardKeys = MutableStateFlow(setOf(Gt7Ps5DebugStateCardKey.SIMULATOR))
@@ -47,9 +58,25 @@ internal class Gt7Ps5DebugStateDetailViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Gt7Ps5DebugStateDetailUiState())
 
     val uiState: StateFlow<Gt7Ps5DebugStateDetailUiState> =
-        combine(_header, gt7Ps5Source.state) { header, gt7Ps5 ->
-            header.copy(gt7Ps5 = gt7Ps5)
+        combine(_header, gt7Ps5Source.state, _selectedReadoutItemKey, _debugReadoutText) { header, gt7Ps5, key, text ->
+            header.copy(gt7Ps5 = gt7Ps5, selectedReadoutItemKey = key, debugReadoutText = text)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Gt7Ps5DebugStateDetailUiState())
+
+    fun selectReadoutItem(value: String) {
+        val key = ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5).find { it.value == value } ?: return
+        _selectedReadoutItemKey.update { key }
+    }
+
+    fun updateDebugReadoutText(text: String) {
+        _debugReadoutText.update { text }
+    }
+
+    fun requestReadout() {
+        val text = _debugReadoutText.value
+        if (text.isBlank()) return
+        val request = DebugReadoutRequest(Simulator.Gt7Ps5, _selectedReadoutItemKey.value, text)
+        viewModelScope.launch { requestDebugReadout(request) }
+    }
 
     fun moveCard(
         fromIndex: Int,

@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
+import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
@@ -72,6 +73,7 @@ internal class Gt7Ps5NarratorViewModel(
     private val eventProcessor: Gt7Ps5NarratorEventProcessor,
     private val determineGt7Ps5NarratorReadout: DetermineGt7Ps5NarratorReadoutUseCase =
         DetermineGt7Ps5NarratorReadoutUseCase(),
+    observeDebugReadoutRequest: ObserveDebugReadoutRequestUseCase,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
     private val selectedSimulator =
@@ -130,6 +132,22 @@ internal class Gt7Ps5NarratorViewModel(
                     myBestLapUseCases.observeGt7Ps5()
                 }
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    @Suppress("UnusedPrivateProperty")
+    private val debugReadoutRequestJob =
+        observeDebugReadoutRequest()
+            .onEach { request ->
+                if (request.simulator == Simulator.Gt7Ps5) {
+                    val state = narratorState
+                    eventProcessor.processDebugReadout(
+                        request = request,
+                        readoutOrder = readoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = currentTimeMs(),
+                        logContext = Gt7Ps5TelemetryLogContext(state, currentSettings, state),
+                    )
+                }
+            }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob =

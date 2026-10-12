@@ -9,6 +9,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
@@ -103,6 +104,7 @@ import org.koin.dsl.module
 @OptIn(ExperimentalResourceApi::class)
 val lmuWindowsNarratorModule: Module =
     module {
+        factory { ObserveDebugReadoutRequestUseCase(get()) }
         // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
         viewModel {
             LmuWindowsNarratorViewModel(
@@ -120,6 +122,7 @@ val lmuWindowsNarratorModule: Module =
                 get(),
                 get(),
                 get(),
+                observeDebugReadoutRequest = get(),
             )
         }
 

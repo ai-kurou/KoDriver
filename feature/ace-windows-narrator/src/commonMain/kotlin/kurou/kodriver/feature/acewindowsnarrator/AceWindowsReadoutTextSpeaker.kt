@@ -16,6 +16,7 @@ import kurou.kodriver.domain.engine.AceWindowsTyreOverheat
 import kurou.kodriver.domain.engine.AceWindowsVehicleApproach
 import kurou.kodriver.domain.engine.AceWindowsWhiteFlag
 import kurou.kodriver.domain.engine.AceWindowsYellowFlag
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.formatAceWindowsMyBestLapReadoutText
@@ -91,7 +92,9 @@ internal class AceWindowsReadoutTextSpeaker(
 
     private suspend fun eventText(event: SpeechEvent): ReadoutText? {
         val text =
-            if (event is AceWindowsTyreOverheat) {
+            if (event is DebugReadoutText) {
+                event.resolvedText
+            } else if (event is AceWindowsTyreOverheat) {
                 event.resolvedText
                     ?: formatAceWindowsTyreTemperatureReadoutText(
                         observeTyreOverheatReadoutText().first(),
@@ -178,6 +181,7 @@ internal class AceWindowsReadoutTextSpeaker(
 /** 自由文言対象の判定をNarratorと本文再生で共有する。 */
 internal fun isAceWindowsCustomSpeakEvent(event: SpeechEvent): Boolean =
     when (event) {
+        is DebugReadoutText,
         is AceWindowsWhiteFlag,
         is AceWindowsGreenFlag,
         is AceWindowsRedFlag,

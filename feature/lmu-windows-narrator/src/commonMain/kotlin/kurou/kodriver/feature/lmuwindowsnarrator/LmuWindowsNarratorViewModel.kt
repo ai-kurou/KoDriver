@@ -38,6 +38,7 @@ import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassTyreTemperatureH
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
+import kurou.kodriver.domain.usecase.ObserveDebugReadoutRequestUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearRemainingUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
@@ -164,6 +165,7 @@ internal class LmuWindowsNarratorViewModel(
     pitTimingUseCases: PitTimingUseCases,
     private val eventProcessor: LmuWindowsNarratorEventProcessor,
     private val narratorUseCases: NarratorUseCases,
+    observeDebugReadoutRequest: ObserveDebugReadoutRequestUseCase,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
     private var narratorState = LmuWindowsNarratorState()
@@ -328,6 +330,22 @@ internal class LmuWindowsNarratorViewModel(
                 SharingStarted.Eagerly,
                 LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             )
+
+    @Suppress("UnusedPrivateProperty")
+    private val debugReadoutRequestJob =
+        observeDebugReadoutRequest()
+            .onEach { request ->
+                if (request.simulator == Simulator.LmuWindows) {
+                    val state = narratorState
+                    eventProcessor.processDebugReadout(
+                        request = request,
+                        readoutOrder = readoutOrder.value,
+                        queueEnabledStates = queueEnabledStates.value,
+                        observedAtMs = currentTimeMs(),
+                        logContext = LmuWindowsTelemetryLogContext(state, currentSettings, state),
+                    )
+                }
+            }.launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob =

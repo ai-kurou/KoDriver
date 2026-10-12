@@ -86,3 +86,7 @@ SimHub Control Mapper が送る F9（VK `0x78`）で残りバーチャルエナ�
 既存の `RemainingVirtualEnergy.Root` / `RemainingVirtualEnergy.WarningReadout` スイッチに従う。
 ホットキーは固定で、設定 UI や追加の設定項目は不要。データ未受信時は何もしない。
 Android と非 Windows ではホットキー押下を通知しない。
+
+## デバッグ読み上げの例外
+
+デバッグ状態詳細ペインの要求は `ReadoutItemKey.topLevelEntriesOf` の項目を使用する。ログと優先度・キュー判定のキーは通常の Narrator と同じ TopLevel で、項目スイッチと determine 系の判定を意図的に通さず入力文字列を読み上げる。この経路は設定スイッチの配線確認には使わない。通常テレメトリ経路のスイッチ動作は従来どおり確認する。

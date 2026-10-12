@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.gt7ps5debugstatedetail
 
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,9 +16,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kurou.kodriver.core.designsystem.DebugReadoutRequestCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_best_lap_title
 import kurou.kodriver.feature.gt7ps5debugstatedetail.generated.resources.debug_state_current_lap_title
@@ -62,6 +66,9 @@ fun Gt7Ps5DebugStateDetailPane(
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         onMoveCard = viewModel::moveCard,
+        onReadoutItemSelected = viewModel::selectReadoutItem,
+        onDebugReadoutTextChange = viewModel::updateDebugReadoutText,
+        onRequestReadout = viewModel::requestReadout,
         modifier = modifier,
     )
 }
@@ -72,6 +79,9 @@ internal fun Gt7Ps5DebugStateDetailPaneContent(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     onMoveCard: (Int, Int) -> Unit = { _, _ -> },
+    onReadoutItemSelected: (String) -> Unit = {},
+    onDebugReadoutTextChange: (String) -> Unit = {},
+    onRequestReadout: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     DetailPaneScaffold(
@@ -88,19 +98,30 @@ internal fun Gt7Ps5DebugStateDetailPaneContent(
                 rememberReorderableLazyGridState(gridState) { from, to ->
                     onMoveCard(from.index, to.index)
                 }
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(columns),
-                state = gridState,
-                modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
-            ) {
-                items(uiState.cardOrder, key = { it.name }) { cardKey ->
-                    ReorderableItem(reorderableState, key = cardKey.name) {
-                        DebugStateCard(
-                            cardKey = cardKey,
-                            uiState = uiState,
-                            enabled = cardKey in uiState.enabledCardKeys,
-                            modifier = Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(),
-                        )
+            Column {
+                DebugReadoutRequestCard(
+                    readoutItemKeyValues = ReadoutItemKey.topLevelEntriesOf(Simulator.Gt7Ps5).map { it.value },
+                    selectedReadoutItemKeyValue = uiState.selectedReadoutItemKey.value,
+                    text = uiState.debugReadoutText,
+                    onReadoutItemSelected = onReadoutItemSelected,
+                    onTextChange = onDebugReadoutTextChange,
+                    onReadout = onRequestReadout,
+                    modifier = Modifier.padding(KoDriverSpacing.small),
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(columns),
+                    state = gridState,
+                    modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
+                ) {
+                    items(uiState.cardOrder, key = { it.name }) { cardKey ->
+                        ReorderableItem(reorderableState, key = cardKey.name) {
+                            DebugStateCard(
+                                cardKey = cardKey,
+                                uiState = uiState,
+                                enabled = cardKey in uiState.enabledCardKeys,
+                                modifier = Modifier.padding(KoDriverSpacing.small).longPressDraggableHandle(),
+                            )
+                        }
                     }
                 }
             }

@@ -10,10 +10,12 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.excludeRecords
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +27,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
@@ -33,6 +37,7 @@ import org.junit.rules.TestRule
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsDebugStateDetailPaneWiringTest {
@@ -155,6 +160,46 @@ class LmuWindowsDebugStateDetailPaneWiringTest {
             verify(atLeast = 1) { viewModel.uiState }
             verify(exactly = 0) { onBack() }
             confirmVerified(viewModel, onBack)
+        } finally {
+            stopKoin()
+        }
+    }
+
+    @Test
+    fun `固定カードはグリッドの上にあり項目選択と入力と送信をViewModelへ通知する`() {
+        val keys = ReadoutItemKey.topLevelEntriesOf(Simulator.LmuWindows)
+        val state = MutableStateFlow(LmuWindowsDebugStateDetailUiState())
+        excludeRecords { viewModel.uiState }
+        every { viewModel.uiState } returns state
+        every { viewModel.selectReadoutItem(keys.last().value) } answers {
+            state.update { it.copy(selectedReadoutItemKey = keys.last()) }
+        }
+        every { viewModel.updateDebugReadoutText("入力 {laps}") } answers {
+            state.update { it.copy(debugReadoutText = "入力 {laps}") }
+        }
+        every { viewModel.requestReadout() } returns Unit
+        startKoin { modules(module { single { viewModel } }) }
+        try {
+            rule.setContent {
+                KoDriverTheme {
+                    LmuWindowsDebugStateDetailPane(
+                        canNavigateBack = false,
+                        onBack = {},
+                        modifier = Modifier.requiredSize(1560.dp, 1080.dp),
+                    )
+                }
+            }
+            val card = rule.onNodeWithTag("debug_readout_request_card").fetchSemanticsNode().boundsInRoot
+            val grid = rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG).fetchSemanticsNode().boundsInRoot
+            assertEquals(true, card.bottom <= grid.top)
+            rule.onNodeWithTag("debug_readout_request_item").performClick()
+            rule.onNodeWithTag("debug_readout_item_${keys.last().value}").performClick()
+            rule.onNodeWithTag("debug_readout_request_text").performTextReplacement("入力 {laps}")
+            rule.onNodeWithText("読み上げ").performClick()
+            verify(exactly = 1) { viewModel.selectReadoutItem(keys.last().value) }
+            verify(exactly = 1) { viewModel.updateDebugReadoutText("入力 {laps}") }
+            verify(exactly = 1) { viewModel.requestReadout() }
+            confirmVerified(viewModel)
         } finally {
             stopKoin()
         }

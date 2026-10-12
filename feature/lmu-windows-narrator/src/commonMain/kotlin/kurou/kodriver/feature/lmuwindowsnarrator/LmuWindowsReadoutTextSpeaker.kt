@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kurou.kodriver.domain.engine.DebugReadoutText
 import kurou.kodriver.domain.engine.LmuWindowsBlueFlag
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
 import kurou.kodriver.domain.engine.LmuWindowsBrakeWearLow
@@ -134,6 +135,10 @@ internal class LmuWindowsReadoutTextSpeaker(
 
     private suspend fun eventText(event: SpeechEvent): String? =
         when (event) {
+            is DebugReadoutText -> {
+                event.resolvedText
+            }
+
             is LmuWindowsYellowFlag -> {
                 observeSectorYellowFlagReadoutText().first()
             }
