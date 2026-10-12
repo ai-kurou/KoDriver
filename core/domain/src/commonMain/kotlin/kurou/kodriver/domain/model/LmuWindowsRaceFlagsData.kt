@@ -6,13 +6,13 @@ import kotlinx.serialization.Serializable
 data class LmuWindowsRaceFlagsData(
     // セッション全体の進行状態。例: ガレージ、グリッド、走行中、終了後。
     val gamePhase: SessionPhase,
-    // セッション全体の黄旗状態。黄旗なし/FCY準備中/ピットクローズ等を表す。
+    // セッション全体のイエローフラッグ状態。イエローフラッグなし/FCY準備中/ピットクローズ等を表す。
     val yellowFlagState: SessionYellowFlagState,
-    // 各セクターの旗状態。0番目=セクター1、1番目=セクター2、2番目=セクター3。
+    // 各セクターのフラッグ状態。0番目=セクター1、1番目=セクター2、2番目=セクター3。
     val sectorFlags: List<SectorFlagState>,
-    // プレイヤー車両個別に出ている旗指示。追い越し指示やペナルティ指示など。
+    // プレイヤー車両個別に出ているフラッグ指示。追い越し指示やペナルティ指示など。
     val playerFlag: PrimaryFlag,
-    // プレイヤー車両が黄旗制御下にあるかどうか。
+    // プレイヤー車両がイエローフラッグ制御下にあるかどうか。
     val playerUnderYellow: Boolean,
 )
 
@@ -63,7 +63,7 @@ enum class SessionYellowFlagState(
 }
 
 // shared memory の ScoringInfo.mSectorFlag[3] に対応する値。
-// 通常は 0=クリア、1=黄旗として使われるため、その前提で enum 化している。
+// 通常は 0=クリア、1=イエローフラッグとして使われるため、その前提で enum 化している。
 @Serializable
 enum class SectorFlagState(
     val rawValue: Int,

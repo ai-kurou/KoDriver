@@ -699,7 +699,7 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `直前のフラグデータがないイベントはnullとして保存する`() =
+    fun `直前のフラッグデータがないイベントはnullとして保存する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null
@@ -743,7 +743,7 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
-    fun `読み上げたフラグイベントを直前と現在のフラグデータとともに保存する`() =
+    fun `読み上げたフラッグイベントを直前と現在のフラッグデータとともに保存する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
             every { ttsEngine.currentReadoutItemKey } returns null

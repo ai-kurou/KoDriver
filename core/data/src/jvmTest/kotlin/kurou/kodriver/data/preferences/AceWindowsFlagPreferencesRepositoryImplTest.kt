@@ -50,7 +50,7 @@ class AceWindowsFlagPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `複数フラグを独立して保存・取得できる`() =
+    fun `複数フラッグを独立して保存・取得できる`() =
         runTest {
             repository.saveFlagEnabledState(AceWindowsReadoutItemKey.Flag.BlueFlag, true)
             repository.saveFlagEnabledState(AceWindowsReadoutItemKey.Flag.YellowFlag, false)

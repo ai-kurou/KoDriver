@@ -44,7 +44,7 @@ class LmuWindowsDebugStateDetailPaneTest {
     }
 
     @Test
-    fun `フラグ情報・ゲームフェーズ・セッションが未取得の場合は未取得の文言を表示する`() {
+    fun `フラッグ情報・ゲームフェーズ・セッションが未取得の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
@@ -231,7 +231,7 @@ class LmuWindowsDebugStateDetailPaneTest {
     }
 
     @Test
-    fun `フラグ情報が取得済みでアクティブなフラグがない場合はフラッグなしを表示する`() {
+    fun `フラッグ情報が取得済みでアクティブなフラッグがない場合はフラッグなしを表示する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
@@ -315,7 +315,7 @@ class LmuWindowsDebugStateDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("フラグ情報").assertIsDisplayed()
+        rule.onNodeWithText("フラッグ情報").assertIsDisplayed()
         rule.onNodeWithText("選択中のシミュレーター").assertIsDisplayed()
     }
 

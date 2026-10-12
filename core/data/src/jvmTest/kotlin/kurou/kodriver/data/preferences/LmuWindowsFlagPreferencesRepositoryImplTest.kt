@@ -50,7 +50,7 @@ class LmuWindowsFlagPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `複数フラグを独立して保存・取得できる`() =
+    fun `複数フラッグを独立して保存・取得できる`() =
         runTest {
             repository.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.BlueFlag, true)
             repository.saveFlagEnabledState(LmuWindowsReadoutItemKey.Flag.SectorYellowFlag, false)

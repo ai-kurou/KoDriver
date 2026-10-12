@@ -41,7 +41,7 @@ class FlagInfoContentTest {
     }
 
     @Test
-    fun `アクティブなフラグがない場合はなしの文言を表示する`() {
+    fun `アクティブなフラッグがない場合はなしの文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
@@ -63,7 +63,7 @@ class FlagInfoContentTest {
     }
 
     @Test
-    fun `アクティブなフラグがある場合はその名称を表示する`() {
+    fun `アクティブなフラッグがある場合はその名称を表示する`() {
         rule.setContent {
             MaterialTheme {
                 LmuWindowsDebugStateDetailPaneContent(
@@ -113,7 +113,7 @@ class FlagInfoContentTest {
         )
 
     @Test
-    fun `表示するフラグが同じならyellowFlagStateが変わってもコンテンツキーは変わらない`() {
+    fun `表示するフラッグが同じならyellowFlagStateが変わってもコンテンツキーは変わらない`() {
         val before = sampleRaceFlags(PrimaryFlag.GREEN)
         val after = before.copy(yellowFlagState = SessionYellowFlagState.PENDING)
 
@@ -124,7 +124,7 @@ class FlagInfoContentTest {
     }
 
     @Test
-    fun `表示するフラグが変わるとコンテンツキーも変わる`() {
+    fun `表示するフラッグが変わるとコンテンツキーも変わる`() {
         assertNotEquals(
             flagInfoContentKey(sampleRaceFlags(PrimaryFlag.GREEN)),
             flagInfoContentKey(sampleRaceFlags(PrimaryFlag.BLUE)),

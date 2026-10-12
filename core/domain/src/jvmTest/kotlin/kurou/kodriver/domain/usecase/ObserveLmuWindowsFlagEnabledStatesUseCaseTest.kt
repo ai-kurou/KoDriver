@@ -39,7 +39,7 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
     private val repository: LmuWindowsFlagPreferencesRepository = mockk()
 
     @Test
-    fun `初期値はフラグ4種のデフォルトtrueを返す`() =
+    fun `初期値はフラッグ4種のデフォルトtrueを返す`() =
         runTest {
             val repo = createLmuWindowsFlagPreferencesRepository(repository)
             val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)

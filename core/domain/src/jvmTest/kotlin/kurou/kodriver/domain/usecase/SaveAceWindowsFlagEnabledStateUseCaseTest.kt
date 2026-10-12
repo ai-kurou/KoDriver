@@ -12,7 +12,7 @@ class SaveAceWindowsFlagEnabledStateUseCaseTest {
     private val repository: AceWindowsFlagPreferencesRepository = mockk(relaxUnitFun = true)
 
     @Test
-    fun `指定したフラグの有効状態が保存される`() =
+    fun `指定したフラッグの有効状態が保存される`() =
         runTest {
             SaveAceWindowsFlagEnabledStateUseCase(repository)(AceWindowsReadoutItemKey.Flag.RedFlag, false)
 

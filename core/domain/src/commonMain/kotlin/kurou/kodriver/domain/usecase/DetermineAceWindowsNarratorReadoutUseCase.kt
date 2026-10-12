@@ -38,7 +38,7 @@ import kotlin.math.roundToInt
 /**
  * ACE 向け読み上げ判定の継続状態。
  *
- * 同じ低燃料警告・同じ旗状態・同じタイヤ過熱状態・同じ車両接近状態・同じ燃料残り周回数を連続で読み上げないため、
+ * 同じ低燃料警告・同じフラッグ状態・同じタイヤ過熱状態・同じ車両接近状態・同じ燃料残り周回数を連続で読み上げないため、
  * 前回の判定結果を保持する。
  */
 data class AceWindowsNarratorState(
@@ -70,7 +70,7 @@ data class AceWindowsNarratorReadoutDecision(
 )
 
 /**
- * ACE の燃料残量・旗状態・タイヤカーカス温度・周辺車両接近から、今回読み上げるべき音声イベントを決定する UseCase。
+ * ACE の燃料残量・フラッグ状態・タイヤカーカス温度・周辺車両接近から、今回読み上げるべき音声イベントを決定する UseCase。
  *
  * 注意: ACE の共有メモリには自車の向きに相当するフィールドが存在せず、周辺車両との直線距離
  * （[AceWindowsVehicleApproachData.nearbyVehicles]）のみが取得できるため、LMU（[LmuWindowsCarLeft]/

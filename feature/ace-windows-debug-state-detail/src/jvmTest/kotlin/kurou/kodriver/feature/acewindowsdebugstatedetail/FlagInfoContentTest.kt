@@ -38,7 +38,7 @@ class FlagInfoContentTest {
     }
 
     @Test
-    fun `ACEの場合はフラグの表示名を表示する`() {
+    fun `ACEの場合はフラッグの表示名を表示する`() {
         val expected =
             mapOf(
                 AceWindowsFlagType.NO_FLAG to "フラッグなし",
@@ -78,7 +78,7 @@ class FlagInfoContentTest {
     }
 
     @Test
-    fun `フラグの種類だけでコンテンツキーが決まる`() {
+    fun `フラッグの種類だけでコンテンツキーが決まる`() {
         val green = AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG)
         val red = AceWindowsFlagData(flag = AceWindowsFlagType.RED_FLAG)
 
