@@ -321,7 +321,10 @@ private fun DefaultOtherContent(
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
     var showOverlayTextSizeDialog by rememberSaveable { mutableStateOf(false) }
     if (showReadoutStartSoundDialog) {
-        OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
+        OtherReadoutStartSoundDetailDialog(
+            simulatorId = selectedSimulatorId,
+            onDismiss = { showReadoutStartSoundDialog = false },
+        )
     }
     if (showThemeDialog) {
         OtherThemeDetailDialog(onDismiss = { showThemeDialog = false })
