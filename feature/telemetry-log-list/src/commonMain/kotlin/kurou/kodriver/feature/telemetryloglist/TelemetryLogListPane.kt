@@ -68,8 +68,10 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.ScrollToTopEffect
+import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.util.MILLISECONDS_PER_DAY
 import kurou.kodriver.domain.util.MILLISECONDS_PER_HOUR
@@ -80,6 +82,7 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.new_telemetry
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_menu_item
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title_for_simulator
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_feedback_menu_item
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_more_button
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_narration_interrupted_description
@@ -101,6 +104,7 @@ internal fun TelemetryLogListPane(
 ) {
     if (uiState.logs.isEmpty()) {
         TelemetryLogEmptyState(
+            selectedSimulator = uiState.selectedSimulator,
             modifier = modifier.fillMaxSize(),
         )
         return
@@ -275,7 +279,10 @@ private fun TelemetryLogResetListItem(
 }
 
 @Composable
-private fun TelemetryLogEmptyState(modifier: Modifier = Modifier) {
+private fun TelemetryLogEmptyState(
+    selectedSimulator: Simulator?,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier = modifier.padding(KoDriverSpacing.extraLarge),
         contentAlignment = Alignment.Center,
@@ -291,7 +298,15 @@ private fun TelemetryLogEmptyState(modifier: Modifier = Modifier) {
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = stringResource(Res.string.telemetry_log_empty_title),
+                text =
+                    if (selectedSimulator != null) {
+                        stringResource(
+                            Res.string.telemetry_log_empty_title_for_simulator,
+                            simulatorDisplayName(selectedSimulator.id),
+                        )
+                    } else {
+                        stringResource(Res.string.telemetry_log_empty_title)
+                    },
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,

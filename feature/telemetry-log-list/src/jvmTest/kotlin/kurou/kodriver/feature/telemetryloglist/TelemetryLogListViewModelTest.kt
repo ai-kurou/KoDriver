@@ -20,8 +20,10 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kotlin.test.AfterTest
@@ -36,6 +38,8 @@ class TelemetryLogListViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
     private val repository: TelemetryLogRepository = mockk()
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
+    private val selectedSimulator = MutableStateFlow<Simulator>(Simulator.LmuWindows)
 
     private val logsFlow = MutableStateFlow(emptyList<TelemetryLog>())
 
@@ -54,7 +58,9 @@ class TelemetryLogListViewModelTest {
             observeSortedTelemetryLogs =
                 ObserveSortedTelemetryLogsUseCase(
                     ObserveTelemetryLogsUseCase(repository),
+                    ObserveSelectedSimulatorUseCase(simulatorRepository),
                 ),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
             deleteTelemetryLog = DeleteTelemetryLogUseCase(repository),
         )
@@ -63,6 +69,7 @@ class TelemetryLogListViewModelTest {
     fun `ログの更新を観測する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
@@ -92,9 +99,11 @@ class TelemetryLogListViewModelTest {
         }
 
     @Test
-    fun `ace_windowsのログも観測する`() =
+    fun `選択中のace_windowsとそのログを観測する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
+            selectedSimulator.update { Simulator.AceWindows }
             val viewModel = createViewModel()
 
             logsFlow.update {
@@ -108,6 +117,7 @@ class TelemetryLogListViewModelTest {
                     .logs
                     .map { it.simulator },
             )
+            assertEquals(Simulator.AceWindows, viewModel.uiState.first().selectedSimulator)
             verify(exactly = 1) { repository.observeTelemetryLogs() }
             confirmVerified(repository)
         }
@@ -116,6 +126,7 @@ class TelemetryLogListViewModelTest {
     fun `selectLogで未選択のログIDを選択する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
@@ -130,6 +141,7 @@ class TelemetryLogListViewModelTest {
     fun `selectLogで選択済みのログIDを再選択すると選択状態を解除する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
@@ -146,6 +158,7 @@ class TelemetryLogListViewModelTest {
     fun `clearSelectedLogで選択状態を解除する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
@@ -162,6 +175,7 @@ class TelemetryLogListViewModelTest {
     fun `選択中のログが一覧から消えた場合は選択状態を解除する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
@@ -175,9 +189,40 @@ class TelemetryLogListViewModelTest {
         }
 
     @Test
+    fun `シミュレーターを切り替えると一覧と選択中シミュレーターが更新されログ選択を解除する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
+            logsFlow.update {
+                listOf(
+                    telemetryLog(id = 1, createdAt = 100),
+                    telemetryLog(id = 2, createdAt = 300, simulator = Simulator.AceWindows),
+                )
+            }
+            val viewModel = createViewModel()
+            viewModel.selectLog(1)
+            val initial = viewModel.uiState.first { it.selectedLogId == 1L }
+            assertEquals(Simulator.LmuWindows, initial.selectedSimulator)
+            assertEquals(listOf(1L), initial.logs.map { it.id })
+
+            selectedSimulator.update { Simulator.AceWindows }
+
+            val state =
+                viewModel.uiState.first {
+                    it.selectedSimulator == Simulator.AceWindows && it.logs.firstOrNull()?.id == 2L
+                }
+            assertEquals(listOf(2L), state.logs.map { it.id })
+            assertNull(state.selectedLogId)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            verify(exactly = 2) { simulatorRepository.selectedSimulator() }
+            confirmVerified(repository, simulatorRepository)
+        }
+
+    @Test
     fun `resetDatabaseに成功するとisResettingがfalseに戻りresetSucceededがtrueになる`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
             val viewModel = createViewModel()
 
@@ -198,6 +243,7 @@ class TelemetryLogListViewModelTest {
     fun `resetDatabaseが失敗するとresetSucceededがfalseになる`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             coEvery { repository.deleteAllTelemetryLogs() } throws IllegalStateException("削除に失敗しました")
             val viewModel = createViewModel()
 
@@ -215,6 +261,7 @@ class TelemetryLogListViewModelTest {
     fun `onResetClickで確認ダイアログを表示する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             viewModel.onResetClick()
@@ -228,6 +275,7 @@ class TelemetryLogListViewModelTest {
     fun `onResetDismissで確認ダイアログを閉じる`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             val viewModel = createViewModel()
 
             viewModel.onResetClick()
@@ -243,6 +291,7 @@ class TelemetryLogListViewModelTest {
     fun `onResetConfirmでダイアログを閉じてresetDatabaseを実行する`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
             val viewModel = createViewModel()
 
@@ -265,6 +314,7 @@ class TelemetryLogListViewModelTest {
     fun `consumeResetResultでresetSucceededをnullに戻す`() =
         runTest(dispatcher) {
             every { repository.observeTelemetryLogs() } returns logsFlow
+            every { simulatorRepository.selectedSimulator() } returns selectedSimulator
             coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
             val viewModel = createViewModel()
 

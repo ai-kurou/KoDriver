@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 
 /**
@@ -18,6 +19,7 @@ import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
  */
 class TelemetryLogListViewModel internal constructor(
     observeSortedTelemetryLogs: ObserveSortedTelemetryLogsUseCase,
+    observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
     private val deleteTelemetryLog: DeleteTelemetryLogUseCase,
 ) : ViewModel() {
@@ -48,8 +50,10 @@ class TelemetryLogListViewModel internal constructor(
             resetUiState,
             _deleteState,
             _pendingDeleteLogId,
-        ) { baseUiState, deleteState, pendingDeleteLogId ->
+            observeSelectedSimulator(),
+        ) { baseUiState, deleteState, pendingDeleteLogId, selectedSimulator ->
             baseUiState.copy(
+                selectedSimulator = selectedSimulator,
                 pendingDeleteLogId = pendingDeleteLogId,
                 isDeleting = deleteState.isDeleting,
                 deleteSucceeded = deleteState.deleteSucceeded,

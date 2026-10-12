@@ -1,9 +1,42 @@
 package kurou.kodriver.feature.telemetryloglist
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.Simulator
+import org.junit.Rule
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TelemetryLogListPaneTest {
+    @get:Rule
+    val rule = createComposeRule()
+
+    @Test
+    fun `選択中のシミュレーターがない場合は既存の空状態を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                TelemetryLogListPane(uiState = TelemetryLogListUiState(selectedSimulator = null))
+            }
+        }
+
+        rule.onNodeWithText("ログはまだありません").assertIsDisplayed()
+        rule.onNodeWithText("テレメトリを受信すると、ここに新しい順で表示されます。").assertIsDisplayed()
+    }
+
+    @Test
+    fun `選択中のシミュレーターの表示名を含む空状態を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                TelemetryLogListPane(uiState = TelemetryLogListUiState(selectedSimulator = Simulator.LmuWindows))
+            }
+        }
+
+        rule.onNodeWithText("Le Mans Ultimate（Windows版）のログはまだありません").assertIsDisplayed()
+        rule.onNodeWithText("テレメトリを受信すると、ここに新しい順で表示されます。").assertIsDisplayed()
+    }
+
     @Test
     fun `UTC0時0分0秒はJST9時0分0秒として表示する`() {
         val text = formatTelemetryLogTime(createdAt = 0L, raceElapsedMs = 0L)

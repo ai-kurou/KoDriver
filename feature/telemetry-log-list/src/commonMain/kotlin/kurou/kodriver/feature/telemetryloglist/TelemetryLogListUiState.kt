@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.telemetryloglist
 
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 
 /**
@@ -8,6 +9,7 @@ import kurou.kodriver.domain.model.TelemetryLog
 data class TelemetryLogListUiState(
     val logs: List<TelemetryLog> = emptyList(),
     val selectedLogId: Long? = null,
+    val selectedSimulator: Simulator? = null,
     val isResetting: Boolean = false,
     val resetSucceeded: Boolean? = null,
     val showResetConfirmDialog: Boolean = false,
