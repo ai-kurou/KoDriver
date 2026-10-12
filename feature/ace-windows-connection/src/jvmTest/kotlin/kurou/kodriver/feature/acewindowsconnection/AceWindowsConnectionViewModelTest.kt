@@ -130,7 +130,7 @@ class AceWindowsConnectionViewModelTest {
         }
 
     @Test
-    fun `ACEから別シミュレータへ切り替えると未確認にリセットされる`() =
+    fun `ACEから別シミュレーターへ切り替えると未確認にリセットされる`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.AceWindows)
             every { connectionRepository.fuelStream() } returns MutableStateFlow(defaultFuel)

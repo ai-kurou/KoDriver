@@ -30,8 +30,8 @@
     <string name="debug_state_vehicle_location_title">車両位置</string>
     <string name="debug_state_vehicle_location_ace_unassigned">Unassigned（未割当）</string>
     <string name="debug_state_vehicle_location_ace_pitlane">PitLane（ピットレーン）</string>
-    <string name="debug_state_vehicle_location_ace_pitentry">PitEntry（ピット進入）</string>
-    <string name="debug_state_vehicle_location_ace_pitexit">PitExit（ピット退出）</string>
+    <string name="debug_state_vehicle_location_ace_pitentry">PitEntry（ピットイン）</string>
+    <string name="debug_state_vehicle_location_ace_pitexit">PitExit（ピットアウト）</string>
     <string name="debug_state_vehicle_location_ace_track">Track（コース上）</string>
     <string name="debug_state_unknown">不明</string>
     <string name="debug_state_vehicle_location_ace_status">ステータス: %1$s</string>

@@ -29,7 +29,7 @@ class AppScreenPrimarySimulatorItemTest {
     }
 
     @Test
-    fun `アイコンには シミュレータを選択 のcontentDescriptionが設定される`() {
+    fun `アイコンには シミュレーターを選択 のcontentDescriptionが設定される`() {
         rule.setContent {
             AppScreenPrimarySimulatorIcon(simulatorId = "lmu_windows")
         }
@@ -68,7 +68,7 @@ class AppScreenPrimarySimulatorItemTest {
     }
 
     @Test
-    fun `expandedがtrueの場合シミュレータ一覧が表示される`() {
+    fun `expandedがtrueの場合シミュレーター一覧が表示される`() {
         rule.setContent {
             AppScreenPrimarySimulatorIndicator(
                 simulatorId = "lmu_windows",
@@ -84,7 +84,7 @@ class AppScreenPrimarySimulatorItemTest {
     }
 
     @Test
-    fun `expandedがfalseの場合シミュレータ一覧が表示されない`() {
+    fun `expandedがfalseの場合シミュレーター一覧が表示されない`() {
         rule.setContent {
             AppScreenPrimarySimulatorIndicator(
                 simulatorId = "lmu_windows",

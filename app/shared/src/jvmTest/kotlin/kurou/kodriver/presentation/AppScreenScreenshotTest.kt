@@ -155,7 +155,7 @@ class AppScreenScreenshotTest {
         }
 
     @Test
-    fun `NavigationRail シミュレータ選択ポップアップ`() =
+    fun `NavigationRail シミュレーター選択ポップアップ`() =
         composeScreenshotTest {
             setAppContent {
                 val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
@@ -265,7 +265,7 @@ class AppScreenScreenshotTest {
         }
 
     @Test
-    fun `NavigationBar シミュレータ選択ポップアップ`() =
+    fun `NavigationBar シミュレーター選択ポップアップ`() =
         composeScreenshotTest {
             setAppContent {
                 val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)

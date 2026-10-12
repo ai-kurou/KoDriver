@@ -229,7 +229,7 @@ class DesktopKoinModuleGraphTest {
                     },
                 ),
         ) {
-            // 開始音ダイアログの ViewModel が要求する選択中のシミュレータ ID。
+            // 開始音ダイアログの ViewModel が要求する選択中のシミュレーター ID。
             withInstance(Simulator.LmuWindows.id)
         }
     }

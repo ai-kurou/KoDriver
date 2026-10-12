@@ -257,7 +257,7 @@ class AppScreenViewModelTest {
         }
 
     @Test
-    fun `選択済みシミュレータがuiStateに反映される`() =
+    fun `選択済みシミュレーターがuiStateに反映される`() =
         runTest {
             val viewModel = createViewModel(selectedSimulator = Simulator.LmuWindows)
             val uiState = viewModel.uiState.first()

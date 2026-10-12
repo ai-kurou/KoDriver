@@ -60,7 +60,7 @@ class OtherReadoutStartSoundDetailDialogWiringTest {
     private val aceEngine: TextToSpeechEngine = mockk()
 
     @Test
-    fun `同じViewModelStoreOwnerでシミュレータを切り替えて再表示すると対応するエンジンだけで試聴する`() {
+    fun `同じViewModelStoreOwnerでシミュレーターを切り替えて再表示すると対応するエンジンだけで試聴する`() {
         every { repository.observeType() } returns flowOf(ReadoutStartSoundType.FORMULA_RADIO)
         every { lmuEngine.previewStartSound(ReadoutStartSoundType.ELECTRONIC_NOISE) } returns Unit
         every { gt7Engine.previewStartSound(ReadoutStartSoundType.ELECTRONIC_NOISE) } returns Unit

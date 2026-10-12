@@ -70,7 +70,7 @@ class ReadoutListItemTypeFromIdTest {
     }
 
     @Test
-    fun `lmu_windows でシミュレータに属さないキーは null を返す`() {
+    fun `lmu_windows でシミュレーターに属さないキーは null を返す`() {
         assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root))
     }
 
@@ -83,7 +83,7 @@ class ReadoutListItemTypeFromIdTest {
     }
 
     @Test
-    fun `gt7_ps5 でシミュレータに属さないキーは null を返す`() {
+    fun `gt7_ps5 でシミュレーターに属さないキーは null を返す`() {
         assertNull(ReadoutListItemType.fromId(Simulator.Gt7Ps5, LmuWindowsReadoutItemKey.Flag.Root))
     }
 

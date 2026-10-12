@@ -48,7 +48,7 @@ class ObserveTelemetryReceivingUseCaseTest {
         )
 
     @Test
-    fun `選択中シミュレータのテレメトリを受信するとtrueになる`() =
+    fun `選択中シミュレーターのテレメトリを受信するとtrueになる`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             val telemetry = MutableSharedFlow<LmuWindowsTelemetryData>(replay = 1)

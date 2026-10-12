@@ -86,7 +86,7 @@ class AndroidReadoutPreferencesRepositoryTest {
         }
 
     @Test
-    fun `異なるシミュレータのデータは互いに影響しない`() =
+    fun `異なるシミュレーターのデータは互いに影響しない`() =
         runTest(testDispatcher) {
             repository.saveReadoutEnabledState("lmu_windows", LmuWindowsReadoutItemKey.VehicleApproach.Root, true)
             repository.saveReadoutOrder("lmu_windows", listOf(LmuWindowsReadoutItemKey.VehicleApproach.Root))

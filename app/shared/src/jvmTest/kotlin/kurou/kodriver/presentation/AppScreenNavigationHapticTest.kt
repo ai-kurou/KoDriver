@@ -49,7 +49,7 @@ class AppScreenNavigationHapticTest {
     }
 
     @Test
-    fun `NavigationBarのシミュレータメニューと選択は振動設定trueに従う`() {
+    fun `NavigationBarのシミュレーターメニューと選択は振動設定trueに従う`() {
         val haptic = FakeHapticFeedback()
         var selectedId: String? = null
         rule.setContent {
@@ -97,7 +97,7 @@ class AppScreenNavigationHapticTest {
     }
 
     @Test
-    fun `NavigationBarのシミュレータメニューと選択は振動設定falseに従う`() {
+    fun `NavigationBarのシミュレーターメニューと選択は振動設定falseに従う`() {
         val haptic = FakeHapticFeedback()
         var selectedId: String? = null
         rule.setContent {
@@ -155,7 +155,7 @@ class AppScreenNavigationHapticTest {
     }
 
     @Test
-    fun `NavigationRailのシミュレータメニューと選択は振動設定trueに従う`() {
+    fun `NavigationRailのシミュレーターメニューと選択は振動設定trueに従う`() {
         val haptic = FakeHapticFeedback()
         var selectedId: String? = null
         rule.setContent {
@@ -203,7 +203,7 @@ class AppScreenNavigationHapticTest {
     }
 
     @Test
-    fun `NavigationRailのシミュレータメニューと選択は振動設定falseに従う`() {
+    fun `NavigationRailのシミュレーターメニューと選択は振動設定falseに従う`() {
         val haptic = FakeHapticFeedback()
         var selectedId: String? = null
         rule.setContent {

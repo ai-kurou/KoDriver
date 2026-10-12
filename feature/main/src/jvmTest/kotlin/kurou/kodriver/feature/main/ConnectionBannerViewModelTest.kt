@@ -188,7 +188,7 @@ class ConnectionBannerViewModelTest {
         }
 
     @Test
-    fun `ACEから別シミュレータへ切り替えるとGT7の接続確認を開始する`() =
+    fun `ACEから別シミュレーターへ切り替えるとGT7の接続確認を開始する`() =
         runTest {
             val aceChecker = FakeAceBannerConnectionChecker(isConnected = true)
             val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.AceWindows)
