@@ -1,0 +1,9 @@
+digraph G {
+  rankdir=TB
+  node [shape=box, style="rounded,filled"]
+  ":app:desktopApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
+  ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:windows-hotkey-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=2.5]
+  ":app:desktopApp" -> ":core:windows-hotkey-data"
+  ":core:windows-hotkey-data" -> ":core:domain"
+}
