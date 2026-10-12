@@ -36,6 +36,8 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.core.designsystem.constrainToTabletopTopPane
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.core.designsystem.shouldCollapseDetailPane
+import kurou.kodriver.core.designsystem.simulatorDisplayName
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_failure
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_success
@@ -202,12 +204,12 @@ internal fun TelemetryLogContentScaffold(
         onResultConsumed = onDeleteResultConsumed,
     )
 
-    if (uiState.showResetConfirmDialog) {
-        TelemetryLogResetConfirmDialog(
-            onConfirm = onResetConfirm,
-            onDismiss = onResetDismiss,
-        )
-    }
+    TelemetryLogResetConfirmDialogHost(
+        visible = uiState.showResetConfirmDialog,
+        selectedSimulator = uiState.selectedSimulator,
+        onConfirm = onResetConfirm,
+        onDismiss = onResetDismiss,
+    )
 
     if (uiState.pendingDeleteLogId != null) {
         TelemetryLogDeleteConfirmDialog(
@@ -244,6 +246,22 @@ internal fun TelemetryLogContentScaffold(
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
+        )
+    }
+}
+
+@Composable
+private fun TelemetryLogResetConfirmDialogHost(
+    visible: Boolean,
+    selectedSimulator: Simulator?,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    if (visible && selectedSimulator != null) {
+        TelemetryLogResetConfirmDialog(
+            simulatorName = simulatorDisplayName(selectedSimulator.id),
+            onConfirm = onConfirm,
+            onDismiss = onDismiss,
         )
     }
 }

@@ -5,7 +5,7 @@
     <string name="telemetry_log_empty_description">テレメトリを受信すると、ここに新しい順で表示されます。</string>
     <string name="telemetry_log_reset_item">データベースをリセット</string>
     <string name="telemetry_log_reset_confirm_title">データベースをリセットしますか？</string>
-    <string name="telemetry_log_reset_confirm_body">保存されているすべてのテレメトリログが削除されます。この操作は元に戻せません。</string>
+    <string name="telemetry_log_reset_confirm_body">%1$sのテレメトリログがすべて削除されます。他のシミュレーターのログは削除されません。この操作は元に戻せません。</string>
     <string name="telemetry_log_reset_confirm_button">削除する</string>
     <string name="telemetry_log_reset_cancel_button">キャンセル</string>
     <string name="telemetry_log_reset_success">データベースをリセットしました</string>

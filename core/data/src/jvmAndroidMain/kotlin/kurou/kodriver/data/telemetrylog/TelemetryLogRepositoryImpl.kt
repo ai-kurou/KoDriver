@@ -63,8 +63,8 @@ internal class TelemetryLogRepositoryImpl(
         )
     }
 
-    override suspend fun deleteAllTelemetryLogs() {
-        dao.deleteAll()
+    override suspend fun deleteTelemetryLogsBySimulator(simulator: Simulator) {
+        dao.deleteBySimulator(simulator.id)
     }
 
     override suspend fun deleteTelemetryLog(id: Long) {

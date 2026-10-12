@@ -17,6 +17,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TelemetryLogResetConfirmDialog(
+    simulatorName: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
@@ -24,7 +25,7 @@ internal fun TelemetryLogResetConfirmDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.telemetry_log_reset_confirm_title)) },
-        text = { Text(stringResource(Res.string.telemetry_log_reset_confirm_body)) },
+        text = { Text(stringResource(Res.string.telemetry_log_reset_confirm_body, simulatorName)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
                 Text(
@@ -49,6 +50,7 @@ internal fun TelemetryLogResetConfirmDialog(
 private fun TelemetryLogResetConfirmDialogPreview() {
     KoDriverTheme {
         TelemetryLogResetConfirmDialog(
+            simulatorName = "Assetto Corsa EVO",
             onConfirm = {},
             onDismiss = {},
         )

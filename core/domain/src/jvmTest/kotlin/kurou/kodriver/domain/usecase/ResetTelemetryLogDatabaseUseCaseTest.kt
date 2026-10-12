@@ -59,8 +59,10 @@ private fun createTelemetryLogRepository(
             logs.update { it + log.copy(id = nextId) }
         }
     }
-    coEvery { repository.deleteAllTelemetryLogs() } answers {
-        logs.update { emptyList() }
+    listOf(Simulator.Gt7Ps5, Simulator.LmuWindows).forEach { simulator ->
+        coEvery { repository.deleteTelemetryLogsBySimulator(simulator) } answers {
+            logs.update { current -> current.filterNot { it.simulator == simulator } }
+        }
     }
     return repository
 }
@@ -69,8 +71,18 @@ class ResetTelemetryLogDatabaseUseCaseTest {
     private val repository: TelemetryLogRepository = mockk()
 
     @Test
-    fun `全てのログを削除する`() =
+    fun `指定シミュレーターのログのみ削除して他シミュレーターのログを残す`() =
         runTest {
+            val otherLog =
+                TelemetryLog(
+                    id = 2L,
+                    createdAt = 2000L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = LmuWindowsReadoutItemKey.Flag.Root,
+                    narratedText = "イエローフラッグ",
+                    narrationOutcome = NarrationOutcome.QUEUED,
+                    telemetryJson = "{}",
+                )
             val repository =
                 createTelemetryLogRepository(
                     repository,
@@ -85,15 +97,16 @@ class ResetTelemetryLogDatabaseUseCaseTest {
                                 narrationOutcome = NarrationOutcome.QUEUED,
                                 telemetryJson = """{"lapCount":1}""",
                             ),
+                            otherLog,
                         ),
                 )
             val resetUseCase = ResetTelemetryLogDatabaseUseCase(repository)
             val observeUseCase = ObserveTelemetryLogsUseCase(repository)
 
-            resetUseCase()
+            resetUseCase(Simulator.Gt7Ps5)
 
-            assertEquals(emptyList(), observeUseCase().first())
-            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            assertEquals(listOf(otherLog), observeUseCase().first())
+            coVerify(exactly = 1) { repository.deleteTelemetryLogsBySimulator(Simulator.Gt7Ps5) }
             verify(exactly = 1) { repository.observeTelemetryLogs() }
             confirmVerified(repository)
         }

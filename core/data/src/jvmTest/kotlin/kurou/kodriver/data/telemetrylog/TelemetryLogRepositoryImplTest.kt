@@ -80,17 +80,27 @@ class TelemetryLogRepositoryImplTest {
         }
 
     @Test
-    fun `deleteAllTelemetryLogsは全てのログを削除する`() =
+    fun `deleteTelemetryLogsBySimulatorは指定シミュレーターのログのみ全て削除する`() =
         runTest {
+            val otherLog = telemetryLogEntity(id = 2L, createdAt = 2000L)
             val dao =
                 FakeTelemetryLogDao(
-                    initialLogs = listOf(telemetryLogEntity(id = 1L, createdAt = 1000L)),
+                    initialLogs =
+                        listOf(
+                            telemetryLogEntity(id = 1L, createdAt = 1000L, simulator = Simulator.AceWindows),
+                            otherLog,
+                            telemetryLogEntity(id = 3L, createdAt = 3000L, simulator = Simulator.AceWindows),
+                        ),
                 )
             val repository = TelemetryLogRepositoryImpl(dao)
 
-            repository.deleteAllTelemetryLogs()
+            repository.deleteTelemetryLogsBySimulator(Simulator.AceWindows)
 
-            assertEquals(emptyList(), dao.logs.first())
+            assertEquals(listOf(otherLog), dao.logs.first())
+
+            repository.deleteTelemetryLogsBySimulator(Simulator.AceWindows)
+
+            assertEquals(listOf(otherLog), dao.logs.first())
         }
 
     @Test
@@ -409,8 +419,8 @@ private class FakeTelemetryLogDao(
         logs.update { it + log }
     }
 
-    override suspend fun deleteAll() {
-        logs.update { emptyList() }
+    override suspend fun deleteBySimulator(simulatorId: String) {
+        logs.update { logs -> logs.filterNot { it.simulatorId == simulatorId } }
     }
 
     override suspend fun delete(id: Long) {
