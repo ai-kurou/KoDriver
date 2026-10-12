@@ -377,6 +377,7 @@ private fun DefaultOtherContent(
                     DebugStateDetailPane(selectedSimulatorId, canNavigateBack, onBack)
                 }
 
+                OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,

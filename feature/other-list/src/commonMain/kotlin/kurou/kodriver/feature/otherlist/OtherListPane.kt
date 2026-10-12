@@ -68,6 +68,7 @@ import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kurou.kodriver.feature.otherlist.generated.resources.item_license
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_background_opacity_summary
+import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_color
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_text_size
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible
 import kurou.kodriver.feature.otherlist.generated.resources.item_overlay_visible_summary
@@ -143,6 +144,7 @@ private fun OtherListItemType.section(): OtherListSection =
 
         OtherListItemType.OverlayVisible,
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
         -> OtherListSection.OverlaySettings
 
@@ -191,6 +193,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
 
         OtherListItemType.OverlayVisible,
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
         -> {
             otherOverlaySettingsItemDisplayName(itemType)
@@ -256,6 +259,7 @@ private fun otherOverlaySettingsItemDisplayName(itemType: OtherListItemType): St
     when (itemType) {
         OtherListItemType.OverlayVisible -> stringResource(Res.string.item_overlay_visible)
         OtherListItemType.OverlayTextSize -> stringResource(Res.string.item_overlay_text_size)
+        OtherListItemType.OverlayTextColor -> stringResource(Res.string.item_overlay_text_color)
         OtherListItemType.OverlayBackgroundOpacity -> stringResource(Res.string.item_overlay_background_opacity)
         else -> error("unexpected item type: $itemType")
     }
@@ -317,6 +321,7 @@ private fun OtherListItemTrailingIcon(
         OtherListItemType.OverlayTextSize,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
 
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayVisible,
         OtherListItemType.KeepScreenOn,
         OtherListItemType.DynamicColor,
@@ -459,6 +464,10 @@ private fun otherVoiceSettingsItemSupportingContent(
             }
         }
 
+        OtherListItemType.OverlayTextColor -> {
+            { OtherListOverlayTextColorSummary(uiState.overlayTextColor) }
+        }
+
         OtherListItemType.OverlayBackgroundOpacity -> {
             {
                 val opacity = uiState.overlayBackgroundOpacity
@@ -534,6 +543,7 @@ private fun otherListItemSupportingContent(
         OtherListItemType.VoicePitch,
         OtherListItemType.Voice,
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
         -> {
             otherVoiceSettingsItemSupportingContent(item, uiState)
@@ -681,6 +691,7 @@ private fun OtherListItem(
                 OtherListItemType.WindowsSpeechUnavailable,
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayTextSize,
+                OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
@@ -699,21 +710,27 @@ private fun OtherListItem(
             Modifier
                 .fillMaxWidth()
                 .semantics { selected = isSelected }
-                .clickable {
-                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                    handleOtherListItemClick(
-                        item = item,
-                        uiState = uiState,
-                        onOverlayVisibleChange = onOverlayVisibleChange,
-                        onKeepScreenOnChange = onKeepScreenOnChange,
-                        onDynamicColorEnabledChange = onDynamicColorEnabledChange,
-                        onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
-                        onStartupEnabledChange = onStartupEnabledChange,
-                        openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
-                        openTtsSettings = openTtsSettings,
-                        onItemClick = onItemClick,
-                    )
-                },
+                .then(
+                    if (item == OtherListItemType.OverlayTextColor) {
+                        Modifier
+                    } else {
+                        Modifier.clickable {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                            handleOtherListItemClick(
+                                item = item,
+                                uiState = uiState,
+                                onOverlayVisibleChange = onOverlayVisibleChange,
+                                onKeepScreenOnChange = onKeepScreenOnChange,
+                                onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                                onHapticFeedbackEnabledChange = onHapticFeedbackEnabledChange,
+                                onStartupEnabledChange = onStartupEnabledChange,
+                                openAccessLocalNetworkPermissionSettings = openAccessLocalNetworkPermissionSettings,
+                                openTtsSettings = openTtsSettings,
+                                onItemClick = onItemClick,
+                            )
+                        }
+                    },
+                ),
     )
 }
 
@@ -731,6 +748,10 @@ private fun handleOtherListItemClick(
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     when (item) {
+        OtherListItemType.OverlayTextColor -> {
+            // 詳細ペインは未実装で clickable を付けないため、この分岐には到達しない。
+        }
+
         OtherListItemType.OverlayVisible -> {
             onOverlayVisibleChange(!uiState.overlayVisible)
         }
