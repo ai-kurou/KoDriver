@@ -46,6 +46,7 @@ class SpeechEventTest {
                 LmuWindowsTyreWearWarning(50),
                 LmuWindowsBrakeOverheat(700),
                 LmuWindowsRemainingVirtualEnergyWarning(50),
+                LmuWindowsRemainingVirtualEnergyCurrentValue(42),
                 LmuWindowsMyBestLap(83_456L),
                 LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
             )
@@ -67,6 +68,7 @@ class SpeechEventTest {
                 LmuWindowsTyreWearWarning(50, "判定時の本文"),
                 LmuWindowsBrakeOverheat(700, "判定時の本文"),
                 LmuWindowsRemainingVirtualEnergyWarning(50, "判定時の本文"),
+                LmuWindowsRemainingVirtualEnergyCurrentValue(42, "判定時の本文"),
                 LmuWindowsMyBestLap(83_456L, "判定時の本文"),
                 LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear, "判定時の本文"),
             )
@@ -113,6 +115,14 @@ class SpeechEventTest {
         assertEquals("タイヤ低温 60度", LmuWindowsTyreCold(60).narratedText)
         assertEquals("タイヤ残存率50%以下", LmuWindowsTyreWearWarning(50).narratedText)
         assertEquals("バーチャルエナジー残量50%以下", LmuWindowsRemainingVirtualEnergyWarning(50).narratedText)
+    }
+
+    @Test
+    fun `現在のエナジー残量は固定文言と既存のRootキーを持つ`() {
+        val event = LmuWindowsRemainingVirtualEnergyCurrentValue(42)
+        assertEquals(42, event.percentage)
+        assertEquals("バーチャルエナジー残量は42パーセント", event.narratedText)
+        assertEquals(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root, event.readoutItemKey)
     }
 
     @Test
