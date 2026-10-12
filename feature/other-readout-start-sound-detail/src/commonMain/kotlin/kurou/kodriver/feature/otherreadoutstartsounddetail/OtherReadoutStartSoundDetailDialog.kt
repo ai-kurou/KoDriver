@@ -40,7 +40,8 @@ fun OtherReadoutStartSoundDetailDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: OtherReadoutStartSoundDetailViewModel = koinViewModel(parameters = { parametersOf(simulatorId) })
+    val viewModel: OtherReadoutStartSoundDetailViewModel =
+        koinViewModel(key = simulatorId, parameters = { parametersOf(simulatorId) })
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     OtherReadoutStartSoundDetailDialogContent(
         uiState = uiState,
