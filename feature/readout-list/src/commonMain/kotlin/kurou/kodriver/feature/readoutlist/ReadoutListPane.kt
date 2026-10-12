@@ -89,9 +89,9 @@ import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
 import kurou.kodriver.feature.readoutlist.generated.resources.drag_handle
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_description
@@ -199,6 +199,7 @@ internal fun PriorityHintSheetContent(modifier: Modifier = Modifier) {
 @Composable
 internal fun ReadoutListPane(
     uiState: ReadoutListUiState,
+    catalog: ReadoutCatalog,
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
@@ -274,7 +275,7 @@ internal fun ReadoutListPane(
                         label = "cardContainerColor",
                     )
                     val itemName = itemDisplayName(item)
-                    val readoutEnabled = uiState.readoutEnabledStates.readoutEnabled(item)
+                    val readoutEnabled = with(catalog) { uiState.readoutEnabledStates.readoutEnabled(item) }
                     ReadoutListItemCard(
                         item = item,
                         index = index,
@@ -675,6 +676,7 @@ private fun ReadoutListPanePreview(
 ) {
     KoDriverTheme {
         ReadoutListPane(
+            catalog = previewReadoutCatalog,
             uiState = uiState,
             onMove = { _, _ -> },
             onReadoutEnabledChanged = { _, _ -> },

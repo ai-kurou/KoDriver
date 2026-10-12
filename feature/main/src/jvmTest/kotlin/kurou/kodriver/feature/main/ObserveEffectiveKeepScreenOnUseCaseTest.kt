@@ -1,0 +1,97 @@
+package kurou.kodriver.feature.main
+
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AceWindowsStatusRepository
+import kurou.kodriver.domain.repository.Gt7Ps5Repository
+import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
+import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class ObserveEffectiveKeepScreenOnUseCaseTest {
+    private val keepScreenOnRepository: KeepScreenOnEnabledRepository = mockk()
+
+    private val simulatorRepository: SimulatorPreferencesRepository = mockk()
+
+    private val lmuWindowsRepository: LmuWindowsRepository = mockk()
+
+    private val gt7Ps5Repository: Gt7Ps5Repository = mockk()
+
+    private val aceWindowsStatusRepository: AceWindowsStatusRepository = mockk()
+
+    private fun createUseCase() =
+        ObserveEffectiveKeepScreenOnUseCase(
+            observeKeepScreenOnEnabled = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
+            observeTelemetryReceiving =
+                ObserveTelemetryReceivingUseCase(
+                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
+                    observeGt7Ps5 = ObserveGt7Ps5UseCase(gt7Ps5Repository),
+                    observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(aceWindowsStatusRepository),
+                ),
+        )
+
+    @Test
+    fun `設定が有効かつテレメトリ受信中の場合trueになる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns flowOf(true)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
+            every { gt7Ps5Repository.telemetryStream() } returns flowOf(fakeGt7Ps5TelemetryData())
+            val useCase = createUseCase()
+
+            assertTrue(useCase().first { it })
+
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            confirmVerified(keepScreenOnRepository, simulatorRepository, gt7Ps5Repository)
+        }
+
+    @Test
+    fun `設定が有効でもテレメトリ未受信の場合falseになる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns flowOf(true)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
+            every { gt7Ps5Repository.telemetryStream() } returns emptyFlow()
+            val useCase = createUseCase()
+
+            assertFalse(useCase().first())
+
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            confirmVerified(keepScreenOnRepository, simulatorRepository, gt7Ps5Repository)
+        }
+
+    @Test
+    fun `テレメトリ受信中でも設定が無効な場合falseになる`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns flowOf(false)
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
+            every { gt7Ps5Repository.telemetryStream() } returns flowOf(fakeGt7Ps5TelemetryData())
+            val useCase = createUseCase()
+
+            assertFalse(useCase().first())
+
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            confirmVerified(keepScreenOnRepository, simulatorRepository, gt7Ps5Repository)
+        }
+}

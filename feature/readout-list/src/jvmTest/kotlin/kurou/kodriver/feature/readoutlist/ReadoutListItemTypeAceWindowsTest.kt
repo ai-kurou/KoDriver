@@ -72,7 +72,7 @@ class ReadoutListItemTypeAceWindowsTest {
                 AceWindowsReadoutItemKey.TyreTemperature.Root,
                 AceWindowsReadoutItemKey.MyBestLap.Root,
             ),
-            ReadoutListItemType.defaultOrder(Simulator.AceWindows),
+            ReadoutListItemType.defaultOrder(Simulator.AceWindows, testReadoutCatalog),
         )
     }
 }

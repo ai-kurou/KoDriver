@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.aceWindowsReadoutEnabled
 import kurou.kodriver.domain.model.formatAceWindowsRemainingFuelReadoutText
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelReadoutTextUseCase
@@ -64,7 +64,7 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
                 thresholdPercentage = thresholdPercentage,
                 readoutText = text,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled),
+                enabled = enabledStates.aceWindowsReadoutEnabled(AceWindowsReadoutItemKey.RemainingFuel.DetailEnabled),
             )
         }.stateIn(
             viewModelScope,

@@ -18,8 +18,10 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.LmuWindowsBrakeOverheat
 import kurou.kodriver.domain.model.LMU_WINDOWS_BRAKE_TEMPERATURE_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutCatalog
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassBrakeTemperaturePreferencesRepository
@@ -82,7 +84,11 @@ class LmuWindowsReadoutBrakeTemperatureDetailViewModelTest {
                     saveVehicleClassSelection =
                         SaveLmuWindowsVehicleClassBrakeTemperatureSelectionUseCase(vehicleClassRepository),
                 ),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+            observeReadoutEnabledStates =
+                ObserveReadoutEnabledStatesUseCase(
+                    readoutPreferencesRepository,
+                    ReadoutCatalog(listOf(LmuWindowsReadoutCatalog)),
+                ),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
             readout = BrakeTemperatureReadoutUseCases(playSpeechEvent, stopSpeech, checkAvailable, observeVolume),
         )

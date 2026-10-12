@@ -4,10 +4,13 @@ digraph G {
   ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
   ":core:designsystem" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:lmu-windows-domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":core:narrator" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":feature:ace-windows-narrator" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:ace-windows-narrator"
+  ":core:lmu-windows-domain" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:domain"
   ":feature:ace-windows-narrator" -> ":core:designsystem"
   ":feature:ace-windows-narrator" -> ":core:narrator"
+  ":feature:ace-windows-narrator" -> ":core:lmu-windows-domain"
 }

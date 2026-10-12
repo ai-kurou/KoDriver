@@ -12,8 +12,8 @@ import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
+import kurou.kodriver.domain.model.lmuWindowsReadoutEnabled
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassBrakeWearLowThresholdPercentDefault
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeWearReadoutTextUseCase
@@ -75,7 +75,7 @@ internal class LmuWindowsReadoutBrakeWearDetailViewModel(
                 selectedVehicleClass = selectedVehicleClass,
                 readoutText = text,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.BrakeWear.WarningReadout),
+                enabled = enabledStates.lmuWindowsReadoutEnabled(LmuWindowsReadoutItemKey.BrakeWear.WarningReadout),
             )
         }
 

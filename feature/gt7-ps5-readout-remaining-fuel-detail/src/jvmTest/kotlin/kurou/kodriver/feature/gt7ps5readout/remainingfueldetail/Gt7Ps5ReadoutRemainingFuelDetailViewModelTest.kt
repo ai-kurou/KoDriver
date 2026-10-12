@@ -19,7 +19,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutCatalog
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
@@ -74,7 +76,10 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
                     saveThresholdPercentage =
                         SaveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
                     observeReadoutEnabledStates =
-                        ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                        ObserveReadoutEnabledStatesUseCase(
+                            readoutPreferencesRepository,
+                            ReadoutCatalog(listOf(Gt7Ps5ReadoutCatalog)),
+                        ),
                     saveReadoutEnabledState =
                         SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
                 ),

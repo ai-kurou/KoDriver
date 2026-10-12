@@ -75,6 +75,7 @@ class ReadoutContentTest {
                     itemDisplayName(LmuWindowsReadoutItemKey.MyBestLap.Root),
                 )
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -122,6 +123,7 @@ class ReadoutContentTest {
         rule.setContent {
             tyreWearText = itemDisplayName(LmuWindowsReadoutItemKey.TyreWear.Root)
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -151,6 +153,7 @@ class ReadoutContentTest {
 
         rule.setContent {
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -187,6 +190,7 @@ class ReadoutContentTest {
 
         rule.setContent {
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -236,6 +240,7 @@ class ReadoutContentTest {
         rule.setContent {
             tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -265,6 +270,7 @@ class ReadoutContentTest {
         rule.setContent {
             veText = itemDisplayName(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.Root)
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -298,6 +304,7 @@ class ReadoutContentTest {
         rule.setContent {
             remainingFuelText = itemDisplayName(AceWindowsReadoutItemKey.RemainingFuel.Root)
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.AceWindows,
@@ -327,6 +334,7 @@ class ReadoutContentTest {
         rule.setContent {
             remainingFuelText = itemDisplayName(Gt7Ps5ReadoutItemKey.RemainingFuel.Root)
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.Gt7Ps5,
@@ -365,6 +373,7 @@ class ReadoutContentTest {
                     itemDisplayName(Gt7Ps5ReadoutItemKey.MyBestLap.Root),
                 )
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.Gt7Ps5,
@@ -408,6 +417,7 @@ class ReadoutContentTest {
         rule.setContent {
             tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -459,6 +469,7 @@ class ReadoutContentTest {
         rule.setContent {
             tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -513,6 +524,7 @@ class ReadoutContentTest {
         rule.setContent {
             tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -584,6 +596,7 @@ class ReadoutContentTest {
             lastItemText = itemDisplayName(LmuWindowsReadoutItemKey.MyBestLap.Root)
             Box(modifier = Modifier.height(240.dp)) {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -632,6 +645,7 @@ class ReadoutContentTest {
             lastItemText = itemDisplayName(LmuWindowsReadoutItemKey.MyBestLap.Root)
             Box(modifier = Modifier.height(240.dp)) {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,

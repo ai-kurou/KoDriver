@@ -18,7 +18,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsReadoutCatalog
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -64,7 +66,11 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
         LmuWindowsReadoutMyBestLapDetailViewModel(
             myBestLapUseCases =
                 MyBestLapUseCases(
-                    observeEnabledStates = ObserveReadoutEnabledStatesUseCase(enabledRepository),
+                    observeEnabledStates =
+                        ObserveReadoutEnabledStatesUseCase(
+                            enabledRepository,
+                            ReadoutCatalog(listOf(LmuWindowsReadoutCatalog)),
+                        ),
                     saveEnabledState = SaveReadoutEnabledStateUseCase(enabledRepository),
                 ),
             readout =

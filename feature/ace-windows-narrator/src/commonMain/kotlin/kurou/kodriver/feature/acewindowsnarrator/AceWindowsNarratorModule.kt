@@ -115,12 +115,12 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveAceWindowsVehicleApproachUseCase(get()) }
         factory { ObserveAceWindowsVehicleApproachEnabledStatesUseCase(get()) }
         factory { AceWindowsVehicleApproachThresholdsUseCases(get()) }
-        factory { ObserveReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveReadoutEnabledStatesUseCase(get(), get()) }
         factory { ObserveReadoutOrderUseCase(get()) }
         factory { ResolveReadoutOrderUseCase() }
-        factory { ObserveResolvedReadoutOrderUseCase(get(), get()) }
+        factory { ObserveResolvedReadoutOrderUseCase(get(), get(), get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
-        factory { ObserveQueueEnabledStatesUseCase(get()) }
+        factory { ObserveQueueEnabledStatesUseCase(get(), get()) }
 
         // TTS依存は他シミュレーターのunqualified登録と区別する。
         factory(named(Simulator.AceWindows.id)) { ObserveAceWindowsCheckeredFlagReadoutTextUseCase(get()) }
@@ -191,7 +191,7 @@ val aceWindowsNarratorModule: Module =
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
-                    startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
+                    startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get(), get())(),
                 ),
             )
         }

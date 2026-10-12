@@ -102,7 +102,7 @@ class ReadoutListItemTypeFromIdTest {
                 LmuWindowsReadoutItemKey.VehicleDamage.Root,
                 LmuWindowsReadoutItemKey.MyBestLap.Root,
             ),
-            ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+            ReadoutListItemType.defaultOrder(Simulator.LmuWindows, testReadoutCatalog),
         )
     }
 
@@ -158,7 +158,7 @@ class ReadoutListItemTypeFromIdTest {
                 Gt7Ps5ReadoutItemKey.TyreTemperature.Root,
                 Gt7Ps5ReadoutItemKey.MyBestLap.Root,
             ),
-            ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
+            ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5, testReadoutCatalog),
         )
     }
 

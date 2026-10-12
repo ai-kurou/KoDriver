@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":core:lmu-windows-domain"))
     implementation(projects.core.domain)
     implementation(projects.core.windowsSharedMemory)
     implementation(platform(libs.kotlinx.coroutines.bom))

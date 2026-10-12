@@ -13,7 +13,6 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckAccessLocalNetworkPermissionGrantedUseCase
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveEffectiveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.ObserveHapticFeedbackEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase

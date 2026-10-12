@@ -42,6 +42,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsFuelPercent
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.AceWindowsReadoutCatalog
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
@@ -49,6 +50,7 @@ import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
@@ -184,13 +186,22 @@ class AceWindowsNarratorViewModelTest {
                 SimulatorUseCases(ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository)),
             readoutListUseCases =
                 ReadoutListUseCases(
-                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    observeReadoutEnabledStates =
+                        ObserveReadoutEnabledStatesUseCase(
+                            readoutPreferencesRepository,
+                            ReadoutCatalog(listOf(AceWindowsReadoutCatalog)),
+                        ),
                     observeReadoutOrder =
                         ObserveResolvedReadoutOrderUseCase(
                             ObserveReadoutOrderUseCase(readoutPreferencesRepository),
                             ResolveReadoutOrderUseCase(),
+                            catalog = ReadoutCatalog(listOf(AceWindowsReadoutCatalog)),
                         ),
-                    observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
+                    observeQueueEnabledStates =
+                        ObserveQueueEnabledStatesUseCase(
+                            queuePreferencesRepository,
+                            ReadoutCatalog(listOf(AceWindowsReadoutCatalog)),
+                        ),
                 ),
             flagUseCases =
                 FlagUseCases(

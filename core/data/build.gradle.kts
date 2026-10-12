@@ -36,6 +36,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core:lmu-windows-domain"))
             implementation(projects.core.domain)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
             implementation(libs.kotlinx.coroutinesCore)
@@ -75,6 +76,7 @@ kotlin {
             }
         }
         jvmTest.dependencies {
+            implementation(libs.mockk)
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))

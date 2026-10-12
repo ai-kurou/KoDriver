@@ -81,16 +81,16 @@ val gt7Ps5NarratorModule: Module =
         factory { DetermineGt7Ps5NarratorReadoutUseCase() }
         factory { SaveTelemetryLogUseCase(get()) }
         factory { ObserveGt7Ps5UseCase(get()) }
-        factory { ObserveReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveReadoutEnabledStatesUseCase(get(), get()) }
         factory { ObserveReadoutOrderUseCase(get()) }
         factory { ResolveReadoutOrderUseCase() }
-        factory { ObserveResolvedReadoutOrderUseCase(get(), get()) }
+        factory { ObserveResolvedReadoutOrderUseCase(get(), get(), get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
         factory { ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(get()) }
         factory { ObserveGt7Ps5TyreTemperatureHighThresholdUseCase(get()) }
         factory { ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(get()) }
-        factory { ObserveQueueEnabledStatesUseCase(get()) }
+        factory { ObserveQueueEnabledStatesUseCase(get(), get()) }
 
         // PR2の詳細ペイン用UseCaseや他シミュレーターと区別し、GT7のTTS依存を本モジュールで登録する。
         factory(named(Simulator.Gt7Ps5.id)) { ObserveGt7Ps5RemainingFuelReadoutTextUseCase(get()) }
@@ -139,7 +139,7 @@ val gt7Ps5NarratorModule: Module =
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
-                    startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
+                    startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get(), get())(),
                 ),
             )
         }

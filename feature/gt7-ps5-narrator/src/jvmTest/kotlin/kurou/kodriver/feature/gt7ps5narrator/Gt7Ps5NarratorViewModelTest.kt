@@ -31,11 +31,13 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.Gt7Ps5FuelUnit
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutCatalog
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
@@ -114,13 +116,22 @@ class Gt7Ps5NarratorViewModelTest {
                 SimulatorUseCases(ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository)),
             readoutListUseCases =
                 ReadoutListUseCases(
-                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    observeReadoutEnabledStates =
+                        ObserveReadoutEnabledStatesUseCase(
+                            readoutPreferencesRepository,
+                            ReadoutCatalog(listOf(Gt7Ps5ReadoutCatalog)),
+                        ),
                     observeReadoutOrder =
                         ObserveResolvedReadoutOrderUseCase(
                             ObserveReadoutOrderUseCase(readoutPreferencesRepository),
                             ResolveReadoutOrderUseCase(),
+                            catalog = ReadoutCatalog(listOf(Gt7Ps5ReadoutCatalog)),
                         ),
-                    observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
+                    observeQueueEnabledStates =
+                        ObserveQueueEnabledStatesUseCase(
+                            queuePreferencesRepository,
+                            ReadoutCatalog(listOf(Gt7Ps5ReadoutCatalog)),
+                        ),
                 ),
             remainingFuelLapsUseCases =
                 RemainingFuelLapsUseCases(

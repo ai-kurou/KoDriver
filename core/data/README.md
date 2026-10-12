@@ -1,6 +1,6 @@
 # data
 
-`:core:domain` で定義された Repository インターフェースの実装を提供するモジュール。JVM（デスクトップ）/ Android の両ターゲットを持つ `kotlinMultiplatform` モジュールで、プラットフォーム固有の実装は `androidMain` / `jvmMain` に、共通実装は `jvmAndroidMain` に置く。
+`:core:domain` と `:core:lmu-windows-domain` で定義された Repository インターフェースの実装を提供するモジュール。JVM（デスクトップ）/ Android の両ターゲットを持つ `kotlinMultiplatform` モジュールで、プラットフォーム固有の実装は `androidMain` / `jvmMain` に、共通実装は `jvmAndroidMain` に置く。
 
 ## Koin モジュール
 
@@ -50,3 +50,9 @@ Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStor
 `LmuWindowsTyreTemperatureReadoutTextPreferencesRepository` は過熱・低温警告の文言を扱う。
 Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共有する。
 保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
+
+## 読み上げカタログ
+
+`APP_READOUT_CATALOG` は LMU → GT7 → ACE の順で各 `SimulatorReadoutCatalog` を束ねる。
+保存済みキーの復元をこのカタログで行い、Android／DesktopのKoinモジュールで `ReadoutCatalog` を登録する。
+featureの読み上げ設定・既定順序・開始音・キューは、この注入されたカタログを使用する。

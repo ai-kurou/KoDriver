@@ -44,6 +44,7 @@ internal fun createViewModel(
     queueRepository: QueuePreferencesRepository,
     startSoundRepository: ReadoutStartSoundEnabledPreferencesRepository,
 ) = ReadoutListViewModel(
+    catalog = testReadoutCatalog,
     simulatorUseCases =
         SimulatorUseCases(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
@@ -56,17 +57,21 @@ internal fun createViewModel(
         ),
     readoutEnabledUseCases =
         ReadoutEnabledUseCases(
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository, testReadoutCatalog),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
         ),
     queueUseCases =
         QueueUseCases(
-            observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository),
+            observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository, testReadoutCatalog),
             saveQueueEnabledState = SaveQueueEnabledStateUseCase(queueRepository),
         ),
     startSoundUseCases =
         StartSoundUseCases(
-            observeReadoutStartSoundEnabledStates = ObserveReadoutStartSoundEnabledStatesUseCase(startSoundRepository),
+            observeReadoutStartSoundEnabledStates =
+                ObserveReadoutStartSoundEnabledStatesUseCase(
+                    startSoundRepository,
+                    testReadoutCatalog,
+                ),
             saveReadoutStartSoundEnabledState = SaveReadoutStartSoundEnabledStateUseCase(startSoundRepository),
         ),
 )

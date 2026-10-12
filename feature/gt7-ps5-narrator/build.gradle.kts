@@ -19,6 +19,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
         }
         jvmTest.dependencies {
+            implementation(project(":core:lmu-windows-domain"))
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))

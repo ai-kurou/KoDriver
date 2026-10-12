@@ -19,7 +19,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutCatalog
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
@@ -74,7 +76,10 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
                     saveThresholdPercentage =
                         SaveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
                     observeReadoutEnabledStates =
-                        ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                        ObserveReadoutEnabledStatesUseCase(
+                            readoutPreferencesRepository,
+                            ReadoutCatalog(listOf(AceWindowsReadoutCatalog)),
+                        ),
                     saveReadoutEnabledState =
                         SaveReadoutEnabledStateUseCase(readoutPreferencesRepository),
                 ),

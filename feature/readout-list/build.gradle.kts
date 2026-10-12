@@ -13,6 +13,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core:lmu-windows-domain"))
             implementation(projects.core.designsystem)
             implementation(libs.compose.material3.adaptive.layout)
             implementation(libs.compose.material3.adaptive.navigation)
@@ -64,6 +65,7 @@ compose.resources {
 
 dependencies {
     testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(project(":core:lmu-windows-domain"))
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(platform(libs.kotlinx.coroutines.bom))

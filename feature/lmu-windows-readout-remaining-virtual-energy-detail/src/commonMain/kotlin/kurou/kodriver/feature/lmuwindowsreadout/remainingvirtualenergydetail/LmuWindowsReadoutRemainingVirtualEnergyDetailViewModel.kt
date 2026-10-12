@@ -11,7 +11,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOL
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsRemainingVirtualEnergyReadoutText
-import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.model.lmuWindowsReadoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyReadoutTextUseCase
@@ -64,7 +64,10 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
                 thresholdPercentage = thresholdPercentage,
                 readoutText = text,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout),
+                enabled =
+                    enabledStates.lmuWindowsReadoutEnabled(
+                        LmuWindowsReadoutItemKey.RemainingVirtualEnergy.WarningReadout,
+                    ),
             )
         }.stateIn(
             viewModelScope,

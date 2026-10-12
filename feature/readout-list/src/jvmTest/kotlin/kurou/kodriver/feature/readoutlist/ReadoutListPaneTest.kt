@@ -28,7 +28,6 @@ import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.READOUT_ENABLED_STATE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
@@ -46,6 +45,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState = ReadoutListUiState(),
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -65,6 +65,7 @@ class ReadoutListPaneTest {
             KoDriverTheme {
                 Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                     ReadoutListPane(
+                        catalog = testReadoutCatalog,
                         uiState = ReadoutListUiState(),
                         onMove = { _, _ -> },
                         onReadoutEnabledChanged = { _, _ -> },
@@ -112,6 +113,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -141,6 +143,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -174,6 +177,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -208,6 +212,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -225,7 +230,7 @@ class ReadoutListPaneTest {
 
         rule.onAllNodes(hasSwitchRole()).assertCountEquals(items.size)
         items.forEachIndexed { index, item ->
-            val enabled = READOUT_ENABLED_STATE_DEFAULT.getValue(Simulator.LmuWindows).getValue(item)
+            val enabled = testReadoutCatalog.enabledStateDefaults(Simulator.LmuWindows).getValue(item)
             rule.onAllNodes(hasSwitchRole())[index].assert(
                 SemanticsMatcher.expectValue(
                     SemanticsProperties.ToggleableState,
@@ -240,6 +245,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -270,6 +276,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -306,6 +313,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -335,6 +343,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -361,6 +370,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -390,6 +400,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.AceWindows,
@@ -419,6 +430,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
@@ -444,6 +456,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -475,6 +488,7 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
+                    catalog = testReadoutCatalog,
                     uiState =
                         ReadoutListUiState(
                             selectedSimulator = Simulator.LmuWindows,
@@ -505,10 +519,11 @@ class ReadoutListPaneTest {
             KoDriverTheme {
                 Box(modifier = Modifier.requiredSize(411.dp, 3000.dp)) {
                     ReadoutListPane(
+                        catalog = testReadoutCatalog,
                         uiState =
                             ReadoutListUiState(
                                 selectedSimulator = Simulator.LmuWindows,
-                                items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows, testReadoutCatalog),
                             ),
                         onMove = { _, _ -> },
                         onReadoutEnabledChanged = { _, _ -> },

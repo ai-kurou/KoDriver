@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.data.APP_READOUT_CATALOG
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Gt7Ps5ReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
@@ -397,7 +397,8 @@ private fun TelemetryLogEntity.toDomainLog() =
         id = id,
         createdAt = createdAt,
         simulator = Simulator.fromId(simulatorId) ?: error("Unknown simulatorId: $simulatorId"),
-        readoutItemKey = ReadoutItemKey.fromValue(readoutItemKey) ?: error("Unknown readoutItemKey: $readoutItemKey"),
+        readoutItemKey =
+            APP_READOUT_CATALOG.fromValue(readoutItemKey) ?: error("Unknown readoutItemKey: $readoutItemKey"),
         narratedText = narratedText,
         narrationOutcome = NarrationOutcome.QUEUED,
         telemetryJson = telemetryJson,

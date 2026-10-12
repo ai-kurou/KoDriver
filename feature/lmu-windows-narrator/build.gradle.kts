@@ -11,6 +11,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core:lmu-windows-domain"))
             implementation(projects.core.designsystem)
             implementation(projects.core.narrator)
             implementation(project.dependencies.platform(libs.kotlinx.coroutines.bom))
@@ -33,6 +34,7 @@ kotlin {
 
 dependencies {
     testFixturesImplementation(projects.core.domain)
+    testFixturesApi(project(":core:lmu-windows-domain"))
     testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
 }

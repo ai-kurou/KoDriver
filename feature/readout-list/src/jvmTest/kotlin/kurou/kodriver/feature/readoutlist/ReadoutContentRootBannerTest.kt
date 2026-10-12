@@ -42,6 +42,7 @@ class ReadoutContentRootBannerTest {
         rule.setContent {
             tyreTemperatureText = itemDisplayName(LmuWindowsReadoutItemKey.TyreTemperature.Root)
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -73,6 +74,7 @@ class ReadoutContentRootBannerTest {
     fun `選択中項目のRootがONの場合は詳細ペインにバナーを表示しない`() {
         rule.setContent {
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -98,6 +100,7 @@ class ReadoutContentRootBannerTest {
     fun `Root状態が未読込でデフォルトがtrueの項目は詳細ペインにバナーを表示しない`() {
         rule.setContent {
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,
@@ -123,6 +126,7 @@ class ReadoutContentRootBannerTest {
     fun `Root状態が未読込でデフォルトがfalseの項目は詳細ペインにバナーを表示する`() {
         rule.setContent {
             ReadoutContent(
+                catalog = testReadoutCatalog,
                 uiState =
                     ReadoutListUiState(
                         selectedSimulator = Simulator.LmuWindows,

@@ -18,7 +18,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ACE_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.AceWindowsReadoutCatalog
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsMyBestLapPreferencesRepository
@@ -64,7 +66,11 @@ class AceWindowsReadoutMyBestLapDetailViewModelTest {
         AceWindowsReadoutMyBestLapDetailViewModel(
             myBestLapUseCases =
                 MyBestLapUseCases(
-                    observeEnabledStates = ObserveReadoutEnabledStatesUseCase(enabledRepository),
+                    observeEnabledStates =
+                        ObserveReadoutEnabledStatesUseCase(
+                            enabledRepository,
+                            ReadoutCatalog(listOf(AceWindowsReadoutCatalog)),
+                        ),
                     saveEnabledState = SaveReadoutEnabledStateUseCase(enabledRepository),
                 ),
             readout =

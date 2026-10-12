@@ -52,6 +52,7 @@ import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsPitTimingSource
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsReadoutCatalog
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
@@ -68,6 +69,7 @@ import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.PrimaryFlag
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -449,13 +451,22 @@ class LmuWindowsNarratorViewModelTest {
                 SimulatorUseCases(ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository)),
             readoutListUseCases =
                 ReadoutListUseCases(
-                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    observeReadoutEnabledStates =
+                        ObserveReadoutEnabledStatesUseCase(
+                            readoutPreferencesRepository,
+                            ReadoutCatalog(listOf(LmuWindowsReadoutCatalog)),
+                        ),
                     observeReadoutOrder =
                         ObserveResolvedReadoutOrderUseCase(
                             ObserveReadoutOrderUseCase(readoutPreferencesRepository),
                             ResolveReadoutOrderUseCase(),
+                            catalog = ReadoutCatalog(listOf(LmuWindowsReadoutCatalog)),
                         ),
-                    observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
+                    observeQueueEnabledStates =
+                        ObserveQueueEnabledStatesUseCase(
+                            queuePreferencesRepository,
+                            ReadoutCatalog(listOf(LmuWindowsReadoutCatalog)),
+                        ),
                 ),
             flagUseCases =
                 FlagUseCases(

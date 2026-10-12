@@ -155,10 +155,10 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
         factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
-        factory { ObserveReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveReadoutEnabledStatesUseCase(get(), get()) }
         factory { ObserveReadoutOrderUseCase(get()) }
         factory { ResolveReadoutOrderUseCase() }
-        factory { ObserveResolvedReadoutOrderUseCase(get(), get()) }
+        factory { ObserveResolvedReadoutOrderUseCase(get(), get(), get()) }
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
@@ -181,7 +181,7 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingTyreWearLapsUseCase(get()) }
         factory { ObserveLmuWindowsPitTimingEnabledStatesUseCase(get()) }
-        factory { ObserveQueueEnabledStatesUseCase(get()) }
+        factory { ObserveQueueEnabledStatesUseCase(get(), get()) }
 
         // 音声再生（named "lmu_windows" で GT7/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
         factory(named(Simulator.LmuWindows.id)) { PlaySpeechEventUseCase(get(named(Simulator.LmuWindows.id))) }
@@ -268,7 +268,7 @@ val lmuWindowsNarratorModule: Module =
                     defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
                     volumeFlow = ObserveSoundVolumeUseCase(get())(),
                     startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
-                    startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get())(),
+                    startSoundEnabledStatesFlow = ObserveReadoutStartSoundEnabledStatesUseCase(get(), get())(),
                     customSpeak = get<LmuWindowsReadoutTextSpeaker>()::invoke,
                     isCustomSpeakEvent = { it is ReadoutTextEvent },
                 ),

@@ -9,6 +9,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core:lmu-windows-domain"))
             implementation(projects.core.designsystem)
         }
         jvmTest.dependencies {

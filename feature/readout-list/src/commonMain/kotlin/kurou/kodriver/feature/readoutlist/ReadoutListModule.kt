@@ -36,13 +36,13 @@ val readoutListModule =
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
         factory { ObserveSelectedSimulatorUseCase(get()) }
-        factory { ObserveReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveReadoutEnabledStatesUseCase(get(), get()) }
         factory { SaveReadoutEnabledStateUseCase(get()) }
         factory { ObserveReadoutOrderUseCase(get()) }
         factory { ResolveReadoutOrderUseCase() }
         factory { SaveReadoutOrderUseCase(get()) }
-        factory { ObserveQueueEnabledStatesUseCase(get()) }
+        factory { ObserveQueueEnabledStatesUseCase(get(), get()) }
         factory { SaveQueueEnabledStateUseCase(get()) }
-        factory { ObserveReadoutStartSoundEnabledStatesUseCase(get()) }
+        factory { ObserveReadoutStartSoundEnabledStatesUseCase(get(), get()) }
         factory { SaveReadoutStartSoundEnabledStateUseCase(get()) }
     }

@@ -4,6 +4,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.model.AceWindowsReadoutCatalog
+import kurou.kodriver.domain.model.Gt7Ps5ReadoutCatalog
+import kurou.kodriver.domain.model.LmuWindowsReadoutCatalog
+import kurou.kodriver.domain.model.ReadoutCatalog
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
@@ -20,6 +24,7 @@ import org.koin.dsl.module
  */
 val fakeReadoutListModule =
     module {
+        single { ReadoutCatalog(listOf(LmuWindowsReadoutCatalog, Gt7Ps5ReadoutCatalog, AceWindowsReadoutCatalog)) }
         single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
         single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
         single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {

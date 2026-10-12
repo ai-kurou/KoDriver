@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsMyBestLapReadoutText
-import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.model.lmuWindowsReadoutEnabled
 import kurou.kodriver.domain.preview.ReadoutTextPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapReadoutTextUseCase
@@ -60,7 +60,7 @@ internal class LmuWindowsReadoutMyBestLapDetailViewModel(
             preview.textToSpeechAvailable,
         ) { states, text, available ->
             LmuWindowsReadoutMyBestLapDetailUiState(
-                enabled = states.readoutEnabled(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled),
+                enabled = states.lmuWindowsReadoutEnabled(LmuWindowsReadoutItemKey.MyBestLap.DetailEnabled),
                 readoutText = text,
                 isTextToSpeechAvailable = available,
             )

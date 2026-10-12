@@ -37,10 +37,11 @@ class ReadoutContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         ReadoutContent(
+                            catalog = testReadoutCatalog,
                             uiState =
                                 ReadoutListUiState(
                                     selectedSimulator = Simulator.LmuWindows,
-                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows, testReadoutCatalog),
                                     selectedItem = LmuWindowsReadoutListItemType.Flag,
                                 ),
                             onMove = { _, _ -> },
@@ -67,10 +68,11 @@ class ReadoutContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         ReadoutContent(
+                            catalog = testReadoutCatalog,
                             uiState =
                                 ReadoutListUiState(
                                     selectedSimulator = Simulator.LmuWindows,
-                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows, testReadoutCatalog),
                                     selectedItem = null,
                                 ),
                             onMove = { _, _ -> },
@@ -101,10 +103,11 @@ class ReadoutContentScreenshotTest {
                                 mutableStateOf<ReadoutListItemType?>(LmuWindowsReadoutListItemType.Flag)
                             }
                         ReadoutContent(
+                            catalog = testReadoutCatalog,
                             uiState =
                                 ReadoutListUiState(
                                     selectedSimulator = Simulator.LmuWindows,
-                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows, testReadoutCatalog),
                                     selectedItem = selectedItem,
                                 ),
                             onMove = { _, _ -> },

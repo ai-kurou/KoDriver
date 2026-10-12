@@ -12,7 +12,7 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DE
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.formatLmuWindowsTyreWearReadoutText
-import kurou.kodriver.domain.model.readoutEnabled
+import kurou.kodriver.domain.model.lmuWindowsReadoutEnabled
 import kurou.kodriver.domain.preview.ReadoutSpeechEventPreviewHelper
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearReadoutTextUseCase
@@ -68,7 +68,7 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
                 thresholdPercentage = thresholdPercentage,
                 readoutText = text,
                 isTextToSpeechAvailable = available,
-                enabled = enabledStates.readoutEnabled(LmuWindowsReadoutItemKey.TyreWear.WarningReadout),
+                enabled = enabledStates.lmuWindowsReadoutEnabled(LmuWindowsReadoutItemKey.TyreWear.WarningReadout),
             )
         }.stateIn(
             viewModelScope,

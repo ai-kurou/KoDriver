@@ -38,6 +38,7 @@ class ReadoutListPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
                             ReadoutListPane(
+                                catalog = testReadoutCatalog,
                                 uiState = ReadoutListUiState(),
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
@@ -63,10 +64,15 @@ class ReadoutListPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
                             ReadoutListPane(
+                                catalog = testReadoutCatalog,
                                 uiState =
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
-                                        items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                        items =
+                                            ReadoutListItemType.defaultOrder(
+                                                Simulator.LmuWindows,
+                                                testReadoutCatalog,
+                                            ),
                                         readoutEnabledStates = enabledStates,
                                     ),
                                 onMove = { _, _ -> },
@@ -95,10 +101,11 @@ class ReadoutListPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
                             ReadoutListPane(
+                                catalog = testReadoutCatalog,
                                 uiState =
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.Gt7Ps5,
-                                        items = ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
+                                        items = ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5, testReadoutCatalog),
                                         readoutEnabledStates = enabledStates,
                                     ),
                                 onMove = { _, _ -> },
@@ -124,10 +131,15 @@ class ReadoutListPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
                             ReadoutListPane(
+                                catalog = testReadoutCatalog,
                                 uiState =
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.AceWindows,
-                                        items = ReadoutListItemType.defaultOrder(Simulator.AceWindows),
+                                        items =
+                                            ReadoutListItemType.defaultOrder(
+                                                Simulator.AceWindows,
+                                                testReadoutCatalog,
+                                            ),
                                     ),
                                 onMove = { _, _ -> },
                                 onReadoutEnabledChanged = { _, _ -> },
@@ -147,7 +159,7 @@ class ReadoutListPaneScreenshotTest {
         composeScreenshotTest {
             every { repository.observeReadoutEnabledStates("lmu_windows") } returns MutableStateFlow(emptyMap())
             val enabledStates = observeReadoutEnabledStates("lmu_windows")
-            val items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows)
+            val items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows, testReadoutCatalog)
             var lastItemText = ""
 
             setContent {
@@ -157,6 +169,7 @@ class ReadoutListPaneScreenshotTest {
                         // 先頭へ戻るボタンの表示にはスクロールが必要なため、listPane標準サイズ(360x1080)より低くしている
                         Box(modifier = Modifier.requiredSize(360.dp, 400.dp)) {
                             ReadoutListPane(
+                                catalog = testReadoutCatalog,
                                 uiState =
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
@@ -204,10 +217,15 @@ class ReadoutListPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
                             ReadoutListPane(
+                                catalog = testReadoutCatalog,
                                 uiState =
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
-                                        items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                        items =
+                                            ReadoutListItemType.defaultOrder(
+                                                Simulator.LmuWindows,
+                                                testReadoutCatalog,
+                                            ),
                                         selectedItem = LmuWindowsReadoutListItemType.Flag,
                                         readoutEnabledStates =
                                             mapOf(
@@ -240,10 +258,15 @@ class ReadoutListPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(360.dp, 1080.dp)) {
                             ReadoutListPane(
+                                catalog = testReadoutCatalog,
                                 uiState =
                                     ReadoutListUiState(
                                         selectedSimulator = Simulator.LmuWindows,
-                                        items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                        items =
+                                            ReadoutListItemType.defaultOrder(
+                                                Simulator.LmuWindows,
+                                                testReadoutCatalog,
+                                            ),
                                         selectedItem = LmuWindowsReadoutListItemType.Flag,
                                         readoutEnabledStates =
                                             mapOf(
@@ -269,5 +292,5 @@ class ReadoutListPaneScreenshotTest {
         }
 
     private fun observeReadoutEnabledStates(simulator: String): Map<ReadoutItemKey, Boolean> =
-        runBlocking { ObserveReadoutEnabledStatesUseCase(repository)(simulator).first() }
+        runBlocking { ObserveReadoutEnabledStatesUseCase(repository, testReadoutCatalog)(simulator).first() }
 }
