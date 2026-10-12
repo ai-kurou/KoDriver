@@ -1,6 +1,7 @@
 <resources>
     <string name="new_telemetry_logs">新しいログ</string>
     <string name="telemetry_log_empty_title">ログはまだありません</string>
+    <string name="telemetry_log_empty_title_for_simulator">%1$sのログはまだありません</string>
     <string name="telemetry_log_empty_description">テレメトリを受信すると、ここに新しい順で表示されます。</string>
     <string name="telemetry_log_reset_item">データベースをリセット</string>
     <string name="telemetry_log_reset_confirm_title">データベースをリセットしますか？</string>
