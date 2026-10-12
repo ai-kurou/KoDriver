@@ -22,7 +22,7 @@ class BaselineProfileGenerator {
             pressHome()
             startActivityAndWait()
 
-            // 起動〜シミュレータ選択〜読み上げ一覧表示までの
+            // 起動〜シミュレーター選択〜読み上げ一覧表示までの
             // クリティカルユーザージャーニーをプロファイル対象にする。
             // アイコンのcontentDescriptionはCompose Resourcesの非同期解決に依存し
             // 出現直後はUiAutomatorから見つからないことがあるため、

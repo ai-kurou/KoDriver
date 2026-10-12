@@ -47,8 +47,8 @@ class DebugStateVehicleLocationCardTest {
             listOf(
                 AceWindowsCarLocation.UNASSIGNED to "Unassigned（未割当）",
                 AceWindowsCarLocation.PITLANE to "PitLane（ピットレーン）",
-                AceWindowsCarLocation.PITENTRY to "PitEntry（ピット進入）",
-                AceWindowsCarLocation.PITEXIT to "PitExit（ピット退出）",
+                AceWindowsCarLocation.PITENTRY to "PitEntry（ピットイン）",
+                AceWindowsCarLocation.PITEXIT to "PitExit（ピットアウト）",
                 AceWindowsCarLocation.TRACK to "Track（コース上）",
                 AceWindowsCarLocation.UNKNOWN to "不明",
             )

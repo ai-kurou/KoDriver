@@ -1,6 +1,6 @@
 # GT7 (PS5) 接続設定ガイド
 
-> **注意：** PS5は1台のデバイスにのみテレメトリーを送信するため、Android版とWindows版を同時にPS5へ直接接続することはできない。両方を使いたい場合はSimHubを経由する構成（ケース2）を使用すること。
+> **注意：** PS5は1台のデバイスにのみテレメトリを送信するため、Android版とWindows版を同時にPS5へ直接接続することはできない。両方を使いたい場合はSimHubを経由する構成（ケース2）を使用すること。
 
 ## Android版のローカルネットワークアクセス許可
 
@@ -29,7 +29,7 @@ SimHubとKoDriverを同時に使う場合はこの構成を使用する。
 
 ### SimHub側の設定
 
-SimHubの Gran Turismo 7 テレメトリー設定を以下のように構成する。
+SimHubの Gran Turismo 7 テレメトリ設定を以下のように構成する。
 `Forward UDP packets` を有効にし、KoDriverを実行している端末へUDPパケットを転送する。
 
 ![SimHub GT7設定画面](images/simhub_gt7_ps5_ip_settings.png)

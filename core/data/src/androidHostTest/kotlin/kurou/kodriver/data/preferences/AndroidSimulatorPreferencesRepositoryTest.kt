@@ -39,7 +39,7 @@ class AndroidSimulatorPreferencesRepositoryTest {
     }
 
     @Test
-    fun `selectedSimulatorは初期状態でLmuWindowsを返し保存後に選択したシミュレータを返す`() =
+    fun `selectedSimulatorは初期状態でLmuWindowsを返し保存後に選択したシミュレーターを返す`() =
         runTest(testDispatcher) {
             assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
 

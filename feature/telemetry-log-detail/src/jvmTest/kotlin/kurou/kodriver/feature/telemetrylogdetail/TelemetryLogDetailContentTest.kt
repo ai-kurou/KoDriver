@@ -20,7 +20,7 @@ class TelemetryLogDetailContentTest {
     }
 
     @Test
-    fun `2つのテレメトリーデータJSONを表示する`() {
+    fun `2つのテレメトリデータJSONを表示する`() {
         rule.setContent {
             TelemetryLogDetailContent(
                 uiState =

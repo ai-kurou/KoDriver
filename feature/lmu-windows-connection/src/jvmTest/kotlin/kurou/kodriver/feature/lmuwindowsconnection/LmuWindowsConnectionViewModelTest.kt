@@ -117,7 +117,7 @@ class LmuWindowsConnectionViewModelTest {
         }
 
     @Test
-    fun `LMUから別シミュレータへ切り替えると未接続にリセットされる`() =
+    fun `LMUから別シミュレーターへ切り替えると未接続にリセットされる`() =
         runTest {
             val simulatorFlow = MutableStateFlow<Simulator>(Simulator.LmuWindows)
             coEvery { connectionRepository.isConnected() } returns true

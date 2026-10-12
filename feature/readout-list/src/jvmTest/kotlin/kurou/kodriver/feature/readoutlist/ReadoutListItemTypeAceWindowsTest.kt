@@ -41,7 +41,7 @@ class ReadoutListItemTypeAceWindowsTest {
     }
 
     @Test
-    fun `ace_windows でシミュレータに属さないキーは null を返す`() {
+    fun `ace_windows でシミュレーターに属さないキーは null を返す`() {
         assertNull(ReadoutListItemType.fromId(Simulator.AceWindows, Gt7Ps5ReadoutItemKey.RemainingFuelLaps.Root))
     }
 

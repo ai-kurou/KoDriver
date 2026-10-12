@@ -362,7 +362,7 @@ class AppScreenContentTest {
     }
 
     @Test
-    fun `選択中項目をタップするとシミュレータ選択メニューが開く`() {
+    fun `選択中項目をタップするとシミュレーター選択メニューが開く`() {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
@@ -377,7 +377,7 @@ class AppScreenContentTest {
     }
 
     @Test
-    fun `メニューでシミュレータを選択するとonSimulatorSelectedにIDが渡される`() {
+    fun `メニューでシミュレーターを選択するとonSimulatorSelectedにIDが渡される`() {
         var selectedId: String? = null
 
         rule.setContent {
