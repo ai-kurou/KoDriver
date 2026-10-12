@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kotlin.math.roundToLong
 
 private const val MILLIMETERS_PER_METER = 1000.0
@@ -9,7 +9,7 @@ private const val THOUSANDTHS_DIGITS = 3
 private const val TENTHS_PER_UNIT = 10L
 
 /** ブレーキの厚さをミリメートル（小数3桁）で整形する。負の値は 0 として扱う。微小な摩耗を確認できるよう細かく出す。 */
-internal fun formatBrakeThicknessMillimeters(thickness: BrakeThicknessMeters): String {
+internal fun formatBrakeThicknessMillimeters(thickness: LmuWindowsBrakeThicknessMeters): String {
     val thousandths =
         (thickness.value.toDouble() * MILLIMETERS_PER_METER * THOUSANDTHS_PER_MILLIMETER).roundToLong()
     val clamped = thousandths.coerceAtLeast(0L)

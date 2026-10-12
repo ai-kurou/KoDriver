@@ -13,8 +13,10 @@ const val LMU_WINDOWS_BRAKE_FAILURE_THICKNESS_METERS_UNKNOWN_DEFAULT = 0.025f
  * 車両クラスごとのブレーキ破損厚さのデフォルト値。残量%は「新品時の厚さ」と「破損厚さ」の間での位置で計算する。
  * LMU の REST API は破損厚さを返さないため、クラス別の固定値を使う。
  */
-fun lmuWindowsVehicleClassBrakeFailureThicknessDefault(vehicleClass: LmuWindowsVehicleClassData): BrakeThicknessMeters =
-    BrakeThicknessMeters(
+fun lmuWindowsVehicleClassBrakeFailureThicknessDefault(
+    vehicleClass: LmuWindowsVehicleClassData,
+): LmuWindowsBrakeThicknessMeters =
+    LmuWindowsBrakeThicknessMeters(
         when (vehicleClass) {
             LmuWindowsVehicleClassData.Hypercar -> LMU_WINDOWS_BRAKE_FAILURE_THICKNESS_METERS_HYPERCAR_DEFAULT
             LmuWindowsVehicleClassData.P2 -> LMU_WINDOWS_BRAKE_FAILURE_THICKNESS_METERS_P2_DEFAULT

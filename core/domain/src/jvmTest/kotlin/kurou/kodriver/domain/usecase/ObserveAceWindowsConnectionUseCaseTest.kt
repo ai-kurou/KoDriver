@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.AceWindowsFuelPercent
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -26,7 +26,7 @@ class ObserveAceWindowsConnectionUseCaseTest {
     @Test
     fun `接続確認結果と燃料データを返す`() =
         runTest {
-            val fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0))
+            val fuel = AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(42.0))
             every { repository.fuelStream() } returns MutableStateFlow(fuel)
             coEvery { repository.isConnected() } returns true
             val useCase = createUseCase(repository)

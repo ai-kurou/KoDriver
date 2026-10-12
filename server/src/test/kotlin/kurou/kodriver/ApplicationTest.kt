@@ -20,24 +20,25 @@ import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsFuelPercent
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
-import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.FuelPercent
-import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
+import kurou.kodriver.domain.model.LmuWindowsPressureKpa
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
@@ -53,7 +54,6 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
-import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -3786,16 +3786,16 @@ private val vehicleApproachDataLeft =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(3),
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = LateralDistanceMeters(1.5),
-        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
+        lateralDistanceLeftMeters = LmuWindowsLateralDistanceMeters(1.5),
+        lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private val vehicleApproachDataRight =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = emptySet(),
         sideBySideRightVehicleIds = setOf(5),
-        lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
-        lateralDistanceRightMeters = LateralDistanceMeters(2.0),
+        lateralDistanceLeftMeters = LmuWindowsLateralDistanceMeters(Double.MAX_VALUE),
+        lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(2.0),
     )
 
 private const val VEHICLE_APPROACH_LEFT_JSON =
@@ -4070,7 +4070,7 @@ private val emptyWheels =
             surfaceTemperature = CelsiusReading(0f),
             carcassTemperature = CelsiusReading(0f),
             brakeTemperature = CelsiusReading(0f),
-            pressureKpa = PressureKpa(0.0),
+            pressureKpa = LmuWindowsPressureKpa(0.0),
             wear = LmuWindowsTyreWearRatio(0.0),
         )
     }
@@ -4147,8 +4147,8 @@ private class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRep
     }
 }
 
-private val aceFuelData1 = AceWindowsFuelData(remainingPercent = FuelPercent(42.0))
-private val aceFuelData2 = AceWindowsFuelData(remainingPercent = FuelPercent(28.5))
+private val aceFuelData1 = AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(42.0))
+private val aceFuelData2 = AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(28.5))
 
 private const val ACE_FUEL_JSON_1 = """{"remainingPercent":42.0}"""
 private const val ACE_FUEL_JSON_2 = """{"remainingPercent":28.5}"""
@@ -4318,7 +4318,7 @@ private class FakeLmuWindowsTyreDetachedRepository : LmuWindowsTyreDetachedRepos
 
 private val brakeWearData =
     LmuWindowsBrakeWearData(
-        wheels = mapOf(WheelIndex.FRONT_LEFT to BrakeThicknessMeters(0.03f)),
+        wheels = mapOf(WheelIndex.FRONT_LEFT to LmuWindowsBrakeThicknessMeters(0.03f)),
     )
 
 private const val BRAKE_WEAR_JSON = """{"wheels":{"FRONT_LEFT":0.03}}"""

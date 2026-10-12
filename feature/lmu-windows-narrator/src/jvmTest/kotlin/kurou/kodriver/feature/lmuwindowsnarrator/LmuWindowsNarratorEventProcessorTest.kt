@@ -45,17 +45,18 @@ import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
 import kurou.kodriver.domain.engine.ReadoutTextEvent
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsPitTimingSource
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -71,7 +72,6 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
@@ -810,7 +810,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 ttsEngine.speak(
                     LmuWindowsPitTimingWarning(
                         laps = 2,
-                        source = PitTimingSource.TyreWear,
+                        source = LmuWindowsPitTimingSource.TyreWear,
                         resolvedText = "タイヤ交換まであと2周",
                     ),
                     queue = false,
@@ -830,7 +830,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             processor.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
-                events = listOf(LmuWindowsPitTimingWarning(laps = 2, source = PitTimingSource.TyreWear)),
+                events = listOf(LmuWindowsPitTimingWarning(laps = 2, source = LmuWindowsPitTimingSource.TyreWear)),
                 readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -852,7 +852,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 ttsEngine.speak(
                     LmuWindowsPitTimingWarning(
                         laps = 2,
-                        source = PitTimingSource.TyreWear,
+                        source = LmuWindowsPitTimingSource.TyreWear,
                         resolvedText = "タイヤ交換まであと2周",
                     ),
                     false,
@@ -880,7 +880,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 ttsEngine.speak(
                     LmuWindowsPitTimingWarning(
                         laps = 2,
-                        source = PitTimingSource.VirtualEnergy,
+                        source = LmuWindowsPitTimingSource.VirtualEnergy,
                         resolvedText = "あと2周でピットへ",
                     ),
                     queue = false,
@@ -902,7 +902,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
                 events =
                     listOf(
-                        LmuWindowsPitTimingWarning(laps = 2, source = PitTimingSource.VirtualEnergy),
+                        LmuWindowsPitTimingWarning(laps = 2, source = LmuWindowsPitTimingSource.VirtualEnergy),
                     ),
                 readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
@@ -925,7 +925,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 ttsEngine.speak(
                     LmuWindowsPitTimingWarning(
                         laps = 2,
-                        source = PitTimingSource.VirtualEnergy,
+                        source = LmuWindowsPitTimingSource.VirtualEnergy,
                         resolvedText = "あと2周でピットへ",
                     ),
                     false,
@@ -961,7 +961,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             createProcessor { null }.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
-                events = listOf(LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy)),
+                events = listOf(LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.VirtualEnergy)),
                 readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -998,7 +998,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
             createProcessor { null }.processPitTiming(
                 snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
-                events = listOf(LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear)),
+                events = listOf(LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.TyreWear)),
                 readoutOrder = listOf(LmuWindowsReadoutItemKey.PitTiming.Root),
                 queueEnabledStates = emptyMap(),
                 observedAtMs = 0L,
@@ -2824,10 +2824,10 @@ class LmuWindowsNarratorEventProcessorTest {
             val telemetryJsons = mutableListOf<String>()
             val events =
                 listOf<ReadoutTextEvent>(
-                    LmuWindowsPitTimingWarning(2, PitTimingSource.VirtualEnergy),
-                    LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy),
-                    LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
-                    LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear),
+                    LmuWindowsPitTimingWarning(2, LmuWindowsPitTimingSource.VirtualEnergy),
+                    LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.VirtualEnergy),
+                    LmuWindowsPitTimingWarning(2, LmuWindowsPitTimingSource.TyreWear),
+                    LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.TyreWear),
                 )
             val resolvedEvents = events.map { it.withResolvedText("判定時の本文") }
             every { observePitTimingVirtualEnergyReadoutText() } returns template
@@ -3170,8 +3170,8 @@ private fun leftVehicleApproach(distance: Double = 3.0) =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(1),
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = LateralDistanceMeters(distance),
-        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
+        lateralDistanceLeftMeters = LmuWindowsLateralDistanceMeters(distance),
+        lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private fun vehicleDamage(overheating: Boolean) =
@@ -3280,10 +3280,10 @@ private fun brakeWear(frontLeft: Int) =
         wheels =
             mapOf(
                 WheelIndex.FRONT_LEFT to
-                    LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), frontLeft.toFloat()),
-                WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80f),
-                WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80f),
-                WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 80f),
+                    LmuWindowsBrakeWearWheelRemaining(LmuWindowsBrakeThicknessMeters(0.03f), frontLeft.toFloat()),
+                WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(LmuWindowsBrakeThicknessMeters(0.03f), 80f),
+                WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(LmuWindowsBrakeThicknessMeters(0.03f), 80f),
+                WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(LmuWindowsBrakeThicknessMeters(0.03f), 80f),
             ),
     )
 

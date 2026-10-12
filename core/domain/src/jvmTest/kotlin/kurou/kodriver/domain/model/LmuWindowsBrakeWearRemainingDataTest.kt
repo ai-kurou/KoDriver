@@ -4,8 +4,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LmuWindowsBrakeWearRemainingDataTest {
-    private val max = BrakeThicknessMeters(0.036f)
-    private val failure = BrakeThicknessMeters(0.025f)
+    private val max = LmuWindowsBrakeThicknessMeters(0.036f)
+    private val failure = LmuWindowsBrakeThicknessMeters(0.025f)
 
     @Test
     fun `新品時の厚さなら100%`() {
@@ -14,18 +14,22 @@ class LmuWindowsBrakeWearRemainingDataTest {
 
     @Test
     fun `新品時の厚さと破損厚さの中間なら50%`() {
-        assertEquals(50f, calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.0305f), max, failure), 0.001f)
+        assertEquals(
+            50f,
+            calculateBrakeWearRemainingPercent(LmuWindowsBrakeThicknessMeters(0.0305f), max, failure),
+            0.001f,
+        )
     }
 
     @Test
     fun `破損厚さ以下なら0%`() {
         assertEquals(0f, calculateBrakeWearRemainingPercent(failure, max, failure))
-        assertEquals(0f, calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.010f), max, failure))
+        assertEquals(0f, calculateBrakeWearRemainingPercent(LmuWindowsBrakeThicknessMeters(0.010f), max, failure))
     }
 
     @Test
     fun `新品時の厚さを超えても100%を上限にする`() {
-        assertEquals(100f, calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.040f), max, failure))
+        assertEquals(100f, calculateBrakeWearRemainingPercent(LmuWindowsBrakeThicknessMeters(0.040f), max, failure))
     }
 
     @Test
@@ -33,7 +37,11 @@ class LmuWindowsBrakeWearRemainingDataTest {
         assertEquals(100f, calculateBrakeWearRemainingPercent(failure, failure, failure))
         assertEquals(
             100f,
-            calculateBrakeWearRemainingPercent(BrakeThicknessMeters(0.020f), BrakeThicknessMeters(0.020f), failure),
+            calculateBrakeWearRemainingPercent(
+                LmuWindowsBrakeThicknessMeters(0.020f),
+                LmuWindowsBrakeThicknessMeters(0.020f),
+                failure,
+            ),
         )
     }
 }

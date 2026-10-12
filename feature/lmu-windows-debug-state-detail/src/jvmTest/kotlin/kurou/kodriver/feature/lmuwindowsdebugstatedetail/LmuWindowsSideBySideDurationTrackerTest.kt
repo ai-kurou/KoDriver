@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsdebugstatedetail
 
-import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -11,7 +11,12 @@ class LmuWindowsSideBySideDurationTrackerTest {
     private fun data(
         left: Set<Int> = emptySet(),
         right: Set<Int> = emptySet(),
-    ) = LmuWindowsVehicleApproachData(left, right, LateralDistanceMeters(1.0), LateralDistanceMeters(2.0))
+    ) = LmuWindowsVehicleApproachData(
+        left,
+        right,
+        LmuWindowsLateralDistanceMeters(1.0),
+        LmuWindowsLateralDistanceMeters(2.0),
+    )
 
     @Test
     fun `車両がいなければ左右ともnullになる`() {

@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsFuelPercent
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
@@ -21,7 +22,6 @@ import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Test
 
@@ -50,7 +50,7 @@ class AceWindowsDebugStateDetailPaneScreenshotTest {
             enabledCardKeys = defaultDebugStateCardOrder.toSet(),
             aceWindows =
                 AceWindowsDebugState(
-                    fuel = AceWindowsFuelData(remainingPercent = FuelPercent(42.0)),
+                    fuel = AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(42.0)),
                     flag = AceWindowsFlagData(flag = AceWindowsFlagType.YELLOW_FLAG),
                     status = AceWindowsStatusData(AceWindowsStatusType.LIVE, AceWindowsCarLocation.TRACK),
                     bestLapTime = AceWindowsBestLapTimeData(bestLapTimeMs = 83_456),

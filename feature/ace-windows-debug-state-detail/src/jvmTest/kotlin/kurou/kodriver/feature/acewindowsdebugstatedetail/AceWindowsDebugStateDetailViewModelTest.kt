@@ -21,12 +21,12 @@ import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsFuelPercent
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
-import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.repository.AceWindowsBestLapTimeRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
@@ -160,7 +160,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             viewModel.uiState.first()
             testScheduler.runCurrent()
 
-            val data = AceWindowsFuelData(remainingPercent = FuelPercent(50.0))
+            val data = AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(50.0))
             flow.emit(data)
             testScheduler.runCurrent()
             val state = viewModel.uiState.first()
@@ -469,7 +469,7 @@ class AceWindowsDebugStateDetailViewModelTest {
     @Test
     fun `全ストリームを集約し更新しても受信済みカードを維持する`() =
         runTest {
-            val flow = MutableStateFlow(AceWindowsFuelData(remainingPercent = FuelPercent(50.0)))
+            val flow = MutableStateFlow(AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(50.0)))
             every { fuelRepository.fuelStream() } returns flow
             every { flagRepository.flagStream() } returns
                 MutableStateFlow(AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG))
@@ -491,7 +491,7 @@ class AceWindowsDebugStateDetailViewModelTest {
             assertEquals(aceWindowsSupportedCardKeys, viewModel.uiState.first().enabledCardKeys)
             assertEquals(
                 AceWindowsDebugState(
-                    fuel = AceWindowsFuelData(remainingPercent = FuelPercent(50.0)),
+                    fuel = AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(50.0)),
                     flag = AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG),
                     status = AceWindowsStatusData(AceWindowsStatusType.LIVE, AceWindowsCarLocation.TRACK),
                     tyreCarcassTemperature = AceWindowsTyreCarcassTemperatureData(wheels = emptyMap()),
@@ -501,10 +501,10 @@ class AceWindowsDebugStateDetailViewModelTest {
                 ),
                 viewModel.uiState.first().aceWindows,
             )
-            flow.update { AceWindowsFuelData(remainingPercent = FuelPercent(42.0)) }
+            flow.update { AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(42.0)) }
             testScheduler.runCurrent()
             assertEquals(
-                FuelPercent(42.0),
+                AceWindowsFuelPercent(42.0),
                 viewModel.uiState
                     .first()
                     .aceWindows.fuel

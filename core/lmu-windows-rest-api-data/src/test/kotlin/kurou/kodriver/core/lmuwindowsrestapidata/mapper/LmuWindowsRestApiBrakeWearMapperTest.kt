@@ -2,7 +2,7 @@ package kurou.kodriver.core.lmuwindowsrestapidata.mapper
 
 import kurou.kodriver.core.lmuwindowsrestapidata.dto.RepairAndRefuelResponseDto
 import kurou.kodriver.core.lmuwindowsrestapidata.dto.WearablesDto
-import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,10 +17,10 @@ class LmuWindowsRestApiBrakeWearMapperTest {
 
         assertEquals(
             mapOf(
-                WheelIndex.FRONT_LEFT to BrakeThicknessMeters(0.036f),
-                WheelIndex.FRONT_RIGHT to BrakeThicknessMeters(0.035f),
-                WheelIndex.REAR_LEFT to BrakeThicknessMeters(0.032f),
-                WheelIndex.REAR_RIGHT to BrakeThicknessMeters(0.031f),
+                WheelIndex.FRONT_LEFT to LmuWindowsBrakeThicknessMeters(0.036f),
+                WheelIndex.FRONT_RIGHT to LmuWindowsBrakeThicknessMeters(0.035f),
+                WheelIndex.REAR_LEFT to LmuWindowsBrakeThicknessMeters(0.032f),
+                WheelIndex.REAR_RIGHT to LmuWindowsBrakeThicknessMeters(0.031f),
             ),
             result?.wheels,
         )

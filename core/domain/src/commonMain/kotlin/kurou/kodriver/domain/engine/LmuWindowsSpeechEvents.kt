@@ -18,8 +18,8 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_OVERHEAT_READOUT_T
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_PART_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_DAMAGE_TYRE_DETACHED_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_YELLOW_FLAG_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsPitTimingSource
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.defaultLmuWindowsPitTimingReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeTemperatureReadoutText
 import kurou.kodriver.domain.model.formatLmuWindowsBrakeWearReadoutText
@@ -252,7 +252,7 @@ data class LmuWindowsMyBestLap(
  */
 data class LmuWindowsPitTimingWarning(
     val laps: Int,
-    val source: PitTimingSource,
+    val source: LmuWindowsPitTimingSource,
     override val resolvedText: String? = null,
 ) : ReadoutTextEvent {
     override val readoutItemKey = LmuWindowsReadoutItemKey.PitTiming.Root

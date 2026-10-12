@@ -11,5 +11,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LmuWindowsBrakeWearData(
     /** ホイールごとのブレーキ残り厚さ（単位: meters）。 */
-    val wheels: Map<WheelIndex, BrakeThicknessMeters>,
+    val wheels: Map<WheelIndex, LmuWindowsBrakeThicknessMeters>,
 )

@@ -9,18 +9,19 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
+import kurou.kodriver.domain.model.LmuWindowsPressureKpa
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
@@ -35,7 +36,6 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
-import kurou.kodriver.domain.model.PressureKpa
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -60,7 +60,7 @@ private fun sampleWheel(surfaceTemperatureCelsius: Double) =
         surfaceTemperature = CelsiusReading(surfaceTemperatureCelsius.toFloat()),
         carcassTemperature = CelsiusReading(0f),
         brakeTemperature = CelsiusReading(0f),
-        pressureKpa = PressureKpa(0.0),
+        pressureKpa = LmuWindowsPressureKpa(0.0),
         wear = LmuWindowsTyreWearRatio(0.0),
     )
 
@@ -127,10 +127,11 @@ private val sampleBrakeWear =
     LmuWindowsBrakeWearRemainingData(
         wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.036f), 87f),
-                WheelIndex.FRONT_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.035f), 82.5f),
-                WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.03f), 60f),
-                WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(BrakeThicknessMeters(0.031f), 65f),
+                WheelIndex.FRONT_LEFT to LmuWindowsBrakeWearWheelRemaining(LmuWindowsBrakeThicknessMeters(0.036f), 87f),
+                WheelIndex.FRONT_RIGHT to
+                    LmuWindowsBrakeWearWheelRemaining(LmuWindowsBrakeThicknessMeters(0.035f), 82.5f),
+                WheelIndex.REAR_LEFT to LmuWindowsBrakeWearWheelRemaining(LmuWindowsBrakeThicknessMeters(0.03f), 60f),
+                WheelIndex.REAR_RIGHT to LmuWindowsBrakeWearWheelRemaining(LmuWindowsBrakeThicknessMeters(0.031f), 65f),
             ),
     )
 
@@ -149,8 +150,8 @@ private val sampleVehicleApproach =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(4),
         sideBySideRightVehicleIds = setOf(7),
-        lateralDistanceLeftMeters = LateralDistanceMeters(2.0),
-        lateralDistanceRightMeters = LateralDistanceMeters(1.5),
+        lateralDistanceLeftMeters = LmuWindowsLateralDistanceMeters(2.0),
+        lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(1.5),
     )
 
 private val sampleSideBySideDurations = LmuWindowsSideBySideDurations(leftMillis = 3_400, rightMillis = 12_800)

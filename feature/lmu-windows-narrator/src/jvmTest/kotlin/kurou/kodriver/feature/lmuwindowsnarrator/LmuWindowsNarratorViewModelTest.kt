@@ -37,19 +37,20 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.CelsiusReading
 import kurou.kodriver.domain.model.LMU_WINDOWS_MY_BEST_LAP_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
-import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsPitTimingSource
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -66,7 +67,6 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyRatio
 import kurou.kodriver.domain.model.NarrationOutcome
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
@@ -552,7 +552,7 @@ class LmuWindowsNarratorViewModelTest {
                                 tyreColdReadoutText
                             } else if (
                                 it is LmuWindowsPitTimingWarning &&
-                                it.source == PitTimingSource.TyreWear
+                                it.source == LmuWindowsPitTimingSource.TyreWear
                             ) {
                                 "タイヤ交換へ"
                             } else {
@@ -2389,7 +2389,7 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.VirtualEnergy,
+                        source = LmuWindowsPitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
                     ),
                 ),
@@ -2543,7 +2543,7 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.TyreWear,
+                        source = LmuWindowsPitTimingSource.TyreWear,
                         resolvedText = "タイヤ交換へ",
                     ),
                 ),
@@ -2602,12 +2602,12 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.VirtualEnergy,
+                        source = LmuWindowsPitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
                     ),
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.VirtualEnergy,
+                        source = LmuWindowsPitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
                     ),
                 ),
@@ -2666,12 +2666,12 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.TyreWear,
+                        source = LmuWindowsPitTimingSource.TyreWear,
                         resolvedText = "タイヤ交換へ",
                     ),
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.TyreWear,
+                        source = LmuWindowsPitTimingSource.TyreWear,
                         resolvedText = "タイヤ交換へ",
                     ),
                 ),
@@ -2721,7 +2721,7 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.VirtualEnergy,
+                        source = LmuWindowsPitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
                     ),
                 ),
@@ -2770,7 +2770,7 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.TyreWear,
+                        source = LmuWindowsPitTimingSource.TyreWear,
                         resolvedText = "タイヤ交換へ",
                     ),
                 ),
@@ -2818,7 +2818,7 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.VirtualEnergy,
+                        source = LmuWindowsPitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
                     ),
                 ),
@@ -2866,7 +2866,7 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.VirtualEnergy,
+                        source = LmuWindowsPitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
                     ),
                 ),
@@ -2883,12 +2883,12 @@ class LmuWindowsNarratorViewModelTest {
                 listOf<SpeechEvent>(
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.VirtualEnergy,
+                        source = LmuWindowsPitTimingSource.VirtualEnergy,
                         resolvedText = "エナジー切れのため必ずピットイン",
                     ),
                     LmuWindowsPitTimingWarning(
                         0,
-                        source = PitTimingSource.TyreWear,
+                        source = LmuWindowsPitTimingSource.TyreWear,
                         resolvedText = "タイヤ交換へ",
                     ),
                 )
@@ -3140,16 +3140,16 @@ private fun noVehicleApproach() =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = emptySet(),
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = LateralDistanceMeters(Double.MAX_VALUE),
-        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
+        lateralDistanceLeftMeters = LmuWindowsLateralDistanceMeters(Double.MAX_VALUE),
+        lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private fun leftVehicleApproach(vehicleId: Int) =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(vehicleId),
         sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = LateralDistanceMeters(3.0),
-        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
+        lateralDistanceLeftMeters = LmuWindowsLateralDistanceMeters(3.0),
+        lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private fun clearFlags(
@@ -3245,7 +3245,7 @@ private fun tyreWear(
 
 private fun brakeWearData(thickness: Float) =
     LmuWindowsBrakeWearData(
-        wheels = WheelIndex.entries.associateWith { BrakeThicknessMeters(thickness) },
+        wheels = WheelIndex.entries.associateWith { LmuWindowsBrakeThicknessMeters(thickness) },
     )
 
 private fun brakeTemperature(

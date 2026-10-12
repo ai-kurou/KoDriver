@@ -15,15 +15,15 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.BrakeThicknessMeters
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.LateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsFuelUnit
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -204,7 +204,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             assertTrue(LmuWindowsDebugStateCardKey.BRAKE_WEAR in initial.enabledCardKeys)
 
             brakeWearFlow.update {
-                LmuWindowsBrakeWearData(mapOf(WheelIndex.FRONT_LEFT to BrakeThicknessMeters(0.03f)))
+                LmuWindowsBrakeWearData(mapOf(WheelIndex.FRONT_LEFT to LmuWindowsBrakeThicknessMeters(0.03f)))
             }
             testScheduler.runCurrent()
             val updated = viewModel.uiState.first()
@@ -212,7 +212,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
                 updated.lmuWindows.brakeWear
                     ?.wheels
                     ?.get(WheelIndex.FRONT_LEFT)
-            assertEquals(BrakeThicknessMeters(0.03f), updatedWheel?.thickness)
+            assertEquals(LmuWindowsBrakeThicknessMeters(0.03f), updatedWheel?.thickness)
             assertTrue((updatedWheel?.remainingPercent ?: 100f) < 100f)
 
             brakeWearFlow.update { null }
@@ -551,7 +551,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
 
             assertEquals(LmuWindowsSideBySideDurations(0, null), state.lmuWindows.sideBySideDurations)
             nowMs = 2_250L
-            approach.update { it.copy(lateralDistanceLeftMeters = LateralDistanceMeters(1.5)) }
+            approach.update { it.copy(lateralDistanceLeftMeters = LmuWindowsLateralDistanceMeters(1.5)) }
             val continued = viewModel.uiState.first { it.lmuWindows.sideBySideDurations?.leftMillis == 1_250L }
             assertEquals(LmuWindowsSideBySideDurations(1_250, null), continued.lmuWindows.sideBySideDurations)
             verify(exactly = 1) { flagRepository.flagStream() }
@@ -649,7 +649,7 @@ class LmuWindowsDebugStateDetailViewModelTest {
             val rightApproach =
                 sampleVehicleApproach(emptySet()).copy(
                     sideBySideRightVehicleIds = setOf(2),
-                    lateralDistanceRightMeters = LateralDistanceMeters(1.5),
+                    lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(1.5),
                 )
             val approach = MutableStateFlow(rightApproach)
             every { vehicleApproachRepository.vehicleApproachStream() } returns approach
@@ -1345,8 +1345,8 @@ private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) =
         sideBySideLeftVehicleIds = leftVehicleIds,
         sideBySideRightVehicleIds = emptySet(),
         lateralDistanceLeftMeters =
-            LateralDistanceMeters(if (leftVehicleIds.isEmpty()) Double.MAX_VALUE else 1.0),
-        lateralDistanceRightMeters = LateralDistanceMeters(Double.MAX_VALUE),
+            LmuWindowsLateralDistanceMeters(if (leftVehicleIds.isEmpty()) Double.MAX_VALUE else 1.0),
+        lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(Double.MAX_VALUE),
     )
 
 private fun sampleTyreCarcassTemperature() = LmuWindowsTyreCarcassTemperatureData(wheels = emptyMap())
@@ -1366,4 +1366,7 @@ private fun sampleVehicleDamage(
 private fun sampleTyreDetached(vararg detachedWheels: WheelIndex) =
     LmuWindowsTyreDetachedData(wheels = WheelIndex.entries.associateWith { it in detachedWheels })
 
-private fun sampleBrakeWear() = LmuWindowsBrakeWearData(mapOf(WheelIndex.FRONT_LEFT to BrakeThicknessMeters(0.036f)))
+private fun sampleBrakeWear() =
+    LmuWindowsBrakeWearData(
+        mapOf(WheelIndex.FRONT_LEFT to LmuWindowsBrakeThicknessMeters(0.036f)),
+    )

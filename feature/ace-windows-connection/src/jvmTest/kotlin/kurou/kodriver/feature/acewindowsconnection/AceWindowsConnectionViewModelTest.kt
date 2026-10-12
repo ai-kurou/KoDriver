@@ -20,7 +20,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.FuelPercent
+import kurou.kodriver.domain.model.AceWindowsFuelPercent
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -42,7 +42,7 @@ class AceWindowsConnectionViewModelTest {
 
     private val simulatorRepository: SimulatorPreferencesRepository = mockk()
 
-    private val defaultFuel = AceWindowsFuelData(remainingPercent = FuelPercent(0.0))
+    private val defaultFuel = AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(0.0))
 
     @BeforeTest
     fun setUp() {
@@ -86,7 +86,7 @@ class AceWindowsConnectionViewModelTest {
     @Test
     fun `ACE選択時に燃料残量を保持する`() =
         runTest {
-            val fuelFlow = MutableStateFlow(AceWindowsFuelData(remainingPercent = FuelPercent(32.5)))
+            val fuelFlow = MutableStateFlow(AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(32.5)))
             every { connectionRepository.fuelStream() } returns fuelFlow
             coEvery { connectionRepository.isConnected() } returns true
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
@@ -97,7 +97,7 @@ class AceWindowsConnectionViewModelTest {
 
             assertEquals(32.5, viewModel.uiState.first().fuelRemainingPercent)
 
-            fuelFlow.update { AceWindowsFuelData(remainingPercent = FuelPercent(28.0)) }
+            fuelFlow.update { AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(28.0)) }
             dispatcher.scheduler.runCurrent()
 
             assertEquals(28.0, viewModel.uiState.first().fuelRemainingPercent)

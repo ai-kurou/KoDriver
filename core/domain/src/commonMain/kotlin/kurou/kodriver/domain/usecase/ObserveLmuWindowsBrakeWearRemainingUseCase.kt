@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearWheelRemaining
@@ -31,7 +31,7 @@ class ObserveLmuWindowsBrakeWearRemainingUseCase(
     operator fun invoke(): Flow<LmuWindowsBrakeWearRemainingData?> =
         flow {
             var vehicleClass: LmuWindowsVehicleClassData = LmuWindowsVehicleClassData.Unknown(raw = "")
-            var maxThickness = emptyMap<WheelIndex, BrakeThicknessMeters>()
+            var maxThickness = emptyMap<WheelIndex, LmuWindowsBrakeThicknessMeters>()
             merge(
                 vehicleClassRepository
                     .vehicleClassStream()

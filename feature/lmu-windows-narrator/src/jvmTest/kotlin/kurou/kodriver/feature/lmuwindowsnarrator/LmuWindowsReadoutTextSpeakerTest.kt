@@ -26,7 +26,7 @@ import kurou.kodriver.domain.engine.LmuWindowsTyreDetached
 import kurou.kodriver.domain.engine.LmuWindowsTyreOverheat
 import kurou.kodriver.domain.engine.LmuWindowsTyreWearWarning
 import kurou.kodriver.domain.engine.LmuWindowsYellowFlag
-import kurou.kodriver.domain.model.PitTimingSource
+import kurou.kodriver.domain.model.LmuWindowsPitTimingSource
 import kurou.kodriver.domain.usecase.CheckTextToSpeechAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBlueFlagReadoutTextUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsBrakeTemperatureReadoutTextUseCase
@@ -575,7 +575,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("残り1周", volume = VOLUME) } just Runs
 
-            speaker(LmuWindowsPitTimingWarning(1, PitTimingSource.VirtualEnergy), VOLUME)
+            speaker(LmuWindowsPitTimingWarning(1, LmuWindowsPitTimingSource.VirtualEnergy), VOLUME)
 
             verify(exactly = 1) { observePitTimingVirtualEnergyReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -590,7 +590,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("残り5周", volume = VOLUME) } just Runs
 
-            speaker(LmuWindowsPitTimingWarning(5, PitTimingSource.VirtualEnergy), VOLUME)
+            speaker(LmuWindowsPitTimingWarning(5, LmuWindowsPitTimingSource.VirtualEnergy), VOLUME)
 
             verify(exactly = 1) { observePitTimingVirtualEnergyReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -603,7 +603,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observePitTimingVirtualEnergyReadoutText() } returns flowOf("  ")
 
-            val event = LmuWindowsPitTimingWarning(1, PitTimingSource.VirtualEnergy)
+            val event = LmuWindowsPitTimingWarning(1, LmuWindowsPitTimingSource.VirtualEnergy)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -617,7 +617,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observePitTimingVirtualEnergyReadoutText() } returns flowOf("ピットイン")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val event = LmuWindowsPitTimingWarning(1, PitTimingSource.VirtualEnergy)
+            val event = LmuWindowsPitTimingWarning(1, LmuWindowsPitTimingSource.VirtualEnergy)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -633,7 +633,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
 
-            speaker(LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy), VOLUME)
+            speaker(LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.VirtualEnergy), VOLUME)
 
             verify(exactly = 1) { observePitTimingVirtualEnergyImminentReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -648,7 +648,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
 
-            speaker(LmuWindowsPitTimingWarning(-1, PitTimingSource.VirtualEnergy), VOLUME)
+            speaker(LmuWindowsPitTimingWarning(-1, LmuWindowsPitTimingSource.VirtualEnergy), VOLUME)
 
             verify(exactly = 1) { observePitTimingVirtualEnergyImminentReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -661,7 +661,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observePitTimingVirtualEnergyImminentReadoutText() } returns flowOf("  ")
 
-            val event = LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy)
+            val event = LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.VirtualEnergy)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -675,7 +675,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observePitTimingVirtualEnergyImminentReadoutText() } returns flowOf("ピットイン")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val event = LmuWindowsPitTimingWarning(0, PitTimingSource.VirtualEnergy)
+            val event = LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.VirtualEnergy)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -691,7 +691,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("残り1周", volume = VOLUME) } just Runs
 
-            speaker(LmuWindowsPitTimingWarning(1, PitTimingSource.TyreWear), VOLUME)
+            speaker(LmuWindowsPitTimingWarning(1, LmuWindowsPitTimingSource.TyreWear), VOLUME)
 
             verify(exactly = 1) { observePitTimingTyreWearReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -706,7 +706,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("残り5周", volume = VOLUME) } just Runs
 
-            speaker(LmuWindowsPitTimingWarning(5, PitTimingSource.TyreWear), VOLUME)
+            speaker(LmuWindowsPitTimingWarning(5, LmuWindowsPitTimingSource.TyreWear), VOLUME)
 
             verify(exactly = 1) { observePitTimingTyreWearReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -719,7 +719,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observePitTimingTyreWearReadoutText() } returns flowOf("  ")
 
-            val event = LmuWindowsPitTimingWarning(1, PitTimingSource.TyreWear)
+            val event = LmuWindowsPitTimingWarning(1, LmuWindowsPitTimingSource.TyreWear)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -733,7 +733,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observePitTimingTyreWearReadoutText() } returns flowOf("ピットイン")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val event = LmuWindowsPitTimingWarning(1, PitTimingSource.TyreWear)
+            val event = LmuWindowsPitTimingWarning(1, LmuWindowsPitTimingSource.TyreWear)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -749,7 +749,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
 
-            speaker(LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear), VOLUME)
+            speaker(LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.TyreWear), VOLUME)
 
             verify(exactly = 1) { observePitTimingTyreWearImminentReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -764,7 +764,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             coEvery { checkTextToSpeechAvailable() } returns true
             coEvery { speakText("必ず{laps}ピットイン", volume = VOLUME) } just Runs
 
-            speaker(LmuWindowsPitTimingWarning(-1, PitTimingSource.TyreWear), VOLUME)
+            speaker(LmuWindowsPitTimingWarning(-1, LmuWindowsPitTimingSource.TyreWear), VOLUME)
 
             verify(exactly = 1) { observePitTimingTyreWearImminentReadoutText() }
             coVerify(exactly = 1) { checkTextToSpeechAvailable() }
@@ -777,7 +777,7 @@ class LmuWindowsReadoutTextSpeakerTest {
         runTest {
             every { observePitTimingTyreWearImminentReadoutText() } returns flowOf("  ")
 
-            val event = LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear)
+            val event = LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.TyreWear)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 
@@ -791,7 +791,7 @@ class LmuWindowsReadoutTextSpeakerTest {
             every { observePitTimingTyreWearImminentReadoutText() } returns flowOf("ピットイン")
             coEvery { checkTextToSpeechAvailable() } returns false
 
-            val event = LmuWindowsPitTimingWarning(0, PitTimingSource.TyreWear)
+            val event = LmuWindowsPitTimingWarning(0, LmuWindowsPitTimingSource.TyreWear)
             assertNull(speaker.readoutText(event))
             speaker(event, VOLUME)
 

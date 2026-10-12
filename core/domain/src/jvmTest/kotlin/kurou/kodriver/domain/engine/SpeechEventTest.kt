@@ -19,8 +19,8 @@ import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_REA
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsPitTimingSource
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
-import kurou.kodriver.domain.model.PitTimingSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -47,7 +47,7 @@ class SpeechEventTest {
                 LmuWindowsBrakeOverheat(700),
                 LmuWindowsRemainingVirtualEnergyWarning(50),
                 LmuWindowsMyBestLap(83_456L),
-                LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear),
+                LmuWindowsPitTimingWarning(2, LmuWindowsPitTimingSource.TyreWear),
             )
         val expected =
             listOf<ReadoutTextEvent>(
@@ -68,7 +68,7 @@ class SpeechEventTest {
                 LmuWindowsBrakeOverheat(700, "判定時の本文"),
                 LmuWindowsRemainingVirtualEnergyWarning(50, "判定時の本文"),
                 LmuWindowsMyBestLap(83_456L, "判定時の本文"),
-                LmuWindowsPitTimingWarning(2, PitTimingSource.TyreWear, "判定時の本文"),
+                LmuWindowsPitTimingWarning(2, LmuWindowsPitTimingSource.TyreWear, "判定時の本文"),
             )
         assertEquals(expected, events.map { it.withResolvedText("判定時の本文") })
         events.forEach { event ->
@@ -193,7 +193,7 @@ class SpeechEventTest {
         listOf(1, 3).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_READOUT_TEXT_DEFAULT.replace("{laps}", laps.toString()),
-                LmuWindowsPitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
+                LmuWindowsPitTimingWarning(laps, LmuWindowsPitTimingSource.VirtualEnergy).narratedText,
             )
         }
     }
@@ -203,7 +203,7 @@ class SpeechEventTest {
         listOf(0, -1).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_IMMINENT_READOUT_TEXT_DEFAULT,
-                LmuWindowsPitTimingWarning(laps, PitTimingSource.VirtualEnergy).narratedText,
+                LmuWindowsPitTimingWarning(laps, LmuWindowsPitTimingSource.VirtualEnergy).narratedText,
             )
         }
     }
@@ -213,7 +213,7 @@ class SpeechEventTest {
         listOf(1, 3).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_READOUT_TEXT_DEFAULT.replace("{laps}", laps.toString()),
-                LmuWindowsPitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
+                LmuWindowsPitTimingWarning(laps, LmuWindowsPitTimingSource.TyreWear).narratedText,
             )
         }
     }
@@ -223,7 +223,7 @@ class SpeechEventTest {
         listOf(0, -1).forEach { laps ->
             assertEquals(
                 LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_IMMINENT_READOUT_TEXT_DEFAULT,
-                LmuWindowsPitTimingWarning(laps, PitTimingSource.TyreWear).narratedText,
+                LmuWindowsPitTimingWarning(laps, LmuWindowsPitTimingSource.TyreWear).narratedText,
             )
         }
     }

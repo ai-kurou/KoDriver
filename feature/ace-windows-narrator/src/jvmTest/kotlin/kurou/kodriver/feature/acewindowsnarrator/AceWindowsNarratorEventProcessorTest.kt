@@ -37,13 +37,13 @@ import kurou.kodriver.domain.model.AceWindowsBestLapTimeData
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsFuelPercent
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.model.AceWindowsReadoutItemKey
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.NarrationOutcome
 import kurou.kodriver.domain.model.Simulator
@@ -2016,7 +2016,8 @@ class AceWindowsNarratorEventProcessorTest {
             readoutText = readoutText,
         )
 
-    private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = FuelPercent(remainingPercent))
+    private fun fuel(remainingPercent: Double) =
+        AceWindowsFuelData(remainingPercent = AceWindowsFuelPercent(remainingPercent))
 
     private fun logContext() =
         AceWindowsTelemetryLogContext(

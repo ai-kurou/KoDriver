@@ -24,6 +24,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Celsius
 import kurou.kodriver.domain.model.LmuWindowsBrakeTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
+import kurou.kodriver.domain.model.LmuWindowsPitTimingSource
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsReadoutItemKey
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -33,7 +34,6 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
-import kurou.kodriver.domain.model.PitTimingSource
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
@@ -570,7 +570,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             state = stateAfterEvaluation,
             events =
                 listOf(
-                    LmuWindowsPitTimingWarning(remainingLaps, source = PitTimingSource.VirtualEnergy),
+                    LmuWindowsPitTimingWarning(remainingLaps, source = LmuWindowsPitTimingSource.VirtualEnergy),
                 ),
         )
     }
@@ -634,7 +634,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             )
         return LmuWindowsNarratorReadoutDecision(
             state = stateAfterEvaluation,
-            events = listOf(LmuWindowsPitTimingWarning(remainingLaps, source = PitTimingSource.TyreWear)),
+            events = listOf(LmuWindowsPitTimingWarning(remainingLaps, source = LmuWindowsPitTimingSource.TyreWear)),
         )
     }
 
@@ -644,8 +644,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         event: LmuWindowsPitTimingWarning,
     ): LmuWindowsNarratorState =
         when (event.source) {
-            PitTimingSource.VirtualEnergy -> state.copy(lastAnnouncedPitTimingVirtualEnergyLaps = event.laps)
-            PitTimingSource.TyreWear -> state.copy(lastAnnouncedPitTimingTyreWearLaps = event.laps)
+            LmuWindowsPitTimingSource.VirtualEnergy -> state.copy(lastAnnouncedPitTimingVirtualEnergyLaps = event.laps)
+            LmuWindowsPitTimingSource.TyreWear -> state.copy(lastAnnouncedPitTimingTyreWearLaps = event.laps)
         }
 
     fun determineRaceFlags(

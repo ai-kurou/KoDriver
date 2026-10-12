@@ -7,7 +7,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kotlin.test.Test
@@ -22,8 +22,8 @@ private fun fakeVehicleApproachData(
 ) = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = if (isSideBySideLeft) setOf(1) else emptySet(),
     sideBySideRightVehicleIds = if (isSideBySideRight) setOf(2) else emptySet(),
-    lateralDistanceLeftMeters = LateralDistanceMeters(lateralDistanceLeftMeters),
-    lateralDistanceRightMeters = LateralDistanceMeters(lateralDistanceRightMeters),
+    lateralDistanceLeftMeters = LmuWindowsLateralDistanceMeters(lateralDistanceLeftMeters),
+    lateralDistanceRightMeters = LmuWindowsLateralDistanceMeters(lateralDistanceRightMeters),
 )
 
 class ObserveLmuWindowsVehicleApproachUseCaseTest {

@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsFuelPercent
 import kurou.kodriver.domain.model.AceWindowsNearbyVehicleData
 import kurou.kodriver.domain.model.AceWindowsRemainingFuelLapsData
 import kurou.kodriver.domain.model.AceWindowsStatusData
@@ -12,7 +13,6 @@ import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.AceWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.AceWindowsVehicleApproachData
 import kurou.kodriver.domain.model.CelsiusReading
-import kurou.kodriver.domain.model.FuelPercent
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import kotlin.math.sqrt
@@ -121,7 +121,9 @@ internal object AceWindowsMapper {
     fun mapFuel(buffer: ByteBuffer): AceWindowsFuelData =
         AceWindowsFuelData(
             remainingPercent =
-                FuelPercent(buffer.getFloat(OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT).toDouble() * PERCENT_MULTIPLIER),
+                AceWindowsFuelPercent(
+                    buffer.getFloat(OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT).toDouble() * PERCENT_MULTIPLIER,
+                ),
         )
 
     // laps_possible_with_fuel は直近の平均消費率 (fuel_liter_per_lap) から ACE が算出する

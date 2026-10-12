@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverExtendedColors
 import kurou.kodriver.core.designsystem.KoDriverSpacing
 import kurou.kodriver.core.designsystem.koDriverNumericTextStyle
-import kurou.kodriver.domain.model.LateralDistanceMeters
+import kurou.kodriver.domain.model.LmuWindowsLateralDistanceMeters
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -194,7 +194,7 @@ internal fun LmuWindowsFuelContent(
 
 private val SIDE_BY_SIDE_COLUMN_WIDTH = 80.dp
 
-private fun formatMeters(value: LateralDistanceMeters): String {
+private fun formatMeters(value: LmuWindowsLateralDistanceMeters): String {
     val rounded = round(value.value * 10) / 10
     return rounded.toString()
 }

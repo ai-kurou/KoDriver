@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.BrakeThicknessMeters
+import kurou.kodriver.domain.model.LmuWindowsBrakeThicknessMeters
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearData
 import kurou.kodriver.domain.model.LmuWindowsBrakeWearRemainingData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
@@ -31,10 +31,10 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
     ) = LmuWindowsBrakeWearData(
         wheels =
             mapOf(
-                WheelIndex.FRONT_LEFT to BrakeThicknessMeters(frontLeft),
-                WheelIndex.FRONT_RIGHT to BrakeThicknessMeters(frontLeft),
-                WheelIndex.REAR_LEFT to BrakeThicknessMeters(rearRight),
-                WheelIndex.REAR_RIGHT to BrakeThicknessMeters(rearRight),
+                WheelIndex.FRONT_LEFT to LmuWindowsBrakeThicknessMeters(frontLeft),
+                WheelIndex.FRONT_RIGHT to LmuWindowsBrakeThicknessMeters(frontLeft),
+                WheelIndex.REAR_LEFT to LmuWindowsBrakeThicknessMeters(rearRight),
+                WheelIndex.REAR_RIGHT to LmuWindowsBrakeThicknessMeters(rearRight),
             ),
     )
 
@@ -55,7 +55,7 @@ class ObserveLmuWindowsBrakeWearRemainingUseCaseTest {
             val results = buildList { useCase().collect { add(it?.wheels?.getValue(WheelIndex.FRONT_LEFT)) } }
 
             assertEquals(listOf(100, 50, 0), results.map { it?.remainingPercent?.roundToInt() })
-            assertEquals(BrakeThicknessMeters(0.0305f), results[1]?.thickness)
+            assertEquals(LmuWindowsBrakeThicknessMeters(0.0305f), results[1]?.thickness)
             verify(exactly = 1) { wearRepo.brakeWearStream() }
             verify(exactly = 1) { classRepo.vehicleClassStream() }
             confirmVerified(wearRepo, classRepo)
