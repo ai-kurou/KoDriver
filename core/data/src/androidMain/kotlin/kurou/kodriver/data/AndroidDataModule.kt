@@ -16,6 +16,7 @@ import kurou.kodriver.data.preferences.createConsoleAddressPreferencesRepository
 import kurou.kodriver.data.preferences.createDebugStateCardOrderPreferencesRepository
 import kurou.kodriver.data.preferences.createFeedbackCooldownPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayBackgroundOpacityPreferencesRepository
+import kurou.kodriver.data.preferences.createOverlayTextColorPreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayTextSizePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayVisiblePreferencesRepository
 import kurou.kodriver.data.preferences.createOverlayWindowBoundsPreferencesRepository
@@ -43,6 +44,7 @@ import kurou.kodriver.domain.repository.HapticFeedbackAvailabilityRepository
 import kurou.kodriver.domain.repository.HapticFeedbackEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.OverlayBackgroundOpacityPreferencesRepository
+import kurou.kodriver.domain.repository.OverlayTextColorPreferencesRepository
 import kurou.kodriver.domain.repository.OverlayTextSizePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayVisiblePreferencesRepository
 import kurou.kodriver.domain.repository.OverlayWindowBoundsPreferencesRepository
@@ -171,6 +173,10 @@ private fun androidDataModuleAppSettings(context: Context) =
         // オーバーレイの文字サイズ設定
         single<OverlayTextSizePreferencesRepository> {
             createOverlayTextSizePreferencesRepository(context.filesDir.absolutePath)
+        }
+        // オーバーレイの文字色設定
+        single<OverlayTextColorPreferencesRepository> {
+            createOverlayTextColorPreferencesRepository(context.filesDir.absolutePath)
         }
         // オーバーレイの背景透明度設定
         single<OverlayBackgroundOpacityPreferencesRepository> {

@@ -1,0 +1,14 @@
+<resources>
+    <string name="overlay_text_color_amber">アンバー</string>
+    <string name="overlay_text_color_white">白</string>
+    <string name="overlay_text_color_red">赤</string>
+    <string name="overlay_text_color_green">緑</string>
+    <string name="overlay_text_color_blue">青</string>
+    <string name="overlay_text_color_cyan">シアン</string>
+    <string name="overlay_text_color_magenta">マゼンタ</string>
+    <string name="overlay_text_color_yellow">黄</string>
+    <string name="overlay_text_color_title">文字色</string>
+    <string name="overlay_text_color_ok">OK</string>
+    <string name="overlay_text_color_cancel">キャンセル</string>
+    <string name="overlay_text_color_reset">リセット</string>
+</resources>

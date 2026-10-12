@@ -83,6 +83,7 @@ import kurou.kodriver.feature.otherlist.OtherListViewModel
 import kurou.kodriver.feature.otherlist.TtsUnavailableGuidance
 import kurou.kodriver.feature.otherlist.rememberOpenTtsSettings
 import kurou.kodriver.feature.otheroverlaybackgroundopacitydetail.OtherOverlayBackgroundOpacityDetailPane
+import kurou.kodriver.feature.otheroverlaytextcolordetail.OtherOverlayTextColorDetailDialog
 import kurou.kodriver.feature.otheroverlaytextsizedetail.OtherOverlayTextSizeDetailDialog
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
@@ -319,6 +320,7 @@ private fun DefaultOtherContent(
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
+    var showOverlayTextColorDialog by rememberSaveable { mutableStateOf(false) }
     var showOverlayTextSizeDialog by rememberSaveable { mutableStateOf(false) }
     if (showReadoutStartSoundDialog) {
         OtherReadoutStartSoundDetailDialog(
@@ -329,6 +331,9 @@ private fun DefaultOtherContent(
     if (showThemeDialog) {
         OtherThemeDetailDialog(onDismiss = { showThemeDialog = false })
     }
+    if (showOverlayTextColorDialog) {
+        OtherOverlayTextColorDetailDialog(onDismiss = { showOverlayTextColorDialog = false })
+    }
     if (showOverlayTextSizeDialog) {
         OtherOverlayTextSizeDetailDialog(onDismiss = { showOverlayTextSizeDialog = false })
     }
@@ -337,6 +342,7 @@ private fun DefaultOtherContent(
         scrollToTopRequest = scrollToTopRequest,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         onOpenThemeDialog = { showThemeDialog = true },
+        onOpenOverlayTextColorDialog = { showOverlayTextColorDialog = true },
         onOpenOverlayTextSizeDialog = { showOverlayTextSizeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId, feedbackAttachRequestId ->
             when (itemType) {
@@ -377,6 +383,7 @@ private fun DefaultOtherContent(
                     DebugStateDetailPane(selectedSimulatorId, canNavigateBack, onBack)
                 }
 
+                OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,

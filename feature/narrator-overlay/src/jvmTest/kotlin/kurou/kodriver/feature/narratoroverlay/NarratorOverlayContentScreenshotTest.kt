@@ -140,6 +140,18 @@ class NarratorOverlayContentScreenshotTest {
             )
         }
 
+    @Test
+    fun `保存した白い文字色を表示する`() =
+        composeScreenshotTest {
+            captureNarratorOverlayContent(
+                uiState =
+                    NarratorOverlayUiState(
+                        latestTelemetryLog = telemetryLog(narratedText = "イエローフラッグ"),
+                        overlayTextColor = 0xFFFFFFFFL,
+                    ),
+            )
+        }
+
     private fun DesktopComposeUiTest.captureNarratorOverlayContent(uiState: NarratorOverlayUiState) {
         setContent {
             Box(modifier = Modifier.requiredSize(400.dp, 120.dp)) {

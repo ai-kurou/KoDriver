@@ -5,6 +5,7 @@ import kurou.kodriver.domain.usecase.GetDeviceVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayBackgroundOpacityUseCase
+import kurou.kodriver.domain.usecase.ObserveOverlayTextColorUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayTextSizeUseCase
 import kurou.kodriver.domain.usecase.ObserveOverlayVisibleUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
@@ -65,6 +66,7 @@ val otherListModule =
                 get(),
                 get(),
                 get(),
+                get(),
                 // 接続先IPの設定はAndroidのみ。項目がないプラットフォームでは購読しない。
                 if (OtherListItemType.ServerIp in buildOtherListItems()) get() else null,
                 get(),
@@ -85,6 +87,7 @@ val otherListModule =
         factory { SaveOverlayVisibleUseCase(get()) }
         factory { ObserveOverlayTextSizeUseCase(get()) }
         factory { ObserveOverlayBackgroundOpacityUseCase(get()) }
+        factory { ObserveOverlayTextColorUseCase(get()) }
 
         // other-theme-detail と同じfactory定義なので、どちらが後から登録されても同じ依存を解決する。
         factory { ObserveThemeModeUseCase(get()) }

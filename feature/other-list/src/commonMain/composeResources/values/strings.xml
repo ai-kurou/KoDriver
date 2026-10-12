@@ -52,4 +52,5 @@
     <string name="console_ip_not_configured">未設定</string>
     <string name="item_voice_pitch">声の高さ</string>
     <string name="item_voice_pitch_summary">%1$s倍</string>
+    <string name="item_overlay_text_color">文字色</string>
 </resources>

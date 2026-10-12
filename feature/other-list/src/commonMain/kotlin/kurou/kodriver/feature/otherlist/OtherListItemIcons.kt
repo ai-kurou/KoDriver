@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Feedback
+import androidx.compose.material.icons.outlined.FormatColorText
 import androidx.compose.material.icons.outlined.FormatSize
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.Layers
@@ -46,6 +47,7 @@ internal fun otherListItemLeadingIconVector(itemType: OtherListItemType): ImageV
 
         OtherListItemType.OverlayVisible,
         OtherListItemType.OverlayTextSize,
+        OtherListItemType.OverlayTextColor,
         OtherListItemType.OverlayBackgroundOpacity,
         -> otherOverlaySettingsItemLeadingIconVector(itemType)
 
@@ -80,6 +82,7 @@ private fun otherOverlaySettingsItemLeadingIconVector(itemType: OtherListItemTyp
     when (itemType) {
         OtherListItemType.OverlayVisible -> Icons.Outlined.Layers
         OtherListItemType.OverlayTextSize -> Icons.Outlined.FormatSize
+        OtherListItemType.OverlayTextColor -> Icons.Outlined.FormatColorText
         OtherListItemType.OverlayBackgroundOpacity -> Icons.Outlined.Opacity
         else -> error("unexpected item type: $itemType")
     }
