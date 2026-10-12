@@ -47,6 +47,36 @@ class OtherContentTest {
         )
 
     @Test
+    fun `文字色をタップしても選択や詳細表示を行わない`() {
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+        var backEnabled = false
+        var detailDisplayed = false
+
+        rule.setContent {
+            OtherContent(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.OverlayTextColor),
+                        selectedItem = selectedItem,
+                    ),
+                onItemSelected = { selectedItem = it },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, _, _ -> backEnabled = enabled },
+                detailContent = { _, _, _, _, _ -> detailDisplayed = true },
+            )
+        }
+
+        rule.onNodeWithText("文字色").assertExists().performClick()
+        rule.waitForIdle()
+
+        assertEquals(null, selectedItem)
+        assertFalse(backEnabled)
+        assertFalse(detailDisplayed)
+    }
+
+    @Test
     fun `声の高さをタップすると選択して詳細ペインを開く`() {
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
         var backEnabled = false

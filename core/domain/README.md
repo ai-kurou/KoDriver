@@ -43,3 +43,5 @@ Factoryは両Repositoryの組を返し、Android／DesktopのDIで同じDataStor
 `LmuWindowsTyreTemperatureReadoutTextPreferencesRepository` は過熱・低温警告の文言を扱う。
 Factoryが返す両RepositoryはAndroid／DesktopのDIで1つのDataStoreを共有する。
 保存ファイル・フィールド・ProtoNumberを維持するため、設定移行は不要。
+
+オーバーレイ文字色は ARGB の Long として保存し、`OVERLAY_TEXT_COLOR_DEFAULT`（`0xFFFFC107L`）を既定値とする。`ObserveOverlayTextColorUseCase` は保存値を配信する。

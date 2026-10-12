@@ -21,6 +21,7 @@ enum class OtherListItemType(
     Theme("theme"),
     OverlayVisible("overlay_visible"),
     OverlayTextSize("overlay_text_size"),
+    OverlayTextColor("overlay_text_color"),
     OverlayBackgroundOpacity("overlay_background_opacity"),
     DynamicColor("dynamic_color"),
     HapticFeedback("haptic_feedback"),

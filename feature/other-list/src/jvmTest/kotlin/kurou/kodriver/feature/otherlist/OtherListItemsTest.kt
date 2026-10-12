@@ -6,6 +6,15 @@ import kotlin.test.assertTrue
 
 class OtherListItemsTest {
     @Test
+    fun `文字色は文字サイズの直後かつ背景透明度の前に表示する`() {
+        val items = buildOtherListItems()
+        val textSizeIndex = items.indexOf(OtherListItemType.OverlayTextSize)
+
+        assertEquals(OtherListItemType.OverlayTextColor, items[textSizeIndex + 1])
+        assertEquals(OtherListItemType.OverlayBackgroundOpacity, items[textSizeIndex + 2])
+    }
+
+    @Test
     fun `声の高さを読み上げ設定の最下部に含める`() {
         val items = buildOtherListItems()
 
@@ -35,6 +44,7 @@ class OtherListItemsTest {
                 OtherListItemType.Theme,
                 OtherListItemType.OverlayVisible,
                 OtherListItemType.OverlayTextSize,
+                OtherListItemType.OverlayTextColor,
                 OtherListItemType.OverlayBackgroundOpacity,
                 OtherListItemType.Startup,
                 OtherListItemType.GitHubRepository,

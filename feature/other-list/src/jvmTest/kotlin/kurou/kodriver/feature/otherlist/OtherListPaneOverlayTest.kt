@@ -22,15 +22,21 @@ class OtherListPaneOverlayTest {
     private val onItemClick: (OtherListItemType) -> Unit = mockk()
 
     @Test
-    fun `オーバーレイ設定に既定の文字サイズと背景透明度を表示する`() {
+    fun `オーバーレイ設定に既定の文字サイズと文字色と背景透明度を表示する`() {
         setPane(
             OtherListUiState(
-                items = listOf(OtherListItemType.OverlayTextSize, OtherListItemType.OverlayBackgroundOpacity),
+                items =
+                    listOf(
+                        OtherListItemType.OverlayTextSize,
+                        OtherListItemType.OverlayTextColor,
+                        OtherListItemType.OverlayBackgroundOpacity,
+                    ),
             ),
         )
 
         rule.onNodeWithText("オーバーレイ設定").assertIsDisplayed()
         rule.onNode(hasText("文字サイズ") and hasText("中")).assertIsDisplayed().assertIsNotSelected()
+        rule.onNode(hasText("文字色") and hasText("#FFC107")).assertIsDisplayed().assertIsNotSelected()
         rule.onNode(hasText("背景の透明度") and hasText("50%")).assertIsDisplayed().assertIsNotSelected()
         verify(exactly = 0) { onItemClick(OtherListItemType.OverlayTextSize) }
         verify(exactly = 0) { onItemClick(OtherListItemType.OverlayBackgroundOpacity) }
@@ -117,6 +123,33 @@ class OtherListPaneOverlayTest {
         rule.onNodeWithText("背景の透明度").assertHasClickAction().performClick()
 
         verify(exactly = 1) { onItemClick(OtherListItemType.OverlayBackgroundOpacity) }
+        confirmVerified(onItemClick)
+    }
+
+    @Test
+    fun `文字色をクリックしても選択を通知しない`() {
+        setPane(OtherListUiState(items = listOf(OtherListItemType.OverlayTextColor)))
+
+        rule
+            .onNodeWithText("文字色")
+            .assertHasClickAction()
+            .performClick()
+            .assertIsNotSelected()
+
+        verify(exactly = 0) { onItemClick(OtherListItemType.OverlayTextColor) }
+        confirmVerified(onItemClick)
+    }
+
+    @Test
+    fun `文字色の副テキストは保存済みのRGBを表示する`() {
+        setPane(
+            OtherListUiState(
+                items = listOf(OtherListItemType.OverlayTextColor),
+                overlayTextColor = 0x80123ABCL,
+            ),
+        )
+
+        rule.onNode(hasText("文字色") and hasText("#123ABC")).assertIsDisplayed()
         confirmVerified(onItemClick)
     }
 
