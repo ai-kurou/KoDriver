@@ -48,10 +48,16 @@ class DebugStateCardOrderPreferencesRepositoryFactoryTest {
             val aceRepository =
                 createDebugStateCardOrderPreferencesRepository(tempDir.absolutePath, Simulator.AceWindows)
 
+            val gt7Repository =
+                createDebugStateCardOrderPreferencesRepository(tempDir.absolutePath, Simulator.Gt7Ps5)
+
             lmuRepository.saveCardOrder(listOf("SESSION", "SIMULATOR"))
             assertEquals(emptyList(), aceRepository.observeCardOrder().first())
 
             aceRepository.saveCardOrder(listOf("BEST_LAP", "SIMULATOR"))
+            assertEquals(emptyList(), gt7Repository.observeCardOrder().first())
+            gt7Repository.saveCardOrder(listOf("CURRENT_LAP", "SIMULATOR"))
+            assertEquals(listOf("CURRENT_LAP", "SIMULATOR"), gt7Repository.observeCardOrder().first())
 
             assertEquals(
                 listOf("SESSION", "SIMULATOR"),

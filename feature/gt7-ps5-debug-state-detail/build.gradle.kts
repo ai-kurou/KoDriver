@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
+            implementation(libs.reorderable)
         }
         jvmTest.dependencies {
             implementation(libs.mockk)
